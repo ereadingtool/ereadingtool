@@ -25,10 +25,7 @@ SECRET_KEY = '@06@zn%-45%=9v75d2k(z%g$0-&p#d9($x+t)r_b0g)t4x=$bw'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
-
-# Application definition
+ALLOWED_HOSTS = ['0.0.0.0']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -38,6 +35,20 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+# third-party apps
+INSTALLED_APPS += [
+    'tagging'
+]
+
+# project apps
+INSTALLED_APPS += [
+    'question',
+    'text'
+]
+
+FORCE_LOWERCASE_TAGS = True
+MAX_TAG_LENGTH = 50
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
