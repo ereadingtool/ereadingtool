@@ -156,4 +156,4 @@ venv.bak/
 .mypy_cache/
 
 .idea/
-templates/
+/db.sqlite3
