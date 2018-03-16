@@ -44,11 +44,14 @@ INSTALLED_APPS += [
 # project apps
 INSTALLED_APPS += [
     'question',
-    'text'
+    'text',
+    'user'
 ]
 
 FORCE_LOWERCASE_TAGS = True
 MAX_TAG_LENGTH = 50
+
+AUTH_USER_MODEL = 'user.ReaderUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
