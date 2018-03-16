@@ -5,12 +5,17 @@ from text.models import Text
 class Question(models.Model):
     text = models.ForeignKey(Text, blank=False, related_name='questions', on_delete=models.CASCADE)
 
+    body = models.TextField(blank=False)
+
     TYPE_CHOICES = (
         ('main_idea', 'Main Idea'),
         ('detail', 'Detail')
     )
 
     type = models.CharField(max_length=32, blank=False, choices=TYPE_CHOICES)
+
+    def __str__(self):
+        return self.body[:15]
 
 
 class Answer(models.Model):
@@ -20,3 +25,5 @@ class Answer(models.Model):
     correct = models.BooleanField(default=False, blank=False)
     feedback = models.CharField(max_length=255, blank=False)
 
+    def __str__(self):
+        return self.text[:15]
