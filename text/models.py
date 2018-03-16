@@ -2,6 +2,9 @@ from django.db import models
 
 
 class TextDifficulty(models.Model):
+    class Meta:
+        verbose_name_plural = 'Text Difficulties'
+
     code = models.CharField(max_length=32, blank=False)
     name = models.CharField(max_length=255, blank=False)
 

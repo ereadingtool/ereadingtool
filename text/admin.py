@@ -10,6 +10,6 @@ class TextDifficultyAdmin(admin.ModelAdmin):
     pass
 
 
-admin.register(TextDifficultyAdmin, TextDifficulty)
-admin.register(TextAdmin, Text)
+admin.site.register(TextDifficulty, TextDifficultyAdmin)
+admin.site.register(Text, TextAdmin)
 
