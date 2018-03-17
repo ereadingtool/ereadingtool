@@ -19,6 +19,10 @@ class Question(models.Model):
 
 
 class Answer(models.Model):
+    class Meta:
+        ordering = ['order']
+
+    order = models.PositiveIntegerField(default=0, editable=False)
     question = models.ForeignKey(Question, blank=False, related_name='answers', on_delete=models.CASCADE)
 
     text = models.CharField(max_length=255, blank=False)
@@ -26,4 +30,4 @@ class Answer(models.Model):
     feedback = models.CharField(max_length=255, blank=False)
 
     def __str__(self):
-        return self.text[:15]
+        return '{order}'.format(order=self.order)
