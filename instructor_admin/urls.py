@@ -1,5 +1,5 @@
 from django.urls import path
-from admin.views import AdminView
+from instructor_admin.views import AdminView
 
 
 urlpatterns = [
