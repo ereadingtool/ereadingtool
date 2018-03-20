@@ -1,0 +1,39 @@
+body {
+    background: #f9f9f9;
+    margin-top: 0;
+    margin-right: 0;
+    margin-left: 0;
+}
+
+.app {
+    grid-gap: 0;
+    display: grid;
+    grid-row-gap: 100px;
+    grid-template-rows: 67px;
+}
+
+.header {
+    display: grid;
+    background: #FFFFFF;
+
+    align-items: center;
+    justify-items: center;
+    border: solid 0.5px lightgrey;
+}
+
+.menu {
+    grid-area: 1 / 6;
+    display: grid;
+    grid-template-rows: 35px;
+    grid-template-columns: 100px;
+
+    align-items: center;
+    justify-items: center;
+}
+
+.item {
+    font: "Lucida Console";
+    grid-area: 1;
+    grid-column: auto;
+}
+

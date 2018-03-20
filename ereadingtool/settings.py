@@ -68,7 +68,7 @@ ROOT_URLCONF = 'ereadingtool.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'question/templates')]
+        'DIRS': [os.path.join(BASE_DIR, 'question/templates'), os.path.join(BASE_DIR, 'admin/templates')]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
