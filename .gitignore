@@ -158,3 +158,11 @@ venv.bak/
 .idea/
 /db.sqlite3
 /static/
+/bower_components/
+/node_modules/
+/.pulp-cache/
+/output/
+/generated-docs/
+/.psc*
+/.purs*
+/.psa*

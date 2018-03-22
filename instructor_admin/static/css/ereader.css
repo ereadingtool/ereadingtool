@@ -5,19 +5,17 @@ body {
     margin-left: 0;
 }
 
-.app {
+.header {
     grid-gap: 0;
     display: grid;
     grid-row-gap: 100px;
     grid-template-rows: 67px;
-}
 
-.header {
-    display: grid;
     background: #FFFFFF;
 
     align-items: center;
     justify-items: center;
+
     border: solid 0.5px lightgrey;
 }
 
@@ -31,9 +29,38 @@ body {
     justify-items: center;
 }
 
-.item {
+.menu_item {
     font: "Lucida Console";
     grid-area: 1;
     grid-column: auto;
+}
+
+.filter {
+    display: grid;
+    margin-top: 50px;
+    margin-bottom: 0;
+    grid-template-columns: 4% auto 4%;
+}
+
+.text_items {
+    margin-top: 2%;
+    display: grid;
+    grid-row-gap: 5%;
+
+    grid-template-columns: 4% auto 4%;
+    grid-auto-rows: 110px;
+}
+
+.text_item {
+    display: grid;
+    grid-column: 2;
+
+    align-items: center;
+    justify-items: center;
+
+    grid-template-columns: 2% 36% repeat(auto-fill, 20%) 2%;
+
+    background: #FFFFFF;
+    border: solid 0.5px lightgrey;
 }
 
