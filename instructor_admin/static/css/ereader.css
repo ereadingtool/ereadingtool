@@ -50,6 +50,11 @@ body {
 
     align-items: right;
     justify-items: right;
+
+    grid-auto-rows: 50px;
+
+    grid-row-gap: 5%;
+
 }
 
 .item_property {
@@ -87,7 +92,48 @@ body {
 
     grid-template-columns: 4% auto 4%;
     grid-auto-rows: 110px;
+}
 
+@media (min-width: 300px) {
+    .text_items {
+        margin-top: 2%;
+        display: grid;
+        grid-row-gap: 5%;
+
+        grid-template-columns: 4% auto 4%;
+        grid-auto-rows: 110px;
+    }
+
+    .item_property {
+        display: grid;
+
+        align-items: center;
+        justify-items: center;
+
+        font-size: 9px;
+    }
+
+    .sub_description {
+        color: #a4a4a4;
+        font-size: 9px;
+
+        display: block;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+.media {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 2em;
+}
+
+.media > * {
+  flex: 1 1 250px;
+  margin: 10px;
 }
 
 .footer_items {
