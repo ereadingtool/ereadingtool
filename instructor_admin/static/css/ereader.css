@@ -94,7 +94,7 @@ body {
     grid-auto-rows: 110px;
 }
 
-@media (min-width: 300px) {
+@media screen and (min-width:300px) and (max-width: 568px) {
     .text_items {
         margin-top: 2%;
         display: grid;
