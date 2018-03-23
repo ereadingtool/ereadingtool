@@ -13,6 +13,9 @@ body {
 
     background: #FFFFFF;
 
+    font: "Lucida Console";
+    font-size: 18px;
+
     align-items: center;
     justify-items: center;
 
@@ -36,11 +39,46 @@ body {
 }
 
 .filter {
+    grid-column: 2 / 2;
+}
+
+.filter_items {
     display: grid;
     margin-top: 50px;
     margin-bottom: 0;
     grid-template-columns: 4% auto 4%;
+
+    align-items: right;
+    justify-items: right;
 }
+
+.item_property {
+    display: grid;
+
+    align-items: center;
+    justify-items: center;
+
+    font-size: 23px;
+    font-weight: 300;
+}
+
+.sub_description {
+    color: #a4a4a4;
+    font-size: 14px;
+    font-weight: 300;
+
+    display: block;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.message {
+    margin: 8px;
+    color: #737373;
+}
+
 
 .text_items {
     margin-top: 2%;
@@ -49,6 +87,22 @@ body {
 
     grid-template-columns: 4% auto 4%;
     grid-auto-rows: 110px;
+
+}
+
+.footer_items {
+    margin-top: 100px;
+    margin-bottom: 0;
+
+    display: grid;
+    grid-template-columns: 4% auto 4%;
+
+    align-items: center;
+    justify-items: center;
+}
+
+.footer {
+    grid-column: 2 / 2;
 }
 
 .text_item {

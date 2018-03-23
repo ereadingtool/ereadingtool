@@ -18,6 +18,22 @@ class Text(models.Model):
 
     body = models.TextField(blank=False)
 
-    def __str__(self):
-        return '{pk} - {source}'.format(pk=self.pk, source=self.source)
+    created_dt = models.DateTimeField(auto_now_add=True)
+    modified_dt = models.DateTimeField(auto_now=True)
 
+    title = models.CharField(max_length=255, blank=True)
+
+    def to_dict(self):
+        return {
+            'id': self.pk,
+            'title': self.title,
+            'created_dt': self.created_dt.isoformat(),
+            'modified_dt': self.modified_dt.isoformat(),
+            'question_count': len(list(self.questions.all())),
+            'source': self.source,
+            'difficulty': self.difficulty.name,
+            'body': self.body
+        }
+
+    def __str__(self):
+        return '{title}'.format(title=self.title)

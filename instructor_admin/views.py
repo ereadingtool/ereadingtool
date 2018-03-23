@@ -16,7 +16,6 @@ class AdminAPIView(View):
     model = Text
 
     def get(self, request):
-        texts = [{'source': text.source, 'difficulty': text.difficulty.slug, 'body': text.body}
-                 for text in self.model.objects.all()]
+        texts = [text.to_dict() for text in self.model.objects.all()]
 
         return HttpResponse(json.dumps(list(texts)))
