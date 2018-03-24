@@ -12,6 +12,13 @@ class AdminView(TemplateView):
     template_name = 'admin.html'
 
 
+class AdminCreateQuizView(TemplateView):
+    model = Text
+
+    fields = ('source', 'difficulty', 'body',)
+    template_name = 'create_quiz.html'
+
+
 class AdminAPIView(View):
     model = Text
 

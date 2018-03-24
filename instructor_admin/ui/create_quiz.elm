@@ -2,7 +2,6 @@ import Html exposing (..)
 import Html.Attributes exposing (classList, attribute)
 
 import Http exposing (..)
-import Date exposing (..)
 
 import Model exposing (Text, Texts, Model, textsDecoder)
 import Config exposing (..)
@@ -55,6 +54,19 @@ view_header model =
         ]
     ]
 
+view_preview : Model -> Html Msg
+view_preview model =
+    div [ classList [("preview", True)] ] [
+        text ""
+      , div [ classList [("preview_menu", True)] ] [
+          span [ classList [("menu_item", True)] ] [
+              Html.button [] [ Html.text "Preview" ]
+            , Html.input [attribute "placeholder" "Search texts.."] []
+          ]
+        ]
+    ]
+
+
 view_filter : Model -> Html Msg
 view_filter model = div [classList [("filter_items", True)] ] [
      div [classList [("filter", True)] ] [
@@ -63,43 +75,31 @@ view_filter model = div [classList [("filter_items", True)] ] [
      ]
  ]
 
-month_day_year_fmt : Date -> String
-month_day_year_fmt date = List.foldr (++) "" <| List.map (\s -> s ++ "  ")
-  [toString <| Date.month date, (toString <| Date.day date) ++ ",", toString <| Date.year date]
-
-
-view_text : Text -> Html Msg
-view_text text = div [ classList[("text_item", True)] ] [
-     div [classList [("item_property", True)], attribute "data-id" (toString text.id)] [ Html.text "" ]
-   , div [classList [("item_property", True)]] [
-       Html.text text.title
-     , span [classList [("sub_description", True)]] [
-         Html.text <| "Modified:   " ++ month_day_year_fmt text.modified_dt
+view_choices : Model -> Int -> List (Html Msg)
+view_choices model places =
+     List.map (\i ->
+       div [ classList [("answer_item", True)] ] [
+            Html.input [attribute "type" "radio"] []
+         ,  Html.text <| "Click to write Choice " ++ (toString i)
        ]
-     ]
-   , div [classList [("item_property", True)]] [
-       Html.text text.difficulty
-       , span [classList [("sub_description", True)]] [
-             Html.text "Difficulty"
-           ]
-     ]
-   , div [classList [("item_property", True)]] [
-        Html.text <| toString text.question_count
-        , span [classList [("sub_description", True)]] [
-             Html.text "Questions"
-           ]
-     ]
-   , div [classList [("item_property", True)]] [
-        Html.text "1"
-        , span [classList [("sub_description", True)]] [
-             Html.text "Languages"
-           ]
-     ]   , div [classList [("action_menu", True)]] [ Html.text "" ]
- ]
+     ) <| List.range 1 places
 
-view_texts : Model -> Html Msg
-view_texts model = div [classList [("text_items", True)] ]
-   (List.map view_text model.texts)
+view_create_question : Model -> List (Html Msg)
+view_create_question model = [
+      div [] [Html.input [attribute "type" "checkbox"] []]
+   ,  div [classList [("question_item", True)] ] [ Html.text "Click to write the question text" ]
+ ] ++ (view_choices model 4)
+
+view_create_questions : Model -> Html Msg
+view_create_questions model = div [ classList [("question_section", True)] ] [
+      div [ classList [("questions", True)] ] (view_create_question model)
+  ]
+
+
+view_create_title : Model -> Html Msg
+view_create_title model = div [ classList [("create_text", True)] ] [
+      div [ classList [("create_title", True)] ] [ Html.text "title" ]
+  ]
 
 view_footer : Model -> Html Msg
 view_footer model = div [classList [("footer_items", True)] ] [
@@ -111,8 +111,8 @@ view_footer model = div [classList [("footer_items", True)] ] [
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    (view_header model)
-  , (view_filter model)
-  , (view_texts model)
-  , (view_footer model)
+      (view_header model)
+    , (view_preview model)
+    , (view_create_title model)
+    , (view_create_questions model)
   ]
