@@ -1,18 +1,21 @@
 import Html exposing (..)
 import Html.Attributes exposing (classList, attribute)
 
+import Html.Events exposing (onClick, onBlur, onInput)
+
 import Http exposing (..)
 
-import Model exposing (Text, Texts, Model, textsDecoder)
+import Model exposing (Text, Texts, textsDecoder)
 import Config exposing (..)
 
--- UPDATE
-type Msg = Update (Result Http.Error (List Text))
+type Msg = Update (Result Http.Error (List Text)) | EditTitle | UpdateTitle String
+
+type alias Model = { texts : List Text, editTitle : Bool, title: String }
 
 type alias Filter = List String
 
 init : (Model, Cmd Msg)
-init = (Model  [], updateTexts [])
+init = (Model  [] False "title", updateTexts [])
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -27,8 +30,12 @@ updateTexts filter = let request = Http.get text_api_endpoint textsDecoder in
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
+    EditTitle ->
+      ({ model | editTitle = if model.editTitle then False else True }, Cmd.none)
+    UpdateTitle title ->
+      ({ model | title = title }, Cmd.none)
     Update (Ok texts) ->
-      (Model texts, Cmd.none)
+      ({ model | texts = texts}, Cmd.none)
     -- handle user-friendly msgs
     Update (Err _) ->
       (model, Cmd.none)
@@ -79,7 +86,7 @@ view_choices : Model -> Int -> List (Html Msg)
 view_choices model places =
      List.map (\i ->
        div [ classList [("answer_item", True)] ] [
-            Html.input [attribute "type" "radio"] []
+            Html.input [attribute "type" "radio", attribute "name" "question_1_answers"] []
          ,  Html.text <| "Click to write Choice " ++ (toString i)
        ]
      ) <| List.range 1 places
@@ -96,9 +103,18 @@ view_create_questions model = div [ classList [("question_section", True)] ] [
   ]
 
 
+view_edit_title : Model -> Html Msg
+view_edit_title model = if model.editTitle then
+    Html.input [attribute "type" "textbox", attribute "value" model.title, onInput UpdateTitle, onBlur EditTitle] [ ]
+  else
+    Html.span [onClick EditTitle] [ Html.text model.title ]
+
+
 view_create_title : Model -> Html Msg
 view_create_title model = div [ classList [("create_text", True)] ] [
-      div [ classList [("create_title", True)] ] [ Html.text "title" ]
+      div [ classList [("create_title", True)] ] [
+        view_edit_title model
+      ]
   ]
 
 view_footer : Model -> Html Msg

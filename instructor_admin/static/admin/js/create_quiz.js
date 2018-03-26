@@ -9737,41 +9737,6 @@ var _user$project$Main$view_footer = function (model) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Main$view_create_title = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$classList(
-				{
-					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'create_text', _1: true},
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$classList(
-						{
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'create_title', _1: true},
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text('title'),
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		});
-};
 var _user$project$Main$view_choices = F2(
 	function (model, places) {
 		return A2(
@@ -9796,7 +9761,11 @@ var _user$project$Main$view_choices = F2(
 							{
 								ctor: '::',
 								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'radio'),
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'name', 'answer'),
+									_1: {ctor: '[]'}
+								}
 							},
 							{ctor: '[]'}),
 						_1: {
@@ -10068,6 +10037,121 @@ var _user$project$Main$view_header = function (model) {
 			}
 		});
 };
+var _user$project$Main$update = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		switch (_p0.ctor) {
+			case 'EditTitle':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							editTitle: model.editTitle ? false : true
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'UpdateTitle':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{title: _p0._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				if (_p0._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{texts: _p0._0._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+		}
+	});
+var _user$project$Main$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$none;
+};
+var _user$project$Main$Model = F3(
+	function (a, b, c) {
+		return {texts: a, editTitle: b, title: c};
+	});
+var _user$project$Main$UpdateTitle = function (a) {
+	return {ctor: 'UpdateTitle', _0: a};
+};
+var _user$project$Main$EditTitle = {ctor: 'EditTitle'};
+var _user$project$Main$view_edit_title = function (model) {
+	return model.editTitle ? A2(
+		_elm_lang$html$Html$input,
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'textbox'),
+			_1: {
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', model.title),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateTitle),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onBlur(_user$project$Main$EditTitle),
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		},
+		{ctor: '[]'}) : A2(
+		_elm_lang$html$Html$span,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$EditTitle),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(model.title),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Main$view_create_title = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$classList(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'create_text', _1: true},
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$classList(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'create_title', _1: true},
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _user$project$Main$view_edit_title(model),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		});
+};
 var _user$project$Main$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -10090,22 +10174,6 @@ var _user$project$Main$view = function (model) {
 			}
 		});
 };
-var _user$project$Main$update = F2(
-	function (msg, model) {
-		var _p0 = msg;
-		if (_p0._0.ctor === 'Ok') {
-			return {
-				ctor: '_Tuple2',
-				_0: _user$project$Model$Model(_p0._0._0),
-				_1: _elm_lang$core$Platform_Cmd$none
-			};
-		} else {
-			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-		}
-	});
-var _user$project$Main$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$none;
-};
 var _user$project$Main$Update = function (a) {
 	return {ctor: 'Update', _0: a};
 };
@@ -10115,8 +10183,11 @@ var _user$project$Main$updateTexts = function (filter) {
 };
 var _user$project$Main$init = {
 	ctor: '_Tuple2',
-	_0: _user$project$Model$Model(
-		{ctor: '[]'}),
+	_0: A3(
+		_user$project$Main$Model,
+		{ctor: '[]'},
+		false,
+		'title'),
 	_1: _user$project$Main$updateTexts(
 		{ctor: '[]'})
 };
