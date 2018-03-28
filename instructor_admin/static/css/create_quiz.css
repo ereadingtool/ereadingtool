@@ -144,11 +144,11 @@ body {
     grid-row-gap: 10%;
     grid-column: 2;
 
-    grid-template-columns: 5%;
+    grid-template-columns: 9%;
 }
 
-.text_property_item {
-
+.over {
+    background-color: #d1e1ed;
 }
 
 @media screen and (min-width:300px) and (max-width: 568px) {

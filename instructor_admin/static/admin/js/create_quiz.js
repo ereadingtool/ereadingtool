@@ -9221,10 +9221,24 @@ var _user$project$Ports$selectAllInputText = _elm_lang$core$Native_Platform.outg
 var _user$project$Main$view_editable_field = F4(
 	function (field, model, view, edit) {
 		var _p0 = A2(_elm_lang$core$Dict$get, field, model.editable_fields);
-		if ((_p0.ctor === 'Just') && (_p0._0 === true)) {
-			return edit(model);
+		if (_p0.ctor === 'Just') {
+			var _p1 = _p0._0.editable;
+			if (_p1 === true) {
+				return edit(model);
+			} else {
+				return view(model);
+			}
 		} else {
 			return view(model);
+		}
+	});
+var _user$project$Main$get_hover = F2(
+	function (model, field) {
+		var _p2 = A2(_elm_lang$core$Dict$get, field, model.editable_fields);
+		if (_p2.ctor === 'Just') {
+			return _p2._0.hover;
+		} else {
+			return false;
 		}
 	});
 var _user$project$Main$view_choices = F2(
@@ -9530,10 +9544,10 @@ var _user$project$Main$view_header = function (model) {
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var text = model.text;
-		var _p1 = msg;
-		switch (_p1.ctor) {
+		var _p3 = msg;
+		switch (_p3.ctor) {
 			case 'ToggleEditableField':
-				var _p3 = _p1._0;
+				var _p7 = _p3._0;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -9541,18 +9555,64 @@ var _user$project$Main$update = F2(
 						{
 							editable_fields: A3(
 								_elm_lang$core$Dict$update,
-								_p3,
+								_p7,
 								function (v) {
-									var _p2 = v;
-									if ((_p2.ctor === 'Just') && (_p2._0 === true)) {
-										return _elm_lang$core$Maybe$Just(false);
+									var _p4 = v;
+									if (_p4.ctor === 'Just') {
+										var _p6 = _p4._0;
+										var _p5 = _p6.editable;
+										if (_p5 === true) {
+											return _elm_lang$core$Maybe$Just(
+												_elm_lang$core$Native_Utils.update(
+													_p6,
+													{editable: false, hover: false}));
+										} else {
+											return _elm_lang$core$Maybe$Just(
+												_elm_lang$core$Native_Utils.update(
+													_p6,
+													{editable: true, hover: true}));
+										}
 									} else {
-										return _elm_lang$core$Maybe$Just(true);
+										return v;
 									}
 								},
 								model.editable_fields)
 						}),
-					_1: _user$project$Ports$selectAllInputText(_p3)
+					_1: _user$project$Ports$selectAllInputText(_p7)
+				};
+			case 'Hover':
+				var _p11 = _p3._0;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							editable_fields: A3(
+								_elm_lang$core$Dict$update,
+								_p11,
+								function (v) {
+									var _p8 = v;
+									if (_p8.ctor === 'Just') {
+										var _p10 = _p8._0;
+										var _p9 = _p10.hover;
+										if (_p9 === true) {
+											return _elm_lang$core$Maybe$Just(
+												_elm_lang$core$Native_Utils.update(
+													_p10,
+													{hover: false}));
+										} else {
+											return _elm_lang$core$Maybe$Just(
+												_elm_lang$core$Native_Utils.update(
+													_p10,
+													{hover: true}));
+										}
+									} else {
+										return v;
+									}
+								},
+								model.editable_fields)
+						}),
+					_1: _user$project$Ports$selectAllInputText(_p11)
 				};
 			case 'UpdateTitle':
 				return {
@@ -9562,7 +9622,7 @@ var _user$project$Main$update = F2(
 						{
 							text: _elm_lang$core$Native_Utils.update(
 								text,
-								{title: _p1._0})
+								{title: _p3._0})
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -9574,7 +9634,7 @@ var _user$project$Main$update = F2(
 						{
 							text: _elm_lang$core$Native_Utils.update(
 								text,
-								{source: _p1._0})
+								{source: _p3._0})
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -9586,7 +9646,7 @@ var _user$project$Main$update = F2(
 						{
 							text: _elm_lang$core$Native_Utils.update(
 								text,
-								{difficulty: _p1._0})
+								{difficulty: _p3._0})
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -9598,7 +9658,7 @@ var _user$project$Main$update = F2(
 						{
 							text: _elm_lang$core$Native_Utils.update(
 								text,
-								{body: _p1._0})
+								{body: _p3._0})
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -9608,6 +9668,10 @@ var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
 var _user$project$Main$new_text = {id: _elm_lang$core$Maybe$Nothing, title: 'title', created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing, source: 'source', difficulty: 'difficulty', question_count: 0, body: 'text'};
+var _user$project$Main$Field = F2(
+	function (a, b) {
+		return {editable: a, hover: b};
+	});
 var _user$project$Main$Model = F3(
 	function (a, b, c) {
 		return {text: a, questions: b, editable_fields: c};
@@ -9621,16 +9685,32 @@ var _user$project$Main$init = {
 		_elm_lang$core$Dict$fromList(
 			{
 				ctor: '::',
-				_0: {ctor: '_Tuple2', _0: 'title', _1: false},
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'title',
+					_1: A2(_user$project$Main$Field, false, false)
+				},
 				_1: {
 					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'source', _1: false},
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'source',
+						_1: A2(_user$project$Main$Field, false, false)
+					},
 					_1: {
 						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'difficulty', _1: false},
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'difficulty',
+							_1: A2(_user$project$Main$Field, false, false)
+						},
 						_1: {
 							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'body', _1: false},
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'body',
+								_1: A2(_user$project$Main$Field, false, false)
+							},
 							_1: {ctor: '[]'}
 						}
 					}
@@ -9650,18 +9730,52 @@ var _user$project$Main$UpdateSource = function (a) {
 var _user$project$Main$UpdateTitle = function (a) {
 	return {ctor: 'UpdateTitle', _0: a};
 };
+var _user$project$Main$Hover = function (a) {
+	return {ctor: 'Hover', _0: a};
+};
+var _user$project$Main$hover_attrs = F2(
+	function (model, field) {
+		return {
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$classList(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'over',
+						_1: A2(_user$project$Main$get_hover, model, field)
+					},
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Events$onMouseOver(
+					_user$project$Main$Hover(field)),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onMouseLeave(
+						_user$project$Main$Hover(field)),
+					_1: {ctor: '[]'}
+				}
+			}
+		};
+	});
 var _user$project$Main$ToggleEditableField = function (a) {
 	return {ctor: 'ToggleEditableField', _0: a};
 };
 var _user$project$Main$view_title = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
+	var attrs = A2(
+		_elm_lang$core$Basics_ops['++'],
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html_Events$onClick(
 				_user$project$Main$ToggleEditableField('title')),
 			_1: {ctor: '[]'}
 		},
+		A2(_user$project$Main$hover_attrs, model, 'title'));
+	return A2(
+		_elm_lang$html$Html$div,
+		attrs,
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html$text(model.text.title),
@@ -9696,14 +9810,18 @@ var _user$project$Main$edit_title = function (model) {
 		{ctor: '[]'});
 };
 var _user$project$Main$view_source = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
+	var attrs = A2(
+		_elm_lang$core$Basics_ops['++'],
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html_Events$onClick(
 				_user$project$Main$ToggleEditableField('source')),
 			_1: {ctor: '[]'}
 		},
+		A2(_user$project$Main$hover_attrs, model, 'source'));
+	return A2(
+		_elm_lang$html$Html$div,
+		attrs,
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html$text(model.text.source),
@@ -9724,7 +9842,7 @@ var _user$project$Main$edit_source = function (model) {
 					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'source'),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateTitle),
+						_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateSource),
 						_1: {
 							ctor: '::',
 							_0: _elm_lang$html$Html_Events$onBlur(
@@ -9736,6 +9854,25 @@ var _user$project$Main$edit_source = function (model) {
 			}
 		},
 		{ctor: '[]'});
+};
+var _user$project$Main$view_difficulty = function (model) {
+	var attrs = A2(
+		_elm_lang$core$Basics_ops['++'],
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Events$onClick(
+				_user$project$Main$ToggleEditableField('difficulty')),
+			_1: {ctor: '[]'}
+		},
+		A2(_user$project$Main$hover_attrs, model, 'difficulty'));
+	return A2(
+		_elm_lang$html$Html$div,
+		attrs,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(model.text.difficulty),
+			_1: {ctor: '[]'}
+		});
 };
 var _user$project$Main$edit_difficulty = function (model) {
 	return A2(
@@ -9764,21 +9901,6 @@ var _user$project$Main$edit_difficulty = function (model) {
 		},
 		{ctor: '[]'});
 };
-var _user$project$Main$view_difficulty = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Events$onClick(
-				_user$project$Main$ToggleEditableField('difficulty')),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text(model.text.difficulty),
-			_1: {ctor: '[]'}
-		});
-};
 var _user$project$Main$edit_body = function (model) {
 	return A2(
 		_elm_lang$html$Html$textarea,
@@ -9803,14 +9925,18 @@ var _user$project$Main$edit_body = function (model) {
 		});
 };
 var _user$project$Main$view_body = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
+	var attrs = A2(
+		_elm_lang$core$Basics_ops['++'],
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html_Events$onClick(
 				_user$project$Main$ToggleEditableField('body')),
 			_1: {ctor: '[]'}
 		},
+		A2(_user$project$Main$hover_attrs, model, 'body'));
+	return A2(
+		_elm_lang$html$Html$div,
+		attrs,
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html$text(model.text.body),

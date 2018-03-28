@@ -1,7 +1,7 @@
 import Html exposing (..)
 import Html.Attributes exposing (classList, attribute)
 
-import Html.Events exposing (onClick, onBlur, onInput)
+import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onMouseOut, onMouseLeave)
 
 import Dict
 
@@ -10,14 +10,19 @@ import Model exposing (Text, Question, textsDecoder)
 import Ports exposing (selectAllInputText)
 
 
-type Msg = ToggleEditableField String
+type Msg = ToggleEditableField String | Hover String
   | UpdateTitle String
   | UpdateSource String
   | UpdateDifficulty String
   | UpdateBody String
 
 
-type alias Model = { text : Text, questions: List Question, editable_fields: (Dict.Dict String Bool) }
+type alias Field = {
+    editable : Bool
+  , hover : Bool}
+
+
+type alias Model = { text : Text, questions: List Question, editable_fields: (Dict.Dict String Field) }
 
 type alias Filter = List String
 
@@ -38,10 +43,10 @@ new_text = {
 
 init : (Model, Cmd Msg)
 init = (Model new_text [] (Dict.fromList [
-      ("title", False)
-    , ("source", False)
-    , ("difficulty", False)
-    , ("body", False)
+      ("title", Field False False)
+    , ("source", Field False False)
+    , ("difficulty", Field False False)
+    , ("body", Field False False)
   ]) , Cmd.none)
 
 subscriptions : Model -> Sub Msg
@@ -54,9 +59,18 @@ update msg model = let text = model.text in
     ToggleEditableField field ->
       ({ model | editable_fields = Dict.update field
         (\v -> case v of
-          Just True -> Just False
-          _ -> Just True) model.editable_fields }, selectAllInputText field)
+          Just field -> case field.editable of
+            True -> Just { field | editable = False, hover = False }
+            _ -> Just { field | editable = True, hover = True }
+          _ -> v) model.editable_fields }, selectAllInputText field)
 
+    Hover field ->
+      ({ model | editable_fields = Dict.update field
+        (\v -> case v of
+          Just field -> case field.hover of
+            True -> Just { field | hover = False }
+            _ -> Just { field | hover = True }
+          _ -> v) model.editable_fields }, selectAllInputText field)
 
     UpdateTitle title -> ({ model | text = { text | title = title }}, Cmd.none)
     UpdateSource source ->  ({ model | text = { text | source = source }}, Cmd.none)
@@ -125,9 +139,20 @@ view_create_questions model = div [ classList [("question_section", True)] ] [
       div [ classList [("questions", True)] ] (view_create_question model)
   ]
 
+get_hover : Model -> String -> Bool
+get_hover model field = case Dict.get field model.editable_fields of
+  Just field -> field.hover
+  Nothing -> False
+
+hover_attrs : Model -> String -> List (Attribute Msg)
+hover_attrs model field = [
+    classList [ ("over", get_hover model field) ]
+  , onMouseOver (Hover field)
+  , onMouseLeave (Hover field)]
+
 view_title : Model -> Html Msg
-view_title model = Html.div [onClick (ToggleEditableField "title")] [
-  Html.text model.text.title ]
+view_title model = let attrs = [onClick (ToggleEditableField "title")] ++ (hover_attrs model "title") in
+  Html.div attrs [ Html.text model.text.title ]
 
 edit_title :Model -> Html Msg
 edit_title model = Html.input [
@@ -138,15 +163,20 @@ edit_title model = Html.input [
       , onBlur (ToggleEditableField "title") ] [ ]
 
 view_source : Model -> Html Msg
-view_source model = Html.div [onClick (ToggleEditableField "source")] [ Html.text model.text.source ]
+view_source model = let attrs = [onClick (ToggleEditableField "source")] ++ (hover_attrs model "source") in
+  Html.div attrs [ Html.text model.text.source ]
 
 edit_source : Model -> Html Msg
 edit_source model = Html.input [
         attribute "type" "text"
       , attribute "value" model.text.source
       , attribute "id" "source"
-      , onInput UpdateTitle
+      , onInput UpdateSource
       , onBlur (ToggleEditableField "source") ] [ ]
+
+view_difficulty : Model -> Html Msg
+view_difficulty model = let attrs = [onClick (ToggleEditableField "difficulty")] ++ (hover_attrs model "difficulty") in
+  Html.div attrs [ Html.text model.text.difficulty ]
 
 edit_difficulty : Model -> Html Msg
 edit_difficulty model = Html.input [
@@ -156,8 +186,6 @@ edit_difficulty model = Html.input [
       , onInput UpdateDifficulty
       , onBlur (ToggleEditableField "difficulty") ] [ ]
 
-view_difficulty : Model -> Html Msg
-view_difficulty model = Html.div [onClick (ToggleEditableField "difficulty")] [ Html.text model.text.difficulty ]
 
 edit_body : Model -> Html Msg
 edit_body model = Html.textarea [
@@ -166,11 +194,14 @@ edit_body model = Html.textarea [
       , onBlur (ToggleEditableField "body") ] [ Html.text model.text.body ]
 
 view_body : Model -> Html Msg
-view_body model = Html.div [onClick (ToggleEditableField "body")] [ Html.text model.text.body ]
+view_body model = let attrs = [onClick (ToggleEditableField "body")] ++ (hover_attrs model "body") in
+  Html.div attrs [ Html.text model.text.body ]
 
 view_editable_field : String -> Model -> (Model -> Html Msg) -> (Model -> Html Msg) -> Html Msg
 view_editable_field field model view edit = case Dict.get field model.editable_fields of
-   Just True -> edit model
+   Just field -> case field.editable of
+     True -> edit model
+     _ -> view model
    _ -> view model
 
 view_create_text : Model -> Html Msg
