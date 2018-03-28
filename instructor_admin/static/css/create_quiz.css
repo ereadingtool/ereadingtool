@@ -119,8 +119,15 @@ body {
     color: #737373;
 }
 
+.body {
+    font-size: 23px;
+    font-weight: 300;
 
-.create_text {
+    margin-top: 4%;
+    grid-column: 2;
+}
+
+.text_properties {
     margin-top: 3%;
     display: grid;
     grid-row-gap: 5%;
@@ -128,11 +135,20 @@ body {
     grid-template-columns: 4% auto 20%;
 }
 
-.create_title {
+.text_property_items {
     font-size: 23px;
     font-weight: 300;
 
+    display: grid;
+
+    grid-row-gap: 10%;
     grid-column: 2;
+
+    grid-template-columns: 5%;
+}
+
+.text_property_item {
+
 }
 
 @media screen and (min-width:300px) and (max-width: 568px) {

@@ -3,42 +3,65 @@ import Html.Attributes exposing (classList, attribute)
 
 import Html.Events exposing (onClick, onBlur, onInput)
 
-import Http exposing (..)
+import Dict
 
-import Model exposing (Text, Texts, textsDecoder)
-import Config exposing (..)
+import Model exposing (Text, Question, textsDecoder)
 
-type Msg = Update (Result Http.Error (List Text)) | EditTitle | UpdateTitle String
+import Ports exposing (selectAllInputText)
 
-type alias Model = { texts : List Text, editTitle : Bool, title: String }
+
+type Msg = ToggleEditableField String
+  | UpdateTitle String
+  | UpdateSource String
+  | UpdateDifficulty String
+  | UpdateBody String
+
+
+type alias Model = { text : Text, questions: List Question, editable_fields: (Dict.Dict String Bool) }
 
 type alias Filter = List String
 
+new_text : Text
+new_text = {
+    id = Nothing
+  , title = "title"
+  , created_dt = Nothing
+  , modified_dt = Nothing
+  , source = "source"
+  , difficulty = "difficulty"
+  , question_count = 0
+  , body = "text" }
+
+
+--new_question : Question
+--new_question = {}
+
 init : (Model, Cmd Msg)
-init = (Model  [] False "title", updateTexts [])
+init = (Model new_text [] (Dict.fromList [
+      ("title", False)
+    , ("source", False)
+    , ("difficulty", False)
+    , ("body", False)
+  ]) , Cmd.none)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
-
-updateTexts : Filter -> Cmd Msg
-updateTexts filter = let request = Http.get text_api_endpoint textsDecoder in
-  Http.send Update request
-
-
 update : Msg -> Model -> (Model, Cmd Msg)
-update msg model =
+update msg model = let text = model.text in
   case msg of
-    EditTitle ->
-      ({ model | editTitle = if model.editTitle then False else True }, Cmd.none)
-    UpdateTitle title ->
-      ({ model | title = title }, Cmd.none)
-    Update (Ok texts) ->
-      ({ model | texts = texts}, Cmd.none)
-    -- handle user-friendly msgs
-    Update (Err _) ->
-      (model, Cmd.none)
+    ToggleEditableField field ->
+      ({ model | editable_fields = Dict.update field
+        (\v -> case v of
+          Just True -> Just False
+          _ -> Just True) model.editable_fields }, selectAllInputText field)
+
+
+    UpdateTitle title -> ({ model | text = { text | title = title }}, Cmd.none)
+    UpdateSource source ->  ({ model | text = { text | source = source }}, Cmd.none)
+    UpdateDifficulty difficulty -> ({ model | text = { text | difficulty = difficulty }}, Cmd.none)
+    UpdateBody body -> ({ model | text = { text | body = body }}, Cmd.none)
 
 
 main : Program Never Model Msg
@@ -102,33 +125,68 @@ view_create_questions model = div [ classList [("question_section", True)] ] [
       div [ classList [("questions", True)] ] (view_create_question model)
   ]
 
+view_title : Model -> Html Msg
+view_title model = Html.div [onClick (ToggleEditableField "title")] [
+  Html.text model.text.title ]
 
-view_edit_title : Model -> Html Msg
-view_edit_title model = if model.editTitle then
-    Html.input [attribute "type" "textbox", attribute "value" model.title, onInput UpdateTitle, onBlur EditTitle] [ ]
-  else
-    Html.span [onClick EditTitle] [ Html.text model.title ]
+edit_title :Model -> Html Msg
+edit_title model = Html.input [
+        attribute "type" "text"
+      , attribute "value" model.text.title
+      , attribute "id" "title"
+      , onInput UpdateTitle
+      , onBlur (ToggleEditableField "title") ] [ ]
 
+view_source : Model -> Html Msg
+view_source model = Html.div [onClick (ToggleEditableField "source")] [ Html.text model.text.source ]
 
-view_create_title : Model -> Html Msg
-view_create_title model = div [ classList [("create_text", True)] ] [
-      div [ classList [("create_title", True)] ] [
-        view_edit_title model
+edit_source : Model -> Html Msg
+edit_source model = Html.input [
+        attribute "type" "text"
+      , attribute "value" model.text.source
+      , attribute "id" "source"
+      , onInput UpdateTitle
+      , onBlur (ToggleEditableField "source") ] [ ]
+
+edit_difficulty : Model -> Html Msg
+edit_difficulty model = Html.input [
+        attribute "type" "text"
+      , attribute "value" model.text.difficulty
+      , attribute "id" "difficulty"
+      , onInput UpdateDifficulty
+      , onBlur (ToggleEditableField "difficulty") ] [ ]
+
+view_difficulty : Model -> Html Msg
+view_difficulty model = Html.div [onClick (ToggleEditableField "difficulty")] [ Html.text model.text.difficulty ]
+
+edit_body : Model -> Html Msg
+edit_body model = Html.textarea [
+        onInput UpdateBody
+      , attribute "id" "body"
+      , onBlur (ToggleEditableField "body") ] [ Html.text model.text.body ]
+
+view_body : Model -> Html Msg
+view_body model = Html.div [onClick (ToggleEditableField "body")] [ Html.text model.text.body ]
+
+view_editable_field : String -> Model -> (Model -> Html Msg) -> (Model -> Html Msg) -> Html Msg
+view_editable_field field model view edit = case Dict.get field model.editable_fields of
+   Just True -> edit model
+   _ -> view model
+
+view_create_text : Model -> Html Msg
+view_create_text model = div [ classList [("text_properties", True)] ] [
+      div [ classList [("text_property_items", True)] ] [
+          view_editable_field "title" model view_title edit_title
+        , view_editable_field "source" model view_source edit_source
+        , view_editable_field "difficulty" model view_difficulty edit_difficulty
       ]
+      , div [ classList [("body",True)] ]  [ view_editable_field "body" model view_body edit_body ]
   ]
 
-view_footer : Model -> Html Msg
-view_footer model = div [classList [("footer_items", True)] ] [
-    div [classList [("footer", True), ("message", True)] ] [
-        Html.text <| "Showing " ++ toString (List.length model.texts) ++ " entries"
-    ]
- ]
-
--- VIEW
 view : Model -> Html Msg
 view model = div [] [
       (view_header model)
     , (view_preview model)
-    , (view_create_title model)
+    , (view_create_text model)
     , (view_create_questions model)
   ]

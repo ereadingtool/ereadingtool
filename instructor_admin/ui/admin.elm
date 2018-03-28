@@ -4,11 +4,13 @@ import Html.Attributes exposing (classList, attribute)
 import Http exposing (..)
 import Date exposing (..)
 
-import Model exposing (Text, Texts, Model, textsDecoder)
+import Model exposing (Text, textsDecoder)
 import Config exposing (..)
 
 -- UPDATE
 type Msg = Update (Result Http.Error (List Text))
+
+type alias Model = { texts : List Text }
 
 type alias Filter = List String
 
@@ -65,7 +67,7 @@ view_filter model = div [classList [("filter_items", True)] ] [
 
 month_day_year_fmt : Date -> String
 month_day_year_fmt date = List.foldr (++) "" <| List.map (\s -> s ++ "  ")
-  [toString <| Date.month date, (toString <| Date.day date) ++ ",", toString <| Date.year date]
+    [toString <| Date.month date, (toString <| Date.day date) ++ ",", toString <| Date.year date]
 
 
 view_text : Text -> Html Msg
@@ -74,7 +76,9 @@ view_text text = div [ classList[("text_item", True)] ] [
    , div [classList [("item_property", True)]] [
        Html.text text.title
      , span [classList [("sub_description", True)]] [
-         Html.text <| "Modified:   " ++ month_day_year_fmt text.modified_dt
+         Html.text <| "Modified:   " ++ (case text.modified_dt of
+           Just date -> month_day_year_fmt date
+           _ -> "")
        ]
      ]
    , div [classList [("item_property", True)]] [
