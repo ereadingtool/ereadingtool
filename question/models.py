@@ -1,11 +1,13 @@
 from django.db import models
+from mixins.model import Timestamped
 from text.models import Text
 
 
-class Question(models.Model):
+class Question(Timestamped, models.Model):
     text = models.ForeignKey(Text, blank=False, related_name='questions', on_delete=models.CASCADE)
 
     body = models.TextField(blank=False)
+    order = models.PositiveIntegerField(default=0, editable=False)
 
     TYPE_CHOICES = (
         ('main_idea', 'Main Idea'),
@@ -23,6 +25,7 @@ class Answer(models.Model):
         ordering = ['order']
 
     order = models.PositiveIntegerField(default=0, editable=False)
+
     question = models.ForeignKey(Question, blank=False, related_name='answers', on_delete=models.CASCADE)
 
     text = models.CharField(max_length=255, blank=False)

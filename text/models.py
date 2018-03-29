@@ -1,4 +1,5 @@
 from django.db import models
+from mixins.model import Timestamped
 
 
 class TextDifficulty(models.Model):
@@ -12,14 +13,11 @@ class TextDifficulty(models.Model):
         return self.name
 
 
-class Text(models.Model):
+class Text(Timestamped, models.Model):
     source = models.CharField(max_length=255, blank=False)
     difficulty = models.ForeignKey(TextDifficulty, null=True, related_name='texts', on_delete=models.SET_NULL)
 
     body = models.TextField(blank=False)
-
-    created_dt = models.DateTimeField(auto_now_add=True)
-    modified_dt = models.DateTimeField(auto_now=True)
 
     title = models.CharField(max_length=255, blank=True)
 

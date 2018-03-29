@@ -5,7 +5,7 @@ import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onMouseOut, 
 
 import Dict
 
-import Model exposing (Text, Question, textsDecoder)
+import Model exposing (Text, Question, Answer, textsDecoder)
 
 import Ports exposing (selectAllInputText)
 
@@ -22,7 +22,7 @@ type alias Field = {
   , hover : Bool}
 
 
-type alias Model = { text : Text, questions: List Question, editable_fields: (Dict.Dict String Field) }
+type alias Model = { text : Text, editable_fields: (Dict.Dict String Field), questions: List Question }
 
 type alias Filter = List String
 
@@ -38,20 +38,33 @@ new_text = {
   , body = "text" }
 
 
---new_question : Question
---new_question = {}
+new_question : Question
+new_question = {
+    id = Nothing
+  , text_id = Nothing
+  , created_dt = Nothing
+  , modified_dt = Nothing
+  , body = "Click to write the question text."
+  , order = 1
+  , answers = (generate_answers 4)
+  , question_type = "main_idea"}
+
 
 init : (Model, Cmd Msg)
-init = (Model new_text [] (Dict.fromList [
+init = (Model new_text (Dict.fromList [
       ("title", Field False False)
     , ("source", Field False False)
     , ("difficulty", Field False False)
     , ("body", Field False False)
-  ]) , Cmd.none)
+  ]) [new_question], Cmd.none)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
+
+generate_answers : Int -> List Answer
+generate_answers n = List.map (\i -> Answer Nothing Nothing "Click to write choice " False i "")
+  <| List.range 1 n
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = let text = model.text in
@@ -119,24 +132,25 @@ view_filter model = div [classList [("filter_items", True)] ] [
      ]
  ]
 
-view_choices : Model -> Int -> List (Html Msg)
-view_choices model places =
-     List.map (\i ->
-       div [ classList [("answer_item", True)] ] [
-            Html.input [attribute "type" "radio", attribute "name" "question_1_answers"] []
-         ,  Html.text <| "Click to write Choice " ++ (toString i)
-       ]
-     ) <| List.range 1 places
+view_answer : Question -> Answer -> Html Msg
+view_answer question answer =
+   div [ classList [("answer_item", True)] ] [
+        Html.input [
+            attribute "type" "radio"
+          , attribute "name" (String.join "_" ["question", (toString question.order), "answer"])
+        ] []
+     ,  Html.text <| "Click to write Choice " ++ (toString answer.order)
+   ]
 
-view_create_question : Model -> List (Html Msg)
-view_create_question model = [
+view_question : Question -> List (Html Msg)
+view_question question = [
       div [] [Html.input [attribute "type" "checkbox"] []]
-   ,  div [classList [("question_item", True)] ] [ Html.text "Click to write the question text" ]
- ] ++ (view_choices model 4)
+   ,  div [classList [("question_item", True)] ] [ Html.text question.body ]
+ ] ++ (List.map (view_answer question) question.answers)
 
-view_create_questions : Model -> Html Msg
-view_create_questions model = div [ classList [("question_section", True)] ] [
-      div [ classList [("questions", True)] ] (view_create_question model)
+view_questions : Model -> Html Msg
+view_questions model = div [ classList [("question_section", True)] ] [
+      div [ classList [("questions", True)] ] (List.concat <| List.map view_question model.questions)
   ]
 
 get_hover : Model -> String -> Bool
@@ -150,9 +164,11 @@ hover_attrs model field = [
   , onMouseOver (Hover field)
   , onMouseLeave (Hover field)]
 
+text_property_attrs : Model -> String -> List (Attribute Msg)
+text_property_attrs model field = [onClick (ToggleEditableField field)] ++ (hover_attrs model field)
+
 view_title : Model -> Html Msg
-view_title model = let attrs = [onClick (ToggleEditableField "title")] ++ (hover_attrs model "title") in
-  Html.div attrs [ Html.text model.text.title ]
+view_title model = Html.div (text_property_attrs model "title") [ Html.text model.text.title ]
 
 edit_title :Model -> Html Msg
 edit_title model = Html.input [
@@ -163,8 +179,7 @@ edit_title model = Html.input [
       , onBlur (ToggleEditableField "title") ] [ ]
 
 view_source : Model -> Html Msg
-view_source model = let attrs = [onClick (ToggleEditableField "source")] ++ (hover_attrs model "source") in
-  Html.div attrs [ Html.text model.text.source ]
+view_source model = Html.div (text_property_attrs model "source") [ Html.text model.text.source ]
 
 edit_source : Model -> Html Msg
 edit_source model = Html.input [
@@ -175,8 +190,7 @@ edit_source model = Html.input [
       , onBlur (ToggleEditableField "source") ] [ ]
 
 view_difficulty : Model -> Html Msg
-view_difficulty model = let attrs = [onClick (ToggleEditableField "difficulty")] ++ (hover_attrs model "difficulty") in
-  Html.div attrs [ Html.text model.text.difficulty ]
+view_difficulty model = Html.div (text_property_attrs model "difficulty") [ Html.text model.text.difficulty ]
 
 edit_difficulty : Model -> Html Msg
 edit_difficulty model = Html.input [
@@ -187,15 +201,14 @@ edit_difficulty model = Html.input [
       , onBlur (ToggleEditableField "difficulty") ] [ ]
 
 
+view_body : Model -> Html Msg
+view_body model = Html.div (text_property_attrs model "body") [ Html.text model.text.body ]
+
 edit_body : Model -> Html Msg
 edit_body model = Html.textarea [
         onInput UpdateBody
       , attribute "id" "body"
       , onBlur (ToggleEditableField "body") ] [ Html.text model.text.body ]
-
-view_body : Model -> Html Msg
-view_body model = let attrs = [onClick (ToggleEditableField "body")] ++ (hover_attrs model "body") in
-  Html.div attrs [ Html.text model.text.body ]
 
 view_editable_field : String -> Model -> (Model -> Html Msg) -> (Model -> Html Msg) -> Html Msg
 view_editable_field field model view edit = case Dict.get field model.editable_fields of
@@ -219,5 +232,5 @@ view model = div [] [
       (view_header model)
     , (view_preview model)
     , (view_create_text model)
-    , (view_create_questions model)
+    , (view_questions model)
   ]

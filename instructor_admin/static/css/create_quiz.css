@@ -144,7 +144,7 @@ body {
     grid-row-gap: 10%;
     grid-column: 2;
 
-    grid-template-columns: 9%;
+    grid-template-columns: auto;
 }
 
 .over {

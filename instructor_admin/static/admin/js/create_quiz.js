@@ -9183,9 +9183,39 @@ var _user$project$Model$textDecoder = A3(
 								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$Text)))))))));
 var _user$project$Model$textsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Model$textDecoder);
-var _user$project$Model$Question = F5(
-	function (a, b, c, d, e) {
-		return {id: a, text: b, order: c, body: d, question_type: e};
+var _user$project$Model$Answer = F6(
+	function (a, b, c, d, e, f) {
+		return {id: a, question_id: b, text: c, correct: d, order: e, feedback: f};
+	});
+var _user$project$Model$answerDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'feedback',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'order',
+		_elm_lang$core$Json_Decode$int,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'correct',
+			_elm_lang$core$Json_Decode$bool,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'text',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'question_id',
+					_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'id',
+						_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$Answer)))))));
+var _user$project$Model$answersDecoder = _elm_lang$core$Json_Decode$list(_user$project$Model$answerDecoder);
+var _user$project$Model$Question = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {id: a, text_id: b, created_dt: c, modified_dt: d, body: e, order: f, answers: g, question_type: h};
 	});
 var _user$project$Model$questionDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -9193,21 +9223,33 @@ var _user$project$Model$questionDecoder = A3(
 	_elm_lang$core$Json_Decode$string,
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'body',
-		_elm_lang$core$Json_Decode$string,
+		'answers',
+		_user$project$Model$answersDecoder,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 			'order',
 			_elm_lang$core$Json_Decode$int,
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'text',
+				'body',
 				_elm_lang$core$Json_Decode$string,
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'id',
-					_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$Question))))));
+					'modified_dt',
+					_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'created_dt',
+						_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+						A3(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+							'text_id',
+							_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+							A3(
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+								'id',
+								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$Question)))))))));
 var _user$project$Model$questionsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Model$questionDecoder);
 var _user$project$Model$Detail = {ctor: 'Detail'};
 var _user$project$Model$MainIdea = {ctor: 'MainIdea'};
@@ -9241,51 +9283,64 @@ var _user$project$Main$get_hover = F2(
 			return false;
 		}
 	});
-var _user$project$Main$view_choices = F2(
-	function (model, places) {
+var _user$project$Main$view_answer = F2(
+	function (question, answer) {
 		return A2(
-			_elm_lang$core$List$map,
-			function (i) {
-				return A2(
-					_elm_lang$html$Html$div,
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$classList(
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'answer_item', _1: true},
-								_1: {ctor: '[]'}
-							}),
+						_0: {ctor: '_Tuple2', _0: 'answer_item', _1: true},
 						_1: {ctor: '[]'}
-					},
+					}),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$input,
 					{
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$input,
-							{
-								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'radio'),
-								_1: {
-									ctor: '::',
-									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'name', 'question_1_answers'),
-									_1: {ctor: '[]'}
-								}
-							},
-							{ctor: '[]'}),
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'radio'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html$text(
+							_0: A2(
+								_elm_lang$html$Html_Attributes$attribute,
+								'name',
 								A2(
-									_elm_lang$core$Basics_ops['++'],
-									'Click to write Choice ',
-									_elm_lang$core$Basics$toString(i))),
+									_elm_lang$core$String$join,
+									'_',
+									{
+										ctor: '::',
+										_0: 'question',
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$core$Basics$toString(question.order),
+											_1: {
+												ctor: '::',
+												_0: 'answer',
+												_1: {ctor: '[]'}
+											}
+										}
+									})),
 							_1: {ctor: '[]'}
 						}
-					});
-			},
-			A2(_elm_lang$core$List$range, 1, places));
+					},
+					{ctor: '[]'}),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Click to write Choice ',
+							_elm_lang$core$Basics$toString(answer.order))),
+					_1: {ctor: '[]'}
+				}
+			});
 	});
-var _user$project$Main$view_create_question = function (model) {
+var _user$project$Main$view_question = function (question) {
 	return A2(
 		_elm_lang$core$Basics_ops['++'],
 		{
@@ -9321,15 +9376,18 @@ var _user$project$Main$view_create_question = function (model) {
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text('Click to write the question text'),
+						_0: _elm_lang$html$Html$text(question.body),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
 			}
 		},
-		A2(_user$project$Main$view_choices, model, 4));
+		A2(
+			_elm_lang$core$List$map,
+			_user$project$Main$view_answer(question),
+			question.answers));
 };
-var _user$project$Main$view_create_questions = function (model) {
+var _user$project$Main$view_questions = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -9356,7 +9414,8 @@ var _user$project$Main$view_create_questions = function (model) {
 						}),
 					_1: {ctor: '[]'}
 				},
-				_user$project$Main$view_create_question(model)),
+				_elm_lang$core$List$concat(
+					A2(_elm_lang$core$List$map, _user$project$Main$view_question, model.questions))),
 			_1: {ctor: '[]'}
 		});
 };
@@ -9664,8 +9723,26 @@ var _user$project$Main$update = F2(
 				};
 		}
 	});
+var _user$project$Main$generate_answers = function (n) {
+	return A2(
+		_elm_lang$core$List$map,
+		function (i) {
+			return A6(_user$project$Model$Answer, _elm_lang$core$Maybe$Nothing, _elm_lang$core$Maybe$Nothing, 'Click to write choice ', false, i, '');
+		},
+		A2(_elm_lang$core$List$range, 1, n));
+};
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
+};
+var _user$project$Main$new_question = {
+	id: _elm_lang$core$Maybe$Nothing,
+	text_id: _elm_lang$core$Maybe$Nothing,
+	created_dt: _elm_lang$core$Maybe$Nothing,
+	modified_dt: _elm_lang$core$Maybe$Nothing,
+	body: 'Click to write the question text.',
+	order: 1,
+	answers: _user$project$Main$generate_answers(4),
+	question_type: 'main_idea'
 };
 var _user$project$Main$new_text = {id: _elm_lang$core$Maybe$Nothing, title: 'title', created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing, source: 'source', difficulty: 'difficulty', question_count: 0, body: 'text'};
 var _user$project$Main$Field = F2(
@@ -9674,14 +9751,13 @@ var _user$project$Main$Field = F2(
 	});
 var _user$project$Main$Model = F3(
 	function (a, b, c) {
-		return {text: a, questions: b, editable_fields: c};
+		return {text: a, editable_fields: b, questions: c};
 	});
 var _user$project$Main$init = {
 	ctor: '_Tuple2',
 	_0: A3(
 		_user$project$Main$Model,
 		_user$project$Main$new_text,
-		{ctor: '[]'},
 		_elm_lang$core$Dict$fromList(
 			{
 				ctor: '::',
@@ -9715,7 +9791,12 @@ var _user$project$Main$init = {
 						}
 					}
 				}
-			})),
+			}),
+		{
+			ctor: '::',
+			_0: _user$project$Main$new_question,
+			_1: {ctor: '[]'}
+		}),
 	_1: _elm_lang$core$Platform_Cmd$none
 };
 var _user$project$Main$UpdateBody = function (a) {
@@ -9763,22 +9844,55 @@ var _user$project$Main$hover_attrs = F2(
 var _user$project$Main$ToggleEditableField = function (a) {
 	return {ctor: 'ToggleEditableField', _0: a};
 };
+var _user$project$Main$text_property_attrs = F2(
+	function (model, field) {
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Events$onClick(
+					_user$project$Main$ToggleEditableField(field)),
+				_1: {ctor: '[]'}
+			},
+			A2(_user$project$Main$hover_attrs, model, field));
+	});
 var _user$project$Main$view_title = function (model) {
-	var attrs = A2(
-		_elm_lang$core$Basics_ops['++'],
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Events$onClick(
-				_user$project$Main$ToggleEditableField('title')),
-			_1: {ctor: '[]'}
-		},
-		A2(_user$project$Main$hover_attrs, model, 'title'));
 	return A2(
 		_elm_lang$html$Html$div,
-		attrs,
+		A2(_user$project$Main$text_property_attrs, model, 'title'),
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html$text(model.text.title),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Main$view_source = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		A2(_user$project$Main$text_property_attrs, model, 'source'),
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(model.text.source),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Main$view_difficulty = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		A2(_user$project$Main$text_property_attrs, model, 'difficulty'),
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(model.text.difficulty),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Main$view_body = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		A2(_user$project$Main$text_property_attrs, model, 'body'),
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(model.text.body),
 			_1: {ctor: '[]'}
 		});
 };
@@ -9809,25 +9923,6 @@ var _user$project$Main$edit_title = function (model) {
 		},
 		{ctor: '[]'});
 };
-var _user$project$Main$view_source = function (model) {
-	var attrs = A2(
-		_elm_lang$core$Basics_ops['++'],
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Events$onClick(
-				_user$project$Main$ToggleEditableField('source')),
-			_1: {ctor: '[]'}
-		},
-		A2(_user$project$Main$hover_attrs, model, 'source'));
-	return A2(
-		_elm_lang$html$Html$div,
-		attrs,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text(model.text.source),
-			_1: {ctor: '[]'}
-		});
-};
 var _user$project$Main$edit_source = function (model) {
 	return A2(
 		_elm_lang$html$Html$input,
@@ -9854,25 +9949,6 @@ var _user$project$Main$edit_source = function (model) {
 			}
 		},
 		{ctor: '[]'});
-};
-var _user$project$Main$view_difficulty = function (model) {
-	var attrs = A2(
-		_elm_lang$core$Basics_ops['++'],
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Events$onClick(
-				_user$project$Main$ToggleEditableField('difficulty')),
-			_1: {ctor: '[]'}
-		},
-		A2(_user$project$Main$hover_attrs, model, 'difficulty'));
-	return A2(
-		_elm_lang$html$Html$div,
-		attrs,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text(model.text.difficulty),
-			_1: {ctor: '[]'}
-		});
 };
 var _user$project$Main$edit_difficulty = function (model) {
 	return A2(
@@ -9918,25 +9994,6 @@ var _user$project$Main$edit_body = function (model) {
 				}
 			}
 		},
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text(model.text.body),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Main$view_body = function (model) {
-	var attrs = A2(
-		_elm_lang$core$Basics_ops['++'],
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Events$onClick(
-				_user$project$Main$ToggleEditableField('body')),
-			_1: {ctor: '[]'}
-		},
-		A2(_user$project$Main$hover_attrs, model, 'body'));
-	return A2(
-		_elm_lang$html$Html$div,
-		attrs,
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html$text(model.text.body),
@@ -10021,7 +10078,7 @@ var _user$project$Main$view = function (model) {
 					_0: _user$project$Main$view_create_text(model),
 					_1: {
 						ctor: '::',
-						_0: _user$project$Main$view_create_questions(model),
+						_0: _user$project$Main$view_questions(model),
 						_1: {ctor: '[]'}
 					}
 				}

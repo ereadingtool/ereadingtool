@@ -1,8 +1,8 @@
-module Model exposing (Text, Question, textsDecoder)
+module Model exposing (Text, Question, QuestionType, Answer, textsDecoder)
 
 import Date exposing (..)
 
-import Json.Decode exposing (int, string, float, nullable, list, succeed, Decoder, field, at)
+import Json.Decode exposing (int, string, float, bool, nullable, list, succeed, Decoder, field, at)
 import Json.Decode.Extra exposing (date)
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 
@@ -20,23 +20,49 @@ type alias Text = {
 
 type QuestionType = MainIdea | Detail
 
+type alias Answer = {
+    id: Maybe Int
+  , question_id: Maybe Int
+  , text: String
+  , correct: Bool
+  , order: Int
+  , feedback: String }
+
+
+answerDecoder : Decoder Answer
+answerDecoder =
+  decode Answer
+    |> required "id" (nullable int)
+    |> required "question_id" (nullable int)
+    |> required "text" string
+    |> required "correct" bool
+    |> required "order" int
+    |> required "feedback" string
+
+answersDecoder : Decoder (List Answer)
+answersDecoder = list answerDecoder
+
 type alias Question = {
     id: Maybe Int
-  , text: String
-  , order: Int
+  , text_id: Maybe Int
+  , created_dt: Maybe Date
+  , modified_dt: Maybe Date
   , body: String
+  , order: Int
+  , answers: List Answer
   , question_type: String }
-
 
 questionDecoder : Decoder Question
 questionDecoder =
   decode Question
     |> required "id" (nullable int)
-    |> required "text" string
-    |> required "order" int
+    |> required "text_id" (nullable int)
+    |> required "created_dt" (nullable date)
+    |> required "modified_dt" (nullable date)
     |> required "body" string
+    |> required "order" int
+    |> required "answers" answersDecoder
     |> required "question_type" string
-
 
 questionsDecoder : Decoder (List Question)
 questionsDecoder = list questionDecoder
