@@ -9253,6 +9253,10 @@ var _user$project$Model$questionDecoder = A3(
 var _user$project$Model$questionsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Model$questionDecoder);
 var _user$project$Model$Detail = {ctor: 'Detail'};
 var _user$project$Model$MainIdea = {ctor: 'MainIdea'};
+var _user$project$Model$AdvancedMid = {ctor: 'AdvancedMid'};
+var _user$project$Model$AdvancedLow = {ctor: 'AdvancedLow'};
+var _user$project$Model$IntermediateHigh = {ctor: 'IntermediateHigh'};
+var _user$project$Model$IntermediateMid = {ctor: 'IntermediateMid'};
 
 var _user$project$Ports$selectAllInputText = _elm_lang$core$Native_Platform.outgoingPort(
 	'selectAllInputText',
@@ -9261,22 +9265,22 @@ var _user$project$Ports$selectAllInputText = _elm_lang$core$Native_Platform.outg
 	});
 
 var _user$project$Main$view_editable_field = F4(
-	function (field, model, view, edit) {
-		var _p0 = A2(_elm_lang$core$Dict$get, field, model.editable_fields);
+	function (model, i, view, edit) {
+		var _p0 = A2(_elm_lang$core$Array$get, i, model.fields);
 		if (_p0.ctor === 'Just') {
 			var _p1 = _p0._0.editable;
 			if (_p1 === true) {
-				return edit(model);
+				return A2(edit, model, i);
 			} else {
-				return view(model);
+				return A2(view, model, i);
 			}
 		} else {
-			return view(model);
+			return A2(view, model, i);
 		}
 	});
 var _user$project$Main$get_hover = F2(
-	function (model, field) {
-		var _p2 = A2(_elm_lang$core$Dict$get, field, model.editable_fields);
+	function (model, i) {
+		var _p2 = A2(_elm_lang$core$Array$get, i, model.fields);
 		if (_p2.ctor === 'Just') {
 			return _p2._0.hover;
 		} else {
@@ -9415,7 +9419,8 @@ var _user$project$Main$view_questions = function (model) {
 					_1: {ctor: '[]'}
 				},
 				_elm_lang$core$List$concat(
-					A2(_elm_lang$core$List$map, _user$project$Main$view_question, model.questions))),
+					_elm_lang$core$Array$toList(
+						A2(_elm_lang$core$Array$map, _user$project$Main$view_question, model.questions)))),
 			_1: {ctor: '[]'}
 		});
 };
@@ -9607,72 +9612,88 @@ var _user$project$Main$update = F2(
 		switch (_p3.ctor) {
 			case 'ToggleEditableField':
 				var _p7 = _p3._0;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							editable_fields: A3(
-								_elm_lang$core$Dict$update,
-								_p7,
-								function (v) {
-									var _p4 = v;
-									if (_p4.ctor === 'Just') {
-										var _p6 = _p4._0;
-										var _p5 = _p6.editable;
-										if (_p5 === true) {
-											return _elm_lang$core$Maybe$Just(
-												_elm_lang$core$Native_Utils.update(
-													_p6,
-													{editable: false, hover: false}));
-										} else {
-											return _elm_lang$core$Maybe$Just(
-												_elm_lang$core$Native_Utils.update(
-													_p6,
-													{editable: true, hover: true}));
-										}
-									} else {
-										return v;
-									}
-								},
-								model.editable_fields)
-						}),
-					_1: _user$project$Ports$selectAllInputText(_p7)
-				};
+				var _p4 = A2(_elm_lang$core$Array$get, _p7, model.fields);
+				if (_p4.ctor === 'Just') {
+					var _p6 = _p4._0;
+					var _p5 = _p6.editable;
+					if (_p5 === true) {
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{
+									fields: A3(
+										_elm_lang$core$Array$set,
+										_p7,
+										_elm_lang$core$Native_Utils.update(
+											_p6,
+											{editable: false, hover: false}),
+										model.fields)
+								}),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
+					} else {
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{
+									fields: A3(
+										_elm_lang$core$Array$set,
+										_p7,
+										_elm_lang$core$Native_Utils.update(
+											_p6,
+											{editable: true}),
+										model.fields)
+								}),
+							_1: _user$project$Ports$selectAllInputText(_p6.id)
+						};
+					}
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
 			case 'Hover':
 				var _p11 = _p3._0;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							editable_fields: A3(
-								_elm_lang$core$Dict$update,
-								_p11,
-								function (v) {
-									var _p8 = v;
-									if (_p8.ctor === 'Just') {
-										var _p10 = _p8._0;
-										var _p9 = _p10.hover;
-										if (_p9 === true) {
-											return _elm_lang$core$Maybe$Just(
-												_elm_lang$core$Native_Utils.update(
-													_p10,
-													{hover: false}));
-										} else {
-											return _elm_lang$core$Maybe$Just(
-												_elm_lang$core$Native_Utils.update(
-													_p10,
-													{hover: true}));
-										}
-									} else {
-										return v;
-									}
-								},
-								model.editable_fields)
-						}),
-					_1: _user$project$Ports$selectAllInputText(_p11)
-				};
+				var _p8 = A2(_elm_lang$core$Array$get, _p11, model.fields);
+				if (_p8.ctor === 'Just') {
+					var _p10 = _p8._0;
+					var _p9 = _p10.hover;
+					if (_p9 === true) {
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{
+									fields: A3(
+										_elm_lang$core$Array$set,
+										_p11,
+										_elm_lang$core$Native_Utils.update(
+											_p10,
+											{hover: false}),
+										model.fields)
+								}),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
+					} else {
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{
+									fields: A3(
+										_elm_lang$core$Array$set,
+										_p11,
+										_elm_lang$core$Native_Utils.update(
+											_p10,
+											{hover: true}),
+										model.fields)
+								}),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
+					}
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
 			case 'UpdateTitle':
 				return {
 					ctor: '_Tuple2',
@@ -9734,6 +9755,23 @@ var _user$project$Main$generate_answers = function (n) {
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
+var _user$project$Main$question_difficulties = {
+	ctor: '::',
+	_0: {ctor: '_Tuple2', _0: 'intermediate_mid', _1: 'Intermediate-Mid'},
+	_1: {
+		ctor: '::',
+		_0: {ctor: '_Tuple2', _0: 'intermediate_high', _1: 'Intermediate-High'},
+		_1: {
+			ctor: '::',
+			_0: {ctor: '_Tuple2', _0: 'advanced_low', _1: 'Advanced-Low'},
+			_1: {
+				ctor: '::',
+				_0: {ctor: '_Tuple2', _0: 'advanced_mid', _1: 'Advanced-Mid'},
+				_1: {ctor: '[]'}
+			}
+		}
+	}
+};
 var _user$project$Main$new_question = {
 	id: _elm_lang$core$Maybe$Nothing,
 	text_id: _elm_lang$core$Maybe$Nothing,
@@ -9745,58 +9783,43 @@ var _user$project$Main$new_question = {
 	question_type: 'main_idea'
 };
 var _user$project$Main$new_text = {id: _elm_lang$core$Maybe$Nothing, title: 'title', created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing, source: 'source', difficulty: 'difficulty', question_count: 0, body: 'text'};
-var _user$project$Main$Field = F2(
-	function (a, b) {
-		return {editable: a, hover: b};
+var _user$project$Main$Field = F3(
+	function (a, b, c) {
+		return {id: a, editable: b, hover: c};
 	});
 var _user$project$Main$Model = F3(
 	function (a, b, c) {
-		return {text: a, editable_fields: b, questions: c};
+		return {text: a, questions: b, fields: c};
 	});
 var _user$project$Main$init = {
 	ctor: '_Tuple2',
 	_0: A3(
 		_user$project$Main$Model,
 		_user$project$Main$new_text,
-		_elm_lang$core$Dict$fromList(
+		_elm_lang$core$Array$fromList(
 			{
 				ctor: '::',
-				_0: {
-					ctor: '_Tuple2',
-					_0: 'title',
-					_1: A2(_user$project$Main$Field, false, false)
-				},
+				_0: _user$project$Main$new_question,
+				_1: {ctor: '[]'}
+			}),
+		_elm_lang$core$Array$fromList(
+			{
+				ctor: '::',
+				_0: {id: 'title', editable: false, hover: false},
 				_1: {
 					ctor: '::',
-					_0: {
-						ctor: '_Tuple2',
-						_0: 'source',
-						_1: A2(_user$project$Main$Field, false, false)
-					},
+					_0: {id: 'source', editable: false, hover: false},
 					_1: {
 						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'difficulty',
-							_1: A2(_user$project$Main$Field, false, false)
-						},
+						_0: {id: 'difficulty', editable: false, hover: false},
 						_1: {
 							ctor: '::',
-							_0: {
-								ctor: '_Tuple2',
-								_0: 'body',
-								_1: A2(_user$project$Main$Field, false, false)
-							},
+							_0: {id: 'body', editable: false, hover: false},
 							_1: {ctor: '[]'}
 						}
 					}
 				}
-			}),
-		{
-			ctor: '::',
-			_0: _user$project$Main$new_question,
-			_1: {ctor: '[]'}
-		}),
+			})),
 	_1: _elm_lang$core$Platform_Cmd$none
 };
 var _user$project$Main$UpdateBody = function (a) {
@@ -9815,7 +9838,7 @@ var _user$project$Main$Hover = function (a) {
 	return {ctor: 'Hover', _0: a};
 };
 var _user$project$Main$hover_attrs = F2(
-	function (model, field) {
+	function (model, i) {
 		return {
 			ctor: '::',
 			_0: _elm_lang$html$Html_Attributes$classList(
@@ -9824,18 +9847,18 @@ var _user$project$Main$hover_attrs = F2(
 					_0: {
 						ctor: '_Tuple2',
 						_0: 'over',
-						_1: A2(_user$project$Main$get_hover, model, field)
+						_1: A2(_user$project$Main$get_hover, model, i)
 					},
 					_1: {ctor: '[]'}
 				}),
 			_1: {
 				ctor: '::',
 				_0: _elm_lang$html$Html_Events$onMouseOver(
-					_user$project$Main$Hover(field)),
+					_user$project$Main$Hover(i)),
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html_Events$onMouseLeave(
-						_user$project$Main$Hover(field)),
+						_user$project$Main$Hover(i)),
 					_1: {ctor: '[]'}
 				}
 			}
@@ -9845,161 +9868,216 @@ var _user$project$Main$ToggleEditableField = function (a) {
 	return {ctor: 'ToggleEditableField', _0: a};
 };
 var _user$project$Main$text_property_attrs = F2(
-	function (model, field) {
+	function (model, i) {
 		return A2(
 			_elm_lang$core$Basics_ops['++'],
 			{
 				ctor: '::',
 				_0: _elm_lang$html$Html_Events$onClick(
-					_user$project$Main$ToggleEditableField(field)),
+					_user$project$Main$ToggleEditableField(i)),
 				_1: {ctor: '[]'}
 			},
-			A2(_user$project$Main$hover_attrs, model, field));
+			A2(_user$project$Main$hover_attrs, model, i));
 	});
-var _user$project$Main$view_title = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		A2(_user$project$Main$text_property_attrs, model, 'title'),
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text(model.text.title),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Main$view_source = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		A2(_user$project$Main$text_property_attrs, model, 'source'),
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text(model.text.source),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Main$view_difficulty = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		A2(_user$project$Main$text_property_attrs, model, 'difficulty'),
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text(model.text.difficulty),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Main$view_body = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		A2(_user$project$Main$text_property_attrs, model, 'body'),
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text(model.text.body),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Main$edit_title = function (model) {
-	return A2(
-		_elm_lang$html$Html$input,
-		{
-			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
-			_1: {
+var _user$project$Main$view_title = F2(
+	function (model, i) {
+		return A2(
+			_elm_lang$html$Html$div,
+			A2(_user$project$Main$text_property_attrs, model, i),
+			{
 				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', model.text.title),
+				_0: _elm_lang$html$Html$text('Title: '),
 				_1: {
 					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'title'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateTitle),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onBlur(
-								_user$project$Main$ToggleEditableField('title')),
-							_1: {ctor: '[]'}
-						}
-					}
-				}
-			}
-		},
-		{ctor: '[]'});
-};
-var _user$project$Main$edit_source = function (model) {
-	return A2(
-		_elm_lang$html$Html$input,
-		{
-			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
-			_1: {
-				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', model.text.source),
-				_1: {
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'source'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateSource),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onBlur(
-								_user$project$Main$ToggleEditableField('source')),
-							_1: {ctor: '[]'}
-						}
-					}
-				}
-			}
-		},
-		{ctor: '[]'});
-};
-var _user$project$Main$edit_difficulty = function (model) {
-	return A2(
-		_elm_lang$html$Html$input,
-		{
-			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
-			_1: {
-				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', model.text.difficulty),
-				_1: {
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'difficulty'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateDifficulty),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onBlur(
-								_user$project$Main$ToggleEditableField('difficulty')),
-							_1: {ctor: '[]'}
-						}
-					}
-				}
-			}
-		},
-		{ctor: '[]'});
-};
-var _user$project$Main$edit_body = function (model) {
-	return A2(
-		_elm_lang$html$Html$textarea,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateBody),
-			_1: {
-				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'body'),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onBlur(
-						_user$project$Main$ToggleEditableField('body')),
+					_0: _elm_lang$html$Html$text(model.text.title),
 					_1: {ctor: '[]'}
 				}
-			}
-		},
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text(model.text.body),
-			_1: {ctor: '[]'}
-		});
-};
+			});
+	});
+var _user$project$Main$view_source = F2(
+	function (model, i) {
+		return A2(
+			_elm_lang$html$Html$div,
+			A2(_user$project$Main$text_property_attrs, model, i),
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('Source: '),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(model.text.source),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$Main$view_difficulty = F2(
+	function (model, i) {
+		return A2(
+			_elm_lang$html$Html$div,
+			A2(_user$project$Main$text_property_attrs, model, i),
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('Difficulty:'),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$select,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateDifficulty),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$optgroup,
+								{
+									ctor: '::',
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', model.text.difficulty),
+									_1: {ctor: '[]'}
+								},
+								A2(
+									_elm_lang$core$List$map,
+									function (_p12) {
+										var _p13 = _p12;
+										return A2(
+											_elm_lang$html$Html$option,
+											{ctor: '[]'},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text(_p13._1),
+												_1: {ctor: '[]'}
+											});
+									},
+									_user$project$Main$question_difficulties)),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$Main$view_body = F2(
+	function (model, i) {
+		return A2(
+			_elm_lang$html$Html$div,
+			A2(_user$project$Main$text_property_attrs, model, i),
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('Text: '),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(model.text.body),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$Main$edit_title = F2(
+	function (model, i) {
+		return A2(
+			_elm_lang$html$Html$input,
+			{
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', model.text.title),
+					_1: {
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'title'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateTitle),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onBlur(
+									_user$project$Main$ToggleEditableField(i)),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}
+			},
+			{ctor: '[]'});
+	});
+var _user$project$Main$edit_source = F2(
+	function (model, i) {
+		return A2(
+			_elm_lang$html$Html$input,
+			{
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', model.text.source),
+					_1: {
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'source'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateSource),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onBlur(
+									_user$project$Main$ToggleEditableField(i)),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}
+			},
+			{ctor: '[]'});
+	});
+var _user$project$Main$edit_difficulty = F2(
+	function (model, i) {
+		return A2(
+			_elm_lang$html$Html$input,
+			{
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', model.text.difficulty),
+					_1: {
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'difficulty'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateDifficulty),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onBlur(
+									_user$project$Main$ToggleEditableField(i)),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}
+			},
+			{ctor: '[]'});
+	});
+var _user$project$Main$edit_body = F2(
+	function (model, i) {
+		return A2(
+			_elm_lang$html$Html$textarea,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateBody),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'body'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onBlur(
+							_user$project$Main$ToggleEditableField(i)),
+						_1: {ctor: '[]'}
+					}
+				}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(model.text.body),
+				_1: {ctor: '[]'}
+			});
+	});
 var _user$project$Main$view_create_text = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -10029,13 +10107,13 @@ var _user$project$Main$view_create_text = function (model) {
 				},
 				{
 					ctor: '::',
-					_0: A4(_user$project$Main$view_editable_field, 'title', model, _user$project$Main$view_title, _user$project$Main$edit_title),
+					_0: A4(_user$project$Main$view_editable_field, model, 0, _user$project$Main$view_title, _user$project$Main$edit_title),
 					_1: {
 						ctor: '::',
-						_0: A4(_user$project$Main$view_editable_field, 'source', model, _user$project$Main$view_source, _user$project$Main$edit_source),
+						_0: A4(_user$project$Main$view_editable_field, model, 1, _user$project$Main$view_source, _user$project$Main$edit_source),
 						_1: {
 							ctor: '::',
-							_0: A4(_user$project$Main$view_editable_field, 'difficulty', model, _user$project$Main$view_difficulty, _user$project$Main$edit_difficulty),
+							_0: A4(_user$project$Main$view_editable_field, model, 2, _user$project$Main$view_difficulty, _user$project$Main$view_difficulty),
 							_1: {ctor: '[]'}
 						}
 					}
@@ -10056,7 +10134,7 @@ var _user$project$Main$view_create_text = function (model) {
 					},
 					{
 						ctor: '::',
-						_0: A4(_user$project$Main$view_editable_field, 'body', model, _user$project$Main$view_body, _user$project$Main$edit_body),
+						_0: A4(_user$project$Main$view_editable_field, model, 3, _user$project$Main$view_body, _user$project$Main$edit_body),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
