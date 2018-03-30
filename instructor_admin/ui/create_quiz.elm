@@ -5,28 +5,33 @@ import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onMouseOut, 
 
 import Array exposing (Array)
 
-import Model exposing (Text, Question, QuestionDifficulty, Answer, textsDecoder)
+import Model exposing (Text, Question, Answer, textsDecoder)
 
 import Ports exposing (selectAllInputText)
 
 
-type Msg = ToggleEditableField Int | Hover Int
+type FieldType = TextField | QuestionField
+
+type Msg = ToggleEditableField FieldType Int | Hover FieldType Int
   | UpdateTitle String
   | UpdateSource String
   | UpdateDifficulty String
   | UpdateBody String
+  | UpdateQuestionBody Int Question String
 
 
 type alias Field = {
     id : String
   , editable : Bool
-  , hover : Bool }
+  , hover : Bool
+  , field_type : FieldType }
 
 
 type alias Model = {
     text : Text
   , questions : Array Question
-  , fields : Array Field }
+  , text_fields : Array Field
+  , question_fields : Array Field }
 
 type alias Filter = List String
 
@@ -61,46 +66,72 @@ question_difficulties = [
   , ("advanced_low", "Advanced-Low")
   , ("advanced_mid", "Advanced-Mid") ]
 
+
+initial_questions : Array Question
+initial_questions = (Array.fromList [new_question])
+
 init : (Model, Cmd Msg)
-init = (Model new_text (Array.fromList [new_question]) (Array.fromList [
-      {id="title", editable=False, hover=False}
-    , {id="source", editable=False, hover=False}
-    , {id="difficulty", editable=False, hover=False}
-    , {id="body", editable=False, hover=False}
-  ]), Cmd.none)
+init = (Model new_text initial_questions (Array.fromList [
+      {id="title", field_type=TextField, editable=False, hover=False}
+    , {id="source", field_type=TextField, editable=False, hover=False}
+    , {id="difficulty", field_type=TextField, editable=False, hover=False}
+    , {id="body", field_type=TextField, editable=False, hover=False}
+  ]) (Array.map generate_question_field initial_questions), Cmd.none)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
+generate_question_field : Question -> Field
+generate_question_field question = {
+    id=(String.join "_" ["question", toString question.order])
+  , editable=False
+  , hover=False
+  , field_type=QuestionField }
+
 generate_answers : Int -> List Answer
 generate_answers n = List.map (\i -> Answer Nothing Nothing "Click to write choice " False i "")
   <| List.range 1 n
 
+toggleHover : Int -> Array Field -> (Array Field, String)
+toggleHover i fields = case Array.get i fields of
+  Just field -> case field.hover of
+    True -> (Array.set i { field | hover = False } fields, field.id)
+    _ -> (Array.set i { field | hover = True } fields, field.id)
+  _ -> (fields, "")
+
+toggleEditable : Int -> Array Field -> (Array Field, String)
+toggleEditable i fields = case Array.get i fields of
+   Just field -> case field.editable of
+      True -> (Array.set i { field | editable = False, hover = False } fields, field.id)
+      _ -> (Array.set i { field | editable = True, hover = False } fields, field.id)
+   _ -> (fields, "")
+
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = let text = model.text in
   case msg of
-    ToggleEditableField i -> case Array.get i model.fields of
-      Just field -> case field.editable of
-        True -> ({ model
-                   | fields = (Array.set i { field | editable = False, hover = False } model.fields) }
-              , Cmd.none)
-        _ -> ({ model | fields = (Array.set i { field | editable = True } model.fields) }
-              , selectAllInputText field.id)
-      _ -> (model, Cmd.none)
+    ToggleEditableField field_type i -> case field_type of
+      TextField -> let (fields, field_id) = (toggleEditable i model.text_fields) in
+         ({ model | text_fields = fields }, selectAllInputText field_id )
+      QuestionField -> let (fields, field_id) = (toggleEditable i model.question_fields) in
+         ({ model | question_fields = fields }, selectAllInputText field_id )
 
-    Hover i -> case Array.get i model.fields of
-      Just field -> case field.hover of
-        True -> ({ model | fields = (Array.set i { field | hover = False } model.fields  ) }
-              , Cmd.none)
-        _ -> ({ model | fields = (Array.set i { field | hover = True } model.fields ) }
-              , Cmd.none)
-      _ -> (model, Cmd.none)
+    Hover field_type i -> case field_type of
+      TextField -> let (fields, field_id) = (toggleHover i model.text_fields) in
+         ({ model | text_fields = fields }, selectAllInputText field_id )
+      QuestionField -> let (fields, field_id) = (toggleHover i model.question_fields) in
+         ({ model | question_fields = fields }, selectAllInputText field_id )
 
     UpdateTitle title -> ({ model | text = { text | title = title }}, Cmd.none)
     UpdateSource source ->  ({ model | text = { text | source = source }}, Cmd.none)
     UpdateDifficulty difficulty -> ({ model | text = { text | difficulty = difficulty }}, Cmd.none)
     UpdateBody body -> ({ model | text = { text | body = body }}, Cmd.none)
+
+    UpdateQuestionBody i question body -> ({
+      model | questions = (Array.set i {
+          question | body = body
+        } model.questions)
+      }, Cmd.none)
 
 
 main : Program Never Model Msg
@@ -154,30 +185,57 @@ view_answer question answer =
      ,  Html.text <| "Click to write Choice " ++ (toString answer.order)
    ]
 
-view_question : Question -> List (Html Msg)
-view_question question = [
+edit_question : Field -> Question -> Int -> List (Html Msg)
+edit_question question_field question i = [
       div [] [Html.input [attribute "type" "checkbox"] []]
-   ,  div [classList [("question_item", True)] ] [ Html.text question.body ]
+      , Html.input [
+          attribute "type" "text"
+        , attribute "value" question.body
+        , attribute "id" question_field.id
+        , onInput (UpdateQuestionBody i question)
+        , onBlur (ToggleEditableField QuestionField i) ] [ ] ] ++ (List.map (view_answer question) question.answers)
+
+view_question : Field -> Question -> Int -> List (Html Msg)
+view_question question_field question i = [
+      div [] [Html.input [attribute "type" "checkbox"] []]
+   ,  div [
+          attribute "id" question_field.id
+        , classList [("question_item", True), ("over", question_field.hover)]
+        , onClick (ToggleEditableField QuestionField i)
+        , onMouseOver (Hover QuestionField i)
+        , onMouseLeave (Hover QuestionField i)
+      ] [ Html.text question.body ]
  ] ++ (List.map (view_answer question) question.answers)
 
-view_questions : Model -> Html Msg
-view_questions model = div [ classList [("question_section", True)] ] [
-      div [ classList [("questions", True)] ] (List.concat <| Array.toList <| Array.map view_question model.questions)
-  ]
 
-get_hover : Model -> Int -> Bool
-get_hover model i = case Array.get i model.fields of
+view_editable_question : Array Field -> Int -> Question -> List (Html Msg)
+view_editable_question fields i question = let question_field = case Array.get i fields of
+    Just field -> field
+    _ -> (generate_question_field question) in case question_field.editable of
+      True -> edit_question question_field question i
+      _ -> view_question question_field question i
+
+view_questions : Array Field -> Array Question -> Html Msg
+view_questions fields questions = div [ classList [("question_section", True)] ] [
+      div [ classList [("questions", True)] ]
+      (  List.concat
+      <| Array.toList
+      <| Array.indexedMap (view_editable_question fields) questions
+      )]
+
+get_hover : Array Field -> Int -> Bool
+get_hover fields i = case Array.get i fields of
   Just field -> field.hover
   Nothing -> False
 
-hover_attrs : Model -> Int -> List (Attribute Msg)
-hover_attrs model i = [
-    classList [ ("over", get_hover model i) ]
-  , onMouseOver (Hover i)
-  , onMouseLeave (Hover i)]
+hover_attrs : Array Field -> Int -> List (Attribute Msg)
+hover_attrs fields i = [
+    classList [ ("over", get_hover fields i) ]
+  , onMouseOver (Hover TextField i)
+  , onMouseLeave (Hover TextField i)]
 
 text_property_attrs : Model -> Int -> List (Attribute Msg)
-text_property_attrs model i = [onClick (ToggleEditableField i)] ++ (hover_attrs model i)
+text_property_attrs model i = [onClick (ToggleEditableField TextField i)] ++ (hover_attrs model.text_fields i)
 
 view_title : Model -> Int -> Html Msg
 view_title model i = Html.div (text_property_attrs model i) [
@@ -191,7 +249,7 @@ edit_title model i = Html.input [
       , attribute "value" model.text.title
       , attribute "id" "title"
       , onInput UpdateTitle
-      , onBlur (ToggleEditableField i) ] [ ]
+      , onBlur (ToggleEditableField TextField i) ] [ ]
 
 view_source : Model -> Int -> Html Msg
 view_source model i = Html.div (text_property_attrs model i) [
@@ -205,7 +263,7 @@ edit_source model i = Html.input [
       , attribute "value" model.text.source
       , attribute "id" "source"
       , onInput UpdateSource
-      , onBlur (ToggleEditableField i) ] [ ]
+      , onBlur (ToggleEditableField TextField i) ] [ ]
 
 view_difficulty : Model -> Int -> Html Msg
 view_difficulty model i = Html.div (text_property_attrs model i) [
@@ -223,7 +281,7 @@ edit_difficulty model i = Html.input [
       , attribute "value" model.text.difficulty
       , attribute "id" "difficulty"
       , onInput UpdateDifficulty
-      , onBlur (ToggleEditableField i) ] [ ]
+      , onBlur (ToggleEditableField TextField i) ] [ ]
 
 
 view_body : Model -> Int -> Html Msg
@@ -235,10 +293,10 @@ edit_body : Model -> Int -> Html Msg
 edit_body model i = Html.textarea [
         onInput UpdateBody
       , attribute "id" "body"
-      , onBlur (ToggleEditableField i) ] [ Html.text model.text.body ]
+      , onBlur (ToggleEditableField TextField i) ] [ Html.text model.text.body ]
 
 view_editable_field : Model -> Int -> (Model -> Int -> Html Msg) -> (Model -> Int -> Html Msg) -> Html Msg
-view_editable_field model i view edit = case Array.get i model.fields of
+view_editable_field model i view edit = case Array.get i model.text_fields of
    Just field -> case field.editable of
      True -> (edit model i)
      _ -> (view model i)
@@ -259,5 +317,5 @@ view model = div [] [
       (view_header model)
     , (view_preview model)
     , (view_create_text model)
-    , (view_questions model)
+    , (view_questions model.question_fields model.questions)
   ]
