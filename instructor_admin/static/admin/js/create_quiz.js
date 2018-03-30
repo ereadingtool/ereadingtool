@@ -9283,6 +9283,17 @@ var _user$project$Main$get_hover = F2(
 			return false;
 		}
 	});
+var _user$project$Main$view_editable_answer = F3(
+	function (fields, i, answer) {
+		return {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{ctor: '[]'}),
+			_1: {ctor: '[]'}
+		};
+	});
 var _user$project$Main$view_answer = F2(
 	function (question, answer) {
 		return A2(
@@ -9758,7 +9769,7 @@ var _user$project$Main$initial_questions = _elm_lang$core$Array$fromList(
 		_0: _user$project$Main$new_question,
 		_1: {ctor: '[]'}
 	});
-var _user$project$Main$new_text = {id: _elm_lang$core$Maybe$Nothing, title: 'title', created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing, source: 'source', difficulty: 'difficulty', question_count: 0, body: 'text'};
+var _user$project$Main$new_text = {id: _elm_lang$core$Maybe$Nothing, title: 'title', created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing, source: 'source', difficulty: '', question_count: 0, body: 'text'};
 var _user$project$Main$Field = F4(
 	function (a, b, c, d) {
 		return {id: a, editable: b, hover: c, field_type: d};
@@ -9825,6 +9836,53 @@ var _user$project$Main$UpdateBody = function (a) {
 var _user$project$Main$UpdateDifficulty = function (a) {
 	return {ctor: 'UpdateDifficulty', _0: a};
 };
+var _user$project$Main$edit_difficulty = F2(
+	function (model, i) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('Difficulty:  '),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$select,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateDifficulty),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$optgroup,
+								{ctor: '[]'},
+								A2(
+									_elm_lang$core$List$map,
+									function (_p18) {
+										var _p19 = _p18;
+										var _p20 = _p19._1;
+										return A2(
+											_elm_lang$html$Html$option,
+											_elm_lang$core$Native_Utils.eq(_p20, model.text.difficulty) ? {
+												ctor: '::',
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'selected', ''),
+												_1: {ctor: '[]'}
+											} : {ctor: '[]'},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text(_p20),
+												_1: {ctor: '[]'}
+											});
+									},
+									_user$project$Main$question_difficulties)),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
 var _user$project$Main$UpdateSource = function (a) {
 	return {ctor: 'UpdateSource', _0: a};
 };
@@ -9997,15 +10055,15 @@ var _user$project$Main$view_question = F3(
 var _user$project$Main$view_editable_question = F3(
 	function (fields, i, question) {
 		var question_field = function () {
-			var _p18 = A2(_elm_lang$core$Array$get, i, fields);
-			if (_p18.ctor === 'Just') {
-				return _p18._0;
+			var _p21 = A2(_elm_lang$core$Array$get, i, fields);
+			if (_p21.ctor === 'Just') {
+				return _p21._0;
 			} else {
 				return _user$project$Main$generate_question_field(question);
 			}
 		}();
-		var _p19 = question_field.editable;
-		if (_p19 === true) {
+		var _p22 = question_field.editable;
+		if (_p22 === true) {
 			return A3(_user$project$Main$edit_question, question_field, question, i);
 		} else {
 			return A3(_user$project$Main$view_question, question_field, question, i);
@@ -10090,52 +10148,6 @@ var _user$project$Main$view_source = F2(
 				}
 			});
 	});
-var _user$project$Main$view_difficulty = F2(
-	function (model, i) {
-		return A2(
-			_elm_lang$html$Html$div,
-			A2(_user$project$Main$text_property_attrs, model, i),
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html$text('Difficulty:'),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$select,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateDifficulty),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$optgroup,
-								{
-									ctor: '::',
-									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', model.text.difficulty),
-									_1: {ctor: '[]'}
-								},
-								A2(
-									_elm_lang$core$List$map,
-									function (_p20) {
-										var _p21 = _p20;
-										return A2(
-											_elm_lang$html$Html$option,
-											{ctor: '[]'},
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text(_p21._1),
-												_1: {ctor: '[]'}
-											});
-									},
-									_user$project$Main$question_difficulties)),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
 var _user$project$Main$view_body = F2(
 	function (model, i) {
 		return A2(
@@ -10207,34 +10219,6 @@ var _user$project$Main$edit_source = F2(
 			},
 			{ctor: '[]'});
 	});
-var _user$project$Main$edit_difficulty = F2(
-	function (model, i) {
-		return A2(
-			_elm_lang$html$Html$input,
-			{
-				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
-				_1: {
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', model.text.difficulty),
-					_1: {
-						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'difficulty'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateDifficulty),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onBlur(
-									A2(_user$project$Main$ToggleEditableField, _user$project$Main$TextField, i)),
-								_1: {ctor: '[]'}
-							}
-						}
-					}
-				}
-			},
-			{ctor: '[]'});
-	});
 var _user$project$Main$edit_body = F2(
 	function (model, i) {
 		return A2(
@@ -10294,7 +10278,7 @@ var _user$project$Main$view_create_text = function (model) {
 						_0: A4(_user$project$Main$view_editable_field, model, 1, _user$project$Main$view_source, _user$project$Main$edit_source),
 						_1: {
 							ctor: '::',
-							_0: A4(_user$project$Main$view_editable_field, model, 2, _user$project$Main$view_difficulty, _user$project$Main$view_difficulty),
+							_0: A4(_user$project$Main$view_editable_field, model, 2, _user$project$Main$edit_difficulty, _user$project$Main$edit_difficulty),
 							_1: {ctor: '[]'}
 						}
 					}

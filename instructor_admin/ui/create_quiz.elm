@@ -42,7 +42,7 @@ new_text = {
   , created_dt = Nothing
   , modified_dt = Nothing
   , source = "source"
-  , difficulty = "difficulty"
+  , difficulty = ""
   , question_count = 0
   , body = "text" }
 
@@ -185,6 +185,9 @@ view_answer question answer =
      ,  Html.text <| "Click to write Choice " ++ (toString answer.order)
    ]
 
+view_editable_answer : Array Field -> Int -> Answer -> List (Html Msg)
+view_editable_answer fields i answer = [ div [] [] ]
+
 edit_question : Field -> Question -> Int -> List (Html Msg)
 edit_question question_field question i = [
       div [] [Html.input [attribute "type" "checkbox"] []]
@@ -265,24 +268,17 @@ edit_source model i = Html.input [
       , onInput UpdateSource
       , onBlur (ToggleEditableField TextField i) ] [ ]
 
-view_difficulty : Model -> Int -> Html Msg
-view_difficulty model i = Html.div (text_property_attrs model i) [
-      Html.text "Difficulty:"
-    , Html.select [
-        onInput UpdateDifficulty ] [
-      Html.optgroup [attribute "value" model.text.difficulty]
-        (List.map (\(k,v) -> Html.option [] [Html.text v]) <| question_difficulties)
-    ]
-  ]
-
 edit_difficulty : Model -> Int -> Html Msg
-edit_difficulty model i = Html.input [
-        attribute "type" "text"
-      , attribute "value" model.text.difficulty
-      , attribute "id" "difficulty"
-      , onInput UpdateDifficulty
-      , onBlur (ToggleEditableField TextField i) ] [ ]
-
+edit_difficulty model i = Html.div [] [
+      Html.text "Difficulty:  "
+    , Html.select [
+         onInput UpdateDifficulty ] [
+        Html.optgroup [] (List.map (\(k,v) ->
+          Html.option (if v == model.text.difficulty then [attribute "selected" ""] else []) [Html.text v])
+          question_difficulties
+        )
+       ]
+  ]
 
 view_body : Model -> Int -> Html Msg
 view_body model i = Html.div (text_property_attrs model i) [
@@ -307,7 +303,7 @@ view_create_text model = div [ classList [("text_properties", True)] ] [
       div [ classList [("text_property_items", True)] ] [
           view_editable_field model 0 view_title edit_title
         , view_editable_field model 1 view_source edit_source
-        , view_editable_field model 2 view_difficulty view_difficulty
+        , view_editable_field model 2 edit_difficulty edit_difficulty
       ]
       , div [ classList [("body",True)] ]  [ view_editable_field model 3 view_body edit_body ]
   ]
