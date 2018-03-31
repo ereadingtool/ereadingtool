@@ -10,28 +10,41 @@ import Model exposing (Text, Question, Answer, textsDecoder)
 import Ports exposing (selectAllInputText)
 
 
-type FieldType = TextField | QuestionField
+type Field = Text TextField | Question QuestionField | Answer AnswerField
 
-type Msg = ToggleEditableField FieldType Int | Hover FieldType Int
+type Msg = ToggleEditableField Field | Hover Field
   | UpdateTitle String
   | UpdateSource String
   | UpdateDifficulty String
   | UpdateBody String
-  | UpdateQuestionBody Int Question String
+  | UpdateQuestionBody QuestionField String
 
-
-type alias Field = {
+type alias TextField = {
     id : String
   , editable : Bool
   , hover : Bool
-  , field_type : FieldType }
+  , index : Int }
+
+type alias AnswerField = {
+    id : String
+  , editable : Bool
+  , hover : Bool
+  , answer : Answer
+  , index : Int }
+
+type alias QuestionField = {
+    id : String
+  , editable : Bool
+  , hover : Bool
+  , question : Question
+  , answer_fields : Array AnswerField
+  , index : Int }
 
 
 type alias Model = {
     text : Text
-  , questions : Array Question
-  , text_fields : Array Field
-  , question_fields : Array Field }
+  , text_fields : Array TextField
+  , question_fields : Array QuestionField }
 
 type alias Filter = List String
 
@@ -55,8 +68,8 @@ new_question = {
   , modified_dt = Nothing
   , body = "Click to write the question text."
   , order = 1
-  , answers = (generate_answers 4)
-  , question_type = "main_idea"}
+  , answers = generate_answers 4
+  , question_type = "main_idea" }
 
 
 question_difficulties : List (String, String)
@@ -68,70 +81,90 @@ question_difficulties = [
 
 
 initial_questions : Array Question
-initial_questions = (Array.fromList [new_question])
+initial_questions = Array.fromList [new_question]
 
 init : (Model, Cmd Msg)
-init = (Model new_text initial_questions (Array.fromList [
-      {id="title", field_type=TextField, editable=False, hover=False}
-    , {id="source", field_type=TextField, editable=False, hover=False}
-    , {id="difficulty", field_type=TextField, editable=False, hover=False}
-    , {id="body", field_type=TextField, editable=False, hover=False}
-  ]) (Array.map generate_question_field initial_questions), Cmd.none)
+init = ({
+        text=new_text
+      , text_fields=(Array.fromList [
+          {id="title", editable=False, hover=False, index=0}
+        , {id="source", editable=False, hover=False, index=1}
+        , {id="difficulty", editable=False, hover=False, index=2}
+        , {id="body", editable=False, hover=False, index=3} ])
+      , question_fields=(Array.indexedMap generate_question_field initial_questions)
+  }, Cmd.none)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
-generate_question_field : Question -> Field
-generate_question_field question = {
-    id=(String.join "_" ["question", toString question.order])
+generate_question_field : Int -> Question -> QuestionField
+generate_question_field i question = {
+    id=(String.join "_" ["question", toString i])
   , editable=False
   , hover=False
-  , field_type=QuestionField }
+  , question=question
+  , answer_fields=(Array.indexedMap (generate_answer_field i question) question.answers)
+  , index=i }
 
-generate_answers : Int -> List Answer
-generate_answers n = List.map (\i -> Answer Nothing Nothing "Click to write choice " False i "")
+generate_answer_field : Int -> Question -> Int -> Answer -> AnswerField
+generate_answer_field i question j answer = {
+    id=(String.join "_" ["question", toString i, "answer", toString j])
+  , editable=False
+  , hover=False
+  , answer = generate_answer j
+  , index=i }
+
+
+generate_answer : Int -> Answer
+generate_answer i = {
+    id=Nothing
+  , question_id=Nothing
+  , text="Click to write choice "
+  , correct=False
+  , order=i
+  , feedback="" }
+
+generate_answers : Int -> Array Answer
+generate_answers n =
+     Array.fromList
+  <| List.map generate_answer
   <| List.range 1 n
-
-toggleHover : Int -> Array Field -> (Array Field, String)
-toggleHover i fields = case Array.get i fields of
-  Just field -> case field.hover of
-    True -> (Array.set i { field | hover = False } fields, field.id)
-    _ -> (Array.set i { field | hover = True } fields, field.id)
-  _ -> (fields, "")
-
-toggleEditable : Int -> Array Field -> (Array Field, String)
-toggleEditable i fields = case Array.get i fields of
-   Just field -> case field.editable of
-      True -> (Array.set i { field | editable = False, hover = False } fields, field.id)
-      _ -> (Array.set i { field | editable = True, hover = False } fields, field.id)
-   _ -> (fields, "")
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = let text = model.text in
   case msg of
-    ToggleEditableField field_type i -> case field_type of
-      TextField -> let (fields, field_id) = (toggleEditable i model.text_fields) in
-         ({ model | text_fields = fields }, selectAllInputText field_id )
-      QuestionField -> let (fields, field_id) = (toggleEditable i model.question_fields) in
-         ({ model | question_fields = fields }, selectAllInputText field_id )
+    ToggleEditableField field_type -> case field_type of
+      Text field -> let new_field = { field | editable = (if field.editable then False else True), hover=False} in
+        ({ model |
+          text_fields = Array.set field.index new_field model.text_fields }, selectAllInputText field.id )
 
-    Hover field_type i -> case field_type of
-      TextField -> let (fields, field_id) = (toggleHover i model.text_fields) in
-         ({ model | text_fields = fields }, selectAllInputText field_id )
-      QuestionField -> let (fields, field_id) = (toggleHover i model.question_fields) in
-         ({ model | question_fields = fields }, selectAllInputText field_id )
+      Question field -> let new_field = { field | editable = (if field.editable then False else True), hover=False } in
+        ({ model |
+          question_fields = Array.set field.index new_field model.question_fields }, selectAllInputText field.id )
+
+      _ -> (model, Cmd.none)
+
+    Hover field_type -> case field_type of
+      Text field -> let new_field = { field | hover = (if field.hover then False else True) } in
+        ({ model |
+          text_fields = Array.set field.index new_field model.text_fields }, selectAllInputText field.id )
+
+      Question field -> let new_field = { field | hover = (if field.hover then False else True) } in
+        ({ model |
+          question_fields = Array.set field.index new_field model.question_fields }, selectAllInputText field.id )
+
+      _ -> (model, Cmd.none)
+
+    UpdateQuestionBody field body ->
+      let question = field.question in
+      let new_field = {field | question = {question | body = body} } in
+        ({ model | question_fields = Array.set field.index new_field model.question_fields }, Cmd.none)
 
     UpdateTitle title -> ({ model | text = { text | title = title }}, Cmd.none)
     UpdateSource source ->  ({ model | text = { text | source = source }}, Cmd.none)
     UpdateDifficulty difficulty -> ({ model | text = { text | difficulty = difficulty }}, Cmd.none)
     UpdateBody body -> ({ model | text = { text | body = body }}, Cmd.none)
-
-    UpdateQuestionBody i question body -> ({
-      model | questions = (Array.set i {
-          question | body = body
-        } model.questions)
-      }, Cmd.none)
 
 
 main : Program Never Model Msg
@@ -185,91 +218,91 @@ view_answer question answer =
      ,  Html.text <| "Click to write Choice " ++ (toString answer.order)
    ]
 
-view_editable_answer : Array Field -> Int -> Answer -> List (Html Msg)
+edit_question : QuestionField -> Html Msg
+edit_question question_field =
+  Html.input [
+      attribute "type" "text"
+    , attribute "value" question_field.question.body
+    , attribute "id" question_field.id
+    , onInput (UpdateQuestionBody question_field)
+    , onBlur (ToggleEditableField <| Question question_field)
+  ] [ ]
+
+view_question : QuestionField -> Html Msg
+view_question question_field =
+  div [
+      attribute "id" question_field.id
+    , classList [("question_item", True), ("over", question_field.hover)]
+    , onClick (ToggleEditableField <| Question question_field)
+    , onMouseOver (Hover <| Question question_field)
+    , onMouseLeave (Hover <| Question question_field)
+  ] [ Html.text question_field.question.body ]
+
+
+view_editable_answer : Array AnswerField -> Int -> Answer -> List (Html Msg)
 view_editable_answer fields i answer = [ div [] [] ]
 
-edit_question : Field -> Question -> Int -> List (Html Msg)
-edit_question question_field question i = [
-      div [] [Html.input [attribute "type" "checkbox"] []]
-      , Html.input [
-          attribute "type" "text"
-        , attribute "value" question.body
-        , attribute "id" question_field.id
-        , onInput (UpdateQuestionBody i question)
-        , onBlur (ToggleEditableField QuestionField i) ] [ ] ] ++ (List.map (view_answer question) question.answers)
 
-view_question : Field -> Question -> Int -> List (Html Msg)
-view_question question_field question i = [
-      div [] [Html.input [attribute "type" "checkbox"] []]
-   ,  div [
-          attribute "id" question_field.id
-        , classList [("question_item", True), ("over", question_field.hover)]
-        , onClick (ToggleEditableField QuestionField i)
-        , onMouseOver (Hover QuestionField i)
-        , onMouseLeave (Hover QuestionField i)
-      ] [ Html.text question.body ]
- ] ++ (List.map (view_answer question) question.answers)
+view_editable_question : Int -> QuestionField -> List (Html Msg)
+view_editable_question i field = [
+       div [] [ Html.input [attribute "type" "checkbox"] [] ]
+    ,  (case field.editable of
+        True -> edit_question field
+        _ -> view_question field)
+    ] ++ (Array.toList <| Array.map (view_answer field.question) field.question.answers)
 
-
-view_editable_question : Array Field -> Int -> Question -> List (Html Msg)
-view_editable_question fields i question = let question_field = case Array.get i fields of
-    Just field -> field
-    _ -> (generate_question_field question) in case question_field.editable of
-      True -> edit_question question_field question i
-      _ -> view_question question_field question i
-
-view_questions : Array Field -> Array Question -> Html Msg
-view_questions fields questions = div [ classList [("question_section", True)] ] [
+view_questions : Array QuestionField -> Html Msg
+view_questions fields = div [ classList [("question_section", True)] ] [
       div [ classList [("questions", True)] ]
       (  List.concat
       <| Array.toList
-      <| Array.indexedMap (view_editable_question fields) questions
+      <| Array.indexedMap view_editable_question fields
       )]
 
-get_hover : Array Field -> Int -> Bool
+get_hover : Array TextField -> Int -> Bool
 get_hover fields i = case Array.get i fields of
   Just field -> field.hover
   Nothing -> False
 
-hover_attrs : Array Field -> Int -> List (Attribute Msg)
-hover_attrs fields i = [
-    classList [ ("over", get_hover fields i) ]
-  , onMouseOver (Hover TextField i)
-  , onMouseLeave (Hover TextField i)]
+hover_attrs : TextField -> List (Attribute Msg)
+hover_attrs field = [
+    classList [ ("over", field.hover) ]
+  , onMouseOver (Hover <| Text field)
+  , onMouseLeave (Hover <| Text field)]
 
-text_property_attrs : Model -> Int -> List (Attribute Msg)
-text_property_attrs model i = [onClick (ToggleEditableField TextField i)] ++ (hover_attrs model.text_fields i)
+text_property_attrs : TextField -> List (Attribute Msg)
+text_property_attrs field = [onClick (ToggleEditableField <| Text field)] ++ (hover_attrs field)
 
-view_title : Model -> Int -> Html Msg
-view_title model i = Html.div (text_property_attrs model i) [
+view_title : Model -> TextField -> Html Msg
+view_title model field = Html.div (text_property_attrs field) [
     Html.text "Title: "
   , Html.text model.text.title
   ]
 
-edit_title : Model -> Int -> Html Msg
-edit_title model i = Html.input [
+edit_title : Model -> TextField -> Html Msg
+edit_title model field = Html.input [
         attribute "type" "text"
       , attribute "value" model.text.title
       , attribute "id" "title"
       , onInput UpdateTitle
-      , onBlur (ToggleEditableField TextField i) ] [ ]
+      , onBlur (ToggleEditableField <| Text field) ] [ ]
 
-view_source : Model -> Int -> Html Msg
-view_source model i = Html.div (text_property_attrs model i) [
+view_source : Model -> TextField -> Html Msg
+view_source model field = Html.div (text_property_attrs field) [
      Html.text "Source: "
    , Html.text model.text.source
   ]
 
-edit_source : Model -> Int -> Html Msg
-edit_source model i = Html.input [
+edit_source : Model -> TextField -> Html Msg
+edit_source model field = Html.input [
         attribute "type" "text"
       , attribute "value" model.text.source
       , attribute "id" "source"
       , onInput UpdateSource
-      , onBlur (ToggleEditableField TextField i) ] [ ]
+      , onBlur (ToggleEditableField <| Text field) ] [ ]
 
-edit_difficulty : Model -> Int -> Html Msg
-edit_difficulty model i = Html.div [] [
+edit_difficulty : Model -> TextField -> Html Msg
+edit_difficulty model field = Html.div [] [
       Html.text "Difficulty:  "
     , Html.select [
          onInput UpdateDifficulty ] [
@@ -280,32 +313,32 @@ edit_difficulty model i = Html.div [] [
        ]
   ]
 
-view_body : Model -> Int -> Html Msg
-view_body model i = Html.div (text_property_attrs model i) [
+view_body : Model -> TextField -> Html Msg
+view_body model field = Html.div (text_property_attrs field) [
     Html.text "Text: "
   , Html.text model.text.body ]
 
-edit_body : Model -> Int -> Html Msg
-edit_body model i = Html.textarea [
+edit_body : Model -> TextField -> Html Msg
+edit_body model field = Html.textarea [
         onInput UpdateBody
-      , attribute "id" "body"
-      , onBlur (ToggleEditableField TextField i) ] [ Html.text model.text.body ]
+      , attribute "id" field.id
+      , onBlur (ToggleEditableField <| Text field) ] [ Html.text model.text.body ]
 
-view_editable_field : Model -> Int -> (Model -> Int -> Html Msg) -> (Model -> Int -> Html Msg) -> Html Msg
+view_editable_field : Model -> Int -> (TextField -> Html Msg) -> (TextField -> Html Msg) -> Html Msg
 view_editable_field model i view edit = case Array.get i model.text_fields of
    Just field -> case field.editable of
-     True -> (edit model i)
-     _ -> (view model i)
-   _ -> (view model i)
+     True -> edit field
+     _ -> view field
+   _ -> Html.text ""
 
 view_create_text : Model -> Html Msg
 view_create_text model = div [ classList [("text_properties", True)] ] [
       div [ classList [("text_property_items", True)] ] [
-          view_editable_field model 0 view_title edit_title
-        , view_editable_field model 1 view_source edit_source
-        , view_editable_field model 2 edit_difficulty edit_difficulty
+          view_editable_field model 0 (view_title model) (edit_title model)
+        , view_editable_field model 1 (view_source model) (edit_source model)
+        , view_editable_field model 2 (edit_difficulty model) (edit_difficulty model)
       ]
-      , div [ classList [("body",True)] ]  [ view_editable_field model 3 view_body edit_body ]
+      , div [ classList [("body",True)] ]  [ view_editable_field model 3 (view_body model) (edit_body model) ]
   ]
 
 view : Model -> Html Msg
@@ -313,5 +346,5 @@ view model = div [] [
       (view_header model)
     , (view_preview model)
     , (view_create_text model)
-    , (view_questions model.question_fields model.questions)
+    , (view_questions model.question_fields)
   ]

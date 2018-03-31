@@ -2,7 +2,9 @@ module Model exposing (Text, Question, QuestionType, Answer, textsDecoder)
 
 import Date exposing (..)
 
-import Json.Decode exposing (int, string, float, bool, nullable, list, succeed, Decoder, field, at)
+import Array exposing (Array)
+
+import Json.Decode exposing (int, string, float, bool, nullable, list, array, succeed, Decoder, field, at)
 import Json.Decode.Extra exposing (date)
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 
@@ -39,8 +41,8 @@ answerDecoder =
     |> required "order" int
     |> required "feedback" string
 
-answersDecoder : Decoder (List Answer)
-answersDecoder = list answerDecoder
+answersDecoder : Decoder (Array Answer)
+answersDecoder = array answerDecoder
 
 type alias Question = {
     id: Maybe Int
@@ -49,7 +51,7 @@ type alias Question = {
   , modified_dt: Maybe Date
   , body: String
   , order: Int
-  , answers: List Answer
+  , answers: Array Answer
   , question_type: String }
 
 questionDecoder : Decoder Question
