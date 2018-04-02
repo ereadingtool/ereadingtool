@@ -12,12 +12,14 @@ import Ports exposing (selectAllInputText)
 
 type Field = Text TextField | Question QuestionField | Answer AnswerField
 
-type Msg = ToggleEditableField Field | Hover Field
+type Msg = ToggleEditableField Field | Hover Field | UnHover Field
   | UpdateTitle String
   | UpdateSource String
   | UpdateDifficulty String
   | UpdateBody String
   | UpdateQuestionBody QuestionField String
+  | UpdateAnswer QuestionField AnswerField String
+  | AddQuestion
 
 type alias TextField = {
     id : String
@@ -30,6 +32,7 @@ type alias AnswerField = {
   , editable : Bool
   , hover : Bool
   , answer : Answer
+  , question_field_index : Int
   , index : Int }
 
 type alias QuestionField = {
@@ -98,6 +101,10 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
+add_new_question : Array QuestionField -> Array QuestionField
+add_new_question fields = let arr_len = Array.length fields in
+  Array.push (generate_question_field arr_len new_question) fields
+
 generate_question_field : Int -> Question -> QuestionField
 generate_question_field i question = {
     id=(String.join "_" ["question", toString i])
@@ -112,15 +119,16 @@ generate_answer_field i question j answer = {
     id=(String.join "_" ["question", toString i, "answer", toString j])
   , editable=False
   , hover=False
-  , answer = generate_answer j
-  , index=i }
+  , answer = answer
+  , question_field_index = i
+  , index=j }
 
 
 generate_answer : Int -> Answer
 generate_answer i = {
     id=Nothing
   , question_id=Nothing
-  , text="Click to write choice "
+  , text=String.join " " ["Click to write choice", toString i]
   , correct=False
   , order=i
   , feedback="" }
@@ -131,40 +139,85 @@ generate_answers n =
   <| List.map generate_answer
   <| List.range 1 n
 
+toggle_editable : { a | hover : Bool, index : Int, editable : Bool }
+    -> Array { a | index : Int, editable : Bool, hover : Bool }
+    -> Array { a | index : Int, editable : Bool, hover : Bool }
+toggle_editable field fields =
+  Array.set field.index { field |
+    editable = (if field.editable then False else True), hover=False}
+  fields
+
+set_hover
+    : { a | hover : Bool, index : Int }
+    -> Bool
+    -> Array { a | index : Int, hover : Bool }
+    -> Array { a | index : Int, hover : Bool }
+set_hover field hover fields = Array.set field.index { field | hover = hover } fields
+
+update_answer : AnswerField -> Array QuestionField -> Array QuestionField
+update_answer answer_field question_fields = case Array.get answer_field.question_field_index question_fields of
+    Just question_field ->
+      let new_question_field = { question_field
+      | answer_fields = Array.set answer_field.index answer_field question_field.answer_fields } in
+      Array.set new_question_field.index new_question_field question_fields
+    _ -> question_fields
+
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = let text = model.text in
   case msg of
-    ToggleEditableField field_type -> case field_type of
-      Text field -> let new_field = { field | editable = (if field.editable then False else True), hover=False} in
-        ({ model |
-          text_fields = Array.set field.index new_field model.text_fields }, selectAllInputText field.id )
+    ToggleEditableField field -> case field of
+      Text text_field -> ({ model | text_fields = toggle_editable text_field model.text_fields }
+                     , selectAllInputText text_field.id )
+      Question question_field -> ({ model | question_fields = toggle_editable question_field model.question_fields }
+                         , selectAllInputText question_field.id )
 
-      Question field -> let new_field = { field | editable = (if field.editable then False else True), hover=False } in
-        ({ model |
-          question_fields = Array.set field.index new_field model.question_fields }, selectAllInputText field.id )
+      Answer answer_field ->
+        let new_answer_field = { answer_field
+          | editable = (if answer_field.editable then False else True)
+          , hover = False } in
+        ({ model | question_fields = update_answer new_answer_field model.question_fields}
+         , selectAllInputText new_answer_field.id )
 
-      _ -> (model, Cmd.none)
+    Hover field -> case field of
+      Text text_field -> ({ model | text_fields = set_hover text_field True model.text_fields }
+                     , selectAllInputText text_field.id )
+      Question question_field -> ({ model | question_fields = set_hover question_field True model.question_fields }
+                         , selectAllInputText question_field.id )
 
-    Hover field_type -> case field_type of
-      Text field -> let new_field = { field | hover = (if field.hover then False else True) } in
-        ({ model |
-          text_fields = Array.set field.index new_field model.text_fields }, selectAllInputText field.id )
+      Answer answer_field -> let new_answer_field = { answer_field | hover = True } in
+        ({ model | question_fields = update_answer new_answer_field model.question_fields}
+         , selectAllInputText new_answer_field.id )
 
-      Question field -> let new_field = { field | hover = (if field.hover then False else True) } in
-        ({ model |
-          question_fields = Array.set field.index new_field model.question_fields }, selectAllInputText field.id )
+    UnHover field -> case field of
+      Text text_field -> ({ model | text_fields = set_hover text_field False model.text_fields }
+                     , selectAllInputText text_field.id )
+      Question question_field -> ({ model | question_fields = set_hover question_field False model.question_fields }
+                     , selectAllInputText question_field.id )
 
-      _ -> (model, Cmd.none)
+      Answer answer_field -> let new_answer_field = { answer_field | hover = False } in
+        ({ model | question_fields = update_answer new_answer_field model.question_fields}
+         , selectAllInputText new_answer_field.id )
 
     UpdateQuestionBody field body ->
       let question = field.question in
       let new_field = {field | question = {question | body = body} } in
-        ({ model | question_fields = Array.set field.index new_field model.question_fields }, Cmd.none)
+        ({ model | question_fields = Array.set field.index new_field model.question_fields }, Cmd.none)
+
+    UpdateAnswer question_field answer_field text ->
+      let answer = answer_field.answer in
+      let new_answer = { answer | text = text } in
+      let new_answer_field = { answer_field | answer = new_answer } in
+      let new_question_field = { question_field |
+        answer_fields = Array.set answer_field.index new_answer_field question_field.answer_fields } in
+        ({ model |
+          question_fields = Array.set new_question_field.index new_question_field model.question_fields }, Cmd.none)
 
     UpdateTitle title -> ({ model | text = { text | title = title }}, Cmd.none)
     UpdateSource source ->  ({ model | text = { text | source = source }}, Cmd.none)
     UpdateDifficulty difficulty -> ({ model | text = { text | difficulty = difficulty }}, Cmd.none)
     UpdateBody body -> ({ model | text = { text | body = body }}, Cmd.none)
+
+    AddQuestion -> ({model | question_fields = add_new_question model.question_fields }, Cmd.none)
 
 
 main : Program Never Model Msg
@@ -208,16 +261,6 @@ view_filter model = div [classList [("filter_items", True)] ] [
      ]
  ]
 
-view_answer : Question -> Answer -> Html Msg
-view_answer question answer =
-   div [ classList [("answer_item", True)] ] [
-        Html.input [
-            attribute "type" "radio"
-          , attribute "name" (String.join "_" ["question", (toString question.order), "answer"])
-        ] []
-     ,  Html.text <| "Click to write Choice " ++ (toString answer.order)
-   ]
-
 edit_question : QuestionField -> Html Msg
 edit_question question_field =
   Html.input [
@@ -235,29 +278,60 @@ view_question question_field =
     , classList [("question_item", True), ("over", question_field.hover)]
     , onClick (ToggleEditableField <| Question question_field)
     , onMouseOver (Hover <| Question question_field)
-    , onMouseLeave (Hover <| Question question_field)
+    , onMouseLeave (UnHover <| Question question_field)
   ] [ Html.text question_field.question.body ]
 
 
-view_editable_answer : Array AnswerField -> Int -> Answer -> List (Html Msg)
-view_editable_answer fields i answer = [ div [] [] ]
+view_answer : QuestionField -> AnswerField -> Html Msg
+view_answer question_field answer_field = Html.span
+  [  onClick (ToggleEditableField <| Answer answer_field)
+   , onMouseOver (Hover <| Answer answer_field)
+   , onMouseLeave (UnHover <| Answer answer_field) ]
+  [ Html.text <| answer_field.answer.text ]
 
+edit_answer : QuestionField -> AnswerField -> Html Msg
+edit_answer question_field answer_field = Html.input [
+      attribute "type" "text"
+    , attribute "value" answer_field.answer.text
+    , attribute "id" answer_field.id
+    , onInput (UpdateAnswer question_field answer_field)
+    , onBlur (ToggleEditableField <| Answer answer_field)
+  ] [ ]
 
-view_editable_question : Int -> QuestionField -> List (Html Msg)
-view_editable_question i field = [
+view_editable_answer : QuestionField -> AnswerField -> Html Msg
+view_editable_answer question_field answer_field = div [
+  classList [("answer_item", True)
+            ,("over", answer_field.hover)] ] [
+        Html.input [
+            attribute "type" "radio"
+          , attribute "id"
+            (String.join "_" [
+                "question"
+              , (toString question_field.question.order)
+              , "answer", toString answer_field.answer.order])
+        ] []
+     ,  (case answer_field.editable of
+           True -> edit_answer question_field answer_field
+           False -> view_answer question_field answer_field)
+  ]
+
+view_editable_question : QuestionField -> List (Html Msg)
+view_editable_question field = [
        div [] [ Html.input [attribute "type" "checkbox"] [] ]
     ,  (case field.editable of
-        True -> edit_question field
-        _ -> view_question field)
-    ] ++ (Array.toList <| Array.map (view_answer field.question) field.question.answers)
+          True -> edit_question field
+          _ -> view_question field)
+    ] ++ (Array.toList <| Array.map (view_editable_answer field) field.answer_fields)
 
 view_questions : Array QuestionField -> Html Msg
 view_questions fields = div [ classList [("question_section", True)] ] [
       div [ classList [("questions", True)] ]
-      (  List.concat
-      <| Array.toList
-      <| Array.indexedMap view_editable_question fields
-      )]
+        (  List.concat
+        <| Array.toList
+        <| Array.map view_editable_question fields
+        )
+      , (view_add_question fields)
+      ]
 
 get_hover : Array TextField -> Int -> Bool
 get_hover fields i = case Array.get i fields of
@@ -268,7 +342,7 @@ hover_attrs : TextField -> List (Attribute Msg)
 hover_attrs field = [
     classList [ ("over", field.hover) ]
   , onMouseOver (Hover <| Text field)
-  , onMouseLeave (Hover <| Text field)]
+  , onMouseLeave (UnHover <| Text field)]
 
 text_property_attrs : TextField -> List (Attribute Msg)
 text_property_attrs field = [onClick (ToggleEditableField <| Text field)] ++ (hover_attrs field)
@@ -340,6 +414,9 @@ view_create_text model = div [ classList [("text_properties", True)] ] [
       ]
       , div [ classList [("body",True)] ]  [ view_editable_field model 3 (view_body model) (edit_body model) ]
   ]
+
+view_add_question : Array QuestionField -> Html Msg
+view_add_question fields = div [classList [("add_question", True)], onClick AddQuestion ] [ Html.text "Add question" ]
 
 view : Model -> Html Msg
 view model = div [] [

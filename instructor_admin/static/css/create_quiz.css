@@ -238,3 +238,8 @@ body {
     margin-bottom: 3%;
     grid-column: 2;
 }
+
+.add_question {
+    margin-top: 50%;
+    grid-column: 2;
+}
