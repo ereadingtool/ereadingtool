@@ -201,7 +201,7 @@ update msg model = let text = model.text in
     UpdateQuestionBody field body ->
       let question = field.question in
       let new_field = {field | question = {question | body = body} } in
-        ({ model | question_fields = Array.set field.index new_field model.question_fields }, Cmd.none)
+        ({ model | question_fields = Array.set field.index new_field model.question_fields }, Cmd.none)
 
     UpdateAnswer question_field answer_field text ->
       let answer = answer_field.answer in
@@ -315,23 +315,22 @@ view_editable_answer question_field answer_field = div [
            False -> view_answer question_field answer_field)
   ]
 
-view_editable_question : QuestionField -> List (Html Msg)
-view_editable_question field = [
+view_editable_question : QuestionField -> Html Msg
+view_editable_question field = div [classList [("question", True)]] <| [
        div [] [ Html.input [attribute "type" "checkbox"] [] ]
-    ,  (case field.editable of
+       , (case field.editable of
           True -> edit_question field
           _ -> view_question field)
     ] ++ (Array.toList <| Array.map (view_editable_answer field) field.answer_fields)
 
+view_add_question : Array QuestionField -> Html Msg
+view_add_question fields = div [classList [("add_question", True)], onClick AddQuestion ] [ Html.text "Add question" ]
+
 view_questions : Array QuestionField -> Html Msg
-view_questions fields = div [ classList [("question_section", True)] ] [
-      div [ classList [("questions", True)] ]
-        (  List.concat
-        <| Array.toList
+view_questions fields = div [ classList [("question_section", True)] ] <|
+        (  Array.toList
         <| Array.map view_editable_question fields
-        )
-      , (view_add_question fields)
-      ]
+        ) ++ [ (view_add_question fields) ]
 
 get_hover : Array TextField -> Int -> Bool
 get_hover fields i = case Array.get i fields of
@@ -414,9 +413,6 @@ view_create_text model = div [ classList [("text_properties", True)] ] [
       ]
       , div [ classList [("body",True)] ]  [ view_editable_field model 3 (view_body model) (edit_body model) ]
   ]
-
-view_add_question : Array QuestionField -> Html Msg
-view_add_question fields = div [classList [("add_question", True)], onClick AddQuestion ] [ Html.text "Add question" ]
 
 view : Model -> Html Msg
 view model = div [] [

@@ -10237,42 +10237,54 @@ var _user$project$Main$view_editable_answer = F2(
 	});
 var _user$project$Main$view_editable_question = function (field) {
 	return A2(
-		_elm_lang$core$Basics_ops['++'],
+		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{ctor: '[]'},
+			_0: _elm_lang$html$Html_Attributes$classList(
 				{
 					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$input,
-						{
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'checkbox'),
-							_1: {ctor: '[]'}
-						},
-						{ctor: '[]'}),
+					_0: {ctor: '_Tuple2', _0: 'question', _1: true},
 					_1: {ctor: '[]'}
 				}),
-			_1: {
-				ctor: '::',
-				_0: function () {
-					var _p24 = field.editable;
-					if (_p24 === true) {
-						return _user$project$Main$edit_question(field);
-					} else {
-						return _user$project$Main$view_question(field);
-					}
-				}(),
-				_1: {ctor: '[]'}
-			}
+			_1: {ctor: '[]'}
 		},
-		_elm_lang$core$Array$toList(
-			A2(
-				_elm_lang$core$Array$map,
-				_user$project$Main$view_editable_answer(field),
-				field.answer_fields)));
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$input,
+							{
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'checkbox'),
+								_1: {ctor: '[]'}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: function () {
+						var _p24 = field.editable;
+						if (_p24 === true) {
+							return _user$project$Main$edit_question(field);
+						} else {
+							return _user$project$Main$view_question(field);
+						}
+					}(),
+					_1: {ctor: '[]'}
+				}
+			},
+			_elm_lang$core$Array$toList(
+				A2(
+					_elm_lang$core$Array$map,
+					_user$project$Main$view_editable_answer(field),
+					field.answer_fields))));
 };
 var _user$project$Main$view_questions = function (fields) {
 	return A2(
@@ -10287,29 +10299,15 @@ var _user$project$Main$view_questions = function (fields) {
 				}),
 			_1: {ctor: '[]'}
 		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$classList(
-						{
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'questions', _1: true},
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				},
-				_elm_lang$core$List$concat(
-					_elm_lang$core$Array$toList(
-						A2(_elm_lang$core$Array$map, _user$project$Main$view_editable_question, fields)))),
-			_1: {
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$Array$toList(
+				A2(_elm_lang$core$Array$map, _user$project$Main$view_editable_question, fields)),
+			{
 				ctor: '::',
 				_0: _user$project$Main$view_add_question(fields),
 				_1: {ctor: '[]'}
-			}
-		});
+			}));
 };
 var _user$project$Main$text_property_attrs = function (field) {
 	return A2(

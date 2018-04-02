@@ -211,20 +211,20 @@ body {
 .question_section {
     margin-top: 2%;
 
+    grid-row-gap: 10px;
+
     display: grid;
     grid-template-columns: 4% auto 4%;
 }
 
-.questions {
+.question {
     border: solid 0.5px lightgrey;
     background: #FFFFFF;
     display: grid;
 
+    grid-template-columns: 4% auto 4%;
+
     grid-column: 2;
-
-    grid-template-columns: 5% auto;
-
-    grid-auto-rows: minmax(auto, 50px);
 }
 
 .question_item {
