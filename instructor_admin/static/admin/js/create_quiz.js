@@ -10436,10 +10436,18 @@ var _user$project$Main$edit_body = F2(
 					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', field.id),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onBlur(
-							_user$project$Main$ToggleEditableField(
-								_user$project$Main$Text(field))),
-						_1: {ctor: '[]'}
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '100%'),
+						_1: {
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '100%'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onBlur(
+									_user$project$Main$ToggleEditableField(
+										_user$project$Main$Text(field))),
+								_1: {ctor: '[]'}
+							}
+						}
 					}
 				}
 			},
