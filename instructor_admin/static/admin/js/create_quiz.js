@@ -9586,6 +9586,23 @@ var _user$project$Main$generate_question_field = F2(
 			index: i
 		};
 	});
+var _user$project$Main$delete_question = F2(
+	function (index, fields) {
+		return A2(
+			_elm_lang$core$Array$indexedMap,
+			F2(
+				function (i, field) {
+					return _elm_lang$core$Native_Utils.update(
+						field,
+						{index: i});
+				}),
+			A2(
+				_elm_lang$core$Array$filter,
+				function (field) {
+					return !_elm_lang$core$Native_Utils.eq(field.index, index);
+				},
+				fields));
+	});
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
@@ -9846,13 +9863,23 @@ var _user$project$Main$update = F2(
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			default:
+			case 'AddQuestion':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
 							question_fields: _user$project$Main$add_new_question(model.question_fields)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							question_fields: A2(_user$project$Main$delete_question, _p6._0, model.question_fields)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -9909,6 +9936,9 @@ var _user$project$Main$Question = function (a) {
 };
 var _user$project$Main$Text = function (a) {
 	return {ctor: 'Text', _0: a};
+};
+var _user$project$Main$DeleteQuestion = function (a) {
+	return {ctor: 'DeleteQuestion', _0: a};
 };
 var _user$project$Main$AddQuestion = {ctor: 'AddQuestion'};
 var _user$project$Main$view_add_question = function (fields) {
@@ -10217,7 +10247,29 @@ var _user$project$Main$view_editable_answer = F2(
 											}
 										}
 									})),
-							_1: {ctor: '[]'}
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html_Attributes$attribute,
+									'name',
+									A2(
+										_elm_lang$core$String$join,
+										'_',
+										{
+											ctor: '::',
+											_0: 'question',
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$core$Basics$toString(question_field.question.order),
+												_1: {
+													ctor: '::',
+													_0: 'correct_answer',
+													_1: {ctor: '[]'}
+												}
+											}
+										})),
+								_1: {ctor: '[]'}
+							}
 						}
 					},
 					{ctor: '[]'}),
@@ -10280,11 +10332,39 @@ var _user$project$Main$view_editable_question = function (field) {
 					_1: {ctor: '[]'}
 				}
 			},
-			_elm_lang$core$Array$toList(
-				A2(
-					_elm_lang$core$Array$map,
-					_user$project$Main$view_editable_answer(field),
-					field.answer_fields))));
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$classList(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'delete', _1: true},
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(
+									_user$project$Main$DeleteQuestion(field.index)),
+								_1: {ctor: '[]'}
+							}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('X'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				},
+				_elm_lang$core$Array$toList(
+					A2(
+						_elm_lang$core$Array$map,
+						_user$project$Main$view_editable_answer(field),
+						field.answer_fields)))));
 };
 var _user$project$Main$view_questions = function (fields) {
 	return A2(
@@ -10436,18 +10516,10 @@ var _user$project$Main$edit_body = F2(
 					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', field.id),
 					_1: {
 						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '100%'),
-						_1: {
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '100%'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onBlur(
-									_user$project$Main$ToggleEditableField(
-										_user$project$Main$Text(field))),
-								_1: {ctor: '[]'}
-							}
-						}
+						_0: _elm_lang$html$Html_Events$onBlur(
+							_user$project$Main$ToggleEditableField(
+								_user$project$Main$Text(field))),
+						_1: {ctor: '[]'}
 					}
 				}
 			},

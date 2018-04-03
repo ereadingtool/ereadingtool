@@ -20,6 +20,7 @@ type Msg = ToggleEditableField Field | Hover Field | UnHover Field
   | UpdateQuestionBody QuestionField String
   | UpdateAnswer QuestionField AnswerField String
   | AddQuestion
+  | DeleteQuestion Int
 
 type alias TextField = {
     id : String
@@ -105,6 +106,11 @@ add_new_question : Array QuestionField -> Array QuestionField
 add_new_question fields = let arr_len = Array.length fields in
   Array.push (generate_question_field arr_len new_question) fields
 
+delete_question : Int -> Array QuestionField -> Array QuestionField
+delete_question index fields =
+     Array.indexedMap (\i field -> {field | index = i} )
+  <| Array.filter (\field -> field.index /= index) fields
+
 generate_question_field : Int -> Question -> QuestionField
 generate_question_field i question = {
     id=(String.join "_" ["question", toString i])
@@ -122,7 +128,6 @@ generate_answer_field i question j answer = {
   , answer = answer
   , question_field_index = i
   , index=j }
-
 
 generate_answer : Int -> Answer
 generate_answer i = {
@@ -218,7 +223,7 @@ update msg model = let text = model.text in
     UpdateBody body -> ({ model | text = { text | body = body }}, Cmd.none)
 
     AddQuestion -> ({model | question_fields = add_new_question model.question_fields }, Cmd.none)
-
+    DeleteQuestion index -> ({model | question_fields = delete_question index model.question_fields }, Cmd.none)
 
 main : Program Never Model Msg
 main =
@@ -252,7 +257,6 @@ view_preview model =
         ]
     ]
 
-
 view_filter : Model -> Html Msg
 view_filter model = div [classList [("filter_items", True)] ] [
      div [classList [("filter", True)] ] [
@@ -279,8 +283,9 @@ view_question question_field =
     , onClick (ToggleEditableField <| Question question_field)
     , onMouseOver (Hover <| Question question_field)
     , onMouseLeave (UnHover <| Question question_field)
-  ] [ Html.text question_field.question.body ]
-
+  ] [
+       Html.text question_field.question.body
+  ]
 
 view_answer : QuestionField -> AnswerField -> Html Msg
 view_answer question_field answer_field = Html.span
@@ -309,6 +314,9 @@ view_editable_answer question_field answer_field = div [
                 "question"
               , (toString question_field.question.order)
               , "answer", toString answer_field.answer.order])
+          , attribute "name" (String.join "_" [
+                "question"
+              , (toString question_field.question.order), "correct_answer"])
         ] []
      ,  (case answer_field.editable of
            True -> edit_answer question_field answer_field
@@ -321,7 +329,8 @@ view_editable_question field = div [classList [("question", True)]] <| [
        , (case field.editable of
           True -> edit_question field
           _ -> view_question field)
-    ] ++ (Array.toList <| Array.map (view_editable_answer field) field.answer_fields)
+    ] ++ [ div [classList [("delete", True)], onClick (DeleteQuestion field.index) ] [ Html.text "X" ] ] ++
+    (Array.toList <| Array.map (view_editable_answer field) field.answer_fields)
 
 view_add_question : Array QuestionField -> Html Msg
 view_add_question fields = div [classList [("add_question", True)], onClick AddQuestion ] [ Html.text "Add question" ]

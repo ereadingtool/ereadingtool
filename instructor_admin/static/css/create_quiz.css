@@ -227,7 +227,7 @@ body {
     background: #FFFFFF;
     display: grid;
 
-    grid-template-columns: 4% auto 4%;
+    grid-template-columns: 4% auto 1%;
 
     grid-column: 2;
 }
@@ -247,4 +247,9 @@ body {
 .add_question {
     margin-top: 50%;
     grid-column: 2;
+}
+
+.delete {
+    align-items: right;
+    justify-items: right;
 }
