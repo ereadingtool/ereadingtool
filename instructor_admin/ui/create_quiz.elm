@@ -1,7 +1,7 @@
 import Html exposing (..)
 import Html.Attributes exposing (classList, attribute)
 
-import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onMouseOut, onMouseLeave)
+import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
 
 import Array exposing (Array)
 
@@ -18,7 +18,8 @@ type Msg = ToggleEditableField Field | Hover Field | UnHover Field
   | UpdateDifficulty String
   | UpdateBody String
   | UpdateQuestionBody QuestionField String
-  | UpdateAnswer QuestionField AnswerField String
+  | UpdateAnswerText QuestionField AnswerField String
+  | UpdateAnswerCorrect QuestionField AnswerField Bool
   | AddQuestion
   | DeleteQuestion Int
 
@@ -211,9 +212,18 @@ update msg model = let text = model.text in
       let new_field = {field | question = {question | body = body} } in
         ({ model | question_fields = Array.set field.index new_field model.question_fields }, Cmd.none)
 
-    UpdateAnswer question_field answer_field text ->
+    UpdateAnswerText question_field answer_field text ->
       let answer = answer_field.answer in
       let new_answer = { answer | text = text } in
+      let new_answer_field = { answer_field | answer = new_answer } in
+      let new_question_field = { question_field |
+        answer_fields = Array.set answer_field.index new_answer_field question_field.answer_fields } in
+        ({ model |
+          question_fields = Array.set new_question_field.index new_question_field model.question_fields }, Cmd.none)
+
+    UpdateAnswerCorrect question_field answer_field correct ->
+      let answer = answer_field.answer in
+      let new_answer = { answer | correct = correct } in
       let new_answer_field = { answer_field | answer = new_answer } in
       let new_question_field = { question_field |
         answer_fields = Array.set answer_field.index new_answer_field question_field.answer_fields } in
@@ -301,7 +311,7 @@ edit_answer question_field answer_field = Html.input [
       attribute "type" "text"
     , attribute "value" answer_field.answer.text
     , attribute "id" answer_field.id
-    , onInput (UpdateAnswer question_field answer_field)
+    , onInput (UpdateAnswerText question_field answer_field)
     , onBlur (ToggleEditableField <| Answer answer_field)
   ] [ ]
 
@@ -319,6 +329,7 @@ view_editable_answer question_field answer_field = div [
           , attribute "name" (String.join "_" [
                 "question"
               , (toString question_field.question.order), "correct_answer"])
+          , onCheck (UpdateAnswerCorrect question_field answer_field)
         ] []
      ,  (case answer_field.editable of
            True -> edit_answer question_field answer_field
