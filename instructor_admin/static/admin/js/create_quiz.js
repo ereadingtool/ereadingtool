@@ -9352,62 +9352,58 @@ var _user$project$Main$view_preview = function (model) {
 		},
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html$text(''),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$classList(
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'preview_menu', _1: true},
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$span,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$classList(
-									{
-										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
-										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							},
-							{
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$classList(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'preview_menu', _1: true},
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$span,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$classList(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$button,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('Preview'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
 								ctor: '::',
 								_0: A2(
-									_elm_lang$html$Html$button,
-									{ctor: '[]'},
+									_elm_lang$html$Html$input,
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text('Preview'),
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Search texts..'),
 										_1: {ctor: '[]'}
-									}),
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$input,
-										{
-											ctor: '::',
-											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Search texts..'),
-											_1: {ctor: '[]'}
-										},
-										{ctor: '[]'}),
-									_1: {ctor: '[]'}
-								}
-							}),
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			}
+									},
+									{ctor: '[]'}),
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
 		});
 };
 var _user$project$Main$view_header = function (model) {
@@ -9456,7 +9452,18 @@ var _user$project$Main$view_header = function (model) {
 							},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(''),
+								_0: A2(
+									_elm_lang$html$Html$a,
+									{
+										ctor: '::',
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/admin'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('Quizzes'),
+										_1: {ctor: '[]'}
+									}),
 								_1: {ctor: '[]'}
 							}),
 						_1: {ctor: '[]'}

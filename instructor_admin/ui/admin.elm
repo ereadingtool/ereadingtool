@@ -61,7 +61,7 @@ view_filter : Model -> Html Msg
 view_filter model = div [classList [("filter_items", True)] ] [
      div [classList [("filter", True)] ] [
          Html.input [attribute "placeholder" "Search texts.."] []
-       , Html.button [] [Html.text "Create Text"]
+       , Html.a [attribute "href" "/admin/create-quiz"] [Html.text "Create Text"]
      ]
  ]
 

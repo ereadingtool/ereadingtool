@@ -243,7 +243,7 @@ view_header model =
         text "E-Reader"
       , div [ classList [("menu", True)] ] [
           span [ classList [("menu_item", True)] ] [
-            text ""
+             Html.a [attribute "href" "/admin"] [ Html.text "Quizzes" ]
           ]
         ]
     ]
@@ -251,13 +251,12 @@ view_header model =
 view_preview : Model -> Html Msg
 view_preview model =
     div [ classList [("preview", True)] ] [
-        text ""
-      , div [ classList [("preview_menu", True)] ] [
-          span [ classList [("menu_item", True)] ] [
-              Html.button [] [ Html.text "Preview" ]
-            , Html.input [attribute "placeholder" "Search texts.."] []
-          ]
-        ]
+      div [ classList [("preview_menu", True)] ] [
+            span [ classList [("menu_item", True)] ] [
+                Html.button [] [ Html.text "Preview" ]
+              , Html.input [attribute "placeholder" "Search texts.."] []
+            ]
+      ]
     ]
 
 view_filter : Model -> Html Msg

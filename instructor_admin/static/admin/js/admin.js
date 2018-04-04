@@ -9431,9 +9431,39 @@ var _user$project$Model$textDecoder = A3(
 								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$Text)))))))));
 var _user$project$Model$textsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Model$textDecoder);
-var _user$project$Model$Question = F5(
-	function (a, b, c, d, e) {
-		return {id: a, text: b, order: c, body: d, question_type: e};
+var _user$project$Model$Answer = F6(
+	function (a, b, c, d, e, f) {
+		return {id: a, question_id: b, text: c, correct: d, order: e, feedback: f};
+	});
+var _user$project$Model$answerDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'feedback',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'order',
+		_elm_lang$core$Json_Decode$int,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'correct',
+			_elm_lang$core$Json_Decode$bool,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'text',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'question_id',
+					_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'id',
+						_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$Answer)))))));
+var _user$project$Model$answersDecoder = _elm_lang$core$Json_Decode$array(_user$project$Model$answerDecoder);
+var _user$project$Model$Question = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {id: a, text_id: b, created_dt: c, modified_dt: d, body: e, order: f, answers: g, question_type: h};
 	});
 var _user$project$Model$questionDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -9441,21 +9471,33 @@ var _user$project$Model$questionDecoder = A3(
 	_elm_lang$core$Json_Decode$string,
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'body',
-		_elm_lang$core$Json_Decode$string,
+		'answers',
+		_user$project$Model$answersDecoder,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 			'order',
 			_elm_lang$core$Json_Decode$int,
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'text',
+				'body',
 				_elm_lang$core$Json_Decode$string,
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'id',
-					_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$Question))))));
+					'modified_dt',
+					_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'created_dt',
+						_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+						A3(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+							'text_id',
+							_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+							A3(
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+								'id',
+								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$Question)))))))));
 var _user$project$Model$questionsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Model$questionDecoder);
 var _user$project$Model$Detail = {ctor: 'Detail'};
 var _user$project$Model$MainIdea = {ctor: 'MainIdea'};
@@ -9829,8 +9871,12 @@ var _user$project$Main$view_filter = function (model) {
 					_1: {
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$button,
-							{ctor: '[]'},
+							_elm_lang$html$Html$a,
+							{
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/admin/create-quiz'),
+								_1: {ctor: '[]'}
+							},
 							{
 								ctor: '::',
 								_0: _elm_lang$html$Html$text('Create Text'),
