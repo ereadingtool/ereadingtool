@@ -64,14 +64,14 @@ new_text = {
   , body = "text" }
 
 
-new_question : Question
-new_question = {
+new_question : Int -> Question
+new_question i = {
     id = Nothing
   , text_id = Nothing
   , created_dt = Nothing
   , modified_dt = Nothing
   , body = "Click to write the question text."
-  , order = 1
+  , order = i
   , answers = generate_answers 4
   , question_type = "main_idea" }
 
@@ -85,7 +85,7 @@ question_difficulties = [
 
 
 initial_questions : Array Question
-initial_questions = Array.fromList [new_question]
+initial_questions = Array.fromList [(new_question 0)]
 
 init : (Model, Cmd Msg)
 init = ({
@@ -104,11 +104,14 @@ subscriptions model =
 
 add_new_question : Array QuestionField -> Array QuestionField
 add_new_question fields = let arr_len = Array.length fields in
-  Array.push (generate_question_field arr_len new_question) fields
+  Array.push (generate_question_field arr_len (new_question arr_len)) fields
 
 delete_question : Int -> Array QuestionField -> Array QuestionField
 delete_question index fields =
-     Array.indexedMap (\i field -> {field | index = i} )
+     Array.indexedMap (\i field ->
+       { field | index = i
+       , answer_fields = Array.map (\a -> {a | question_field_index = i }) field.answer_fields
+     })
   <| Array.filter (\field -> field.index /= index) fields
 
 generate_question_field : Int -> Question -> QuestionField

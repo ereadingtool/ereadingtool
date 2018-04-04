@@ -9594,7 +9594,17 @@ var _user$project$Main$delete_question = F2(
 				function (i, field) {
 					return _elm_lang$core$Native_Utils.update(
 						field,
-						{index: i});
+						{
+							index: i,
+							answer_fields: A2(
+								_elm_lang$core$Array$map,
+								function (a) {
+									return _elm_lang$core$Native_Utils.update(
+										a,
+										{question_field_index: i});
+								},
+								field.answer_fields)
+						});
 				}),
 			A2(
 				_elm_lang$core$Array$filter,
@@ -9623,27 +9633,32 @@ var _user$project$Main$question_difficulties = {
 		}
 	}
 };
-var _user$project$Main$new_question = {
-	id: _elm_lang$core$Maybe$Nothing,
-	text_id: _elm_lang$core$Maybe$Nothing,
-	created_dt: _elm_lang$core$Maybe$Nothing,
-	modified_dt: _elm_lang$core$Maybe$Nothing,
-	body: 'Click to write the question text.',
-	order: 1,
-	answers: _user$project$Main$generate_answers(4),
-	question_type: 'main_idea'
+var _user$project$Main$new_question = function (i) {
+	return {
+		id: _elm_lang$core$Maybe$Nothing,
+		text_id: _elm_lang$core$Maybe$Nothing,
+		created_dt: _elm_lang$core$Maybe$Nothing,
+		modified_dt: _elm_lang$core$Maybe$Nothing,
+		body: 'Click to write the question text.',
+		order: i,
+		answers: _user$project$Main$generate_answers(4),
+		question_type: 'main_idea'
+	};
 };
 var _user$project$Main$initial_questions = _elm_lang$core$Array$fromList(
 	{
 		ctor: '::',
-		_0: _user$project$Main$new_question,
+		_0: _user$project$Main$new_question(0),
 		_1: {ctor: '[]'}
 	});
 var _user$project$Main$add_new_question = function (fields) {
 	var arr_len = _elm_lang$core$Array$length(fields);
 	return A2(
 		_elm_lang$core$Array$push,
-		A2(_user$project$Main$generate_question_field, arr_len, _user$project$Main$new_question),
+		A2(
+			_user$project$Main$generate_question_field,
+			arr_len,
+			_user$project$Main$new_question(arr_len)),
 		fields);
 };
 var _user$project$Main$update = F2(
