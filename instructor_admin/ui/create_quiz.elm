@@ -327,7 +327,7 @@ edit_answer question_field answer_field = Html.span [] [
         , onInput (UpdateAnswerFeedback question_field answer_field)
         , attribute "placeholder" "Give some feedback."
         , classList [ ("answer_feedback", True) ]
-      ] []
+      ] [Html.text answer_field.answer.feedback]
     ]
   ]
 

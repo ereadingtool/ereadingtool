@@ -10315,7 +10315,11 @@ var _user$project$Main$edit_answer = F2(
 										}
 									}
 								},
-								{ctor: '[]'}),
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(answer_field.answer.feedback),
+									_1: {ctor: '[]'}
+								}),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}
