@@ -9145,6 +9145,520 @@ var _elm_lang$html$Html_Events$Options = F2(
 		return {stopPropagation: a, preventDefault: b};
 	});
 
+var _elm_lang$http$Native_Http = function() {
+
+
+// ENCODING AND DECODING
+
+function encodeUri(string)
+{
+	return encodeURIComponent(string);
+}
+
+function decodeUri(string)
+{
+	try
+	{
+		return _elm_lang$core$Maybe$Just(decodeURIComponent(string));
+	}
+	catch(e)
+	{
+		return _elm_lang$core$Maybe$Nothing;
+	}
+}
+
+
+// SEND REQUEST
+
+function toTask(request, maybeProgress)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		var xhr = new XMLHttpRequest();
+
+		configureProgress(xhr, maybeProgress);
+
+		xhr.addEventListener('error', function() {
+			callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'NetworkError' }));
+		});
+		xhr.addEventListener('timeout', function() {
+			callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'Timeout' }));
+		});
+		xhr.addEventListener('load', function() {
+			callback(handleResponse(xhr, request.expect.responseToResult));
+		});
+
+		try
+		{
+			xhr.open(request.method, request.url, true);
+		}
+		catch (e)
+		{
+			return callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'BadUrl', _0: request.url }));
+		}
+
+		configureRequest(xhr, request);
+		send(xhr, request.body);
+
+		return function() { xhr.abort(); };
+	});
+}
+
+function configureProgress(xhr, maybeProgress)
+{
+	if (maybeProgress.ctor === 'Nothing')
+	{
+		return;
+	}
+
+	xhr.addEventListener('progress', function(event) {
+		if (!event.lengthComputable)
+		{
+			return;
+		}
+		_elm_lang$core$Native_Scheduler.rawSpawn(maybeProgress._0({
+			bytes: event.loaded,
+			bytesExpected: event.total
+		}));
+	});
+}
+
+function configureRequest(xhr, request)
+{
+	function setHeader(pair)
+	{
+		xhr.setRequestHeader(pair._0, pair._1);
+	}
+
+	A2(_elm_lang$core$List$map, setHeader, request.headers);
+	xhr.responseType = request.expect.responseType;
+	xhr.withCredentials = request.withCredentials;
+
+	if (request.timeout.ctor === 'Just')
+	{
+		xhr.timeout = request.timeout._0;
+	}
+}
+
+function send(xhr, body)
+{
+	switch (body.ctor)
+	{
+		case 'EmptyBody':
+			xhr.send();
+			return;
+
+		case 'StringBody':
+			xhr.setRequestHeader('Content-Type', body._0);
+			xhr.send(body._1);
+			return;
+
+		case 'FormDataBody':
+			xhr.send(body._0);
+			return;
+	}
+}
+
+
+// RESPONSES
+
+function handleResponse(xhr, responseToResult)
+{
+	var response = toResponse(xhr);
+
+	if (xhr.status < 200 || 300 <= xhr.status)
+	{
+		response.body = xhr.responseText;
+		return _elm_lang$core$Native_Scheduler.fail({
+			ctor: 'BadStatus',
+			_0: response
+		});
+	}
+
+	var result = responseToResult(response);
+
+	if (result.ctor === 'Ok')
+	{
+		return _elm_lang$core$Native_Scheduler.succeed(result._0);
+	}
+	else
+	{
+		response.body = xhr.responseText;
+		return _elm_lang$core$Native_Scheduler.fail({
+			ctor: 'BadPayload',
+			_0: result._0,
+			_1: response
+		});
+	}
+}
+
+function toResponse(xhr)
+{
+	return {
+		status: { code: xhr.status, message: xhr.statusText },
+		headers: parseHeaders(xhr.getAllResponseHeaders()),
+		url: xhr.responseURL,
+		body: xhr.response
+	};
+}
+
+function parseHeaders(rawHeaders)
+{
+	var headers = _elm_lang$core$Dict$empty;
+
+	if (!rawHeaders)
+	{
+		return headers;
+	}
+
+	var headerPairs = rawHeaders.split('\u000d\u000a');
+	for (var i = headerPairs.length; i--; )
+	{
+		var headerPair = headerPairs[i];
+		var index = headerPair.indexOf('\u003a\u0020');
+		if (index > 0)
+		{
+			var key = headerPair.substring(0, index);
+			var value = headerPair.substring(index + 2);
+
+			headers = A3(_elm_lang$core$Dict$update, key, function(oldValue) {
+				if (oldValue.ctor === 'Just')
+				{
+					return _elm_lang$core$Maybe$Just(value + ', ' + oldValue._0);
+				}
+				return _elm_lang$core$Maybe$Just(value);
+			}, headers);
+		}
+	}
+
+	return headers;
+}
+
+
+// EXPECTORS
+
+function expectStringResponse(responseToResult)
+{
+	return {
+		responseType: 'text',
+		responseToResult: responseToResult
+	};
+}
+
+function mapExpect(func, expect)
+{
+	return {
+		responseType: expect.responseType,
+		responseToResult: function(response) {
+			var convertedResponse = expect.responseToResult(response);
+			return A2(_elm_lang$core$Result$map, func, convertedResponse);
+		}
+	};
+}
+
+
+// BODY
+
+function multipart(parts)
+{
+	var formData = new FormData();
+
+	while (parts.ctor !== '[]')
+	{
+		var part = parts._0;
+		formData.append(part._0, part._1);
+		parts = parts._1;
+	}
+
+	return { ctor: 'FormDataBody', _0: formData };
+}
+
+return {
+	toTask: F2(toTask),
+	expectStringResponse: expectStringResponse,
+	mapExpect: F2(mapExpect),
+	multipart: multipart,
+	encodeUri: encodeUri,
+	decodeUri: decodeUri
+};
+
+}();
+
+var _elm_lang$http$Http_Internal$map = F2(
+	function (func, request) {
+		return _elm_lang$core$Native_Utils.update(
+			request,
+			{
+				expect: A2(_elm_lang$http$Native_Http.mapExpect, func, request.expect)
+			});
+	});
+var _elm_lang$http$Http_Internal$RawRequest = F7(
+	function (a, b, c, d, e, f, g) {
+		return {method: a, headers: b, url: c, body: d, expect: e, timeout: f, withCredentials: g};
+	});
+var _elm_lang$http$Http_Internal$Request = function (a) {
+	return {ctor: 'Request', _0: a};
+};
+var _elm_lang$http$Http_Internal$Expect = {ctor: 'Expect'};
+var _elm_lang$http$Http_Internal$FormDataBody = {ctor: 'FormDataBody'};
+var _elm_lang$http$Http_Internal$StringBody = F2(
+	function (a, b) {
+		return {ctor: 'StringBody', _0: a, _1: b};
+	});
+var _elm_lang$http$Http_Internal$EmptyBody = {ctor: 'EmptyBody'};
+var _elm_lang$http$Http_Internal$Header = F2(
+	function (a, b) {
+		return {ctor: 'Header', _0: a, _1: b};
+	});
+
+var _elm_lang$http$Http$decodeUri = _elm_lang$http$Native_Http.decodeUri;
+var _elm_lang$http$Http$encodeUri = _elm_lang$http$Native_Http.encodeUri;
+var _elm_lang$http$Http$expectStringResponse = _elm_lang$http$Native_Http.expectStringResponse;
+var _elm_lang$http$Http$expectJson = function (decoder) {
+	return _elm_lang$http$Http$expectStringResponse(
+		function (response) {
+			return A2(_elm_lang$core$Json_Decode$decodeString, decoder, response.body);
+		});
+};
+var _elm_lang$http$Http$expectString = _elm_lang$http$Http$expectStringResponse(
+	function (response) {
+		return _elm_lang$core$Result$Ok(response.body);
+	});
+var _elm_lang$http$Http$multipartBody = _elm_lang$http$Native_Http.multipart;
+var _elm_lang$http$Http$stringBody = _elm_lang$http$Http_Internal$StringBody;
+var _elm_lang$http$Http$jsonBody = function (value) {
+	return A2(
+		_elm_lang$http$Http_Internal$StringBody,
+		'application/json',
+		A2(_elm_lang$core$Json_Encode$encode, 0, value));
+};
+var _elm_lang$http$Http$emptyBody = _elm_lang$http$Http_Internal$EmptyBody;
+var _elm_lang$http$Http$header = _elm_lang$http$Http_Internal$Header;
+var _elm_lang$http$Http$request = _elm_lang$http$Http_Internal$Request;
+var _elm_lang$http$Http$post = F3(
+	function (url, body, decoder) {
+		return _elm_lang$http$Http$request(
+			{
+				method: 'POST',
+				headers: {ctor: '[]'},
+				url: url,
+				body: body,
+				expect: _elm_lang$http$Http$expectJson(decoder),
+				timeout: _elm_lang$core$Maybe$Nothing,
+				withCredentials: false
+			});
+	});
+var _elm_lang$http$Http$get = F2(
+	function (url, decoder) {
+		return _elm_lang$http$Http$request(
+			{
+				method: 'GET',
+				headers: {ctor: '[]'},
+				url: url,
+				body: _elm_lang$http$Http$emptyBody,
+				expect: _elm_lang$http$Http$expectJson(decoder),
+				timeout: _elm_lang$core$Maybe$Nothing,
+				withCredentials: false
+			});
+	});
+var _elm_lang$http$Http$getString = function (url) {
+	return _elm_lang$http$Http$request(
+		{
+			method: 'GET',
+			headers: {ctor: '[]'},
+			url: url,
+			body: _elm_lang$http$Http$emptyBody,
+			expect: _elm_lang$http$Http$expectString,
+			timeout: _elm_lang$core$Maybe$Nothing,
+			withCredentials: false
+		});
+};
+var _elm_lang$http$Http$toTask = function (_p0) {
+	var _p1 = _p0;
+	return A2(_elm_lang$http$Native_Http.toTask, _p1._0, _elm_lang$core$Maybe$Nothing);
+};
+var _elm_lang$http$Http$send = F2(
+	function (resultToMessage, request) {
+		return A2(
+			_elm_lang$core$Task$attempt,
+			resultToMessage,
+			_elm_lang$http$Http$toTask(request));
+	});
+var _elm_lang$http$Http$Response = F4(
+	function (a, b, c, d) {
+		return {url: a, status: b, headers: c, body: d};
+	});
+var _elm_lang$http$Http$BadPayload = F2(
+	function (a, b) {
+		return {ctor: 'BadPayload', _0: a, _1: b};
+	});
+var _elm_lang$http$Http$BadStatus = function (a) {
+	return {ctor: 'BadStatus', _0: a};
+};
+var _elm_lang$http$Http$NetworkError = {ctor: 'NetworkError'};
+var _elm_lang$http$Http$Timeout = {ctor: 'Timeout'};
+var _elm_lang$http$Http$BadUrl = function (a) {
+	return {ctor: 'BadUrl', _0: a};
+};
+var _elm_lang$http$Http$StringPart = F2(
+	function (a, b) {
+		return {ctor: 'StringPart', _0: a, _1: b};
+	});
+var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
+
+var _user$project$Config$text_api_endpoint = '/api/text/';
+
+var _user$project$HttpHelpers$post_with_headers = F4(
+	function (url, headers, body, decoder) {
+		return _elm_lang$http$Http$request(
+			{
+				method: 'POST',
+				headers: headers,
+				url: url,
+				body: body,
+				expect: _elm_lang$http$Http$expectJson(decoder),
+				timeout: _elm_lang$core$Maybe$Nothing,
+				withCredentials: false
+			});
+	});
+
+var _user$project$Model$answerEncoder = function (answer) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'text',
+				_1: _elm_lang$core$Json_Encode$string(answer.text)
+			},
+			_1: {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'correct',
+					_1: _elm_lang$core$Json_Encode$bool(answer.correct)
+				},
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'order',
+						_1: _elm_lang$core$Json_Encode$int(answer.order)
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'feedback',
+							_1: _elm_lang$core$Json_Encode$string(answer.feedback)
+						},
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		});
+};
+var _user$project$Model$answersEncoder = function (answers) {
+	return _elm_lang$core$Json_Encode$list(
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (answer) {
+					return _user$project$Model$answerEncoder(answer);
+				},
+				answers)));
+};
+var _user$project$Model$questionEncoder = function (question) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'body',
+				_1: _elm_lang$core$Json_Encode$string(question.body)
+			},
+			_1: {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'order',
+					_1: _elm_lang$core$Json_Encode$int(question.order)
+				},
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'answers',
+						_1: _user$project$Model$answersEncoder(question.answers)
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'question_type',
+							_1: _elm_lang$core$Json_Encode$string(question.question_type)
+						},
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		});
+};
+var _user$project$Model$questionsEncoder = function (questions) {
+	return _elm_lang$core$Json_Encode$list(
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (question) {
+					return _user$project$Model$questionEncoder(question);
+				},
+				questions)));
+};
+var _user$project$Model$textEncoder = F2(
+	function (text, questions) {
+		return _elm_lang$core$Json_Encode$object(
+			{
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'title',
+					_1: _elm_lang$core$Json_Encode$string(text.title)
+				},
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'source',
+						_1: _elm_lang$core$Json_Encode$string(text.source)
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'difficulty',
+							_1: _elm_lang$core$Json_Encode$string(text.difficulty)
+						},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'body',
+								_1: _elm_lang$core$Json_Encode$string(text.body)
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'questions',
+									_1: _user$project$Model$questionsEncoder(questions)
+								},
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}
+			});
+	});
 var _user$project$Model$Text = F8(
 	function (a, b, c, d, e, f, g, h) {
 		return {id: a, title: b, created_dt: c, modified_dt: d, source: e, difficulty: f, question_count: g, body: h};
@@ -9668,6 +10182,83 @@ var _user$project$Main$add_new_question = function (fields) {
 			_user$project$Main$new_question(arr_len)),
 		fields);
 };
+var _user$project$Main$new_text = {id: _elm_lang$core$Maybe$Nothing, title: 'title', created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing, source: 'source', difficulty: '', question_count: 0, body: 'text'};
+var _user$project$Main$init = function (flags) {
+	return {
+		ctor: '_Tuple2',
+		_0: {
+			text: _user$project$Main$new_text,
+			error_msg: '',
+			flags: flags,
+			text_fields: _elm_lang$core$Array$fromList(
+				{
+					ctor: '::',
+					_0: {id: 'title', editable: false, hover: false, index: 0},
+					_1: {
+						ctor: '::',
+						_0: {id: 'source', editable: false, hover: false, index: 1},
+						_1: {
+							ctor: '::',
+							_0: {id: 'difficulty', editable: false, hover: false, index: 2},
+							_1: {
+								ctor: '::',
+								_0: {id: 'body', editable: false, hover: false, index: 3},
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}),
+			question_fields: A2(_elm_lang$core$Array$indexedMap, _user$project$Main$generate_question_field, _user$project$Main$initial_questions)
+		},
+		_1: _elm_lang$core$Platform_Cmd$none
+	};
+};
+var _user$project$Main$Flags = function (a) {
+	return {csrftoken: a};
+};
+var _user$project$Main$TextField = F4(
+	function (a, b, c, d) {
+		return {id: a, editable: b, hover: c, index: d};
+	});
+var _user$project$Main$AnswerField = F6(
+	function (a, b, c, d, e, f) {
+		return {id: a, editable: b, hover: c, answer: d, question_field_index: e, index: f};
+	});
+var _user$project$Main$QuestionField = F6(
+	function (a, b, c, d, e, f) {
+		return {id: a, editable: b, hover: c, question: d, answer_fields: e, index: f};
+	});
+var _user$project$Main$Model = F5(
+	function (a, b, c, d, e) {
+		return {text: a, flags: b, error_msg: c, text_fields: d, question_fields: e};
+	});
+var _user$project$Main$Answer = function (a) {
+	return {ctor: 'Answer', _0: a};
+};
+var _user$project$Main$Question = function (a) {
+	return {ctor: 'Question', _0: a};
+};
+var _user$project$Main$Text = function (a) {
+	return {ctor: 'Text', _0: a};
+};
+var _user$project$Main$Submitted = function (a) {
+	return {ctor: 'Submitted', _0: a};
+};
+var _user$project$Main$post_text = F3(
+	function (csrftoken, text, questions) {
+		var encoded_text = A2(_user$project$Model$textEncoder, text, questions);
+		var req = A4(
+			_user$project$HttpHelpers$post_with_headers,
+			_user$project$Config$text_api_endpoint,
+			{
+				ctor: '::',
+				_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
+				_1: {ctor: '[]'}
+			},
+			_elm_lang$http$Http$jsonBody(encoded_text),
+			_user$project$Model$textDecoder);
+		return A2(_elm_lang$http$Http$send, _user$project$Main$Submitted, req);
+	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var text = model.text;
@@ -9928,7 +10519,7 @@ var _user$project$Main$update = F2(
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			default:
+			case 'DeleteQuestion':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -9938,59 +10529,97 @@ var _user$project$Main$update = F2(
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-		}
-	});
-var _user$project$Main$new_text = {id: _elm_lang$core$Maybe$Nothing, title: 'title', created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing, source: 'source', difficulty: '', question_count: 0, body: 'text'};
-var _user$project$Main$init = {
-	ctor: '_Tuple2',
-	_0: {
-		text: _user$project$Main$new_text,
-		text_fields: _elm_lang$core$Array$fromList(
-			{
-				ctor: '::',
-				_0: {id: 'title', editable: false, hover: false, index: 0},
-				_1: {
-					ctor: '::',
-					_0: {id: 'source', editable: false, hover: false, index: 1},
-					_1: {
-						ctor: '::',
-						_0: {id: 'difficulty', editable: false, hover: false, index: 2},
-						_1: {
-							ctor: '::',
-							_0: {id: 'body', editable: false, hover: false, index: 3},
-							_1: {ctor: '[]'}
-						}
+			case 'SubmitQuiz':
+				var questions = A2(
+					_elm_lang$core$Array$map,
+					function (q_field) {
+						return q_field.question;
+					},
+					model.question_fields);
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: A3(_user$project$Main$post_text, model.flags.csrftoken, model.text, questions)
+				};
+			default:
+				if (_p6._0.ctor === 'Ok') {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					var _p18 = _p6._0._0;
+					if (_p18.ctor === 'BadStatus') {
+						var _p20 = _p18._0;
+						var _p19 = _p20;
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{
+									error_msg: A2(
+										_elm_lang$core$String$join,
+										' ',
+										{
+											ctor: '::',
+											_0: 'something went wrong: ',
+											_1: {
+												ctor: '::',
+												_0: _p20.body,
+												_1: {ctor: '[]'}
+											}
+										})
+								}),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
+					} else {
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{error_msg: 'some unspecified error'}),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
 					}
 				}
-			}),
-		question_fields: A2(_elm_lang$core$Array$indexedMap, _user$project$Main$generate_question_field, _user$project$Main$initial_questions)
-	},
-	_1: _elm_lang$core$Platform_Cmd$none
-};
-var _user$project$Main$TextField = F4(
-	function (a, b, c, d) {
-		return {id: a, editable: b, hover: c, index: d};
+		}
 	});
-var _user$project$Main$AnswerField = F6(
-	function (a, b, c, d, e, f) {
-		return {id: a, editable: b, hover: c, answer: d, question_field_index: e, index: f};
-	});
-var _user$project$Main$QuestionField = F6(
-	function (a, b, c, d, e, f) {
-		return {id: a, editable: b, hover: c, question: d, answer_fields: e, index: f};
-	});
-var _user$project$Main$Model = F3(
-	function (a, b, c) {
-		return {text: a, text_fields: b, question_fields: c};
-	});
-var _user$project$Main$Answer = function (a) {
-	return {ctor: 'Answer', _0: a};
-};
-var _user$project$Main$Question = function (a) {
-	return {ctor: 'Question', _0: a};
-};
-var _user$project$Main$Text = function (a) {
-	return {ctor: 'Text', _0: a};
+var _user$project$Main$SubmitQuiz = {ctor: 'SubmitQuiz'};
+var _user$project$Main$view_submit = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$classList(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'submit_section', _1: true},
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'submit'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$SubmitQuiz),
+						_1: {ctor: '[]'}
+					}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Create Quiz'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(
+							(!_elm_lang$core$String$isEmpty(model.error_msg)) ? model.error_msg : ''),
+						_1: {ctor: '[]'}
+					}
+				}),
+			_1: {ctor: '[]'}
+		});
 };
 var _user$project$Main$DeleteQuestion = function (a) {
 	return {ctor: 'DeleteQuestion', _0: a};
@@ -10065,19 +10694,19 @@ var _user$project$Main$edit_difficulty = F2(
 								{ctor: '[]'},
 								A2(
 									_elm_lang$core$List$map,
-									function (_p18) {
-										var _p19 = _p18;
-										var _p20 = _p19._1;
+									function (_p21) {
+										var _p22 = _p21;
+										var _p23 = _p22._1;
 										return A2(
 											_elm_lang$html$Html$option,
-											_elm_lang$core$Native_Utils.eq(_p20, model.text.difficulty) ? {
+											_elm_lang$core$Native_Utils.eq(_p23, model.text.difficulty) ? {
 												ctor: '::',
 												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'selected', ''),
 												_1: {ctor: '[]'}
 											} : {ctor: '[]'},
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html$text(_p20),
+												_0: _elm_lang$html$Html$text(_p23),
 												_1: {ctor: '[]'}
 											});
 									},
@@ -10384,8 +11013,8 @@ var _user$project$Main$view_editable_answer = F2(
 				_1: {
 					ctor: '::',
 					_0: function () {
-						var _p21 = answer_field.editable;
-						if (_p21 === true) {
+						var _p24 = answer_field.editable;
+						if (_p24 === true) {
 							return A2(_user$project$Main$edit_answer, question_field, answer_field);
 						} else {
 							return A2(_user$project$Main$view_answer, question_field, answer_field);
@@ -10430,8 +11059,8 @@ var _user$project$Main$view_editable_question = function (field) {
 				_1: {
 					ctor: '::',
 					_0: function () {
-						var _p22 = field.editable;
-						if (_p22 === true) {
+						var _p25 = field.editable;
+						if (_p25 === true) {
 							return _user$project$Main$edit_question(field);
 						} else {
 							return _user$project$Main$view_question(field);
@@ -10736,14 +11365,25 @@ var _user$project$Main$view = function (model) {
 					_1: {
 						ctor: '::',
 						_0: _user$project$Main$view_questions(model.question_fields),
-						_1: {ctor: '[]'}
+						_1: {
+							ctor: '::',
+							_0: _user$project$Main$view_submit(model),
+							_1: {ctor: '[]'}
+						}
 					}
 				}
 			}
 		});
 };
-var _user$project$Main$main = _elm_lang$html$Html$program(
-	{init: _user$project$Main$init, view: _user$project$Main$view, subscriptions: _user$project$Main$subscriptions, update: _user$project$Main$update})();
+var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
+	{init: _user$project$Main$init, view: _user$project$Main$view, subscriptions: _user$project$Main$subscriptions, update: _user$project$Main$update})(
+	A2(
+		_elm_lang$core$Json_Decode$andThen,
+		function (csrftoken) {
+			return _elm_lang$core$Json_Decode$succeed(
+				{csrftoken: csrftoken});
+		},
+		A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string)));
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};

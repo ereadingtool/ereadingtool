@@ -5,10 +5,17 @@ import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onM
 
 import Array exposing (Array)
 
-import Model exposing (Text, Question, Answer, textsDecoder)
+import Http
+import HttpHelpers exposing (post_with_headers)
+
+import Model exposing (Text, Question, Answer, textsDecoder, textEncoder, textDecoder, TextID)
 
 import Ports exposing (selectAllInputText)
 
+import Config exposing (text_api_endpoint)
+
+type alias CSRFToken = String
+type alias Flags = { csrftoken : CSRFToken }
 
 type Field = Text TextField | Question QuestionField | Answer AnswerField
 
@@ -23,6 +30,8 @@ type Msg = ToggleEditableField Field | Hover Field | UnHover Field
   | UpdateAnswerFeedback QuestionField AnswerField String
   | AddQuestion
   | DeleteQuestion Int
+  | SubmitQuiz
+  | Submitted (Result Http.Error Text)
 
 type alias TextField = {
     id : String
@@ -49,6 +58,8 @@ type alias QuestionField = {
 
 type alias Model = {
     text : Text
+  , flags : Flags
+  , error_msg : String
   , text_fields : Array TextField
   , question_fields : Array QuestionField }
 
@@ -89,9 +100,11 @@ question_difficulties = [
 initial_questions : Array Question
 initial_questions = Array.fromList [(new_question 0)]
 
-init : (Model, Cmd Msg)
-init = ({
+init : Flags -> (Model, Cmd Msg)
+init flags = ({
         text=new_text
+      , error_msg=""
+      , flags=flags
       , text_fields=(Array.fromList [
           {id="title", editable=False, hover=False, index=0}
         , {id="source", editable=False, hover=False, index=1}
@@ -240,9 +253,27 @@ update msg model = let text = model.text in
     AddQuestion -> ({model | question_fields = add_new_question model.question_fields }, Cmd.none)
     DeleteQuestion index -> ({model | question_fields = delete_question index model.question_fields }, Cmd.none)
 
-main : Program Never Model Msg
+    SubmitQuiz -> let questions = Array.map (\q_field -> q_field.question) model.question_fields in
+      (model, post_text model.flags.csrftoken model.text questions)
+
+    Submitted (Ok text) -> (model, Cmd.none)
+    Submitted (Err err) -> case err of
+      Http.BadStatus resp -> case resp of
+        _ -> ({ model | error_msg = String.join " " ["something went wrong: ", resp.body]}, Cmd.none)
+      _ -> ({ model | error_msg = "some unspecified error"}, Cmd.none)
+
+
+post_text : CSRFToken -> Text -> Array Question -> Cmd Msg
+post_text csrftoken text questions =
+  let encoded_text = textEncoder text questions in
+  let req =
+    post_with_headers text_api_endpoint [Http.header "X-CSRFToken" csrftoken] (Http.jsonBody encoded_text) textDecoder
+  in
+    Http.send Submitted req
+
+main : Program Flags Model Msg
 main =
-  Html.program
+  Html.programWithFlags
     { init = init
     , view = view
     , subscriptions = subscriptions
@@ -447,10 +478,19 @@ view_create_text model = div [ classList [("text_properties", True)] ] [
       , div [ classList [("body",True)] ]  [ view_editable_field model 3 (view_body model) (edit_body model) ]
   ]
 
+view_submit : Model -> Html Msg
+view_submit model = Html.div [classList [("submit_section", True)]] [
+    Html.div [attribute "class" "submit", onClick SubmitQuiz] [
+        Html.text "Create Quiz"
+      , Html.text (if not (String.isEmpty model.error_msg) then model.error_msg else "")
+    ]
+  ]
+
 view : Model -> Html Msg
 view model = div [] [
       (view_header model)
     , (view_preview model)
     , (view_create_text model)
     , (view_questions model.question_fields)
+    , (view_submit model)
   ]

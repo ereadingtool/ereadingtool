@@ -26,3 +26,6 @@ class AdminAPIView(View):
         texts = [text.to_dict() for text in self.model.objects.all()]
 
         return HttpResponse(json.dumps(list(texts)))
+
+    def post(self, request, *args, **kwargs):
+        return HttpResponse(json.dumps(["text_id", "1"]))

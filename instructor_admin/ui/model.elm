@@ -1,16 +1,19 @@
-module Model exposing (Text, Question, QuestionType, Answer, textsDecoder)
+module Model exposing (Text, TextID, Question, QuestionType, Answer, textsDecoder, textEncoder, textDecoder)
 
 import Date exposing (..)
 
 import Array exposing (Array)
 
-import Json.Decode exposing (int, string, float, bool, nullable, list, array, succeed, Decoder, field, at)
+import Json.Decode as Decode
 import Json.Decode.Extra exposing (date)
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 
+import Json.Encode as Encode
+
+type alias TextID = Int
 
 type alias Text = {
-    id: Maybe Int
+    id: Maybe TextID
   , title: String
   , created_dt: Maybe Date
   , modified_dt: Maybe Date
@@ -19,6 +22,29 @@ type alias Text = {
   , question_count : Int
   , body : String }
 
+textDecoder : Decode.Decoder Text
+textDecoder =
+  decode Text
+    |> required "id" (Decode.nullable Decode.int)
+    |> required "title" Decode.string
+    |> required "created_dt" (Decode.nullable date)
+    |> required "modified_dt" (Decode.nullable date)
+    |> required "source" Decode.string
+    |> required "difficulty" Decode.string
+    |> required "question_count" Decode.int
+    |> required "body" Decode.string
+
+textsDecoder : Decode.Decoder (List Text)
+textsDecoder = Decode.list textDecoder
+
+textEncoder : Text -> Array Question -> Encode.Value
+textEncoder text questions = Encode.object [
+      ("title", Encode.string text.title)
+    , ("source", Encode.string text.source)
+    , ("difficulty", Encode.string text.difficulty)
+    , ("body", Encode.string text.body)
+    , ("questions", (questionsEncoder questions))
+  ]
 
 type QuestionType = MainIdea | Detail
 
@@ -31,18 +57,32 @@ type alias Answer = {
   , feedback: String }
 
 
-answerDecoder : Decoder Answer
+answerDecoder : Decode.Decoder Answer
 answerDecoder =
   decode Answer
-    |> required "id" (nullable int)
-    |> required "question_id" (nullable int)
-    |> required "text" string
-    |> required "correct" bool
-    |> required "order" int
-    |> required "feedback" string
+    |> required "id" (Decode.nullable Decode.int)
+    |> required "question_id" (Decode.nullable Decode.int)
+    |> required "text" Decode.string
+    |> required "correct" Decode.bool
+    |> required "order" Decode.int
+    |> required "feedback" Decode.string
 
-answersDecoder : Decoder (Array Answer)
-answersDecoder = array answerDecoder
+answersDecoder : Decode.Decoder (Array Answer)
+answersDecoder = Decode.array answerDecoder
+
+answersEncoder : Array Answer -> Encode.Value
+answersEncoder answers =
+     Encode.list
+  <| Array.toList
+  <| Array.map (\answer -> answerEncoder answer) answers
+
+answerEncoder : Answer -> Encode.Value
+answerEncoder answer = Encode.object [
+       ("text", Encode.string answer.text)
+     , ("correct", Encode.bool answer.correct)
+     , ("order", Encode.int answer.order)
+     , ("feedback", Encode.string answer.feedback)
+  ]
 
 type alias Question = {
     id: Maybe Int
@@ -54,32 +94,31 @@ type alias Question = {
   , answers: Array Answer
   , question_type: String }
 
-questionDecoder : Decoder Question
+questionDecoder : Decode.Decoder Question
 questionDecoder =
   decode Question
-    |> required "id" (nullable int)
-    |> required "text_id" (nullable int)
-    |> required "created_dt" (nullable date)
-    |> required "modified_dt" (nullable date)
-    |> required "body" string
-    |> required "order" int
+    |> required "id" (Decode.nullable Decode.int)
+    |> required "text_id" (Decode.nullable Decode.int)
+    |> required "created_dt" (Decode.nullable date)
+    |> required "modified_dt" (Decode.nullable date)
+    |> required "body" Decode.string
+    |> required "order" Decode.int
     |> required "answers" answersDecoder
-    |> required "question_type" string
+    |> required "question_type" Decode.string
 
-questionsDecoder : Decoder (List Question)
-questionsDecoder = list questionDecoder
+questionsDecoder : Decode.Decoder (List Question)
+questionsDecoder = Decode.list questionDecoder
 
-textDecoder : Decoder Text
-textDecoder =
-  decode Text
-    |> required "id" (nullable int)
-    |> required "title" string
-    |> required "created_dt" (nullable date)
-    |> required "modified_dt" (nullable date)
-    |> required "source" string
-    |> required "difficulty" string
-    |> required "question_count" int
-    |> required "body" string
+questionEncoder : Question -> Encode.Value
+questionEncoder question = Encode.object [
+       ("body", Encode.string question.body)
+     , ("order", Encode.int question.order)
+     , ("answers", (answersEncoder question.answers) )
+     , ("question_type", Encode.string question.question_type)
+  ]
 
-textsDecoder : Decoder (List Text)
-textsDecoder = list textDecoder
+questionsEncoder : Array Question -> Encode.Value
+questionsEncoder questions =
+     Encode.list
+  <| Array.toList
+  <| Array.map (\question -> questionEncoder question) questions

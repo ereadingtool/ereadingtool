@@ -239,8 +239,6 @@ body {
 
 .answer_item {
     color: #a4a4a4;
-
-    margin-bottom: 3%;
     grid-column: 2;
 }
 
@@ -256,4 +254,13 @@ body {
 .delete {
     align-items: right;
     justify-items: right;
+}
+
+.submit_section {
+    display: grid;
+    grid-template-columns: 15% 20% auto 20% 20%;
+}
+
+.submit {
+    grid-column: 2;
 }
