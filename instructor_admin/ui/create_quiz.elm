@@ -481,8 +481,8 @@ view_create_text model = div [ classList [("text_properties", True)] ] [
 view_submit : Model -> Html Msg
 view_submit model = Html.div [classList [("submit_section", True)]] [
     Html.div [attribute "class" "submit", onClick SubmitQuiz] [
-        Html.text "Create Quiz"
-      , Html.text (if not (String.isEmpty model.error_msg) then model.error_msg else "")
+        Html.text "Create Quiz "
+      , Html.text (if not (String.isEmpty model.error_msg) then (String.join " " ["error: ", model.error_msg]) else "")
     ]
   ]
 

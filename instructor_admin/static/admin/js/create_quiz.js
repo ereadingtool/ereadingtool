@@ -10610,11 +10610,22 @@ var _user$project$Main$view_submit = function (model) {
 				},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text('Create Quiz'),
+					_0: _elm_lang$html$Html$text('Create Quiz '),
 					_1: {
 						ctor: '::',
 						_0: _elm_lang$html$Html$text(
-							(!_elm_lang$core$String$isEmpty(model.error_msg)) ? model.error_msg : ''),
+							(!_elm_lang$core$String$isEmpty(model.error_msg)) ? A2(
+								_elm_lang$core$String$join,
+								' ',
+								{
+									ctor: '::',
+									_0: 'error: ',
+									_1: {
+										ctor: '::',
+										_0: model.error_msg,
+										_1: {ctor: '[]'}
+									}
+								}) : ''),
 						_1: {ctor: '[]'}
 					}
 				}),
