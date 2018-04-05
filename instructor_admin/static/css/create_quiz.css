@@ -244,6 +244,12 @@ body {
     grid-column: 2;
 }
 
+.answer_feedback {
+    color: #a4a4a4;
+
+    margin-top: 1%;
+}
+
 .add_question {
     margin-top: 50%;
     grid-column: 2;

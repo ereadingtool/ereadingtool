@@ -9720,26 +9720,24 @@ var _user$project$Main$update = F2(
 				var _p11 = _p6._0;
 				switch (_p11.ctor) {
 					case 'Text':
-						var _p12 = _p11._0;
 						return {
 							ctor: '_Tuple2',
 							_0: _elm_lang$core$Native_Utils.update(
 								model,
 								{
-									text_fields: A3(_user$project$Main$set_hover, _p12, true, model.text_fields)
+									text_fields: A3(_user$project$Main$set_hover, _p11._0, true, model.text_fields)
 								}),
-							_1: _user$project$Ports$selectAllInputText(_p12.id)
+							_1: _elm_lang$core$Platform_Cmd$none
 						};
 					case 'Question':
-						var _p13 = _p11._0;
 						return {
 							ctor: '_Tuple2',
 							_0: _elm_lang$core$Native_Utils.update(
 								model,
 								{
-									question_fields: A3(_user$project$Main$set_hover, _p13, true, model.question_fields)
+									question_fields: A3(_user$project$Main$set_hover, _p11._0, true, model.question_fields)
 								}),
-							_1: _user$project$Ports$selectAllInputText(_p13.id)
+							_1: _elm_lang$core$Platform_Cmd$none
 						};
 					default:
 						var new_answer_field = _elm_lang$core$Native_Utils.update(
@@ -9752,37 +9750,36 @@ var _user$project$Main$update = F2(
 								{
 									question_fields: A2(_user$project$Main$update_answer, new_answer_field, model.question_fields)
 								}),
-							_1: _user$project$Ports$selectAllInputText(new_answer_field.id)
+							_1: _elm_lang$core$Platform_Cmd$none
 						};
 				}
 			case 'UnHover':
-				var _p14 = _p6._0;
-				switch (_p14.ctor) {
+				var _p12 = _p6._0;
+				switch (_p12.ctor) {
 					case 'Text':
-						var _p15 = _p14._0;
+						var _p13 = _p12._0;
 						return {
 							ctor: '_Tuple2',
 							_0: _elm_lang$core$Native_Utils.update(
 								model,
 								{
-									text_fields: A3(_user$project$Main$set_hover, _p15, false, model.text_fields)
+									text_fields: A3(_user$project$Main$set_hover, _p13, false, model.text_fields)
 								}),
-							_1: _user$project$Ports$selectAllInputText(_p15.id)
+							_1: _user$project$Ports$selectAllInputText(_p13.id)
 						};
 					case 'Question':
-						var _p16 = _p14._0;
 						return {
 							ctor: '_Tuple2',
 							_0: _elm_lang$core$Native_Utils.update(
 								model,
 								{
-									question_fields: A3(_user$project$Main$set_hover, _p16, false, model.question_fields)
+									question_fields: A3(_user$project$Main$set_hover, _p12._0, false, model.question_fields)
 								}),
-							_1: _user$project$Ports$selectAllInputText(_p16.id)
+							_1: _elm_lang$core$Platform_Cmd$none
 						};
 					default:
 						var new_answer_field = _elm_lang$core$Native_Utils.update(
-							_p14._0,
+							_p12._0,
 							{hover: false});
 						return {
 							ctor: '_Tuple2',
@@ -9791,14 +9788,14 @@ var _user$project$Main$update = F2(
 								{
 									question_fields: A2(_user$project$Main$update_answer, new_answer_field, model.question_fields)
 								}),
-							_1: _user$project$Ports$selectAllInputText(new_answer_field.id)
+							_1: _elm_lang$core$Platform_Cmd$none
 						};
 				}
 			case 'UpdateQuestionBody':
-				var _p17 = _p6._0;
-				var question = _p17.question;
+				var _p14 = _p6._0;
+				var question = _p14.question;
 				var new_field = _elm_lang$core$Native_Utils.update(
-					_p17,
+					_p14,
 					{
 						question: _elm_lang$core$Native_Utils.update(
 							question,
@@ -9809,24 +9806,24 @@ var _user$project$Main$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							question_fields: A3(_elm_lang$core$Array$set, _p17.index, new_field, model.question_fields)
+							question_fields: A3(_elm_lang$core$Array$set, _p14.index, new_field, model.question_fields)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'UpdateAnswerText':
-				var _p19 = _p6._0;
-				var _p18 = _p6._1;
-				var answer = _p18.answer;
+				var _p16 = _p6._0;
+				var _p15 = _p6._1;
+				var answer = _p15.answer;
 				var new_answer = _elm_lang$core$Native_Utils.update(
 					answer,
 					{text: _p6._2});
 				var new_answer_field = _elm_lang$core$Native_Utils.update(
-					_p18,
+					_p15,
 					{answer: new_answer});
 				var new_question_field = _elm_lang$core$Native_Utils.update(
-					_p19,
+					_p16,
 					{
-						answer_fields: A3(_elm_lang$core$Array$set, _p18.index, new_answer_field, _p19.answer_fields)
+						answer_fields: A3(_elm_lang$core$Array$set, _p15.index, new_answer_field, _p16.answer_fields)
 					});
 				return {
 					ctor: '_Tuple2',
@@ -9838,19 +9835,19 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'UpdateAnswerCorrect':
-				var _p21 = _p6._0;
-				var _p20 = _p6._1;
-				var answer = _p20.answer;
+				var _p18 = _p6._0;
+				var _p17 = _p6._1;
+				var answer = _p17.answer;
 				var new_answer = _elm_lang$core$Native_Utils.update(
 					answer,
 					{correct: _p6._2});
 				var new_answer_field = _elm_lang$core$Native_Utils.update(
-					_p20,
+					_p17,
 					{answer: new_answer});
 				var new_question_field = _elm_lang$core$Native_Utils.update(
-					_p21,
+					_p18,
 					{
-						answer_fields: A3(_elm_lang$core$Array$set, _p20.index, new_answer_field, _p21.answer_fields)
+						answer_fields: A3(_elm_lang$core$Array$set, _p17.index, new_answer_field, _p18.answer_fields)
 					});
 				return {
 					ctor: '_Tuple2',
@@ -10052,19 +10049,19 @@ var _user$project$Main$edit_difficulty = F2(
 								{ctor: '[]'},
 								A2(
 									_elm_lang$core$List$map,
-									function (_p22) {
-										var _p23 = _p22;
-										var _p24 = _p23._1;
+									function (_p19) {
+										var _p20 = _p19;
+										var _p21 = _p20._1;
 										return A2(
 											_elm_lang$html$Html$option,
-											_elm_lang$core$Native_Utils.eq(_p24, model.text.difficulty) ? {
+											_elm_lang$core$Native_Utils.eq(_p21, model.text.difficulty) ? {
 												ctor: '::',
 												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'selected', ''),
 												_1: {ctor: '[]'}
 											} : {ctor: '[]'},
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html$text(_p24),
+												_0: _elm_lang$html$Html$text(_p21),
 												_1: {ctor: '[]'}
 											});
 									},
@@ -10220,32 +10217,71 @@ var _user$project$Main$view_answer = F2(
 var _user$project$Main$edit_answer = F2(
 	function (question_field, answer_field) {
 		return A2(
-			_elm_lang$html$Html$input,
+			_elm_lang$html$Html$span,
+			{ctor: '[]'},
 			{
 				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
-				_1: {
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', answer_field.answer.text),
-					_1: {
+				_0: A2(
+					_elm_lang$html$Html$input,
+					{
 						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', answer_field.id),
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onInput(
-								A2(_user$project$Main$UpdateAnswerText, question_field, answer_field)),
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', answer_field.answer.text),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onBlur(
-									_user$project$Main$ToggleEditableField(
-										_user$project$Main$Answer(answer_field))),
-								_1: {ctor: '[]'}
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', answer_field.id),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onInput(
+										A2(_user$project$Main$UpdateAnswerText, question_field, answer_field)),
+									_1: {ctor: '[]'}
+								}
 							}
 						}
-					}
+					},
+					{ctor: '[]'}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$textarea,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onBlur(
+										_user$project$Main$ToggleEditableField(
+											_user$project$Main$Answer(answer_field))),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onInput(
+											A2(_user$project$Main$UpdateAnswerText, question_field, answer_field)),
+										_1: {
+											ctor: '::',
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Give some feedback..'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$classList(
+													{
+														ctor: '::',
+														_0: {ctor: '_Tuple2', _0: 'answer_feedback', _1: true},
+														_1: {ctor: '[]'}
+													}),
+												_1: {ctor: '[]'}
+											}
+										}
+									}
+								},
+								{ctor: '[]'}),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
 				}
-			},
-			{ctor: '[]'});
+			});
 	});
 var _user$project$Main$view_editable_answer = F2(
 	function (question_field, answer_field) {
@@ -10276,7 +10312,7 @@ var _user$project$Main$view_editable_answer = F2(
 							ctor: '::',
 							_0: A2(
 								_elm_lang$html$Html_Attributes$attribute,
-								'id',
+								'name',
 								A2(
 									_elm_lang$core$String$join,
 									'_',
@@ -10288,42 +10324,16 @@ var _user$project$Main$view_editable_answer = F2(
 											_0: _elm_lang$core$Basics$toString(question_field.question.order),
 											_1: {
 												ctor: '::',
-												_0: 'answer',
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$core$Basics$toString(answer_field.answer.order),
-													_1: {ctor: '[]'}
-												}
+												_0: 'correct_answer',
+												_1: {ctor: '[]'}
 											}
 										}
 									})),
 							_1: {
 								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html_Attributes$attribute,
-									'name',
-									A2(
-										_elm_lang$core$String$join,
-										'_',
-										{
-											ctor: '::',
-											_0: 'question',
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$core$Basics$toString(question_field.question.order),
-												_1: {
-													ctor: '::',
-													_0: 'correct_answer',
-													_1: {ctor: '[]'}
-												}
-											}
-										})),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onCheck(
-										A2(_user$project$Main$UpdateAnswerCorrect, question_field, answer_field)),
-									_1: {ctor: '[]'}
-								}
+								_0: _elm_lang$html$Html_Events$onCheck(
+									A2(_user$project$Main$UpdateAnswerCorrect, question_field, answer_field)),
+								_1: {ctor: '[]'}
 							}
 						}
 					},
@@ -10331,8 +10341,8 @@ var _user$project$Main$view_editable_answer = F2(
 				_1: {
 					ctor: '::',
 					_0: function () {
-						var _p25 = answer_field.editable;
-						if (_p25 === true) {
+						var _p22 = answer_field.editable;
+						if (_p22 === true) {
 							return A2(_user$project$Main$edit_answer, question_field, answer_field);
 						} else {
 							return A2(_user$project$Main$view_answer, question_field, answer_field);
@@ -10377,8 +10387,8 @@ var _user$project$Main$view_editable_question = function (field) {
 				_1: {
 					ctor: '::',
 					_0: function () {
-						var _p26 = field.editable;
-						if (_p26 === true) {
+						var _p23 = field.editable;
+						if (_p23 === true) {
 							return _user$project$Main$edit_question(field);
 						} else {
 							return _user$project$Main$view_question(field);

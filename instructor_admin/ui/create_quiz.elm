@@ -189,23 +189,23 @@ update msg model = let text = model.text in
 
     Hover field -> case field of
       Text text_field -> ({ model | text_fields = set_hover text_field True model.text_fields }
-                     , selectAllInputText text_field.id )
+                     , Cmd.none )
       Question question_field -> ({ model | question_fields = set_hover question_field True model.question_fields }
-                         , selectAllInputText question_field.id )
+                         , Cmd.none )
 
       Answer answer_field -> let new_answer_field = { answer_field | hover = True } in
         ({ model | question_fields = update_answer new_answer_field model.question_fields}
-         , selectAllInputText new_answer_field.id )
+         , Cmd.none )
 
     UnHover field -> case field of
       Text text_field -> ({ model | text_fields = set_hover text_field False model.text_fields }
                      , selectAllInputText text_field.id )
       Question question_field -> ({ model | question_fields = set_hover question_field False model.question_fields }
-                     , selectAllInputText question_field.id )
+                     , Cmd.none )
 
       Answer answer_field -> let new_answer_field = { answer_field | hover = False } in
         ({ model | question_fields = update_answer new_answer_field model.question_fields}
-         , selectAllInputText new_answer_field.id )
+         , Cmd.none )
 
     UpdateQuestionBody field body ->
       let question = field.question in
@@ -307,13 +307,22 @@ view_answer question_field answer_field = Html.span
   [ Html.text <| answer_field.answer.text ]
 
 edit_answer : QuestionField -> AnswerField -> Html Msg
-edit_answer question_field answer_field = Html.input [
-      attribute "type" "text"
-    , attribute "value" answer_field.answer.text
-    , attribute "id" answer_field.id
-    , onInput (UpdateAnswerText question_field answer_field)
-    , onBlur (ToggleEditableField <| Answer answer_field)
-  ] [ ]
+edit_answer question_field answer_field = Html.span [] [
+    Html.input [
+        attribute "type" "text"
+      , attribute "value" answer_field.answer.text
+      , attribute "id" answer_field.id
+      , onInput (UpdateAnswerText question_field answer_field)
+    ] []
+  , Html.div [] [
+      Html.textarea [
+          onBlur (ToggleEditableField <| Answer answer_field)
+        , onInput (UpdateAnswerText question_field answer_field)
+        , attribute "placeholder" "Give some feedback.."
+        , classList [ ("answer_feedback", True) ]
+      ] []
+    ]
+  ]
 
 view_editable_answer : QuestionField -> AnswerField -> Html Msg
 view_editable_answer question_field answer_field = div [
@@ -321,11 +330,6 @@ view_editable_answer question_field answer_field = div [
             ,("over", answer_field.hover)] ] [
         Html.input [
             attribute "type" "radio"
-          , attribute "id"
-            (String.join "_" [
-                "question"
-              , (toString question_field.question.order)
-              , "answer", toString answer_field.answer.order])
           , attribute "name" (String.join "_" [
                 "question"
               , (toString question_field.question.order), "correct_answer"])
