@@ -245,9 +245,8 @@ body {
 }
 
 .answer_feedback {
-    color: #a4a4a4;
-
-    margin-top: 1%;
+    margin-top: 3px;
+    font-style: italic;
 }
 
 .add_question {

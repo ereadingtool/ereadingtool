@@ -20,6 +20,7 @@ type Msg = ToggleEditableField Field | Hover Field | UnHover Field
   | UpdateQuestionBody QuestionField String
   | UpdateAnswerText QuestionField AnswerField String
   | UpdateAnswerCorrect QuestionField AnswerField Bool
+  | UpdateAnswerFeedback QuestionField AnswerField String
   | AddQuestion
   | DeleteQuestion Int
 
@@ -215,20 +216,21 @@ update msg model = let text = model.text in
     UpdateAnswerText question_field answer_field text ->
       let answer = answer_field.answer in
       let new_answer = { answer | text = text } in
-      let new_answer_field = { answer_field | answer = new_answer } in
-      let new_question_field = { question_field |
-        answer_fields = Array.set answer_field.index new_answer_field question_field.answer_fields } in
-        ({ model |
-          question_fields = Array.set new_question_field.index new_question_field model.question_fields }, Cmd.none)
+        ({ model | question_fields =
+          update_answer { answer_field | answer = new_answer } model.question_fields }, Cmd.none)
 
     UpdateAnswerCorrect question_field answer_field correct ->
       let answer = answer_field.answer in
       let new_answer = { answer | correct = correct } in
-      let new_answer_field = { answer_field | answer = new_answer } in
-      let new_question_field = { question_field |
-        answer_fields = Array.set answer_field.index new_answer_field question_field.answer_fields } in
-        ({ model |
-          question_fields = Array.set new_question_field.index new_question_field model.question_fields }, Cmd.none)
+        ({ model | question_fields =
+          update_answer { answer_field | answer = new_answer } model.question_fields }, Cmd.none)
+
+    UpdateAnswerFeedback question_field answer_field feedback ->
+      let answer = answer_field.answer in
+      let new_answer = { answer | feedback = feedback } in
+        ({ model | question_fields =
+          update_answer { answer_field | answer = new_answer } model.question_fields }, Cmd.none)
+
 
     UpdateTitle title -> ({ model | text = { text | title = title }}, Cmd.none)
     UpdateSource source ->  ({ model | text = { text | source = source }}, Cmd.none)
@@ -303,8 +305,13 @@ view_answer : QuestionField -> AnswerField -> Html Msg
 view_answer question_field answer_field = Html.span
   [  onClick (ToggleEditableField <| Answer answer_field)
    , onMouseOver (Hover <| Answer answer_field)
-   , onMouseLeave (UnHover <| Answer answer_field) ]
-  [ Html.text <| answer_field.answer.text ]
+   , onMouseLeave (UnHover <| Answer answer_field) ] <|
+  [   Html.text answer_field.answer.text ] ++
+    (if not (String.isEmpty answer_field.answer.feedback) then [
+        Html.div [classList [("answer_feedback", True)] ] [
+          Html.text answer_field.answer.feedback
+        ]
+    ] else [])
 
 edit_answer : QuestionField -> AnswerField -> Html Msg
 edit_answer question_field answer_field = Html.span [] [
@@ -317,8 +324,8 @@ edit_answer question_field answer_field = Html.span [] [
   , Html.div [] [
       Html.textarea [
           onBlur (ToggleEditableField <| Answer answer_field)
-        , onInput (UpdateAnswerText question_field answer_field)
-        , attribute "placeholder" "Give some feedback.."
+        , onInput (UpdateAnswerFeedback question_field answer_field)
+        , attribute "placeholder" "Give some feedback."
         , classList [ ("answer_feedback", True) ]
       ] []
     ]
