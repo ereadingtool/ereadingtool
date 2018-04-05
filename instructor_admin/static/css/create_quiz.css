@@ -137,7 +137,7 @@ body {
     display: grid;
     grid-row-gap: 5%;
 
-    grid-template-columns: 4% auto 20%;
+    grid-template-columns: 15% auto 20%;
 }
 
 .text_property_items {
@@ -219,7 +219,7 @@ body {
     grid-row-gap: 10px;
 
     display: grid;
-    grid-template-columns: 4% auto 4%;
+    grid-template-columns: 15% auto 20%;
 }
 
 .question {
@@ -227,7 +227,7 @@ body {
     background: #FFFFFF;
     display: grid;
 
-    grid-template-columns: 4% auto 1%;
+    grid-template-columns: 4% auto 1.5%;
 
     grid-column: 2;
 }
