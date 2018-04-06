@@ -2,7 +2,7 @@
     "use strict";
     var node = document.getElementsByClassName("content")[0];
     var app = Elm.Main.embed(node, {
-        csrftoken: getCookie("csrftoken")
+        csrftoken: document.getElementsByName("csrfmiddlewaretoken")[0].value
     });
 
     function selectAllText(elem_id) {
