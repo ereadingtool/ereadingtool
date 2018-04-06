@@ -82,4 +82,4 @@ class AdminAPIView(View):
 
                 answer = answer_form.save()
 
-        return HttpResponse(json.dumps(["text_id", text.pk]))
+        return HttpResponse(json.dumps({"id": text.pk}))

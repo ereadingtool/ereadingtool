@@ -9803,7 +9803,7 @@ var _user$project$Main$view_msg = function (msg) {
 				' ',
 				{
 					ctor: '::',
-					_0: ' : ',
+					_0: ' ',
 					_1: {
 						ctor: '::',
 						_0: _p0._0,
@@ -10589,7 +10589,9 @@ var _user$project$Main$update = F2(
 					model.question_fields);
 				return {
 					ctor: '_Tuple2',
-					_0: model,
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{error_msg: _elm_lang$core$Maybe$Nothing, success_msg: _elm_lang$core$Maybe$Nothing}),
 					_1: A3(_user$project$Main$post_text, model.flags.csrftoken, model.text, questions)
 				};
 			default:
@@ -10607,7 +10609,7 @@ var _user$project$Main$update = F2(
 											' ',
 											{
 												ctor: '::',
-												_0: ' new text id',
+												_0: ' success!',
 												_1: {
 													ctor: '::',
 													_0: _elm_lang$core$Basics$toString(_p19._0),

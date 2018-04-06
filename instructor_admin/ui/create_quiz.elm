@@ -9,8 +9,10 @@ import Http
 import HttpHelpers exposing (post_with_headers)
 
 import Dict exposing (Dict)
+import Debug
 
-import Model exposing (Text, Question, Answer, textsDecoder, textEncoder, textDecoder, TextID, textCreateRespDecoder, TextCreateResp)
+import Model exposing (Text, Question, Answer, textsDecoder, textEncoder, textDecoder, textCreateRespDecoder,
+  TextCreateResp)
 
 import Ports exposing (selectAllInputText)
 
@@ -261,18 +263,19 @@ update msg model = let text = model.text in
       let answer_fields = q_field.answer_fields in
       let question = q_field.question in
        { question | answers = Array.map (\a_field -> a_field.answer) q_field.answer_fields }) model.question_fields in
-       (model, post_text model.flags.csrftoken model.text questions)
+       ({ model |
+           error_msg = Nothing
+         , success_msg = Nothing }, post_text model.flags.csrftoken model.text questions)
 
     Submitted (Ok text_create_resp) -> case text_create_resp.id of
        Just text_id -> ({ model
-         | success_msg = Just <| String.join " " <| [" new text id", toString text_id]}, Cmd.none)
+         | success_msg = Just <| String.join " " <| [" success!", toString text_id]}, Cmd.none)
        _ -> (model, Cmd.none)
 
     Submitted (Err err) -> case err of
       Http.BadStatus resp -> case resp of
         _ -> ({ model | error_msg = Just <| String.join " " ["something went wrong: ", resp.body]}, Cmd.none)
       Http.BadPayload err resp -> ({ model | error_msg = Just err}, Cmd.none)
-
       _ -> ({ model | error_msg = Just "some unspecified error"}, Cmd.none)
 
 post_text : CSRFToken -> Text -> Array Question -> Cmd Msg
@@ -494,7 +497,7 @@ view_create_text model = div [ classList [("text_properties", True)] ] [
 view_msg : Maybe String -> Html Msg
 view_msg msg = let msg_str = (case msg of
         Just str ->
-          String.join " " [" : ", str]
+          String.join " " [" ", str]
         _ -> "") in Html.text msg_str
 
 
