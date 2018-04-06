@@ -14,8 +14,7 @@ import Ports exposing (selectAllInputText)
 
 import Config exposing (text_api_endpoint)
 
-type alias CSRFToken = String
-type alias Flags = { csrftoken : CSRFToken }
+import Flags exposing (CSRFToken, Flags)
 
 type Field = Text TextField | Question QuestionField | Answer AnswerField
 
@@ -178,7 +177,8 @@ set_hover
 set_hover field hover fields = Array.set field.index { field | hover = hover } fields
 
 update_answer : AnswerField -> Array QuestionField -> Array QuestionField
-update_answer answer_field question_fields = case Array.get answer_field.question_field_index question_fields of
+update_answer answer_field question_fields =
+  case Array.get answer_field.question_field_index question_fields of
     Just question_field ->
       let new_question_field = { question_field
       | answer_fields = Array.set answer_field.index answer_field question_field.answer_fields } in
@@ -253,10 +253,14 @@ update msg model = let text = model.text in
     AddQuestion -> ({model | question_fields = add_new_question model.question_fields }, Cmd.none)
     DeleteQuestion index -> ({model | question_fields = delete_question index model.question_fields }, Cmd.none)
 
-    SubmitQuiz -> let questions = Array.map (\q_field -> q_field.question) model.question_fields in
-      (model, post_text model.flags.csrftoken model.text questions)
+    SubmitQuiz -> let questions = Array.map (\q_field ->
+      let answer_fields = q_field.answer_fields in
+      let question = q_field.question in
+       { question | answers = Array.map (\a_field -> a_field.answer) q_field.answer_fields }) model.question_fields in
+       (model, post_text model.flags.csrftoken model.text questions)
 
     Submitted (Ok text) -> (model, Cmd.none)
+
     Submitted (Err err) -> case err of
       Http.BadStatus resp -> case resp of
         _ -> ({ model | error_msg = String.join " " ["something went wrong: ", resp.body]}, Cmd.none)

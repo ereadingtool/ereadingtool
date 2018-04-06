@@ -6,6 +6,7 @@ import Date exposing (..)
 
 import Model exposing (Text, textsDecoder)
 import Config exposing (..)
+import Flags exposing (Flags)
 
 -- UPDATE
 type Msg = Update (Result Http.Error (List Text))
@@ -14,8 +15,8 @@ type alias Model = { texts : List Text }
 
 type alias Filter = List String
 
-init : (Model, Cmd Msg)
-init = (Model  [], updateTexts [])
+init : Flags -> (Model, Cmd Msg)
+init flags = (Model  [], updateTexts [])
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -37,9 +38,9 @@ update msg model =
       (model, Cmd.none)
 
 
-main : Program Never Model Msg
+main : Program Flags Model Msg
 main =
-  Html.program
+  Html.programWithFlags
     { init = init
     , view = view
     , subscriptions = subscriptions

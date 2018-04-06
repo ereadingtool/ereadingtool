@@ -9393,6 +9393,147 @@ var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
 
 var _user$project$Config$text_api_endpoint = '/api/text/';
 
+var _user$project$Flags$Flags = function (a) {
+	return {csrftoken: a};
+};
+
+var _user$project$Model$answerEncoder = function (answer) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'text',
+				_1: _elm_lang$core$Json_Encode$string(answer.text)
+			},
+			_1: {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'correct',
+					_1: _elm_lang$core$Json_Encode$bool(answer.correct)
+				},
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'order',
+						_1: _elm_lang$core$Json_Encode$int(answer.order)
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'feedback',
+							_1: _elm_lang$core$Json_Encode$string(answer.feedback)
+						},
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		});
+};
+var _user$project$Model$answersEncoder = function (answers) {
+	return _elm_lang$core$Json_Encode$list(
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (answer) {
+					return _user$project$Model$answerEncoder(answer);
+				},
+				answers)));
+};
+var _user$project$Model$questionEncoder = function (question) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'body',
+				_1: _elm_lang$core$Json_Encode$string(question.body)
+			},
+			_1: {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'order',
+					_1: _elm_lang$core$Json_Encode$int(question.order)
+				},
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'answers',
+						_1: _user$project$Model$answersEncoder(question.answers)
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'question_type',
+							_1: _elm_lang$core$Json_Encode$string(question.question_type)
+						},
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		});
+};
+var _user$project$Model$questionsEncoder = function (questions) {
+	return _elm_lang$core$Json_Encode$list(
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (question) {
+					return _user$project$Model$questionEncoder(question);
+				},
+				questions)));
+};
+var _user$project$Model$textEncoder = F2(
+	function (text, questions) {
+		return _elm_lang$core$Json_Encode$object(
+			{
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'title',
+					_1: _elm_lang$core$Json_Encode$string(text.title)
+				},
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'source',
+						_1: _elm_lang$core$Json_Encode$string(text.source)
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'difficulty',
+							_1: _elm_lang$core$Json_Encode$string(text.difficulty)
+						},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'body',
+								_1: _elm_lang$core$Json_Encode$string(text.body)
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'questions',
+									_1: _user$project$Model$questionsEncoder(questions)
+								},
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}
+			});
+	});
 var _user$project$Model$Text = F8(
 	function (a, b, c, d, e, f, g, h) {
 		return {id: a, title: b, created_dt: c, modified_dt: d, source: e, difficulty: f, question_count: g, body: h};
@@ -9991,15 +10132,24 @@ var _user$project$Main$updateTexts = function (filter) {
 	var request = A2(_elm_lang$http$Http$get, _user$project$Config$text_api_endpoint, _user$project$Model$textsDecoder);
 	return A2(_elm_lang$http$Http$send, _user$project$Main$Update, request);
 };
-var _user$project$Main$init = {
-	ctor: '_Tuple2',
-	_0: _user$project$Main$Model(
-		{ctor: '[]'}),
-	_1: _user$project$Main$updateTexts(
-		{ctor: '[]'})
+var _user$project$Main$init = function (flags) {
+	return {
+		ctor: '_Tuple2',
+		_0: _user$project$Main$Model(
+			{ctor: '[]'}),
+		_1: _user$project$Main$updateTexts(
+			{ctor: '[]'})
+	};
 };
-var _user$project$Main$main = _elm_lang$html$Html$program(
-	{init: _user$project$Main$init, view: _user$project$Main$view, subscriptions: _user$project$Main$subscriptions, update: _user$project$Main$update})();
+var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
+	{init: _user$project$Main$init, view: _user$project$Main$view, subscriptions: _user$project$Main$subscriptions, update: _user$project$Main$update})(
+	A2(
+		_elm_lang$core$Json_Decode$andThen,
+		function (csrftoken) {
+			return _elm_lang$core$Json_Decode$succeed(
+				{csrftoken: csrftoken});
+		},
+		A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string)));
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};

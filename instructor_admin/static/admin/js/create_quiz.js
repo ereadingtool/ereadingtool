@@ -10533,7 +10533,18 @@ var _user$project$Main$update = F2(
 				var questions = A2(
 					_elm_lang$core$Array$map,
 					function (q_field) {
-						return q_field.question;
+						var answer_fields = q_field.answer_fields;
+						var question = q_field.question;
+						return _elm_lang$core$Native_Utils.update(
+							question,
+							{
+								answers: A2(
+									_elm_lang$core$Array$map,
+									function (a_field) {
+										return a_field.answer;
+									},
+									q_field.answer_fields)
+							});
 					},
 					model.question_fields);
 				return {
