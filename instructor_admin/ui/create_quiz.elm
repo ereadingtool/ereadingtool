@@ -191,21 +191,23 @@ update_answer answer_field question_fields =
       Array.set new_question_field.index new_question_field question_fields
     _ -> question_fields
 
+post_toggle_field : { a | id: String, hover : Bool, index : Int, editable : Bool } -> Cmd Msg
+post_toggle_field field = if not field.editable then (selectAllInputText field.id) else Cmd.none
+
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = let text = model.text in
   case msg of
     ToggleEditableField field -> case field of
       Text text_field -> ({ model | text_fields = toggle_editable text_field model.text_fields }
-                     , selectAllInputText text_field.id )
+                     , post_toggle_field text_field)
       Question question_field -> ({ model | question_fields = toggle_editable question_field model.question_fields }
-                         , selectAllInputText question_field.id )
-
+                         , post_toggle_field question_field)
       Answer answer_field ->
         let new_answer_field = { answer_field
           | editable = (if answer_field.editable then False else True)
           , hover = False } in
         ({ model | question_fields = update_answer new_answer_field model.question_fields}
-         , selectAllInputText new_answer_field.id )
+         , post_toggle_field new_answer_field )
 
     Hover field -> case field of
       Text text_field -> ({ model | text_fields = set_hover text_field True model.text_fields }
@@ -219,7 +221,7 @@ update msg model = let text = model.text in
 
     UnHover field -> case field of
       Text text_field -> ({ model | text_fields = set_hover text_field False model.text_fields }
-                     , selectAllInputText text_field.id )
+                     , Cmd.none )
       Question question_field -> ({ model | question_fields = set_hover question_field False model.question_fields }
                      , Cmd.none )
 
