@@ -1,6 +1,9 @@
-module Model exposing (Text, TextID, Question, QuestionType, Answer, textsDecoder, textEncoder, textDecoder)
+module Model exposing (Text, TextID, Question, QuestionType, Answer, textsDecoder, textEncoder, textDecoder
+  , textCreateRespDecoder, TextCreateResp)
 
 import Date exposing (..)
+
+import Dict exposing (Dict)
 
 import Array exposing (Array)
 
@@ -9,8 +12,6 @@ import Json.Decode.Extra exposing (date)
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 
 import Json.Encode as Encode
-
-type alias TextID = Int
 
 type alias Text = {
     id: Maybe TextID
@@ -36,6 +37,18 @@ textDecoder =
 
 textsDecoder : Decode.Decoder (List Text)
 textsDecoder = Decode.list textDecoder
+
+type alias TextID = Int
+
+type alias TextCreateResp = {
+    id: Maybe TextID
+  , errors: Maybe (Dict String String) }
+
+textCreateRespDecoder : Decode.Decoder (TextCreateResp)
+textCreateRespDecoder =
+  decode TextCreateResp
+    |> optional "id" (Decode.maybe Decode.int) Nothing
+    |> optional "errors" (Decode.maybe (Decode.dict Decode.string)) Nothing
 
 textEncoder : Text -> Array Question -> Encode.Value
 textEncoder text questions = Encode.object [

@@ -2,6 +2,7 @@ import json
 
 from django.http import HttpResponse
 from django.views.generic import TemplateView, View
+from django.db.models import ObjectDoesNotExist
 from text.models import Text, TextDifficulty
 
 from question.forms import QuestionForm, AnswerForm
@@ -28,11 +29,11 @@ class AdminAPIView(View):
     def get(self, request):
         texts = [text.to_dict() for text in self.model.objects.all()]
 
-        return HttpResponse(json.dumps(list(texts)))
+        return HttpResponse(json.dumps(list(texts)), status=400)
 
     def post(self, request, *args, **kwargs):
         def form_validation_errors(form):
-            return {k: str(form.errors[k].data[0].message) for k in form.errors.keys()}
+            return {"errors": {k: str(form.errors[k].data[0].message) for k in form.errors.keys()}}
 
         text_params = json.loads(request.body.decode('utf8'))
 
@@ -40,12 +41,17 @@ class AdminAPIView(View):
         if 'difficulty' not in text_params or not text_params['difficulty']:
             text_params['difficulty'] = 'intermediate_mid'
 
-        text_params['difficulty'] = TextDifficulty.objects.get(slug=text_params['difficulty']).pk
+        try:
+            text_params['difficulty'] = TextDifficulty.objects.get(slug=text_params['difficulty']).pk
+        except ObjectDoesNotExist:
+            return HttpResponse(json.dumps({"errors": {
+                'difficulty': "text difficulty {0} does not exist".format(text_params['difficulty'])
+            }}), status=400)
 
         text_form = TextForm(text_params)
 
         if not text_form.is_valid():
-            return HttpResponse(json.dumps(form_validation_errors(text_form)))
+            return HttpResponse(json.dumps(form_validation_errors(text_form)), status=400)
 
         text = text_form.save()
 
@@ -60,7 +66,7 @@ class AdminAPIView(View):
             question_form = QuestionForm(question_param)
 
             if not question_form.is_valid():
-                return HttpResponse(json.dumps(form_validation_errors(question_form)))
+                return HttpResponse(json.dumps(form_validation_errors(question_form)), status=400)
 
             question = question_form.save()
 
@@ -72,7 +78,7 @@ class AdminAPIView(View):
                 answer_form = AnswerForm(answer_param)
 
                 if not answer_form.is_valid():
-                    return HttpResponse(json.dumps(form_validation_errors(answer_form)))
+                    return HttpResponse(json.dumps(form_validation_errors(answer_form)), status=400)
 
                 answer = answer_form.save()
 
