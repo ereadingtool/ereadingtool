@@ -6,6 +6,7 @@ from text.models import Text, TextDifficulty
 
 from question.forms import QuestionForm, AnswerForm
 from text.forms import TextForm
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 
 class AdminView(TemplateView):
@@ -24,6 +25,10 @@ class AdminCreateQuizView(TemplateView):
 
 class AdminAPIView(View):
     model = Text
+
+    @ensure_csrf_cookie
+    def dispatch(self, request, *args, **kwargs):
+        super(AdminAPIView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request):
         texts = [text.to_dict() for text in self.model.objects.all()]
