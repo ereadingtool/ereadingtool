@@ -411,8 +411,12 @@ view_delete_menu_item field =
     Html.span [onClick (DeleteQuestion field.index)] [ Html.text "Delete" ]
 
 view_question_type_menu_item : QuestionField -> Html Msg
-view_question_type_menu_item field =
-    Html.div [] [ Html.div [] [ Html.text "Main Idea | Detail" ] ]
+view_question_type_menu_item field = let question_type = field.question.question_type in
+  Html.div [] [
+      (if question_type == "main_idea" then Html.strong [] [ Html.text "Main Idea" ] else Html.text "Main Idea")
+    , Html.text " | "
+    , (if question_type == "detail" then Html.strong [] [ Html.text "Detail" ] else Html.text "Detail")
+  ]
 
 view_menu_items : QuestionField -> List (Html Msg)
 view_menu_items field = List.map (\html -> div [attribute "class" "question_menu_item"] [html]) [

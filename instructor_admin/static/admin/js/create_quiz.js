@@ -9839,20 +9839,36 @@ var _user$project$Main$get_hover = F2(
 		}
 	});
 var _user$project$Main$view_question_type_menu_item = function (field) {
+	var question_type = field.question.question_type;
 	return A2(
 		_elm_lang$html$Html$div,
 		{ctor: '[]'},
 		{
 			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
+			_0: _elm_lang$core$Native_Utils.eq(question_type, 'main_idea') ? A2(
+				_elm_lang$html$Html$strong,
 				{ctor: '[]'},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text('Main Idea | Detail'),
+					_0: _elm_lang$html$Html$text('Main Idea'),
 					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
+				}) : _elm_lang$html$Html$text('Main Idea'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(' | '),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$core$Native_Utils.eq(question_type, 'detail') ? A2(
+						_elm_lang$html$Html$strong,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Detail'),
+							_1: {ctor: '[]'}
+						}) : _elm_lang$html$Html$text('Detail'),
+					_1: {ctor: '[]'}
+				}
+			}
 		});
 };
 var _user$project$Main$view_filter = function (model) {
