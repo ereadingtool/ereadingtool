@@ -8,9 +8,6 @@ import Array exposing (Array)
 import Http
 import HttpHelpers exposing (post_with_headers)
 
-import Dict exposing (Dict)
-import Debug
-
 import Model exposing (Text, Question, Answer, textsDecoder, textEncoder, textDecoder, textCreateRespDecoder,
   TextCreateResp)
 
@@ -27,6 +24,7 @@ type Msg = ToggleEditableField Field | Hover Field | UnHover Field | ToggleQuest
   | UpdateSource String
   | UpdateDifficulty String
   | UpdateBody String
+  | UpdateAuthor String
   | UpdateQuestionField QuestionField
   | UpdateQuestionBody QuestionField String
   | UpdateAnswerText QuestionField AnswerField String
@@ -79,7 +77,7 @@ new_text = {
   , modified_dt = Nothing
   , source = "source"
   , difficulty = ""
-  , author =""
+  , author = "author"
   , question_count = 0
   , body = "text" }
 
@@ -117,7 +115,8 @@ init flags = ({
           {id="title", editable=False, hover=False, index=0}
         , {id="source", editable=False, hover=False, index=1}
         , {id="difficulty", editable=False, hover=False, index=2}
-        , {id="body", editable=False, hover=False, index=3} ])
+        , {id="author", editable=False, hover=False, index=3}
+        , {id="body", editable=False, hover=False, index=4} ])
       , question_fields=(Array.indexedMap generate_question_field initial_questions)
   }, Cmd.none)
 
@@ -268,6 +267,7 @@ update msg model = let text = model.text in
     UpdateSource source ->  ({ model | text = { text | source = source }}, Cmd.none)
     UpdateDifficulty difficulty -> ({ model | text = { text | difficulty = difficulty }}, Cmd.none)
     UpdateBody body -> ({ model | text = { text | body = body }}, Cmd.none)
+    UpdateAuthor author -> ({ model | text = { text | author = author }}, Cmd.none)
 
     AddQuestion -> ({model | question_fields = add_new_question model.question_fields }, Cmd.none)
     DeleteQuestion index -> ({model | question_fields = delete_question index model.question_fields }, Cmd.none)
@@ -536,6 +536,19 @@ edit_body model field = Html.textarea [
       , attribute "id" field.id
       , onBlur (ToggleEditableField <| Text field) ] [ Html.text model.text.body ]
 
+view_author : Model -> TextField -> Html Msg
+view_author model field = Html.div (text_property_attrs field) [
+    Html.text "Author: "
+  , Html.text model.text.author ]
+
+edit_author : Model -> TextField -> Html Msg
+edit_author model field = Html.input [
+        attribute "type" "text"
+      , attribute "value" model.text.author
+      , attribute "id" "author"
+      , onInput UpdateAuthor
+      , onBlur (ToggleEditableField <| Text field) ] [ ]
+
 view_editable_field : Model -> Int -> (TextField -> Html Msg) -> (TextField -> Html Msg) -> Html Msg
 view_editable_field model i view edit = case Array.get i model.text_fields of
    Just field -> case field.editable of
@@ -549,8 +562,9 @@ view_create_text model = div [ classList [("text_properties", True)] ] [
           view_editable_field model 0 (view_title model) (edit_title model)
         , view_editable_field model 1 (view_source model) (edit_source model)
         , view_editable_field model 2 (edit_difficulty model) (edit_difficulty model)
+        , view_editable_field model 3 (view_author model) (edit_author model)
       ]
-      , div [ classList [("body",True)] ]  [ view_editable_field model 3 (view_body model) (edit_body model) ]
+      , div [ classList [("body",True)] ]  [ view_editable_field model 4 (view_body model) (edit_body model) ]
   ]
 
 view_msg : Maybe String -> Html Msg

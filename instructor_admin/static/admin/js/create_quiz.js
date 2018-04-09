@@ -10234,7 +10234,7 @@ var _user$project$Main$add_new_question = function (fields) {
 			_user$project$Main$new_question(arr_len)),
 		fields);
 };
-var _user$project$Main$new_text = {id: _elm_lang$core$Maybe$Nothing, title: 'title', created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing, source: 'source', difficulty: '', author: '', question_count: 0, body: 'text'};
+var _user$project$Main$new_text = {id: _elm_lang$core$Maybe$Nothing, title: 'title', created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing, source: 'source', difficulty: '', author: 'author', question_count: 0, body: 'text'};
 var _user$project$Main$init = function (flags) {
 	return {
 		ctor: '_Tuple2',
@@ -10255,8 +10255,12 @@ var _user$project$Main$init = function (flags) {
 							_0: {id: 'difficulty', editable: false, hover: false, index: 2},
 							_1: {
 								ctor: '::',
-								_0: {id: 'body', editable: false, hover: false, index: 3},
-								_1: {ctor: '[]'}
+								_0: {id: 'author', editable: false, hover: false, index: 3},
+								_1: {
+									ctor: '::',
+									_0: {id: 'body', editable: false, hover: false, index: 4},
+									_1: {ctor: '[]'}
+								}
 							}
 						}
 					}
@@ -10565,6 +10569,18 @@ var _user$project$Main$update = F2(
 							text: _elm_lang$core$Native_Utils.update(
 								text,
 								{body: _p7._0})
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'UpdateAuthor':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							text: _elm_lang$core$Native_Utils.update(
+								text,
+								{author: _p7._0})
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -10909,6 +10925,9 @@ var _user$project$Main$view_menu_items = function (field) {
 				_1: {ctor: '[]'}
 			}
 		});
+};
+var _user$project$Main$UpdateAuthor = function (a) {
+	return {ctor: 'UpdateAuthor', _0: a};
 };
 var _user$project$Main$UpdateBody = function (a) {
 	return {ctor: 'UpdateBody', _0: a};
@@ -11469,6 +11488,21 @@ var _user$project$Main$view_body = F2(
 				}
 			});
 	});
+var _user$project$Main$view_author = F2(
+	function (model, field) {
+		return A2(
+			_elm_lang$html$Html$div,
+			_user$project$Main$text_property_attrs(field),
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('Author: '),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(model.text.author),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
 var _user$project$Main$edit_title = F2(
 	function (model, field) {
 		return A2(
@@ -11552,6 +11586,35 @@ var _user$project$Main$edit_body = F2(
 				_1: {ctor: '[]'}
 			});
 	});
+var _user$project$Main$edit_author = F2(
+	function (model, field) {
+		return A2(
+			_elm_lang$html$Html$input,
+			{
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', model.text.author),
+					_1: {
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'author'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateAuthor),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onBlur(
+									_user$project$Main$ToggleEditableField(
+										_user$project$Main$Text(field))),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}
+			},
+			{ctor: '[]'});
+	});
 var _user$project$Main$view_create_text = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -11603,7 +11666,16 @@ var _user$project$Main$view_create_text = function (model) {
 								2,
 								_user$project$Main$edit_difficulty(model),
 								_user$project$Main$edit_difficulty(model)),
-							_1: {ctor: '[]'}
+							_1: {
+								ctor: '::',
+								_0: A4(
+									_user$project$Main$view_editable_field,
+									model,
+									3,
+									_user$project$Main$view_author(model),
+									_user$project$Main$edit_author(model)),
+								_1: {ctor: '[]'}
+							}
 						}
 					}
 				}),
@@ -11626,7 +11698,7 @@ var _user$project$Main$view_create_text = function (model) {
 						_0: A4(
 							_user$project$Main$view_editable_field,
 							model,
-							3,
+							4,
 							_user$project$Main$view_body(model),
 							_user$project$Main$edit_body(model)),
 						_1: {ctor: '[]'}
