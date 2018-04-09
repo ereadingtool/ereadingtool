@@ -22,7 +22,7 @@ import Flags exposing (CSRFToken, Flags)
 
 type Field = Text TextField | Question QuestionField | Answer AnswerField
 
-type Msg = ToggleEditableField Field | Hover Field | UnHover Field
+type Msg = ToggleEditableField Field | Hover Field | UnHover Field | ToggleQuestionMenu QuestionField
   | UpdateTitle String
   | UpdateSource String
   | UpdateDifficulty String
@@ -56,6 +56,7 @@ type alias QuestionField = {
   , hover : Bool
   , question : Question
   , answer_fields : Array AnswerField
+  , menu_visible : Bool
   , index : Int }
 
 
@@ -141,6 +142,7 @@ generate_question_field i question = {
   , hover=False
   , question=question
   , answer_fields=(Array.indexedMap (generate_answer_field i question) question.answers)
+  , menu_visible=True
   , index=i }
 
 generate_answer_field : Int -> Question -> Int -> Answer -> AnswerField
@@ -190,6 +192,10 @@ update_answer answer_field question_fields =
       | answer_fields = Array.set answer_field.index answer_field question_field.answer_fields } in
       Array.set new_question_field.index new_question_field question_fields
     _ -> question_fields
+
+update_question_field : QuestionField -> Array QuestionField -> Array QuestionField
+update_question_field new_question_field question_fields =
+  Array.set new_question_field.index new_question_field question_fields
 
 post_toggle_field : { a | id: String, hover : Bool, index : Int, editable : Bool } -> Cmd Msg
 post_toggle_field field = if not field.editable then (selectAllInputText field.id) else Cmd.none
@@ -279,6 +285,10 @@ update msg model = let text = model.text in
         _ -> ({ model | error_msg = Just <| String.join " " ["something went wrong: ", resp.body]}, Cmd.none)
       Http.BadPayload err resp -> ({ model | error_msg = Just err}, Cmd.none)
       _ -> ({ model | error_msg = Just "some unspecified error"}, Cmd.none)
+
+    ToggleQuestionMenu field ->
+      let new_field = { field | menu_visible = (if field.menu_visible then False else True) } in
+        ({ model | question_fields = update_question_field new_field model.question_fields }, Cmd.none)
 
 post_text : CSRFToken -> Text -> Array Question -> Cmd Msg
 post_text csrftoken text questions =
@@ -396,13 +406,40 @@ view_editable_answer question_field answer_field = div [
            False -> view_answer question_field answer_field)
   ]
 
+view_delete_menu_item : QuestionField -> Html Msg
+view_delete_menu_item field =
+    Html.span [onClick (DeleteQuestion field.index)] [ Html.text "Delete" ]
+
+view_question_type_menu_item : QuestionField -> Html Msg
+view_question_type_menu_item field =
+    Html.div [] [ Html.div [] [ Html.text "Main Idea | Detail" ] ]
+
+view_menu_items : QuestionField -> List (Html Msg)
+view_menu_items field = List.map (\html -> div [attribute "class" "question_menu_item"] [html]) [
+      (view_delete_menu_item field)
+    , (view_question_type_menu_item field)
+  ]
+
+view_question_menu : QuestionField -> List (Html Msg)
+view_question_menu field = [
+    div [ classList [("question_menu", True)], onClick (ToggleQuestionMenu <| field) ] [
+        Html.div [] [
+          Html.img [
+            attribute "src" "/static/img/action_arrow.svg"
+          ] []
+        ], Html.div [
+          classList [("question_menu_overlay", True), ("hidden", field.menu_visible)]
+        ] (view_menu_items field)
+    ]
+  ]
+
 view_editable_question : QuestionField -> Html Msg
 view_editable_question field = div [classList [("question", True)]] <| [
        div [] [ Html.input [attribute "type" "checkbox"] [] ]
        , (case field.editable of
           True -> edit_question field
           _ -> view_question field)
-    ] ++ [ div [classList [("delete", True)], onClick (DeleteQuestion field.index) ] [ Html.text "X" ] ] ++
+    ] ++ (view_question_menu field) ++
     (Array.toList <| Array.map (view_editable_answer field) field.answer_fields)
 
 view_add_question : Array QuestionField -> Html Msg

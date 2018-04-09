@@ -1,4 +1,4 @@
-module Model exposing (Text, TextID, Question, QuestionType, Answer, textsDecoder, textEncoder, textDecoder
+module Model exposing (Text, TextID, Question, Answer, textsDecoder, textEncoder, textDecoder
   , textCreateRespDecoder, TextCreateResp)
 
 import Date exposing (..)
@@ -58,8 +58,6 @@ textEncoder text questions = Encode.object [
     , ("body", Encode.string text.body)
     , ("questions", (questionsEncoder questions))
   ]
-
-type QuestionType = MainIdea | Detail
 
 type alias Answer = {
     id: Maybe Int

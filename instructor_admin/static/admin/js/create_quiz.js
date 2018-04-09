@@ -9785,8 +9785,6 @@ var _user$project$Model$questionDecoder = A3(
 								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$Question)))))))));
 var _user$project$Model$questionsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Model$questionDecoder);
-var _user$project$Model$Detail = {ctor: 'Detail'};
-var _user$project$Model$MainIdea = {ctor: 'MainIdea'};
 
 var _user$project$Ports$selectAllInputText = _elm_lang$core$Native_Platform.outgoingPort(
 	'selectAllInputText',
@@ -9840,6 +9838,23 @@ var _user$project$Main$get_hover = F2(
 			return false;
 		}
 	});
+var _user$project$Main$view_question_type_menu_item = function (field) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Main Idea | Detail'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		});
+};
 var _user$project$Main$view_filter = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -10031,6 +10046,10 @@ var _user$project$Main$view_header = function (model) {
 var _user$project$Main$post_toggle_field = function (field) {
 	return (!field.editable) ? _user$project$Ports$selectAllInputText(field.id) : _elm_lang$core$Platform_Cmd$none;
 };
+var _user$project$Main$update_question_field = F2(
+	function (new_question_field, question_fields) {
+		return A3(_elm_lang$core$Array$set, new_question_field.index, new_question_field, question_fields);
+	});
 var _user$project$Main$update_answer = F2(
 	function (answer_field, question_fields) {
 		var _p5 = A2(_elm_lang$core$Array$get, answer_field.question_field_index, question_fields);
@@ -10149,6 +10168,7 @@ var _user$project$Main$generate_question_field = F2(
 				_elm_lang$core$Array$indexedMap,
 				A2(_user$project$Main$generate_answer_field, i, question),
 				question.answers),
+			menu_visible: true,
 			index: i
 		};
 	});
@@ -10267,9 +10287,9 @@ var _user$project$Main$AnswerField = F6(
 	function (a, b, c, d, e, f) {
 		return {id: a, editable: b, hover: c, answer: d, question_field_index: e, index: f};
 	});
-var _user$project$Main$QuestionField = F6(
-	function (a, b, c, d, e, f) {
-		return {id: a, editable: b, hover: c, question: d, answer_fields: e, index: f};
+var _user$project$Main$QuestionField = F7(
+	function (a, b, c, d, e, f, g) {
+		return {id: a, editable: b, hover: c, question: d, answer_fields: e, menu_visible: f, index: g};
 	});
 var _user$project$Main$Model = F6(
 	function (a, b, c, d, e, f) {
@@ -10596,7 +10616,7 @@ var _user$project$Main$update = F2(
 						{error_msg: _elm_lang$core$Maybe$Nothing, success_msg: _elm_lang$core$Maybe$Nothing}),
 					_1: A3(_user$project$Main$post_text, model.flags.csrftoken, model.text, questions)
 				};
-			default:
+			case 'Submitted':
 				if (_p7._0.ctor === 'Ok') {
 					var _p18 = _p7._0._0.id;
 					if (_p18.ctor === 'Just') {
@@ -10673,6 +10693,22 @@ var _user$project$Main$update = F2(
 							};
 					}
 				}
+			default:
+				var _p22 = _p7._0;
+				var new_field = _elm_lang$core$Native_Utils.update(
+					_p22,
+					{
+						menu_visible: _p22.menu_visible ? false : true
+					});
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							question_fields: A2(_user$project$Main$update_question_field, new_field, model.question_fields)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 		}
 	});
 var _user$project$Main$SubmitQuiz = {ctor: 'SubmitQuiz'};
@@ -10720,6 +10756,48 @@ var _user$project$Main$view_submit = function (model) {
 };
 var _user$project$Main$DeleteQuestion = function (a) {
 	return {ctor: 'DeleteQuestion', _0: a};
+};
+var _user$project$Main$view_delete_menu_item = function (field) {
+	return A2(
+		_elm_lang$html$Html$span,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Events$onClick(
+				_user$project$Main$DeleteQuestion(field.index)),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text('Delete'),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Main$view_menu_items = function (field) {
+	return A2(
+		_elm_lang$core$List$map,
+		function (html) {
+			return A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'question_menu_item'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: html,
+					_1: {ctor: '[]'}
+				});
+		},
+		{
+			ctor: '::',
+			_0: _user$project$Main$view_delete_menu_item(field),
+			_1: {
+				ctor: '::',
+				_0: _user$project$Main$view_question_type_menu_item(field),
+				_1: {ctor: '[]'}
+			}
+		});
 };
 var _user$project$Main$AddQuestion = {ctor: 'AddQuestion'};
 var _user$project$Main$view_add_question = function (fields) {
@@ -10791,19 +10869,19 @@ var _user$project$Main$edit_difficulty = F2(
 								{ctor: '[]'},
 								A2(
 									_elm_lang$core$List$map,
-									function (_p22) {
-										var _p23 = _p22;
-										var _p24 = _p23._1;
+									function (_p23) {
+										var _p24 = _p23;
+										var _p25 = _p24._1;
 										return A2(
 											_elm_lang$html$Html$option,
-											_elm_lang$core$Native_Utils.eq(_p24, model.text.difficulty) ? {
+											_elm_lang$core$Native_Utils.eq(_p25, model.text.difficulty) ? {
 												ctor: '::',
 												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'selected', ''),
 												_1: {ctor: '[]'}
 											} : {ctor: '[]'},
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html$text(_p24),
+												_0: _elm_lang$html$Html$text(_p25),
 												_1: {ctor: '[]'}
 											});
 									},
@@ -10819,6 +10897,71 @@ var _user$project$Main$UpdateSource = function (a) {
 };
 var _user$project$Main$UpdateTitle = function (a) {
 	return {ctor: 'UpdateTitle', _0: a};
+};
+var _user$project$Main$ToggleQuestionMenu = function (a) {
+	return {ctor: 'ToggleQuestionMenu', _0: a};
+};
+var _user$project$Main$view_question_menu = function (field) {
+	return {
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'question_menu', _1: true},
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(
+						_user$project$Main$ToggleQuestionMenu(field)),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$img,
+							{
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/action_arrow.svg'),
+								_1: {ctor: '[]'}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$classList(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'question_menu_overlay', _1: true},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'hidden', _1: field.menu_visible},
+										_1: {ctor: '[]'}
+									}
+								}),
+							_1: {ctor: '[]'}
+						},
+						_user$project$Main$view_menu_items(field)),
+					_1: {ctor: '[]'}
+				}
+			}),
+		_1: {ctor: '[]'}
+	};
 };
 var _user$project$Main$UnHover = function (a) {
 	return {ctor: 'UnHover', _0: a};
@@ -11110,8 +11253,8 @@ var _user$project$Main$view_editable_answer = F2(
 				_1: {
 					ctor: '::',
 					_0: function () {
-						var _p25 = answer_field.editable;
-						if (_p25 === true) {
+						var _p26 = answer_field.editable;
+						if (_p26 === true) {
 							return A2(_user$project$Main$edit_answer, question_field, answer_field);
 						} else {
 							return A2(_user$project$Main$view_answer, question_field, answer_field);
@@ -11156,8 +11299,8 @@ var _user$project$Main$view_editable_question = function (field) {
 				_1: {
 					ctor: '::',
 					_0: function () {
-						var _p26 = field.editable;
-						if (_p26 === true) {
+						var _p27 = field.editable;
+						if (_p27 === true) {
 							return _user$project$Main$edit_question(field);
 						} else {
 							return _user$project$Main$view_question(field);
@@ -11168,32 +11311,7 @@ var _user$project$Main$view_editable_question = function (field) {
 			},
 			A2(
 				_elm_lang$core$Basics_ops['++'],
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$classList(
-								{
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'delete', _1: true},
-									_1: {ctor: '[]'}
-								}),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(
-									_user$project$Main$DeleteQuestion(field.index)),
-								_1: {ctor: '[]'}
-							}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('X'),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				},
+				_user$project$Main$view_question_menu(field),
 				_elm_lang$core$Array$toList(
 					A2(
 						_elm_lang$core$Array$map,

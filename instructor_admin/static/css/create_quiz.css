@@ -230,10 +230,47 @@ body {
     grid-template-columns: 4% auto 1.5%;
 
     grid-column: 2;
+
+    grid-row-gap: 15px;
+    grid-column-gap: 15px;
 }
 
 .question_item {
-    margin-bottom: 3%;
+    grid-column: 2;
+}
+
+.question_menu {
+    position: relative;
+    cursor: pointer;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.question_menu_overlay {
+    position: absolute;
+
+    z-index: 2;
+    right: 0;
+
+    background: #FFFFFF;
+
+    font-family: "Helvetica Neue";
+    font-size: 14px;
+
+    border: solid 0.5px lightgrey;
+    border-radius: 2px;
+    box-shadow: 0 1px 16px rgba(0,0,0,.1);
+    display: grid;
+
+    grid-template-columns: 20% 200px 20%;
+
+    cursor: pointer;
+}
+
+.question_menu_item {
+    margin: 15% 5% 15% 5%;
     grid-column: 2;
 }
 
@@ -249,6 +286,7 @@ body {
 
 .add_question {
     grid-column: 2;
+    cursor: pointer;
 }
 
 .delete {
@@ -263,4 +301,5 @@ body {
 
 .submit {
     grid-column: 2;
+    cursor: pointer;
 }
