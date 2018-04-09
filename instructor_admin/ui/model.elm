@@ -20,6 +20,7 @@ type alias Text = {
   , modified_dt: Maybe Date
   , source: String
   , difficulty: String
+  , author: String
   , question_count : Int
   , body : String }
 
@@ -32,6 +33,7 @@ textDecoder =
     |> required "modified_dt" (Decode.nullable date)
     |> required "source" Decode.string
     |> required "difficulty" Decode.string
+    |> required "author" Decode.string
     |> required "question_count" Decode.int
     |> required "body" Decode.string
 

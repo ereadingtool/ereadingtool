@@ -9663,9 +9663,9 @@ var _user$project$Model$textEncoder = F2(
 				}
 			});
 	});
-var _user$project$Model$Text = F8(
-	function (a, b, c, d, e, f, g, h) {
-		return {id: a, title: b, created_dt: c, modified_dt: d, source: e, difficulty: f, question_count: g, body: h};
+var _user$project$Model$Text = F9(
+	function (a, b, c, d, e, f, g, h, i) {
+		return {id: a, title: b, created_dt: c, modified_dt: d, source: e, difficulty: f, author: g, question_count: h, body: i};
 	});
 var _user$project$Model$textDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -9677,29 +9677,33 @@ var _user$project$Model$textDecoder = A3(
 		_elm_lang$core$Json_Decode$int,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'difficulty',
+			'author',
 			_elm_lang$core$Json_Decode$string,
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'source',
+				'difficulty',
 				_elm_lang$core$Json_Decode$string,
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'modified_dt',
-					_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+					'source',
+					_elm_lang$core$Json_Decode$string,
 					A3(
 						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'created_dt',
+						'modified_dt',
 						_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
 						A3(
 							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'title',
-							_elm_lang$core$Json_Decode$string,
+							'created_dt',
+							_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
 							A3(
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'id',
-								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$Text)))))))));
+								'title',
+								_elm_lang$core$Json_Decode$string,
+								A3(
+									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+									'id',
+									_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$Text))))))))));
 var _user$project$Model$textsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Model$textDecoder);
 var _user$project$Model$TextCreateResp = F2(
 	function (a, b) {
@@ -10230,7 +10234,7 @@ var _user$project$Main$add_new_question = function (fields) {
 			_user$project$Main$new_question(arr_len)),
 		fields);
 };
-var _user$project$Main$new_text = {id: _elm_lang$core$Maybe$Nothing, title: 'title', created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing, source: 'source', difficulty: '', question_count: 0, body: 'text'};
+var _user$project$Main$new_text = {id: _elm_lang$core$Maybe$Nothing, title: 'title', created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing, source: 'source', difficulty: '', author: '', question_count: 0, body: 'text'};
 var _user$project$Main$init = function (flags) {
 	return {
 		ctor: '_Tuple2',

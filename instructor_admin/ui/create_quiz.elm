@@ -79,6 +79,7 @@ new_text = {
   , modified_dt = Nothing
   , source = "source"
   , difficulty = ""
+  , author =""
   , question_count = 0
   , body = "text" }
 
