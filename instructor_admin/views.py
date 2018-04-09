@@ -29,7 +29,7 @@ class AdminAPIView(View):
     def get(self, request):
         texts = [text.to_dict() for text in self.model.objects.all()]
 
-        return HttpResponse(json.dumps(list(texts)), status=400)
+        return HttpResponse(json.dumps(list(texts)))
 
     def post(self, request, *args, **kwargs):
         def form_validation_errors(form):

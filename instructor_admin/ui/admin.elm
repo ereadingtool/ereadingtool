@@ -13,12 +13,15 @@ import Ports
 -- UPDATE
 type Msg = Update (Result Http.Error (List Text))
 
-type alias Model = { texts : List Text }
+type alias Model = {
+    texts : List Text
+  , flags : Flags
+  }
 
 type alias Filter = List String
 
 init : Flags -> (Model, Cmd Msg)
-init flags = (Model  [], updateTexts [])
+init flags = (Model [] flags, updateTexts [])
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -34,7 +37,7 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     Update (Ok texts) ->
-      (Model texts, Cmd.none)
+      ({ model | texts = texts }, Cmd.none)
     -- handle user-friendly msgs
     Update (Err _) ->
       (model, Cmd.none)

@@ -10130,24 +10130,27 @@ var _user$project$Main$view = function (model) {
 			}
 		});
 };
-var _user$project$Main$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$none;
-};
-var _user$project$Main$Model = function (a) {
-	return {texts: a};
-};
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var _p1 = msg;
 		if (_p1._0.ctor === 'Ok') {
 			return {
 				ctor: '_Tuple2',
-				_0: _user$project$Main$Model(_p1._0._0),
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{texts: _p1._0._0}),
 				_1: _elm_lang$core$Platform_Cmd$none
 			};
 		} else {
 			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
+	});
+var _user$project$Main$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$none;
+};
+var _user$project$Main$Model = F2(
+	function (a, b) {
+		return {texts: a, flags: b};
 	});
 var _user$project$Main$Update = function (a) {
 	return {ctor: 'Update', _0: a};
@@ -10159,8 +10162,10 @@ var _user$project$Main$updateTexts = function (filter) {
 var _user$project$Main$init = function (flags) {
 	return {
 		ctor: '_Tuple2',
-		_0: _user$project$Main$Model(
-			{ctor: '[]'}),
+		_0: A2(
+			_user$project$Main$Model,
+			{ctor: '[]'},
+			flags),
 		_1: _user$project$Main$updateTexts(
 			{ctor: '[]'})
 	};
