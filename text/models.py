@@ -20,6 +20,7 @@ class Text(Timestamped, models.Model):
     body = models.TextField(blank=False)
 
     title = models.CharField(max_length=255, blank=True)
+    author = models.CharField(max_length=255, blank=True)
 
     def to_dict(self):
         return {
@@ -30,7 +31,8 @@ class Text(Timestamped, models.Model):
             'question_count': len(list(self.questions.all())),
             'source': self.source,
             'difficulty': self.difficulty.name,
-            'body': self.body
+            'body': self.body,
+            'author': self.author
         }
 
     def __str__(self):
