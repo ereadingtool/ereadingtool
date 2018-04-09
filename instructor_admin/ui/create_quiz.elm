@@ -27,6 +27,7 @@ type Msg = ToggleEditableField Field | Hover Field | UnHover Field | ToggleQuest
   | UpdateSource String
   | UpdateDifficulty String
   | UpdateBody String
+  | UpdateQuestionField QuestionField
   | UpdateQuestionBody QuestionField String
   | UpdateAnswerText QuestionField AnswerField String
   | UpdateAnswerCorrect QuestionField AnswerField Bool
@@ -238,7 +239,10 @@ update msg model = let text = model.text in
     UpdateQuestionBody field body ->
       let question = field.question in
       let new_field = {field | question = {question | body = body} } in
-        ({ model | question_fields = Array.set field.index new_field model.question_fields }, Cmd.none)
+        ({ model | question_fields = update_question_field new_field model.question_fields }, Cmd.none)
+
+    UpdateQuestionField new_field ->
+        ({ model | question_fields = update_question_field new_field model.question_fields }, Cmd.none)
 
     UpdateAnswerText question_field answer_field text ->
       let answer = answer_field.answer in
@@ -411,11 +415,21 @@ view_delete_menu_item field =
     Html.span [onClick (DeleteQuestion field.index)] [ Html.text "Delete" ]
 
 view_question_type_menu_item : QuestionField -> Html Msg
-view_question_type_menu_item field = let question_type = field.question.question_type in
+view_question_type_menu_item field = let question = field.question in
   Html.div [] [
-      (if question_type == "main_idea" then Html.strong [] [ Html.text "Main Idea" ] else Html.text "Main Idea")
+      (if question.question_type == "main_idea" then
+        Html.strong [] [ Html.text "Main Idea" ]
+       else
+        Html.span [
+          onClick (UpdateQuestionField { field | question = { question | question_type = "main_idea" } })
+        ] [ Html.text "Main Idea" ])
     , Html.text " | "
-    , (if question_type == "detail" then Html.strong [] [ Html.text "Detail" ] else Html.text "Detail")
+    , (if question.question_type == "detail" then
+        Html.strong [] [ Html.text "Detail" ]
+       else
+        Html.span [
+          onClick (UpdateQuestionField { field | question = { question | question_type = "detail" } })
+        ] [ Html.text "Detail" ])
   ]
 
 view_menu_items : QuestionField -> List (Html Msg)
@@ -426,10 +440,11 @@ view_menu_items field = List.map (\html -> div [attribute "class" "question_menu
 
 view_question_menu : QuestionField -> List (Html Msg)
 view_question_menu field = [
-    div [ classList [("question_menu", True)], onClick (ToggleQuestionMenu <| field) ] [
+    div [ classList [("question_menu", True)] ] [
         Html.div [] [
           Html.img [
-            attribute "src" "/static/img/action_arrow.svg"
+              attribute "src" "/static/img/action_arrow.svg"
+            , onClick (ToggleQuestionMenu <| field)
           ] []
         ], Html.div [
           classList [("question_menu_overlay", True), ("hidden", field.menu_visible)]

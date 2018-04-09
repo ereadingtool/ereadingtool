@@ -9838,39 +9838,6 @@ var _user$project$Main$get_hover = F2(
 			return false;
 		}
 	});
-var _user$project$Main$view_question_type_menu_item = function (field) {
-	var question_type = field.question.question_type;
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: _elm_lang$core$Native_Utils.eq(question_type, 'main_idea') ? A2(
-				_elm_lang$html$Html$strong,
-				{ctor: '[]'},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text('Main Idea'),
-					_1: {ctor: '[]'}
-				}) : _elm_lang$html$Html$text('Main Idea'),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$html$Html$text(' | '),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$core$Native_Utils.eq(question_type, 'detail') ? A2(
-						_elm_lang$html$Html$strong,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('Detail'),
-							_1: {ctor: '[]'}
-						}) : _elm_lang$html$Html$text('Detail'),
-					_1: {ctor: '[]'}
-				}
-			}
-		});
-};
 var _user$project$Main$view_filter = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -10475,7 +10442,17 @@ var _user$project$Main$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							question_fields: A3(_elm_lang$core$Array$set, _p14.index, new_field, model.question_fields)
+							question_fields: A2(_user$project$Main$update_question_field, new_field, model.question_fields)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'UpdateQuestionField':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							question_fields: A2(_user$project$Main$update_question_field, _p7._0, model.question_fields)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -10788,33 +10765,6 @@ var _user$project$Main$view_delete_menu_item = function (field) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Main$view_menu_items = function (field) {
-	return A2(
-		_elm_lang$core$List$map,
-		function (html) {
-			return A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'question_menu_item'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: html,
-					_1: {ctor: '[]'}
-				});
-		},
-		{
-			ctor: '::',
-			_0: _user$project$Main$view_delete_menu_item(field),
-			_1: {
-				ctor: '::',
-				_0: _user$project$Main$view_question_type_menu_item(field),
-				_1: {ctor: '[]'}
-			}
-		});
-};
 var _user$project$Main$AddQuestion = {ctor: 'AddQuestion'};
 var _user$project$Main$view_add_question = function (fields) {
 	return A2(
@@ -10855,6 +10805,107 @@ var _user$project$Main$UpdateQuestionBody = F2(
 	function (a, b) {
 		return {ctor: 'UpdateQuestionBody', _0: a, _1: b};
 	});
+var _user$project$Main$UpdateQuestionField = function (a) {
+	return {ctor: 'UpdateQuestionField', _0: a};
+};
+var _user$project$Main$view_question_type_menu_item = function (field) {
+	var question = field.question;
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _elm_lang$core$Native_Utils.eq(question.question_type, 'main_idea') ? A2(
+				_elm_lang$html$Html$strong,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Main Idea'),
+					_1: {ctor: '[]'}
+				}) : A2(
+				_elm_lang$html$Html$span,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(
+						_user$project$Main$UpdateQuestionField(
+							_elm_lang$core$Native_Utils.update(
+								field,
+								{
+									question: _elm_lang$core$Native_Utils.update(
+										question,
+										{question_type: 'main_idea'})
+								}))),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Main Idea'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(' | '),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$core$Native_Utils.eq(question.question_type, 'detail') ? A2(
+						_elm_lang$html$Html$strong,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Detail'),
+							_1: {ctor: '[]'}
+						}) : A2(
+						_elm_lang$html$Html$span,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(
+								_user$project$Main$UpdateQuestionField(
+									_elm_lang$core$Native_Utils.update(
+										field,
+										{
+											question: _elm_lang$core$Native_Utils.update(
+												question,
+												{question_type: 'detail'})
+										}))),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Detail'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
+var _user$project$Main$view_menu_items = function (field) {
+	return A2(
+		_elm_lang$core$List$map,
+		function (html) {
+			return A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'question_menu_item'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: html,
+					_1: {ctor: '[]'}
+				});
+		},
+		{
+			ctor: '::',
+			_0: _user$project$Main$view_delete_menu_item(field),
+			_1: {
+				ctor: '::',
+				_0: _user$project$Main$view_question_type_menu_item(field),
+				_1: {ctor: '[]'}
+			}
+		});
+};
 var _user$project$Main$UpdateBody = function (a) {
 	return {ctor: 'UpdateBody', _0: a};
 };
@@ -10930,12 +10981,7 @@ var _user$project$Main$view_question_menu = function (field) {
 						_0: {ctor: '_Tuple2', _0: 'question_menu', _1: true},
 						_1: {ctor: '[]'}
 					}),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onClick(
-						_user$project$Main$ToggleQuestionMenu(field)),
-					_1: {ctor: '[]'}
-				}
+				_1: {ctor: '[]'}
 			},
 			{
 				ctor: '::',
@@ -10949,7 +10995,12 @@ var _user$project$Main$view_question_menu = function (field) {
 							{
 								ctor: '::',
 								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/action_arrow.svg'),
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onClick(
+										_user$project$Main$ToggleQuestionMenu(field)),
+									_1: {ctor: '[]'}
+								}
 							},
 							{ctor: '[]'}),
 						_1: {ctor: '[]'}
