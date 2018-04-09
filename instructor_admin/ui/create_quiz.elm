@@ -519,9 +519,8 @@ edit_difficulty model field = Html.div [] [
     , Html.select [
          onInput UpdateDifficulty ] [
         Html.optgroup [] (List.map (\(k,v) ->
-          Html.option (if v == model.text.difficulty then [attribute "selected" ""] else []) [Html.text v])
-          question_difficulties
-        )
+          Html.option ([attribute "value" k] ++ (if v == model.text.difficulty then [attribute "selected" ""] else []))
+           [ Html.text v ]) question_difficulties)
        ]
   ]
 

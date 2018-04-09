@@ -10964,11 +10964,18 @@ var _user$project$Main$edit_difficulty = F2(
 										var _p25 = _p24._1;
 										return A2(
 											_elm_lang$html$Html$option,
-											_elm_lang$core$Native_Utils.eq(_p25, model.text.difficulty) ? {
-												ctor: '::',
-												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'selected', ''),
-												_1: {ctor: '[]'}
-											} : {ctor: '[]'},
+											A2(
+												_elm_lang$core$Basics_ops['++'],
+												{
+													ctor: '::',
+													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', _p24._0),
+													_1: {ctor: '[]'}
+												},
+												_elm_lang$core$Native_Utils.eq(_p25, model.text.difficulty) ? {
+													ctor: '::',
+													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'selected', ''),
+													_1: {ctor: '[]'}
+												} : {ctor: '[]'}),
 											{
 												ctor: '::',
 												_0: _elm_lang$html$Html$text(_p25),
