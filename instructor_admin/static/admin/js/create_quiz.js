@@ -10345,20 +10345,22 @@ var _user$project$Main$update = F2(
 						};
 					default:
 						var _p11 = _p8._0;
-						var new_answer_field = _elm_lang$core$Native_Utils.update(
-							_p11,
-							{
-								editable: _p11.editable ? false : true,
-								hover: false
-							});
 						return {
 							ctor: '_Tuple2',
 							_0: _elm_lang$core$Native_Utils.update(
 								model,
 								{
-									question_fields: A2(_user$project$Main$update_answer, new_answer_field, model.question_fields)
+									question_fields: A2(
+										_user$project$Main$update_answer,
+										_elm_lang$core$Native_Utils.update(
+											_p11,
+											{
+												editable: _p11.editable ? false : true,
+												hover: false
+											}),
+										model.question_fields)
 								}),
-							_1: _user$project$Main$post_toggle_field(new_answer_field)
+							_1: _user$project$Main$post_toggle_field(_p11)
 						};
 				}
 			case 'Hover':

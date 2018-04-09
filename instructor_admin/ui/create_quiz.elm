@@ -210,11 +210,10 @@ update msg model = let text = model.text in
       Question question_field -> ({ model | question_fields = toggle_editable question_field model.question_fields }
                          , post_toggle_field question_field)
       Answer answer_field ->
-        let new_answer_field = { answer_field
+        ({ model | question_fields = update_answer { answer_field
           | editable = (if answer_field.editable then False else True)
-          , hover = False } in
-        ({ model | question_fields = update_answer new_answer_field model.question_fields}
-         , post_toggle_field new_answer_field )
+          , hover = False } model.question_fields}
+         , post_toggle_field answer_field )
 
     Hover field -> case field of
       Text text_field -> ({ model | text_fields = set_hover text_field True model.text_fields }
