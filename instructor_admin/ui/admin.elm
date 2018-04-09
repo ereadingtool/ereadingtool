@@ -8,6 +8,8 @@ import Model exposing (Text, textsDecoder)
 import Config exposing (..)
 import Flags exposing (Flags)
 
+import Ports
+
 -- UPDATE
 type Msg = Update (Result Http.Error (List Text))
 

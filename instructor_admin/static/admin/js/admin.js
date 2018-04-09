@@ -9534,9 +9534,9 @@ var _user$project$Model$textEncoder = F2(
 				}
 			});
 	});
-var _user$project$Model$Text = F8(
-	function (a, b, c, d, e, f, g, h) {
-		return {id: a, title: b, created_dt: c, modified_dt: d, source: e, difficulty: f, question_count: g, body: h};
+var _user$project$Model$Text = F9(
+	function (a, b, c, d, e, f, g, h, i) {
+		return {id: a, title: b, created_dt: c, modified_dt: d, source: e, difficulty: f, author: g, question_count: h, body: i};
 	});
 var _user$project$Model$textDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -9548,30 +9548,50 @@ var _user$project$Model$textDecoder = A3(
 		_elm_lang$core$Json_Decode$int,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'difficulty',
+			'author',
 			_elm_lang$core$Json_Decode$string,
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'source',
+				'difficulty',
 				_elm_lang$core$Json_Decode$string,
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'modified_dt',
-					_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+					'source',
+					_elm_lang$core$Json_Decode$string,
 					A3(
 						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'created_dt',
+						'modified_dt',
 						_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
 						A3(
 							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'title',
-							_elm_lang$core$Json_Decode$string,
+							'created_dt',
+							_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
 							A3(
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'id',
-								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$Text)))))))));
+								'title',
+								_elm_lang$core$Json_Decode$string,
+								A3(
+									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+									'id',
+									_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$Text))))))))));
 var _user$project$Model$textsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Model$textDecoder);
+var _user$project$Model$TextCreateResp = F2(
+	function (a, b) {
+		return {id: a, errors: b};
+	});
+var _user$project$Model$textCreateRespDecoder = A4(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+	'errors',
+	_elm_lang$core$Json_Decode$maybe(
+		_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string)),
+	_elm_lang$core$Maybe$Nothing,
+	A4(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+		'id',
+		_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$int),
+		_elm_lang$core$Maybe$Nothing,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$TextCreateResp)));
 var _user$project$Model$Answer = F6(
 	function (a, b, c, d, e, f) {
 		return {id: a, question_id: b, text: c, correct: d, order: e, feedback: f};
@@ -9640,8 +9660,12 @@ var _user$project$Model$questionDecoder = A3(
 								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$Question)))))))));
 var _user$project$Model$questionsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Model$questionDecoder);
-var _user$project$Model$Detail = {ctor: 'Detail'};
-var _user$project$Model$MainIdea = {ctor: 'MainIdea'};
+
+var _user$project$Ports$selectAllInputText = _elm_lang$core$Native_Platform.outgoingPort(
+	'selectAllInputText',
+	function (v) {
+		return v;
+	});
 
 var _user$project$Main$view_footer = function (model) {
 	return A2(
