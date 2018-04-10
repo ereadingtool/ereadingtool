@@ -11,7 +11,7 @@ import HttpHelpers exposing (post_with_headers)
 import Model exposing (Text, TextDifficulty, Question, Answer, textsDecoder, textEncoder, textDecoder,
   textDifficultyDecoder, textCreateRespDecoder, TextCreateResp)
 
-import Ports exposing (selectAllInputText)
+import Ports exposing (selectAllInputText, ckEditor, ckEditorUpdate)
 
 import Config exposing (text_api_endpoint)
 
@@ -121,7 +121,7 @@ retrieveTextDifficultyOptions =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Sub.none
+  ckEditorUpdate UpdateBody
 
 add_new_question : Array QuestionField -> Array QuestionField
 add_new_question fields = let arr_len = Array.length fields in
@@ -204,8 +204,12 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = let text = model.text in
   case msg of
     ToggleEditableField field -> case field of
-      Text text_field -> ({ model | text_fields = toggle_editable text_field model.text_fields }
+      Text text_field -> case text_field.id of
+        "body" -> ({ model | text_fields = toggle_editable text_field model.text_fields }
+                     , Cmd.batch [(ckEditor text_field.id), (post_toggle_field text_field)] )
+        _ -> ({ model | text_fields = toggle_editable text_field model.text_fields }
                      , post_toggle_field text_field)
+
       Question question_field -> ({ model | question_fields = toggle_editable question_field model.question_fields }
                          , post_toggle_field question_field)
       Answer answer_field ->
@@ -536,8 +540,7 @@ view_body model field = Html.div (text_property_attrs field) [
 edit_body : Model -> TextField -> Html Msg
 edit_body model field = Html.textarea [
         onInput UpdateBody
-      , attribute "id" field.id
-      , onBlur (ToggleEditableField <| Text field) ] [ Html.text model.text.body ]
+      , attribute "id" field.id ] [ Html.text model.text.body ]
 
 view_author : Model -> TextField -> Html Msg
 view_author model field = Html.div (text_property_attrs field) [
