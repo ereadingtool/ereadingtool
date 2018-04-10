@@ -9663,6 +9663,7 @@ var _user$project$Model$textEncoder = F2(
 				}
 			});
 	});
+var _user$project$Model$textDifficultyDecoder = _elm_lang$core$Json_Decode$keyValuePairs(_elm_lang$core$Json_Decode$string);
 var _user$project$Model$Text = F9(
 	function (a, b, c, d, e, f, g, h, i) {
 		return {id: a, title: b, created_dt: c, modified_dt: d, source: e, difficulty: f, author: g, question_count: h, body: i};
@@ -10189,23 +10190,6 @@ var _user$project$Main$delete_question = F2(
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
-var _user$project$Main$question_difficulties = {
-	ctor: '::',
-	_0: {ctor: '_Tuple2', _0: 'intermediate_mid', _1: 'Intermediate-Mid'},
-	_1: {
-		ctor: '::',
-		_0: {ctor: '_Tuple2', _0: 'intermediate_high', _1: 'Intermediate-High'},
-		_1: {
-			ctor: '::',
-			_0: {ctor: '_Tuple2', _0: 'advanced_low', _1: 'Advanced-Low'},
-			_1: {
-				ctor: '::',
-				_0: {ctor: '_Tuple2', _0: 'advanced_mid', _1: 'Advanced-Mid'},
-				_1: {ctor: '[]'}
-			}
-		}
-	}
-};
 var _user$project$Main$new_question = function (i) {
 	return {
 		id: _elm_lang$core$Maybe$Nothing,
@@ -10235,41 +10219,6 @@ var _user$project$Main$add_new_question = function (fields) {
 		fields);
 };
 var _user$project$Main$new_text = {id: _elm_lang$core$Maybe$Nothing, title: 'title', created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing, source: 'source', difficulty: '', author: 'author', question_count: 0, body: 'text'};
-var _user$project$Main$init = function (flags) {
-	return {
-		ctor: '_Tuple2',
-		_0: {
-			text: _user$project$Main$new_text,
-			error_msg: _elm_lang$core$Maybe$Nothing,
-			success_msg: _elm_lang$core$Maybe$Nothing,
-			flags: flags,
-			text_fields: _elm_lang$core$Array$fromList(
-				{
-					ctor: '::',
-					_0: {id: 'title', editable: false, hover: false, index: 0},
-					_1: {
-						ctor: '::',
-						_0: {id: 'source', editable: false, hover: false, index: 1},
-						_1: {
-							ctor: '::',
-							_0: {id: 'difficulty', editable: false, hover: false, index: 2},
-							_1: {
-								ctor: '::',
-								_0: {id: 'author', editable: false, hover: false, index: 3},
-								_1: {
-									ctor: '::',
-									_0: {id: 'body', editable: false, hover: false, index: 4},
-									_1: {ctor: '[]'}
-								}
-							}
-						}
-					}
-				}),
-			question_fields: A2(_elm_lang$core$Array$indexedMap, _user$project$Main$generate_question_field, _user$project$Main$initial_questions)
-		},
-		_1: _elm_lang$core$Platform_Cmd$none
-	};
-};
 var _user$project$Main$TextField = F4(
 	function (a, b, c, d) {
 		return {id: a, editable: b, hover: c, index: d};
@@ -10282,9 +10231,9 @@ var _user$project$Main$QuestionField = F7(
 	function (a, b, c, d, e, f, g) {
 		return {id: a, editable: b, hover: c, question: d, answer_fields: e, menu_visible: f, index: g};
 	});
-var _user$project$Main$Model = F6(
-	function (a, b, c, d, e, f) {
-		return {text: a, flags: b, success_msg: c, error_msg: d, text_fields: e, question_fields: f};
+var _user$project$Main$Model = F7(
+	function (a, b, c, d, e, f, g) {
+		return {text: a, flags: b, success_msg: c, error_msg: d, text_fields: e, question_difficulties: f, question_fields: g};
 	});
 var _user$project$Main$Answer = function (a) {
 	return {ctor: 'Answer', _0: a};
@@ -10708,7 +10657,7 @@ var _user$project$Main$update = F2(
 							};
 					}
 				}
-			default:
+			case 'ToggleQuestionMenu':
 				var _p22 = _p7._0;
 				var new_field = _elm_lang$core$Native_Utils.update(
 					_p22,
@@ -10724,6 +10673,18 @@ var _user$project$Main$update = F2(
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
+			default:
+				if (_p7._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{question_difficulties: _p7._0._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
 		}
 	});
 var _user$project$Main$SubmitQuiz = {ctor: 'SubmitQuiz'};
@@ -10768,6 +10729,63 @@ var _user$project$Main$view_submit = function (model) {
 				}),
 			_1: {ctor: '[]'}
 		});
+};
+var _user$project$Main$UpdateTextDifficultyOptions = function (a) {
+	return {ctor: 'UpdateTextDifficultyOptions', _0: a};
+};
+var _user$project$Main$retrieveTextDifficultyOptions = function () {
+	var request = A2(
+		_elm_lang$http$Http$get,
+		A2(
+			_elm_lang$core$String$join,
+			'?',
+			{
+				ctor: '::',
+				_0: _user$project$Config$text_api_endpoint,
+				_1: {
+					ctor: '::',
+					_0: 'difficulties=list',
+					_1: {ctor: '[]'}
+				}
+			}),
+		_user$project$Model$textDifficultyDecoder);
+	return A2(_elm_lang$http$Http$send, _user$project$Main$UpdateTextDifficultyOptions, request);
+}();
+var _user$project$Main$init = function (flags) {
+	return {
+		ctor: '_Tuple2',
+		_0: {
+			text: _user$project$Main$new_text,
+			error_msg: _elm_lang$core$Maybe$Nothing,
+			success_msg: _elm_lang$core$Maybe$Nothing,
+			flags: flags,
+			text_fields: _elm_lang$core$Array$fromList(
+				{
+					ctor: '::',
+					_0: {id: 'title', editable: false, hover: false, index: 0},
+					_1: {
+						ctor: '::',
+						_0: {id: 'source', editable: false, hover: false, index: 1},
+						_1: {
+							ctor: '::',
+							_0: {id: 'difficulty', editable: false, hover: false, index: 2},
+							_1: {
+								ctor: '::',
+								_0: {id: 'author', editable: false, hover: false, index: 3},
+								_1: {
+									ctor: '::',
+									_0: {id: 'body', editable: false, hover: false, index: 4},
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}
+				}),
+			question_fields: A2(_elm_lang$core$Array$indexedMap, _user$project$Main$generate_question_field, _user$project$Main$initial_questions),
+			question_difficulties: {ctor: '[]'}
+		},
+		_1: _user$project$Main$retrieveTextDifficultyOptions
+	};
 };
 var _user$project$Main$DeleteQuestion = function (a) {
 	return {ctor: 'DeleteQuestion', _0: a};
@@ -10984,7 +11002,7 @@ var _user$project$Main$edit_difficulty = F2(
 												_1: {ctor: '[]'}
 											});
 									},
-									_user$project$Main$question_difficulties)),
+									model.question_difficulties)),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}

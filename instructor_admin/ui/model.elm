@@ -1,5 +1,5 @@
-module Model exposing (Text, TextID, Question, Answer, textsDecoder, textEncoder, textDecoder
-  , textCreateRespDecoder, TextCreateResp)
+module Model exposing (Text, TextDifficulty, TextID, Question, Answer, textsDecoder, textEncoder, textDecoder
+  , textCreateRespDecoder, textDifficultyDecoder, TextCreateResp)
 
 import Date exposing (..)
 
@@ -45,6 +45,11 @@ type alias TextID = Int
 type alias TextCreateResp = {
     id: Maybe TextID
   , errors: Maybe (Dict String String) }
+
+type alias TextDifficulty = (String, String)
+
+textDifficultyDecoder : Decode.Decoder (List TextDifficulty)
+textDifficultyDecoder = Decode.keyValuePairs Decode.string
 
 textCreateRespDecoder : Decode.Decoder (TextCreateResp)
 textCreateRespDecoder =

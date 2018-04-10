@@ -8,8 +8,8 @@ import Array exposing (Array)
 import Http
 import HttpHelpers exposing (post_with_headers)
 
-import Model exposing (Text, Question, Answer, textsDecoder, textEncoder, textDecoder, textCreateRespDecoder,
-  TextCreateResp)
+import Model exposing (Text, TextDifficulty, Question, Answer, textsDecoder, textEncoder, textDecoder,
+  textDifficultyDecoder, textCreateRespDecoder, TextCreateResp)
 
 import Ports exposing (selectAllInputText)
 
@@ -32,6 +32,7 @@ type Msg = ToggleEditableField Field | Hover Field | UnHover Field | ToggleQuest
   | UpdateAnswerFeedback QuestionField AnswerField String
   | AddQuestion
   | DeleteQuestion Int
+  | UpdateTextDifficultyOptions (Result Http.Error (List TextDifficulty))
   | SubmitQuiz
   | Submitted (Result Http.Error TextCreateResp)
 
@@ -65,6 +66,7 @@ type alias Model = {
   , success_msg : Maybe String
   , error_msg : Maybe String
   , text_fields : Array TextField
+  , question_difficulties : List TextDifficulty
   , question_fields : Array QuestionField }
 
 type alias Filter = List String
@@ -93,15 +95,6 @@ new_question i = {
   , answers = generate_answers 4
   , question_type = "main_idea" }
 
-
-question_difficulties : List (String, String)
-question_difficulties = [
-    ("intermediate_mid", "Intermediate-Mid")
-  , ("intermediate_high", "Intermediate-High")
-  , ("advanced_low", "Advanced-Low")
-  , ("advanced_mid", "Advanced-Mid") ]
-
-
 initial_questions : Array Question
 initial_questions = Array.fromList [(new_question 0)]
 
@@ -118,7 +111,13 @@ init flags = ({
         , {id="author", editable=False, hover=False, index=3}
         , {id="body", editable=False, hover=False, index=4} ])
       , question_fields=(Array.indexedMap generate_question_field initial_questions)
-  }, Cmd.none)
+      , question_difficulties=[]
+  }, retrieveTextDifficultyOptions)
+
+retrieveTextDifficultyOptions : Cmd Msg
+retrieveTextDifficultyOptions =
+  let request = Http.get (String.join "?" [text_api_endpoint, "difficulties=list"]) textDifficultyDecoder in
+    Http.send UpdateTextDifficultyOptions request
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -293,6 +292,12 @@ update msg model = let text = model.text in
     ToggleQuestionMenu field ->
       let new_field = { field | menu_visible = (if field.menu_visible then False else True) } in
         ({ model | question_fields = update_question_field new_field model.question_fields }, Cmd.none)
+
+    UpdateTextDifficultyOptions (Ok difficulties) ->
+      ({ model | question_difficulties = difficulties }, Cmd.none)
+    -- handle user-friendly msgs
+    UpdateTextDifficultyOptions (Err _) ->
+      (model, Cmd.none)
 
 post_text : CSRFToken -> Text -> Array Question -> Cmd Msg
 post_text csrftoken text questions =
@@ -519,7 +524,7 @@ edit_difficulty model field = Html.div [] [
          onInput UpdateDifficulty ] [
         Html.optgroup [] (List.map (\(k,v) ->
           Html.option ([attribute "value" k] ++ (if v == model.text.difficulty then [attribute "selected" ""] else []))
-           [ Html.text v ]) question_difficulties)
+           [ Html.text v ]) model.question_difficulties)
        ]
   ]
 
