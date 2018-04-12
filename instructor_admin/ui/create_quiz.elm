@@ -482,11 +482,6 @@ view_questions fields = div [ classList [("question_section", True)] ] <|
         <| Array.map view_editable_question fields
         ) ++ [ (view_add_question fields) ]
 
-get_hover : Array TextField -> Int -> Bool
-get_hover fields i = case Array.get i fields of
-  Just field -> field.hover
-  Nothing -> False
-
 hover_attrs : TextField -> List (Attribute Msg)
 hover_attrs field = [
     classList [ ("over", field.hover) ]
