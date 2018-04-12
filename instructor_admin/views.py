@@ -24,26 +24,6 @@ class AdminCreateQuizView(TemplateView):
     template_name = 'create_quiz.html'
 
 
-class ValidationException(Exception):
-    def __init__(self, errors : dict):
-        self.errors = errors
-
-
-class FormValidationException(Exception):
-    def __init__(self, form : ModelForm):
-        self.form = form
-        self.errors = self.form_validation_errors()
-
-    def form_validation_errors(self):
-        return {k: str(self.form.errors[k].data[0].message) for k in self.form.errors.keys()}
-
-
-class JSONException(Exception):
-    def __init__(self, json_str : str, json_decoder_exp: json.JSONDecodeError):
-        self.json = json_str
-        self.json_exp = json_decoder_exp
-
-
 class AdminAPIView(View):
     model = Text
 
@@ -57,61 +37,74 @@ class AdminAPIView(View):
 
     def post(self, request, *args, **kwargs):
         text = None
+        errors = {}
+        questions = []
+
+        def form_validation_errors(form):
+            return {k: str(form.errors[k].data[0].message) for k in form.errors.keys()}
 
         try:
-            with transaction.atomic():
-                try:
-                    text_params = json.loads(request.body.decode('utf8'))
-                except json.JSONDecodeError as e:
-                    raise JSONException(json_str=request.body.decode('utf8'), json_decoder_exp=e)
+            text_params = json.loads(request.body.decode('utf8'))
+        except json.JSONDecodeError as e:
+            return HttpResponse(errors={"errors": {'json': str(e)}}, status=400)
 
-                # default difficulty
-                if 'difficulty' not in text_params or not text_params['difficulty']:
-                    text_params['difficulty'] = 'intermediate_mid'
+        # default difficulty
+        if 'difficulty' not in text_params or not text_params['difficulty']:
+            text_params['difficulty'] = 'intermediate_mid'
 
-                try:
-                    text_params['difficulty'] = TextDifficulty.objects.get(slug=text_params['difficulty']).pk
-                except ObjectDoesNotExist:
-                    raise ValidationException(
-                        errors={"errors": {'difficulty': "text difficulty {0} does not exist".format(
-                            text_params['difficulty'])
-                    }})
+        try:
+            text_params['difficulty'] = TextDifficulty.objects.get(slug=text_params['difficulty']).pk
+        except ObjectDoesNotExist:
+            return HttpResponse(errors={"errors": {'difficulty': "text difficulty {0} does not exist".format(
+                    text_params['difficulty'])
+                }}, status=400)
 
-                text_form = TextForm(text_params)
+        text_form = TextForm(text_params)
 
-                if not text_form.is_valid():
-                    raise FormValidationException(form=text_form)
+        if not text_form.is_valid():
+            errors['text'] = form_validation_errors(text_form)
 
-                text = text_form.save()
+        for i, question_param in enumerate(text_params['questions']):
+            # ignore 'order' param for now
+            question_param.pop('order')
+            # question_type -> type
+            question_param['type'] = question_param.pop('question_type')
 
-                for question_param in text_params['questions']:
-                    question_param['text'] = text.pk
+            question_form = QuestionForm(question_param)
 
-                    # ignore 'order' param for now
-                    question_param.pop('order')
-                    # question_type -> type
-                    question_param['type'] = question_param.pop('question_type')
+            if not question_form.is_valid():
+                errors['question_{0}'.format(i)] = form_validation_errors(question_form)
 
-                    question_form = QuestionForm(question_param)
+            question = {'form': question_form, 'answer_forms': []}
 
-                    if not question_form.is_valid():
-                        raise FormValidationException(form=question_form)
+            for j, answer_param in enumerate(question_param['answers']):
+                # ignore 'order' param for now
+                answer_param.pop('order')
 
-                    question = question_form.save()
+                answer_form = AnswerForm(answer_param)
 
-                    for answer_param in question_param['answers']:
-                        answer_param['question'] = question.pk
-                        # ignore 'order' param for now
-                        answer_param.pop('order')
+                if not answer_form.is_valid():
+                    errors['question_{0}_answer_{1}'.format(i, j)] = form_validation_errors(answer_form)
 
-                        answer_form = AnswerForm(answer_param)
+                question['answer_forms'].append(answer_form)
 
-                        if not answer_form.is_valid():
-                            raise FormValidationException(form=answer_form)
+            questions.append(question)
 
-                        answer_form.save()
+        if errors:
+            return HttpResponse(json.dumps(errors), status=400)
+        else:
+            text = text_form.save()
 
-        except (ValidationException, JSONException, FormValidationException) as exp:
-            return HttpResponse(json.dumps({"errors": exp.errors}), status=400)
+            for question in questions:
+                question = question['form'].save(commit=False)
 
-        return HttpResponse(json.dumps({"id": text.pk}))
+                question.text = text
+                question.save()
+
+                for answer_form in question['answer_forms']:
+                    answer = answer_form.save(commit=False)
+
+                    answer.question = question
+                    answer.save()
+
+            return HttpResponse(json.dumps({"id": text.pk}))
