@@ -1,5 +1,5 @@
 module Model exposing (Text, TextDifficulty, TextID, Question, Answer, textsDecoder, textEncoder, textDecoder
-  , textCreateRespDecoder, textDifficultyDecoder, TextCreateResp)
+  , textCreateRespDecoder, decodeCreateRespErrors, TextCreateRespError, textDifficultyDecoder, TextCreateResp)
 
 import Date exposing (..)
 
@@ -43,8 +43,9 @@ textsDecoder = Decode.list textDecoder
 type alias TextID = Int
 
 type alias TextCreateResp = {
-    id: Maybe TextID
-  , errors: Maybe (Dict String String) }
+    id: Maybe TextID }
+
+type alias TextCreateRespError = Dict.Dict String (Dict.Dict String String)
 
 type alias TextDifficulty = (String, String)
 
@@ -55,7 +56,12 @@ textCreateRespDecoder : Decode.Decoder (TextCreateResp)
 textCreateRespDecoder =
   decode TextCreateResp
     |> optional "id" (Decode.maybe Decode.int) Nothing
-    |> optional "errors" (Decode.maybe (Decode.dict Decode.string)) Nothing
+
+textCreateRespErrDecoder : Decode.Decoder (TextCreateRespError)
+textCreateRespErrDecoder = Decode.dict (Decode.dict Decode.string)
+
+decodeCreateRespErrors : String -> Result String TextCreateRespError
+decodeCreateRespErrors str = Decode.decodeString textCreateRespErrDecoder str
 
 textEncoder : Text -> Array Question -> Encode.Value
 textEncoder text questions = Encode.object [

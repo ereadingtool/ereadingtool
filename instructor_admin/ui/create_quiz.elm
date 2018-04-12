@@ -9,7 +9,9 @@ import Http
 import HttpHelpers exposing (post_with_headers)
 
 import Model exposing (Text, TextDifficulty, Question, Answer, textsDecoder, textEncoder, textDecoder,
-  textDifficultyDecoder, textCreateRespDecoder, TextCreateResp)
+  textDifficultyDecoder, textCreateRespDecoder, decodeCreateRespErrors, TextCreateRespError, TextCreateResp)
+
+import Dict
 
 import Ports exposing (selectAllInputText, ckEditor, ckEditorUpdate)
 
@@ -64,7 +66,7 @@ type alias Model = {
     text : Text
   , flags : Flags
   , success_msg : Maybe String
-  , error_msg : Maybe String
+  , error_msg : Maybe TextCreateRespError
   , text_fields : Array TextField
   , question_difficulties : List TextDifficulty
   , question_fields : Array QuestionField }
@@ -288,10 +290,11 @@ update msg model = let text = model.text in
        _ -> (model, Cmd.none)
 
     Submitted (Err err) -> case err of
-      Http.BadStatus resp -> case resp of
-        _ -> ({ model | error_msg = Just <| String.join " " ["something went wrong: ", resp.body]}, Cmd.none)
-      Http.BadPayload err resp -> ({ model | error_msg = Just err}, Cmd.none)
-      _ -> ({ model | error_msg = Just "some unspecified error"}, Cmd.none)
+      Http.BadStatus resp -> case (decodeCreateRespErrors resp.body) of
+        Ok errors -> ({ model | error_msg = Just errors}, Cmd.none)
+        _ -> (model, Cmd.none)
+      Http.BadPayload err resp -> ({ model | error_msg = Just (Dict.fromList []) }, Cmd.none)
+      _ -> ({ model | error_msg = Just (Dict.fromList [])}, Cmd.none)
 
     ToggleQuestionMenu field ->
       let new_field = { field | menu_visible = (if field.menu_visible then False else True) } in
@@ -573,8 +576,14 @@ view_create_text model = div [ classList [("text_properties", True)] ] [
       , div [ classList [("body",True)] ]  [ view_editable_field model 4 (view_body model) (edit_body model) ]
   ]
 
-view_msg : Maybe String -> Html Msg
-view_msg msg = let msg_str = (case msg of
+view_msg : Maybe TextCreateRespError -> Html Msg
+view_msg msg = case msg of
+  Just err -> Html.text <| toString err
+  _ -> Html.text ""
+
+
+view_success_msg : Maybe String -> Html Msg
+view_success_msg msg = let msg_str = (case msg of
         Just str ->
           String.join " " [" ", str]
         _ -> "") in Html.text msg_str
@@ -585,7 +594,7 @@ view_submit model = Html.div [classList [("submit_section", True)]] [
     Html.div [attribute "class" "submit", onClick SubmitQuiz] [
         Html.text "Create Quiz "
       , view_msg model.error_msg
-      , view_msg model.success_msg
+      , view_success_msg model.success_msg
     ]
   ]
 
