@@ -303,3 +303,8 @@ body {
     grid-column: 2;
     cursor: pointer;
 }
+
+.input_error {
+    border: 1px solid #ff0000;
+    background-color: #ffeeee;
+}

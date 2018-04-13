@@ -4,9 +4,8 @@ from django.http import HttpResponse
 from django.views.generic import TemplateView, View
 from django.db.models import ObjectDoesNotExist
 from text.models import Text, TextDifficulty
-from django.db import transaction
 
-from question.forms import QuestionForm, AnswerForm, ModelForm
+from question.forms import QuestionForm, AnswerForm
 from text.forms import TextForm
 
 
@@ -91,20 +90,25 @@ class AdminAPIView(View):
             questions.append(question)
 
         if errors:
-            return HttpResponse(json.dumps(errors), status=400)
+            # flatten error dictionary, e.g.:
+            # { "question_0_answer_0": {"feedback": "This field is required."} } ->
+            # { "question_0_answer_0_feedback": "This field is required." }
+            return HttpResponse(json.dumps({
+                '_'.join([k, k1]): v[k1] for (k, v) in errors.items() for k1 in v.keys()
+            }), status=400)
         else:
             text = text_form.save()
 
             for question in questions:
-                question = question['form'].save(commit=False)
+                question_obj = question['form'].save(commit=False)
 
-                question.text = text
-                question.save()
+                question_obj.text = text
+                question_obj.save()
 
                 for answer_form in question['answer_forms']:
                     answer = answer_form.save(commit=False)
 
-                    answer.question = question
+                    answer.question = question_obj
                     answer.save()
 
             return HttpResponse(json.dumps({"id": text.pk}))

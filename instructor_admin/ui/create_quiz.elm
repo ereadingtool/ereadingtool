@@ -19,6 +19,8 @@ import Config exposing (text_api_endpoint)
 
 import Flags exposing (CSRFToken, Flags)
 
+import Debug
+
 type Field = Text TextField | Question QuestionField | Answer AnswerField
 
 type Msg = ToggleEditableField Field | Hover Field | UnHover Field | ToggleQuestionMenu QuestionField
@@ -42,7 +44,13 @@ type alias TextField = {
     id : String
   , editable : Bool
   , hover : Bool
-  , index : Int }
+  , index : Int
+  , error : Bool }
+
+type alias AnswerFeedbackField = {
+    id : String
+  , editable : Bool
+  , error : Bool }
 
 type alias AnswerField = {
     id : String
@@ -50,7 +58,9 @@ type alias AnswerField = {
   , hover : Bool
   , answer : Answer
   , question_field_index : Int
-  , index : Int }
+  , index : Int
+  , error: Bool
+  , feedback_field : AnswerFeedbackField }
 
 type alias QuestionField = {
     id : String
@@ -59,7 +69,8 @@ type alias QuestionField = {
   , question : Question
   , answer_fields : Array AnswerField
   , menu_visible : Bool
-  , index : Int }
+  , index : Int
+  , error : Bool }
 
 
 type alias Model = {
@@ -107,11 +118,11 @@ init flags = ({
       , success_msg=Nothing
       , flags=flags
       , text_fields=(Array.fromList [
-          {id="title", editable=False, hover=False, index=0}
-        , {id="source", editable=False, hover=False, index=1}
-        , {id="difficulty", editable=False, hover=False, index=2}
-        , {id="author", editable=False, hover=False, index=3}
-        , {id="body", editable=False, hover=False, index=4} ])
+          {id="title", editable=False, hover=False, index=0, error=False}
+        , {id="source", editable=False, hover=False, index=1, error=False}
+        , {id="difficulty", editable=False, hover=False, index=2, error=False}
+        , {id="author", editable=False, hover=False, index=3, error=False}
+        , {id="body", editable=False, hover=False, index=4, error=False} ])
       , question_fields=(Array.indexedMap generate_question_field initial_questions)
       , question_difficulties=[]
   }, retrieveTextDifficultyOptions)
@@ -139,28 +150,38 @@ delete_question index fields =
 
 generate_question_field : Int -> Question -> QuestionField
 generate_question_field i question = {
-    id=(String.join "_" ["question", toString i])
-  , editable=False
-  , hover=False
-  , question=question
-  , answer_fields=(Array.indexedMap (generate_answer_field i question) question.answers)
-  , menu_visible=True
-  , index=i }
+    id = (String.join "_" ["question", toString i])
+  , editable = False
+  , hover = False
+  , question = question
+  , answer_fields = (Array.indexedMap (generate_answer_field i question) question.answers)
+  , menu_visible = True
+  , index = i
+  , error = False }
+
+generate_answer_feedback_field : String -> AnswerFeedbackField
+generate_answer_feedback_field id = {
+    id = id
+  , editable = False
+  , error = False }
 
 generate_answer_field : Int -> Question -> Int -> Answer -> AnswerField
-generate_answer_field i question j answer = {
-    id=(String.join "_" ["question", toString i, "answer", toString j])
-  , editable=False
-  , hover=False
+generate_answer_field i question j answer =
+  let answer_id = String.join "_" ["question", toString i, "answer", toString j] in {
+    id = answer_id
+  , editable = False
+  , hover = False
   , answer = answer
   , question_field_index = i
-  , index=j }
+  , index = j
+  , error = False
+  , feedback_field = (generate_answer_feedback_field <| String.join "_" [answer_id, "feedback"]) }
 
 generate_answer : Int -> Answer
 generate_answer i = {
     id=Nothing
   , question_id=Nothing
-  , text=String.join " " ["Click to write choice", toString i]
+  , text=String.join " " ["Click to write choice", toString (i+1)]
   , correct=False
   , order=i
   , feedback="" }
@@ -169,14 +190,16 @@ generate_answers : Int -> Array Answer
 generate_answers n =
      Array.fromList
   <| List.map generate_answer
-  <| List.range 1 n
+  <| List.range 0 (n-1)
 
-toggle_editable : { a | hover : Bool, index : Int, editable : Bool }
-    -> Array { a | index : Int, editable : Bool, hover : Bool }
-    -> Array { a | index : Int, editable : Bool, hover : Bool }
+toggle_editable : { a | hover : Bool, index : Int, editable : Bool, error: Bool }
+    -> Array { a | index : Int, editable : Bool, hover : Bool, error: Bool }
+    -> Array { a | index : Int, editable : Bool, hover : Bool, error: Bool }
 toggle_editable field fields =
   Array.set field.index { field |
-    editable = (if field.editable then False else True), hover=False}
+      editable = (if field.editable then False else True)
+    , hover=False
+    , error=False }
   fields
 
 set_hover
@@ -185,6 +208,30 @@ set_hover
     -> Array { a | index : Int, hover : Bool }
     -> Array { a | index : Int, hover : Bool }
 set_hover field hover fields = Array.set field.index { field | hover = hover } fields
+
+update_error : (String, String) -> Model -> Model
+update_error (field_id, field_error) model =
+  -- error keys can be one of: "question_n" | "text_(body|title|source|author)" | "question_n_answer_n"
+  let split_id = String.split "_" field_id in case split_id of
+    ["question", i, "answer", j, "feedback"] -> case (String.toInt i) of
+      Ok i -> case Array.get i model.question_fields of
+        Just question_field -> case (String.toInt j) of
+          Ok j -> case Array.get j question_field.answer_fields of
+            Just answer_field -> let feedback_field = (Debug.log "error on feedback" answer_field.feedback_field) in
+              { model | question_fields =
+                update_answer { answer_field | editable = True,
+                  feedback_field = { feedback_field | error = True, editable = True }  } model.question_fields }
+            _ -> Debug.log (String.join " " ["couldnt find answer field", (toString j), "from server"]) model
+          _ -> Debug.log (String.join " " ["couldnt parse str ", j, "from server"]) model
+        _ -> Debug.log (String.join " " ["couldnt find question field", (toString i), "from server"]) model
+      _ -> Debug.log (String.join " " ["couldnt parse str ", i, "from server"]) model
+    ["question", i] -> Debug.log "question" model
+    ["text", id] -> Debug.log "text" model
+    _ -> Debug.log "couldnt parse errors from server" model
+
+update_errors : Model -> TextCreateRespError -> Model
+update_errors model errors =
+  List.foldr update_error model (Dict.toList errors)
 
 update_answer : AnswerField -> Array QuestionField -> Array QuestionField
 update_answer answer_field question_fields =
@@ -215,9 +262,13 @@ update msg model = let text = model.text in
       Question question_field -> ({ model | question_fields = toggle_editable question_field model.question_fields }
                          , post_toggle_field question_field)
       Answer answer_field ->
+        let answer_feedback_field = answer_field.feedback_field in
+        let new_answer_feedback_field = {answer_feedback_field | error = False } in
         ({ model | question_fields = update_answer { answer_field
           | editable = (if answer_field.editable then False else True)
-          , hover = False } model.question_fields}
+          , hover = False
+          , feedback_field = new_answer_feedback_field
+          , error = False } model.question_fields}
          , post_toggle_field answer_field )
 
     Hover field -> case field of
@@ -290,11 +341,11 @@ update msg model = let text = model.text in
        _ -> (model, Cmd.none)
 
     Submitted (Err err) -> case err of
-      Http.BadStatus resp -> case (decodeCreateRespErrors resp.body) of
-        Ok errors -> ({ model | error_msg = Just errors}, Cmd.none)
+      Http.BadStatus resp -> case (decodeCreateRespErrors (Debug.log "errors" resp.body)) of
+        Ok errors -> (update_errors model (Debug.log "displaying validations" errors), Cmd.none)
         _ -> (model, Cmd.none)
-      Http.BadPayload err resp -> ({ model | error_msg = Just (Dict.fromList []) }, Cmd.none)
-      _ -> ({ model | error_msg = Just (Dict.fromList [])}, Cmd.none)
+      Http.BadPayload err resp -> (model, Cmd.none)
+      _ -> (model, Cmd.none)
 
     ToggleQuestionMenu field ->
       let new_field = { field | menu_visible = (if field.menu_visible then False else True) } in
@@ -376,34 +427,43 @@ view_question question_field =
        Html.text question_field.question.body
   ]
 
+view_answer_feedback : QuestionField -> AnswerField -> List (Html Msg)
+view_answer_feedback question_field answer_field = if not (String.isEmpty answer_field.answer.feedback)
+  then
+    [ Html.div [classList [("answer_feedback", True)] ] [ Html.text answer_field.answer.feedback ] ]
+  else
+    []
+
 view_answer : QuestionField -> AnswerField -> Html Msg
 view_answer question_field answer_field = Html.span
   [  onClick (ToggleEditableField <| Answer answer_field)
    , onMouseOver (Hover <| Answer answer_field)
    , onMouseLeave (UnHover <| Answer answer_field) ] <|
-  [   Html.text answer_field.answer.text ] ++
-    (if not (String.isEmpty answer_field.answer.feedback) then [
-        Html.div [classList [("answer_feedback", True)] ] [
-          Html.text answer_field.answer.feedback
-        ]
-    ] else [])
+  [   Html.text answer_field.answer.text ] ++ (view_answer_feedback question_field answer_field)
+
+edit_answer_feedback : QuestionField -> AnswerField -> Html Msg
+edit_answer_feedback question_field answer_field = Html.div [] [
+      Html.textarea [
+          attribute "id" answer_field.feedback_field.id
+        , onBlur (ToggleEditableField <| Answer answer_field)
+        , onInput (UpdateAnswerFeedback question_field answer_field)
+        , attribute "placeholder" "Give some feedback."
+        , classList [ ("answer_feedback", True), ("input_error", answer_field.feedback_field.error) ]
+      ] [Html.text answer_field.answer.feedback]
+    ]
 
 edit_answer : QuestionField -> AnswerField -> Html Msg
-edit_answer question_field answer_field = Html.span [] [
+edit_answer question_field answer_field =
+  let answer_feedback_field_id = String.join "_" [answer_field.id, "feedback"]
+   in Html.span [] [
     Html.input [
         attribute "type" "text"
       , attribute "value" answer_field.answer.text
       , attribute "id" answer_field.id
       , onInput (UpdateAnswerText question_field answer_field)
+      , classList [ ("input_error", answer_field.error) ]
     ] []
-  , Html.div [] [
-      Html.textarea [
-          onBlur (ToggleEditableField <| Answer answer_field)
-        , onInput (UpdateAnswerFeedback question_field answer_field)
-        , attribute "placeholder" "Give some feedback."
-        , classList [ ("answer_feedback", True) ]
-      ] [Html.text answer_field.answer.feedback]
-    ]
+  , (edit_answer_feedback question_field answer_field)
   ]
 
 view_editable_answer : QuestionField -> AnswerField -> Html Msg

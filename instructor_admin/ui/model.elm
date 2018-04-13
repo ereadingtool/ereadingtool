@@ -45,7 +45,7 @@ type alias TextID = Int
 type alias TextCreateResp = {
     id: Maybe TextID }
 
-type alias TextCreateRespError = Dict.Dict String (Dict.Dict String String)
+type alias TextCreateRespError = Dict.Dict String String
 
 type alias TextDifficulty = (String, String)
 
@@ -58,7 +58,7 @@ textCreateRespDecoder =
     |> optional "id" (Decode.maybe Decode.int) Nothing
 
 textCreateRespErrDecoder : Decode.Decoder (TextCreateRespError)
-textCreateRespErrDecoder = Decode.dict (Decode.dict Decode.string)
+textCreateRespErrDecoder = Decode.dict Decode.string
 
 decodeCreateRespErrors : String -> Result String TextCreateRespError
 decodeCreateRespErrors str = Decode.decodeString textCreateRespErrDecoder str
