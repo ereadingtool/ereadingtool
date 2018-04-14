@@ -16,10 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from instructor_admin.views import AdminAPIView
+from text.views import TextAPIView
+from quiz.views import QuizView
 
 urlpatterns = [
-    path('api/text/', AdminAPIView.as_view()),
+    path('api/text/<int:pk>', TextAPIView.as_view()),
+    path('api/text/', TextAPIView.as_view()),
     path('admin/', include('instructor_admin.urls')),
+    path('quiz/<int:pk>/', QuizView.as_view(), name="quiz"),
     path('django-admin/', admin.site.urls),
 ]

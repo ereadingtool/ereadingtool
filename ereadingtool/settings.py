@@ -45,7 +45,8 @@ INSTALLED_APPS += [
     'question',
     'text',
     'user',
-    'instructor_admin'
+    'instructor_admin',
+    'quiz'
 ]
 
 FORCE_LOWERCASE_TAGS = True
@@ -68,7 +69,11 @@ ROOT_URLCONF = 'ereadingtool.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'question/templates'), os.path.join(BASE_DIR, 'instructor_admin/templates')]
+        'DIRS': [
+            os.path.join(BASE_DIR, 'question/templates'),
+            os.path.join(BASE_DIR, 'instructor_admin/templates'),
+            os.path.join(BASE_DIR, 'quiz/templates')
+        ]
         ,
         'APP_DIRS': True,
         'OPTIONS': {

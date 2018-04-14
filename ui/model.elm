@@ -1,4 +1,4 @@
-module Model exposing (Text, TextDifficulty, TextID, Question, Answer, textsDecoder, textEncoder, textDecoder
+module Model exposing (Text, emptyText, TextDifficulty, TextID, Question, Answer, textsDecoder, textEncoder, textDecoder
   , textCreateRespDecoder, decodeCreateRespErrors, TextCreateRespError, textDifficultyDecoder, TextCreateResp)
 
 import Date exposing (..)
@@ -23,6 +23,18 @@ type alias Text = {
   , author: String
   , question_count : Int
   , body : String }
+
+emptyText : Text
+emptyText = {
+    id = Nothing
+  , title = "title"
+  , created_dt = Nothing
+  , modified_dt = Nothing
+  , source = "source"
+  , difficulty = ""
+  , author = "author"
+  , question_count = 0
+  , body = "text" }
 
 textDecoder : Decode.Decoder Text
 textDecoder =

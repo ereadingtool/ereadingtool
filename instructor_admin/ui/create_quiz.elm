@@ -8,7 +8,7 @@ import Array exposing (Array)
 import Http
 import HttpHelpers exposing (post_with_headers)
 
-import Model exposing (Text, TextDifficulty, Question, Answer, textsDecoder, textEncoder, textDecoder,
+import Model exposing (Text, emptyText, TextDifficulty, Question, Answer, textsDecoder, textEncoder, textDecoder,
   textDifficultyDecoder, textCreateRespDecoder, decodeCreateRespErrors, TextCreateRespError, TextCreateResp)
 
 import Dict
@@ -84,19 +84,6 @@ type alias Model = {
 
 type alias Filter = List String
 
-new_text : Text
-new_text = {
-    id = Nothing
-  , title = "title"
-  , created_dt = Nothing
-  , modified_dt = Nothing
-  , source = "source"
-  , difficulty = ""
-  , author = "author"
-  , question_count = 0
-  , body = "text" }
-
-
 new_question : Int -> Question
 new_question i = {
     id = Nothing
@@ -113,7 +100,7 @@ initial_questions = Array.fromList [(new_question 0)]
 
 init : Flags -> (Model, Cmd Msg)
 init flags = ({
-        text=new_text
+        text=emptyText
       , error_msg=Nothing
       , success_msg=Nothing
       , flags=flags

@@ -1,0 +1,21 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ quiz.title }}</title>
+    <link rel="stylesheet" href="{% static "css/ereader.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/quiz.css" %}"/>
+    <script src="{% static "js/quiz.js" %}"></script>
+</head>
+<body>
+{% csrf_token %}
+<input type='hidden' name='quiz_id' value='{{ pk }}' />
+<div class="content">
+</div>
+
+<script src="{% static "js/load_elm.js" %}"></script>
+
+</body>
+</html>

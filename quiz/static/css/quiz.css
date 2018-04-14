@@ -1,0 +1,21 @@
+.text {
+    display: grid;
+
+    grid-template-columns: 10% auto 10%;
+    grid-auto-rows: 100px;
+
+    align-items: center;
+    justify-items: center;
+}
+
+.text_body {
+    font-size: 23px;
+    font-weight: 300;
+
+    grid-column: 2;
+    grid-row: 3;
+}
+
+iframe {
+    border: 0;
+}
