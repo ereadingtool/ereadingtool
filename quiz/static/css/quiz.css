@@ -9,12 +9,22 @@
 }
 
 .text_body {
-    font-size: 23px;
-    font-weight: 300;
-
     grid-column: 2;
-    grid-row: 3;
+    grid-row: 2;
 }
+
+
+.questions {
+    grid-column: 2;
+    display: grid;
+    grid-template-columns: 10% auto 10%;
+}
+
+
+.question {
+    grid-column: 2;
+}
+
 
 iframe {
     border: 0;

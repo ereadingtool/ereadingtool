@@ -9391,6 +9391,7 @@ var _elm_lang$http$Http$StringPart = F2(
 	});
 var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
 
+var _user$project$Config$question_api_endpoint = '/api/question';
 var _user$project$Config$text_api_endpoint = '/api/text/';
 
 var _user$project$Flags$Flags = function (a) {
@@ -9848,6 +9849,71 @@ var _user$project$Main$view_text = function (text) {
 			_1: {ctor: '[]'}
 		});
 };
+var _user$project$Main$view_answer = function (answer) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$classList(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'answer', _1: true},
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(answer.text),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Main$view_answers = function (answers) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		_elm_lang$core$Array$toList(
+			A2(_elm_lang$core$Array$map, _user$project$Main$view_answer, answers)));
+};
+var _user$project$Main$view_question = function (question) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$classList(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'question', _1: true},
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(question.body),
+			_1: {
+				ctor: '::',
+				_0: _user$project$Main$view_answers(question.answers),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Main$view_questions = function (questions) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$classList(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'questions', _1: true},
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		},
+		_elm_lang$core$Array$toList(
+			A2(_elm_lang$core$Array$map, _user$project$Main$view_question, questions)));
+};
 var _user$project$Main$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -9863,8 +9929,12 @@ var _user$project$Main$view = function (model) {
 					_0: _user$project$Main$view_text(model.text),
 					_1: {
 						ctor: '::',
-						_0: _user$project$Views$view_footer,
-						_1: {ctor: '[]'}
+						_0: _user$project$Main$view_questions(model.questions),
+						_1: {
+							ctor: '::',
+							_0: _user$project$Views$view_footer,
+							_1: {ctor: '[]'}
+						}
 					}
 				}
 			}
@@ -9873,17 +9943,34 @@ var _user$project$Main$view = function (model) {
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
-		if (_p0._0.ctor === 'Ok') {
-			return {
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Native_Utils.update(
-					model,
-					{text: _p0._0._0}),
-				_1: _elm_lang$core$Platform_Cmd$none
-			};
+		if (_p0.ctor === 'UpdateText') {
+			if (_p0._0.ctor === 'Ok') {
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{text: _p0._0._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			} else {
+				var _p1 = A2(_elm_lang$core$Debug$log, 'text error', _p0._0._0);
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			}
 		} else {
-			var _p1 = A2(_elm_lang$core$Debug$log, 'error', _p0._0._0);
-			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			if (_p0._0.ctor === 'Ok') {
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							questions: _elm_lang$core$Array$fromList(_p0._0._0)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			} else {
+				var _p2 = A2(_elm_lang$core$Debug$log, 'questions error', _p0._0._0);
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			}
 		}
 	});
 var _user$project$Main$subscriptions = function (model) {
@@ -9893,15 +9980,18 @@ var _user$project$Main$Flags = F2(
 	function (a, b) {
 		return {csrftoken: a, quiz_id: b};
 	});
-var _user$project$Main$Model = F2(
-	function (a, b) {
-		return {text: a, flags: b};
+var _user$project$Main$Model = F3(
+	function (a, b, c) {
+		return {text: a, questions: b, flags: c};
 	});
-var _user$project$Main$Update = function (a) {
-	return {ctor: 'Update', _0: a};
+var _user$project$Main$UpdateQuestions = function (a) {
+	return {ctor: 'UpdateQuestions', _0: a};
+};
+var _user$project$Main$UpdateText = function (a) {
+	return {ctor: 'UpdateText', _0: a};
 };
 var _user$project$Main$updateText = function (text_id) {
-	var request = A2(
+	var text_req = A2(
 		_elm_lang$http$Http$get,
 		A2(
 			_elm_lang$core$String$join,
@@ -9916,12 +10006,53 @@ var _user$project$Main$updateText = function (text_id) {
 				}
 			}),
 		_user$project$Model$textDecoder);
-	return A2(_elm_lang$http$Http$send, _user$project$Main$Update, request);
+	var question_req = A2(
+		_elm_lang$http$Http$get,
+		A2(
+			_elm_lang$core$String$join,
+			'',
+			{
+				ctor: '::',
+				_0: _user$project$Config$question_api_endpoint,
+				_1: {
+					ctor: '::',
+					_0: '?',
+					_1: {
+						ctor: '::',
+						_0: 'text',
+						_1: {
+							ctor: '::',
+							_0: '=',
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$core$Basics$toString(text_id),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}
+			}),
+		_user$project$Model$questionsDecoder);
+	return _elm_lang$core$Platform_Cmd$batch(
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$http$Http$send, _user$project$Main$UpdateText, text_req),
+			_1: {
+				ctor: '::',
+				_0: A2(_elm_lang$http$Http$send, _user$project$Main$UpdateQuestions, question_req),
+				_1: {ctor: '[]'}
+			}
+		});
 };
 var _user$project$Main$init = function (flags) {
 	return {
 		ctor: '_Tuple2',
-		_0: A2(_user$project$Main$Model, _user$project$Model$emptyText, flags),
+		_0: A3(
+			_user$project$Main$Model,
+			_user$project$Model$emptyText,
+			_elm_lang$core$Array$fromList(
+				{ctor: '[]'}),
+			flags),
 		_1: _user$project$Main$updateText(flags.quiz_id)
 	};
 };

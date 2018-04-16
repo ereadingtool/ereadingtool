@@ -1,5 +1,6 @@
 module Model exposing (Text, emptyText, TextDifficulty, TextID, Question, Answer, textsDecoder, textEncoder, textDecoder
-  , textCreateRespDecoder, decodeCreateRespErrors, TextCreateRespError, textDifficultyDecoder, TextCreateResp)
+  , textCreateRespDecoder, questionsDecoder , decodeCreateRespErrors, TextCreateRespError, textDifficultyDecoder,
+    TextCreateResp)
 
 import Date exposing (..)
 

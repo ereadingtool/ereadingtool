@@ -19,6 +19,18 @@ class Question(Timestamped, models.Model):
     def __str__(self):
         return self.body[:15]
 
+    def to_dict(self):
+        return {
+            'id': self.pk,
+            'text_id': self.text.pk,
+            'created_dt': self.created_dt.isoformat(),
+            'modified_dt': self.modified_dt.isoformat(),
+            'body': self.body,
+            'order': self.order,
+            'answers': [answer.to_dict() for answer in self.answers.all()],
+            'question_type': self.type
+        }
+
 
 class Answer(models.Model):
     class Meta:
@@ -34,3 +46,13 @@ class Answer(models.Model):
 
     def __str__(self):
         return '{order}'.format(order=self.order)
+
+    def to_dict(self):
+        return {
+            'id': self.pk,
+            'question_id': self.question_id,
+            'text': self.text,
+            'order': self.order,
+            'feedback': self.feedback,
+            'correct': self.correct
+        }
