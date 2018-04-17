@@ -1,5 +1,17 @@
+.quiz {
+    display: grid;
+
+    grid-auto-rows: minmax(200px, auto);
+
+    margin-top: 50px;
+    margin-bottom: 0;
+    grid-template-columns: 4% auto 4%;
+
+}
+
 .text {
     display: grid;
+    grid-column: 2;
 
     grid-template-columns: 10% auto 10%;
     grid-auto-rows: 100px;
@@ -10,14 +22,18 @@
 
 .text_body {
     grid-column: 2;
-    grid-row: 2;
 }
 
 
 .questions {
-    grid-column: 2;
     display: grid;
+    padding-top: 15%;
+
+    grid-column: 2;
     grid-template-columns: 10% auto 10%;
+    grid-row-gap: 10%;
+
+    border-top: rgb(238, 238, 238) solid 1px;
 }
 
 

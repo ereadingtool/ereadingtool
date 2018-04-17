@@ -60,8 +60,6 @@ class TextAPIView(View):
             errors['text'] = form_validation_errors(text_form)
 
         for i, question_param in enumerate(text_params['questions']):
-            # ignore 'order' param for now
-            question_param.pop('order')
             # question_type -> type
             question_param['type'] = question_param.pop('question_type')
 
@@ -73,9 +71,6 @@ class TextAPIView(View):
             question = {'form': question_form, 'answer_forms': []}
 
             for j, answer_param in enumerate(question_param['answers']):
-                # ignore 'order' param for now
-                answer_param.pop('order')
-
                 answer_form = AnswerForm(answer_param)
 
                 if not answer_form.is_valid():
@@ -95,16 +90,19 @@ class TextAPIView(View):
         else:
             text = text_form.save()
 
-            for question in questions:
+            for i, question in enumerate(questions):
                 question_obj = question['form'].save(commit=False)
 
                 question_obj.text = text
+
+                question_obj.order = i
                 question_obj.save()
 
-                for answer_form in question['answer_forms']:
+                for j, answer_form in enumerate(question['answer_forms']):
                     answer = answer_form.save(commit=False)
 
                     answer.question = question_obj
+                    answer.order = j
                     answer.save()
 
             return HttpResponse(json.dumps({"id": text.pk}))
