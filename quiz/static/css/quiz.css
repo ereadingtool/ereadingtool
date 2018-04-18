@@ -6,7 +6,6 @@
     margin-top: 50px;
     margin-bottom: 0;
     grid-template-columns: 4% auto 4%;
-
 }
 
 .text {
@@ -41,7 +40,46 @@
     grid-column: 2;
 }
 
+@media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
+    .quiz {
+        font-size: 60px;
+    }
 
-iframe {
-    border: 0;
+    .filter {
+        visibility: hidden;
+    }
+
+    .header {
+        background: #FFFFFF;
+
+        font: "Lucida Console";
+        font-size: 60px;
+
+        border: solid 0.5px lightgrey;
+    }
+
+    .question {
+    }
+
+    input[type="radio"] {
+        -ms-transform: scale(3); /* IE 9 */
+        -webkit-transform: scale(3); /* Chrome, Safari, Opera */
+        transform: scale(3);
+        margin-right: 10%;
+    }
+    .answer {
+    }
+
+    .questions {
+        align-content: left;
+        border-top: rgb(238, 238, 238) solid 5px;
+    }
+
+    .text {
+        display: inline-block;
+    }
+
+    .text_body {
+        grid-column: 2;
+    }
 }
