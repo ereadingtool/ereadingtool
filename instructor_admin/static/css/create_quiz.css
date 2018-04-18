@@ -222,17 +222,24 @@ body {
     grid-template-columns: 15% auto 20%;
 }
 
-.question {
-    border: solid 0.5px lightgrey;
-    background: #FFFFFF;
+.question_parts {
     display: grid;
-
-    grid-template-columns: 4% auto 1.5%;
+    background: #FFFFFF;
+    border: solid 0.5px lightgrey;
 
     grid-column: 2;
 
+    grid-template-columns: 2% auto 1.5%;
     grid-row-gap: 15px;
     grid-column-gap: 15px;
+}
+
+.question {
+    padding: 10% 20% 10% 1%;
+    background: #FFFFFF;
+    display: grid;
+    grid-row-gap: 15px;
+    grid-template-columns: 0 auto 10%;
 }
 
 .question_item {

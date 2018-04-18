@@ -497,8 +497,8 @@ view_menu_items field = List.map (\html -> div [attribute "class" "question_menu
     , (view_question_type_menu_item field)
   ]
 
-view_question_menu : QuestionField -> List (Html Msg)
-view_question_menu field = [
+view_question_menu : QuestionField -> Html Msg
+view_question_menu field =
     div [ classList [("question_menu", True)] ] [
         Html.div [] [
           Html.img [
@@ -509,16 +509,16 @@ view_question_menu field = [
           classList [("question_menu_overlay", True), ("hidden", field.menu_visible)]
         ] (view_menu_items field)
     ]
-  ]
 
 view_editable_question : QuestionField -> Html Msg
-view_editable_question field = div [classList [("question", True)]] <| [
-       div [] [ Html.input [attribute "type" "checkbox"] [] ]
-       , (case field.editable of
+view_editable_question field = div [classList [("question_parts", True)]] [
+    div [] [ Html.input [attribute "type" "checkbox"] [] ]
+  , div [classList [("question", True)]] <| [
+       (case field.editable of
           True -> edit_question field
           _ -> view_question field)
-    ] ++ (view_question_menu field) ++
-    (Array.toList <| Array.map (view_editable_answer field) field.answer_fields)
+    ] ++ (Array.toList <| Array.map (view_editable_answer field) field.answer_fields)
+  , (view_question_menu field)]
 
 view_add_question : Array QuestionField -> Html Msg
 view_add_question fields = div [classList [("add_question", True)], onClick AddQuestion ] [ Html.text "Add question" ]
