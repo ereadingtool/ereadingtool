@@ -19,8 +19,11 @@ from django.urls import path, include
 from quiz.views import QuizView
 
 urlpatterns = [
+    path('', include('user.urls')),
+
     path('api/text/', include('text.urls')),
     path('api/question/', include('question.urls')),
+
     path('admin/', include('instructor_admin.urls')),
     path('quiz/<int:pk>/', QuizView.as_view(), name="quiz"),
     path('django-admin/', admin.site.urls),

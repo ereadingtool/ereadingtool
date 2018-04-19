@@ -70,6 +70,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
+            os.path.join(BASE_DIR, 'user/templates'),
             os.path.join(BASE_DIR, 'question/templates'),
             os.path.join(BASE_DIR, 'instructor_admin/templates'),
             os.path.join(BASE_DIR, 'quiz/templates')
