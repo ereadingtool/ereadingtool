@@ -1,0 +1,17 @@
+.signup {
+    display: grid;
+
+    grid-auto-rows: minmax(250px, auto);
+
+    margin-top: 50px;
+    margin-bottom: 0;
+    grid-template-columns: 4% 15% 10% auto 10% 15% 4%;
+}
+
+.signup_box {
+    display: grid;
+
+    grid-column: 4;
+    grid-template-columns: auto;
+    grid-auto-rows: 50px;
+}
