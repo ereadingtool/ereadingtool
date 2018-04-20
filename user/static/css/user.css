@@ -15,3 +15,20 @@
     grid-template-columns: auto;
     grid-auto-rows: 50px;
 }
+
+.signup_label {
+    display: inline-block;
+    padding-top: 15%;
+}
+
+.cursor {
+    cursor: pointer;
+}
+
+.submit_btn {
+}
+
+.input_error {
+    border: 1px solid #ff0000;
+    background-color: #ffeeee;
+}

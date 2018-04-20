@@ -8,6 +8,8 @@ import Model exposing (Text, textsDecoder)
 import Config exposing (..)
 import Flags exposing (Flags)
 
+import Views exposing (view_filter, view_header)
+
 import Ports
 
 -- UPDATE
@@ -52,24 +54,6 @@ main =
     , update = update
     }
 
-view_header : Model -> Html Msg
-view_header model =
-    div [ classList [("header", True)] ] [
-        text "E-Reader"
-      , div [ classList [("menu", True)] ] [
-          span [ classList [("menu_item", True)] ] [
-            text ""
-          ]
-        ]
-    ]
-
-view_filter : Model -> Html Msg
-view_filter model = div [classList [("filter_items", True)] ] [
-     div [classList [("filter", True)] ] [
-         Html.input [attribute "placeholder" "Search texts.."] []
-       , Html.a [attribute "href" "/admin/create-quiz"] [Html.text "Create Text"]
-     ]
- ]
 
 month_day_year_fmt : Date -> String
 month_day_year_fmt date = List.foldr (++) "" <| List.map (\s -> s ++ "  ")
@@ -121,8 +105,8 @@ view_footer model = div [classList [("footer_items", True)] ] [
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    (view_header model)
-  , (view_filter model)
+    view_header
+  , view_filter
   , (view_texts model)
   , (view_footer model)
   ]

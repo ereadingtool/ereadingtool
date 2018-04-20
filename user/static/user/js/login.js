@@ -3168,6 +3168,143 @@ var _elm_lang$core$Platform$Task = {ctor: 'Task'};
 var _elm_lang$core$Platform$ProcessId = {ctor: 'ProcessId'};
 var _elm_lang$core$Platform$Router = {ctor: 'Router'};
 
+//import Maybe, Native.List //
+
+var _elm_lang$core$Native_Regex = function() {
+
+function escape(str)
+{
+	return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+}
+function caseInsensitive(re)
+{
+	return new RegExp(re.source, 'gi');
+}
+function regex(raw)
+{
+	return new RegExp(raw, 'g');
+}
+
+function contains(re, string)
+{
+	return string.match(re) !== null;
+}
+
+function find(n, re, str)
+{
+	n = n.ctor === 'All' ? Infinity : n._0;
+	var out = [];
+	var number = 0;
+	var string = str;
+	var lastIndex = re.lastIndex;
+	var prevLastIndex = -1;
+	var result;
+	while (number++ < n && (result = re.exec(string)))
+	{
+		if (prevLastIndex === re.lastIndex) break;
+		var i = result.length - 1;
+		var subs = new Array(i);
+		while (i > 0)
+		{
+			var submatch = result[i];
+			subs[--i] = submatch === undefined
+				? _elm_lang$core$Maybe$Nothing
+				: _elm_lang$core$Maybe$Just(submatch);
+		}
+		out.push({
+			match: result[0],
+			submatches: _elm_lang$core$Native_List.fromArray(subs),
+			index: result.index,
+			number: number
+		});
+		prevLastIndex = re.lastIndex;
+	}
+	re.lastIndex = lastIndex;
+	return _elm_lang$core$Native_List.fromArray(out);
+}
+
+function replace(n, re, replacer, string)
+{
+	n = n.ctor === 'All' ? Infinity : n._0;
+	var count = 0;
+	function jsReplacer(match)
+	{
+		if (count++ >= n)
+		{
+			return match;
+		}
+		var i = arguments.length - 3;
+		var submatches = new Array(i);
+		while (i > 0)
+		{
+			var submatch = arguments[i];
+			submatches[--i] = submatch === undefined
+				? _elm_lang$core$Maybe$Nothing
+				: _elm_lang$core$Maybe$Just(submatch);
+		}
+		return replacer({
+			match: match,
+			submatches: _elm_lang$core$Native_List.fromArray(submatches),
+			index: arguments[arguments.length - 2],
+			number: count
+		});
+	}
+	return string.replace(re, jsReplacer);
+}
+
+function split(n, re, str)
+{
+	n = n.ctor === 'All' ? Infinity : n._0;
+	if (n === Infinity)
+	{
+		return _elm_lang$core$Native_List.fromArray(str.split(re));
+	}
+	var string = str;
+	var result;
+	var out = [];
+	var start = re.lastIndex;
+	var restoreLastIndex = re.lastIndex;
+	while (n--)
+	{
+		if (!(result = re.exec(string))) break;
+		out.push(string.slice(start, result.index));
+		start = re.lastIndex;
+	}
+	out.push(string.slice(start));
+	re.lastIndex = restoreLastIndex;
+	return _elm_lang$core$Native_List.fromArray(out);
+}
+
+return {
+	regex: regex,
+	caseInsensitive: caseInsensitive,
+	escape: escape,
+
+	contains: F2(contains),
+	find: F3(find),
+	replace: F4(replace),
+	split: F3(split)
+};
+
+}();
+
+var _elm_lang$core$Regex$split = _elm_lang$core$Native_Regex.split;
+var _elm_lang$core$Regex$replace = _elm_lang$core$Native_Regex.replace;
+var _elm_lang$core$Regex$find = _elm_lang$core$Native_Regex.find;
+var _elm_lang$core$Regex$contains = _elm_lang$core$Native_Regex.contains;
+var _elm_lang$core$Regex$caseInsensitive = _elm_lang$core$Native_Regex.caseInsensitive;
+var _elm_lang$core$Regex$regex = _elm_lang$core$Native_Regex.regex;
+var _elm_lang$core$Regex$escape = _elm_lang$core$Native_Regex.escape;
+var _elm_lang$core$Regex$Match = F4(
+	function (a, b, c, d) {
+		return {match: a, submatches: b, index: c, number: d};
+	});
+var _elm_lang$core$Regex$Regex = {ctor: 'Regex'};
+var _elm_lang$core$Regex$AtMost = function (a) {
+	return {ctor: 'AtMost', _0: a};
+};
+var _elm_lang$core$Regex$All = {ctor: 'All'};
+
 //import Native.List //
 
 var _elm_lang$core$Native_Array = function() {
@@ -9135,6 +9272,12 @@ var _user$project$HttpHelpers$post_with_headers = F4(
 			});
 	});
 
+var _user$project$Util$valid_email_regex = _elm_lang$core$Regex$caseInsensitive(
+	_elm_lang$core$Regex$regex('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$'));
+var _user$project$Util$is_valid_email = function (addr) {
+	return A2(_elm_lang$core$Regex$contains, _user$project$Util$valid_email_regex, addr);
+};
+
 var _user$project$Views$view_footer = A2(
 	_elm_lang$html$Html$div,
 	{
@@ -9272,7 +9415,18 @@ var _user$project$Views$view_header = A2(
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text(''),
+							_0: A2(
+								_elm_lang$html$Html$a,
+								{
+									ctor: '::',
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/admin'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('Quizzes'),
+									_1: {ctor: '[]'}
+								}),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}
@@ -9281,62 +9435,413 @@ var _user$project$Views$view_header = A2(
 		}
 	});
 
-var _user$project$Main$view_submit = function (model) {
+var _user$project$Main$view_password_match = function (match) {
+	return match ? A2(
+		_elm_lang$html$Html$span,
+		{ctor: '[]'},
+		{ctor: '[]'}) : A2(
+		_elm_lang$html$Html$span,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$em,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('passwords do not match'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Main$signup_label = function (html) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'signup_label'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: html,
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Main$view_errors = function (model) {
+	var _p0 = model.errors;
+	if (_p0.ctor === 'Just') {
+		return {
+			ctor: '::',
+			_0: _user$project$Main$signup_label(
+				A2(
+					_elm_lang$html$Html$span,
+					{
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'errors'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(
+							_elm_lang$core$Basics$toString(_p0._0)),
+						_1: {ctor: '[]'}
+					})),
+			_1: {ctor: '[]'}
+		};
+	} else {
+		return {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$span,
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'errors'),
+					_1: {ctor: '[]'}
+				},
+				{ctor: '[]'}),
+			_1: {ctor: '[]'}
+		};
+	}
+};
+var _user$project$Main$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$none;
+};
+var _user$project$Main$signUpEncoder = function (signup_params) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'email',
+				_1: _elm_lang$core$Json_Encode$string(signup_params.email)
+			},
+			_1: {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'password',
+					_1: _elm_lang$core$Json_Encode$string(signup_params.password)
+				},
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'confirm_password',
+						_1: _elm_lang$core$Json_Encode$string(signup_params.confirm_password)
+					},
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
+var _user$project$Main$SignUpResp = function (a) {
+	return {id: a};
+};
+var _user$project$Main$signUpRespDecoder = A4(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+	'id',
+	_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$int),
+	_elm_lang$core$Maybe$Nothing,
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Main$SignUpResp));
+var _user$project$Main$SignUpParams = F3(
+	function (a, b, c) {
+		return {email: a, password: b, confirm_password: c};
+	});
+var _user$project$Main$init = function (flags) {
 	return {
-		ctor: '::',
-		_0: _elm_lang$html$Html$text('Sign Up'),
-		_1: {ctor: '[]'}
+		ctor: '_Tuple2',
+		_0: {
+			flags: flags,
+			signup_params: A3(_user$project$Main$SignUpParams, '', '', ''),
+			show_passwords: false,
+			passwords_match: true,
+			valid_email: true,
+			errors: _elm_lang$core$Maybe$Nothing
+		},
+		_1: _elm_lang$core$Platform_Cmd$none
 	};
 };
-var _user$project$Main$view_password_input = function (model) {
+var _user$project$Main$Model = F6(
+	function (a, b, c, d, e, f) {
+		return {flags: a, signup_params: b, show_passwords: c, passwords_match: d, valid_email: e, errors: f};
+	});
+var _user$project$Main$UpdateConfirmPassword = function (a) {
+	return {ctor: 'UpdateConfirmPassword', _0: a};
+};
+var _user$project$Main$UpdatePassword = function (a) {
+	return {ctor: 'UpdatePassword', _0: a};
+};
+var _user$project$Main$UpdateEmail = function (a) {
+	return {ctor: 'UpdateEmail', _0: a};
+};
+var _user$project$Main$view_email_input = function (model) {
+	var invalid_email_attr = model.valid_email ? {ctor: '[]'} : {
+		ctor: '::',
+		_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'input_error'),
+		_1: {ctor: '[]'}
+	};
 	return {
 		ctor: '::',
-		_0: _elm_lang$html$Html$text('Password'),
+		_0: _user$project$Main$signup_label(
+			_elm_lang$html$Html$text('Email Address')),
 		_1: {
 			ctor: '::',
 			_0: A2(
 				_elm_lang$html$Html$input,
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					{
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'size', '25'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateEmail),
+							_1: {ctor: '[]'}
+						}
+					},
+					invalid_email_attr),
+				{ctor: '[]'}),
+			_1: {ctor: '[]'}
+		}
+	};
+};
+var _user$project$Main$ToggleShowPassword = {ctor: 'ToggleShowPassword'};
+var _user$project$Main$view_password_input = function (model) {
+	var attrs = A2(
+		_elm_lang$core$Basics_ops['++'],
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'size', '35'),
+			_1: {ctor: '[]'}
+		},
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			model.passwords_match ? {ctor: '[]'} : {
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'input_error'),
+				_1: {ctor: '[]'}
+			},
+			model.show_passwords ? {
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
+				_1: {ctor: '[]'}
+			} : {
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'password'),
+				_1: {ctor: '[]'}
+			}));
+	return {
+		ctor: '::',
+		_0: _user$project$Main$signup_label(
+			A2(
+				_elm_lang$html$Html$span,
+				{ctor: '[]'},
 				{
 					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'size', '35'),
-					_1: {ctor: '[]'}
-				},
+					_0: _elm_lang$html$Html$text('Password '),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$span,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$ToggleShowPassword),
+								_1: {
+									ctor: '::',
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'cursor'),
+									_1: {ctor: '[]'}
+								}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('(show)'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				})),
+		_1: {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$input,
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					attrs,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdatePassword),
+						_1: {ctor: '[]'}
+					}),
 				{ctor: '[]'}),
 			_1: {
 				ctor: '::',
-				_0: _elm_lang$html$Html$text('Password (verify)'),
+				_0: _user$project$Main$signup_label(
+					_elm_lang$html$Html$text('Confirm Password')),
 				_1: {
 					ctor: '::',
 					_0: A2(
 						_elm_lang$html$Html$input,
-						{
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'size', '35'),
-							_1: {ctor: '[]'}
-						},
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							attrs,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateConfirmPassword),
+								_1: {ctor: '[]'}
+							}),
 						{ctor: '[]'}),
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: _user$project$Main$view_password_match(model.passwords_match),
+						_1: {ctor: '[]'}
+					}
 				}
 			}
 		}
 	};
 };
-var _user$project$Main$view_email_input = function (model) {
+var _user$project$Main$Submitted = function (a) {
+	return {ctor: 'Submitted', _0: a};
+};
+var _user$project$Main$post_signup = F2(
+	function (csrftoken, signup_params) {
+		var encoded_signup_params = _user$project$Main$signUpEncoder(signup_params);
+		var req = A4(
+			_user$project$HttpHelpers$post_with_headers,
+			_user$project$Config$signup_api_endpoint,
+			{
+				ctor: '::',
+				_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
+				_1: {ctor: '[]'}
+			},
+			_elm_lang$http$Http$jsonBody(encoded_signup_params),
+			_user$project$Main$signUpRespDecoder);
+		return A2(_elm_lang$http$Http$send, _user$project$Main$Submitted, req);
+	});
+var _user$project$Main$update = F2(
+	function (msg, model) {
+		var _p1 = msg;
+		switch (_p1.ctor) {
+			case 'ToggleShowPassword':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							show_passwords: model.show_passwords ? false : true
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'UpdatePassword':
+				var signup_params = model.signup_params;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							signup_params: _elm_lang$core$Native_Utils.update(
+								signup_params,
+								{password: _p1._0})
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'UpdateConfirmPassword':
+				var _p2 = _p1._0;
+				var signup_params = model.signup_params;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							signup_params: _elm_lang$core$Native_Utils.update(
+								signup_params,
+								{confirm_password: _p2}),
+							passwords_match: _elm_lang$core$Native_Utils.eq(signup_params.password, _p2)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'UpdateEmail':
+				var _p3 = _p1._0;
+				var signup_params = model.signup_params;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							signup_params: _elm_lang$core$Native_Utils.update(
+								signup_params,
+								{email: _p3}),
+							valid_email: _user$project$Util$is_valid_email(_p3)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'Submit':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: A2(_user$project$Main$post_signup, model.flags.csrftoken, model.signup_params)
+				};
+			default:
+				if (_p1._0.ctor === 'Ok') {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					var _p4 = _p1._0._0;
+					switch (_p4.ctor) {
+						case 'BadStatus':
+							var _p5 = A2(
+								_elm_lang$core$Json_Decode$decodeString,
+								_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
+								_p4._0.body);
+							if (_p5.ctor === 'Ok') {
+								return {
+									ctor: '_Tuple2',
+									_0: _elm_lang$core$Native_Utils.update(
+										model,
+										{
+											errors: _elm_lang$core$Maybe$Just(_p5._0)
+										}),
+									_1: _elm_lang$core$Platform_Cmd$none
+								};
+							} else {
+								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+							}
+						case 'BadPayload':
+							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+						default:
+							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					}
+				}
+		}
+	});
+var _user$project$Main$Submit = {ctor: 'Submit'};
+var _user$project$Main$view_submit = function (model) {
 	return {
 		ctor: '::',
-		_0: _elm_lang$html$Html$text('Email Address'),
-		_1: {
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$input,
+		_0: _user$project$Main$signup_label(
+			A2(
+				_elm_lang$html$Html$span,
 				{
 					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'size', '25'),
-					_1: {ctor: '[]'}
+					_0: _elm_lang$html$Html_Attributes$classList(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'cursor', _1: true},
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Submit),
+						_1: {ctor: '[]'}
+					}
 				},
-				{ctor: '[]'}),
-			_1: {ctor: '[]'}
-		}
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Sign Up'),
+					_1: {ctor: '[]'}
+				})),
+		_1: {ctor: '[]'}
 	};
 };
 var _user$project$Main$view_content = function (model) {
@@ -9372,7 +9877,10 @@ var _user$project$Main$view_content = function (model) {
 					A2(
 						_elm_lang$core$Basics_ops['++'],
 						_user$project$Main$view_password_input(model),
-						_user$project$Main$view_submit(model)))),
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							_user$project$Main$view_submit(model),
+							_user$project$Main$view_errors(model))))),
 			_1: {ctor: '[]'}
 		});
 };
@@ -9398,64 +9906,6 @@ var _user$project$Main$view = function (model) {
 			}
 		});
 };
-var _user$project$Main$update = F2(
-	function (msg, model) {
-		return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-	});
-var _user$project$Main$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$none;
-};
-var _user$project$Main$signUpEncoder = function (model) {
-	return _elm_lang$core$Json_Encode$object(
-		{
-			ctor: '::',
-			_0: {
-				ctor: '_Tuple2',
-				_0: 'email',
-				_1: _elm_lang$core$Json_Encode$string(model.email)
-			},
-			_1: {
-				ctor: '::',
-				_0: {
-					ctor: '_Tuple2',
-					_0: 'password',
-					_1: _elm_lang$core$Json_Encode$string(model.password)
-				},
-				_1: {
-					ctor: '::',
-					_0: {
-						ctor: '_Tuple2',
-						_0: 'verify_password',
-						_1: _elm_lang$core$Json_Encode$string(model.verify_password)
-					},
-					_1: {ctor: '[]'}
-				}
-			}
-		});
-};
-var _user$project$Main$SignUpResp = function (a) {
-	return {id: a};
-};
-var _user$project$Main$signUpRespDecoder = A4(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
-	'id',
-	_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$int),
-	_elm_lang$core$Maybe$Nothing,
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Main$SignUpResp));
-var _user$project$Main$SignUpParams = F3(
-	function (a, b, c) {
-		return {email: a, password: b, verify_password: c};
-	});
-var _user$project$Main$Model = function (a) {
-	return {signup_params: a};
-};
-var _user$project$Main$init = function (flags) {
-	return {
-		ctor: '_Tuple2',
-		_0: _user$project$Main$Model(_elm_lang$core$Maybe$Nothing),
-		_1: _elm_lang$core$Platform_Cmd$none
-	};
-};
 var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 	{init: _user$project$Main$init, view: _user$project$Main$view, subscriptions: _user$project$Main$subscriptions, update: _user$project$Main$update})(
 	A2(
@@ -9465,25 +9915,6 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 				{csrftoken: csrftoken});
 		},
 		A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string)));
-var _user$project$Main$Submitted = function (a) {
-	return {ctor: 'Submitted', _0: a};
-};
-var _user$project$Main$post_signup = F2(
-	function (csrftoken, signup_params) {
-		var encoded_signup_params = _user$project$Main$signUpEncoder(signup_params);
-		var req = A4(
-			_user$project$HttpHelpers$post_with_headers,
-			_user$project$Config$signup_api_endpoint,
-			{
-				ctor: '::',
-				_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
-				_1: {ctor: '[]'}
-			},
-			_elm_lang$http$Http$jsonBody(encoded_signup_params),
-			_user$project$Main$signUpRespDecoder);
-		return A2(_elm_lang$http$Http$send, _user$project$Main$Submitted, req);
-	});
-var _user$project$Main$Submit = {ctor: 'Submit'};
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};

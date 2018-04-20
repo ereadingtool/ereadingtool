@@ -11,6 +11,8 @@ import HttpHelpers exposing (post_with_headers)
 import Model exposing (Text, emptyText, TextDifficulty, Question, Answer, textsDecoder, textEncoder, textDecoder,
   textDifficultyDecoder, textCreateRespDecoder, decodeCreateRespErrors, TextCreateRespError, TextCreateResp)
 
+import Views exposing (view_filter, view_header, view_footer)
+
 import Dict
 
 import Ports exposing (selectAllInputText, ckEditor, ckEditorUpdate)
@@ -362,17 +364,6 @@ main =
     , update = update
     }
 
-view_header : Model -> Html Msg
-view_header model =
-    div [ classList [("header", True)] ] [
-        text "E-Reader"
-      , div [ classList [("menu", True)] ] [
-          span [ classList [("menu_item", True)] ] [
-             Html.a [attribute "href" "/admin"] [ Html.text "Quizzes" ]
-          ]
-        ]
-    ]
-
 view_preview : Model -> Html Msg
 view_preview model =
     div [ classList [("preview", True)] ] [
@@ -383,14 +374,6 @@ view_preview model =
             ]
       ]
     ]
-
-view_filter : Model -> Html Msg
-view_filter model = div [classList [("filter_items", True)] ] [
-     div [classList [("filter", True)] ] [
-         Html.input [attribute "placeholder" "Search texts.."] []
-       , Html.button [] [Html.text "Create Text"]
-     ]
- ]
 
 edit_question : QuestionField -> Html Msg
 edit_question question_field =
@@ -642,7 +625,7 @@ view_submit model = Html.div [classList [("submit_section", True)]] [
 
 view : Model -> Html Msg
 view model = div [] [
-      (view_header model)
+      view_header
     , (view_preview model)
     , (view_create_text model)
     , (view_questions model.question_fields)

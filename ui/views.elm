@@ -10,7 +10,7 @@ view_header =
         text "E-Reader"
       , div [ classList [("menu", True)] ] [
           span [ classList [("menu_item", True)] ] [
-            text ""
+             Html.a [attribute "href" "/admin"] [ Html.text "Quizzes" ]
           ]
         ]
     ]
