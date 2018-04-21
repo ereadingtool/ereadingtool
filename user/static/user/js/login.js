@@ -9780,7 +9780,9 @@ var _user$project$Main$update = F2(
 			case 'Submit':
 				return {
 					ctor: '_Tuple2',
-					_0: model,
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{errors: _elm_lang$core$Maybe$Nothing}),
 					_1: A2(_user$project$Main$post_signup, model.flags.csrftoken, model.signup_params)
 				};
 			default:

@@ -93,7 +93,7 @@ update msg model = case msg of
     ({ model | signup_params = { signup_params | email = addr }
              , valid_email = is_valid_email addr }, Cmd.none)
 
-  Submit -> (model, post_signup model.flags.csrftoken model.signup_params)
+  Submit -> ({ model | errors = Nothing }, post_signup model.flags.csrftoken model.signup_params)
 
   Submitted (Ok resp) -> (model, Cmd.none)
 

@@ -1,14 +1,37 @@
-from django.forms import ModelForm
+from django import forms
 
-from user.models import Instructor, Student
+from user.models import ReaderUser, Instructor, Student
+from django.utils.translation import ugettext_lazy as _
+from django.core.validators import validate_email
 
 
-class SignUpForm(ModelForm):
-    class Meta:
-        fields = ('email', 'password', 'verify_password',)
+class SignUpForm(forms.ModelForm):
+    email = forms.EmailField(required=True)
+    password = forms.CharField(required=True)
+    confirm_password = forms.CharField(required=True)
 
-    def full_clean(self):
-        super(SignUpForm, self).full_clean()
+    def clean_email(self):
+        email = self.cleaned_data['email']
+
+        validate_email(email)
+
+        if ReaderUser.objects.filter(username=email).count():
+            raise forms.ValidationError(_('Email address already exists.'), code='email_exists')
+
+        return email
+
+    def save(self, commit=True):
+        self.cleaned_data['user'] = ReaderUser(username=self.cleaned_data['email'],
+                                               password=self.cleaned_data['password'])
+
+        self.cleaned_data['user'].save()
+
+        user = super(SignUpForm, self).save(commit=False)
+
+        user.user = self.cleaned_data['user']
+        user.save()
+
+        return user
 
 
 class InstructorSignUpForm(SignUpForm):
@@ -23,13 +46,13 @@ class StudentSignUpForm(SignUpForm):
         exclude = ('user',)
 
 
-class InstructorLoginForm(ModelForm):
+class InstructorLoginForm(forms.ModelForm):
     class Meta:
         model = Instructor
         exclude = ('user',)
 
 
-class StudentLoginForm(ModelForm):
+class StudentLoginForm(forms.ModelForm):
     class Meta:
         model = Student
         exclude = ('user',)
