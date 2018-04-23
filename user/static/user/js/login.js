@@ -9250,6 +9250,7 @@ var _elm_lang$http$Http$StringPart = F2(
 	});
 var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
 
+var _user$project$Config$login_api_endpoint = '/api/login/';
 var _user$project$Config$signup_api_endpoint = '/api/signup/';
 var _user$project$Config$question_api_endpoint = '/api/question/';
 var _user$project$Config$text_api_endpoint = '/api/text/';
@@ -9627,7 +9628,7 @@ var _user$project$Main$post_login = F2(
 		var encoded_login_params = _user$project$Main$loginEncoder(login_params);
 		var req = A4(
 			_user$project$HttpHelpers$post_with_headers,
-			_user$project$Config$signup_api_endpoint,
+			_user$project$Config$login_api_endpoint,
 			{
 				ctor: '::',
 				_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),

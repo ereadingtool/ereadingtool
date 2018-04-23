@@ -14,7 +14,7 @@ import Json.Encode as Encode
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 
 import Views exposing (view_filter, view_header, view_footer)
-import Config exposing (signup_api_endpoint)
+import Config exposing (login_api_endpoint)
 import Flags exposing (CSRFToken, Flags)
 
 
@@ -63,7 +63,7 @@ post_login : CSRFToken -> LoginParams -> Cmd Msg
 post_login csrftoken login_params =
   let encoded_login_params = loginEncoder login_params
       req =
-    post_with_headers signup_api_endpoint [Http.header "X-CSRFToken" csrftoken] (Http.jsonBody encoded_login_params)
+    post_with_headers login_api_endpoint [Http.header "X-CSRFToken" csrftoken] (Http.jsonBody encoded_login_params)
     <| loginRespDecoder
   in
     Http.send Submitted req
