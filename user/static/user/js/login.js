@@ -9758,7 +9758,10 @@ var _user$project$Main$update = F2(
 							signup_params: _elm_lang$core$Native_Utils.update(
 								signup_params,
 								{confirm_password: _p4}),
-							errors: _elm_lang$core$Native_Utils.eq(_p4, model.signup_params.password) ? A2(_elm_lang$core$Dict$remove, 'confirm_password', model.errors) : A3(_elm_lang$core$Dict$insert, 'confirm_password', 'Passwords don\'t match.', model.errors)
+							errors: _elm_lang$core$Native_Utils.eq(_p4, model.signup_params.password) ? A2(
+								_elm_lang$core$Dict$remove,
+								'password',
+								A2(_elm_lang$core$Dict$remove, 'confirm_password', model.errors)) : A3(_elm_lang$core$Dict$insert, 'confirm_password', 'Passwords don\'t match.', model.errors)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};

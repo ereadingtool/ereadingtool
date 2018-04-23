@@ -84,7 +84,7 @@ update msg model = case msg of
   UpdateConfirmPassword confirm_password -> let signup_params = model.signup_params in
         ({ model | signup_params = { signup_params | confirm_password = confirm_password }
                  , errors = (if (confirm_password == model.signup_params.password) then
-                 Dict.remove "confirm_password" model.errors
+                 Dict.remove "password" (Dict.remove "confirm_password" model.errors)
                else
                  Dict.insert "confirm_password" "Passwords don't match." model.errors) }, Cmd.none)
 
