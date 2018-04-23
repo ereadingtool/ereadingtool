@@ -1,5 +1,7 @@
 from django.urls import path
-from user.views import InstructorSignupAPIView, InstructorLoginAPIView, InstructorSignUpView, InstructorLoginView
+from user.views import (InstructorSignupAPIView, InstructorLoginAPIView,
+                        InstructorSignUpView, InstructorLoginView,
+                        InstructorProfileView)
 
 
 api_urlpatterns = [
@@ -9,5 +11,7 @@ api_urlpatterns = [
 
 urlpatterns = [
     path('signup/instructor/', InstructorSignUpView.as_view(), name='instructor-signup'),
-    path('login/instructor/', InstructorLoginView.as_view(), name='instructor-login')
+    path('login/instructor/', InstructorLoginView.as_view(), name='instructor-login'),
+
+    path('profile/instructor/', InstructorProfileView.as_view(), name='instructor-profile')
 ] + api_urlpatterns

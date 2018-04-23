@@ -1,6 +1,7 @@
 from django import forms
 
 from user.models import ReaderUser, Instructor, Student
+from django.contrib.auth.forms import AuthenticationForm
 from django.utils.translation import ugettext_lazy as _
 from django.core.validators import validate_email
 
@@ -46,10 +47,8 @@ class StudentSignUpForm(SignUpForm):
         exclude = ('user',)
 
 
-class InstructorLoginForm(forms.ModelForm):
-    class Meta:
-        model = Instructor
-        exclude = ('user',)
+class InstructorLoginForm(AuthenticationForm):
+    pass
 
 
 class StudentLoginForm(forms.ModelForm):

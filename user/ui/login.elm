@@ -115,7 +115,7 @@ view_email_input model =
     let email_error = if (Dict.member "email" model.errors) then
       [attribute "class" "input_error"]
     else [] in [
-      login_label (Html.text "Login:")
+      login_label (Html.text "Username (e-mail address):")
     , Html.input ([
         attribute "size" "25"
       , onInput UpdateEmail ] ++ (email_error)) []
@@ -129,7 +129,8 @@ view_password_input model = let
     Nothing -> Html.text ""
   pass_err =
     (Dict.member "password" model.errors)
-  attrs = [attribute "size" "35"] ++ (if pass_err then [attribute "class" "input_error"] else []) in [
+  attrs = [attribute "size" "35", attribute "type" "password"] ++
+    (if pass_err then [attribute "class" "input_error"] else []) in [
     login_label (Html.span [] [
       Html.text "Password "
     ])
@@ -139,7 +140,9 @@ view_password_input model = let
 
 view_submit : Model -> List (Html Msg)
 view_submit model = [
-    login_label (Html.span [classList [("cursor", True)], onClick Submit ] [ Html.text "Login" ])
+    login_label (div [attribute "class" "login_submit"] [
+      Html.span [classList [("cursor", True)], onClick Submit ] [ Html.text "Login" ]
+    ])
   ]
 
 view_content : Model -> Html Msg

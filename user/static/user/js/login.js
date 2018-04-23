@@ -9511,7 +9511,11 @@ var _user$project$Main$view_password_input = function (model) {
 		{
 			ctor: '::',
 			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'size', '35'),
-			_1: {ctor: '[]'}
+			_1: {
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'password'),
+				_1: {ctor: '[]'}
+			}
 		},
 		pass_err ? {
 			ctor: '::',
@@ -9594,7 +9598,7 @@ var _user$project$Main$view_email_input = function (model) {
 	return {
 		ctor: '::',
 		_0: _user$project$Main$login_label(
-			_elm_lang$html$Html$text('Login:')),
+			_elm_lang$html$Html$text('Username (e-mail address):')),
 		_1: {
 			ctor: '::',
 			_0: A2(
@@ -9717,24 +9721,35 @@ var _user$project$Main$view_submit = function (model) {
 		ctor: '::',
 		_0: _user$project$Main$login_label(
 			A2(
-				_elm_lang$html$Html$span,
+				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$classList(
-						{
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'cursor', _1: true},
-							_1: {ctor: '[]'}
-						}),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Submit),
-						_1: {ctor: '[]'}
-					}
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'login_submit'),
+					_1: {ctor: '[]'}
 				},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text('Login'),
+					_0: A2(
+						_elm_lang$html$Html$span,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$classList(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'cursor', _1: true},
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Submit),
+								_1: {ctor: '[]'}
+							}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Login'),
+							_1: {ctor: '[]'}
+						}),
 					_1: {ctor: '[]'}
 				})),
 		_1: {ctor: '[]'}

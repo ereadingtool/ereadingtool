@@ -21,6 +21,11 @@
     padding-top: 15%;
 }
 
+.login_submit {
+    display: grid;
+    justify-content: center;
+}
+
 .cursor {
     cursor: pointer;
 }

@@ -1,18 +1,36 @@
 import json
 
 from django.http import HttpResponse
+from django.urls import reverse
 from django.views.generic import TemplateView
 from django.views.generic import View
-from django.urls import reverse
 
-from user.forms import InstructorSignUpForm, InstructorLoginForm, forms
+from django.utils.decorators import method_decorator
+
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.debug import sensitive_post_parameters
+
+from django.contrib.auth import login
+
+from typing import TypeVar
+
+from user.forms import InstructorSignUpForm, InstructorLoginForm, AuthenticationForm, forms
 
 
-class InstructorSignupAPIView(View):
+class APIView(View):
+    @method_decorator(sensitive_post_parameters())
+    @method_decorator(csrf_protect)
+    @method_decorator(never_cache)
+    def dispatch(self, request, *args, **kwargs):
+        return super(APIView, self).dispatch(request, *args, **kwargs)
+
+
+class InstructorSignupAPIView(APIView):
     def post(self, request, *args, **kwargs):
         errors = {}
 
-        def form_validation_errors(form: forms.ModelForm) -> dict:
+        def form_validation_errors(form: TypeVar(bound=forms.Form)) -> dict:
             return {k: str(form.errors[k].data[0].message) for k in form.errors.keys()}
 
         try:
@@ -33,11 +51,11 @@ class InstructorSignupAPIView(View):
             return HttpResponse(json.dumps({'id': instructor.pk, 'redirect': reverse('instructor-login')}))
 
 
-class InstructorLoginAPIView(View):
+class InstructorLoginAPIView(APIView):
     def post(self, request, *args, **kwargs):
         errors = {}
 
-        def form_validation_errors(form: forms.ModelForm) -> dict:
+        def form_validation_errors(form: forms.Form) -> dict:
             return {k: str(form.errors[k].data[0].message) for k in form.errors.keys()}
 
         try:
@@ -53,7 +71,9 @@ class InstructorLoginAPIView(View):
         if errors:
             return HttpResponse(json.dumps(errors), status=400)
         else:
-            return HttpResponse(json.dumps({"login": True}))
+            login(self.request, instructor_login_form.get_user())
+
+            return HttpResponse(json.dumps({'login': True, 'redirect': reverse('instructor-profile')}))
 
 
 class InstructorLoginView(TemplateView):
@@ -62,3 +82,7 @@ class InstructorLoginView(TemplateView):
 
 class InstructorSignUpView(TemplateView):
     template_name = 'instructor_signup.html'
+
+
+class InstructorProfileView(TemplateView):
+    template_name = 'instructor_profile.html'
