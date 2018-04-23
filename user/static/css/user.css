@@ -16,7 +16,7 @@
     grid-auto-rows: 50px;
 }
 
-.signup_label {
+.login_label, .signup_label {
     display: inline-block;
     padding-top: 15%;
 }
