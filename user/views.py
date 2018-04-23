@@ -3,7 +3,7 @@ import json
 from django.http import HttpResponse
 from django.views.generic import TemplateView
 from django.views.generic import View
-
+from django.urls import reverse
 
 from user.forms import InstructorSignUpForm, InstructorLoginForm, forms
 
@@ -18,7 +18,7 @@ class InstructorSignupAPIView(View):
         try:
             signup_params = json.loads(request.body.decode('utf8'))
         except json.JSONDecodeError as e:
-            return HttpResponse(errors={"errors": {'json': str(e)}}, status=400)
+            return HttpResponse(errors={'errors': {'json': str(e)}}, status=400)
 
         instructor_signup_form = InstructorSignUpForm(signup_params)
 
@@ -30,7 +30,7 @@ class InstructorSignupAPIView(View):
         else:
             instructor = instructor_signup_form.save()
 
-            return HttpResponse(json.dumps({"id": instructor.pk}))
+            return HttpResponse(json.dumps({'id': instructor.pk, 'redirect': reverse('instructor-login')}))
 
 
 class InstructorLoginAPIView(View):

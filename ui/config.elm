@@ -6,8 +6,8 @@ text_api_endpoint = "/api/text/"
 question_api_endpoint : String
 question_api_endpoint = "/api/question/"
 
-signup_api_endpoint : String
-signup_api_endpoint = "/api/signup/"
+instructor_signup_api_endpoint : String
+instructor_signup_api_endpoint = "/api/instructor/signup/"
 
-login_api_endpoint : String
-login_api_endpoint = "/api/login/"
+instructor_login_api_endpoint : String
+instructor_login_api_endpoint = "/api/instructor/login/"

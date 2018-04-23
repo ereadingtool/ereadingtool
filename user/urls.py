@@ -3,8 +3,8 @@ from user.views import InstructorSignupAPIView, InstructorLoginAPIView, Instruct
 
 
 api_urlpatterns = [
-    path('api/signup/', InstructorSignupAPIView.as_view(), name='signup'),
-    path('api/login/', InstructorLoginAPIView.as_view(), name='login'),
+    path('api/instructor/signup/', InstructorSignupAPIView.as_view(), name='api-instructor-signup'),
+    path('api/instructor/login/', InstructorLoginAPIView.as_view(), name='api-instructor-login'),
 ]
 
 urlpatterns = [

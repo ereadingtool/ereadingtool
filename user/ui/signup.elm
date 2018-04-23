@@ -7,6 +7,7 @@ import HttpHelpers exposing (post_with_headers)
 import Json.Decode as Decode
 
 import Dict exposing (Dict)
+import Navigation
 
 import Util exposing (is_valid_email)
 
@@ -14,13 +15,14 @@ import Json.Encode as Encode
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 
 import Views exposing (view_filter, view_header, view_footer)
-import Config exposing (signup_api_endpoint)
+import Config exposing (instructor_signup_api_endpoint)
 import Flags exposing (CSRFToken, Flags)
 
 
 type alias UserID = Int
+type alias URI = String
 
-type alias SignUpResp = { id: Maybe UserID }
+type alias SignUpResp = { id: UserID, redirect: URI }
 
 -- UPDATE
 type Msg =
@@ -52,7 +54,8 @@ signUpEncoder signup_params = Encode.object [
 signUpRespDecoder : Decode.Decoder (SignUpResp)
 signUpRespDecoder =
   decode SignUpResp
-    |> optional "id" (Decode.maybe Decode.int) Nothing
+    |> required "id" Decode.int
+    |> required "redirect" Decode.string
 
 init : Flags -> (Model, Cmd Msg)
 init flags = ({
@@ -65,12 +68,18 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
+redirect_to : URI -> Cmd Msg
+redirect_to uri = Navigation.load uri
+
 post_signup : CSRFToken -> SignUpParams -> Cmd Msg
 post_signup csrftoken signup_params =
   let encoded_signup_params = signUpEncoder signup_params
       req =
-    post_with_headers signup_api_endpoint [Http.header "X-CSRFToken" csrftoken] (Http.jsonBody encoded_signup_params)
-    <| signUpRespDecoder
+    post_with_headers
+       instructor_signup_api_endpoint
+       [Http.header "X-CSRFToken" csrftoken]
+       (Http.jsonBody encoded_signup_params)
+       signUpRespDecoder
   in
     Http.send Submitted req
 
@@ -98,7 +107,7 @@ update msg model = case msg of
 
   Submit -> ({ model | errors = Dict.fromList [] }, post_signup model.flags.csrftoken model.signup_params)
 
-  Submitted (Ok resp) -> (model, Cmd.none)
+  Submitted (Ok resp) -> (model, redirect_to resp.redirect)
 
   Submitted (Err err) -> case err of
       Http.BadStatus resp -> case (Decode.decodeString (Decode.dict Decode.string) resp.body) of
