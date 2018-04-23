@@ -10825,8 +10825,8 @@ var _user$project$Main$update = F2(
 				var questions = A2(
 					_elm_lang$core$Array$map,
 					function (q_field) {
-						var answer_fields = q_field.answer_fields;
 						var question = q_field.question;
+						var answer_fields = q_field.answer_fields;
 						return _elm_lang$core$Native_Utils.update(
 							question,
 							{

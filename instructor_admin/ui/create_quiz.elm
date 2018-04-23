@@ -251,8 +251,8 @@ update msg model = let text = model.text in
       Question question_field -> ({ model | question_fields = toggle_editable question_field model.question_fields }
                          , post_toggle_field question_field)
       Answer answer_field ->
-        let answer_feedback_field = answer_field.feedback_field in
-        let new_answer_feedback_field = {answer_feedback_field | error = False } in
+        let answer_feedback_field = answer_field.feedback_field
+            new_answer_feedback_field = {answer_feedback_field | error = False } in
         ({ model | question_fields = update_answer { answer_field
           | editable = (if answer_field.editable then False else True)
           , hover = False
@@ -281,28 +281,28 @@ update msg model = let text = model.text in
          , Cmd.none )
 
     UpdateQuestionBody field body ->
-      let question = field.question in
-      let new_field = {field | question = {question | body = body} } in
+      let question = field.question
+          new_field = {field | question = {question | body = body} } in
         ({ model | question_fields = update_question_field new_field model.question_fields }, Cmd.none)
 
     UpdateQuestionField new_field ->
         ({ model | question_fields = update_question_field new_field model.question_fields }, Cmd.none)
 
     UpdateAnswerText question_field answer_field text ->
-      let answer = answer_field.answer in
-      let new_answer = { answer | text = text } in
+      let answer = answer_field.answer
+          new_answer = { answer | text = text } in
         ({ model | question_fields =
           update_answer { answer_field | answer = new_answer } model.question_fields }, Cmd.none)
 
     UpdateAnswerCorrect question_field answer_field correct ->
-      let answer = answer_field.answer in
-      let new_answer = { answer | correct = correct } in
+      let answer = answer_field.answer
+          new_answer = { answer | correct = correct } in
         ({ model | question_fields =
           update_answer { answer_field | answer = new_answer } model.question_fields }, Cmd.none)
 
     UpdateAnswerFeedback question_field answer_field feedback ->
-      let answer = answer_field.answer in
-      let new_answer = { answer | feedback = feedback } in
+      let answer = answer_field.answer
+          new_answer = { answer | feedback = feedback } in
         ({ model | question_fields =
           update_answer { answer_field | answer = new_answer } model.question_fields }, Cmd.none)
 
@@ -317,8 +317,8 @@ update msg model = let text = model.text in
     DeleteQuestion index -> ({model | question_fields = delete_question index model.question_fields }, Cmd.none)
 
     SubmitQuiz -> let questions = Array.map (\q_field ->
-      let answer_fields = q_field.answer_fields in
-      let question = q_field.question in
+      let answer_fields = q_field.answer_fields
+          question = q_field.question in
        { question | answers = Array.map (\a_field -> a_field.answer) q_field.answer_fields }) model.question_fields in
        ({ model |
            error_msg = Nothing
@@ -348,8 +348,8 @@ update msg model = let text = model.text in
 
 post_text : CSRFToken -> Text -> Array Question -> Cmd Msg
 post_text csrftoken text questions =
-  let encoded_text = textEncoder text questions in
-  let req =
+  let encoded_text = textEncoder text questions
+      req =
     post_with_headers text_api_endpoint [Http.header "X-CSRFToken" csrftoken] (Http.jsonBody encoded_text)
     <| textCreateRespDecoder
   in

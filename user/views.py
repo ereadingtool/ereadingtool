@@ -5,7 +5,7 @@ from django.views.generic import TemplateView
 from django.views.generic import View
 
 
-from user.forms import InstructorSignUpForm, forms
+from user.forms import InstructorSignUpForm, InstructorLoginForm, forms
 
 
 class InstructorSignupAPIView(View):
@@ -34,7 +34,30 @@ class InstructorSignupAPIView(View):
 
 
 class InstructorLoginAPIView(View):
-    pass
+    def post(self, request, *args, **kwargs):
+        errors = {}
+
+        def form_validation_errors(form: forms.ModelForm) -> dict:
+            return {k: str(form.errors[k].data[0].message) for k in form.errors.keys()}
+
+        try:
+            login_params = json.loads(request.body.decode('utf8'))
+        except json.JSONDecodeError as e:
+            return HttpResponse(errors={"errors": {'json': str(e)}}, status=400)
+
+        instructor_login_form = InstructorLoginForm(login_params)
+
+        if not instructor_login_form.is_valid():
+            errors = form_validation_errors(instructor_login_form)
+
+        if errors:
+            return HttpResponse(json.dumps(errors), status=400)
+        else:
+            return HttpResponse(json.dumps({"login": True}))
+
+
+class InstructorLoginView(TemplateView):
+    template_name = 'instructor_login.html'
 
 
 class InstructorSignUpView(TemplateView):

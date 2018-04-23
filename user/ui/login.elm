@@ -20,83 +20,67 @@ import Flags exposing (CSRFToken, Flags)
 
 type alias UserID = Int
 
-type alias SignUpResp = { id: Maybe UserID }
+type alias LoginResp = { id: UserID }
 
 -- UPDATE
 type Msg =
     Submit
-  | Submitted (Result Http.Error SignUpResp)
-  | ToggleShowPassword
+  | Submitted (Result Http.Error LoginResp)
   | UpdateEmail String
   | UpdatePassword String
-  | UpdateConfirmPassword String
 
-type alias SignUpParams = {
+type alias LoginParams = {
     email : String
-  , password : String
-  , confirm_password : String }
+  , password : String }
 
 type alias Model = {
     flags : Flags
-  , signup_params : SignUpParams
-  , show_passwords : Bool
+  , login_params : LoginParams
   , errors : Dict String String }
 
-signUpEncoder : SignUpParams -> Encode.Value
-signUpEncoder signup_params = Encode.object [
-     ("email", Encode.string signup_params.email)
-   , ("password", Encode.string signup_params.password)
-   , ("confirm_password", Encode.string signup_params.confirm_password)
+loginEncoder : LoginParams -> Encode.Value
+loginEncoder login_params = Encode.object [
+     ("email", Encode.string login_params.email)
+   , ("password", Encode.string login_params.password)
   ]
 
-signUpRespDecoder : Decode.Decoder (SignUpResp)
-signUpRespDecoder =
-  decode SignUpResp
-    |> optional "id" (Decode.maybe Decode.int) Nothing
+loginRespDecoder : Decode.Decoder (LoginResp)
+loginRespDecoder =
+  decode LoginResp
+    |> required "login" Decode.int
 
 init : Flags -> (Model, Cmd Msg)
 init flags = ({
     flags = flags
-  , signup_params = (SignUpParams "" "" "")
-  , show_passwords = False
+  , login_params = (LoginParams "" "")
   , errors = Dict.fromList [] }, Cmd.none)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
-post_signup : CSRFToken -> SignUpParams -> Cmd Msg
-post_signup csrftoken signup_params =
-  let encoded_signup_params = signUpEncoder signup_params in
-  let req =
-    post_with_headers signup_api_endpoint [Http.header "X-CSRFToken" csrftoken] (Http.jsonBody encoded_signup_params)
-    <| signUpRespDecoder
+post_login : CSRFToken -> LoginParams -> Cmd Msg
+post_login csrftoken login_params =
+  let encoded_login_params = loginEncoder login_params
+      req =
+    post_with_headers signup_api_endpoint [Http.header "X-CSRFToken" csrftoken] (Http.jsonBody encoded_login_params)
+    <| loginRespDecoder
   in
     Http.send Submitted req
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = case msg of
-  ToggleShowPassword -> ({model | show_passwords = (if model.show_passwords then False else True)}, Cmd.none)
-
-  UpdatePassword password -> let signup_params = model.signup_params in
-        ({ model | signup_params = { signup_params | password = password } }, Cmd.none)
-
-  UpdateConfirmPassword confirm_password -> let signup_params = model.signup_params in
-        ({ model | signup_params = { signup_params | confirm_password = confirm_password }
-                 , errors = (if (confirm_password == model.signup_params.password) then
-                 Dict.remove "password" (Dict.remove "confirm_password" model.errors)
-               else
-                 Dict.insert "confirm_password" "Passwords don't match." model.errors) }, Cmd.none)
-
-  UpdateEmail addr -> let signup_params = model.signup_params in
-    ({ model | signup_params = { signup_params | email = addr }
+  UpdatePassword password -> let login_params = model.login_params in
+        ({ model | login_params = { login_params | password = password } }, Cmd.none)
+  UpdateEmail addr -> let login_params = model.login_params in
+    ({ model | login_params = { login_params | email = addr }
              , errors = (if (is_valid_email addr) || (addr == "") then
                  Dict.remove "email" model.errors
                else
                  Dict.insert "email" "This e-mail is invalid" model.errors) }
              , Cmd.none)
 
-  Submit -> ({ model | errors = Dict.fromList [] }, post_signup model.flags.csrftoken model.signup_params)
+  Submit -> ({ model | errors = Dict.fromList [] }, post_login model.flags.csrftoken model.login_params)
 
   Submitted (Ok resp) -> (model, Cmd.none)
 
@@ -116,19 +100,19 @@ main =
     , update = update
     }
 
-signup_label : Html Msg -> Html Msg
-signup_label html = Html.div [attribute "class" "signup_label"] [ html ]
+login_label : Html Msg -> Html Msg
+login_label html = Html.div [attribute "class" "login_label"] [ html ]
 
 view_email_input : Model -> List (Html Msg)
 view_email_input model =
   let err_msg = case Dict.get "email" model.errors of
-    Just err_msg -> signup_label (Html.em [] [Html.text err_msg])
+    Just err_msg -> login_label (Html.em [] [Html.text err_msg])
     Nothing -> Html.text ""
   in
     let email_error = if (Dict.member "email" model.errors) then
       [attribute "class" "input_error"]
     else [] in [
-      signup_label (Html.text "Email Address")
+      login_label (Html.text "Login:")
     , Html.input ([
         attribute "size" "25"
       , onInput UpdateEmail ] ++ (email_error)) []
@@ -136,31 +120,23 @@ view_email_input model =
     ]
 
 view_password_input : Model -> List (Html Msg)
-view_password_input model =
-  let confirm_err_msg = case Dict.get "confirm_password" model.errors of
-    Just err_msg -> signup_label (Html.em [] [Html.text err_msg])
-    Nothing -> Html.text "" in
-  let password_err_msg = case Dict.get "password" model.errors of
-    Just err_msg -> signup_label (Html.em [] [Html.text err_msg])
-    Nothing -> Html.text "" in
-  let pass_err =
-    (Dict.member "confirm_password" model.errors || Dict.member "password" model.errors) in
-  let attrs = [attribute "size" "35"] ++ (if pass_err then [attribute "class" "input_error"] else []) ++
-    (if model.show_passwords then [attribute "type" "text"] else [attribute "type" "password"]) in [
-    signup_label (Html.span [] [
+view_password_input model = let
+  password_err_msg = case Dict.get "password" model.errors of
+    Just err_msg -> login_label (Html.em [] [Html.text err_msg])
+    Nothing -> Html.text ""
+  pass_err =
+    (Dict.member "password" model.errors)
+  attrs = [attribute "size" "35"] ++ (if pass_err then [attribute "class" "input_error"] else []) in [
+    login_label (Html.span [] [
       Html.text "Password "
-    , Html.span [onClick ToggleShowPassword, attribute "class" "cursor"] [Html.text "(show)"]
     ])
   , Html.input (attrs ++ [onInput UpdatePassword]) []
   , password_err_msg
-  , signup_label (Html.text "Confirm Password")
-  , Html.input (attrs ++ [onInput UpdateConfirmPassword]) []
-  , confirm_err_msg
   ]
 
 view_submit : Model -> List (Html Msg)
 view_submit model = [
-    signup_label (Html.span [classList [("cursor", True)], onClick Submit ] [ Html.text "Sign Up" ])
+    login_label (Html.span [classList [("cursor", True)], onClick Submit ] [ Html.text "Login" ])
   ]
 
 view_content : Model -> Html Msg
