@@ -9435,26 +9435,6 @@ var _user$project$Views$view_header = A2(
 		}
 	});
 
-var _user$project$Main$view_password_match = function (match) {
-	return match ? A2(
-		_elm_lang$html$Html$span,
-		{ctor: '[]'},
-		{ctor: '[]'}) : A2(
-		_elm_lang$html$Html$span,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$em,
-				{ctor: '[]'},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text('passwords do not match'),
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		});
-};
 var _user$project$Main$signup_label = function (html) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -9468,42 +9448,6 @@ var _user$project$Main$signup_label = function (html) {
 			_0: html,
 			_1: {ctor: '[]'}
 		});
-};
-var _user$project$Main$view_errors = function (model) {
-	var _p0 = model.errors;
-	if (_p0.ctor === 'Just') {
-		return {
-			ctor: '::',
-			_0: _user$project$Main$signup_label(
-				A2(
-					_elm_lang$html$Html$span,
-					{
-						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'errors'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text(
-							_elm_lang$core$Basics$toString(_p0._0)),
-						_1: {ctor: '[]'}
-					})),
-			_1: {ctor: '[]'}
-		};
-	} else {
-		return {
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$span,
-				{
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'errors'),
-					_1: {ctor: '[]'}
-				},
-				{ctor: '[]'}),
-			_1: {ctor: '[]'}
-		};
-	}
 };
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
@@ -9556,16 +9500,15 @@ var _user$project$Main$init = function (flags) {
 			flags: flags,
 			signup_params: A3(_user$project$Main$SignUpParams, '', '', ''),
 			show_passwords: false,
-			passwords_match: true,
-			valid_email: true,
-			errors: _elm_lang$core$Maybe$Nothing
+			errors: _elm_lang$core$Dict$fromList(
+				{ctor: '[]'})
 		},
 		_1: _elm_lang$core$Platform_Cmd$none
 	};
 };
-var _user$project$Main$Model = F6(
-	function (a, b, c, d, e, f) {
-		return {flags: a, signup_params: b, show_passwords: c, passwords_match: d, valid_email: e, errors: f};
+var _user$project$Main$Model = F4(
+	function (a, b, c, d) {
+		return {flags: a, signup_params: b, show_passwords: c, errors: d};
 	});
 var _user$project$Main$UpdateConfirmPassword = function (a) {
 	return {ctor: 'UpdateConfirmPassword', _0: a};
@@ -9577,11 +9520,27 @@ var _user$project$Main$UpdateEmail = function (a) {
 	return {ctor: 'UpdateEmail', _0: a};
 };
 var _user$project$Main$view_email_input = function (model) {
-	var invalid_email_attr = model.valid_email ? {ctor: '[]'} : {
+	var err_msg = function () {
+		var _p0 = A2(_elm_lang$core$Dict$get, 'email', model.errors);
+		if (_p0.ctor === 'Just') {
+			return _user$project$Main$signup_label(
+				A2(
+					_elm_lang$html$Html$em,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(_p0._0),
+						_1: {ctor: '[]'}
+					}));
+		} else {
+			return _elm_lang$html$Html$text('');
+		}
+	}();
+	var email_error = A2(_elm_lang$core$Dict$member, 'email', model.errors) ? {
 		ctor: '::',
 		_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'input_error'),
 		_1: {ctor: '[]'}
-	};
+	} : {ctor: '[]'};
 	return {
 		ctor: '::',
 		_0: _user$project$Main$signup_label(
@@ -9601,14 +9560,51 @@ var _user$project$Main$view_email_input = function (model) {
 							_1: {ctor: '[]'}
 						}
 					},
-					invalid_email_attr),
+					email_error),
 				{ctor: '[]'}),
-			_1: {ctor: '[]'}
+			_1: {
+				ctor: '::',
+				_0: err_msg,
+				_1: {ctor: '[]'}
+			}
 		}
 	};
 };
 var _user$project$Main$ToggleShowPassword = {ctor: 'ToggleShowPassword'};
 var _user$project$Main$view_password_input = function (model) {
+	var confirm_err_msg = function () {
+		var _p1 = A2(_elm_lang$core$Dict$get, 'confirm_password', model.errors);
+		if (_p1.ctor === 'Just') {
+			return _user$project$Main$signup_label(
+				A2(
+					_elm_lang$html$Html$em,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(_p1._0),
+						_1: {ctor: '[]'}
+					}));
+		} else {
+			return _elm_lang$html$Html$text('');
+		}
+	}();
+	var password_err_msg = function () {
+		var _p2 = A2(_elm_lang$core$Dict$get, 'password', model.errors);
+		if (_p2.ctor === 'Just') {
+			return _user$project$Main$signup_label(
+				A2(
+					_elm_lang$html$Html$em,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(_p2._0),
+						_1: {ctor: '[]'}
+					}));
+		} else {
+			return _elm_lang$html$Html$text('');
+		}
+	}();
+	var pass_err = A2(_elm_lang$core$Dict$member, 'confirm_password', model.errors) || A2(_elm_lang$core$Dict$member, 'password', model.errors);
 	var attrs = A2(
 		_elm_lang$core$Basics_ops['++'],
 		{
@@ -9618,11 +9614,11 @@ var _user$project$Main$view_password_input = function (model) {
 		},
 		A2(
 			_elm_lang$core$Basics_ops['++'],
-			model.passwords_match ? {ctor: '[]'} : {
+			pass_err ? {
 				ctor: '::',
 				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'input_error'),
 				_1: {ctor: '[]'}
-			},
+			} : {ctor: '[]'},
 			model.show_passwords ? {
 				ctor: '::',
 				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
@@ -9677,25 +9673,29 @@ var _user$project$Main$view_password_input = function (model) {
 				{ctor: '[]'}),
 			_1: {
 				ctor: '::',
-				_0: _user$project$Main$signup_label(
-					_elm_lang$html$Html$text('Confirm Password')),
+				_0: password_err_msg,
 				_1: {
 					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$input,
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							attrs,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateConfirmPassword),
-								_1: {ctor: '[]'}
-							}),
-						{ctor: '[]'}),
+					_0: _user$project$Main$signup_label(
+						_elm_lang$html$Html$text('Confirm Password')),
 					_1: {
 						ctor: '::',
-						_0: _user$project$Main$view_password_match(model.passwords_match),
-						_1: {ctor: '[]'}
+						_0: A2(
+							_elm_lang$html$Html$input,
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								attrs,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateConfirmPassword),
+									_1: {ctor: '[]'}
+								}),
+							{ctor: '[]'}),
+						_1: {
+							ctor: '::',
+							_0: confirm_err_msg,
+							_1: {ctor: '[]'}
+						}
 					}
 				}
 			}
@@ -9722,8 +9722,8 @@ var _user$project$Main$post_signup = F2(
 	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p1 = msg;
-		switch (_p1.ctor) {
+		var _p3 = msg;
+		switch (_p3.ctor) {
 			case 'ToggleShowPassword':
 				return {
 					ctor: '_Tuple2',
@@ -9743,12 +9743,12 @@ var _user$project$Main$update = F2(
 						{
 							signup_params: _elm_lang$core$Native_Utils.update(
 								signup_params,
-								{password: _p1._0})
+								{password: _p3._0})
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'UpdateConfirmPassword':
-				var _p2 = _p1._0;
+				var _p4 = _p3._0;
 				var signup_params = model.signup_params;
 				return {
 					ctor: '_Tuple2',
@@ -9757,13 +9757,13 @@ var _user$project$Main$update = F2(
 						{
 							signup_params: _elm_lang$core$Native_Utils.update(
 								signup_params,
-								{confirm_password: _p2}),
-							passwords_match: _elm_lang$core$Native_Utils.eq(signup_params.password, _p2)
+								{confirm_password: _p4}),
+							errors: _elm_lang$core$Native_Utils.eq(_p4, model.signup_params.password) ? A2(_elm_lang$core$Dict$remove, 'confirm_password', model.errors) : A3(_elm_lang$core$Dict$insert, 'confirm_password', 'Passwords don\'t match.', model.errors)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'UpdateEmail':
-				var _p3 = _p1._0;
+				var _p5 = _p3._0;
 				var signup_params = model.signup_params;
 				return {
 					ctor: '_Tuple2',
@@ -9772,8 +9772,8 @@ var _user$project$Main$update = F2(
 						{
 							signup_params: _elm_lang$core$Native_Utils.update(
 								signup_params,
-								{email: _p3}),
-							valid_email: _user$project$Util$is_valid_email(_p3)
+								{email: _p5}),
+							errors: (_user$project$Util$is_valid_email(_p5) || _elm_lang$core$Native_Utils.eq(_p5, '')) ? A2(_elm_lang$core$Dict$remove, 'email', model.errors) : A3(_elm_lang$core$Dict$insert, 'email', 'This e-mail is invalid', model.errors)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -9782,28 +9782,29 @@ var _user$project$Main$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{errors: _elm_lang$core$Maybe$Nothing}),
+						{
+							errors: _elm_lang$core$Dict$fromList(
+								{ctor: '[]'})
+						}),
 					_1: A2(_user$project$Main$post_signup, model.flags.csrftoken, model.signup_params)
 				};
 			default:
-				if (_p1._0.ctor === 'Ok') {
+				if (_p3._0.ctor === 'Ok') {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
-					var _p4 = _p1._0._0;
-					switch (_p4.ctor) {
+					var _p6 = _p3._0._0;
+					switch (_p6.ctor) {
 						case 'BadStatus':
-							var _p5 = A2(
+							var _p7 = A2(
 								_elm_lang$core$Json_Decode$decodeString,
 								_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
-								_p4._0.body);
-							if (_p5.ctor === 'Ok') {
+								_p6._0.body);
+							if (_p7.ctor === 'Ok') {
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
 										model,
-										{
-											errors: _elm_lang$core$Maybe$Just(_p5._0)
-										}),
+										{errors: _p7._0}),
 									_1: _elm_lang$core$Platform_Cmd$none
 								};
 							} else {
@@ -9879,10 +9880,7 @@ var _user$project$Main$view_content = function (model) {
 					A2(
 						_elm_lang$core$Basics_ops['++'],
 						_user$project$Main$view_password_input(model),
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							_user$project$Main$view_submit(model),
-							_user$project$Main$view_errors(model))))),
+						_user$project$Main$view_submit(model)))),
 			_1: {ctor: '[]'}
 		});
 };
