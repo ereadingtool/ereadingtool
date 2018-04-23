@@ -143,8 +143,8 @@ view_submit model = [
   ]
 
 view_content : Model -> Html Msg
-view_content model = Html.div [ classList [("signup", True)] ] [
-    Html.div [classList [("signup_box", True)] ] <|
+view_content model = Html.div [ classList [("login", True)] ] [
+    Html.div [classList [("login_box", True)] ] <|
         (view_email_input model) ++ (view_password_input model) ++ (view_submit model)
   ]
 

@@ -9748,7 +9748,7 @@ var _user$project$Main$view_content = function (model) {
 			_0: _elm_lang$html$Html_Attributes$classList(
 				{
 					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'signup', _1: true},
+					_0: {ctor: '_Tuple2', _0: 'login', _1: true},
 					_1: {ctor: '[]'}
 				}),
 			_1: {ctor: '[]'}
@@ -9762,7 +9762,7 @@ var _user$project$Main$view_content = function (model) {
 					_0: _elm_lang$html$Html_Attributes$classList(
 						{
 							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'signup_box', _1: true},
+							_0: {ctor: '_Tuple2', _0: 'login_box', _1: true},
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}

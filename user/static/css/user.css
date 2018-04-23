@@ -1,4 +1,4 @@
-.signup {
+.login, .signup {
     display: grid;
 
     grid-auto-rows: minmax(250px, auto);
@@ -8,7 +8,7 @@
     grid-template-columns: 4% 15% 10% auto 10% 15% 4%;
 }
 
-.signup_box {
+.login_box, .signup_box {
     display: grid;
 
     grid-column: 4;
