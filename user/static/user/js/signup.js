@@ -10042,9 +10042,6 @@ var _user$project$Main$signup_label = function (html) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Main$redirect_to = function (uri) {
-	return _elm_lang$navigation$Navigation$load(uri);
-};
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
@@ -10396,7 +10393,7 @@ var _user$project$Main$update = F2(
 					return {
 						ctor: '_Tuple2',
 						_0: model,
-						_1: _user$project$Main$redirect_to(_p3._0._0.redirect)
+						_1: _elm_lang$navigation$Navigation$load(_p3._0._0.redirect)
 					};
 				} else {
 					var _p6 = _p3._0._0;

@@ -68,9 +68,6 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
-redirect_to : URI -> Cmd Msg
-redirect_to uri = Navigation.load uri
-
 post_signup : CSRFToken -> SignUpParams -> Cmd Msg
 post_signup csrftoken signup_params =
   let encoded_signup_params = signUpEncoder signup_params
@@ -107,7 +104,7 @@ update msg model = case msg of
 
   Submit -> ({ model | errors = Dict.fromList [] }, post_signup model.flags.csrftoken model.signup_params)
 
-  Submitted (Ok resp) -> (model, redirect_to resp.redirect)
+  Submitted (Ok resp) -> (model, Navigation.load resp.redirect)
 
   Submitted (Err err) -> case err of
       Http.BadStatus resp -> case (Decode.decodeString (Decode.dict Decode.string) resp.body) of

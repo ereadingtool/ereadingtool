@@ -5,6 +5,7 @@ import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onM
 import Http exposing (..)
 import HttpHelpers exposing (post_with_headers)
 import Json.Decode as Decode
+import Navigation
 
 import Dict exposing (Dict)
 
@@ -19,8 +20,10 @@ import Flags exposing (CSRFToken, Flags)
 
 
 type alias UserID = Int
+type alias URI = String
 
-type alias LoginResp = { id: UserID }
+
+type alias LoginResp = { id: UserID, redirect : URI }
 
 -- UPDATE
 type Msg =
@@ -30,7 +33,7 @@ type Msg =
   | UpdatePassword String
 
 type alias LoginParams = {
-    email : String
+    username : String
   , password : String }
 
 type alias Model = {
@@ -40,14 +43,15 @@ type alias Model = {
 
 loginEncoder : LoginParams -> Encode.Value
 loginEncoder login_params = Encode.object [
-     ("email", Encode.string login_params.email)
+     ("username", Encode.string login_params.username)
    , ("password", Encode.string login_params.password)
   ]
 
 loginRespDecoder : Decode.Decoder (LoginResp)
 loginRespDecoder =
   decode LoginResp
-    |> required "login" Decode.int
+    |> required "id" Decode.int
+    |> required "redirect" Decode.string
 
 init : Flags -> (Model, Cmd Msg)
 init flags = ({
@@ -76,7 +80,7 @@ update msg model = case msg of
   UpdatePassword password -> let login_params = model.login_params in
         ({ model | login_params = { login_params | password = password } }, Cmd.none)
   UpdateEmail addr -> let login_params = model.login_params in
-    ({ model | login_params = { login_params | email = addr }
+    ({ model | login_params = { login_params | username = addr }
              , errors = (if (is_valid_email addr) || (addr == "") then
                  Dict.remove "email" model.errors
                else
@@ -85,7 +89,7 @@ update msg model = case msg of
 
   Submit -> ({ model | errors = Dict.fromList [] }, post_login model.flags.csrftoken model.login_params)
 
-  Submitted (Ok resp) -> (model, Cmd.none)
+  Submitted (Ok resp) -> (model, Navigation.load resp.redirect)
 
   Submitted (Err err) -> case err of
       Http.BadStatus resp -> case (Decode.decodeString (Decode.dict Decode.string) resp.body) of
