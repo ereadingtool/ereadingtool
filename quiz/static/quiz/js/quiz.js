@@ -20639,7 +20639,11 @@ var _jinjor$elm_html_parser$HtmlParser_Util$getElementById = F2(
 			nodes);
 	});
 
-var _user$project$Config$question_api_endpoint = '/api/question';
+var _user$project$Config$student_login_api_endpoint = '/api/student/login/';
+var _user$project$Config$student_signup_api_endpoint = '/api/student/signup/';
+var _user$project$Config$instructor_login_api_endpoint = '/api/instructor/login/';
+var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signup/';
+var _user$project$Config$question_api_endpoint = '/api/question/';
 var _user$project$Config$text_api_endpoint = '/api/text/';
 
 var _user$project$Flags$Flags = function (a) {
@@ -21046,7 +21050,18 @@ var _user$project$Views$view_header = A2(
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text(''),
+							_0: A2(
+								_elm_lang$html$Html$a,
+								{
+									ctor: '::',
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/admin'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('Quizzes'),
+									_1: {ctor: '[]'}
+								}),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}
@@ -21421,21 +21436,6 @@ var _user$project$Main$UpdateText = function (a) {
 	return {ctor: 'UpdateText', _0: a};
 };
 var _user$project$Main$updateText = function (text_id) {
-	var text_req = A2(
-		_elm_lang$http$Http$get,
-		A2(
-			_elm_lang$core$String$join,
-			'',
-			{
-				ctor: '::',
-				_0: _user$project$Config$text_api_endpoint,
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$core$Basics$toString(text_id),
-					_1: {ctor: '[]'}
-				}
-			}),
-		_user$project$Model$textDecoder);
 	var question_req = A2(
 		_elm_lang$http$Http$get,
 		A2(
@@ -21463,6 +21463,21 @@ var _user$project$Main$updateText = function (text_id) {
 				}
 			}),
 		_user$project$Model$questionsDecoder);
+	var text_req = A2(
+		_elm_lang$http$Http$get,
+		A2(
+			_elm_lang$core$String$join,
+			'',
+			{
+				ctor: '::',
+				_0: _user$project$Config$text_api_endpoint,
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$core$Basics$toString(text_id),
+					_1: {ctor: '[]'}
+				}
+			}),
+		_user$project$Model$textDecoder);
 	return _elm_lang$core$Platform_Cmd$batch(
 		{
 			ctor: '::',

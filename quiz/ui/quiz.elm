@@ -53,9 +53,11 @@ subscriptions model =
 
 updateText : Int -> Cmd Msg
 updateText text_id =
-  let text_req = Http.get (String.join "" [text_api_endpoint, (toString text_id)]) textDecoder in
-  let question_req = Http.get (String.join "" [question_api_endpoint, "?", "text", "=", (toString text_id)]) questionsDecoder
-  in Cmd.batch [Http.send UpdateText text_req, Http.send UpdateQuestions question_req]
+  let
+    text_req = Http.get (String.join "" [text_api_endpoint, (toString text_id)]) textDecoder
+    question_req = Http.get (String.join "" [question_api_endpoint, "?", "text", "=", (toString text_id)]) questionsDecoder
+  in
+    Cmd.batch [Http.send UpdateText text_req, Http.send UpdateQuestions question_req]
 
 gen_answer_field : Int -> Int -> Answer -> AnswerField
 gen_answer_field question_field_index answer_index answer = {
@@ -73,7 +75,6 @@ gen_question_field index question = {
   , index = index
   , question = question
   , answer_fields = Array.indexedMap (\i a -> gen_answer_field index i a) question.answers }
-
 
 update_answer_field : AnswerField -> Array AnswerField -> Array AnswerField
 update_answer_field answer_field answer_fields = Array.set answer_field.index answer_field answer_fields
@@ -99,13 +100,13 @@ update msg model =
       _ -> (model, Cmd.none)
 
     Select question_field answer_field selected ->
-      let new_answer_field = { answer_field | selected = selected } in
-      let new_question_field =
+      let new_answer_field = { answer_field | selected = selected }
+          new_question_field =
         { question_field
-         | answer_fields = update_answer_field new_answer_field (unselect_answer_fields question_field.answer_fields) } in
-      ({ model
+         | answer_fields = update_answer_field new_answer_field (unselect_answer_fields question_field.answer_fields) }
+      in
+        ({ model
          | question_fields = update_question_field new_question_field model.question_fields }, Cmd.none)
-
 
 main : Program Flags Model Msg
 main =
@@ -133,13 +134,14 @@ view_answers question_field =
   div [] (Array.toList <| Array.map (view_answer question_field) question_field.answer_fields)
 
 view_question : QuestionField -> Html Msg
-view_question question_field = let question = question_field.question in
-  div [
-    classList [("question", True)]
-  , attribute "id" question_field.id ] [
-    Html.text question.body
-  , (view_answers question_field) ]
-
+view_question question_field = let
+    question = question_field.question
+  in
+    div [ classList [("question", True)], attribute "id" question_field.id] [
+        Html.text question.body
+      , (view_answers question_field)
+    ]
+
 view_questions : Array QuestionField -> Html Msg
 view_questions questions = div [ classList[("questions", True)] ] (Array.toList <| Array.map view_question questions)
 

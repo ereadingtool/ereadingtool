@@ -118,7 +118,7 @@ view_difficulty_choices model = [
        ]
     ]
 
-view_content :Model -> Html Msg
+view_content : Model -> Html Msg
 view_content model = Html.div [ classList [("signup", True)] ] [
     Html.div [classList [("signup_box", True)] ] <|
         (SignUp.view_email_input UpdateEmail model) ++
