@@ -37,3 +37,8 @@
     border: 1px solid #ff0000;
     background-color: #ffeeee;
 }
+
+select {
+   border: 0;
+   border-radius: 0;
+}

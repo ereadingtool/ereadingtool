@@ -1,7 +1,7 @@
 from django import forms
 
 from user.models import ReaderUser, Instructor, Student
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.utils.translation import ugettext_lazy as _
 from django.core.validators import validate_email
 from django.contrib.auth import password_validation
@@ -57,6 +57,8 @@ class InstructorSignUpForm(SignUpForm):
 
 
 class StudentSignUpForm(SignUpForm):
+    difficulty = forms.CharField(required=True)
+
     class Meta:
         model = Student
         exclude = ('user',)
@@ -66,7 +68,5 @@ class InstructorLoginForm(AuthenticationForm):
     pass
 
 
-class StudentLoginForm(forms.ModelForm):
-    class Meta:
-        model = Student
-        exclude = ('user',)
+class StudentLoginForm(AuthenticationForm):
+    pass

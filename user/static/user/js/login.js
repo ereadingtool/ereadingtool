@@ -9842,6 +9842,8 @@ var _elm_lang$navigation$Navigation$onEffects = F4(
 	});
 _elm_lang$core$Native_Platform.effectManagers['Navigation'] = {pkg: 'elm-lang/navigation', init: _elm_lang$navigation$Navigation$init, onEffects: _elm_lang$navigation$Navigation$onEffects, onSelfMsg: _elm_lang$navigation$Navigation$onSelfMsg, tag: 'fx', cmdMap: _elm_lang$navigation$Navigation$cmdMap, subMap: _elm_lang$navigation$Navigation$subMap};
 
+var _user$project$Config$student_login_api_endpoint = '/api/student/login/';
+var _user$project$Config$student_signup_api_endpoint = '/api/student/signup/';
 var _user$project$Config$instructor_login_api_endpoint = '/api/instructor/login/';
 var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signup/';
 var _user$project$Config$question_api_endpoint = '/api/question/';
@@ -10028,7 +10030,7 @@ var _user$project$Views$view_header = A2(
 		}
 	});
 
-var _user$project$Main$login_label = function (html) {
+var _user$project$Login$login_label = function (html) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -10042,10 +10044,10 @@ var _user$project$Main$login_label = function (html) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Main$subscriptions = function (model) {
+var _user$project$Login$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
-var _user$project$Main$loginEncoder = function (login_params) {
+var _user$project$Login$loginEncoder = function (login_params) {
 	return _elm_lang$core$Json_Encode$object(
 		{
 			ctor: '::',
@@ -10065,11 +10067,11 @@ var _user$project$Main$loginEncoder = function (login_params) {
 			}
 		});
 };
-var _user$project$Main$LoginResp = F2(
+var _user$project$Login$LoginResp = F2(
 	function (a, b) {
 		return {id: a, redirect: b};
 	});
-var _user$project$Main$loginRespDecoder = A3(
+var _user$project$Login$loginRespDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'redirect',
 	_elm_lang$core$Json_Decode$string,
@@ -10077,31 +10079,31 @@ var _user$project$Main$loginRespDecoder = A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'id',
 		_elm_lang$core$Json_Decode$int,
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Main$LoginResp)));
-var _user$project$Main$LoginParams = F2(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Login$LoginResp)));
+var _user$project$Login$LoginParams = F2(
 	function (a, b) {
 		return {username: a, password: b};
 	});
-var _user$project$Main$init = function (flags) {
+var _user$project$Login$init = function (flags) {
 	return {
 		ctor: '_Tuple2',
 		_0: {
 			flags: flags,
-			login_params: A2(_user$project$Main$LoginParams, '', ''),
+			login_params: A2(_user$project$Login$LoginParams, '', ''),
 			errors: _elm_lang$core$Dict$fromList(
 				{ctor: '[]'})
 		},
 		_1: _elm_lang$core$Platform_Cmd$none
 	};
 };
-var _user$project$Main$Model = F3(
+var _user$project$Login$Model = F3(
 	function (a, b, c) {
 		return {flags: a, login_params: b, errors: c};
 	});
-var _user$project$Main$UpdatePassword = function (a) {
+var _user$project$Login$UpdatePassword = function (a) {
 	return {ctor: 'UpdatePassword', _0: a};
 };
-var _user$project$Main$view_password_input = function (model) {
+var _user$project$Login$view_password_input = function (model) {
 	var pass_err = A2(_elm_lang$core$Dict$member, 'password', model.errors);
 	var attrs = A2(
 		_elm_lang$core$Basics_ops['++'],
@@ -10122,7 +10124,7 @@ var _user$project$Main$view_password_input = function (model) {
 	var password_err_msg = function () {
 		var _p0 = A2(_elm_lang$core$Dict$get, 'password', model.errors);
 		if (_p0.ctor === 'Just') {
-			return _user$project$Main$login_label(
+			return _user$project$Login$login_label(
 				A2(
 					_elm_lang$html$Html$em,
 					{ctor: '[]'},
@@ -10137,7 +10139,7 @@ var _user$project$Main$view_password_input = function (model) {
 	}();
 	return {
 		ctor: '::',
-		_0: _user$project$Main$login_label(
+		_0: _user$project$Login$login_label(
 			A2(
 				_elm_lang$html$Html$span,
 				{ctor: '[]'},
@@ -10155,7 +10157,7 @@ var _user$project$Main$view_password_input = function (model) {
 					attrs,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdatePassword),
+						_0: _elm_lang$html$Html_Events$onInput(_user$project$Login$UpdatePassword),
 						_1: {ctor: '[]'}
 					}),
 				{ctor: '[]'}),
@@ -10167,14 +10169,14 @@ var _user$project$Main$view_password_input = function (model) {
 		}
 	};
 };
-var _user$project$Main$UpdateEmail = function (a) {
+var _user$project$Login$UpdateEmail = function (a) {
 	return {ctor: 'UpdateEmail', _0: a};
 };
-var _user$project$Main$view_email_input = function (model) {
+var _user$project$Login$view_email_input = function (model) {
 	var err_msg = function () {
 		var _p1 = A2(_elm_lang$core$Dict$get, 'email', model.errors);
 		if (_p1.ctor === 'Just') {
-			return _user$project$Main$login_label(
+			return _user$project$Login$login_label(
 				A2(
 					_elm_lang$html$Html$em,
 					{ctor: '[]'},
@@ -10194,7 +10196,7 @@ var _user$project$Main$view_email_input = function (model) {
 	} : {ctor: '[]'};
 	return {
 		ctor: '::',
-		_0: _user$project$Main$login_label(
+		_0: _user$project$Login$login_label(
 			_elm_lang$html$Html$text('Username (e-mail address):')),
 		_1: {
 			ctor: '::',
@@ -10207,7 +10209,7 @@ var _user$project$Main$view_email_input = function (model) {
 						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'size', '25'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateEmail),
+							_0: _elm_lang$html$Html_Events$onInput(_user$project$Login$UpdateEmail),
 							_1: {ctor: '[]'}
 						}
 					},
@@ -10221,26 +10223,26 @@ var _user$project$Main$view_email_input = function (model) {
 		}
 	};
 };
-var _user$project$Main$Submitted = function (a) {
+var _user$project$Login$Submitted = function (a) {
 	return {ctor: 'Submitted', _0: a};
 };
-var _user$project$Main$post_login = F2(
-	function (csrftoken, login_params) {
-		var encoded_login_params = _user$project$Main$loginEncoder(login_params);
+var _user$project$Login$post_login = F3(
+	function (endpoint, csrftoken, login_params) {
+		var encoded_login_params = _user$project$Login$loginEncoder(login_params);
 		var req = A4(
 			_user$project$HttpHelpers$post_with_headers,
-			_user$project$Config$instructor_login_api_endpoint,
+			endpoint,
 			{
 				ctor: '::',
 				_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
 				_1: {ctor: '[]'}
 			},
 			_elm_lang$http$Http$jsonBody(encoded_login_params),
-			_user$project$Main$loginRespDecoder);
-		return A2(_elm_lang$http$Http$send, _user$project$Main$Submitted, req);
+			_user$project$Login$loginRespDecoder);
+		return A2(_elm_lang$http$Http$send, _user$project$Login$Submitted, req);
 	});
-var _user$project$Main$update = F2(
-	function (msg, model) {
+var _user$project$Login$update = F3(
+	function (endpoint, msg, model) {
 		var _p2 = msg;
 		switch (_p2.ctor) {
 			case 'UpdatePassword':
@@ -10280,7 +10282,7 @@ var _user$project$Main$update = F2(
 							errors: _elm_lang$core$Dict$fromList(
 								{ctor: '[]'})
 						}),
-					_1: A2(_user$project$Main$post_login, model.flags.csrftoken, model.login_params)
+					_1: A3(_user$project$Login$post_login, endpoint, model.flags.csrftoken, model.login_params)
 				};
 			default:
 				if (_p2._0.ctor === 'Ok') {
@@ -10316,11 +10318,11 @@ var _user$project$Main$update = F2(
 				}
 		}
 	});
-var _user$project$Main$Submit = {ctor: 'Submit'};
-var _user$project$Main$view_submit = function (model) {
+var _user$project$Login$Submit = {ctor: 'Submit'};
+var _user$project$Login$view_submit = function (model) {
 	return {
 		ctor: '::',
-		_0: _user$project$Main$login_label(
+		_0: _user$project$Login$login_label(
 			A2(
 				_elm_lang$html$Html$div,
 				{
@@ -10342,7 +10344,7 @@ var _user$project$Main$view_submit = function (model) {
 								}),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Submit),
+								_0: _elm_lang$html$Html_Events$onClick(_user$project$Login$Submit),
 								_1: {ctor: '[]'}
 							}
 						},
@@ -10356,7 +10358,7 @@ var _user$project$Main$view_submit = function (model) {
 		_1: {ctor: '[]'}
 	};
 };
-var _user$project$Main$view_content = function (model) {
+var _user$project$Login$view_content = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -10385,15 +10387,15 @@ var _user$project$Main$view_content = function (model) {
 				},
 				A2(
 					_elm_lang$core$Basics_ops['++'],
-					_user$project$Main$view_email_input(model),
+					_user$project$Login$view_email_input(model),
 					A2(
 						_elm_lang$core$Basics_ops['++'],
-						_user$project$Main$view_password_input(model),
-						_user$project$Main$view_submit(model)))),
+						_user$project$Login$view_password_input(model),
+						_user$project$Login$view_submit(model)))),
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Main$view = function (model) {
+var _user$project$Login$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{ctor: '[]'},
@@ -10405,7 +10407,7 @@ var _user$project$Main$view = function (model) {
 				_0: _user$project$Views$view_filter,
 				_1: {
 					ctor: '::',
-					_0: _user$project$Main$view_content(model),
+					_0: _user$project$Login$view_content(model),
 					_1: {
 						ctor: '::',
 						_0: _user$project$Views$view_footer,
@@ -10415,20 +10417,11 @@ var _user$project$Main$view = function (model) {
 			}
 		});
 };
-var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
-	{init: _user$project$Main$init, view: _user$project$Main$view, subscriptions: _user$project$Main$subscriptions, update: _user$project$Main$update})(
-	A2(
-		_elm_lang$core$Json_Decode$andThen,
-		function (csrftoken) {
-			return _elm_lang$core$Json_Decode$succeed(
-				{csrftoken: csrftoken});
-		},
-		A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string)));
 
 var Elm = {};
-Elm['Main'] = Elm['Main'] || {};
-if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', undefined);
+Elm['Login'] = Elm['Login'] || {};
+if (typeof _user$project$Login$main !== 'undefined') {
+    _user$project$Login$main(Elm['Login'], 'Login', undefined);
 }
 
 if (typeof define === "function" && define['amd'])

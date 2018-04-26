@@ -1,0 +1,20 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>E-Reader Student Login</title>
+    <link rel="stylesheet" href="{% static "css/ereader.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/user.css" %}"/>
+    <script src="{% static "user/js/student_login.js" %}"></script>
+</head>
+<body>
+{% csrf_token %}
+<div class="content">
+</div>
+
+<script src="{% static "user/js/load_elm.js" %}"></script>
+
+</body>
+</html>

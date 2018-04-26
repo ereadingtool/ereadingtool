@@ -19,7 +19,8 @@ from django.urls import path, include
 from quiz.views import QuizView
 
 urlpatterns = [
-    path('', include('user.urls')),
+    path('', include('user.urls.instructor')),
+    path('', include('user.urls.student')),
 
     path('api/text/', include('text.urls')),
     path('api/question/', include('question.urls')),

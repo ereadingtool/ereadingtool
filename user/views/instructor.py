@@ -1,28 +1,12 @@
 import json
-from typing import TypeVar
 
 from django.contrib.auth import login
 from django.http import HttpResponse
 from django.urls import reverse
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import never_cache
-from django.views.decorators.csrf import csrf_protect
-from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import TemplateView
-from django.views.generic import View
 
-from user.forms import InstructorSignUpForm, InstructorLoginForm, forms
-
-
-class APIView(View):
-    @method_decorator(sensitive_post_parameters())
-    @method_decorator(csrf_protect)
-    @method_decorator(never_cache)
-    def dispatch(self, request, *args, **kwargs):
-        return super(APIView, self).dispatch(request, *args, **kwargs)
-
-    def format_form_errors(self, form: TypeVar('forms.Form')) -> dict:
-        return {k: str(' '.join(form.errors[k])) for k in form.errors.keys()}
+from user.forms import InstructorSignUpForm, InstructorLoginForm
+from user.views.api import APIView
 
 
 class InstructorSignupAPIView(APIView):
@@ -73,12 +57,12 @@ class InstructorLoginAPIView(APIView):
 
 
 class InstructorLoginView(TemplateView):
-    template_name = 'instructor_login.html'
+    template_name = 'instructor/login.html'
 
 
 class InstructorSignUpView(TemplateView):
-    template_name = 'instructor_signup.html'
+    template_name = 'instructor/signup.html'
 
 
 class InstructorProfileView(TemplateView):
-    template_name = 'instructor_profile.html'
+    template_name = 'instructor/profile.html'

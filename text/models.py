@@ -12,6 +12,12 @@ class TextDifficulty(models.Model):
     def __str__(self):
         return self.name
 
+    def to_dict(self):
+        return {
+            'slug': self.slug,
+            'name': self.name
+        }
+
 
 class Text(Timestamped, models.Model):
     source = models.CharField(max_length=255, blank=False)

@@ -5894,6 +5894,688 @@ var _elm_lang$core$Json_Decode$bool = _elm_lang$core$Native_Json.decodePrimitive
 var _elm_lang$core$Json_Decode$string = _elm_lang$core$Native_Json.decodePrimitive('string');
 var _elm_lang$core$Json_Decode$Decoder = {ctor: 'Decoder'};
 
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode = _elm_lang$core$Json_Decode$succeed;
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$resolve = _elm_lang$core$Json_Decode$andThen(_elm_lang$core$Basics$identity);
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom = _elm_lang$core$Json_Decode$map2(
+	F2(
+		function (x, y) {
+			return y(x);
+		}));
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$hardcoded = function (_p0) {
+	return _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom(
+		_elm_lang$core$Json_Decode$succeed(_p0));
+};
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optionalDecoder = F3(
+	function (pathDecoder, valDecoder, fallback) {
+		var nullOr = function (decoder) {
+			return _elm_lang$core$Json_Decode$oneOf(
+				{
+					ctor: '::',
+					_0: decoder,
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$core$Json_Decode$null(fallback),
+						_1: {ctor: '[]'}
+					}
+				});
+		};
+		var handleResult = function (input) {
+			var _p1 = A2(_elm_lang$core$Json_Decode$decodeValue, pathDecoder, input);
+			if (_p1.ctor === 'Ok') {
+				var _p2 = A2(
+					_elm_lang$core$Json_Decode$decodeValue,
+					nullOr(valDecoder),
+					_p1._0);
+				if (_p2.ctor === 'Ok') {
+					return _elm_lang$core$Json_Decode$succeed(_p2._0);
+				} else {
+					return _elm_lang$core$Json_Decode$fail(_p2._0);
+				}
+			} else {
+				return _elm_lang$core$Json_Decode$succeed(fallback);
+			}
+		};
+		return A2(_elm_lang$core$Json_Decode$andThen, handleResult, _elm_lang$core$Json_Decode$value);
+	});
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optionalAt = F4(
+	function (path, valDecoder, fallback, decoder) {
+		return A2(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optionalDecoder,
+				A2(_elm_lang$core$Json_Decode$at, path, _elm_lang$core$Json_Decode$value),
+				valDecoder,
+				fallback),
+			decoder);
+	});
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional = F4(
+	function (key, valDecoder, fallback, decoder) {
+		return A2(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optionalDecoder,
+				A2(_elm_lang$core$Json_Decode$field, key, _elm_lang$core$Json_Decode$value),
+				valDecoder,
+				fallback),
+			decoder);
+	});
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$requiredAt = F3(
+	function (path, valDecoder, decoder) {
+		return A2(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom,
+			A2(_elm_lang$core$Json_Decode$at, path, valDecoder),
+			decoder);
+	});
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required = F3(
+	function (key, valDecoder, decoder) {
+		return A2(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom,
+			A2(_elm_lang$core$Json_Decode$field, key, valDecoder),
+			decoder);
+	});
+
+var _elm_lang$core$Task$onError = _elm_lang$core$Native_Scheduler.onError;
+var _elm_lang$core$Task$andThen = _elm_lang$core$Native_Scheduler.andThen;
+var _elm_lang$core$Task$spawnCmd = F2(
+	function (router, _p0) {
+		var _p1 = _p0;
+		return _elm_lang$core$Native_Scheduler.spawn(
+			A2(
+				_elm_lang$core$Task$andThen,
+				_elm_lang$core$Platform$sendToApp(router),
+				_p1._0));
+	});
+var _elm_lang$core$Task$fail = _elm_lang$core$Native_Scheduler.fail;
+var _elm_lang$core$Task$mapError = F2(
+	function (convert, task) {
+		return A2(
+			_elm_lang$core$Task$onError,
+			function (_p2) {
+				return _elm_lang$core$Task$fail(
+					convert(_p2));
+			},
+			task);
+	});
+var _elm_lang$core$Task$succeed = _elm_lang$core$Native_Scheduler.succeed;
+var _elm_lang$core$Task$map = F2(
+	function (func, taskA) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (a) {
+				return _elm_lang$core$Task$succeed(
+					func(a));
+			},
+			taskA);
+	});
+var _elm_lang$core$Task$map2 = F3(
+	function (func, taskA, taskB) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (a) {
+				return A2(
+					_elm_lang$core$Task$andThen,
+					function (b) {
+						return _elm_lang$core$Task$succeed(
+							A2(func, a, b));
+					},
+					taskB);
+			},
+			taskA);
+	});
+var _elm_lang$core$Task$map3 = F4(
+	function (func, taskA, taskB, taskC) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (a) {
+				return A2(
+					_elm_lang$core$Task$andThen,
+					function (b) {
+						return A2(
+							_elm_lang$core$Task$andThen,
+							function (c) {
+								return _elm_lang$core$Task$succeed(
+									A3(func, a, b, c));
+							},
+							taskC);
+					},
+					taskB);
+			},
+			taskA);
+	});
+var _elm_lang$core$Task$map4 = F5(
+	function (func, taskA, taskB, taskC, taskD) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (a) {
+				return A2(
+					_elm_lang$core$Task$andThen,
+					function (b) {
+						return A2(
+							_elm_lang$core$Task$andThen,
+							function (c) {
+								return A2(
+									_elm_lang$core$Task$andThen,
+									function (d) {
+										return _elm_lang$core$Task$succeed(
+											A4(func, a, b, c, d));
+									},
+									taskD);
+							},
+							taskC);
+					},
+					taskB);
+			},
+			taskA);
+	});
+var _elm_lang$core$Task$map5 = F6(
+	function (func, taskA, taskB, taskC, taskD, taskE) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (a) {
+				return A2(
+					_elm_lang$core$Task$andThen,
+					function (b) {
+						return A2(
+							_elm_lang$core$Task$andThen,
+							function (c) {
+								return A2(
+									_elm_lang$core$Task$andThen,
+									function (d) {
+										return A2(
+											_elm_lang$core$Task$andThen,
+											function (e) {
+												return _elm_lang$core$Task$succeed(
+													A5(func, a, b, c, d, e));
+											},
+											taskE);
+									},
+									taskD);
+							},
+							taskC);
+					},
+					taskB);
+			},
+			taskA);
+	});
+var _elm_lang$core$Task$sequence = function (tasks) {
+	var _p3 = tasks;
+	if (_p3.ctor === '[]') {
+		return _elm_lang$core$Task$succeed(
+			{ctor: '[]'});
+	} else {
+		return A3(
+			_elm_lang$core$Task$map2,
+			F2(
+				function (x, y) {
+					return {ctor: '::', _0: x, _1: y};
+				}),
+			_p3._0,
+			_elm_lang$core$Task$sequence(_p3._1));
+	}
+};
+var _elm_lang$core$Task$onEffects = F3(
+	function (router, commands, state) {
+		return A2(
+			_elm_lang$core$Task$map,
+			function (_p4) {
+				return {ctor: '_Tuple0'};
+			},
+			_elm_lang$core$Task$sequence(
+				A2(
+					_elm_lang$core$List$map,
+					_elm_lang$core$Task$spawnCmd(router),
+					commands)));
+	});
+var _elm_lang$core$Task$init = _elm_lang$core$Task$succeed(
+	{ctor: '_Tuple0'});
+var _elm_lang$core$Task$onSelfMsg = F3(
+	function (_p7, _p6, _p5) {
+		return _elm_lang$core$Task$succeed(
+			{ctor: '_Tuple0'});
+	});
+var _elm_lang$core$Task$command = _elm_lang$core$Native_Platform.leaf('Task');
+var _elm_lang$core$Task$Perform = function (a) {
+	return {ctor: 'Perform', _0: a};
+};
+var _elm_lang$core$Task$perform = F2(
+	function (toMessage, task) {
+		return _elm_lang$core$Task$command(
+			_elm_lang$core$Task$Perform(
+				A2(_elm_lang$core$Task$map, toMessage, task)));
+	});
+var _elm_lang$core$Task$attempt = F2(
+	function (resultToMessage, task) {
+		return _elm_lang$core$Task$command(
+			_elm_lang$core$Task$Perform(
+				A2(
+					_elm_lang$core$Task$onError,
+					function (_p8) {
+						return _elm_lang$core$Task$succeed(
+							resultToMessage(
+								_elm_lang$core$Result$Err(_p8)));
+					},
+					A2(
+						_elm_lang$core$Task$andThen,
+						function (_p9) {
+							return _elm_lang$core$Task$succeed(
+								resultToMessage(
+									_elm_lang$core$Result$Ok(_p9)));
+						},
+						task))));
+	});
+var _elm_lang$core$Task$cmdMap = F2(
+	function (tagger, _p10) {
+		var _p11 = _p10;
+		return _elm_lang$core$Task$Perform(
+			A2(_elm_lang$core$Task$map, tagger, _p11._0));
+	});
+_elm_lang$core$Native_Platform.effectManagers['Task'] = {pkg: 'elm-lang/core', init: _elm_lang$core$Task$init, onEffects: _elm_lang$core$Task$onEffects, onSelfMsg: _elm_lang$core$Task$onSelfMsg, tag: 'cmd', cmdMap: _elm_lang$core$Task$cmdMap};
+
+//import Native.Scheduler //
+
+var _elm_lang$core$Native_Time = function() {
+
+var now = _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+{
+	callback(_elm_lang$core$Native_Scheduler.succeed(Date.now()));
+});
+
+function setInterval_(interval, task)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		var id = setInterval(function() {
+			_elm_lang$core$Native_Scheduler.rawSpawn(task);
+		}, interval);
+
+		return function() { clearInterval(id); };
+	});
+}
+
+return {
+	now: now,
+	setInterval_: F2(setInterval_)
+};
+
+}();
+var _elm_lang$core$Time$setInterval = _elm_lang$core$Native_Time.setInterval_;
+var _elm_lang$core$Time$spawnHelp = F3(
+	function (router, intervals, processes) {
+		var _p0 = intervals;
+		if (_p0.ctor === '[]') {
+			return _elm_lang$core$Task$succeed(processes);
+		} else {
+			var _p1 = _p0._0;
+			var spawnRest = function (id) {
+				return A3(
+					_elm_lang$core$Time$spawnHelp,
+					router,
+					_p0._1,
+					A3(_elm_lang$core$Dict$insert, _p1, id, processes));
+			};
+			var spawnTimer = _elm_lang$core$Native_Scheduler.spawn(
+				A2(
+					_elm_lang$core$Time$setInterval,
+					_p1,
+					A2(_elm_lang$core$Platform$sendToSelf, router, _p1)));
+			return A2(_elm_lang$core$Task$andThen, spawnRest, spawnTimer);
+		}
+	});
+var _elm_lang$core$Time$addMySub = F2(
+	function (_p2, state) {
+		var _p3 = _p2;
+		var _p6 = _p3._1;
+		var _p5 = _p3._0;
+		var _p4 = A2(_elm_lang$core$Dict$get, _p5, state);
+		if (_p4.ctor === 'Nothing') {
+			return A3(
+				_elm_lang$core$Dict$insert,
+				_p5,
+				{
+					ctor: '::',
+					_0: _p6,
+					_1: {ctor: '[]'}
+				},
+				state);
+		} else {
+			return A3(
+				_elm_lang$core$Dict$insert,
+				_p5,
+				{ctor: '::', _0: _p6, _1: _p4._0},
+				state);
+		}
+	});
+var _elm_lang$core$Time$inMilliseconds = function (t) {
+	return t;
+};
+var _elm_lang$core$Time$millisecond = 1;
+var _elm_lang$core$Time$second = 1000 * _elm_lang$core$Time$millisecond;
+var _elm_lang$core$Time$minute = 60 * _elm_lang$core$Time$second;
+var _elm_lang$core$Time$hour = 60 * _elm_lang$core$Time$minute;
+var _elm_lang$core$Time$inHours = function (t) {
+	return t / _elm_lang$core$Time$hour;
+};
+var _elm_lang$core$Time$inMinutes = function (t) {
+	return t / _elm_lang$core$Time$minute;
+};
+var _elm_lang$core$Time$inSeconds = function (t) {
+	return t / _elm_lang$core$Time$second;
+};
+var _elm_lang$core$Time$now = _elm_lang$core$Native_Time.now;
+var _elm_lang$core$Time$onSelfMsg = F3(
+	function (router, interval, state) {
+		var _p7 = A2(_elm_lang$core$Dict$get, interval, state.taggers);
+		if (_p7.ctor === 'Nothing') {
+			return _elm_lang$core$Task$succeed(state);
+		} else {
+			var tellTaggers = function (time) {
+				return _elm_lang$core$Task$sequence(
+					A2(
+						_elm_lang$core$List$map,
+						function (tagger) {
+							return A2(
+								_elm_lang$core$Platform$sendToApp,
+								router,
+								tagger(time));
+						},
+						_p7._0));
+			};
+			return A2(
+				_elm_lang$core$Task$andThen,
+				function (_p8) {
+					return _elm_lang$core$Task$succeed(state);
+				},
+				A2(_elm_lang$core$Task$andThen, tellTaggers, _elm_lang$core$Time$now));
+		}
+	});
+var _elm_lang$core$Time$subscription = _elm_lang$core$Native_Platform.leaf('Time');
+var _elm_lang$core$Time$State = F2(
+	function (a, b) {
+		return {taggers: a, processes: b};
+	});
+var _elm_lang$core$Time$init = _elm_lang$core$Task$succeed(
+	A2(_elm_lang$core$Time$State, _elm_lang$core$Dict$empty, _elm_lang$core$Dict$empty));
+var _elm_lang$core$Time$onEffects = F3(
+	function (router, subs, _p9) {
+		var _p10 = _p9;
+		var rightStep = F3(
+			function (_p12, id, _p11) {
+				var _p13 = _p11;
+				return {
+					ctor: '_Tuple3',
+					_0: _p13._0,
+					_1: _p13._1,
+					_2: A2(
+						_elm_lang$core$Task$andThen,
+						function (_p14) {
+							return _p13._2;
+						},
+						_elm_lang$core$Native_Scheduler.kill(id))
+				};
+			});
+		var bothStep = F4(
+			function (interval, taggers, id, _p15) {
+				var _p16 = _p15;
+				return {
+					ctor: '_Tuple3',
+					_0: _p16._0,
+					_1: A3(_elm_lang$core$Dict$insert, interval, id, _p16._1),
+					_2: _p16._2
+				};
+			});
+		var leftStep = F3(
+			function (interval, taggers, _p17) {
+				var _p18 = _p17;
+				return {
+					ctor: '_Tuple3',
+					_0: {ctor: '::', _0: interval, _1: _p18._0},
+					_1: _p18._1,
+					_2: _p18._2
+				};
+			});
+		var newTaggers = A3(_elm_lang$core$List$foldl, _elm_lang$core$Time$addMySub, _elm_lang$core$Dict$empty, subs);
+		var _p19 = A6(
+			_elm_lang$core$Dict$merge,
+			leftStep,
+			bothStep,
+			rightStep,
+			newTaggers,
+			_p10.processes,
+			{
+				ctor: '_Tuple3',
+				_0: {ctor: '[]'},
+				_1: _elm_lang$core$Dict$empty,
+				_2: _elm_lang$core$Task$succeed(
+					{ctor: '_Tuple0'})
+			});
+		var spawnList = _p19._0;
+		var existingDict = _p19._1;
+		var killTask = _p19._2;
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (newProcesses) {
+				return _elm_lang$core$Task$succeed(
+					A2(_elm_lang$core$Time$State, newTaggers, newProcesses));
+			},
+			A2(
+				_elm_lang$core$Task$andThen,
+				function (_p20) {
+					return A3(_elm_lang$core$Time$spawnHelp, router, spawnList, existingDict);
+				},
+				killTask));
+	});
+var _elm_lang$core$Time$Every = F2(
+	function (a, b) {
+		return {ctor: 'Every', _0: a, _1: b};
+	});
+var _elm_lang$core$Time$every = F2(
+	function (interval, tagger) {
+		return _elm_lang$core$Time$subscription(
+			A2(_elm_lang$core$Time$Every, interval, tagger));
+	});
+var _elm_lang$core$Time$subMap = F2(
+	function (f, _p21) {
+		var _p22 = _p21;
+		return A2(
+			_elm_lang$core$Time$Every,
+			_p22._0,
+			function (_p23) {
+				return f(
+					_p22._1(_p23));
+			});
+	});
+_elm_lang$core$Native_Platform.effectManagers['Time'] = {pkg: 'elm-lang/core', init: _elm_lang$core$Time$init, onEffects: _elm_lang$core$Time$onEffects, onSelfMsg: _elm_lang$core$Time$onSelfMsg, tag: 'sub', subMap: _elm_lang$core$Time$subMap};
+
+var _elm_lang$core$Process$kill = _elm_lang$core$Native_Scheduler.kill;
+var _elm_lang$core$Process$sleep = _elm_lang$core$Native_Scheduler.sleep;
+var _elm_lang$core$Process$spawn = _elm_lang$core$Native_Scheduler.spawn;
+
+var _elm_lang$dom$Native_Dom = function() {
+
+var fakeNode = {
+	addEventListener: function() {},
+	removeEventListener: function() {}
+};
+
+var onDocument = on(typeof document !== 'undefined' ? document : fakeNode);
+var onWindow = on(typeof window !== 'undefined' ? window : fakeNode);
+
+function on(node)
+{
+	return function(eventName, decoder, toTask)
+	{
+		return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback) {
+
+			function performTask(event)
+			{
+				var result = A2(_elm_lang$core$Json_Decode$decodeValue, decoder, event);
+				if (result.ctor === 'Ok')
+				{
+					_elm_lang$core$Native_Scheduler.rawSpawn(toTask(result._0));
+				}
+			}
+
+			node.addEventListener(eventName, performTask);
+
+			return function()
+			{
+				node.removeEventListener(eventName, performTask);
+			};
+		});
+	};
+}
+
+var rAF = typeof requestAnimationFrame !== 'undefined'
+	? requestAnimationFrame
+	: function(callback) { callback(); };
+
+function withNode(id, doStuff)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		rAF(function()
+		{
+			var node = document.getElementById(id);
+			if (node === null)
+			{
+				callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'NotFound', _0: id }));
+				return;
+			}
+			callback(_elm_lang$core$Native_Scheduler.succeed(doStuff(node)));
+		});
+	});
+}
+
+
+// FOCUS
+
+function focus(id)
+{
+	return withNode(id, function(node) {
+		node.focus();
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function blur(id)
+{
+	return withNode(id, function(node) {
+		node.blur();
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+
+// SCROLLING
+
+function getScrollTop(id)
+{
+	return withNode(id, function(node) {
+		return node.scrollTop;
+	});
+}
+
+function setScrollTop(id, desiredScrollTop)
+{
+	return withNode(id, function(node) {
+		node.scrollTop = desiredScrollTop;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function toBottom(id)
+{
+	return withNode(id, function(node) {
+		node.scrollTop = node.scrollHeight;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function getScrollLeft(id)
+{
+	return withNode(id, function(node) {
+		return node.scrollLeft;
+	});
+}
+
+function setScrollLeft(id, desiredScrollLeft)
+{
+	return withNode(id, function(node) {
+		node.scrollLeft = desiredScrollLeft;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function toRight(id)
+{
+	return withNode(id, function(node) {
+		node.scrollLeft = node.scrollWidth;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+
+// SIZE
+
+function width(options, id)
+{
+	return withNode(id, function(node) {
+		switch (options.ctor)
+		{
+			case 'Content':
+				return node.scrollWidth;
+			case 'VisibleContent':
+				return node.clientWidth;
+			case 'VisibleContentWithBorders':
+				return node.offsetWidth;
+			case 'VisibleContentWithBordersAndMargins':
+				var rect = node.getBoundingClientRect();
+				return rect.right - rect.left;
+		}
+	});
+}
+
+function height(options, id)
+{
+	return withNode(id, function(node) {
+		switch (options.ctor)
+		{
+			case 'Content':
+				return node.scrollHeight;
+			case 'VisibleContent':
+				return node.clientHeight;
+			case 'VisibleContentWithBorders':
+				return node.offsetHeight;
+			case 'VisibleContentWithBordersAndMargins':
+				var rect = node.getBoundingClientRect();
+				return rect.bottom - rect.top;
+		}
+	});
+}
+
+return {
+	onDocument: F3(onDocument),
+	onWindow: F3(onWindow),
+
+	focus: focus,
+	blur: blur,
+
+	getScrollTop: getScrollTop,
+	setScrollTop: F2(setScrollTop),
+	getScrollLeft: getScrollLeft,
+	setScrollLeft: F2(setScrollLeft),
+	toBottom: toBottom,
+	toRight: toRight,
+
+	height: F2(height),
+	width: F2(width)
+};
+
+}();
+
+var _elm_lang$dom$Dom_LowLevel$onWindow = _elm_lang$dom$Native_Dom.onWindow;
+var _elm_lang$dom$Dom_LowLevel$onDocument = _elm_lang$dom$Native_Dom.onDocument;
+
 var _elm_lang$virtual_dom$VirtualDom_Debug$wrap;
 var _elm_lang$virtual_dom$VirtualDom_Debug$wrapWithFlags;
 
@@ -8397,6 +9079,794 @@ var _elm_lang$html$Html_Events$Options = F2(
 		return {stopPropagation: a, preventDefault: b};
 	});
 
+var _elm_lang$http$Native_Http = function() {
+
+
+// ENCODING AND DECODING
+
+function encodeUri(string)
+{
+	return encodeURIComponent(string);
+}
+
+function decodeUri(string)
+{
+	try
+	{
+		return _elm_lang$core$Maybe$Just(decodeURIComponent(string));
+	}
+	catch(e)
+	{
+		return _elm_lang$core$Maybe$Nothing;
+	}
+}
+
+
+// SEND REQUEST
+
+function toTask(request, maybeProgress)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		var xhr = new XMLHttpRequest();
+
+		configureProgress(xhr, maybeProgress);
+
+		xhr.addEventListener('error', function() {
+			callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'NetworkError' }));
+		});
+		xhr.addEventListener('timeout', function() {
+			callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'Timeout' }));
+		});
+		xhr.addEventListener('load', function() {
+			callback(handleResponse(xhr, request.expect.responseToResult));
+		});
+
+		try
+		{
+			xhr.open(request.method, request.url, true);
+		}
+		catch (e)
+		{
+			return callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'BadUrl', _0: request.url }));
+		}
+
+		configureRequest(xhr, request);
+		send(xhr, request.body);
+
+		return function() { xhr.abort(); };
+	});
+}
+
+function configureProgress(xhr, maybeProgress)
+{
+	if (maybeProgress.ctor === 'Nothing')
+	{
+		return;
+	}
+
+	xhr.addEventListener('progress', function(event) {
+		if (!event.lengthComputable)
+		{
+			return;
+		}
+		_elm_lang$core$Native_Scheduler.rawSpawn(maybeProgress._0({
+			bytes: event.loaded,
+			bytesExpected: event.total
+		}));
+	});
+}
+
+function configureRequest(xhr, request)
+{
+	function setHeader(pair)
+	{
+		xhr.setRequestHeader(pair._0, pair._1);
+	}
+
+	A2(_elm_lang$core$List$map, setHeader, request.headers);
+	xhr.responseType = request.expect.responseType;
+	xhr.withCredentials = request.withCredentials;
+
+	if (request.timeout.ctor === 'Just')
+	{
+		xhr.timeout = request.timeout._0;
+	}
+}
+
+function send(xhr, body)
+{
+	switch (body.ctor)
+	{
+		case 'EmptyBody':
+			xhr.send();
+			return;
+
+		case 'StringBody':
+			xhr.setRequestHeader('Content-Type', body._0);
+			xhr.send(body._1);
+			return;
+
+		case 'FormDataBody':
+			xhr.send(body._0);
+			return;
+	}
+}
+
+
+// RESPONSES
+
+function handleResponse(xhr, responseToResult)
+{
+	var response = toResponse(xhr);
+
+	if (xhr.status < 200 || 300 <= xhr.status)
+	{
+		response.body = xhr.responseText;
+		return _elm_lang$core$Native_Scheduler.fail({
+			ctor: 'BadStatus',
+			_0: response
+		});
+	}
+
+	var result = responseToResult(response);
+
+	if (result.ctor === 'Ok')
+	{
+		return _elm_lang$core$Native_Scheduler.succeed(result._0);
+	}
+	else
+	{
+		response.body = xhr.responseText;
+		return _elm_lang$core$Native_Scheduler.fail({
+			ctor: 'BadPayload',
+			_0: result._0,
+			_1: response
+		});
+	}
+}
+
+function toResponse(xhr)
+{
+	return {
+		status: { code: xhr.status, message: xhr.statusText },
+		headers: parseHeaders(xhr.getAllResponseHeaders()),
+		url: xhr.responseURL,
+		body: xhr.response
+	};
+}
+
+function parseHeaders(rawHeaders)
+{
+	var headers = _elm_lang$core$Dict$empty;
+
+	if (!rawHeaders)
+	{
+		return headers;
+	}
+
+	var headerPairs = rawHeaders.split('\u000d\u000a');
+	for (var i = headerPairs.length; i--; )
+	{
+		var headerPair = headerPairs[i];
+		var index = headerPair.indexOf('\u003a\u0020');
+		if (index > 0)
+		{
+			var key = headerPair.substring(0, index);
+			var value = headerPair.substring(index + 2);
+
+			headers = A3(_elm_lang$core$Dict$update, key, function(oldValue) {
+				if (oldValue.ctor === 'Just')
+				{
+					return _elm_lang$core$Maybe$Just(value + ', ' + oldValue._0);
+				}
+				return _elm_lang$core$Maybe$Just(value);
+			}, headers);
+		}
+	}
+
+	return headers;
+}
+
+
+// EXPECTORS
+
+function expectStringResponse(responseToResult)
+{
+	return {
+		responseType: 'text',
+		responseToResult: responseToResult
+	};
+}
+
+function mapExpect(func, expect)
+{
+	return {
+		responseType: expect.responseType,
+		responseToResult: function(response) {
+			var convertedResponse = expect.responseToResult(response);
+			return A2(_elm_lang$core$Result$map, func, convertedResponse);
+		}
+	};
+}
+
+
+// BODY
+
+function multipart(parts)
+{
+	var formData = new FormData();
+
+	while (parts.ctor !== '[]')
+	{
+		var part = parts._0;
+		formData.append(part._0, part._1);
+		parts = parts._1;
+	}
+
+	return { ctor: 'FormDataBody', _0: formData };
+}
+
+return {
+	toTask: F2(toTask),
+	expectStringResponse: expectStringResponse,
+	mapExpect: F2(mapExpect),
+	multipart: multipart,
+	encodeUri: encodeUri,
+	decodeUri: decodeUri
+};
+
+}();
+
+var _elm_lang$http$Http_Internal$map = F2(
+	function (func, request) {
+		return _elm_lang$core$Native_Utils.update(
+			request,
+			{
+				expect: A2(_elm_lang$http$Native_Http.mapExpect, func, request.expect)
+			});
+	});
+var _elm_lang$http$Http_Internal$RawRequest = F7(
+	function (a, b, c, d, e, f, g) {
+		return {method: a, headers: b, url: c, body: d, expect: e, timeout: f, withCredentials: g};
+	});
+var _elm_lang$http$Http_Internal$Request = function (a) {
+	return {ctor: 'Request', _0: a};
+};
+var _elm_lang$http$Http_Internal$Expect = {ctor: 'Expect'};
+var _elm_lang$http$Http_Internal$FormDataBody = {ctor: 'FormDataBody'};
+var _elm_lang$http$Http_Internal$StringBody = F2(
+	function (a, b) {
+		return {ctor: 'StringBody', _0: a, _1: b};
+	});
+var _elm_lang$http$Http_Internal$EmptyBody = {ctor: 'EmptyBody'};
+var _elm_lang$http$Http_Internal$Header = F2(
+	function (a, b) {
+		return {ctor: 'Header', _0: a, _1: b};
+	});
+
+var _elm_lang$http$Http$decodeUri = _elm_lang$http$Native_Http.decodeUri;
+var _elm_lang$http$Http$encodeUri = _elm_lang$http$Native_Http.encodeUri;
+var _elm_lang$http$Http$expectStringResponse = _elm_lang$http$Native_Http.expectStringResponse;
+var _elm_lang$http$Http$expectJson = function (decoder) {
+	return _elm_lang$http$Http$expectStringResponse(
+		function (response) {
+			return A2(_elm_lang$core$Json_Decode$decodeString, decoder, response.body);
+		});
+};
+var _elm_lang$http$Http$expectString = _elm_lang$http$Http$expectStringResponse(
+	function (response) {
+		return _elm_lang$core$Result$Ok(response.body);
+	});
+var _elm_lang$http$Http$multipartBody = _elm_lang$http$Native_Http.multipart;
+var _elm_lang$http$Http$stringBody = _elm_lang$http$Http_Internal$StringBody;
+var _elm_lang$http$Http$jsonBody = function (value) {
+	return A2(
+		_elm_lang$http$Http_Internal$StringBody,
+		'application/json',
+		A2(_elm_lang$core$Json_Encode$encode, 0, value));
+};
+var _elm_lang$http$Http$emptyBody = _elm_lang$http$Http_Internal$EmptyBody;
+var _elm_lang$http$Http$header = _elm_lang$http$Http_Internal$Header;
+var _elm_lang$http$Http$request = _elm_lang$http$Http_Internal$Request;
+var _elm_lang$http$Http$post = F3(
+	function (url, body, decoder) {
+		return _elm_lang$http$Http$request(
+			{
+				method: 'POST',
+				headers: {ctor: '[]'},
+				url: url,
+				body: body,
+				expect: _elm_lang$http$Http$expectJson(decoder),
+				timeout: _elm_lang$core$Maybe$Nothing,
+				withCredentials: false
+			});
+	});
+var _elm_lang$http$Http$get = F2(
+	function (url, decoder) {
+		return _elm_lang$http$Http$request(
+			{
+				method: 'GET',
+				headers: {ctor: '[]'},
+				url: url,
+				body: _elm_lang$http$Http$emptyBody,
+				expect: _elm_lang$http$Http$expectJson(decoder),
+				timeout: _elm_lang$core$Maybe$Nothing,
+				withCredentials: false
+			});
+	});
+var _elm_lang$http$Http$getString = function (url) {
+	return _elm_lang$http$Http$request(
+		{
+			method: 'GET',
+			headers: {ctor: '[]'},
+			url: url,
+			body: _elm_lang$http$Http$emptyBody,
+			expect: _elm_lang$http$Http$expectString,
+			timeout: _elm_lang$core$Maybe$Nothing,
+			withCredentials: false
+		});
+};
+var _elm_lang$http$Http$toTask = function (_p0) {
+	var _p1 = _p0;
+	return A2(_elm_lang$http$Native_Http.toTask, _p1._0, _elm_lang$core$Maybe$Nothing);
+};
+var _elm_lang$http$Http$send = F2(
+	function (resultToMessage, request) {
+		return A2(
+			_elm_lang$core$Task$attempt,
+			resultToMessage,
+			_elm_lang$http$Http$toTask(request));
+	});
+var _elm_lang$http$Http$Response = F4(
+	function (a, b, c, d) {
+		return {url: a, status: b, headers: c, body: d};
+	});
+var _elm_lang$http$Http$BadPayload = F2(
+	function (a, b) {
+		return {ctor: 'BadPayload', _0: a, _1: b};
+	});
+var _elm_lang$http$Http$BadStatus = function (a) {
+	return {ctor: 'BadStatus', _0: a};
+};
+var _elm_lang$http$Http$NetworkError = {ctor: 'NetworkError'};
+var _elm_lang$http$Http$Timeout = {ctor: 'Timeout'};
+var _elm_lang$http$Http$BadUrl = function (a) {
+	return {ctor: 'BadUrl', _0: a};
+};
+var _elm_lang$http$Http$StringPart = F2(
+	function (a, b) {
+		return {ctor: 'StringPart', _0: a, _1: b};
+	});
+var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
+
+var _elm_lang$navigation$Native_Navigation = function() {
+
+
+// FAKE NAVIGATION
+
+function go(n)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		if (n !== 0)
+		{
+			history.go(n);
+		}
+		callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Native_Utils.Tuple0));
+	});
+}
+
+function pushState(url)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		history.pushState({}, '', url);
+		callback(_elm_lang$core$Native_Scheduler.succeed(getLocation()));
+	});
+}
+
+function replaceState(url)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		history.replaceState({}, '', url);
+		callback(_elm_lang$core$Native_Scheduler.succeed(getLocation()));
+	});
+}
+
+
+// REAL NAVIGATION
+
+function reloadPage(skipCache)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		document.location.reload(skipCache);
+		callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Native_Utils.Tuple0));
+	});
+}
+
+function setLocation(url)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		try
+		{
+			window.location = url;
+		}
+		catch(err)
+		{
+			// Only Firefox can throw a NS_ERROR_MALFORMED_URI exception here.
+			// Other browsers reload the page, so let's be consistent about that.
+			document.location.reload(false);
+		}
+		callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Native_Utils.Tuple0));
+	});
+}
+
+
+// GET LOCATION
+
+function getLocation()
+{
+	var location = document.location;
+
+	return {
+		href: location.href,
+		host: location.host,
+		hostname: location.hostname,
+		protocol: location.protocol,
+		origin: location.origin,
+		port_: location.port,
+		pathname: location.pathname,
+		search: location.search,
+		hash: location.hash,
+		username: location.username,
+		password: location.password
+	};
+}
+
+
+// DETECT IE11 PROBLEMS
+
+function isInternetExplorer11()
+{
+	return window.navigator.userAgent.indexOf('Trident') !== -1;
+}
+
+
+return {
+	go: go,
+	setLocation: setLocation,
+	reloadPage: reloadPage,
+	pushState: pushState,
+	replaceState: replaceState,
+	getLocation: getLocation,
+	isInternetExplorer11: isInternetExplorer11
+};
+
+}();
+
+var _elm_lang$navigation$Navigation$replaceState = _elm_lang$navigation$Native_Navigation.replaceState;
+var _elm_lang$navigation$Navigation$pushState = _elm_lang$navigation$Native_Navigation.pushState;
+var _elm_lang$navigation$Navigation$go = _elm_lang$navigation$Native_Navigation.go;
+var _elm_lang$navigation$Navigation$reloadPage = _elm_lang$navigation$Native_Navigation.reloadPage;
+var _elm_lang$navigation$Navigation$setLocation = _elm_lang$navigation$Native_Navigation.setLocation;
+var _elm_lang$navigation$Navigation_ops = _elm_lang$navigation$Navigation_ops || {};
+_elm_lang$navigation$Navigation_ops['&>'] = F2(
+	function (task1, task2) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (_p0) {
+				return task2;
+			},
+			task1);
+	});
+var _elm_lang$navigation$Navigation$notify = F3(
+	function (router, subs, location) {
+		var send = function (_p1) {
+			var _p2 = _p1;
+			return A2(
+				_elm_lang$core$Platform$sendToApp,
+				router,
+				_p2._0(location));
+		};
+		return A2(
+			_elm_lang$navigation$Navigation_ops['&>'],
+			_elm_lang$core$Task$sequence(
+				A2(_elm_lang$core$List$map, send, subs)),
+			_elm_lang$core$Task$succeed(
+				{ctor: '_Tuple0'}));
+	});
+var _elm_lang$navigation$Navigation$cmdHelp = F3(
+	function (router, subs, cmd) {
+		var _p3 = cmd;
+		switch (_p3.ctor) {
+			case 'Jump':
+				return _elm_lang$navigation$Navigation$go(_p3._0);
+			case 'New':
+				return A2(
+					_elm_lang$core$Task$andThen,
+					A2(_elm_lang$navigation$Navigation$notify, router, subs),
+					_elm_lang$navigation$Navigation$pushState(_p3._0));
+			case 'Modify':
+				return A2(
+					_elm_lang$core$Task$andThen,
+					A2(_elm_lang$navigation$Navigation$notify, router, subs),
+					_elm_lang$navigation$Navigation$replaceState(_p3._0));
+			case 'Visit':
+				return _elm_lang$navigation$Navigation$setLocation(_p3._0);
+			default:
+				return _elm_lang$navigation$Navigation$reloadPage(_p3._0);
+		}
+	});
+var _elm_lang$navigation$Navigation$killPopWatcher = function (popWatcher) {
+	var _p4 = popWatcher;
+	if (_p4.ctor === 'Normal') {
+		return _elm_lang$core$Process$kill(_p4._0);
+	} else {
+		return A2(
+			_elm_lang$navigation$Navigation_ops['&>'],
+			_elm_lang$core$Process$kill(_p4._0),
+			_elm_lang$core$Process$kill(_p4._1));
+	}
+};
+var _elm_lang$navigation$Navigation$onSelfMsg = F3(
+	function (router, location, state) {
+		return A2(
+			_elm_lang$navigation$Navigation_ops['&>'],
+			A3(_elm_lang$navigation$Navigation$notify, router, state.subs, location),
+			_elm_lang$core$Task$succeed(state));
+	});
+var _elm_lang$navigation$Navigation$subscription = _elm_lang$core$Native_Platform.leaf('Navigation');
+var _elm_lang$navigation$Navigation$command = _elm_lang$core$Native_Platform.leaf('Navigation');
+var _elm_lang$navigation$Navigation$Location = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return function (k) {
+											return {href: a, host: b, hostname: c, protocol: d, origin: e, port_: f, pathname: g, search: h, hash: i, username: j, password: k};
+										};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+var _elm_lang$navigation$Navigation$State = F2(
+	function (a, b) {
+		return {subs: a, popWatcher: b};
+	});
+var _elm_lang$navigation$Navigation$init = _elm_lang$core$Task$succeed(
+	A2(
+		_elm_lang$navigation$Navigation$State,
+		{ctor: '[]'},
+		_elm_lang$core$Maybe$Nothing));
+var _elm_lang$navigation$Navigation$Reload = function (a) {
+	return {ctor: 'Reload', _0: a};
+};
+var _elm_lang$navigation$Navigation$reload = _elm_lang$navigation$Navigation$command(
+	_elm_lang$navigation$Navigation$Reload(false));
+var _elm_lang$navigation$Navigation$reloadAndSkipCache = _elm_lang$navigation$Navigation$command(
+	_elm_lang$navigation$Navigation$Reload(true));
+var _elm_lang$navigation$Navigation$Visit = function (a) {
+	return {ctor: 'Visit', _0: a};
+};
+var _elm_lang$navigation$Navigation$load = function (url) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$Visit(url));
+};
+var _elm_lang$navigation$Navigation$Modify = function (a) {
+	return {ctor: 'Modify', _0: a};
+};
+var _elm_lang$navigation$Navigation$modifyUrl = function (url) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$Modify(url));
+};
+var _elm_lang$navigation$Navigation$New = function (a) {
+	return {ctor: 'New', _0: a};
+};
+var _elm_lang$navigation$Navigation$newUrl = function (url) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$New(url));
+};
+var _elm_lang$navigation$Navigation$Jump = function (a) {
+	return {ctor: 'Jump', _0: a};
+};
+var _elm_lang$navigation$Navigation$back = function (n) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$Jump(0 - n));
+};
+var _elm_lang$navigation$Navigation$forward = function (n) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$Jump(n));
+};
+var _elm_lang$navigation$Navigation$cmdMap = F2(
+	function (_p5, myCmd) {
+		var _p6 = myCmd;
+		switch (_p6.ctor) {
+			case 'Jump':
+				return _elm_lang$navigation$Navigation$Jump(_p6._0);
+			case 'New':
+				return _elm_lang$navigation$Navigation$New(_p6._0);
+			case 'Modify':
+				return _elm_lang$navigation$Navigation$Modify(_p6._0);
+			case 'Visit':
+				return _elm_lang$navigation$Navigation$Visit(_p6._0);
+			default:
+				return _elm_lang$navigation$Navigation$Reload(_p6._0);
+		}
+	});
+var _elm_lang$navigation$Navigation$Monitor = function (a) {
+	return {ctor: 'Monitor', _0: a};
+};
+var _elm_lang$navigation$Navigation$program = F2(
+	function (locationToMessage, stuff) {
+		var init = stuff.init(
+			_elm_lang$navigation$Native_Navigation.getLocation(
+				{ctor: '_Tuple0'}));
+		var subs = function (model) {
+			return _elm_lang$core$Platform_Sub$batch(
+				{
+					ctor: '::',
+					_0: _elm_lang$navigation$Navigation$subscription(
+						_elm_lang$navigation$Navigation$Monitor(locationToMessage)),
+					_1: {
+						ctor: '::',
+						_0: stuff.subscriptions(model),
+						_1: {ctor: '[]'}
+					}
+				});
+		};
+		return _elm_lang$html$Html$program(
+			{init: init, view: stuff.view, update: stuff.update, subscriptions: subs});
+	});
+var _elm_lang$navigation$Navigation$programWithFlags = F2(
+	function (locationToMessage, stuff) {
+		var init = function (flags) {
+			return A2(
+				stuff.init,
+				flags,
+				_elm_lang$navigation$Native_Navigation.getLocation(
+					{ctor: '_Tuple0'}));
+		};
+		var subs = function (model) {
+			return _elm_lang$core$Platform_Sub$batch(
+				{
+					ctor: '::',
+					_0: _elm_lang$navigation$Navigation$subscription(
+						_elm_lang$navigation$Navigation$Monitor(locationToMessage)),
+					_1: {
+						ctor: '::',
+						_0: stuff.subscriptions(model),
+						_1: {ctor: '[]'}
+					}
+				});
+		};
+		return _elm_lang$html$Html$programWithFlags(
+			{init: init, view: stuff.view, update: stuff.update, subscriptions: subs});
+	});
+var _elm_lang$navigation$Navigation$subMap = F2(
+	function (func, _p7) {
+		var _p8 = _p7;
+		return _elm_lang$navigation$Navigation$Monitor(
+			function (_p9) {
+				return func(
+					_p8._0(_p9));
+			});
+	});
+var _elm_lang$navigation$Navigation$InternetExplorer = F2(
+	function (a, b) {
+		return {ctor: 'InternetExplorer', _0: a, _1: b};
+	});
+var _elm_lang$navigation$Navigation$Normal = function (a) {
+	return {ctor: 'Normal', _0: a};
+};
+var _elm_lang$navigation$Navigation$spawnPopWatcher = function (router) {
+	var reportLocation = function (_p10) {
+		return A2(
+			_elm_lang$core$Platform$sendToSelf,
+			router,
+			_elm_lang$navigation$Native_Navigation.getLocation(
+				{ctor: '_Tuple0'}));
+	};
+	return _elm_lang$navigation$Native_Navigation.isInternetExplorer11(
+		{ctor: '_Tuple0'}) ? A3(
+		_elm_lang$core$Task$map2,
+		_elm_lang$navigation$Navigation$InternetExplorer,
+		_elm_lang$core$Process$spawn(
+			A3(_elm_lang$dom$Dom_LowLevel$onWindow, 'popstate', _elm_lang$core$Json_Decode$value, reportLocation)),
+		_elm_lang$core$Process$spawn(
+			A3(_elm_lang$dom$Dom_LowLevel$onWindow, 'hashchange', _elm_lang$core$Json_Decode$value, reportLocation))) : A2(
+		_elm_lang$core$Task$map,
+		_elm_lang$navigation$Navigation$Normal,
+		_elm_lang$core$Process$spawn(
+			A3(_elm_lang$dom$Dom_LowLevel$onWindow, 'popstate', _elm_lang$core$Json_Decode$value, reportLocation)));
+};
+var _elm_lang$navigation$Navigation$onEffects = F4(
+	function (router, cmds, subs, _p11) {
+		var _p12 = _p11;
+		var _p15 = _p12.popWatcher;
+		var stepState = function () {
+			var _p13 = {ctor: '_Tuple2', _0: subs, _1: _p15};
+			_v6_2:
+			do {
+				if (_p13._0.ctor === '[]') {
+					if (_p13._1.ctor === 'Just') {
+						return A2(
+							_elm_lang$navigation$Navigation_ops['&>'],
+							_elm_lang$navigation$Navigation$killPopWatcher(_p13._1._0),
+							_elm_lang$core$Task$succeed(
+								A2(_elm_lang$navigation$Navigation$State, subs, _elm_lang$core$Maybe$Nothing)));
+					} else {
+						break _v6_2;
+					}
+				} else {
+					if (_p13._1.ctor === 'Nothing') {
+						return A2(
+							_elm_lang$core$Task$map,
+							function (_p14) {
+								return A2(
+									_elm_lang$navigation$Navigation$State,
+									subs,
+									_elm_lang$core$Maybe$Just(_p14));
+							},
+							_elm_lang$navigation$Navigation$spawnPopWatcher(router));
+					} else {
+						break _v6_2;
+					}
+				}
+			} while(false);
+			return _elm_lang$core$Task$succeed(
+				A2(_elm_lang$navigation$Navigation$State, subs, _p15));
+		}();
+		return A2(
+			_elm_lang$navigation$Navigation_ops['&>'],
+			_elm_lang$core$Task$sequence(
+				A2(
+					_elm_lang$core$List$map,
+					A2(_elm_lang$navigation$Navigation$cmdHelp, router, subs),
+					cmds)),
+			stepState);
+	});
+_elm_lang$core$Native_Platform.effectManagers['Navigation'] = {pkg: 'elm-lang/navigation', init: _elm_lang$navigation$Navigation$init, onEffects: _elm_lang$navigation$Navigation$onEffects, onSelfMsg: _elm_lang$navigation$Navigation$onSelfMsg, tag: 'fx', cmdMap: _elm_lang$navigation$Navigation$cmdMap, subMap: _elm_lang$navigation$Navigation$subMap};
+
+var _user$project$Config$student_login_api_endpoint = '/api/student/login/';
+var _user$project$Config$student_signup_api_endpoint = '/api/student/signup/';
+var _user$project$Config$instructor_login_api_endpoint = '/api/instructor/login/';
+var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signup/';
+var _user$project$Config$question_api_endpoint = '/api/question/';
+var _user$project$Config$text_api_endpoint = '/api/text/';
+
+var _user$project$Flags$Flags = function (a) {
+	return {csrftoken: a};
+};
+
+var _user$project$HttpHelpers$post_with_headers = F4(
+	function (url, headers, body, decoder) {
+		return _elm_lang$http$Http$request(
+			{
+				method: 'POST',
+				headers: headers,
+				url: url,
+				body: body,
+				expect: _elm_lang$http$Http$expectJson(decoder),
+				timeout: _elm_lang$core$Maybe$Nothing,
+				withCredentials: false
+			});
+	});
+
 var _user$project$Util$valid_email_regex = _elm_lang$core$Regex$caseInsensitive(
 	_elm_lang$core$Regex$regex('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$'));
 var _user$project$Util$is_valid_email = function (addr) {
@@ -8560,65 +10030,12 @@ var _user$project$Views$view_header = A2(
 		}
 	});
 
-var _user$project$SignUp$toggle_show_password = function (model) {
-	return _elm_lang$core$Native_Utils.update(
-		model,
-		{
-			show_passwords: model.show_passwords ? false : true
-		});
-};
-var _user$project$SignUp$update_password = F2(
-	function (model, password) {
-		var signup_params = model.signup_params;
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{
-				signup_params: _elm_lang$core$Native_Utils.update(
-					signup_params,
-					{password: password})
-			});
-	});
-var _user$project$SignUp$update_confirm_password = F2(
-	function (model, confirm_password) {
-		var signup_params = model.signup_params;
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{
-				signup_params: _elm_lang$core$Native_Utils.update(
-					signup_params,
-					{confirm_password: confirm_password}),
-				errors: _elm_lang$core$Native_Utils.eq(confirm_password, model.signup_params.password) ? A2(
-					_elm_lang$core$Dict$remove,
-					'password',
-					A2(_elm_lang$core$Dict$remove, 'confirm_password', model.errors)) : A3(_elm_lang$core$Dict$insert, 'confirm_password', 'Passwords don\'t match.', model.errors)
-			});
-	});
-var _user$project$SignUp$update_email = F2(
-	function (model, addr) {
-		var signup_params = model.signup_params;
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{
-				signup_params: _elm_lang$core$Native_Utils.update(
-					signup_params,
-					{email: addr}),
-				errors: (_user$project$Util$is_valid_email(addr) || _elm_lang$core$Native_Utils.eq(addr, '')) ? A2(_elm_lang$core$Dict$remove, 'email', model.errors) : A3(_elm_lang$core$Dict$insert, 'email', 'This e-mail is invalid', model.errors)
-			});
-	});
-var _user$project$SignUp$submit = function (model) {
-	return _elm_lang$core$Native_Utils.update(
-		model,
-		{
-			errors: _elm_lang$core$Dict$fromList(
-				{ctor: '[]'})
-		});
-};
-var _user$project$SignUp$signup_label = function (html) {
+var _user$project$Login$login_label = function (html) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'signup_label'),
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'login_label'),
 			_1: {ctor: '[]'}
 		},
 		{
@@ -8627,286 +10044,399 @@ var _user$project$SignUp$signup_label = function (html) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$SignUp$view_email_input = F2(
-	function (update_email_msg, model) {
-		var email_error = A2(_elm_lang$core$Dict$member, 'email', model.errors) ? {
+var _user$project$Login$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$none;
+};
+var _user$project$Login$loginEncoder = function (login_params) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'username',
+				_1: _elm_lang$core$Json_Encode$string(login_params.username)
+			},
+			_1: {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'password',
+					_1: _elm_lang$core$Json_Encode$string(login_params.password)
+				},
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Login$LoginResp = F2(
+	function (a, b) {
+		return {id: a, redirect: b};
+	});
+var _user$project$Login$loginRespDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'redirect',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'id',
+		_elm_lang$core$Json_Decode$int,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Login$LoginResp)));
+var _user$project$Login$LoginParams = F2(
+	function (a, b) {
+		return {username: a, password: b};
+	});
+var _user$project$Login$init = function (flags) {
+	return {
+		ctor: '_Tuple2',
+		_0: {
+			flags: flags,
+			login_params: A2(_user$project$Login$LoginParams, '', ''),
+			errors: _elm_lang$core$Dict$fromList(
+				{ctor: '[]'})
+		},
+		_1: _elm_lang$core$Platform_Cmd$none
+	};
+};
+var _user$project$Login$Model = F3(
+	function (a, b, c) {
+		return {flags: a, login_params: b, errors: c};
+	});
+var _user$project$Login$UpdatePassword = function (a) {
+	return {ctor: 'UpdatePassword', _0: a};
+};
+var _user$project$Login$view_password_input = function (model) {
+	var pass_err = A2(_elm_lang$core$Dict$member, 'password', model.errors);
+	var attrs = A2(
+		_elm_lang$core$Basics_ops['++'],
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'size', '35'),
+			_1: {
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'password'),
+				_1: {ctor: '[]'}
+			}
+		},
+		pass_err ? {
 			ctor: '::',
 			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'input_error'),
 			_1: {ctor: '[]'}
-		} : {ctor: '[]'};
-		var err_msg = function () {
-			var _p0 = A2(_elm_lang$core$Dict$get, 'email', model.errors);
-			if (_p0.ctor === 'Just') {
-				return _user$project$SignUp$signup_label(
-					A2(
-						_elm_lang$html$Html$em,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(_p0._0),
-							_1: {ctor: '[]'}
-						}));
-			} else {
-				return _elm_lang$html$Html$text('');
-			}
-		}();
-		return {
-			ctor: '::',
-			_0: _user$project$SignUp$signup_label(
-				_elm_lang$html$Html$text('Email Address')),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$input,
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						{
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'size', '25'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onInput(update_email_msg),
-								_1: {ctor: '[]'}
-							}
-						},
-						email_error),
-					{ctor: '[]'}),
-				_1: {
-					ctor: '::',
-					_0: err_msg,
-					_1: {ctor: '[]'}
-				}
-			}
-		};
-	});
-var _user$project$SignUp$view_password_input = F2(
-	function (_p1, model) {
-		var _p2 = _p1;
-		var pass_err = A2(_elm_lang$core$Dict$member, 'confirm_password', model.errors) || A2(_elm_lang$core$Dict$member, 'password', model.errors);
-		var attrs = A2(
-			_elm_lang$core$Basics_ops['++'],
-			{
-				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'size', '35'),
-				_1: {ctor: '[]'}
-			},
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				pass_err ? {
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'input_error'),
-					_1: {ctor: '[]'}
-				} : {ctor: '[]'},
-				model.show_passwords ? {
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
-					_1: {ctor: '[]'}
-				} : {
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'password'),
-					_1: {ctor: '[]'}
-				}));
-		var password_err_msg = function () {
-			var _p3 = A2(_elm_lang$core$Dict$get, 'password', model.errors);
-			if (_p3.ctor === 'Just') {
-				return _user$project$SignUp$signup_label(
-					A2(
-						_elm_lang$html$Html$em,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(_p3._0),
-							_1: {ctor: '[]'}
-						}));
-			} else {
-				return _elm_lang$html$Html$text('');
-			}
-		}();
-		var confirm_err_msg = function () {
-			var _p4 = A2(_elm_lang$core$Dict$get, 'confirm_password', model.errors);
-			if (_p4.ctor === 'Just') {
-				return _user$project$SignUp$signup_label(
-					A2(
-						_elm_lang$html$Html$em,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(_p4._0),
-							_1: {ctor: '[]'}
-						}));
-			} else {
-				return _elm_lang$html$Html$text('');
-			}
-		}();
-		return {
-			ctor: '::',
-			_0: _user$project$SignUp$signup_label(
+		} : {ctor: '[]'});
+	var password_err_msg = function () {
+		var _p0 = A2(_elm_lang$core$Dict$get, 'password', model.errors);
+		if (_p0.ctor === 'Just') {
+			return _user$project$Login$login_label(
 				A2(
-					_elm_lang$html$Html$span,
+					_elm_lang$html$Html$em,
 					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text('Password '),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$span,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onClick(_p2._0),
-									_1: {
-										ctor: '::',
-										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'cursor'),
-										_1: {ctor: '[]'}
-									}
-								},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text('(show)'),
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}
-					})),
+						_0: _elm_lang$html$Html$text(_p0._0),
+						_1: {ctor: '[]'}
+					}));
+		} else {
+			return _elm_lang$html$Html$text('');
+		}
+	}();
+	return {
+		ctor: '::',
+		_0: _user$project$Login$login_label(
+			A2(
+				_elm_lang$html$Html$span,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Password '),
+					_1: {ctor: '[]'}
+				})),
+		_1: {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$input,
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					attrs,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onInput(_user$project$Login$UpdatePassword),
+						_1: {ctor: '[]'}
+					}),
+				{ctor: '[]'}),
 			_1: {
 				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$input,
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						attrs,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onInput(_p2._1),
-							_1: {ctor: '[]'}
-						}),
-					{ctor: '[]'}),
-				_1: {
-					ctor: '::',
-					_0: password_err_msg,
-					_1: {
+				_0: password_err_msg,
+				_1: {ctor: '[]'}
+			}
+		}
+	};
+};
+var _user$project$Login$UpdateEmail = function (a) {
+	return {ctor: 'UpdateEmail', _0: a};
+};
+var _user$project$Login$view_email_input = function (model) {
+	var err_msg = function () {
+		var _p1 = A2(_elm_lang$core$Dict$get, 'email', model.errors);
+		if (_p1.ctor === 'Just') {
+			return _user$project$Login$login_label(
+				A2(
+					_elm_lang$html$Html$em,
+					{ctor: '[]'},
+					{
 						ctor: '::',
-						_0: _user$project$SignUp$signup_label(
-							_elm_lang$html$Html$text('Confirm Password')),
+						_0: _elm_lang$html$Html$text(_p1._0),
+						_1: {ctor: '[]'}
+					}));
+		} else {
+			return _elm_lang$html$Html$text('');
+		}
+	}();
+	var email_error = A2(_elm_lang$core$Dict$member, 'email', model.errors) ? {
+		ctor: '::',
+		_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'input_error'),
+		_1: {ctor: '[]'}
+	} : {ctor: '[]'};
+	return {
+		ctor: '::',
+		_0: _user$project$Login$login_label(
+			_elm_lang$html$Html$text('Username (e-mail address):')),
+		_1: {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$input,
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					{
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'size', '25'),
 						_1: {
 							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$input,
-								A2(
-									_elm_lang$core$Basics_ops['++'],
-									attrs,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Events$onInput(_p2._2),
-										_1: {ctor: '[]'}
-									}),
-								{ctor: '[]'}),
+							_0: _elm_lang$html$Html_Events$onInput(_user$project$Login$UpdateEmail),
+							_1: {ctor: '[]'}
+						}
+					},
+					email_error),
+				{ctor: '[]'}),
+			_1: {
+				ctor: '::',
+				_0: err_msg,
+				_1: {ctor: '[]'}
+			}
+		}
+	};
+};
+var _user$project$Login$Submitted = function (a) {
+	return {ctor: 'Submitted', _0: a};
+};
+var _user$project$Login$post_login = F3(
+	function (endpoint, csrftoken, login_params) {
+		var encoded_login_params = _user$project$Login$loginEncoder(login_params);
+		var req = A4(
+			_user$project$HttpHelpers$post_with_headers,
+			endpoint,
+			{
+				ctor: '::',
+				_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
+				_1: {ctor: '[]'}
+			},
+			_elm_lang$http$Http$jsonBody(encoded_login_params),
+			_user$project$Login$loginRespDecoder);
+		return A2(_elm_lang$http$Http$send, _user$project$Login$Submitted, req);
+	});
+var _user$project$Login$update = F3(
+	function (endpoint, msg, model) {
+		var _p2 = msg;
+		switch (_p2.ctor) {
+			case 'UpdatePassword':
+				var login_params = model.login_params;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							login_params: _elm_lang$core$Native_Utils.update(
+								login_params,
+								{password: _p2._0})
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'UpdateEmail':
+				var _p3 = _p2._0;
+				var login_params = model.login_params;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							login_params: _elm_lang$core$Native_Utils.update(
+								login_params,
+								{username: _p3}),
+							errors: (_user$project$Util$is_valid_email(_p3) || _elm_lang$core$Native_Utils.eq(_p3, '')) ? A2(_elm_lang$core$Dict$remove, 'email', model.errors) : A3(_elm_lang$core$Dict$insert, 'email', 'This e-mail is invalid', model.errors)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'Submit':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							errors: _elm_lang$core$Dict$fromList(
+								{ctor: '[]'})
+						}),
+					_1: A3(_user$project$Login$post_login, endpoint, model.flags.csrftoken, model.login_params)
+				};
+			default:
+				if (_p2._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: model,
+						_1: _elm_lang$navigation$Navigation$load(_p2._0._0.redirect)
+					};
+				} else {
+					var _p4 = _p2._0._0;
+					switch (_p4.ctor) {
+						case 'BadStatus':
+							var _p5 = A2(
+								_elm_lang$core$Json_Decode$decodeString,
+								_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
+								_p4._0.body);
+							if (_p5.ctor === 'Ok') {
+								return {
+									ctor: '_Tuple2',
+									_0: _elm_lang$core$Native_Utils.update(
+										model,
+										{errors: _p5._0}),
+									_1: _elm_lang$core$Platform_Cmd$none
+								};
+							} else {
+								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+							}
+						case 'BadPayload':
+							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+						default:
+							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					}
+				}
+		}
+	});
+var _user$project$Login$Submit = {ctor: 'Submit'};
+var _user$project$Login$view_submit = function (model) {
+	return {
+		ctor: '::',
+		_0: _user$project$Login$login_label(
+			A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'login_submit'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$span,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$classList(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'cursor', _1: true},
+									_1: {ctor: '[]'}
+								}),
 							_1: {
 								ctor: '::',
-								_0: confirm_err_msg,
+								_0: _elm_lang$html$Html_Events$onClick(_user$project$Login$Submit),
 								_1: {ctor: '[]'}
 							}
-						}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Login'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				})),
+		_1: {ctor: '[]'}
+	};
+};
+var _user$project$Login$view_content = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$classList(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'login', _1: true},
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$classList(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'login_box', _1: true},
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				},
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_user$project$Login$view_email_input(model),
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						_user$project$Login$view_password_input(model),
+						_user$project$Login$view_submit(model)))),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Login$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _user$project$Views$view_header,
+			_1: {
+				ctor: '::',
+				_0: _user$project$Views$view_filter,
+				_1: {
+					ctor: '::',
+					_0: _user$project$Login$view_content(model),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Views$view_footer,
+						_1: {ctor: '[]'}
 					}
 				}
 			}
-		};
-	});
-var _user$project$SignUp$view_submit = F2(
-	function (submit_msg, model) {
-		return {
-			ctor: '::',
-			_0: _user$project$SignUp$signup_label(
-				A2(
-					_elm_lang$html$Html$span,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$classList(
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'cursor', _1: true},
-								_1: {ctor: '[]'}
-							}),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onClick(submit_msg),
-							_1: {ctor: '[]'}
-						}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('Sign Up'),
-						_1: {ctor: '[]'}
-					})),
-			_1: {ctor: '[]'}
-		};
-	});
-var _user$project$SignUp$view_content = F4(
-	function (email_msg, password_msgs, submit_msg, model) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$classList(
-					{
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'signup', _1: true},
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$classList(
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'signup_box', _1: true},
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					},
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						A2(_user$project$SignUp$view_email_input, email_msg, model),
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							A2(_user$project$SignUp$view_password_input, password_msgs, model),
-							A2(_user$project$SignUp$view_submit, submit_msg, model)))),
-				_1: {ctor: '[]'}
-			});
-	});
-var _user$project$SignUp$view = F4(
-	function (email_msg, password_msgs, submit_msg, model) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
-			{
-				ctor: '::',
-				_0: _user$project$Views$view_header,
-				_1: {
-					ctor: '::',
-					_0: _user$project$Views$view_filter,
-					_1: {
-						ctor: '::',
-						_0: A4(_user$project$SignUp$view_content, email_msg, password_msgs, submit_msg, model),
-						_1: {
-							ctor: '::',
-							_0: _user$project$Views$view_footer,
-							_1: {ctor: '[]'}
-						}
-					}
-				}
-			});
-	});
+		});
+};
+
+var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
+	{
+		init: _user$project$Login$init,
+		view: _user$project$Login$view,
+		subscriptions: _user$project$Login$subscriptions,
+		update: _user$project$Login$update(_user$project$Config$student_login_api_endpoint)
+	})(
+	A2(
+		_elm_lang$core$Json_Decode$andThen,
+		function (csrftoken) {
+			return _elm_lang$core$Json_Decode$succeed(
+				{csrftoken: csrftoken});
+		},
+		A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string)));
 
 var Elm = {};
-Elm['SignUp'] = Elm['SignUp'] || {};
-if (typeof _user$project$SignUp$main !== 'undefined') {
-    _user$project$SignUp$main(Elm['SignUp'], 'SignUp', undefined);
+Elm['Main'] = Elm['Main'] || {};
+if (typeof _user$project$Main$main !== 'undefined') {
+    _user$project$Main$main(Elm['Main'], 'Main', undefined);
 }
 
 if (typeof define === "function" && define['amd'])

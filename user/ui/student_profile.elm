@@ -52,7 +52,7 @@ main =
 view_content : Model -> Html Msg
 view_content model = Html.div [ classList [] ] [
     Html.div [classList [] ] <|
-        [Html.text "instructor profile"]
+        [Html.text "student profile"]
   ]
 
 -- VIEW

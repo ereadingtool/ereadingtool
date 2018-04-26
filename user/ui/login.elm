@@ -1,3 +1,5 @@
+module Login exposing (init, view, subscriptions, update, Model, Msg)
+
 import Html exposing (Html, div)
 import Html.Attributes exposing (classList, attribute)
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
@@ -15,7 +17,7 @@ import Json.Encode as Encode
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 
 import Views exposing (view_filter, view_header, view_footer)
-import Config exposing (instructor_login_api_endpoint)
+import Config exposing (student_login_api_endpoint)
 import Flags exposing (CSRFToken, Flags)
 
 
@@ -63,20 +65,20 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
-post_login : CSRFToken -> LoginParams -> Cmd Msg
-post_login csrftoken login_params =
+post_login : String -> CSRFToken -> LoginParams -> Cmd Msg
+post_login endpoint csrftoken login_params =
   let encoded_login_params = loginEncoder login_params
       req =
     post_with_headers
-       instructor_login_api_endpoint
+       endpoint
        [Http.header "X-CSRFToken" csrftoken]
        (Http.jsonBody encoded_login_params)
        loginRespDecoder
   in
     Http.send Submitted req
 
-update : Msg -> Model -> (Model, Cmd Msg)
-update msg model = case msg of
+update : String -> Msg -> Model -> (Model, Cmd Msg)
+update endpoint msg model = case msg of
   UpdatePassword password -> let login_params = model.login_params in
         ({ model | login_params = { login_params | password = password } }, Cmd.none)
   UpdateEmail addr -> let login_params = model.login_params in
@@ -87,7 +89,7 @@ update msg model = case msg of
                  Dict.insert "email" "This e-mail is invalid" model.errors) }
              , Cmd.none)
 
-  Submit -> ({ model | errors = Dict.fromList [] }, post_login model.flags.csrftoken model.login_params)
+  Submit -> ({ model | errors = Dict.fromList [] }, post_login endpoint model.flags.csrftoken model.login_params)
 
   Submitted (Ok resp) -> (model, Navigation.load resp.redirect)
 
@@ -98,14 +100,6 @@ update msg model = case msg of
       Http.BadPayload err resp -> (model, Cmd.none)
       _ -> (model, Cmd.none)
 
-main : Program Flags Model Msg
-main =
-  Html.programWithFlags
-    { init = init
-    , view = view
-    , subscriptions = subscriptions
-    , update = update
-    }
 
 login_label : Html Msg -> Html Msg
 login_label html = Html.div [attribute "class" "login_label"] [ html ]

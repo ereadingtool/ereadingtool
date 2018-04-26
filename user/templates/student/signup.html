@@ -4,17 +4,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>E-Reader Login</title>
+    <title>E-Reader Student Sign Up</title>
     <link rel="stylesheet" href="{% static "css/ereader.css" %}"/>
     <link rel="stylesheet" href="{% static "css/user.css" %}"/>
-    <script src="{% static "user/js/login.js" %}"></script>
+    <script src="{% static "user/js/student_signup.js" %}"></script>
 </head>
 <body>
 {% csrf_token %}
+<input id="difficulty_choices" type="hidden" value="{{ difficulties }}">
 <div class="content">
 </div>
 
-<script src="{% static "user/js/load_elm.js" %}"></script>
+<script src="{% static "user/js/student/load_elm.js" %}"></script>
 
 </body>
 </html>
