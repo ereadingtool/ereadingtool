@@ -136,6 +136,13 @@ view_password_input model = let
   , password_err_msg
   ]
 
+view_errors : Model -> List (Html Msg)
+view_errors model = case Dict.get "all" model.errors of
+  Just all_err ->
+    [ login_label (Html.span [attribute "class" "errors"] [ Html.em [] [Html.text <| all_err ]]) ]
+  _ ->
+    [ Html.span [attribute "class" "errors"] [] ]
+
 view_submit : Model -> List (Html Msg)
 view_submit model = [
     login_label (div [attribute "class" "login_submit"] [
@@ -146,7 +153,10 @@ view_submit model = [
 view_content : Model -> Html Msg
 view_content model = Html.div [ classList [("login", True)] ] [
     Html.div [classList [("login_box", True)] ] <|
-        (view_email_input model) ++ (view_password_input model) ++ (view_submit model)
+        (view_email_input model) ++
+        (view_password_input model) ++
+        (view_errors model) ++
+        (view_submit model)
   ]
 
 -- VIEW

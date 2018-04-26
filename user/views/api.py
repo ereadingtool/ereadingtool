@@ -17,4 +17,10 @@ class APIView(View):
         return super(APIView, self).dispatch(request, *args, **kwargs)
 
     def format_form_errors(self, form: TypeVar('forms.Form')) -> dict:
-        return {k: str(' '.join(form.errors[k])) for k in form.errors.keys()}
+        errors = {k: str(' '.join(form.errors[k])) for k in form.errors.keys()}
+
+        # convert special Django form field error __all__ to something more frontend-friendly
+        if '__all__' in errors:
+            errors['all'] = errors.pop('__all__')
+
+        return errors

@@ -10044,6 +10044,48 @@ var _user$project$Login$login_label = function (html) {
 			_1: {ctor: '[]'}
 		});
 };
+var _user$project$Login$view_errors = function (model) {
+	var _p0 = A2(_elm_lang$core$Dict$get, 'all', model.errors);
+	if (_p0.ctor === 'Just') {
+		return {
+			ctor: '::',
+			_0: _user$project$Login$login_label(
+				A2(
+					_elm_lang$html$Html$span,
+					{
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'errors'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$em,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(_p0._0),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					})),
+			_1: {ctor: '[]'}
+		};
+	} else {
+		return {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$span,
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'errors'),
+					_1: {ctor: '[]'}
+				},
+				{ctor: '[]'}),
+			_1: {ctor: '[]'}
+		};
+	}
+};
 var _user$project$Login$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
@@ -10122,15 +10164,15 @@ var _user$project$Login$view_password_input = function (model) {
 			_1: {ctor: '[]'}
 		} : {ctor: '[]'});
 	var password_err_msg = function () {
-		var _p0 = A2(_elm_lang$core$Dict$get, 'password', model.errors);
-		if (_p0.ctor === 'Just') {
+		var _p1 = A2(_elm_lang$core$Dict$get, 'password', model.errors);
+		if (_p1.ctor === 'Just') {
 			return _user$project$Login$login_label(
 				A2(
 					_elm_lang$html$Html$em,
 					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(_p0._0),
+						_0: _elm_lang$html$Html$text(_p1._0),
 						_1: {ctor: '[]'}
 					}));
 		} else {
@@ -10174,15 +10216,15 @@ var _user$project$Login$UpdateEmail = function (a) {
 };
 var _user$project$Login$view_email_input = function (model) {
 	var err_msg = function () {
-		var _p1 = A2(_elm_lang$core$Dict$get, 'email', model.errors);
-		if (_p1.ctor === 'Just') {
+		var _p2 = A2(_elm_lang$core$Dict$get, 'email', model.errors);
+		if (_p2.ctor === 'Just') {
 			return _user$project$Login$login_label(
 				A2(
 					_elm_lang$html$Html$em,
 					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(_p1._0),
+						_0: _elm_lang$html$Html$text(_p2._0),
 						_1: {ctor: '[]'}
 					}));
 		} else {
@@ -10243,8 +10285,8 @@ var _user$project$Login$post_login = F3(
 	});
 var _user$project$Login$update = F3(
 	function (endpoint, msg, model) {
-		var _p2 = msg;
-		switch (_p2.ctor) {
+		var _p3 = msg;
+		switch (_p3.ctor) {
 			case 'UpdatePassword':
 				var login_params = model.login_params;
 				return {
@@ -10254,12 +10296,12 @@ var _user$project$Login$update = F3(
 						{
 							login_params: _elm_lang$core$Native_Utils.update(
 								login_params,
-								{password: _p2._0})
+								{password: _p3._0})
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'UpdateEmail':
-				var _p3 = _p2._0;
+				var _p4 = _p3._0;
 				var login_params = model.login_params;
 				return {
 					ctor: '_Tuple2',
@@ -10268,8 +10310,8 @@ var _user$project$Login$update = F3(
 						{
 							login_params: _elm_lang$core$Native_Utils.update(
 								login_params,
-								{username: _p3}),
-							errors: (_user$project$Util$is_valid_email(_p3) || _elm_lang$core$Native_Utils.eq(_p3, '')) ? A2(_elm_lang$core$Dict$remove, 'email', model.errors) : A3(_elm_lang$core$Dict$insert, 'email', 'This e-mail is invalid', model.errors)
+								{username: _p4}),
+							errors: (_user$project$Util$is_valid_email(_p4) || _elm_lang$core$Native_Utils.eq(_p4, '')) ? A2(_elm_lang$core$Dict$remove, 'email', model.errors) : A3(_elm_lang$core$Dict$insert, 'email', 'This e-mail is invalid', model.errors)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -10285,26 +10327,26 @@ var _user$project$Login$update = F3(
 					_1: A3(_user$project$Login$post_login, endpoint, model.flags.csrftoken, model.login_params)
 				};
 			default:
-				if (_p2._0.ctor === 'Ok') {
+				if (_p3._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: model,
-						_1: _elm_lang$navigation$Navigation$load(_p2._0._0.redirect)
+						_1: _elm_lang$navigation$Navigation$load(_p3._0._0.redirect)
 					};
 				} else {
-					var _p4 = _p2._0._0;
-					switch (_p4.ctor) {
+					var _p5 = _p3._0._0;
+					switch (_p5.ctor) {
 						case 'BadStatus':
-							var _p5 = A2(
+							var _p6 = A2(
 								_elm_lang$core$Json_Decode$decodeString,
 								_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
-								_p4._0.body);
-							if (_p5.ctor === 'Ok') {
+								_p5._0.body);
+							if (_p6.ctor === 'Ok') {
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
 										model,
-										{errors: _p5._0}),
+										{errors: _p6._0}),
 									_1: _elm_lang$core$Platform_Cmd$none
 								};
 							} else {
@@ -10391,7 +10433,10 @@ var _user$project$Login$view_content = function (model) {
 					A2(
 						_elm_lang$core$Basics_ops['++'],
 						_user$project$Login$view_password_input(model),
-						_user$project$Login$view_submit(model)))),
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							_user$project$Login$view_errors(model),
+							_user$project$Login$view_submit(model))))),
 			_1: {ctor: '[]'}
 		});
 };
