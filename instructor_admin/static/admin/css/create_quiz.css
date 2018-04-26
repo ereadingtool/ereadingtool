@@ -47,32 +47,6 @@ body {
     grid-template-columns: 200px;
 }
 
-.menu {
-    grid-area: 1 / 6;
-    display: grid;
-    grid-template-rows: 35px;
-    grid-template-columns: 100px;
-
-    align-items: center;
-    justify-items: center;
-}
-
-.menu_item {
-    font: "Lucida Console";
-    grid-area: 1;
-    grid-column: auto;
-
-    display: block;
-
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.menu_item input {
-    width: 100px;
-}
-
 .filter {
     grid-column: 2 / 2;
 }

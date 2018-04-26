@@ -141,7 +141,7 @@ view_question question_field = let
         Html.text question.body
       , (view_answers question_field)
     ]
-
+
 view_questions : Array QuestionField -> Html Msg
 view_questions questions = div [ classList[("questions", True)] ] (Array.toList <| Array.map view_question questions)
 

@@ -28,6 +28,8 @@ body {
     grid-template-rows: 35px;
     grid-template-columns: 100px;
 
+    grid-column-gap: 10%;
+
     align-items: center;
     justify-items: center;
 }
@@ -163,4 +165,3 @@ body {
     background: #FFFFFF;
     border: solid 0.5px lightgrey;
 }
-

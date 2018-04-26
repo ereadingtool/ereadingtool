@@ -9,9 +9,9 @@ view_header =
     div [ classList [("header", True)] ] [
         text "E-Reader"
       , div [ classList [("menu", True)] ] [
-          span [ classList [("menu_item", True)] ] [
-             Html.a [attribute "href" "/admin"] [ Html.text "Quizzes" ]
-          ]
+          span [ classList [("menu_item", True)] ] [ Html.a [attribute "href" "/admin"] [ Html.text "Quizzes" ] ]
+        , span [ classList [("menu_item", True)] ] [ Html.a [attribute "href" "/login/student/"] [ Html.text "Student Login" ] ]
+        , span [ classList [("menu_item", True)] ] [ Html.a [attribute "href" "/login/instructor/"] [ Html.text "Instructor Login" ] ]
         ]
     ]
 

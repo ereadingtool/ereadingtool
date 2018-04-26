@@ -7,9 +7,13 @@ from django.views.generic import View
 from question.forms import QuestionForm, AnswerForm
 from text.forms import TextForm, ModelForm
 from text.models import Text, TextDifficulty
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
 
 
-class TextAPIView(View):
+class TextAPIView(LoginRequiredMixin, View):
+    login_url = reverse_lazy('student-login')
+
     model = Text
 
     def get(self, request, *args, **kwargs):

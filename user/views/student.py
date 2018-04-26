@@ -4,10 +4,13 @@ from django.contrib.auth import login
 from django.http import HttpResponse
 from django.urls import reverse
 from django.views.generic import TemplateView
+from django.urls import reverse_lazy
+
 
 from text.models import TextDifficulty
 from user.forms import StudentSignUpForm, StudentLoginForm
 from user.views.api import APIView
+from user.views.base import ProfileView
 
 
 class StudentSignupAPIView(APIView):
@@ -73,5 +76,7 @@ class StudentLoginView(TemplateView):
     template_name = 'student/login.html'
 
 
-class StudentProfileView(TemplateView):
+class StudentProfileView(ProfileView):
     template_name = 'student/profile.html'
+
+    login_url = reverse_lazy('student-login')

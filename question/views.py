@@ -6,10 +6,13 @@ from django.views.generic import View
 
 from text.models import Text
 from question.models import Question
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
 
 
-class QuestionAPIView(View):
+class QuestionAPIView(LoginRequiredMixin, View):
     model = Question
+    login_url = reverse_lazy('student-login')
 
     def get(self, request, *args, **kwargs):
         if 'pk' in kwargs:

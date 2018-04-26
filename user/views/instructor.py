@@ -1,9 +1,11 @@
 import json
 
 from django.contrib.auth import login
+from user.views.base import ProfileView
 from django.http import HttpResponse
 from django.urls import reverse
 from django.views.generic import TemplateView
+from django.urls import reverse_lazy
 
 from user.forms import InstructorSignUpForm, InstructorLoginForm
 from user.views.api import APIView
@@ -64,5 +66,8 @@ class InstructorSignUpView(TemplateView):
     template_name = 'instructor/signup.html'
 
 
-class InstructorProfileView(TemplateView):
+class InstructorProfileView(ProfileView):
+    login_url = reverse_lazy('instructor-login')
+
     template_name = 'instructor/profile.html'
+
