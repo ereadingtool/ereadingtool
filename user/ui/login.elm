@@ -113,7 +113,7 @@ view_email_input model =
     let email_error = if (Dict.member "email" model.errors) then
       [attribute "class" "input_error"]
     else [] in [
-      login_label (Html.text "Username (e-mail address):")
+      login_label (Html.span [] [ Html.text "Username (e-mail address):" ])
     , Html.input ([
         attribute "size" "25"
       , onInput UpdateEmail ] ++ (email_error)) []
@@ -130,7 +130,7 @@ view_password_input model = let
   attrs = [attribute "size" "35", attribute "type" "password"] ++
     (if pass_err then [attribute "class" "input_error"] else []) in [
     login_label (Html.span [] [
-      Html.text "Password "
+      Html.text "Password:"
     ])
   , Html.input (attrs ++ [onInput UpdatePassword]) []
   , password_err_msg

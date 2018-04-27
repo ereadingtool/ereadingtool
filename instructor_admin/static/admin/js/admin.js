@@ -9977,6 +9977,14 @@ var _user$project$Main$month_day_year_fmt = function (date) {
 			}));
 };
 var _user$project$Main$view_text = function (text) {
+	var text_id = function () {
+		var _p0 = text.id;
+		if (_p0.ctor === 'Just') {
+			return _elm_lang$core$Basics$toString(_p0._0);
+		} else {
+			return '';
+		}
+	}();
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -10003,10 +10011,7 @@ var _user$project$Main$view_text = function (text) {
 						}),
 					_1: {
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html_Attributes$attribute,
-							'data-id',
-							_elm_lang$core$Basics$toString(text.id)),
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-id', text_id),
 						_1: {ctor: '[]'}
 					}
 				},
@@ -10031,7 +10036,21 @@ var _user$project$Main$view_text = function (text) {
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(text.title),
+						_0: A2(
+							_elm_lang$html$Html$a,
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html_Attributes$attribute,
+									'href',
+									A2(_elm_lang$core$Basics_ops['++'], '/quiz/', text_id)),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(text.title),
+								_1: {ctor: '[]'}
+							}),
 						_1: {
 							ctor: '::',
 							_0: A2(
@@ -10053,9 +10072,9 @@ var _user$project$Main$view_text = function (text) {
 											_elm_lang$core$Basics_ops['++'],
 											'Modified:   ',
 											function () {
-												var _p0 = text.modified_dt;
-												if (_p0.ctor === 'Just') {
-													return _user$project$Main$month_day_year_fmt(_p0._0);
+												var _p1 = text.modified_dt;
+												if (_p1.ctor === 'Just') {
+													return _user$project$Main$month_day_year_fmt(_p1._0);
 												} else {
 													return '';
 												}
@@ -10249,13 +10268,13 @@ var _user$project$Main$view = function (model) {
 };
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p1 = msg;
-		if (_p1._0.ctor === 'Ok') {
+		var _p2 = msg;
+		if (_p2._0.ctor === 'Ok') {
 			return {
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
 					model,
-					{texts: _p1._0._0}),
+					{texts: _p2._0._0}),
 				_1: _elm_lang$core$Platform_Cmd$none
 			};
 		} else {

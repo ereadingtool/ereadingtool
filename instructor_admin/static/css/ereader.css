@@ -8,8 +8,9 @@ body {
 .header {
     grid-gap: 0;
     display: grid;
-    grid-row-gap: 100px;
     grid-template-rows: 67px;
+
+    grid-template-columns: 20% 15% 15% 50%;
 
     background: #FFFFFF;
 
@@ -23,10 +24,10 @@ body {
 }
 
 .menu {
-    grid-area: 1 / 6;
     display: grid;
-    grid-template-rows: 35px;
-    grid-template-columns: 100px;
+
+    grid-area: 1 / 4;
+    grid-template-columns: 40% 40% 50%;
 
     grid-column-gap: 10%;
 
@@ -36,8 +37,6 @@ body {
 
 .menu_item {
     font: "Lucida Console";
-    grid-area: 1;
-    grid-column: auto;
 }
 
 .filter {
@@ -55,7 +54,8 @@ body {
 
     grid-auto-rows: 50px;
 
-    grid-row-gap: 5%;
+    grid-row-gap: 35px;
+    row-gap: 35px;
 
 }
 
@@ -88,9 +88,10 @@ body {
 
 
 .text_items {
-    margin-top: 2%;
     display: grid;
-    grid-row-gap: 5%;
+    margin-top: 2%;
+    grid-row-gap: 35px;
+    row-gap: 35px;
 
     grid-template-columns: 4% auto 4%;
     grid-auto-rows: 110px;
@@ -100,7 +101,8 @@ body {
     .text_items {
         margin-top: 2%;
         display: grid;
-        grid-row-gap: 5%;
+        grid-row-gap: 35px;
+        row-gap: 35px;
 
         grid-template-columns: 4% auto 4%;
         grid-auto-rows: 110px;

@@ -10249,7 +10249,7 @@ var _user$project$Login$view_password_input = function (model) {
 				{ctor: '[]'},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text('Password '),
+					_0: _elm_lang$html$Html$text('Password:'),
 					_1: {ctor: '[]'}
 				})),
 		_1: {
@@ -10301,7 +10301,14 @@ var _user$project$Login$view_email_input = function (model) {
 	return {
 		ctor: '::',
 		_0: _user$project$Login$login_label(
-			_elm_lang$html$Html$text('Username (e-mail address):')),
+			A2(
+				_elm_lang$html$Html$span,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Username (e-mail address):'),
+					_1: {ctor: '[]'}
+				})),
 		_1: {
 			ctor: '::',
 			_0: A2(

@@ -131,7 +131,7 @@ view_answer question_field answer_field = div [ classList [("answer", True)] ] [
 
 view_answers : QuestionField -> Html Msg
 view_answers question_field =
-  div [] (Array.toList <| Array.map (view_answer question_field) question_field.answer_fields)
+  div [attribute "class" "answers"] (Array.toList <| Array.map (view_answer question_field) question_field.answer_fields)
 
 view_question : QuestionField -> Html Msg
 view_question question_field = let

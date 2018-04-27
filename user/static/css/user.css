@@ -19,6 +19,7 @@
 .login_label, .signup_label {
     display: inline-block;
     padding-top: 15%;
+    -webkit-padding-before: 2.5%;
 }
 
 .login_submit {

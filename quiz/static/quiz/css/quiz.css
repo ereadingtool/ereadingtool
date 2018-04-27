@@ -26,18 +26,27 @@
 
 .questions {
     display: grid;
-    padding-top: 15%;
+    padding-top: 85px;
 
     grid-column: 2;
     grid-template-columns: 10% auto 10%;
     grid-row-gap: 10%;
+    row-gap: 10%;
 
     border-top: rgb(238, 238, 238) solid 1px;
 }
 
 
 .question {
+    margin: 5px 5px 5px 5px;
     grid-column: 2;
+}
+
+.answers {
+    margin-top: 20px;
+}
+.answer {
+    margin: 10px 10px 10px 10px;
 }
 
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {

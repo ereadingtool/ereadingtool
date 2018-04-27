@@ -61,10 +61,14 @@ month_day_year_fmt date = List.foldr (++) "" <| List.map (\s -> s ++ "  ")
 
 
 view_text : Text -> Html Msg
-view_text text = div [ classList[("text_item", True)] ] [
-     div [classList [("item_property", True)], attribute "data-id" (toString text.id)] [ Html.text "" ]
+view_text text = let
+   text_id = (case text.id of
+     Just id -> toString id
+     _ -> "") in
+   div [ classList[("text_item", True)] ] [
+     div [classList [("item_property", True)], attribute "data-id" (text_id)] [ Html.text "" ]
    , div [classList [("item_property", True)]] [
-       Html.text text.title
+       Html.a [attribute "href" ("/quiz/" ++ text_id)] [ Html.text text.title ]
      , span [classList [("sub_description", True)]] [
          Html.text <| "Modified:   " ++ (case text.modified_dt of
            Just date -> month_day_year_fmt date

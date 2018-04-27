@@ -21395,7 +21395,11 @@ var _user$project$Main$view_answer = F2(
 var _user$project$Main$view_answers = function (question_field) {
 	return A2(
 		_elm_lang$html$Html$div,
-		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'answers'),
+			_1: {ctor: '[]'}
+		},
 		_elm_lang$core$Array$toList(
 			A2(
 				_elm_lang$core$Array$map,
