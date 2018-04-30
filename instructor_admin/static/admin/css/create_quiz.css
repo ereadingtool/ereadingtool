@@ -231,6 +231,7 @@ body {
 
 .question_item {
     grid-column: 2;
+    word-wrap: break-word;
 }
 
 .question_menu {

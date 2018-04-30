@@ -92,7 +92,7 @@ new_question i = {
   , text_id = Nothing
   , created_dt = Nothing
   , modified_dt = Nothing
-  , body = "Click to write the question text."
+  , body = ""
   , order = i
   , answers = generate_answers 4
   , question_type = "main_idea" }
@@ -117,9 +117,9 @@ init flags = ({
   }, retrieveTextDifficultyOptions)
 
 retrieveTextDifficultyOptions : Cmd Msg
-retrieveTextDifficultyOptions =
-  let request = Http.get (String.join "?" [text_api_endpoint, "difficulties=list"]) textDifficultyDecoder in
-    Http.send UpdateTextDifficultyOptions request
+retrieveTextDifficultyOptions = let
+    request = Http.get (String.join "?" [text_api_endpoint, "difficulties=list"]) textDifficultyDecoder
+  in Http.send UpdateTextDifficultyOptions request
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -215,6 +215,12 @@ update_error (field_id, field_error) model =
         _ -> Debug.log (String.join " " ["couldnt find question field", (toString i), "from server"]) model
       _ -> Debug.log (String.join " " ["couldnt parse str ", i, "from server"]) model
     ["question", i] -> Debug.log "question" model
+    ["question", i, "body"] -> case (String.toInt i) of
+      Ok i -> case Array.get i model.question_fields of
+        Just question_field -> { model |
+          question_fields = update_question_field { question_field | error = True } model.question_fields }
+        _ -> model
+      _ -> model
     ["text", id] -> Debug.log "text" model
     _ -> Debug.log "couldnt parse errors from server" model
 
@@ -377,25 +383,27 @@ view_preview model =
 
 edit_question : QuestionField -> Html Msg
 edit_question question_field =
-  Html.div [classList [("answer_item", True)] ] [
-    Html.input [
-      attribute "type" "text"
-    , attribute "value" question_field.question.body
+  Html.div [classList [("question_item", True)] ] [
+    Html.textarea [
+      attribute "rows" "2"
+    , attribute "cols" "100"
     , attribute "id" question_field.id
     , onInput (UpdateQuestionBody question_field)
     , onBlur (ToggleEditableField <| Question question_field)
-    ] [] ]
+    ] [Html.text question_field.question.body] ]
 
 view_question : QuestionField -> Html Msg
 view_question question_field =
   div [
       attribute "id" question_field.id
-    , classList [("question_item", True), ("over", question_field.hover)]
+    , classList [("question_item", True), ("over", question_field.hover), ("input_error", question_field.error)]
     , onClick (ToggleEditableField <| Question question_field)
     , onMouseOver (Hover <| Question question_field)
     , onMouseLeave (UnHover <| Question question_field)
   ] [
-       Html.text question_field.question.body
+       Html.text (if String.isEmpty question_field.question.body then
+         "Click to write the question text." else
+         question_field.question.body)
   ]
 
 view_answer_feedback : QuestionField -> AnswerField -> List (Html Msg)
