@@ -11439,32 +11439,48 @@ var _user$project$Main$ToggleEditableField = function (a) {
 };
 var _user$project$Main$edit_question = function (question_field) {
 	return A2(
-		_elm_lang$html$Html$input,
+		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
-			_1: {
-				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', question_field.question.body),
-				_1: {
+			_0: _elm_lang$html$Html_Attributes$classList(
+				{
 					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', question_field.id),
+					_0: {ctor: '_Tuple2', _0: 'answer_item', _1: true},
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$input,
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onInput(
-							_user$project$Main$UpdateQuestionBody(question_field)),
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', question_field.question.body),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onBlur(
-								_user$project$Main$ToggleEditableField(
-									_user$project$Main$Question(question_field))),
-							_1: {ctor: '[]'}
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', question_field.id),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onInput(
+									_user$project$Main$UpdateQuestionBody(question_field)),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onBlur(
+										_user$project$Main$ToggleEditableField(
+											_user$project$Main$Question(question_field))),
+									_1: {ctor: '[]'}
+								}
+							}
 						}
 					}
-				}
-			}
-		},
-		{ctor: '[]'});
+				},
+				{ctor: '[]'}),
+			_1: {ctor: '[]'}
+		});
 };
 var _user$project$Main$view_question = function (question_field) {
 	return A2(

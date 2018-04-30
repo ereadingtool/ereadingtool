@@ -377,13 +377,14 @@ view_preview model =
 
 edit_question : QuestionField -> Html Msg
 edit_question question_field =
-  Html.input [
+  Html.div [classList [("answer_item", True)] ] [
+    Html.input [
       attribute "type" "text"
     , attribute "value" question_field.question.body
     , attribute "id" question_field.id
     , onInput (UpdateQuestionBody question_field)
     , onBlur (ToggleEditableField <| Question question_field)
-  ] [ ]
+    ] [] ]
 
 view_question : QuestionField -> Html Msg
 view_question question_field =
