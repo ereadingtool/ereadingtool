@@ -401,7 +401,7 @@ view_question question_field =
 view_answer_feedback : QuestionField -> AnswerField -> List (Html Msg)
 view_answer_feedback question_field answer_field = if not (String.isEmpty answer_field.answer.feedback)
   then
-    [ Html.div [classList [("answer_feedback", True)] ] [ Html.text answer_field.answer.feedback ] ]
+    [ Html.div [classList [("answer_feedback", True), ("grey_bg", True)] ] [ Html.text answer_field.answer.feedback ] ]
   else
     []
 
@@ -416,6 +416,8 @@ edit_answer_feedback : QuestionField -> AnswerField -> Html Msg
 edit_answer_feedback question_field answer_field = Html.div [] [
       Html.textarea [
           attribute "id" answer_field.feedback_field.id
+        , attribute "rows" "5"
+        , attribute "cols" "75"
         , onBlur (ToggleEditableField <| Answer answer_field)
         , onInput (UpdateAnswerFeedback question_field answer_field)
         , attribute "placeholder" "Give some feedback."

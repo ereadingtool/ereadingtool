@@ -275,7 +275,11 @@ body {
 
 .answer_feedback {
     margin-top: 3px;
-    font-style: italic;
+    word-wrap: break-word;
+}
+
+.grey_bg {
+    background: #F7F7F7;
 }
 
 .add_question {

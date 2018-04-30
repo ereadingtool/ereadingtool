@@ -10083,7 +10083,11 @@ var _user$project$Main$view_answer_feedback = F2(
 						{
 							ctor: '::',
 							_0: {ctor: '_Tuple2', _0: 'answer_feedback', _1: true},
-							_1: {ctor: '[]'}
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'grey_bg', _1: true},
+								_1: {ctor: '[]'}
+							}
 						}),
 					_1: {ctor: '[]'}
 				},
@@ -11573,29 +11577,37 @@ var _user$project$Main$edit_answer_feedback = F2(
 						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', answer_field.feedback_field.id),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onBlur(
-								_user$project$Main$ToggleEditableField(
-									_user$project$Main$Answer(answer_field))),
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'rows', '5'),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onInput(
-									A2(_user$project$Main$UpdateAnswerFeedback, question_field, answer_field)),
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'cols', '75'),
 								_1: {
 									ctor: '::',
-									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Give some feedback.'),
+									_0: _elm_lang$html$Html_Events$onBlur(
+										_user$project$Main$ToggleEditableField(
+											_user$project$Main$Answer(answer_field))),
 									_1: {
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$classList(
-											{
+										_0: _elm_lang$html$Html_Events$onInput(
+											A2(_user$project$Main$UpdateAnswerFeedback, question_field, answer_field)),
+										_1: {
+											ctor: '::',
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Give some feedback.'),
+											_1: {
 												ctor: '::',
-												_0: {ctor: '_Tuple2', _0: 'answer_feedback', _1: true},
-												_1: {
-													ctor: '::',
-													_0: {ctor: '_Tuple2', _0: 'input_error', _1: answer_field.feedback_field.error},
-													_1: {ctor: '[]'}
-												}
-											}),
-										_1: {ctor: '[]'}
+												_0: _elm_lang$html$Html_Attributes$classList(
+													{
+														ctor: '::',
+														_0: {ctor: '_Tuple2', _0: 'answer_feedback', _1: true},
+														_1: {
+															ctor: '::',
+															_0: {ctor: '_Tuple2', _0: 'input_error', _1: answer_field.feedback_field.error},
+															_1: {ctor: '[]'}
+														}
+													}),
+												_1: {ctor: '[]'}
+											}
+										}
 									}
 								}
 							}
