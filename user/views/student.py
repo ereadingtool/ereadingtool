@@ -1,11 +1,12 @@
 import json
+from typing import TypeVar
 
+from django import forms
 from django.contrib.auth import login
 from django.http import HttpResponse
 from django.urls import reverse
-from django.views.generic import TemplateView
 from django.urls import reverse_lazy
-
+from django.views.generic import TemplateView
 
 from text.models import TextDifficulty
 from user.forms import StudentSignUpForm, StudentLoginForm
@@ -14,50 +15,24 @@ from user.views.base import ProfileView
 
 
 class StudentSignupAPIView(APIView):
-    def post(self, request, *args, **kwargs):
-        errors = {}
+    form = StudentSignUpForm
 
-        try:
-            signup_params = json.loads(request.body.decode('utf8'))
-        except json.JSONDecodeError as e:
-            return HttpResponse(errors={'errors': {'json': str(e)}}, status=400)
+    def post_success(self, student_signup_form: TypeVar('forms.Form')) -> HttpResponse:
+        student = student_signup_form.save()
 
-        student_signup_form = StudentSignUpForm(signup_params)
-
-        if not student_signup_form.is_valid():
-            errors = self.format_form_errors(student_signup_form)
-
-        if errors:
-            return HttpResponse(json.dumps(errors), status=400)
-        else:
-            student = student_signup_form.save()
-
-            return HttpResponse(json.dumps({'id': student.pk, 'redirect': reverse('student-login')}))
+        return HttpResponse(json.dumps({'id': student.pk, 'redirect': reverse('student-login')}))
 
 
 class StudentLoginAPIView(APIView):
-    def post(self, request, *args, **kwargs):
-        errors = {}
+    form = StudentLoginForm
 
-        try:
-            login_params = json.loads(request.body.decode('utf8'))
-        except json.JSONDecodeError as e:
-            return HttpResponse(errors={"errors": {'json': str(e)}}, status=400)
+    def post_success(self, student_login_form: TypeVar('forms.Form')) -> HttpResponse:
+        reader_user = student_login_form.get_user()
+        login(self.request, reader_user)
 
-        student_login_form = StudentLoginForm(request, login_params)
+        student = reader_user.student
 
-        if not student_login_form.is_valid():
-            errors = self.format_form_errors(student_login_form)
-
-        if errors:
-            return HttpResponse(json.dumps(errors), status=400)
-        else:
-            reader_user = student_login_form.get_user()
-            login(self.request, reader_user)
-
-            student = reader_user.student
-
-            return HttpResponse(json.dumps({'id': student.pk, 'redirect': reverse('student-profile')}))
+        return HttpResponse(json.dumps({'id': student.pk, 'redirect': reverse('student-profile')}))
 
 
 class StudentSignUpView(TemplateView):

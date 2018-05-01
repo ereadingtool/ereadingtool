@@ -1,61 +1,37 @@
 import json
+from typing import TypeVar
 
+from django import forms
 from django.contrib.auth import login
-from user.views.base import ProfileView
 from django.http import HttpResponse
 from django.urls import reverse
-from django.views.generic import TemplateView
 from django.urls import reverse_lazy
+from django.views.generic import TemplateView
 
 from user.forms import InstructorSignUpForm, InstructorLoginForm
 from user.views.api import APIView
+from user.views.base import ProfileView
 
 
 class InstructorSignupAPIView(APIView):
-    def post(self, request, *args, **kwargs):
-        errors = {}
+    form = InstructorSignUpForm
 
-        try:
-            signup_params = json.loads(request.body.decode('utf8'))
-        except json.JSONDecodeError as e:
-            return HttpResponse(errors={'errors': {'json': str(e)}}, status=400)
+    def post_success(self, instructor_signup_form: TypeVar('forms.Form')) -> HttpResponse:
+        instructor = instructor_signup_form.save()
 
-        instructor_signup_form = InstructorSignUpForm(signup_params)
-
-        if not instructor_signup_form.is_valid():
-            errors = self.format_form_errors(instructor_signup_form)
-
-        if errors:
-            return HttpResponse(json.dumps(errors), status=400)
-        else:
-            instructor = instructor_signup_form.save()
-
-            return HttpResponse(json.dumps({'id': instructor.pk, 'redirect': reverse('instructor-login')}))
+        return HttpResponse(json.dumps({'id': instructor.pk, 'redirect': reverse('instructor-login')}))
 
 
 class InstructorLoginAPIView(APIView):
-    def post(self, request, *args, **kwargs):
-        errors = {}
+    form = InstructorLoginForm
 
-        try:
-            login_params = json.loads(request.body.decode('utf8'))
-        except json.JSONDecodeError as e:
-            return HttpResponse(errors={"errors": {'json': str(e)}}, status=400)
+    def post_success(self, instructor_login_form: TypeVar('forms.Form')) -> HttpResponse:
+        reader_user = instructor_login_form.get_user()
+        login(self.request, reader_user)
 
-        instructor_login_form = InstructorLoginForm(request, login_params)
+        instructor = reader_user.instructor
 
-        if not instructor_login_form.is_valid():
-            errors = self.format_form_errors(instructor_login_form)
-
-        if errors:
-            return HttpResponse(json.dumps(errors), status=400)
-        else:
-            reader_user = instructor_login_form.get_user()
-            login(self.request, reader_user)
-
-            instructor = reader_user.instructor
-
-            return HttpResponse(json.dumps({'id': instructor.pk, 'redirect': reverse('instructor-profile')}))
+        return HttpResponse(json.dumps({'id': instructor.pk, 'redirect': reverse('instructor-profile')}))
 
 
 class InstructorLoginView(TemplateView):
