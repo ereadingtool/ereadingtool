@@ -3,7 +3,7 @@ from typing import TypeVar
 
 from django import forms
 from django.contrib.auth import login
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
@@ -15,7 +15,8 @@ from user.views.base import ProfileView
 
 
 class StudentSignupAPIView(APIView):
-    form = StudentSignUpForm
+    def form(self, request: HttpRequest, params: dict) -> TypeVar('forms.Form'):
+        return StudentSignUpForm(params)
 
     def post_success(self, student_signup_form: TypeVar('forms.Form')) -> HttpResponse:
         student = student_signup_form.save()
@@ -24,10 +25,15 @@ class StudentSignupAPIView(APIView):
 
 
 class StudentLoginAPIView(APIView):
-    form = StudentLoginForm
+    def form(self, request: HttpRequest, params: dict) -> TypeVar('forms.Form'):
+        return StudentLoginForm(request, params)
 
     def post_success(self, student_login_form: TypeVar('forms.Form')) -> HttpResponse:
         reader_user = student_login_form.get_user()
+
+        if hasattr(reader_user, 'instructor'):
+            return self.post_error({'all': 'Something went wrong.  Please try a different username and password.'})
+
         login(self.request, reader_user)
 
         student = reader_user.student

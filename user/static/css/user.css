@@ -43,3 +43,9 @@ select {
    border: 0;
    border-radius: 0;
 }
+
+.errors {
+    display: grid;
+    align-content: center;
+    justify-content: center;
+}

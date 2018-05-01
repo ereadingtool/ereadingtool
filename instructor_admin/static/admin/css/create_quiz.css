@@ -275,8 +275,10 @@ body {
 }
 
 .answer_feedback {
-    margin-top: 3px;
+    margin: 10px 10px 10px 10px;
+    padding: 20px 20px 20px 20px;
     word-wrap: break-word;
+    color: #000000;
 }
 
 .grey_bg {

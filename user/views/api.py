@@ -1,5 +1,5 @@
 import json
-from typing import TypeVar
+from typing import TypeVar, Type
 
 from django import forms
 from django.http import HttpResponse, HttpRequest
