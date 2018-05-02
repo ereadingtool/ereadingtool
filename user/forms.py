@@ -1,10 +1,11 @@
 from django import forms
-
-from user.models import ReaderUser, Instructor, Student
-from django.contrib.auth.forms import AuthenticationForm
-from django.utils.translation import ugettext_lazy as _
-from django.core.validators import validate_email
 from django.contrib.auth import password_validation
+from django.contrib.auth.forms import AuthenticationForm
+from django.core.validators import validate_email
+from django.utils.translation import ugettext_lazy as _
+
+from text.models import TextDifficulty
+from user.models import ReaderUser, Instructor, Student
 
 
 class SignUpForm(forms.ModelForm):
@@ -59,9 +60,23 @@ class InstructorSignUpForm(SignUpForm):
 class StudentSignUpForm(SignUpForm):
     difficulty = forms.CharField(required=True)
 
+    def clean_difficulty(self):
+        if not TextDifficulty.objects.filter(slug=self.cleaned_data['difficulty']).count():
+            raise forms.ValidationError(_("This difficulty does not exist."), code='difficulty_does_not_exist')
+
+        return self.cleaned_data['difficulty']
+
+    def save(self, commit=True):
+        student = super(StudentSignUpForm, self).save(commit=commit)
+
+        student.difficulty_preference = TextDifficulty.objects.get(slug=self.cleaned_data['difficulty'])
+        student.save()
+
+        return student
+
     class Meta:
         model = Student
-        exclude = ('user',)
+        exclude = ('user', 'difficulty_preference',)
 
 
 class InstructorLoginForm(AuthenticationForm):
@@ -70,3 +85,9 @@ class InstructorLoginForm(AuthenticationForm):
 
 class StudentLoginForm(AuthenticationForm):
     pass
+
+
+class StudentForm(forms.ModelForm):
+    class Meta:
+        model = Student
+        exclude = ('user',)

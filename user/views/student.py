@@ -3,15 +3,38 @@ from typing import TypeVar
 
 from django import forms
 from django.contrib.auth import login
-from django.http import HttpResponse, HttpRequest
+from django.http import HttpResponse, HttpRequest, HttpResponseForbidden
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 
 from text.models import TextDifficulty
-from user.forms import StudentSignUpForm, StudentLoginForm
+from user.forms import StudentSignUpForm, StudentLoginForm, StudentForm
+from user.models import Student
 from user.views.api import APIView
 from user.views.base import ProfileView
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+
+class StudentAPIView(LoginRequiredMixin, APIView):
+    raise_exception = True
+
+    def form(self, request: HttpRequest, params: dict) -> TypeVar('forms.Form'):
+        return StudentForm(params)
+
+    def get(self, request, *args, **kwargs) -> HttpResponse:
+        if not Student.objects.filter(pk=kwargs['pk']).count():
+            return HttpResponse(status=400)
+
+        student = Student.objects.get(pk=kwargs['pk'])
+
+        if student.user != self.request.user:
+            return HttpResponseForbidden()
+
+        return HttpResponse(json.dumps(student.to_dict()))
+
+    def post_success(self, form: TypeVar('forms.Form')) -> HttpResponse:
+        raise NotImplementedError
 
 
 class StudentSignupAPIView(APIView):
@@ -59,5 +82,5 @@ class StudentLoginView(TemplateView):
 
 class StudentProfileView(ProfileView):
     template_name = 'student/profile.html'
-
     login_url = reverse_lazy('student-login')
+
