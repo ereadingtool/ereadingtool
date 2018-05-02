@@ -1,20 +1,11 @@
+{% extends "user_base.html" %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Student Profile</title>
+{% block styles %}
     <link rel="stylesheet" href="{% static "css/ereader.css" %}"/>
-    <link rel="stylesheet" href="{% static "css/user.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/user_profile.css" %}"/>
+{% endblock %}
+
+{% block scripts %}
     <script src="{% static "user/js/student_profile.js" %}"></script>
-</head>
-<body>
-{% csrf_token %}
-<div class="content">
-</div>
-
-<script src="{% static "user/js/load_elm.js" %}"></script>
-
-</body>
-</html>
+{% endblock %}

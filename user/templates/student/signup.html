@@ -1,21 +1,11 @@
+{% extends "user_base.html" %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>E-Reader Student Sign Up</title>
-    <link rel="stylesheet" href="{% static "css/ereader.css" %}"/>
-    <link rel="stylesheet" href="{% static "css/user.css" %}"/>
+{% block scripts %}
     <script src="{% static "user/js/student_signup.js" %}"></script>
-</head>
-<body>
-{% csrf_token %}
-<input id="difficulty_choices" type="hidden" value="{{ difficulties }}">
-<div class="content">
-</div>
+{% endblock %}
 
-<script src="{% static "user/js/student/load_elm.js" %}"></script>
-
-</body>
-</html>
+{% block body %}
+    <input id="difficulty_choices" type="hidden" value="{{ difficulties }}">
+    <script src="{% static "user/js/student/load_elm.js" %}"></script>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% block title %}
+        <title>E-Reader</title>
+    {% endblock %}
+    {% block styles %}
+        <link rel="stylesheet" href="{% static "css/ereader.css" %}"/>
+    {% endblock %}
+    {% block scripts %}
+    {% endblock %}
+</head>
+<body>
+{% csrf_token %}
+<div class="content">
+</div>
+
+<input id="profile_id" type="hidden" data-type="{{ profile_type }}" value="{{ profile_id }}">
+
+{% block body %}
+{% endblock %}
+
+</body>
+</html>

@@ -16,11 +16,15 @@ import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardc
 
 import Views exposing (view_filter, view_header, view_footer)
 import Config exposing (..)
-import Flags exposing (CSRFToken, Flags)
-
+import Flags exposing (CSRFToken, ProfileID, ProfileType)
 
 -- UPDATE
 type Msg = Update
+
+type alias Flags = {
+    csrftoken : CSRFToken
+  , profile_id : ProfileID
+  , profile_type: ProfileType }
 
 type alias Model = {
     flags : Flags
@@ -34,7 +38,6 @@ init flags = ({
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
-
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = case msg of
@@ -50,9 +53,9 @@ main =
     }
 
 view_content : Model -> Html Msg
-view_content model = Html.div [ classList [] ] [
-    Html.div [classList [] ] <|
-        [Html.text "student profile"]
+view_content model = Html.div [ classList [("profile", True)] ] [
+    Html.div [classList [("preferred_difficulty", True)] ] <|
+        [Html.text model.flags.profile_type]
   ]
 
 -- VIEW

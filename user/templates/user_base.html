@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    <title>{{ title }}</title>
+{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static "css/ereader.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/user.css" %}"/>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block body %}
+    <script src="{% static "user/js/load_elm.js" %}"></script>
+{% endblock %}
+

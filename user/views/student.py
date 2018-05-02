@@ -67,7 +67,7 @@ class StudentLoginAPIView(APIView):
 class StudentSignUpView(TemplateView):
     template_name = 'student/signup.html'
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict:
         context = super(StudentSignUpView, self).get_context_data(**kwargs)
 
         context['difficulties'] = json.dumps([(text_difficulty.slug, text_difficulty.name)

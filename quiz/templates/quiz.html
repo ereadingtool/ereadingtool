@@ -1,21 +1,21 @@
+{% extends "base.html" %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+{% block title %}
     <title>{{ quiz.title }}</title>
+{% endblock %}
+
+{% block styles %}
     <link rel="stylesheet" href="{% static "css/ereader.css" %}"/>
     <link rel="stylesheet" href="{% static "quiz/css/quiz.css" %}"/>
+{% endblock %}
+
+{% block scripts %}
     <script src="{% static "quiz/js/quiz.js" %}"></script>
-</head>
-<body>
-{% csrf_token %}
-<input type='hidden' name='quiz_id' value='{{ pk }}' />
-<div class="content">
-</div>
+{% endblock %}
 
-<script src="{% static "quiz/js/load_elm.js" %}"></script>
-
-</body>
-</html>
+{% block body %}
+    <input type='hidden' name='quiz_id' value='{{ pk }}' />
+    <script src="{% static "quiz/js/load_elm.js" %}"></script>
+{% endblock %}
+

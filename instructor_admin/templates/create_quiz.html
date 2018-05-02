@@ -1,21 +1,20 @@
+{% extends "base.html" %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+{% block title %}
     <title>Instructor Admin - Create A New Quiz</title>
+{% endblock %}
+
+{% block styles %}
     <link rel="stylesheet" href="{% static "css/ereader.css" %}"/>
     <link rel="stylesheet" href="{% static "admin/css/create_quiz.css" %}"/>
+{% endblock %}
+
+{% block scripts %}
     <script type="text/javascript" src="{% static "admin/js/create_quiz.js" %}"></script>
     <script type="text/javascript" src="{% static "admin/js/ckeditor/ckeditor.js" %}"></script>
-</head>
-<body>
-{% csrf_token %}
-<div class="content">
-</div>
+{% endblock %}
 
-<script src="{% static "admin/js/load_elm.js" %}"></script>
-
-</body>
-</html>
+{% block body %}
+    <script src="{% static "admin/js/load_elm.js" %}"></script>
+{% endblock %}
