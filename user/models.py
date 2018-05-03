@@ -17,7 +17,14 @@ class Student(models.Model):
                                               related_name='students')
 
     def to_dict(self):
+        difficulties = {d.slug: d.name for d in TextDifficulty.objects.all()}
+
+        difficulties[''] = ''
+
         return {
             'id': self.pk,
-            'difficulty_preference': self.difficulty_preference.slug if self.difficulty_preference else None
+            'username': self.user.username,
+            'difficulty_preference': {self.difficulty_preference.slug: self.difficulty_preference.name}
+            if self.difficulty_preference else None,
+            'difficulties': difficulties
         }

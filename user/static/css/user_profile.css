@@ -2,10 +2,11 @@
     display: grid;
 
     margin-top: 50px;
-    grid-template-columns: 4% 15% 10% auto 10% 15% 4%;
+    grid-template-columns: 4% 15% auto 10% 15% 4%;
+    grid-auto-rows: 50px;
 }
 
-.preferred_difficulty {
+.profile_items {
     display: grid;
-    grid-column: 4;
+    grid-column: 3;
 }

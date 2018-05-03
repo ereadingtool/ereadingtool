@@ -17,3 +17,6 @@ student_signup_api_endpoint = "/api/student/signup/"
 
 student_login_api_endpoint : String
 student_login_api_endpoint = "/api/student/login/"
+
+student_api_endpoint : String
+student_api_endpoint = "/api/student/"
