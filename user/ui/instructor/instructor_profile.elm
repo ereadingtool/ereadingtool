@@ -1,21 +1,9 @@
 import Html exposing (Html, div)
 import Html.Attributes exposing (classList, attribute)
-import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
-
-import Http exposing (..)
-import HttpHelpers exposing (post_with_headers)
-import Json.Decode as Decode
 
 import Dict exposing (Dict)
-import Navigation
-
-import Util exposing (is_valid_email)
-
-import Json.Encode as Encode
-import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 
 import Views exposing (view_filter, view_header, view_footer)
-import Config exposing (..)
 import Flags exposing (CSRFToken, Flags)
 
 

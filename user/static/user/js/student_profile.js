@@ -9514,9 +9514,10 @@ var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signu
 var _user$project$Config$question_api_endpoint = '/api/question/';
 var _user$project$Config$text_api_endpoint = '/api/text/';
 
-var _user$project$Flags$Flags = function (a) {
-	return {csrftoken: a};
-};
+var _user$project$Flags$Flags = F3(
+	function (a, b, c) {
+		return {csrftoken: a, profile_id: b, profile_type: c};
+	});
 
 var _user$project$HttpHelpers$post_with_headers = F4(
 	function (url, headers, body, decoder) {
@@ -9794,35 +9795,62 @@ var _user$project$Model$questionDecoder = A3(
 								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$Question)))))))));
 var _user$project$Model$questionsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Model$questionDecoder);
-var _user$project$Model$StudentProfile = F4(
+
+var _user$project$Profile$studentUserName = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0.username;
+};
+var _user$project$Profile$studentDifficulties = function (_p2) {
+	var _p3 = _p2;
+	return _p3._0.difficulties;
+};
+var _user$project$Profile$studentDifficultyPreference = function (_p4) {
+	var _p5 = _p4;
+	return _p5._0.difficulty_preference;
+};
+var _user$project$Profile$StudentProfileParams = F4(
 	function (a, b, c, d) {
-		return {id: a, difficulty_preference: b, difficulties: c, username: d};
+		return {id: a, username: b, difficulty_preference: c, difficulties: d};
 	});
-var _user$project$Model$studentProfileDecoder = A3(
+var _user$project$Profile$studentProfileParamsDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'username',
-	_elm_lang$core$Json_Decode$string,
+	'difficulties',
+	_user$project$Model$textDifficultyDecoder,
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'difficulties',
-		_user$project$Model$textDifficultyDecoder,
+		'difficulty_preference',
+		_elm_lang$core$Json_Decode$nullable(
+			A3(
+				_elm_lang$core$Json_Decode$map2,
+				F2(
+					function (v0, v1) {
+						return {ctor: '_Tuple2', _0: v0, _1: v1};
+					}),
+				A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string),
+				A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string))),
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'difficulty_preference',
-			_elm_lang$core$Json_Decode$nullable(
-				A3(
-					_elm_lang$core$Json_Decode$map2,
-					F2(
-						function (v0, v1) {
-							return {ctor: '_Tuple2', _0: v0, _1: v1};
-						}),
-					A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string),
-					A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string))),
+			'username',
+			_elm_lang$core$Json_Decode$string,
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 				'id',
 				_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$StudentProfile)))));
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Profile$StudentProfileParams)))));
+var _user$project$Profile$StudentProfile = function (a) {
+	return {ctor: 'StudentProfile', _0: a};
+};
+var _user$project$Profile$studentProfile = function (params) {
+	return _user$project$Profile$StudentProfile(params);
+};
+var _user$project$Profile$emptyStudentProfile = _user$project$Profile$StudentProfile(
+	{
+		id: _elm_lang$core$Maybe$Nothing,
+		username: '',
+		difficulty_preference: _elm_lang$core$Maybe$Nothing,
+		difficulties: {ctor: '[]'}
+	});
+var _user$project$Profile$studentProfileDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Profile$StudentProfile, _user$project$Profile$studentProfileParamsDecoder);
 
 var _user$project$Views$view_footer = A2(
 	_elm_lang$html$Html$div,
@@ -10035,7 +10063,27 @@ var _user$project$Views$view_header = A2(
 										}),
 									_1: {ctor: '[]'}
 								}),
-							_1: {ctor: '[]'}
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$span,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$classList(
+											{
+												ctor: '::',
+												_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('User Profile'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
 						}
 					}
 				}),
@@ -10053,9 +10101,7 @@ var _user$project$Main$update = F2(
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{
-								profile: A2(_elm_lang$core$Debug$log, 'profile', _p0._0._0)
-							}),
+							{profile: _p0._0._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
@@ -10064,10 +10110,7 @@ var _user$project$Main$update = F2(
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								err_str: A2(
-									_elm_lang$core$Debug$log,
-									'err',
-									_elm_lang$core$Basics$toString(_p0._0._0))
+								err_str: _elm_lang$core$Basics$toString(_p0._0._0)
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
@@ -10108,9 +10151,9 @@ var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
 var _user$project$Main$updateRespDecoder = _elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string);
-var _user$project$Main$profileEncoder = function (profile) {
+var _user$project$Main$profileEncoder = function (student) {
 	var encode_pref = function () {
-		var _p3 = profile.difficulty_preference;
+		var _p3 = _user$project$Profile$studentDifficultyPreference(student);
 		if (_p3.ctor === 'Just') {
 			return _elm_lang$core$Json_Encode$string(
 				_elm_lang$core$Tuple$first(_p3._0));
@@ -10156,7 +10199,7 @@ var _user$project$Main$UpdateDifficulty = function (a) {
 };
 var _user$project$Main$view_difficulty = function (model) {
 	var pref = function () {
-		var _p4 = model.profile.difficulty_preference;
+		var _p4 = _user$project$Profile$studentDifficultyPreference(model.profile);
 		if (_p4.ctor === 'Just') {
 			return _elm_lang$core$Tuple$first(_p4._0);
 		} else {
@@ -10214,7 +10257,7 @@ var _user$project$Main$view_difficulty = function (model) {
 										_1: {ctor: '[]'}
 									});
 							},
-							model.profile.difficulties)),
+							_user$project$Profile$studentDifficulties(model.profile))),
 					_1: {ctor: '[]'}
 				}),
 			_1: {ctor: '[]'}
@@ -10257,7 +10300,8 @@ var _user$project$Main$view_content = function (model) {
 							_0: _elm_lang$html$Html$text('Username: '),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(model.profile.username),
+								_0: _elm_lang$html$Html$text(
+									_user$project$Profile$studentUserName(model.profile)),
 								_1: {ctor: '[]'}
 							}
 						}),
@@ -10336,7 +10380,7 @@ var _user$project$Main$update_student_profile = function (profile_id) {
 					_1: {ctor: '[]'}
 				}
 			}),
-		_user$project$Model$studentProfileDecoder);
+		_user$project$Profile$studentProfileDecoder);
 	return A2(_elm_lang$http$Http$send, _user$project$Main$UpdateStudentProfile, request);
 };
 var _user$project$Main$init = function (flags) {
@@ -10344,12 +10388,7 @@ var _user$project$Main$init = function (flags) {
 		ctor: '_Tuple2',
 		_0: {
 			flags: flags,
-			profile: A4(
-				_user$project$Model$StudentProfile,
-				_elm_lang$core$Maybe$Nothing,
-				_elm_lang$core$Maybe$Nothing,
-				{ctor: '[]'},
-				''),
+			profile: _user$project$Profile$emptyStudentProfile,
 			err_str: '',
 			errors: _elm_lang$core$Dict$fromList(
 				{ctor: '[]'})

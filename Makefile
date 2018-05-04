@@ -11,3 +11,6 @@ quiz:
 .PHONY: user
 user:
 	for f in user/ui/{instructor,student}/*; do ${ELM_MAKE} $$f --warn --output=user/static/user/js/$$(basename -s .elm $$f).js; done;
+
+.PHONY: all
+all: admin quiz user

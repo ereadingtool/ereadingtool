@@ -16,7 +16,7 @@ import Util exposing (is_valid_email)
 import Json.Encode as Encode
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 
-import Views exposing (view_filter, view_header, view_footer)
+import Views
 import Config exposing (student_login_api_endpoint)
 import Flags exposing (CSRFToken, Flags)
 
@@ -162,8 +162,8 @@ view_content model = Html.div [ classList [("login", True)] ] [
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    (view_header)
-  , (view_filter)
+    (Views.view_header)
+  , (Views.view_filter)
   , (view_content model)
-  , (view_footer)
+  , (Views.view_footer)
   ]

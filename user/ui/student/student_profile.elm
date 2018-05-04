@@ -10,7 +10,7 @@ import Json.Encode as Encode
 import Dict exposing (Dict)
 import Debug
 
-import Model exposing (StudentProfile, studentProfileDecoder)
+import Profile
 
 import Views exposing (view_filter, view_header, view_footer)
 import Config exposing (student_api_endpoint)
@@ -18,7 +18,7 @@ import Flags exposing (CSRFToken, ProfileID, ProfileType)
 
 -- UPDATE
 type Msg =
-    UpdateStudentProfile (Result Error StudentProfile)
+    UpdateStudentProfile (Result Error Profile.StudentProfile)
   | UpdateDifficulty String
   | Submitted (Result Error UpdateProfileResp )
 
@@ -29,15 +29,15 @@ type alias Flags = {
 
 type alias Model = {
     flags : Flags
-  , profile : StudentProfile
+  , profile : Profile.StudentProfile
   , err_str : String
   , errors : Dict String String }
 
 type alias UpdateProfileResp = Dict.Dict String String
 
-profileEncoder : StudentProfile -> Encode.Value
-profileEncoder profile = let
-  encode_pref = (case profile.difficulty_preference of
+profileEncoder : Profile.StudentProfile -> Encode.Value
+profileEncoder student = let
+  encode_pref = (case (Profile.studentDifficultyPreference student) of
     Just difficulty -> Encode.string (Tuple.first difficulty)
     _ -> Encode.null) in Encode.object [
      ("difficulty_preference", encode_pref)
@@ -46,7 +46,7 @@ profileEncoder profile = let
 updateRespDecoder : Decode.Decoder (UpdateProfileResp)
 updateRespDecoder = Decode.dict Decode.string
 
-post_profile : CSRFToken -> StudentProfile -> Cmd Msg
+post_profile : CSRFToken -> Profile.StudentProfile -> Cmd Msg
 post_profile csrftoken profile =
   let encoded_profile = profileEncoder profile
       req =
@@ -61,7 +61,7 @@ post_profile csrftoken profile =
 init : Flags -> (Model, Cmd Msg)
 init flags = ({
     flags = flags
-  , profile = StudentProfile Nothing Nothing [] ""
+  , profile = Profile.emptyStudentProfile
   , err_str = "", errors = Dict.fromList [] }, update_student_profile flags.profile_id)
 
 subscriptions : Model -> Sub Msg
@@ -70,17 +70,18 @@ subscriptions model =
 
 update_student_profile : ProfileID -> Cmd Msg
 update_student_profile profile_id =  let
-    request = Http.get (String.join "" [student_api_endpoint, (toString profile_id) ++ "/"]) studentProfileDecoder
+    request = Http.get (String.join "" [student_api_endpoint, (toString profile_id) ++ "/"])
+      Profile.studentProfileDecoder
   in Http.send UpdateStudentProfile request
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = case msg of
   UpdateStudentProfile (Ok profile) ->
-    ({ model | profile = (Debug.log "profile" profile) }, Cmd.none)
+    ({ model | profile = profile }, Cmd.none)
 
   -- handle user-friendly msgs
   UpdateStudentProfile (Err err) ->
-    ({ model | err_str = (Debug.log "err" (toString err))}, Cmd.none)
+    ({ model | err_str = toString err }, Cmd.none)
 
   UpdateDifficulty _ -> (model, Cmd.none)
 
@@ -103,7 +104,7 @@ main =
     }
 
 view_difficulty : Model -> Html Msg
-view_difficulty model = let pref = (case model.profile.difficulty_preference of
+view_difficulty model = let pref = (case Profile.studentDifficultyPreference model.profile of
   Just pref -> Tuple.first pref
   _ -> "") in Html.div [classList [("profile_item", True)] ] [
     Html.select [
@@ -111,14 +112,14 @@ view_difficulty model = let pref = (case model.profile.difficulty_preference of
         Html.optgroup [] (List.map (\(k,v) ->
           Html.option ([attribute "value" k] ++
             (if v == pref then [attribute "selected" ""] else []))
-           [ Html.text v ]) model.profile.difficulties)
+           [ Html.text v ]) (Profile.studentDifficulties model.profile))
        ]
   ]
 
 view_content : Model -> Html Msg
 view_content model = Html.div [ classList [("profile", True)] ] [
     Html.div [classList [("profile_items", True)] ] [
-        Html.span [] [Html.text "Username: ", Html.text model.profile.username]
+        Html.span [] [Html.text "Username: ", Html.text (Profile.userName model.profile)]
       , Html.text "Preferred Difficulty", (view_difficulty model)
       , (if not (String.isEmpty model.err_str) then
           Html.span [attribute "class" "error"] [ Html.text "error", Html.text model.err_str ]

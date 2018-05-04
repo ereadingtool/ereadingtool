@@ -1,6 +1,6 @@
 module Model exposing (Text, emptyText, TextDifficulty, TextID, Question, Answer, textsDecoder, textEncoder, textDecoder
   , textCreateRespDecoder, questionsDecoder , decodeCreateRespErrors, TextCreateRespError, textDifficultyDecoder
-  , studentProfileDecoder, TextCreateResp, StudentProfile)
+  , TextCreateResp)
 
 import Date exposing (..)
 
@@ -159,18 +159,3 @@ questionsEncoder questions =
      Encode.list
   <| Array.toList
   <| Array.map (\question -> questionEncoder question) questions
-
-type alias StudentProfile = {
-    id: Maybe Int
-  , difficulty_preference: Maybe TextDifficulty
-  , difficulties: List TextDifficulty
-  , username: String }
-
-studentProfileDecoder : Decode.Decoder StudentProfile
-studentProfileDecoder =
-  decode StudentProfile
-    |> required "id" (Decode.nullable Decode.int)
-    |> required "difficulty_preference" (Decode.nullable
-      ( Decode.map2 (,) (Decode.index 0 Decode.string) (Decode.index 1 Decode.string) ))
-    |> required "difficulties" textDifficultyDecoder
-    |> required "username" Decode.string

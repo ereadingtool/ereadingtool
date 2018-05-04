@@ -10,7 +10,7 @@ from django.views.generic import TemplateView
 
 from user.forms import InstructorSignUpForm, InstructorLoginForm
 from user.views.api import APIView
-from user.views.base import ProfileView
+from user.views.mixin import ProfileView
 
 
 class InstructorSignupAPIView(APIView):

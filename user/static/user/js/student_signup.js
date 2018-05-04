@@ -10243,9 +10243,10 @@ var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signu
 var _user$project$Config$question_api_endpoint = '/api/question/';
 var _user$project$Config$text_api_endpoint = '/api/text/';
 
-var _user$project$Flags$Flags = function (a) {
-	return {csrftoken: a};
-};
+var _user$project$Flags$Flags = F3(
+	function (a, b, c) {
+		return {csrftoken: a, profile_id: b, profile_type: c};
+	});
 
 var _user$project$HttpHelpers$post_with_headers = F4(
 	function (url, headers, body, decoder) {
@@ -10478,7 +10479,27 @@ var _user$project$Views$view_header = A2(
 										}),
 									_1: {ctor: '[]'}
 								}),
-							_1: {ctor: '[]'}
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$span,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$classList(
+											{
+												ctor: '::',
+												_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('User Profile'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
 						}
 					}
 				}),
@@ -11091,35 +11112,6 @@ var _user$project$Model$questionDecoder = A3(
 								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$Question)))))))));
 var _user$project$Model$questionsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Model$questionDecoder);
-var _user$project$Model$StudentProfile = F4(
-	function (a, b, c, d) {
-		return {id: a, difficulty_preference: b, difficulties: c, username: d};
-	});
-var _user$project$Model$studentProfileDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'username',
-	_elm_lang$core$Json_Decode$string,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'difficulties',
-		_user$project$Model$textDifficultyDecoder,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'difficulty_preference',
-			_elm_lang$core$Json_Decode$nullable(
-				A3(
-					_elm_lang$core$Json_Decode$map2,
-					F2(
-						function (v0, v1) {
-							return {ctor: '_Tuple2', _0: v0, _1: v1};
-						}),
-					A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string),
-					A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string))),
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'id',
-				_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$StudentProfile)))));
 
 var _user$project$Main$init = function (flags) {
 	return {

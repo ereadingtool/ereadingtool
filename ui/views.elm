@@ -3,6 +3,8 @@ module Views exposing (view_filter, view_header, view_footer)
 import Html exposing (..)
 import Html.Attributes exposing (classList, attribute)
 
+import Flags exposing (CSRFToken)
+
 
 view_header : Html msg
 view_header =
@@ -12,6 +14,7 @@ view_header =
           span [ classList [("menu_item", True)] ] [ Html.a [attribute "href" "/admin"] [ Html.text "Quizzes" ] ]
         , span [ classList [("menu_item", True)] ] [ Html.a [attribute "href" "/login/student/"] [ Html.text "Student Login" ] ]
         , span [ classList [("menu_item", True)] ] [ Html.a [attribute "href" "/login/instructor/"] [ Html.text "Instructor Login" ] ]
+        , span [ classList [("menu_item", True)] ] [ Html.text "User Profile" ]
         ]
     ]
 
