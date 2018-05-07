@@ -9777,6 +9777,14 @@ var _user$project$Model$questionDecoder = A3(
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$Question)))))))));
 var _user$project$Model$questionsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Model$questionDecoder);
 
+var _user$project$Profile$tupleDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	F2(
+		function (v0, v1) {
+			return {ctor: '_Tuple2', _0: v0, _1: v1};
+		}),
+	A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
 var _user$project$Profile$view_instructor_profile_header = function (_p0) {
 	var _p1 = _p0;
 	return {
@@ -9869,19 +9877,11 @@ var _user$project$Profile$StudentProfileParams = F4(
 var _user$project$Profile$studentProfileParamsDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'difficulties',
-	_user$project$Model$textDifficultyDecoder,
+	_elm_lang$core$Json_Decode$list(_user$project$Profile$tupleDecoder),
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'difficulty_preference',
-		_elm_lang$core$Json_Decode$nullable(
-			A3(
-				_elm_lang$core$Json_Decode$map2,
-				F2(
-					function (v0, v1) {
-						return {ctor: '_Tuple2', _0: v0, _1: v1};
-					}),
-				A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string),
-				A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string))),
+		_elm_lang$core$Json_Decode$nullable(_user$project$Profile$tupleDecoder),
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 			'username',

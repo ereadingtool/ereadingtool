@@ -79,14 +79,16 @@ emptyStudentProfile = StudentProfile {
   , difficulty_preference = Nothing
   , difficulties = [] }
 
+tupleDecoder : Decode.Decoder ( String, String )
+tupleDecoder = Decode.map2 (,) (Decode.index 0 Decode.string) (Decode.index 1 Decode.string)
+
 studentProfileParamsDecoder : Decode.Decoder StudentProfileParams
 studentProfileParamsDecoder =
   decode StudentProfileParams
     |> required "id" (Decode.nullable Decode.int)
     |> required "username" Decode.string
-    |> required "difficulty_preference" (Decode.nullable
-      ( Decode.map2 (,) (Decode.index 0 Decode.string) (Decode.index 1 Decode.string) ))
-    |> required "difficulties" Model.textDifficultyDecoder
+    |> required "difficulty_preference" (Decode.nullable tupleDecoder)
+    |> required "difficulties" (Decode.list tupleDecoder)
 
 
 studentProfileDecoder : Decode.Decoder StudentProfile
