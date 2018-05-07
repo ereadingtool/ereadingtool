@@ -11,7 +11,8 @@ import HttpHelpers exposing (post_with_headers)
 import Model exposing (Text, emptyText, TextDifficulty, Question, Answer, textsDecoder, textEncoder, textDecoder,
   textDifficultyDecoder, textCreateRespDecoder, decodeCreateRespErrors, TextCreateRespError, TextCreateResp)
 
-import Views exposing (view_filter, view_header, view_footer)
+import Views
+import Profile
 
 import Dict
 
@@ -75,9 +76,11 @@ type alias QuestionField = {
   , error : Bool }
 
 
+
 type alias Model = {
     text : Text
   , flags : Flags
+  , profile : Profile.Profile
   , success_msg : Maybe String
   , error_msg : Maybe TextCreateRespError
   , text_fields : Array TextField
@@ -106,6 +109,7 @@ init flags = ({
       , error_msg=Nothing
       , success_msg=Nothing
       , flags=flags
+      , profile=Profile.init_profile flags
       , text_fields=(Array.fromList [
           {id="title", editable=False, hover=False, index=0, error=False}
         , {id="source", editable=False, hover=False, index=1, error=False}
@@ -636,7 +640,7 @@ view_submit model = Html.div [classList [("submit_section", True)]] [
 
 view : Model -> Html Msg
 view model = div [] [
-      view_header
+      Views.view_header (Profile.view_profile_header model.profile)
     , (view_preview model)
     , (view_create_text model)
     , (view_questions model.question_fields)

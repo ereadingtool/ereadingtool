@@ -3,7 +3,7 @@ import Html.Attributes exposing (classList, attribute)
 
 import Dict exposing (Dict)
 
-import Views exposing (view_filter, view_header, view_footer)
+import Views
 import Flags exposing (CSRFToken, Flags)
 
 
@@ -46,8 +46,8 @@ view_content model = Html.div [ classList [] ] [
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    (view_header)
-  , (view_filter)
+    (Views.view_header Nothing)
+  , (Views.view_filter)
   , (view_content model)
-  , (view_footer)
+  , (Views.view_footer)
   ]

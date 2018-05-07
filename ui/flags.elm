@@ -1,11 +1,15 @@
-module Flags exposing (CSRFToken, ProfileID, ProfileType, Flags)
+module Flags exposing (CSRFToken, Flags)
+
+import Profile
 
 type alias CSRFToken = String
-type alias ProfileID = Int
 
-type alias ProfileType = String
+type alias UnAuthedFlags = {
+    csrftoken : CSRFToken }
 
 type alias Flags = {
    csrftoken : CSRFToken
- , profile_id : Maybe ProfileID
- , profile_type : Maybe ProfileType }
+ , profile_id : Profile.ProfileID
+ , profile_type : Profile.ProfileType
+ , instructor_profile : Maybe Profile.InstructorProfileParams
+ , student_profile : Maybe Profile.StudentProfileParams }

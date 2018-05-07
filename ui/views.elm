@@ -4,16 +4,18 @@ import Html exposing (..)
 import Html.Attributes exposing (classList, attribute)
 
 
-view_header : List (Html msg) -> Html msg
-view_header user_profile =
+view_header : Maybe (List (Html msg)) -> Html msg
+view_header view_user_profile =
     div [ classList [("header", True)] ] [
         text "E-Reader"
-      , div [ classList [("menu", True)] ] [
+      , div [ classList [("menu", True)] ] <|
+        [
           span [ classList [("menu_item", True)] ] [ Html.a [attribute "href" "/admin"] [ Html.text "Quizzes" ] ]
         , span [ classList [("menu_item", True)] ] [ Html.a [attribute "href" "/login/student/"] [ Html.text "Student Login" ] ]
         , span [ classList [("menu_item", True)] ] [ Html.a [attribute "href" "/login/instructor/"] [ Html.text "Instructor Login" ] ]
-        , span [ classList [("menu_item", True)] ] user_profile
-        ]
+        ] ++ (case view_user_profile of
+          Just profile_view -> [ span [ classList [("menu_item", True)] ] profile_view ]
+          _ -> [])
     ]
 
 view_filter : Html msg

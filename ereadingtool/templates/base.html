@@ -14,11 +14,9 @@
     {% endblock %}
 </head>
 <body>
-{% csrf_token %}
+
 <div class="content">
 </div>
-
-<input id="profile_id" type="hidden" data-type="{{ profile_type }}" value="{{ profile_id }}">
 
 {% block body %}
 {% endblock %}

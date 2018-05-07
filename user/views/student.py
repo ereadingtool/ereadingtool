@@ -82,20 +82,6 @@ class StudentLoginView(TemplateView):
     template_name = 'student/login.html'
 
 
-class StudentLoadElm(ElmLoadJsView):
-    def get_context_data(self, **kwargs):
-        context = super(StudentLoadElm, self).get_context_data(**kwargs)
-
-        context['elm']['difficulties'] = {
-            'quote': False,
-            'safe': True,
-            'value': json.dumps([(text_difficulty.slug, text_difficulty.name)
-                                 for text_difficulty in TextDifficulty.objects.all()])
-        }
-
-        return context
-
-
 class StudentProfileView(ProfileView):
     template_name = 'student/profile.html'
     login_url = reverse_lazy('student-login')

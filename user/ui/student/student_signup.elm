@@ -7,7 +7,7 @@ import Dict exposing (Dict)
 import Json.Encode as Encode
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 import Json.Decode as Decode
-import Views exposing (view_filter, view_header, view_footer)
+import Views
 import Html.Attributes exposing (classList, attribute)
 
 import HttpHelpers exposing (post_with_headers)
@@ -129,10 +129,10 @@ view_content model = Html.div [ classList [("signup", True)] ] [
 
 view : Model -> Html Msg
 view model = div [] [
-    (view_header)
-  , (view_filter)
+    (Views.view_header Nothing)
+  , (Views.view_filter)
   , (view_content model)
-  , (view_footer)
+  , (Views.view_footer)
   ]
 
 main : Program Flags Model Msg

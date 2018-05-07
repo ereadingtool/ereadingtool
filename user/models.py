@@ -10,6 +10,12 @@ class ReaderUser(AbstractUser):
 class Instructor(models.Model):
     user = models.OneToOneField(ReaderUser, on_delete=models.CASCADE)
 
+    def to_dict(self):
+        return {
+            'id': self.pk,
+            'username': self.user.username
+        }
+
 
 class Student(models.Model):
     user = models.OneToOneField(ReaderUser, on_delete=models.CASCADE)
@@ -17,9 +23,11 @@ class Student(models.Model):
                                               related_name='students')
 
     def to_dict(self):
-        difficulties = {d.slug: d.name for d in TextDifficulty.objects.all()}
+        difficulties = [(text_difficulty.slug, text_difficulty.name)
+                        for text_difficulty in TextDifficulty.objects.all()]
 
-        difficulties[''] = ''
+        # difficulty_preference can be null
+        difficulties.append(('', ''))
 
         return {
             'id': self.pk,

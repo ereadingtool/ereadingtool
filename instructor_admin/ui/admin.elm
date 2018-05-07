@@ -8,22 +8,22 @@ import Model exposing (Text, textsDecoder)
 import Config exposing (..)
 import Flags exposing (Flags)
 
-import Views exposing (view_filter, view_header)
-
-import Ports
+import Views
+import Profile
 
 -- UPDATE
 type Msg = Update (Result Http.Error (List Text))
 
 type alias Model = {
     texts : List Text
+  , profile : Profile.Profile
   , flags : Flags
   }
 
 type alias Filter = List String
 
 init : Flags -> (Model, Cmd Msg)
-init flags = (Model [] flags, updateTexts [])
+init flags = ({ texts=[], profile=Profile.init_profile flags, flags=flags }, updateTexts [])
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -109,8 +109,8 @@ view_footer model = div [classList [("footer_items", True)] ] [
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    view_header
-  , view_filter
+    Views.view_header (Profile.view_profile_header model.profile)
+  , Views.view_filter
   , (view_texts model)
   , (view_footer model)
   ]

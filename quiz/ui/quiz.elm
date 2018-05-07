@@ -10,7 +10,8 @@ import Http exposing (..)
 import Array exposing (Array)
 
 import Model exposing (Text, Question, Answer, emptyText, textDecoder, questionsDecoder )
-import Views exposing (view_filter, view_header, view_footer)
+import Views
+import Profile
 import Config exposing (..)
 import Flags exposing (CSRFToken)
 
@@ -22,11 +23,16 @@ type Msg =
 
 type alias Flags = {
     csrftoken : CSRFToken
+  , profile_id : Profile.ProfileID
+  , profile_type : Profile.ProfileType
+  , instructor_profile : Maybe Profile.InstructorProfileParams
+  , student_profile : Maybe Profile.StudentProfileParams
   , quiz_id : Int }
 
 type alias Model = {
     text : Text
   , question_fields : Array QuestionField
+  , profile : Profile.Profile
   , flags : Flags }
 
 type alias AnswerField = {
@@ -45,7 +51,11 @@ type alias QuestionField = {
 
 
 init : Flags -> (Model, Cmd Msg)
-init flags = (Model emptyText (Array.fromList []) flags, (updateText flags.quiz_id))
+init flags = ({
+    text=emptyText
+  , question_fields=Array.fromList []
+  , profile=Profile.init_profile flags
+  , flags=flags}, updateText flags.quiz_id)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -158,8 +168,8 @@ view_content model = div [ classList [("quiz", True)] ] [
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    (view_header)
-  , (view_filter)
+    (Views.view_header (Profile.view_profile_header model.profile))
+  , (Views.view_filter)
   , (view_content model)
-  , (view_footer)
+  , (Views.view_footer)
   ]

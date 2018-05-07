@@ -19,4 +19,3 @@ class QuizLoadElm(ElmLoadJsView):
         context['elm']['quiz_id'] = {'quote': False, 'safe': True, 'value': context['pk']}
 
         return context
-

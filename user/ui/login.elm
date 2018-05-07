@@ -161,7 +161,7 @@ view_content model = Html.div [ classList [("login", True)] ] [
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    (Views.view_header)
+    (Views.view_header Nothing)
   , (Views.view_filter)
   , (view_content model)
   , (Views.view_footer)

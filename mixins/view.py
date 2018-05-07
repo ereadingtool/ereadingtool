@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.db.models import ObjectDoesNotExist
@@ -18,13 +20,22 @@ class ElmLoadJsView(LoginRequiredMixin, TemplateView):
         context = super(ElmLoadJsView, self).get_context_data(**kwargs)
 
         context.setdefault('elm', {})
-
         profile = None
 
         try:
             profile = self.request.user.student
+
+            context['elm']['student_profile'] = {'quote': False, 'safe': True,
+                                                 'value': json.dumps(profile.to_dict())}
+            context['elm']['instructor_profile'] = {'quote': False, 'safe': True,
+                                                    'value': json.dumps(None)}
         except ObjectDoesNotExist:
             profile = self.request.user.instructor
+
+            context['elm']['instructor_profile'] = {'quote': False, 'safe': True,
+                                                    'value': json.dumps(profile.to_dict())}
+            context['elm']['student_profile'] = {'quote': False, 'safe': True,
+                                                 'value': json.dumps(None)}
 
         context['elm']['profile_id'] = {
             'quote': False,

@@ -8,13 +8,12 @@ import Json.Decode as Decode
 import Json.Encode as Encode
 
 import Dict exposing (Dict)
-import Debug
 
 import Profile exposing (StudentProfile)
 
 import Views
 import Config exposing (student_api_endpoint)
-import Flags exposing (CSRFToken, ProfileID, ProfileType)
+import Flags
 
 -- UPDATE
 type Msg =
@@ -22,13 +21,8 @@ type Msg =
   | UpdateDifficulty String
   | Submitted (Result Error UpdateProfileResp )
 
-type alias Flags = {
-    csrftoken : CSRFToken
-  , profile_id : ProfileID
-  , profile_type: ProfileType }
-
 type alias Model = {
-    flags : Flags
+    flags : Flags.Flags
   , profile : Profile.StudentProfile
   , err_str : String
   , errors : Dict String String }
@@ -46,7 +40,7 @@ profileEncoder student = let
 updateRespDecoder : Decode.Decoder (UpdateProfileResp)
 updateRespDecoder = Decode.dict Decode.string
 
-post_profile : CSRFToken -> Profile.StudentProfile -> Cmd Msg
+post_profile : Flags.CSRFToken -> Profile.StudentProfile -> Cmd Msg
 post_profile csrftoken profile =
   let encoded_profile = profileEncoder profile
       req =
@@ -58,11 +52,11 @@ post_profile csrftoken profile =
   in
     Http.send Submitted req
 
-init : Flags -> (Model, Cmd Msg)
+init : Flags.Flags -> (Model, Cmd Msg)
 init flags = ({
     flags = flags
   , profile = Profile.emptyStudentProfile
-  , err_str = "", errors = Dict.fromList [] }, Profile.update_student_profile UpdateStudentProfile flags.profile_id)
+  , err_str = "", errors = Dict.fromList [] }, Profile.retrieve_student_profile UpdateStudentProfile flags.profile_id)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -88,7 +82,7 @@ update msg model = case msg of
       _ -> (model, Cmd.none)
 
 
-main : Program Flags Model Msg
+main : Program Flags.Flags Model Msg
 main =
   Html.programWithFlags
     { init = init
@@ -120,13 +114,10 @@ view_content model = Html.div [ classList [("profile", True)] ] [
         else Html.text "")]
   ]
 
-view_profile : StudentProfile -> List (Html Msg)
-view_profile profile = [ Html.div [] [] ]
-
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    (Views.view_header (Profile.view_user_profile_header model.profile))
+    (Views.view_header <| Just (Profile.view_student_profile_header model.profile))
   , (Views.view_filter)
   , (view_content model)
   , (Views.view_footer)
