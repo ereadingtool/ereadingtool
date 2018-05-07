@@ -10,9 +10,9 @@ import Json.Encode as Encode
 import Dict exposing (Dict)
 import Debug
 
-import Profile
+import Profile exposing (StudentProfile)
 
-import Views exposing (view_filter, view_header, view_footer)
+import Views
 import Config exposing (student_api_endpoint)
 import Flags exposing (CSRFToken, ProfileID, ProfileType)
 
@@ -62,17 +62,11 @@ init : Flags -> (Model, Cmd Msg)
 init flags = ({
     flags = flags
   , profile = Profile.emptyStudentProfile
-  , err_str = "", errors = Dict.fromList [] }, update_student_profile flags.profile_id)
+  , err_str = "", errors = Dict.fromList [] }, Profile.update_student_profile UpdateStudentProfile flags.profile_id)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
-
-update_student_profile : ProfileID -> Cmd Msg
-update_student_profile profile_id =  let
-    request = Http.get (String.join "" [student_api_endpoint, (toString profile_id) ++ "/"])
-      Profile.studentProfileDecoder
-  in Http.send UpdateStudentProfile request
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = case msg of
@@ -119,18 +113,21 @@ view_difficulty model = let pref = (case Profile.studentDifficultyPreference mod
 view_content : Model -> Html Msg
 view_content model = Html.div [ classList [("profile", True)] ] [
     Html.div [classList [("profile_items", True)] ] [
-        Html.span [] [Html.text "Username: ", Html.text (Profile.userName model.profile)]
+        Html.span [] [Html.text "Username: ", Html.text (Profile.studentUserName model.profile)]
       , Html.text "Preferred Difficulty", (view_difficulty model)
       , (if not (String.isEmpty model.err_str) then
           Html.span [attribute "class" "error"] [ Html.text "error", Html.text model.err_str ]
         else Html.text "")]
   ]
 
+view_profile : StudentProfile -> List (Html Msg)
+view_profile profile = [ Html.div [] [] ]
+
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    (view_header)
-  , (view_filter)
+    (Views.view_header (Profile.view_user_profile_header model.profile))
+  , (Views.view_filter)
   , (view_content model)
-  , (view_footer)
+  , (Views.view_footer)
   ]

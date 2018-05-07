@@ -9796,17 +9796,58 @@ var _user$project$Model$questionDecoder = A3(
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$Question)))))))));
 var _user$project$Model$questionsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Model$questionDecoder);
 
-var _user$project$Profile$studentUserName = function (_p0) {
+var _user$project$Profile$view_user_profile_header = function (_p0) {
 	var _p1 = _p0;
-	return _p1._0.username;
+	return {
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('Logged in as:'),
+				_1: {ctor: '[]'}
+			}),
+		_1: {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$a,
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/profile/student/'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(_p1._0.username),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Log out'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		}
+	};
 };
-var _user$project$Profile$studentDifficulties = function (_p2) {
+var _user$project$Profile$studentUserName = function (_p2) {
 	var _p3 = _p2;
-	return _p3._0.difficulties;
+	return _p3._0.username;
 };
-var _user$project$Profile$studentDifficultyPreference = function (_p4) {
+var _user$project$Profile$studentDifficulties = function (_p4) {
 	var _p5 = _p4;
-	return _p5._0.difficulty_preference;
+	return _p5._0.difficulties;
+};
+var _user$project$Profile$studentDifficultyPreference = function (_p6) {
+	var _p7 = _p6;
+	return _p7._0.difficulty_preference;
 };
 var _user$project$Profile$StudentProfileParams = F4(
 	function (a, b, c, d) {
@@ -9851,6 +9892,28 @@ var _user$project$Profile$emptyStudentProfile = _user$project$Profile$StudentPro
 		difficulties: {ctor: '[]'}
 	});
 var _user$project$Profile$studentProfileDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Profile$StudentProfile, _user$project$Profile$studentProfileParamsDecoder);
+var _user$project$Profile$update_student_profile = F2(
+	function (msg, profile_id) {
+		var request = A2(
+			_elm_lang$http$Http$get,
+			A2(
+				_elm_lang$core$String$join,
+				'',
+				{
+					ctor: '::',
+					_0: _user$project$Config$student_api_endpoint,
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$core$Basics_ops['++'],
+							_elm_lang$core$Basics$toString(profile_id),
+							'/'),
+						_1: {ctor: '[]'}
+					}
+				}),
+			_user$project$Profile$studentProfileDecoder);
+		return A2(_elm_lang$http$Http$send, msg, request);
+	});
 
 var _user$project$Views$view_footer = A2(
 	_elm_lang$html$Html$div,
@@ -9944,66 +10007,37 @@ var _user$project$Views$view_filter = A2(
 			}),
 		_1: {ctor: '[]'}
 	});
-var _user$project$Views$view_header = A2(
-	_elm_lang$html$Html$div,
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html_Attributes$classList(
-			{
-				ctor: '::',
-				_0: {ctor: '_Tuple2', _0: 'header', _1: true},
-				_1: {ctor: '[]'}
-			}),
-		_1: {ctor: '[]'}
-	},
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html$text('E-Reader'),
-		_1: {
+var _user$project$Views$view_header = function (user_profile) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
 			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
+			_0: _elm_lang$html$Html_Attributes$classList(
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$classList(
-						{
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'menu', _1: true},
-							_1: {ctor: '[]'}
-						}),
+					_0: {ctor: '_Tuple2', _0: 'header', _1: true},
 					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$span,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$classList(
-								{
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$a,
-								{
-									ctor: '::',
-									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/admin'),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text('Quizzes'),
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}),
-					_1: {
+				}),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text('E-Reader'),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$classList(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'menu', _1: true},
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					},
+					{
 						ctor: '::',
 						_0: A2(
 							_elm_lang$html$Html$span,
@@ -10023,12 +10057,12 @@ var _user$project$Views$view_header = A2(
 									_elm_lang$html$Html$a,
 									{
 										ctor: '::',
-										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/login/student/'),
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/admin'),
 										_1: {ctor: '[]'}
 									},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text('Student Login'),
+										_0: _elm_lang$html$Html$text('Quizzes'),
 										_1: {ctor: '[]'}
 									}),
 								_1: {ctor: '[]'}
@@ -10053,12 +10087,12 @@ var _user$project$Views$view_header = A2(
 										_elm_lang$html$Html$a,
 										{
 											ctor: '::',
-											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/login/instructor/'),
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/login/student/'),
 											_1: {ctor: '[]'}
 										},
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html$text('Instructor Login'),
+											_0: _elm_lang$html$Html$text('Student Login'),
 											_1: {ctor: '[]'}
 										}),
 									_1: {ctor: '[]'}
@@ -10079,18 +10113,55 @@ var _user$project$Views$view_header = A2(
 									},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text('User Profile'),
+										_0: A2(
+											_elm_lang$html$Html$a,
+											{
+												ctor: '::',
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/login/instructor/'),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text('Instructor Login'),
+												_1: {ctor: '[]'}
+											}),
 										_1: {ctor: '[]'}
 									}),
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$span,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$classList(
+												{
+													ctor: '::',
+													_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										},
+										user_profile),
+									_1: {ctor: '[]'}
+								}
 							}
 						}
-					}
-				}),
-			_1: {ctor: '[]'}
-		}
-	});
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
 
+var _user$project$Main$view_profile = function (profile) {
+	return {
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{ctor: '[]'}),
+		_1: {ctor: '[]'}
+	};
+};
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
@@ -10343,7 +10414,8 @@ var _user$project$Main$view = function (model) {
 		{ctor: '[]'},
 		{
 			ctor: '::',
-			_0: _user$project$Views$view_header,
+			_0: _user$project$Views$view_header(
+				_user$project$Profile$view_user_profile_header(model.profile)),
 			_1: {
 				ctor: '::',
 				_0: _user$project$Views$view_filter,
@@ -10362,27 +10434,6 @@ var _user$project$Main$view = function (model) {
 var _user$project$Main$UpdateStudentProfile = function (a) {
 	return {ctor: 'UpdateStudentProfile', _0: a};
 };
-var _user$project$Main$update_student_profile = function (profile_id) {
-	var request = A2(
-		_elm_lang$http$Http$get,
-		A2(
-			_elm_lang$core$String$join,
-			'',
-			{
-				ctor: '::',
-				_0: _user$project$Config$student_api_endpoint,
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$core$Basics_ops['++'],
-						_elm_lang$core$Basics$toString(profile_id),
-						'/'),
-					_1: {ctor: '[]'}
-				}
-			}),
-		_user$project$Profile$studentProfileDecoder);
-	return A2(_elm_lang$http$Http$send, _user$project$Main$UpdateStudentProfile, request);
-};
 var _user$project$Main$init = function (flags) {
 	return {
 		ctor: '_Tuple2',
@@ -10393,7 +10444,7 @@ var _user$project$Main$init = function (flags) {
 			errors: _elm_lang$core$Dict$fromList(
 				{ctor: '[]'})
 		},
-		_1: _user$project$Main$update_student_profile(flags.profile_id)
+		_1: A2(_user$project$Profile$update_student_profile, _user$project$Main$UpdateStudentProfile, flags.profile_id)
 	};
 };
 var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(

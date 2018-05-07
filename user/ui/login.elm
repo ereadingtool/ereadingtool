@@ -17,7 +17,6 @@ import Json.Encode as Encode
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 
 import Views
-import Config exposing (student_login_api_endpoint)
 import Flags exposing (CSRFToken, Flags)
 
 

@@ -12,11 +12,12 @@ from text.models import TextDifficulty
 from user.forms import StudentSignUpForm, StudentLoginForm, StudentForm
 from user.models import Student
 from user.views.api import APIView
-from user.views.mixin import ProfileView
+from user.views.mixin import ProfileView, ElmLoadJsView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class StudentAPIView(LoginRequiredMixin, APIView):
+    # returns permission denied HTTP message rather than redirect to login
     raise_exception = True
 
     def form(self, request: HttpRequest, params: dict) -> TypeVar('forms.Form'):
@@ -78,6 +79,20 @@ class StudentSignUpView(TemplateView):
 
 class StudentLoginView(TemplateView):
     template_name = 'student/login.html'
+
+
+class StudentLoadElm(ElmLoadJsView):
+    def get_context_data(self, **kwargs):
+        context = super(StudentLoadElm, self).get_context_data(**kwargs)
+
+        context['elm']['difficulties'] = {
+            'quote': False,
+            'safe': True,
+            'value': json.dumps([(text_difficulty.slug, text_difficulty.name)
+                                 for text_difficulty in TextDifficulty.objects.all()])
+        }
+
+        return context
 
 
 class StudentProfileView(ProfileView):

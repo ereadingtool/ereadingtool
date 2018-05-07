@@ -7,5 +7,5 @@
 
 {% block body %}
     <input id="difficulty_choices" type="hidden" value="{{ difficulties }}">
-    <script src="{% static "user/js/student/load_elm.js" %}"></script>
+    <script src="{% url "student-elm" %}></script>
 {% endblock %}

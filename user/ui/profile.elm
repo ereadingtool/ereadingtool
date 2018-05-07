@@ -1,10 +1,16 @@
-module Profile exposing (Profile, studentProfile, studentDifficultyPreference, emptyStudentProfile,
-  studentDifficulties, studentProfileDecoder, userName)
+module Profile exposing (StudentProfile, studentProfile, studentDifficultyPreference, emptyStudentProfile,
+  studentDifficulties, studentProfileDecoder, studentUserName, view_user_profile_header, update_student_profile)
 
 import Model
 import Config exposing (student_api_endpoint)
 import Json.Decode as Decode
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
+import Html exposing (Html, div)
+
+import Http exposing (..)
+import HttpHelpers exposing (post_with_headers)
+
+import Html.Attributes exposing (classList, attribute)
 
 import Flags exposing (ProfileID, ProfileType)
 
@@ -14,23 +20,27 @@ type alias StudentProfileParams = {
   , difficulty_preference: Maybe Model.TextDifficulty
   , difficulties: List Model.TextDifficulty }
 
-type Profile = StudentProfile StudentProfileParams | InstructorProfile
+type StudentProfile = StudentProfile StudentProfileParams
 
-studentProfile : StudentProfileParams -> Profile
+studentProfile : StudentProfileParams -> StudentProfile
 studentProfile params = StudentProfile params
 
-studentDifficultyPreference : Profile -> Maybe Model.TextDifficulty
+studentDifficultyPreference : StudentProfile -> Maybe Model.TextDifficulty
 studentDifficultyPreference (StudentProfile attrs) = attrs.difficulty_preference
 
-studentDifficulties : Profile -> List Model.TextDifficulty
+studentDifficulties : StudentProfile -> List Model.TextDifficulty
 studentDifficulties (StudentProfile attrs) = attrs.difficulties
 
-userName : Profile -> String
-userName profile = case profile of
-  StudentProfile attrs -> attrs.username
-  InstructorProfile -> ""
+studentUserName : StudentProfile -> String
+studentUserName (StudentProfile attrs) = attrs.username
 
-emptyStudentProfile : Profile
+view_user_profile_header : StudentProfile -> List (Html msg)
+view_user_profile_header (StudentProfile attrs) = [
+    Html.div [] [ Html.text "Logged in as:" ], Html.a [attribute "href" "/profile/student/"] [ Html.text attrs.username ],
+    Html.div [] [ Html.text "Log out" ]
+  ]
+
+emptyStudentProfile : StudentProfile
 emptyStudentProfile = StudentProfile {
     id = Nothing
   , username = ""
@@ -47,6 +57,12 @@ studentProfileParamsDecoder =
     |> required "difficulties" Model.textDifficultyDecoder
 
 
-studentProfileDecoder : Decode.Decoder Profile
+studentProfileDecoder : Decode.Decoder StudentProfile
 studentProfileDecoder =
   Decode.map StudentProfile studentProfileParamsDecoder
+
+update_student_profile : (Result Error StudentProfile -> msg) -> ProfileID -> Cmd msg
+update_student_profile msg profile_id =  let
+    request = Http.get (String.join "" [student_api_endpoint, (toString profile_id) ++ "/"])
+      studentProfileDecoder
+  in Http.send msg request

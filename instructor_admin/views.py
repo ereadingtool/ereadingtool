@@ -2,7 +2,7 @@ from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from text.models import Text
-from user.views.mixin import ProfileView
+from user.views.mixin import ProfileView, ElmLoadJsView
 
 
 class AdminView(ProfileView, LoginRequiredMixin, TemplateView):
@@ -13,11 +13,15 @@ class TextAdminView(AdminView):
     model = Text
 
     fields = ('source', 'difficulty', 'body',)
-    template_name = 'admin.html'
+    template_name = 'instructor_admin/admin.html'
 
 
-class AdminCreateQuizView(AdminView):
+class AdminCreateEditQuizView(AdminView):
     model = Text
 
     fields = ('source', 'difficulty', 'body',)
-    template_name = 'create_quiz.html'
+    template_name = 'instructor_admin/create_quiz.html'
+
+
+class AdminCreateEditElmLoadView(ElmLoadJsView):
+    template_name = "instructor_admin/load_elm.html"

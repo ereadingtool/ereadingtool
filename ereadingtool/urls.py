@@ -17,9 +17,13 @@ from django.contrib import admin
 from django.urls import path, include, reverse_lazy
 from django.views.generic import RedirectView
 
-from quiz.views import QuizView
+from quiz.views import QuizView, QuizLoadElm
+from user.views.mixin import ElmLoadJsView
+
 
 urlpatterns = [
+    path('load_elm.js', ElmLoadJsView.as_view(), name='load-elm'),
+
     path('', include('user.urls.instructor')),
     path('', include('user.urls.student')),
 
@@ -27,7 +31,10 @@ urlpatterns = [
     path('api/question/', include('question.urls')),
 
     path('admin/', include('instructor_admin.urls')),
+
+    path('quiz/<int:pk>/load_elm.js', QuizLoadElm.as_view(), name="quiz-load-elm"),
     path('quiz/<int:pk>/', QuizView.as_view(), name="quiz"),
+
     path('django-admin/', admin.site.urls),
     path('', RedirectView.as_view(url=reverse_lazy('student-login')))
 ]

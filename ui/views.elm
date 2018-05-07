@@ -3,18 +3,16 @@ module Views exposing (view_filter, view_header, view_footer)
 import Html exposing (..)
 import Html.Attributes exposing (classList, attribute)
 
-import Flags exposing (CSRFToken)
 
-
-view_header : Html msg
-view_header =
+view_header : List (Html msg) -> Html msg
+view_header user_profile =
     div [ classList [("header", True)] ] [
         text "E-Reader"
       , div [ classList [("menu", True)] ] [
           span [ classList [("menu_item", True)] ] [ Html.a [attribute "href" "/admin"] [ Html.text "Quizzes" ] ]
         , span [ classList [("menu_item", True)] ] [ Html.a [attribute "href" "/login/student/"] [ Html.text "Student Login" ] ]
         , span [ classList [("menu_item", True)] ] [ Html.a [attribute "href" "/login/instructor/"] [ Html.text "Instructor Login" ] ]
-        , span [ classList [("menu_item", True)] ] [ Html.text "User Profile" ]
+        , span [ classList [("menu_item", True)] ] user_profile
         ]
     ]
 

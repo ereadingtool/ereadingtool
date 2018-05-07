@@ -4,8 +4,16 @@ from django.db.models import ObjectDoesNotExist
 
 
 class ProfileView(LoginRequiredMixin, TemplateView):
+    pass
+
+
+class ElmLoadJsView(LoginRequiredMixin, TemplateView):
+    template_name = "load_elm_base.html"
+
     def get_context_data(self, **kwargs) -> dict:
-        context = super(ProfileView, self).get_context_data(**kwargs)
+        context = super(ElmLoadJsView, self).get_context_data(**kwargs)
+
+        context.setdefault('elm', {})
 
         profile = None
 
@@ -14,7 +22,16 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         except ObjectDoesNotExist:
             profile = self.request.user.instructor
 
-        context['profile_type'] = profile.__class__.__name__.lower()
-        context['profile_id'] = profile.pk
+        context['elm']['profile_id'] = {
+            'quote': False,
+            'safe': True,
+            'value': profile.pk
+        }
+
+        context['elm']['profile_type'] = {
+            'quote': True,
+            'safe': True,
+            'value': profile.__class__.__name__.lower()
+        }
 
         return context
