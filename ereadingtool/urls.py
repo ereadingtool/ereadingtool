@@ -18,7 +18,7 @@ from django.urls import path, include, reverse_lazy
 from django.views.generic import RedirectView
 
 from quiz.views import QuizView, QuizLoadElm
-from user.views.mixin import ElmLoadJsView
+from mixins.view import ElmLoadJsView
 
 
 urlpatterns = [

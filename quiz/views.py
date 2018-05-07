@@ -1,5 +1,6 @@
 from django.views.generic import TemplateView
-from user.views.mixin import ProfileView, ElmLoadJsView
+from user.views.mixin import ProfileView
+from mixins.view import ElmLoadJsView
 from django.urls import reverse_lazy
 from text.models import Text
 

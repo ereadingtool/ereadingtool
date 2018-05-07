@@ -10,7 +10,7 @@ api_urlpatterns = [
 ]
 
 urlpatterns = [
-    path('load_elm.js', StudentLoadElm.as_view(), name='student-elm'),
+    path('student/load_elm.js', StudentLoadElm.as_view(), name='student-elm'),
 
     path('signup/student/', StudentSignUpView.as_view(), name='student-signup'),
     path('login/student/', StudentLoginView.as_view(), name='student-login'),
