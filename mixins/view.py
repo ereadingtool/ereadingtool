@@ -1,19 +1,30 @@
 import json
 
+from rjsmin import jsmin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.db.models import ObjectDoesNotExist
 from text.models import TextDifficulty
 
+from django.views.decorators.vary import vary_on_cookie
+from django.views.decorators.cache import cache_control
+
 
 class ElmLoadJsBaseView(TemplateView):
     template_name = "load_elm_base.html"
+
+    @cache_control(private=True, must_revalidate=True)
+    @vary_on_cookie
+    def dispatch(self, request, *args, **kwargs):
+        return super(ElmLoadJsBaseView, self).dispatch(request, *args, **kwargs)
 
     # minify js
     def render_to_response(self, context, **response_kwargs):
         response = super(ElmLoadJsBaseView, self).render_to_response(context, **response_kwargs)
 
-        response.content = response.rendered_content.replace(r'\s{2,}', ' ')
+        response.render()
+
+        response.content = jsmin(response.content.decode('utf8'))
 
         return response
 
