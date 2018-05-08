@@ -5,3 +5,6 @@
     <script src="{% static "user/js/instructor_login.js" %}"></script>
 {% endblock %}
 
+{% block body %}
+    <script src="{% url "load-elm-unauth" %}"></script>
+{% endblock %}

@@ -1,4 +1,4 @@
-module Flags exposing (CSRFToken, Flags)
+module Flags exposing (CSRFToken, Flags, UnAuthedFlags)
 
 import Profile
 

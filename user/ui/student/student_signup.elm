@@ -1,5 +1,5 @@
 import Html exposing (Html, div)
-import Flags exposing (CSRFToken)
+import Flags
 
 import SignUp
 import Navigation
@@ -18,7 +18,7 @@ import Html.Events exposing (onClick, onBlur, onInput)
 
 type alias SignUpResp = { id: SignUp.UserID, redirect: SignUp.URI }
 
-type alias Flags = { csrftoken : CSRFToken, difficulties: List TextDifficulty }
+type alias Flags = { csrftoken : Flags.CSRFToken, difficulties: List TextDifficulty }
 
 type alias SignUpParams = {
     email : String
@@ -59,7 +59,7 @@ signUpRespDecoder =
     |> required "id" Decode.int
     |> required "redirect" Decode.string
 
-post_signup : CSRFToken -> SignUpParams -> Cmd Msg
+post_signup : Flags.CSRFToken -> SignUpParams -> Cmd Msg
 post_signup csrftoken signup_params =
   let encoded_signup_params = signUpEncoder signup_params
       req =

@@ -1,5 +1,5 @@
 import Html exposing (Html, div)
-import Flags exposing (CSRFToken, Flags)
+import Flags
 
 import SignUp
 import Navigation
@@ -28,7 +28,7 @@ type Msg =
   | Submit
 
 type alias Model = {
-    flags : Flags
+    flags : Flags.UnAuthedFlags
   , signup_params : SignUpParams
   , show_passwords : Bool
   , errors : Dict String String }
@@ -51,7 +51,7 @@ signUpRespDecoder =
     |> required "id" Decode.int
     |> required "redirect" Decode.string
 
-post_signup : CSRFToken -> SignUpParams -> Cmd Msg
+post_signup : Flags.CSRFToken -> SignUpParams -> Cmd Msg
 post_signup csrftoken signup_params =
   let encoded_signup_params = signUpEncoder signup_params
       req =
@@ -63,7 +63,7 @@ post_signup csrftoken signup_params =
   in
     Http.send Submitted req
 
-init : Flags -> (Model, Cmd Msg)
+init : Flags.UnAuthedFlags -> (Model, Cmd Msg)
 init flags = ({
     flags = flags
   , signup_params = {
@@ -90,7 +90,7 @@ update msg model = case msg of
       Http.BadPayload err resp -> (model, Cmd.none)
       _ -> (model, Cmd.none)
 
-main : Program Flags Model Msg
+main : Program Flags.UnAuthedFlags Model Msg
 main =
   Html.programWithFlags
     { init = init

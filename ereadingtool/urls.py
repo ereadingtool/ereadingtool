@@ -18,11 +18,14 @@ from django.urls import path, include, reverse_lazy
 from django.views.generic import RedirectView
 
 from quiz.views import QuizView, QuizLoadElm
-from mixins.view import ElmLoadJsView
+from mixins.view import ElmLoadJsView, NoAuthElmLoadJsView, ElmLoadStudentSignUpView
 
 
 urlpatterns = [
     path('load_elm.js', ElmLoadJsView.as_view(), name='load-elm'),
+    path('load_elm_unauth.js', NoAuthElmLoadJsView.as_view(), name='load-elm-unauth'),
+
+    path('load_elm_unauth_student.js', ElmLoadStudentSignUpView.as_view(), name='load-elm-unauth-student-signup'),
 
     path('', include('user.urls.instructor')),
     path('', include('user.urls.student')),

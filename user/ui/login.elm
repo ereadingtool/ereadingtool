@@ -17,12 +17,12 @@ import Json.Encode as Encode
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 
 import Views
-import Flags exposing (CSRFToken, Flags)
+import Flags
 
 
 type alias UserID = Int
 type alias URI = String
-
+type alias SignUpURI = String
 
 type alias LoginResp = { id: UserID, redirect : URI }
 
@@ -38,7 +38,7 @@ type alias LoginParams = {
   , password : String }
 
 type alias Model = {
-    flags : Flags
+    flags : Flags.UnAuthedFlags
   , login_params : LoginParams
   , errors : Dict String String }
 
@@ -54,7 +54,7 @@ loginRespDecoder =
     |> required "id" Decode.int
     |> required "redirect" Decode.string
 
-init : Flags -> (Model, Cmd Msg)
+init : Flags.UnAuthedFlags -> (Model, Cmd Msg)
 init flags = ({
     flags = flags
   , login_params = (LoginParams "" "")
@@ -64,7 +64,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
-post_login : String -> CSRFToken -> LoginParams -> Cmd Msg
+post_login : String -> Flags.CSRFToken -> LoginParams -> Cmd Msg
 post_login endpoint csrftoken login_params =
   let encoded_login_params = loginEncoder login_params
       req =
@@ -149,20 +149,27 @@ view_submit model = [
     ])
   ]
 
-view_content : Model -> Html Msg
-view_content model = Html.div [ classList [("login", True)] ] [
+view_signup : SignUpURI -> List (Html Msg)
+view_signup signup_uri = [
+  Html.span [] [
+    Html.text "Not registered? "
+  , Html.a [attribute "href" signup_uri] [ Html.span [attribute "class" "cursor"] [Html.text "Sign Up"]]
+  ]]
+
+view_content : SignUpURI -> Model -> Html Msg
+view_content signup_uri model = Html.div [ classList [("login", True)] ] [
     Html.div [classList [("login_box", True)] ] <|
         (view_email_input model) ++
-        (view_password_input model) ++
-        (view_errors model) ++
-        (view_submit model)
+        (view_password_input model) ++ (view_signup signup_uri) ++
+        (view_submit model) ++
+        (view_errors model)
   ]
 
 -- VIEW
-view : Model -> Html Msg
-view model = div [] [
+view : SignUpURI -> Model -> Html Msg
+view signup_uri model = div [] [
     (Views.view_header Nothing)
   , (Views.view_filter)
-  , (view_content model)
+  , (view_content signup_uri model)
   , (Views.view_footer)
   ]

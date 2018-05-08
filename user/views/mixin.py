@@ -4,4 +4,3 @@ from django.views.generic import TemplateView
 
 class ProfileView(LoginRequiredMixin, TemplateView):
     pass
-

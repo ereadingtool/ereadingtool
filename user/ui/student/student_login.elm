@@ -1,16 +1,16 @@
 import Html exposing (Html)
 
 import Config exposing (student_login_api_endpoint)
-import Flags exposing (CSRFToken, Flags)
+import Flags
 
-import Login exposing (init, view, subscriptions, update)
+import Login
 
 
-main : Program Flags Login.Model Login.Msg
+main : Program Flags.UnAuthedFlags Login.Model Login.Msg
 main =
   Html.programWithFlags
-    { init = init
-    , view = view
-    , subscriptions = subscriptions
-    , update = (update student_login_api_endpoint)
+    { init = Login.init
+    , view = (Login.view "/signup/student")
+    , subscriptions = Login.subscriptions
+    , update = (Login.update student_login_api_endpoint)
     }
