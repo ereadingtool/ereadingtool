@@ -27,7 +27,7 @@ class ElmLoadJsBaseView(TemplateView):
 
 class ElmLoadJsView(LoginRequiredMixin, ElmLoadJsBaseView):
     def get_context_data(self, **kwargs) -> dict:
-        context = super(ElmLoadJsBaseView, self).get_context_data(**kwargs)
+        context = super(ElmLoadJsView, self).get_context_data(**kwargs)
 
         profile = None
 
