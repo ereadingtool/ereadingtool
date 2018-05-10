@@ -13,7 +13,7 @@ import Html.Attributes exposing (classList, attribute)
 import HttpHelpers exposing (post_with_headers)
 import Config exposing (student_signup_api_endpoint)
 import Http exposing (..)
-import Model exposing (TextDifficulty)
+import Text.Model exposing (TextDifficulty)
 import Html.Events exposing (onClick, onBlur, onInput)
 
 type alias SignUpResp = { id: SignUp.UserID, redirect: SignUp.URI }

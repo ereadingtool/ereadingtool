@@ -9,7 +9,9 @@ import Http exposing (..)
 
 import Array exposing (Array)
 
-import Model exposing (Text, Question, Answer, emptyText, textDecoder, questionsDecoder )
+import Field.Text exposing (Text, emptyText, textDecoder)
+import Field.Question exposing (Question, questionsDecoder)
+import Field.Answer exposing (Answer)
 import Views
 import Profile
 import Config exposing (..)

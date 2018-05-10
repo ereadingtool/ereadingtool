@@ -9506,15 +9506,67 @@ var _elm_lang$http$Http$StringPart = F2(
 	});
 var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
 
-var _user$project$Config$student_api_endpoint = '/api/student/';
-var _user$project$Config$student_login_api_endpoint = '/api/student/login/';
-var _user$project$Config$student_signup_api_endpoint = '/api/student/signup/';
-var _user$project$Config$instructor_login_api_endpoint = '/api/instructor/login/';
-var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signup/';
-var _user$project$Config$question_api_endpoint = '/api/question/';
-var _user$project$Config$text_api_endpoint = '/api/text/';
+var _user$project$Answer_Model$generate_answer = function (i) {
+	return {
+		id: _elm_lang$core$Maybe$Nothing,
+		question_id: _elm_lang$core$Maybe$Nothing,
+		text: A2(
+			_elm_lang$core$String$join,
+			' ',
+			{
+				ctor: '::',
+				_0: 'Click to write choice',
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$core$Basics$toString(i + 1),
+					_1: {ctor: '[]'}
+				}
+			}),
+		correct: false,
+		order: i,
+		feedback: ''
+	};
+};
+var _user$project$Answer_Model$generate_answers = function (n) {
+	return _elm_lang$core$Array$fromList(
+		A2(
+			_elm_lang$core$List$map,
+			_user$project$Answer_Model$generate_answer,
+			A2(_elm_lang$core$List$range, 0, n - 1)));
+};
+var _user$project$Answer_Model$Answer = F6(
+	function (a, b, c, d, e, f) {
+		return {id: a, question_id: b, text: c, correct: d, order: e, feedback: f};
+	});
 
-var _user$project$Model$answerEncoder = function (answer) {
+var _user$project$Answer_Decode$answerDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'feedback',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'order',
+		_elm_lang$core$Json_Decode$int,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'correct',
+			_elm_lang$core$Json_Decode$bool,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'text',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'question_id',
+					_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'id',
+						_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Answer_Model$Answer)))))));
+var _user$project$Answer_Decode$answersDecoder = _elm_lang$core$Json_Decode$array(_user$project$Answer_Decode$answerDecoder);
+
+var _user$project$Answer_Encode$answerEncoder = function (answer) {
 	return _elm_lang$core$Json_Encode$object(
 		{
 			ctor: '::',
@@ -9550,233 +9602,172 @@ var _user$project$Model$answerEncoder = function (answer) {
 			}
 		});
 };
-var _user$project$Model$answersEncoder = function (answers) {
+var _user$project$Answer_Encode$answersEncoder = function (answers) {
 	return _elm_lang$core$Json_Encode$list(
 		_elm_lang$core$Array$toList(
 			A2(
 				_elm_lang$core$Array$map,
 				function (answer) {
-					return _user$project$Model$answerEncoder(answer);
+					return _user$project$Answer_Encode$answerEncoder(answer);
 				},
 				answers)));
 };
-var _user$project$Model$questionEncoder = function (question) {
-	return _elm_lang$core$Json_Encode$object(
-		{
-			ctor: '::',
-			_0: {
-				ctor: '_Tuple2',
-				_0: 'body',
-				_1: _elm_lang$core$Json_Encode$string(question.body)
-			},
-			_1: {
-				ctor: '::',
-				_0: {
-					ctor: '_Tuple2',
-					_0: 'order',
-					_1: _elm_lang$core$Json_Encode$int(question.order)
-				},
-				_1: {
-					ctor: '::',
-					_0: {
-						ctor: '_Tuple2',
-						_0: 'answers',
-						_1: _user$project$Model$answersEncoder(question.answers)
-					},
-					_1: {
-						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'question_type',
-							_1: _elm_lang$core$Json_Encode$string(question.question_type)
-						},
-						_1: {ctor: '[]'}
-					}
-				}
-			}
-		});
+
+var _user$project$Field$set_hover = F3(
+	function (field, hover, fields) {
+		return A3(
+			_elm_lang$core$Array$set,
+			field.index,
+			_elm_lang$core$Native_Utils.update(
+				field,
+				{hover: hover}),
+			fields);
+	});
+var _user$project$Field$toggle_editable = F2(
+	function (field, fields) {
+		return A3(
+			_elm_lang$core$Array$set,
+			field.index,
+			_elm_lang$core$Native_Utils.update(
+				field,
+				{
+					editable: field.editable ? false : true,
+					hover: false,
+					error: false
+				}),
+			fields);
+	});
+var _user$project$Field$fieldIDDecoder = _elm_lang$core$Json_Decode$int;
+
+var _user$project$Answer_Field$generate_answer_feedback_field = function (id) {
+	return {id: id, editable: false, error: false};
 };
-var _user$project$Model$questionsEncoder = function (questions) {
-	return _elm_lang$core$Json_Encode$list(
-		_elm_lang$core$Array$toList(
-			A2(
-				_elm_lang$core$Array$map,
-				function (question) {
-					return _user$project$Model$questionEncoder(question);
-				},
-				questions)));
-};
-var _user$project$Model$textEncoder = F2(
-	function (text, questions) {
-		return _elm_lang$core$Json_Encode$object(
+var _user$project$Answer_Field$AnswerFeedbackField = F3(
+	function (a, b, c) {
+		return {id: a, editable: b, error: c};
+	});
+var _user$project$Answer_Field$AnswerFieldAttributes = F6(
+	function (a, b, c, d, e, f) {
+		return {id: a, editable: b, hover: c, error: d, question_index: e, index: f};
+	});
+var _user$project$Answer_Field$AnswerField = F3(
+	function (a, b, c) {
+		return {ctor: 'AnswerField', _0: a, _1: b, _2: c};
+	});
+var _user$project$Answer_Field$update_question_index = F2(
+	function (_p0, i) {
+		var _p1 = _p0;
+		return A3(
+			_user$project$Answer_Field$AnswerField,
+			_p1._0,
+			_elm_lang$core$Native_Utils.update(
+				_p1._1,
+				{question_index: i}),
+			_p1._2);
+	});
+var _user$project$Answer_Field$generate_answer_field = F3(
+	function (i, j, answer) {
+		var answer_id = A2(
+			_elm_lang$core$String$join,
+			'_',
 			{
 				ctor: '::',
-				_0: {
-					ctor: '_Tuple2',
-					_0: 'title',
-					_1: _elm_lang$core$Json_Encode$string(text.title)
-				},
+				_0: 'question',
 				_1: {
 					ctor: '::',
-					_0: {
-						ctor: '_Tuple2',
-						_0: 'source',
-						_1: _elm_lang$core$Json_Encode$string(text.source)
-					},
+					_0: _elm_lang$core$Basics$toString(i),
 					_1: {
 						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'difficulty',
-							_1: _elm_lang$core$Json_Encode$string(text.difficulty)
-						},
+						_0: 'answer',
 						_1: {
 							ctor: '::',
-							_0: {
-								ctor: '_Tuple2',
-								_0: 'body',
-								_1: _elm_lang$core$Json_Encode$string(text.body)
-							},
-							_1: {
-								ctor: '::',
-								_0: {
-									ctor: '_Tuple2',
-									_0: 'questions',
-									_1: _user$project$Model$questionsEncoder(questions)
-								},
-								_1: {ctor: '[]'}
-							}
+							_0: _elm_lang$core$Basics$toString(j),
+							_1: {ctor: '[]'}
 						}
 					}
 				}
 			});
+		return A3(
+			_user$project$Answer_Field$AnswerField,
+			answer,
+			{id: answer_id, editable: false, hover: false, error: false, question_index: i, index: j},
+			_user$project$Answer_Field$generate_answer_feedback_field(
+				A2(
+					_elm_lang$core$String$join,
+					'_',
+					{
+						ctor: '::',
+						_0: answer_id,
+						_1: {
+							ctor: '::',
+							_0: 'feedback',
+							_1: {ctor: '[]'}
+						}
+					})));
 	});
-var _user$project$Model$textCreateRespErrDecoder = _elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string);
-var _user$project$Model$decodeCreateRespErrors = function (str) {
-	return A2(_elm_lang$core$Json_Decode$decodeString, _user$project$Model$textCreateRespErrDecoder, str);
+
+var _user$project$Config$student_api_endpoint = '/api/student/';
+var _user$project$Config$student_login_api_endpoint = '/api/student/login/';
+var _user$project$Config$student_signup_api_endpoint = '/api/student/signup/';
+var _user$project$Config$instructor_login_api_endpoint = '/api/instructor/login/';
+var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signup/';
+var _user$project$Config$question_api_endpoint = '/api/question/';
+var _user$project$Config$text_api_endpoint = '/api/text/';
+
+var _user$project$Question_Model$new_question = function (i) {
+	return {
+		id: _elm_lang$core$Maybe$Nothing,
+		text_id: _elm_lang$core$Maybe$Nothing,
+		created_dt: _elm_lang$core$Maybe$Nothing,
+		modified_dt: _elm_lang$core$Maybe$Nothing,
+		body: '',
+		order: i,
+		answers: _user$project$Answer_Model$generate_answers(4),
+		question_type: 'main_idea'
+	};
 };
-var _user$project$Model$textDifficultyDecoder = _elm_lang$core$Json_Decode$keyValuePairs(_elm_lang$core$Json_Decode$string);
-var _user$project$Model$emptyText = {id: _elm_lang$core$Maybe$Nothing, title: 'title', created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing, source: 'source', difficulty: '', author: 'author', question_count: 0, body: 'text'};
-var _user$project$Model$Text = F9(
-	function (a, b, c, d, e, f, g, h, i) {
-		return {id: a, title: b, created_dt: c, modified_dt: d, source: e, difficulty: f, author: g, question_count: h, body: i};
+var _user$project$Question_Model$initial_questions = _elm_lang$core$Array$fromList(
+	{
+		ctor: '::',
+		_0: _user$project$Question_Model$new_question(0),
+		_1: {ctor: '[]'}
 	});
-var _user$project$Model$textDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'body',
-	_elm_lang$core$Json_Decode$string,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'question_count',
-		_elm_lang$core$Json_Decode$int,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'author',
-			_elm_lang$core$Json_Decode$string,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'difficulty',
-				_elm_lang$core$Json_Decode$string,
-				A3(
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'source',
-					_elm_lang$core$Json_Decode$string,
-					A3(
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'modified_dt',
-						_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
-						A3(
-							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'created_dt',
-							_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
-							A3(
-								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'title',
-								_elm_lang$core$Json_Decode$string,
-								A3(
-									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-									'id',
-									_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$Text))))))))));
-var _user$project$Model$textsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Model$textDecoder);
-var _user$project$Model$TextCreateResp = function (a) {
-	return {id: a};
-};
-var _user$project$Model$textCreateRespDecoder = A4(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
-	'id',
-	_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$int),
-	_elm_lang$core$Maybe$Nothing,
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$TextCreateResp));
-var _user$project$Model$Answer = F6(
-	function (a, b, c, d, e, f) {
-		return {id: a, question_id: b, text: c, correct: d, order: e, feedback: f};
-	});
-var _user$project$Model$answerDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'feedback',
-	_elm_lang$core$Json_Decode$string,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'order',
-		_elm_lang$core$Json_Decode$int,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'correct',
-			_elm_lang$core$Json_Decode$bool,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'text',
-				_elm_lang$core$Json_Decode$string,
-				A3(
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'question_id',
-					_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-					A3(
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'id',
-						_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$Answer)))))));
-var _user$project$Model$answersDecoder = _elm_lang$core$Json_Decode$array(_user$project$Model$answerDecoder);
-var _user$project$Model$Question = F8(
+var _user$project$Question_Model$Question = F8(
 	function (a, b, c, d, e, f, g, h) {
 		return {id: a, text_id: b, created_dt: c, modified_dt: d, body: e, order: f, answers: g, question_type: h};
 	});
-var _user$project$Model$questionDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'question_type',
-	_elm_lang$core$Json_Decode$string,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'answers',
-		_user$project$Model$answersDecoder,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'order',
-			_elm_lang$core$Json_Decode$int,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'body',
-				_elm_lang$core$Json_Decode$string,
-				A3(
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'modified_dt',
-					_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
-					A3(
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'created_dt',
-						_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
-						A3(
-							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'text_id',
-							_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-							A3(
-								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'id',
-								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$Question)))))))));
-var _user$project$Model$questionsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Model$questionDecoder);
 
+var _user$project$Text_Model$emptyText = {id: _elm_lang$core$Maybe$Nothing, title: 'title', created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing, source: 'source', difficulty: '', author: 'author', question_count: 0, questions: _user$project$Question_Model$initial_questions, body: 'text'};
+var _user$project$Text_Model$Text = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return {id: a, title: b, created_dt: c, modified_dt: d, source: e, difficulty: f, author: g, question_count: h, questions: i, body: j};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+
+var _user$project$Profile$tupleDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	F2(
+		function (v0, v1) {
+			return {ctor: '_Tuple2', _0: v0, _1: v1};
+		}),
+	A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
 var _user$project$Profile$view_instructor_profile_header = function (_p0) {
 	var _p1 = _p0;
 	return {
@@ -9869,19 +9860,11 @@ var _user$project$Profile$StudentProfileParams = F4(
 var _user$project$Profile$studentProfileParamsDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'difficulties',
-	_user$project$Model$textDifficultyDecoder,
+	_elm_lang$core$Json_Decode$list(_user$project$Profile$tupleDecoder),
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'difficulty_preference',
-		_elm_lang$core$Json_Decode$nullable(
-			A3(
-				_elm_lang$core$Json_Decode$map2,
-				F2(
-					function (v0, v1) {
-						return {ctor: '_Tuple2', _0: v0, _1: v1};
-					}),
-				A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string),
-				A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string))),
+		_elm_lang$core$Json_Decode$nullable(_user$project$Profile$tupleDecoder),
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 			'username',
@@ -9987,6 +9970,85 @@ var _user$project$HttpHelpers$post_with_headers = F4(
 			});
 	});
 
+var _user$project$Ports$selectAllInputText = _elm_lang$core$Native_Platform.outgoingPort(
+	'selectAllInputText',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$ckEditor = _elm_lang$core$Native_Platform.outgoingPort(
+	'ckEditor',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$ckEditorUpdate = _elm_lang$core$Native_Platform.incomingPort('ckEditorUpdate', _elm_lang$core$Json_Decode$string);
+
+var _user$project$Views$view_preview = A2(
+	_elm_lang$html$Html$div,
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html_Attributes$classList(
+			{
+				ctor: '::',
+				_0: {ctor: '_Tuple2', _0: 'preview', _1: true},
+				_1: {ctor: '[]'}
+			}),
+		_1: {ctor: '[]'}
+	},
+	{
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'preview_menu', _1: true},
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$span,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$classList(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$button,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('Preview'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$input,
+								{
+									ctor: '::',
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Search texts..'),
+									_1: {ctor: '[]'}
+								},
+								{ctor: '[]'}),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			}),
+		_1: {ctor: '[]'}
+	});
 var _user$project$Views$view_footer = A2(
 	_elm_lang$html$Html$div,
 	{
@@ -10234,17 +10296,522 @@ var _user$project$Views$view_header = function (view_user_profile) {
 		});
 };
 
-var _user$project$Ports$selectAllInputText = _elm_lang$core$Native_Platform.outgoingPort(
-	'selectAllInputText',
-	function (v) {
-		return v;
+var _user$project$Question_Field$question_index = function (_p0) {
+	var _p1 = _p0;
+	return _p1._1.index;
+};
+var _user$project$Question_Field$update_question_field = F2(
+	function (new_question_field, question_fields) {
+		return A3(
+			_elm_lang$core$Array$set,
+			_user$project$Question_Field$question_index(new_question_field),
+			new_question_field,
+			question_fields);
 	});
-var _user$project$Ports$ckEditor = _elm_lang$core$Native_Platform.outgoingPort(
-	'ckEditor',
-	function (v) {
-		return v;
+var _user$project$Question_Field$QuestionFieldAttributes = F6(
+	function (a, b, c, d, e, f) {
+		return {id: a, editable: b, hover: c, menu_visible: d, error: e, index: f};
 	});
-var _user$project$Ports$ckEditorUpdate = _elm_lang$core$Native_Platform.incomingPort('ckEditorUpdate', _elm_lang$core$Json_Decode$string);
+var _user$project$Question_Field$QuestionField = F3(
+	function (a, b, c) {
+		return {ctor: 'QuestionField', _0: a, _1: b, _2: c};
+	});
+var _user$project$Question_Field$generate_question_field = F2(
+	function (i, question) {
+		return A3(
+			_user$project$Question_Field$QuestionField,
+			question,
+			{
+				id: A2(
+					_elm_lang$core$String$join,
+					'_',
+					{
+						ctor: '::',
+						_0: 'question',
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$core$Basics$toString(i),
+							_1: {ctor: '[]'}
+						}
+					}),
+				editable: false,
+				hover: false,
+				menu_visible: false,
+				error: false,
+				index: i
+			},
+			A2(
+				_elm_lang$core$Array$indexedMap,
+				_user$project$Answer_Field$generate_answer_field(i),
+				question.answers));
+	});
+var _user$project$Question_Field$add_new_question = function (fields) {
+	var arr_len = _elm_lang$core$Array$length(fields);
+	return A2(
+		_elm_lang$core$Array$push,
+		A2(
+			_user$project$Question_Field$generate_question_field,
+			arr_len,
+			_user$project$Question_Model$new_question(arr_len)),
+		fields);
+};
+var _user$project$Question_Field$initial_question_fields = A2(_elm_lang$core$Array$indexedMap, _user$project$Question_Field$generate_question_field, _user$project$Question_Model$initial_questions);
+var _user$project$Question_Field$delete_question = F2(
+	function (index, fields) {
+		return A2(
+			_elm_lang$core$Array$indexedMap,
+			F2(
+				function (i, _p2) {
+					var _p3 = _p2;
+					return A3(
+						_user$project$Question_Field$QuestionField,
+						_p3._0,
+						_elm_lang$core$Native_Utils.update(
+							_p3._1,
+							{index: i}),
+						A2(
+							_elm_lang$core$Array$map,
+							function (answer_field) {
+								return A2(_user$project$Answer_Field$update_question_index, answer_field, i);
+							},
+							_p3._2));
+				}),
+			A2(
+				_elm_lang$core$Array$filter,
+				function (field) {
+					return !_elm_lang$core$Native_Utils.eq(
+						_user$project$Question_Field$question_index(field),
+						index);
+				},
+				fields));
+	});
+
+var _user$project$Text_Field$update_errors = F2(
+	function (errors, components) {
+		return components;
+	});
+var _user$project$Text_Field$text = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0;
+};
+var _user$project$Text_Field$body = function (_p2) {
+	var _p3 = _p2;
+	return _p3._2.body;
+};
+var _user$project$Text_Field$generate_text_field = F2(
+	function (i, attr) {
+		return {
+			id: A2(
+				_elm_lang$core$String$join,
+				'_',
+				{
+					ctor: '::',
+					_0: 'text',
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$core$Basics$toString(i),
+						_1: {
+							ctor: '::',
+							_0: attr,
+							_1: {ctor: '[]'}
+						}
+					}
+				}),
+			editable: false,
+			hover: false,
+			error: false,
+			index: i
+		};
+	});
+var _user$project$Text_Field$TextField = F5(
+	function (a, b, c, d, e) {
+		return {id: a, editable: b, hover: c, error: d, index: e};
+	});
+var _user$project$Text_Field$TextFields = F5(
+	function (a, b, c, d, e) {
+		return {title: a, source: b, difficulty: c, author: d, body: e};
+	});
+var _user$project$Text_Field$TextComponentAttributes = function (a) {
+	return {index: a};
+};
+var _user$project$Text_Field$TextComponent = F4(
+	function (a, b, c, d) {
+		return {ctor: 'TextComponent', _0: a, _1: b, _2: c, _3: d};
+	});
+var _user$project$Text_Field$emptyTextComponent = function (i) {
+	return A4(
+		_user$project$Text_Field$TextComponent,
+		_user$project$Text_Model$emptyText,
+		{index: i},
+		{
+			title: A2(_user$project$Text_Field$generate_text_field, i, 'title'),
+			source: A2(_user$project$Text_Field$generate_text_field, i, 'source'),
+			difficulty: A2(_user$project$Text_Field$generate_text_field, i, 'difficulty'),
+			author: A2(_user$project$Text_Field$generate_text_field, i, 'author'),
+			body: A2(_user$project$Text_Field$generate_text_field, i, 'body')
+		},
+		_user$project$Question_Field$initial_question_fields);
+};
+var _user$project$Text_Field$add_new_text = function (components) {
+	var arr_len = _elm_lang$core$Array$length(components);
+	return A2(
+		_elm_lang$core$Array$push,
+		_user$project$Text_Field$emptyTextComponent(arr_len),
+		components);
+};
+
+var _user$project$Text_Update$update = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		return {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Native_Utils.update(
+				model,
+				{
+					text_components: _user$project$Text_Field$add_new_text(
+						_elm_lang$core$Array$fromList(
+							{ctor: '[]'}))
+				}),
+			_1: _elm_lang$core$Platform_Cmd$none
+		};
+	});
+var _user$project$Text_Update$UpdateID = F2(
+	function (a, b) {
+		return {ctor: 'UpdateID', _0: a, _1: b};
+	});
+
+var _user$project$Text_View$edit_body = function (text_field) {
+	var text = _user$project$Text_Field$text(text_field.parent);
+	return A2(
+		_elm_lang$html$Html$textarea,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Events$onInput(
+				function (_p0) {
+					return text_field.msg(
+						A2(_user$project$Text_Update$UpdateID, text_field.attrs.id, _p0));
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', text_field.attrs.id),
+				_1: {ctor: '[]'}
+			}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(text.body),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Text_View$html_attrs = {ctor: '[]'};
+var _user$project$Text_View$view_body = function (text_field) {
+	var text = _user$project$Text_Field$text(text_field.parent);
+	return A2(
+		_elm_lang$html$Html$div,
+		_user$project$Text_View$html_attrs,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text('Text: '),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(text.body),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Text_View$view_editable = F3(
+	function (text_field, view, edit) {
+		var _p1 = text_field.attrs.editable;
+		if (_p1 === true) {
+			return edit(text_field);
+		} else {
+			return view(text_field);
+		}
+	});
+var _user$project$Text_View$view_text_component = F2(
+	function (msg, text_component) {
+		var body_field = _user$project$Text_Field$body(text_component);
+		return {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$classList(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'text_properties', _1: true},
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$classList(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'text_property_items', _1: true},
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						},
+						{ctor: '[]'}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$classList(
+									{
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'body', _1: true},
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: A3(
+									_user$project$Text_View$view_editable,
+									{parent: text_component, msg: msg, attrs: body_field},
+									_user$project$Text_View$view_body,
+									_user$project$Text_View$edit_body),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}),
+			_1: {ctor: '[]'}
+		};
+	});
+var _user$project$Text_View$view_text_components = F2(
+	function (msg, text_components) {
+		return A2(
+			_elm_lang$html$Html$span,
+			{ctor: '[]'},
+			A3(
+				_elm_lang$core$List$foldl,
+				F2(
+					function (x, y) {
+						return A2(_elm_lang$core$Basics_ops['++'], x, y);
+					}),
+				{ctor: '[]'},
+				_elm_lang$core$Array$toList(
+					A2(
+						_elm_lang$core$Array$map,
+						_user$project$Text_View$view_text_component(msg),
+						text_components))));
+	});
+var _user$project$Text_View$TextField = F3(
+	function (a, b, c) {
+		return {parent: a, msg: b, attrs: c};
+	});
+
+var _user$project$Question_Encode$questionEncoder = function (question) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'body',
+				_1: _elm_lang$core$Json_Encode$string(question.body)
+			},
+			_1: {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'order',
+					_1: _elm_lang$core$Json_Encode$int(question.order)
+				},
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'answers',
+						_1: _user$project$Answer_Encode$answersEncoder(question.answers)
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'question_type',
+							_1: _elm_lang$core$Json_Encode$string(question.question_type)
+						},
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		});
+};
+var _user$project$Question_Encode$questionsEncoder = function (questions) {
+	return _elm_lang$core$Json_Encode$list(
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (question) {
+					return _user$project$Question_Encode$questionEncoder(question);
+				},
+				questions)));
+};
+
+var _user$project$Text_Encode$textEncoder = function (text) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'title',
+				_1: _elm_lang$core$Json_Encode$string(text.title)
+			},
+			_1: {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'source',
+					_1: _elm_lang$core$Json_Encode$string(text.source)
+				},
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'difficulty',
+						_1: _elm_lang$core$Json_Encode$string(text.difficulty)
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'body',
+							_1: _elm_lang$core$Json_Encode$string(text.body)
+						},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'author',
+								_1: _elm_lang$core$Json_Encode$string(text.author)
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'questions',
+									_1: _user$project$Question_Encode$questionsEncoder(text.questions)
+								},
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}
+			}
+		});
+};
+var _user$project$Text_Encode$textsEncoder = function (texts) {
+	return _elm_lang$core$Json_Encode$list(
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (text) {
+					return _user$project$Text_Encode$textEncoder(text);
+				},
+				texts)));
+};
+
+var _user$project$Question_Decode$questionDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'question_type',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'answers',
+		_user$project$Answer_Decode$answersDecoder,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'order',
+			_elm_lang$core$Json_Decode$int,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'body',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'modified_dt',
+					_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'created_dt',
+						_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+						A3(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+							'text_id',
+							_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+							A3(
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+								'id',
+								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Question_Model$Question)))))))));
+var _user$project$Question_Decode$questionsDecoder = _elm_lang$core$Json_Decode$array(_user$project$Question_Decode$questionDecoder);
+
+var _user$project$Text_Decode$textCreateRespErrDecoder = _elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string);
+var _user$project$Text_Decode$decodeCreateRespErrors = function (str) {
+	return A2(_elm_lang$core$Json_Decode$decodeString, _user$project$Text_Decode$textCreateRespErrDecoder, str);
+};
+var _user$project$Text_Decode$textDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'body',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'questions',
+		_user$project$Question_Decode$questionsDecoder,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'question_count',
+			_elm_lang$core$Json_Decode$int,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'author',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'difficulty',
+					_elm_lang$core$Json_Decode$string,
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'source',
+						_elm_lang$core$Json_Decode$string,
+						A3(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+							'modified_dt',
+							_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+							A3(
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+								'created_dt',
+								_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+								A3(
+									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+									'title',
+									_elm_lang$core$Json_Decode$string,
+									A3(
+										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+										'id',
+										_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$Text)))))))))));
+var _user$project$Text_Decode$textsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textDecoder);
+var _user$project$Text_Decode$TextCreateResp = function (a) {
+	return {id: a};
+};
+var _user$project$Text_Decode$textCreateRespDecoder = A4(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+	'id',
+	_elm_lang$core$Json_Decode$maybe(_user$project$Field$fieldIDDecoder),
+	_elm_lang$core$Maybe$Nothing,
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextCreateResp));
 
 var _user$project$Main$view_success_msg = function (msg) {
 	var msg_str = function () {
@@ -10277,538 +10844,35 @@ var _user$project$Main$view_msg = function (msg) {
 		return _elm_lang$html$Html$text('');
 	}
 };
-var _user$project$Main$view_editable_field = F4(
-	function (model, i, view, edit) {
-		var _p2 = A2(_elm_lang$core$Array$get, i, model.text_fields);
-		if (_p2.ctor === 'Just') {
-			var _p4 = _p2._0;
-			var _p3 = _p4.editable;
-			if (_p3 === true) {
-				return edit(_p4);
-			} else {
-				return view(_p4);
-			}
-		} else {
-			return _elm_lang$html$Html$text('');
-		}
-	});
-var _user$project$Main$view_answer_feedback = F2(
-	function (question_field, answer_field) {
-		return (!_elm_lang$core$String$isEmpty(answer_field.answer.feedback)) ? {
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$classList(
-						{
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'answer_feedback', _1: true},
-							_1: {
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'grey_bg', _1: true},
-								_1: {ctor: '[]'}
-							}
-						}),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(answer_field.answer.feedback),
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		} : {ctor: '[]'};
-	});
-var _user$project$Main$view_preview = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$classList(
-				{
-					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'preview', _1: true},
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$classList(
-						{
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'preview_menu', _1: true},
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$span,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$classList(
-								{
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$button,
-								{ctor: '[]'},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text('Preview'),
-									_1: {ctor: '[]'}
-								}),
-							_1: {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$input,
-									{
-										ctor: '::',
-										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Search texts..'),
-										_1: {ctor: '[]'}
-									},
-									{ctor: '[]'}),
-								_1: {ctor: '[]'}
-							}
-						}),
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		});
-};
 var _user$project$Main$post_toggle_field = function (field) {
 	return (!field.editable) ? _user$project$Ports$selectAllInputText(field.id) : _elm_lang$core$Platform_Cmd$none;
 };
-var _user$project$Main$update_question_field = F2(
-	function (new_question_field, question_fields) {
-		return A3(_elm_lang$core$Array$set, new_question_field.index, new_question_field, question_fields);
-	});
-var _user$project$Main$update_answer = F2(
-	function (answer_field, question_fields) {
-		var _p5 = A2(_elm_lang$core$Array$get, answer_field.question_field_index, question_fields);
-		if (_p5.ctor === 'Just') {
-			var _p6 = _p5._0;
-			var new_question_field = _elm_lang$core$Native_Utils.update(
-				_p6,
-				{
-					answer_fields: A3(_elm_lang$core$Array$set, answer_field.index, answer_field, _p6.answer_fields)
-				});
-			return A3(_elm_lang$core$Array$set, new_question_field.index, new_question_field, question_fields);
-		} else {
-			return question_fields;
-		}
-	});
-var _user$project$Main$update_error = F2(
-	function (_p7, model) {
-		var _p8 = _p7;
-		var split_id = A2(_elm_lang$core$String$split, '_', _p8._0);
-		var _p9 = split_id;
-		_v6_4:
-		do {
-			if ((_p9.ctor === '::') && (_p9._1.ctor === '::')) {
-				if (_p9._1._1.ctor === '::') {
-					if (_p9._0 === 'question') {
-						if (_p9._1._1._1.ctor === '::') {
-							if ((((_p9._1._1._0 === 'answer') && (_p9._1._1._1._1.ctor === '::')) && (_p9._1._1._1._1._0 === 'feedback')) && (_p9._1._1._1._1._1.ctor === '[]')) {
-								var _p18 = _p9._1._1._1._0;
-								var _p17 = _p9._1._0;
-								var _p10 = _elm_lang$core$String$toInt(_p17);
-								if (_p10.ctor === 'Ok') {
-									var _p16 = _p10._0;
-									var _p11 = A2(_elm_lang$core$Array$get, _p16, model.question_fields);
-									if (_p11.ctor === 'Just') {
-										var _p12 = _elm_lang$core$String$toInt(_p18);
-										if (_p12.ctor === 'Ok') {
-											var _p15 = _p12._0;
-											var _p13 = A2(_elm_lang$core$Array$get, _p15, _p11._0.answer_fields);
-											if (_p13.ctor === 'Just') {
-												var _p14 = _p13._0;
-												var feedback_field = A2(_elm_lang$core$Debug$log, 'error on feedback', _p14.feedback_field);
-												return _elm_lang$core$Native_Utils.update(
-													model,
-													{
-														question_fields: A2(
-															_user$project$Main$update_answer,
-															_elm_lang$core$Native_Utils.update(
-																_p14,
-																{
-																	editable: true,
-																	feedback_field: _elm_lang$core$Native_Utils.update(
-																		feedback_field,
-																		{error: true, editable: true})
-																}),
-															model.question_fields)
-													});
-											} else {
-												return A2(
-													_elm_lang$core$Debug$log,
-													A2(
-														_elm_lang$core$String$join,
-														' ',
-														{
-															ctor: '::',
-															_0: 'couldnt find answer field',
-															_1: {
-																ctor: '::',
-																_0: _elm_lang$core$Basics$toString(_p15),
-																_1: {
-																	ctor: '::',
-																	_0: 'from server',
-																	_1: {ctor: '[]'}
-																}
-															}
-														}),
-													model);
-											}
-										} else {
-											return A2(
-												_elm_lang$core$Debug$log,
-												A2(
-													_elm_lang$core$String$join,
-													' ',
-													{
-														ctor: '::',
-														_0: 'couldnt parse str ',
-														_1: {
-															ctor: '::',
-															_0: _p18,
-															_1: {
-																ctor: '::',
-																_0: 'from server',
-																_1: {ctor: '[]'}
-															}
-														}
-													}),
-												model);
-										}
-									} else {
-										return A2(
-											_elm_lang$core$Debug$log,
-											A2(
-												_elm_lang$core$String$join,
-												' ',
-												{
-													ctor: '::',
-													_0: 'couldnt find question field',
-													_1: {
-														ctor: '::',
-														_0: _elm_lang$core$Basics$toString(_p16),
-														_1: {
-															ctor: '::',
-															_0: 'from server',
-															_1: {ctor: '[]'}
-														}
-													}
-												}),
-											model);
-									}
-								} else {
-									return A2(
-										_elm_lang$core$Debug$log,
-										A2(
-											_elm_lang$core$String$join,
-											' ',
-											{
-												ctor: '::',
-												_0: 'couldnt parse str ',
-												_1: {
-													ctor: '::',
-													_0: _p17,
-													_1: {
-														ctor: '::',
-														_0: 'from server',
-														_1: {ctor: '[]'}
-													}
-												}
-											}),
-										model);
-								}
-							} else {
-								break _v6_4;
-							}
-						} else {
-							if (_p9._1._1._0 === 'body') {
-								var _p19 = _elm_lang$core$String$toInt(_p9._1._0);
-								if (_p19.ctor === 'Ok') {
-									var _p20 = A2(_elm_lang$core$Array$get, _p19._0, model.question_fields);
-									if (_p20.ctor === 'Just') {
-										return _elm_lang$core$Native_Utils.update(
-											model,
-											{
-												question_fields: A2(
-													_user$project$Main$update_question_field,
-													_elm_lang$core$Native_Utils.update(
-														_p20._0,
-														{error: true}),
-													model.question_fields)
-											});
-									} else {
-										return model;
-									}
-								} else {
-									return model;
-								}
-							} else {
-								break _v6_4;
-							}
-						}
-					} else {
-						break _v6_4;
-					}
-				} else {
-					switch (_p9._0) {
-						case 'question':
-							return A2(_elm_lang$core$Debug$log, 'question', model);
-						case 'text':
-							return A2(_elm_lang$core$Debug$log, 'text', model);
-						default:
-							break _v6_4;
-					}
-				}
-			} else {
-				break _v6_4;
-			}
-		} while(false);
-		return A2(_elm_lang$core$Debug$log, 'couldnt parse errors from server', model);
-	});
-var _user$project$Main$update_errors = F2(
-	function (model, errors) {
-		return A3(
-			_elm_lang$core$List$foldr,
-			_user$project$Main$update_error,
-			model,
-			_elm_lang$core$Dict$toList(errors));
-	});
-var _user$project$Main$set_hover = F3(
-	function (field, hover, fields) {
-		return A3(
-			_elm_lang$core$Array$set,
-			field.index,
-			_elm_lang$core$Native_Utils.update(
-				field,
-				{hover: hover}),
-			fields);
-	});
-var _user$project$Main$toggle_editable = F2(
-	function (field, fields) {
-		return A3(
-			_elm_lang$core$Array$set,
-			field.index,
-			_elm_lang$core$Native_Utils.update(
-				field,
-				{
-					editable: field.editable ? false : true,
-					hover: false,
-					error: false
-				}),
-			fields);
-	});
-var _user$project$Main$generate_answer = function (i) {
-	return {
-		id: _elm_lang$core$Maybe$Nothing,
-		question_id: _elm_lang$core$Maybe$Nothing,
-		text: A2(
-			_elm_lang$core$String$join,
-			' ',
-			{
-				ctor: '::',
-				_0: 'Click to write choice',
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$core$Basics$toString(i + 1),
-					_1: {ctor: '[]'}
-				}
-			}),
-		correct: false,
-		order: i,
-		feedback: ''
-	};
+var _user$project$Main$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$none;
 };
-var _user$project$Main$generate_answers = function (n) {
-	return _elm_lang$core$Array$fromList(
-		A2(
-			_elm_lang$core$List$map,
-			_user$project$Main$generate_answer,
-			A2(_elm_lang$core$List$range, 0, n - 1)));
+var _user$project$Main$textDifficultyDecoder = _elm_lang$core$Json_Decode$keyValuePairs(_elm_lang$core$Json_Decode$string);
+var _user$project$Main$Model = F6(
+	function (a, b, c, d, e, f) {
+		return {flags: a, profile: b, success_msg: c, error_msg: d, text_components: e, question_difficulties: f};
+	});
+var _user$project$Main$Text = function (a) {
+	return {ctor: 'Text', _0: a};
 };
-var _user$project$Main$generate_answer_feedback_field = function (id) {
-	return {id: id, editable: false, error: false};
-};
-var _user$project$Main$generate_answer_field = F4(
-	function (i, question, j, answer) {
-		var answer_id = A2(
-			_elm_lang$core$String$join,
-			'_',
-			{
-				ctor: '::',
-				_0: 'question',
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$core$Basics$toString(i),
-					_1: {
-						ctor: '::',
-						_0: 'answer',
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$core$Basics$toString(j),
-							_1: {ctor: '[]'}
-						}
-					}
-				}
-			});
-		return {
-			id: answer_id,
-			editable: false,
-			hover: false,
-			answer: answer,
-			question_field_index: i,
-			index: j,
-			error: false,
-			feedback_field: _user$project$Main$generate_answer_feedback_field(
-				A2(
-					_elm_lang$core$String$join,
-					'_',
-					{
-						ctor: '::',
-						_0: answer_id,
-						_1: {
-							ctor: '::',
-							_0: 'feedback',
-							_1: {ctor: '[]'}
-						}
-					}))
-		};
-	});
-var _user$project$Main$generate_question_field = F2(
-	function (i, question) {
-		return {
-			id: A2(
-				_elm_lang$core$String$join,
-				'_',
-				{
-					ctor: '::',
-					_0: 'question',
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$core$Basics$toString(i),
-						_1: {ctor: '[]'}
-					}
-				}),
-			editable: false,
-			hover: false,
-			question: question,
-			answer_fields: A2(
-				_elm_lang$core$Array$indexedMap,
-				A2(_user$project$Main$generate_answer_field, i, question),
-				question.answers),
-			menu_visible: true,
-			index: i,
-			error: false
-		};
-	});
-var _user$project$Main$delete_question = F2(
-	function (index, fields) {
-		return A2(
-			_elm_lang$core$Array$indexedMap,
-			F2(
-				function (i, field) {
-					return _elm_lang$core$Native_Utils.update(
-						field,
-						{
-							index: i,
-							answer_fields: A2(
-								_elm_lang$core$Array$map,
-								function (a) {
-									return _elm_lang$core$Native_Utils.update(
-										a,
-										{question_field_index: i});
-								},
-								field.answer_fields)
-						});
-				}),
-			A2(
-				_elm_lang$core$Array$filter,
-				function (field) {
-					return !_elm_lang$core$Native_Utils.eq(field.index, index);
-				},
-				fields));
-	});
-var _user$project$Main$new_question = function (i) {
-	return {
-		id: _elm_lang$core$Maybe$Nothing,
-		text_id: _elm_lang$core$Maybe$Nothing,
-		created_dt: _elm_lang$core$Maybe$Nothing,
-		modified_dt: _elm_lang$core$Maybe$Nothing,
-		body: '',
-		order: i,
-		answers: _user$project$Main$generate_answers(4),
-		question_type: 'main_idea'
-	};
-};
-var _user$project$Main$initial_questions = _elm_lang$core$Array$fromList(
-	{
-		ctor: '::',
-		_0: _user$project$Main$new_question(0),
-		_1: {ctor: '[]'}
-	});
-var _user$project$Main$add_new_question = function (fields) {
-	var arr_len = _elm_lang$core$Array$length(fields);
-	return A2(
-		_elm_lang$core$Array$push,
-		A2(
-			_user$project$Main$generate_question_field,
-			arr_len,
-			_user$project$Main$new_question(arr_len)),
-		fields);
-};
-var _user$project$Main$TextField = F5(
-	function (a, b, c, d, e) {
-		return {id: a, editable: b, hover: c, index: d, error: e};
-	});
-var _user$project$Main$AnswerFeedbackField = F3(
-	function (a, b, c) {
-		return {id: a, editable: b, error: c};
-	});
-var _user$project$Main$AnswerField = F8(
-	function (a, b, c, d, e, f, g, h) {
-		return {id: a, editable: b, hover: c, answer: d, question_field_index: e, index: f, error: g, feedback_field: h};
-	});
-var _user$project$Main$QuestionField = F8(
-	function (a, b, c, d, e, f, g, h) {
-		return {id: a, editable: b, hover: c, question: d, answer_fields: e, menu_visible: f, index: g, error: h};
-	});
-var _user$project$Main$Model = F8(
-	function (a, b, c, d, e, f, g, h) {
-		return {text: a, flags: b, profile: c, success_msg: d, error_msg: e, text_fields: f, question_difficulties: g, question_fields: h};
-	});
 var _user$project$Main$Answer = function (a) {
 	return {ctor: 'Answer', _0: a};
 };
 var _user$project$Main$Question = function (a) {
 	return {ctor: 'Question', _0: a};
 };
-var _user$project$Main$Text = function (a) {
-	return {ctor: 'Text', _0: a};
+var _user$project$Main$TextComponentMsg = function (a) {
+	return {ctor: 'TextComponentMsg', _0: a};
 };
 var _user$project$Main$Submitted = function (a) {
 	return {ctor: 'Submitted', _0: a};
 };
-var _user$project$Main$post_text = F3(
-	function (csrftoken, text, questions) {
-		var encoded_text = A2(_user$project$Model$textEncoder, text, questions);
+var _user$project$Main$post_text = F2(
+	function (csrftoken, texts) {
+		var encoded_texts = _user$project$Text_Encode$textsEncoder(texts);
 		var req = A4(
 			_user$project$HttpHelpers$post_with_headers,
 			_user$project$Config$text_api_endpoint,
@@ -10817,360 +10881,36 @@ var _user$project$Main$post_text = F3(
 				_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
 				_1: {ctor: '[]'}
 			},
-			_elm_lang$http$Http$jsonBody(encoded_text),
-			_user$project$Model$textCreateRespDecoder);
+			_elm_lang$http$Http$jsonBody(encoded_texts),
+			_user$project$Text_Decode$textCreateRespDecoder);
 		return A2(_elm_lang$http$Http$send, _user$project$Main$Submitted, req);
 	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var text = model.text;
-		var _p21 = msg;
-		switch (_p21.ctor) {
-			case 'ToggleEditableField':
-				var _p22 = _p21._0;
-				switch (_p22.ctor) {
-					case 'Text':
-						var _p24 = _p22._0;
-						var _p23 = _p24.id;
-						if (_p23 === 'body') {
-							return {
-								ctor: '_Tuple2',
-								_0: _elm_lang$core$Native_Utils.update(
-									model,
-									{
-										text_fields: A2(_user$project$Main$toggle_editable, _p24, model.text_fields)
-									}),
-								_1: _elm_lang$core$Platform_Cmd$batch(
-									{
-										ctor: '::',
-										_0: _user$project$Ports$ckEditor(_p24.id),
-										_1: {
-											ctor: '::',
-											_0: _user$project$Main$post_toggle_field(_p24),
-											_1: {ctor: '[]'}
-										}
-									})
-							};
-						} else {
-							return {
-								ctor: '_Tuple2',
-								_0: _elm_lang$core$Native_Utils.update(
-									model,
-									{
-										text_fields: A2(_user$project$Main$toggle_editable, _p24, model.text_fields)
-									}),
-								_1: _user$project$Main$post_toggle_field(_p24)
-							};
-						}
-					case 'Question':
-						var _p25 = _p22._0;
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{
-									question_fields: A2(_user$project$Main$toggle_editable, _p25, model.question_fields)
-								}),
-							_1: _user$project$Main$post_toggle_field(_p25)
-						};
-					default:
-						var _p26 = _p22._0;
-						var answer_feedback_field = _p26.feedback_field;
-						var new_answer_feedback_field = _elm_lang$core$Native_Utils.update(
-							answer_feedback_field,
-							{error: false});
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{
-									question_fields: A2(
-										_user$project$Main$update_answer,
-										_elm_lang$core$Native_Utils.update(
-											_p26,
-											{
-												editable: _p26.editable ? false : true,
-												hover: false,
-												feedback_field: new_answer_feedback_field,
-												error: false
-											}),
-										model.question_fields)
-								}),
-							_1: _user$project$Main$post_toggle_field(_p26)
-						};
-				}
-			case 'Hover':
-				var _p27 = _p21._0;
-				switch (_p27.ctor) {
-					case 'Text':
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{
-									text_fields: A3(_user$project$Main$set_hover, _p27._0, true, model.text_fields)
-								}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					case 'Question':
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{
-									question_fields: A3(_user$project$Main$set_hover, _p27._0, true, model.question_fields)
-								}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					default:
-						var new_answer_field = _elm_lang$core$Native_Utils.update(
-							_p27._0,
-							{hover: true});
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{
-									question_fields: A2(_user$project$Main$update_answer, new_answer_field, model.question_fields)
-								}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-				}
-			case 'UnHover':
-				var _p28 = _p21._0;
-				switch (_p28.ctor) {
-					case 'Text':
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{
-									text_fields: A3(_user$project$Main$set_hover, _p28._0, false, model.text_fields)
-								}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					case 'Question':
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{
-									question_fields: A3(_user$project$Main$set_hover, _p28._0, false, model.question_fields)
-								}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					default:
-						var new_answer_field = _elm_lang$core$Native_Utils.update(
-							_p28._0,
-							{hover: false});
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{
-									question_fields: A2(_user$project$Main$update_answer, new_answer_field, model.question_fields)
-								}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-				}
-			case 'UpdateQuestionBody':
-				var _p29 = _p21._0;
-				var question = _p29.question;
-				var new_field = _elm_lang$core$Native_Utils.update(
-					_p29,
-					{
-						question: _elm_lang$core$Native_Utils.update(
-							question,
-							{body: _p21._1})
-					});
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							question_fields: A2(_user$project$Main$update_question_field, new_field, model.question_fields)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'UpdateQuestionField':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							question_fields: A2(_user$project$Main$update_question_field, _p21._0, model.question_fields)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'UpdateAnswerText':
-				var _p30 = _p21._1;
-				var answer = _p30.answer;
-				var new_answer = _elm_lang$core$Native_Utils.update(
-					answer,
-					{text: _p21._2});
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							question_fields: A2(
-								_user$project$Main$update_answer,
-								_elm_lang$core$Native_Utils.update(
-									_p30,
-									{answer: new_answer}),
-								model.question_fields)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'UpdateAnswerCorrect':
-				var _p31 = _p21._1;
-				var answer = _p31.answer;
-				var new_answer = _elm_lang$core$Native_Utils.update(
-					answer,
-					{correct: _p21._2});
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							question_fields: A2(
-								_user$project$Main$update_answer,
-								_elm_lang$core$Native_Utils.update(
-									_p31,
-									{answer: new_answer}),
-								model.question_fields)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'UpdateAnswerFeedback':
-				var _p32 = _p21._1;
-				var answer = _p32.answer;
-				var new_answer = _elm_lang$core$Native_Utils.update(
-					answer,
-					{feedback: _p21._2});
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							question_fields: A2(
-								_user$project$Main$update_answer,
-								_elm_lang$core$Native_Utils.update(
-									_p32,
-									{answer: new_answer}),
-								model.question_fields)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'UpdateTitle':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							text: _elm_lang$core$Native_Utils.update(
-								text,
-								{title: _p21._0})
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'UpdateSource':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							text: _elm_lang$core$Native_Utils.update(
-								text,
-								{source: _p21._0})
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'UpdateDifficulty':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							text: _elm_lang$core$Native_Utils.update(
-								text,
-								{difficulty: _p21._0})
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'UpdateBody':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							text: _elm_lang$core$Native_Utils.update(
-								text,
-								{body: _p21._0})
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'UpdateAuthor':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							text: _elm_lang$core$Native_Utils.update(
-								text,
-								{author: _p21._0})
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'AddQuestion':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							question_fields: _user$project$Main$add_new_question(model.question_fields)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'DeleteQuestion':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							question_fields: A2(_user$project$Main$delete_question, _p21._0, model.question_fields)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
+		var _p2 = msg;
+		switch (_p2.ctor) {
+			case 'TextComponentMsg':
+				return A2(_user$project$Text_Update$update, _p2._0, model);
 			case 'SubmitQuiz':
-				var questions = A2(
-					_elm_lang$core$Array$map,
-					function (q_field) {
-						var question = q_field.question;
-						var answer_fields = q_field.answer_fields;
-						return _elm_lang$core$Native_Utils.update(
-							question,
-							{
-								answers: A2(
-									_elm_lang$core$Array$map,
-									function (a_field) {
-										return a_field.answer;
-									},
-									q_field.answer_fields)
-							});
-					},
-					model.question_fields);
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{error_msg: _elm_lang$core$Maybe$Nothing, success_msg: _elm_lang$core$Maybe$Nothing}),
-					_1: A3(_user$project$Main$post_text, model.flags.csrftoken, model.text, questions)
+					_1: A2(
+						_user$project$Main$post_text,
+						model.flags.csrftoken,
+						A2(
+							_elm_lang$core$Array$map,
+							function (c) {
+								return _user$project$Text_Field$text(c);
+							},
+							model.text_components))
 				};
 			case 'Submitted':
-				if (_p21._0.ctor === 'Ok') {
-					var _p33 = _p21._0._0.id;
-					if (_p33.ctor === 'Just') {
+				if (_p2._0.ctor === 'Ok') {
+					var _p3 = _p2._0._0.id;
+					if (_p3.ctor === 'Just') {
 						return {
 							ctor: '_Tuple2',
 							_0: _elm_lang$core$Native_Utils.update(
@@ -11185,7 +10925,7 @@ var _user$project$Main$update = F2(
 												_0: ' success!',
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$core$Basics$toString(_p33._0),
+													_0: _elm_lang$core$Basics$toString(_p3._0),
 													_1: {ctor: '[]'}
 												}
 											}))
@@ -11196,18 +10936,19 @@ var _user$project$Main$update = F2(
 						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 					}
 				} else {
-					var _p34 = _p21._0._0;
-					switch (_p34.ctor) {
+					var _p4 = _p2._0._0;
+					switch (_p4.ctor) {
 						case 'BadStatus':
-							var _p35 = _user$project$Model$decodeCreateRespErrors(
-								A2(_elm_lang$core$Debug$log, 'errors', _p34._0.body));
-							if (_p35.ctor === 'Ok') {
+							var _p5 = _user$project$Text_Decode$decodeCreateRespErrors(
+								A2(_elm_lang$core$Debug$log, 'errors', _p4._0.body));
+							if (_p5.ctor === 'Ok') {
+								var err = A2(_elm_lang$core$Debug$log, 'displaying validations', _p5._0);
+								var new_text_components = A2(_user$project$Text_Field$update_errors, err, model.text_components);
 								return {
 									ctor: '_Tuple2',
-									_0: A2(
-										_user$project$Main$update_errors,
+									_0: _elm_lang$core$Native_Utils.update(
 										model,
-										A2(_elm_lang$core$Debug$log, 'displaying validations', _p35._0)),
+										{text_components: new_text_components}),
 									_1: _elm_lang$core$Platform_Cmd$none
 								};
 							} else {
@@ -11219,29 +10960,13 @@ var _user$project$Main$update = F2(
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 					}
 				}
-			case 'ToggleQuestionMenu':
-				var _p36 = _p21._0;
-				var new_field = _elm_lang$core$Native_Utils.update(
-					_p36,
-					{
-						menu_visible: _p36.menu_visible ? false : true
-					});
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							question_fields: A2(_user$project$Main$update_question_field, new_field, model.question_fields)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
 			default:
-				if (_p21._0.ctor === 'Ok') {
+				if (_p2._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{question_difficulties: _p21._0._0}),
+							{question_difficulties: _p2._0._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
@@ -11278,7 +11003,7 @@ var _user$project$Main$view_submit = function (model) {
 				},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text('Create Quiz '),
+					_0: _elm_lang$html$Html$text('Save Quiz '),
 					_1: {
 						ctor: '::',
 						_0: _user$project$Main$view_msg(model.error_msg),
@@ -11290,6 +11015,29 @@ var _user$project$Main$view_submit = function (model) {
 					}
 				}),
 			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Main$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _user$project$Views$view_header(
+				_user$project$Profile$view_profile_header(model.profile)),
+			_1: {
+				ctor: '::',
+				_0: _user$project$Views$view_preview,
+				_1: {
+					ctor: '::',
+					_0: A2(_user$project$Text_View$view_text_components, _user$project$Main$TextComponentMsg, model.text_components),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Main$view_submit(model),
+						_1: {ctor: '[]'}
+					}
+				}
+			}
 		});
 };
 var _user$project$Main$UpdateTextDifficultyOptions = function (a) {
@@ -11310,1075 +11058,24 @@ var _user$project$Main$retrieveTextDifficultyOptions = function () {
 					_1: {ctor: '[]'}
 				}
 			}),
-		_user$project$Model$textDifficultyDecoder);
+		_user$project$Main$textDifficultyDecoder);
 	return A2(_elm_lang$http$Http$send, _user$project$Main$UpdateTextDifficultyOptions, request);
 }();
 var _user$project$Main$init = function (flags) {
 	return {
 		ctor: '_Tuple2',
 		_0: {
-			text: _user$project$Model$emptyText,
-			error_msg: _elm_lang$core$Maybe$Nothing,
-			success_msg: _elm_lang$core$Maybe$Nothing,
 			flags: flags,
+			success_msg: _elm_lang$core$Maybe$Nothing,
+			error_msg: _elm_lang$core$Maybe$Nothing,
 			profile: _user$project$Profile$init_profile(flags),
-			text_fields: _elm_lang$core$Array$fromList(
-				{
-					ctor: '::',
-					_0: {id: 'title', editable: false, hover: false, index: 0, error: false},
-					_1: {
-						ctor: '::',
-						_0: {id: 'source', editable: false, hover: false, index: 1, error: false},
-						_1: {
-							ctor: '::',
-							_0: {id: 'difficulty', editable: false, hover: false, index: 2, error: false},
-							_1: {
-								ctor: '::',
-								_0: {id: 'author', editable: false, hover: false, index: 3, error: false},
-								_1: {
-									ctor: '::',
-									_0: {id: 'body', editable: false, hover: false, index: 4, error: false},
-									_1: {ctor: '[]'}
-								}
-							}
-						}
-					}
-				}),
-			question_fields: A2(_elm_lang$core$Array$indexedMap, _user$project$Main$generate_question_field, _user$project$Main$initial_questions),
+			text_components: _user$project$Text_Field$add_new_text(
+				_elm_lang$core$Array$fromList(
+					{ctor: '[]'})),
 			question_difficulties: {ctor: '[]'}
 		},
 		_1: _user$project$Main$retrieveTextDifficultyOptions
 	};
-};
-var _user$project$Main$DeleteQuestion = function (a) {
-	return {ctor: 'DeleteQuestion', _0: a};
-};
-var _user$project$Main$view_delete_menu_item = function (field) {
-	return A2(
-		_elm_lang$html$Html$span,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Events$onClick(
-				_user$project$Main$DeleteQuestion(field.index)),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text('Delete'),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Main$AddQuestion = {ctor: 'AddQuestion'};
-var _user$project$Main$view_add_question = function (fields) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$classList(
-				{
-					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'add_question', _1: true},
-					_1: {ctor: '[]'}
-				}),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$AddQuestion),
-				_1: {ctor: '[]'}
-			}
-		},
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text('Add question'),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Main$UpdateAnswerFeedback = F3(
-	function (a, b, c) {
-		return {ctor: 'UpdateAnswerFeedback', _0: a, _1: b, _2: c};
-	});
-var _user$project$Main$UpdateAnswerCorrect = F3(
-	function (a, b, c) {
-		return {ctor: 'UpdateAnswerCorrect', _0: a, _1: b, _2: c};
-	});
-var _user$project$Main$UpdateAnswerText = F3(
-	function (a, b, c) {
-		return {ctor: 'UpdateAnswerText', _0: a, _1: b, _2: c};
-	});
-var _user$project$Main$UpdateQuestionBody = F2(
-	function (a, b) {
-		return {ctor: 'UpdateQuestionBody', _0: a, _1: b};
-	});
-var _user$project$Main$UpdateQuestionField = function (a) {
-	return {ctor: 'UpdateQuestionField', _0: a};
-};
-var _user$project$Main$view_question_type_menu_item = function (field) {
-	var question = field.question;
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: _elm_lang$core$Native_Utils.eq(question.question_type, 'main_idea') ? A2(
-				_elm_lang$html$Html$strong,
-				{ctor: '[]'},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text('Main Idea'),
-					_1: {ctor: '[]'}
-				}) : A2(
-				_elm_lang$html$Html$span,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onClick(
-						_user$project$Main$UpdateQuestionField(
-							_elm_lang$core$Native_Utils.update(
-								field,
-								{
-									question: _elm_lang$core$Native_Utils.update(
-										question,
-										{question_type: 'main_idea'})
-								}))),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text('Main Idea'),
-					_1: {ctor: '[]'}
-				}),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$html$Html$text(' | '),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$core$Native_Utils.eq(question.question_type, 'detail') ? A2(
-						_elm_lang$html$Html$strong,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('Detail'),
-							_1: {ctor: '[]'}
-						}) : A2(
-						_elm_lang$html$Html$span,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onClick(
-								_user$project$Main$UpdateQuestionField(
-									_elm_lang$core$Native_Utils.update(
-										field,
-										{
-											question: _elm_lang$core$Native_Utils.update(
-												question,
-												{question_type: 'detail'})
-										}))),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('Detail'),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				}
-			}
-		});
-};
-var _user$project$Main$view_menu_items = function (field) {
-	return A2(
-		_elm_lang$core$List$map,
-		function (html) {
-			return A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'question_menu_item'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: html,
-					_1: {ctor: '[]'}
-				});
-		},
-		{
-			ctor: '::',
-			_0: _user$project$Main$view_delete_menu_item(field),
-			_1: {
-				ctor: '::',
-				_0: _user$project$Main$view_question_type_menu_item(field),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-var _user$project$Main$UpdateAuthor = function (a) {
-	return {ctor: 'UpdateAuthor', _0: a};
-};
-var _user$project$Main$UpdateBody = function (a) {
-	return {ctor: 'UpdateBody', _0: a};
-};
-var _user$project$Main$subscriptions = function (model) {
-	return _user$project$Ports$ckEditorUpdate(_user$project$Main$UpdateBody);
-};
-var _user$project$Main$edit_body = F2(
-	function (model, field) {
-		return A2(
-			_elm_lang$html$Html$textarea,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateBody),
-				_1: {
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', field.id),
-					_1: {ctor: '[]'}
-				}
-			},
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html$text(model.text.body),
-				_1: {ctor: '[]'}
-			});
-	});
-var _user$project$Main$UpdateDifficulty = function (a) {
-	return {ctor: 'UpdateDifficulty', _0: a};
-};
-var _user$project$Main$edit_difficulty = F2(
-	function (model, field) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html$text('Difficulty:  '),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$select,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateDifficulty),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$optgroup,
-								{ctor: '[]'},
-								A2(
-									_elm_lang$core$List$map,
-									function (_p37) {
-										var _p38 = _p37;
-										var _p39 = _p38._1;
-										return A2(
-											_elm_lang$html$Html$option,
-											A2(
-												_elm_lang$core$Basics_ops['++'],
-												{
-													ctor: '::',
-													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', _p38._0),
-													_1: {ctor: '[]'}
-												},
-												_elm_lang$core$Native_Utils.eq(_p39, model.text.difficulty) ? {
-													ctor: '::',
-													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'selected', ''),
-													_1: {ctor: '[]'}
-												} : {ctor: '[]'}),
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text(_p39),
-												_1: {ctor: '[]'}
-											});
-									},
-									model.question_difficulties)),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _user$project$Main$UpdateSource = function (a) {
-	return {ctor: 'UpdateSource', _0: a};
-};
-var _user$project$Main$UpdateTitle = function (a) {
-	return {ctor: 'UpdateTitle', _0: a};
-};
-var _user$project$Main$ToggleQuestionMenu = function (a) {
-	return {ctor: 'ToggleQuestionMenu', _0: a};
-};
-var _user$project$Main$view_question_menu = function (field) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$classList(
-				{
-					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'question_menu', _1: true},
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{ctor: '[]'},
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$img,
-						{
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/action_arrow.svg'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(
-									_user$project$Main$ToggleQuestionMenu(field)),
-								_1: {ctor: '[]'}
-							}
-						},
-						{ctor: '[]'}),
-					_1: {ctor: '[]'}
-				}),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$classList(
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'question_menu_overlay', _1: true},
-								_1: {
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'hidden', _1: field.menu_visible},
-									_1: {ctor: '[]'}
-								}
-							}),
-						_1: {ctor: '[]'}
-					},
-					_user$project$Main$view_menu_items(field)),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-var _user$project$Main$UnHover = function (a) {
-	return {ctor: 'UnHover', _0: a};
-};
-var _user$project$Main$Hover = function (a) {
-	return {ctor: 'Hover', _0: a};
-};
-var _user$project$Main$hover_attrs = function (field) {
-	return {
-		ctor: '::',
-		_0: _elm_lang$html$Html_Attributes$classList(
-			{
-				ctor: '::',
-				_0: {ctor: '_Tuple2', _0: 'over', _1: field.hover},
-				_1: {ctor: '[]'}
-			}),
-		_1: {
-			ctor: '::',
-			_0: _elm_lang$html$Html_Events$onMouseOver(
-				_user$project$Main$Hover(
-					_user$project$Main$Text(field))),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$html$Html_Events$onMouseLeave(
-					_user$project$Main$UnHover(
-						_user$project$Main$Text(field))),
-				_1: {ctor: '[]'}
-			}
-		}
-	};
-};
-var _user$project$Main$ToggleEditableField = function (a) {
-	return {ctor: 'ToggleEditableField', _0: a};
-};
-var _user$project$Main$edit_question = function (question_field) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$classList(
-				{
-					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'question_item', _1: true},
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$textarea,
-				{
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'rows', '2'),
-					_1: {
-						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'cols', '100'),
-						_1: {
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', question_field.id),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onInput(
-									_user$project$Main$UpdateQuestionBody(question_field)),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onBlur(
-										_user$project$Main$ToggleEditableField(
-											_user$project$Main$Question(question_field))),
-									_1: {ctor: '[]'}
-								}
-							}
-						}
-					}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(question_field.question.body),
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Main$view_question = function (question_field) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', question_field.id),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$classList(
-					{
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'question_item', _1: true},
-						_1: {
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'over', _1: question_field.hover},
-							_1: {
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'input_error', _1: question_field.error},
-								_1: {ctor: '[]'}
-							}
-						}
-					}),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onClick(
-						_user$project$Main$ToggleEditableField(
-							_user$project$Main$Question(question_field))),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onMouseOver(
-							_user$project$Main$Hover(
-								_user$project$Main$Question(question_field))),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onMouseLeave(
-								_user$project$Main$UnHover(
-									_user$project$Main$Question(question_field))),
-							_1: {ctor: '[]'}
-						}
-					}
-				}
-			}
-		},
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text(
-				_elm_lang$core$String$isEmpty(question_field.question.body) ? 'Click to write the question text.' : question_field.question.body),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Main$view_answer = F2(
-	function (question_field, answer_field) {
-		return A2(
-			_elm_lang$html$Html$span,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Events$onClick(
-					_user$project$Main$ToggleEditableField(
-						_user$project$Main$Answer(answer_field))),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onMouseOver(
-						_user$project$Main$Hover(
-							_user$project$Main$Answer(answer_field))),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onMouseLeave(
-							_user$project$Main$UnHover(
-								_user$project$Main$Answer(answer_field))),
-						_1: {ctor: '[]'}
-					}
-				}
-			},
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(answer_field.answer.text),
-					_1: {ctor: '[]'}
-				},
-				A2(_user$project$Main$view_answer_feedback, question_field, answer_field)));
-	});
-var _user$project$Main$edit_answer_feedback = F2(
-	function (question_field, answer_field) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$textarea,
-					{
-						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', answer_field.feedback_field.id),
-						_1: {
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'rows', '5'),
-							_1: {
-								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'cols', '75'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onBlur(
-										_user$project$Main$ToggleEditableField(
-											_user$project$Main$Answer(answer_field))),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Events$onInput(
-											A2(_user$project$Main$UpdateAnswerFeedback, question_field, answer_field)),
-										_1: {
-											ctor: '::',
-											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Give some feedback.'),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$classList(
-													{
-														ctor: '::',
-														_0: {ctor: '_Tuple2', _0: 'answer_feedback', _1: true},
-														_1: {
-															ctor: '::',
-															_0: {ctor: '_Tuple2', _0: 'input_error', _1: answer_field.feedback_field.error},
-															_1: {ctor: '[]'}
-														}
-													}),
-												_1: {ctor: '[]'}
-											}
-										}
-									}
-								}
-							}
-						}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text(answer_field.answer.feedback),
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			});
-	});
-var _user$project$Main$edit_answer = F2(
-	function (question_field, answer_field) {
-		var answer_feedback_field_id = A2(
-			_elm_lang$core$String$join,
-			'_',
-			{
-				ctor: '::',
-				_0: answer_field.id,
-				_1: {
-					ctor: '::',
-					_0: 'feedback',
-					_1: {ctor: '[]'}
-				}
-			});
-		return A2(
-			_elm_lang$html$Html$span,
-			{ctor: '[]'},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$input,
-					{
-						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
-						_1: {
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', answer_field.answer.text),
-							_1: {
-								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', answer_field.id),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onInput(
-										A2(_user$project$Main$UpdateAnswerText, question_field, answer_field)),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$classList(
-											{
-												ctor: '::',
-												_0: {ctor: '_Tuple2', _0: 'input_error', _1: answer_field.error},
-												_1: {ctor: '[]'}
-											}),
-										_1: {ctor: '[]'}
-									}
-								}
-							}
-						}
-					},
-					{ctor: '[]'}),
-				_1: {
-					ctor: '::',
-					_0: A2(_user$project$Main$edit_answer_feedback, question_field, answer_field),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _user$project$Main$view_editable_answer = F2(
-	function (question_field, answer_field) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$classList(
-					{
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'answer_item', _1: true},
-						_1: {
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'over', _1: answer_field.hover},
-							_1: {ctor: '[]'}
-						}
-					}),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$input,
-					{
-						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'radio'),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html_Attributes$attribute,
-								'name',
-								A2(
-									_elm_lang$core$String$join,
-									'_',
-									{
-										ctor: '::',
-										_0: 'question',
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$core$Basics$toString(question_field.question.order),
-											_1: {
-												ctor: '::',
-												_0: 'correct_answer',
-												_1: {ctor: '[]'}
-											}
-										}
-									})),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onCheck(
-									A2(_user$project$Main$UpdateAnswerCorrect, question_field, answer_field)),
-								_1: {ctor: '[]'}
-							}
-						}
-					},
-					{ctor: '[]'}),
-				_1: {
-					ctor: '::',
-					_0: function () {
-						var _p40 = answer_field.editable;
-						if (_p40 === true) {
-							return A2(_user$project$Main$edit_answer, question_field, answer_field);
-						} else {
-							return A2(_user$project$Main$view_answer, question_field, answer_field);
-						}
-					}(),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _user$project$Main$view_editable_question = function (field) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$classList(
-				{
-					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'question_parts', _1: true},
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{ctor: '[]'},
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$input,
-						{
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'checkbox'),
-							_1: {ctor: '[]'}
-						},
-						{ctor: '[]'}),
-					_1: {ctor: '[]'}
-				}),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$classList(
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'question', _1: true},
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					},
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						{
-							ctor: '::',
-							_0: function () {
-								var _p41 = field.editable;
-								if (_p41 === true) {
-									return _user$project$Main$edit_question(field);
-								} else {
-									return _user$project$Main$view_question(field);
-								}
-							}(),
-							_1: {ctor: '[]'}
-						},
-						_elm_lang$core$Array$toList(
-							A2(
-								_elm_lang$core$Array$map,
-								_user$project$Main$view_editable_answer(field),
-								field.answer_fields)))),
-				_1: {
-					ctor: '::',
-					_0: _user$project$Main$view_question_menu(field),
-					_1: {ctor: '[]'}
-				}
-			}
-		});
-};
-var _user$project$Main$view_questions = function (fields) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$classList(
-				{
-					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'question_section', _1: true},
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		},
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			_elm_lang$core$Array$toList(
-				A2(_elm_lang$core$Array$map, _user$project$Main$view_editable_question, fields)),
-			{
-				ctor: '::',
-				_0: _user$project$Main$view_add_question(fields),
-				_1: {ctor: '[]'}
-			}));
-};
-var _user$project$Main$text_property_attrs = function (field) {
-	return A2(
-		_elm_lang$core$Basics_ops['++'],
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Events$onClick(
-				_user$project$Main$ToggleEditableField(
-					_user$project$Main$Text(field))),
-			_1: {ctor: '[]'}
-		},
-		_user$project$Main$hover_attrs(field));
-};
-var _user$project$Main$view_title = F2(
-	function (model, field) {
-		return A2(
-			_elm_lang$html$Html$div,
-			_user$project$Main$text_property_attrs(field),
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html$text('Title: '),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(model.text.title),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _user$project$Main$view_source = F2(
-	function (model, field) {
-		return A2(
-			_elm_lang$html$Html$div,
-			_user$project$Main$text_property_attrs(field),
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html$text('Source: '),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(model.text.source),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _user$project$Main$view_body = F2(
-	function (model, field) {
-		return A2(
-			_elm_lang$html$Html$div,
-			_user$project$Main$text_property_attrs(field),
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html$text('Text: '),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(model.text.body),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _user$project$Main$view_author = F2(
-	function (model, field) {
-		return A2(
-			_elm_lang$html$Html$div,
-			_user$project$Main$text_property_attrs(field),
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html$text('Author: '),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(model.text.author),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _user$project$Main$edit_title = F2(
-	function (model, field) {
-		return A2(
-			_elm_lang$html$Html$input,
-			{
-				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
-				_1: {
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', model.text.title),
-					_1: {
-						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'title'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateTitle),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onBlur(
-									_user$project$Main$ToggleEditableField(
-										_user$project$Main$Text(field))),
-								_1: {ctor: '[]'}
-							}
-						}
-					}
-				}
-			},
-			{ctor: '[]'});
-	});
-var _user$project$Main$edit_source = F2(
-	function (model, field) {
-		return A2(
-			_elm_lang$html$Html$input,
-			{
-				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
-				_1: {
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', model.text.source),
-					_1: {
-						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'source'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateSource),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onBlur(
-									_user$project$Main$ToggleEditableField(
-										_user$project$Main$Text(field))),
-								_1: {ctor: '[]'}
-							}
-						}
-					}
-				}
-			},
-			{ctor: '[]'});
-	});
-var _user$project$Main$edit_author = F2(
-	function (model, field) {
-		return A2(
-			_elm_lang$html$Html$input,
-			{
-				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
-				_1: {
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', model.text.author),
-					_1: {
-						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'author'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateAuthor),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onBlur(
-									_user$project$Main$ToggleEditableField(
-										_user$project$Main$Text(field))),
-								_1: {ctor: '[]'}
-							}
-						}
-					}
-				}
-			},
-			{ctor: '[]'});
-	});
-var _user$project$Main$view_create_text = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$classList(
-				{
-					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'text_properties', _1: true},
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$classList(
-						{
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'text_property_items', _1: true},
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: A4(
-						_user$project$Main$view_editable_field,
-						model,
-						0,
-						_user$project$Main$view_title(model),
-						_user$project$Main$edit_title(model)),
-					_1: {
-						ctor: '::',
-						_0: A4(
-							_user$project$Main$view_editable_field,
-							model,
-							1,
-							_user$project$Main$view_source(model),
-							_user$project$Main$edit_source(model)),
-						_1: {
-							ctor: '::',
-							_0: A4(
-								_user$project$Main$view_editable_field,
-								model,
-								2,
-								_user$project$Main$edit_difficulty(model),
-								_user$project$Main$edit_difficulty(model)),
-							_1: {
-								ctor: '::',
-								_0: A4(
-									_user$project$Main$view_editable_field,
-									model,
-									3,
-									_user$project$Main$view_author(model),
-									_user$project$Main$edit_author(model)),
-								_1: {ctor: '[]'}
-							}
-						}
-					}
-				}),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$classList(
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'body', _1: true},
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: A4(
-							_user$project$Main$view_editable_field,
-							model,
-							4,
-							_user$project$Main$view_body(model),
-							_user$project$Main$edit_body(model)),
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-var _user$project$Main$view = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: _user$project$Views$view_header(
-				_user$project$Profile$view_profile_header(model.profile)),
-			_1: {
-				ctor: '::',
-				_0: _user$project$Main$view_preview(model),
-				_1: {
-					ctor: '::',
-					_0: _user$project$Main$view_create_text(model),
-					_1: {
-						ctor: '::',
-						_0: _user$project$Main$view_questions(model.question_fields),
-						_1: {
-							ctor: '::',
-							_0: _user$project$Main$view_submit(model),
-							_1: {ctor: '[]'}
-						}
-					}
-				}
-			}
-		});
 };
 var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 	{init: _user$project$Main$init, view: _user$project$Main$view, subscriptions: _user$project$Main$subscriptions, update: _user$project$Main$update})(

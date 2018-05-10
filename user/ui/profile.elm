@@ -3,7 +3,7 @@ module Profile exposing (StudentProfile, studentProfile, studentDifficultyPrefer
   , view_instructor_profile_header, view_profile_header, InstructorProfile, init_profile, ProfileID, ProfileType
   , StudentProfileParams, InstructorProfileParams, Profile)
 
-import Model
+import Text.Model as Text
 import Config exposing (student_api_endpoint)
 import Json.Decode as Decode
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
@@ -19,8 +19,8 @@ type alias ProfileType = String
 type alias StudentProfileParams = {
     id: Maybe Int
   , username: String
-  , difficulty_preference: Maybe Model.TextDifficulty
-  , difficulties: List Model.TextDifficulty }
+  , difficulty_preference: Maybe Text.TextDifficulty
+  , difficulties: List Text.TextDifficulty }
 
 type alias InstructorProfileParams = { id: Maybe Int, username: String }
 
@@ -33,10 +33,10 @@ type Profile = Student StudentProfile | Instructor InstructorProfile | EmptyProf
 studentProfile : StudentProfileParams -> StudentProfile
 studentProfile params = StudentProfile params
 
-studentDifficultyPreference : StudentProfile -> Maybe Model.TextDifficulty
+studentDifficultyPreference : StudentProfile -> Maybe Text.TextDifficulty
 studentDifficultyPreference (StudentProfile attrs) = attrs.difficulty_preference
 
-studentDifficulties : StudentProfile -> List Model.TextDifficulty
+studentDifficulties : StudentProfile -> List Text.TextDifficulty
 studentDifficulties (StudentProfile attrs) = attrs.difficulties
 
 studentUserName : StudentProfile -> String

@@ -4,7 +4,8 @@ import Html.Attributes exposing (classList, attribute)
 import Http exposing (..)
 import Date exposing (..)
 
-import Model exposing (Text, textsDecoder)
+import Text.Model exposing (Text)
+import Text.Decode
 import Config exposing (..)
 import Flags exposing (Flags)
 
@@ -31,7 +32,7 @@ subscriptions model =
 
 
 updateTexts : Filter -> Cmd Msg
-updateTexts filter = let request = Http.get text_api_endpoint textsDecoder in
+updateTexts filter = let request = Http.get text_api_endpoint Text.Decode.textsDecoder in
   Http.send Update request
 
 

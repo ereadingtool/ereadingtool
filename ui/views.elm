@@ -1,4 +1,4 @@
-module Views exposing (view_filter, view_header, view_footer)
+module Views exposing (view_filter, view_header, view_footer, view_preview)
 
 import Html exposing (..)
 import Html.Attributes exposing (classList, attribute)
@@ -32,3 +32,14 @@ view_footer = div [classList [("footer_items", True)] ] [
         Html.text ""
     ]
  ]
+
+view_preview : Html msg
+view_preview  =
+    div [ classList [("preview", True)] ] [
+      div [ classList [("preview_menu", True)] ] [
+            span [ classList [("menu_item", True)] ] [
+                Html.button [] [ Html.text "Preview" ]
+              , Html.input [attribute "placeholder" "Search texts.."] []
+            ]
+      ]
+    ]
