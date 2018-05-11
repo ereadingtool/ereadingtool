@@ -21,14 +21,13 @@ import Text.Model exposing (Text, TextDifficulty)
 import Text.View
 import Text.Update
 
-import Text.Field exposing (TextComponent, TextField)
+import Text.Component exposing (TextComponent, TextField)
 
 import Text.Encode
 import Text.Decode
 
 import Answer.Field exposing (AnswerField, AnswerFeedbackField)
 import Question.Field exposing (QuestionField, update_question_field, add_new_question, delete_question)
-
 
 type Field = Question QuestionField | Answer AnswerField | Text TextField
 
@@ -54,7 +53,7 @@ init flags = ({
       , success_msg=Nothing
       , error_msg=Nothing
       , profile=Profile.init_profile flags
-      , text_components=Text.Field.add_new_text (Array.fromList [])
+      , text_components=Text.Component.add_new_text (Array.fromList [])
       , question_difficulties=[]
   }, retrieveTextDifficultyOptions)
 
@@ -81,7 +80,7 @@ update msg model = case msg of
     TextComponentMsg msg -> (Text.Update.update msg model)
 
     SubmitQuiz -> ({ model | error_msg = Nothing, success_msg = Nothing }
-      , post_text model.flags.csrftoken (Array.map (\c -> Text.Field.text c) model.text_components))
+      , post_text model.flags.csrftoken (Array.map (\c -> Text.Component.text c) model.text_components))
       {-let questions = Array.map (\q_field ->
       let answer_fields = q_field.answer_fields
           question = q_field.question in
@@ -98,8 +97,8 @@ update msg model = case msg of
     Submitted (Err err) -> case err of
       Http.BadStatus resp -> case (Text.Decode.decodeCreateRespErrors (Debug.log "errors" resp.body)) of
         Ok errors -> let
-          err = (Debug.log "displaying validations" errors)
-          new_text_components = Text.Field.update_errors err model.text_components
+          _ = (Debug.log "displaying validations" errors)
+          new_text_components = Text.Component.update_errors model.text_components errors
         in ({ model | text_components = new_text_components }, Cmd.none)
         _ -> (model, Cmd.none)
       Http.BadPayload err resp -> (model, Cmd.none)
@@ -129,15 +128,6 @@ main =
     , update = update
     }
 
-{-hover_attrs : Text.Field.TextField -> List (Attribute Msg)
-hover_attrs field = [
-    classList [ ("over", field.hover) ]
-  , onMouseOver (Hover <| Text field)
-  , onMouseLeave (UnHover <| Text field)]
-
-text_property_attrs : Text.Field.TextField -> List (Attribute Msg)
-text_property_attrs field = [onClick (ToggleEditableField <| Text field)] ++ (hover_attrs field)-}
-
 view_msg : Maybe Text.Decode.TextCreateRespError -> Html Msg
 view_msg msg = case msg of
   Just err -> Html.text <| toString err
@@ -163,6 +153,6 @@ view : Model -> Html Msg
 view model = div [] [
       Views.view_header (Profile.view_profile_header model.profile)
     , (Views.view_preview)
-    , (Text.View.view_text_components TextComponentMsg model.text_components)
+    , (Text.View.view_text_components TextComponentMsg model.text_components model.question_difficulties)
     , (view_submit model)
   ]

@@ -1,11 +1,11 @@
 module Question.View exposing (..)
 
 import Text.Model exposing (Text)
-import Text.Field exposing (TextComponent, TextField)
+import Text.Component exposing (TextComponent, TextField)
 import Html exposing (..)
 import Html.Attributes exposing (classList, attribute)
 
-import Question.Field
+import Question.Field exposing (QuestionField)
 
 import Array exposing (Array)
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)

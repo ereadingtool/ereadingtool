@@ -9639,6 +9639,18 @@ var _user$project$Field$toggle_editable = F2(
 	});
 var _user$project$Field$fieldIDDecoder = _elm_lang$core$Json_Decode$int;
 
+var _user$project$Answer_Field$attributes = function (_p0) {
+	var _p1 = _p0;
+	return _p1._1;
+};
+var _user$project$Answer_Field$index = function (answer_field) {
+	var attrs = _user$project$Answer_Field$attributes(answer_field);
+	return attrs.index;
+};
+var _user$project$Answer_Field$question_index = function (answer_field) {
+	var attrs = _user$project$Answer_Field$attributes(answer_field);
+	return attrs.question_index;
+};
 var _user$project$Answer_Field$generate_answer_feedback_field = function (id) {
 	return {id: id, editable: false, error: false};
 };
@@ -9655,15 +9667,15 @@ var _user$project$Answer_Field$AnswerField = F3(
 		return {ctor: 'AnswerField', _0: a, _1: b, _2: c};
 	});
 var _user$project$Answer_Field$update_question_index = F2(
-	function (_p0, i) {
-		var _p1 = _p0;
+	function (_p2, i) {
+		var _p3 = _p2;
 		return A3(
 			_user$project$Answer_Field$AnswerField,
-			_p1._0,
+			_p3._0,
 			_elm_lang$core$Native_Utils.update(
-				_p1._1,
+				_p3._1,
 				{question_index: i}),
-			_p1._2);
+			_p3._2);
 	});
 var _user$project$Answer_Field$generate_answer_field = F3(
 	function (i, j, answer) {
@@ -9704,6 +9716,31 @@ var _user$project$Answer_Field$generate_answer_field = F3(
 							_1: {ctor: '[]'}
 						}
 					})));
+	});
+var _user$project$Answer_Field$switch_editable = function (_p4) {
+	var _p5 = _p4;
+	var _p6 = _p5._1;
+	return A3(
+		_user$project$Answer_Field$AnswerField,
+		_p5._0,
+		_elm_lang$core$Native_Utils.update(
+			_p6,
+			{
+				editable: _p6.editable ? false : true,
+				hover: false
+			}),
+		_p5._2);
+};
+var _user$project$Answer_Field$hover = F2(
+	function (_p7, hover) {
+		var _p8 = _p7;
+		return A3(
+			_user$project$Answer_Field$AnswerField,
+			_p8._0,
+			_elm_lang$core$Native_Utils.update(
+				_p8._1,
+				{hover: hover}),
+			_p8._2);
 	});
 
 var _user$project$Config$student_api_endpoint = '/api/student/';
@@ -10296,9 +10333,17 @@ var _user$project$Views$view_header = function (view_user_profile) {
 		});
 };
 
-var _user$project$Question_Field$question_index = function (_p0) {
+var _user$project$Question_Field$attributes = function (_p0) {
 	var _p1 = _p0;
-	return _p1._1.index;
+	return _p1._1;
+};
+var _user$project$Question_Field$index = function (question_field) {
+	var attrs = _user$project$Question_Field$attributes(question_field);
+	return attrs.index;
+};
+var _user$project$Question_Field$question_index = function (_p2) {
+	var _p3 = _p2;
+	return _p3._1.index;
 };
 var _user$project$Question_Field$update_question_field = F2(
 	function (new_question_field, question_fields) {
@@ -10361,20 +10406,20 @@ var _user$project$Question_Field$delete_question = F2(
 		return A2(
 			_elm_lang$core$Array$indexedMap,
 			F2(
-				function (i, _p2) {
-					var _p3 = _p2;
+				function (i, _p4) {
+					var _p5 = _p4;
 					return A3(
 						_user$project$Question_Field$QuestionField,
-						_p3._0,
+						_p5._0,
 						_elm_lang$core$Native_Utils.update(
-							_p3._1,
+							_p5._1,
 							{index: i}),
 						A2(
 							_elm_lang$core$Array$map,
 							function (answer_field) {
 								return A2(_user$project$Answer_Field$update_question_index, answer_field, i);
 							},
-							_p3._2));
+							_p5._2));
 				}),
 			A2(
 				_elm_lang$core$Array$filter,
@@ -10385,20 +10430,81 @@ var _user$project$Question_Field$delete_question = F2(
 				},
 				fields));
 	});
+var _user$project$Question_Field$switch_editable = function (_p6) {
+	var _p7 = _p6;
+	var _p8 = _p7._1;
+	return A3(
+		_user$project$Question_Field$QuestionField,
+		_p7._0,
+		_elm_lang$core$Native_Utils.update(
+			_p8,
+			{
+				editable: _p8.editable ? false : true,
+				hover: false
+			}),
+		_p7._2);
+};
+var _user$project$Question_Field$hover = F2(
+	function (_p9, hover) {
+		var _p10 = _p9;
+		return A3(
+			_user$project$Question_Field$QuestionField,
+			_p10._0,
+			_elm_lang$core$Native_Utils.update(
+				_p10._1,
+				{hover: hover}),
+			_p10._2);
+	});
 
-var _user$project$Text_Field$update_errors = F2(
-	function (errors, components) {
+var _user$project$Text_Component$update_errors = F2(
+	function (components, errors) {
 		return components;
 	});
-var _user$project$Text_Field$text = function (_p0) {
+var _user$project$Text_Component$question_fields = function (_p0) {
 	var _p1 = _p0;
-	return _p1._0;
+	return _p1._3;
 };
-var _user$project$Text_Field$body = function (_p2) {
+var _user$project$Text_Component$attributes = function (_p2) {
 	var _p3 = _p2;
-	return _p3._2.body;
+	return _p3._1;
 };
-var _user$project$Text_Field$generate_text_field = F2(
+var _user$project$Text_Component$index = function (text_component) {
+	var attrs = _user$project$Text_Component$attributes(text_component);
+	return attrs.index;
+};
+var _user$project$Text_Component$text = function (_p4) {
+	var _p5 = _p4;
+	return _p5._0;
+};
+var _user$project$Text_Component$body = function (_p6) {
+	var _p7 = _p6;
+	return _p7._2.body;
+};
+var _user$project$Text_Component$author = function (_p8) {
+	var _p9 = _p8;
+	return _p9._2.author;
+};
+var _user$project$Text_Component$difficulty = function (_p10) {
+	var _p11 = _p10;
+	return _p11._2.difficulty;
+};
+var _user$project$Text_Component$source = function (_p12) {
+	var _p13 = _p12;
+	return _p13._2.source;
+};
+var _user$project$Text_Component$title = function (_p14) {
+	var _p15 = _p14;
+	return _p15._2.title;
+};
+var _user$project$Text_Component$switch_editable = function (field) {
+	return _elm_lang$core$Native_Utils.update(
+		field,
+		{
+			editable: field.editable ? false : true,
+			hover: false
+		});
+};
+var _user$project$Text_Component$generate_text_field = F2(
 	function (i, attr) {
 		return {
 			id: A2(
@@ -10420,117 +10526,708 @@ var _user$project$Text_Field$generate_text_field = F2(
 			editable: false,
 			hover: false,
 			error: false,
+			name: attr,
 			index: i
 		};
 	});
-var _user$project$Text_Field$TextField = F5(
-	function (a, b, c, d, e) {
-		return {id: a, editable: b, hover: c, error: d, index: e};
+var _user$project$Text_Component$TextField = F6(
+	function (a, b, c, d, e, f) {
+		return {id: a, editable: b, hover: c, error: d, name: e, index: f};
 	});
-var _user$project$Text_Field$TextFields = F5(
+var _user$project$Text_Component$TextFields = F5(
 	function (a, b, c, d, e) {
 		return {title: a, source: b, difficulty: c, author: d, body: e};
 	});
-var _user$project$Text_Field$TextComponentAttributes = function (a) {
+var _user$project$Text_Component$TextComponentAttributes = function (a) {
 	return {index: a};
 };
-var _user$project$Text_Field$TextComponent = F4(
+var _user$project$Text_Component$TextComponent = F4(
 	function (a, b, c, d) {
 		return {ctor: 'TextComponent', _0: a, _1: b, _2: c, _3: d};
 	});
-var _user$project$Text_Field$emptyTextComponent = function (i) {
+var _user$project$Text_Component$emptyTextComponent = function (i) {
 	return A4(
-		_user$project$Text_Field$TextComponent,
+		_user$project$Text_Component$TextComponent,
 		_user$project$Text_Model$emptyText,
 		{index: i},
 		{
-			title: A2(_user$project$Text_Field$generate_text_field, i, 'title'),
-			source: A2(_user$project$Text_Field$generate_text_field, i, 'source'),
-			difficulty: A2(_user$project$Text_Field$generate_text_field, i, 'difficulty'),
-			author: A2(_user$project$Text_Field$generate_text_field, i, 'author'),
-			body: A2(_user$project$Text_Field$generate_text_field, i, 'body')
+			title: A2(_user$project$Text_Component$generate_text_field, i, 'title'),
+			source: A2(_user$project$Text_Component$generate_text_field, i, 'source'),
+			difficulty: A2(_user$project$Text_Component$generate_text_field, i, 'difficulty'),
+			author: A2(_user$project$Text_Component$generate_text_field, i, 'author'),
+			body: A2(_user$project$Text_Component$generate_text_field, i, 'body')
 		},
 		_user$project$Question_Field$initial_question_fields);
 };
-var _user$project$Text_Field$add_new_text = function (components) {
+var _user$project$Text_Component$add_new_text = function (components) {
 	var arr_len = _elm_lang$core$Array$length(components);
 	return A2(
 		_elm_lang$core$Array$push,
-		_user$project$Text_Field$emptyTextComponent(arr_len),
+		_user$project$Text_Component$emptyTextComponent(arr_len),
 		components);
 };
+var _user$project$Text_Component$update_title = F2(
+	function (_p16, title) {
+		var _p17 = _p16;
+		return A4(
+			_user$project$Text_Component$TextComponent,
+			_elm_lang$core$Native_Utils.update(
+				_p17._0,
+				{title: title}),
+			_p17._1,
+			_p17._2,
+			_p17._3);
+	});
+var _user$project$Text_Component$update_source = F2(
+	function (_p18, source) {
+		var _p19 = _p18;
+		return A4(
+			_user$project$Text_Component$TextComponent,
+			_elm_lang$core$Native_Utils.update(
+				_p19._0,
+				{source: source}),
+			_p19._1,
+			_p19._2,
+			_p19._3);
+	});
+var _user$project$Text_Component$update_difficulty = F2(
+	function (_p20, difficulty) {
+		var _p21 = _p20;
+		return A4(
+			_user$project$Text_Component$TextComponent,
+			_elm_lang$core$Native_Utils.update(
+				_p21._0,
+				{difficulty: difficulty}),
+			_p21._1,
+			_p21._2,
+			_p21._3);
+	});
+var _user$project$Text_Component$update_author = F2(
+	function (_p22, author) {
+		var _p23 = _p22;
+		return A4(
+			_user$project$Text_Component$TextComponent,
+			_elm_lang$core$Native_Utils.update(
+				_p23._0,
+				{author: author}),
+			_p23._1,
+			_p23._2,
+			_p23._3);
+	});
+var _user$project$Text_Component$update_body = F2(
+	function (_p24, body) {
+		var _p25 = _p24;
+		return A4(
+			_user$project$Text_Component$TextComponent,
+			_elm_lang$core$Native_Utils.update(
+				_p25._0,
+				{body: body}),
+			_p25._1,
+			_p25._2,
+			_p25._3);
+	});
+var _user$project$Text_Component$set_question = F2(
+	function (_p26, question_field) {
+		var _p27 = _p26;
+		var question_index = _user$project$Question_Field$index(question_field);
+		return A4(
+			_user$project$Text_Component$TextComponent,
+			_p27._0,
+			_p27._1,
+			_p27._2,
+			A3(_elm_lang$core$Array$set, question_index, question_field, _p27._3));
+	});
+var _user$project$Text_Component$set_answer = F2(
+	function (_p28, answer_field) {
+		var _p29 = _p28;
+		var _p34 = _p29._0;
+		var _p33 = _p29._3;
+		var _p32 = _p29._2;
+		var _p31 = _p29._1;
+		var question_index = _user$project$Answer_Field$question_index(answer_field);
+		var answer_index = _user$project$Answer_Field$index(answer_field);
+		var _p30 = A2(_elm_lang$core$Array$get, question_index, _p33);
+		if (_p30.ctor === 'Just') {
+			return A4(
+				_user$project$Text_Component$TextComponent,
+				_p34,
+				_p31,
+				_p32,
+				A3(_elm_lang$core$Array$set, question_index, _p30._0, _p33));
+		} else {
+			return A4(_user$project$Text_Component$TextComponent, _p34, _p31, _p32, _p33);
+		}
+	});
+var _user$project$Text_Component$set_text = F3(
+	function (_p35, field_name, value) {
+		var _p36 = _p35;
+		var _p41 = _p36._0;
+		var _p40 = _p36._3;
+		var _p39 = _p36._2;
+		var _p38 = _p36._1;
+		var _p37 = field_name;
+		switch (_p37) {
+			case 'title':
+				return A4(
+					_user$project$Text_Component$TextComponent,
+					_elm_lang$core$Native_Utils.update(
+						_p41,
+						{title: value}),
+					_p38,
+					_p39,
+					_p40);
+			case 'source':
+				return A4(
+					_user$project$Text_Component$TextComponent,
+					_elm_lang$core$Native_Utils.update(
+						_p41,
+						{source: value}),
+					_p38,
+					_p39,
+					_p40);
+			case 'difficulty':
+				return A4(
+					_user$project$Text_Component$TextComponent,
+					_elm_lang$core$Native_Utils.update(
+						_p41,
+						{difficulty: value}),
+					_p38,
+					_p39,
+					_p40);
+			case 'author':
+				return A4(
+					_user$project$Text_Component$TextComponent,
+					_elm_lang$core$Native_Utils.update(
+						_p41,
+						{author: value}),
+					_p38,
+					_p39,
+					_p40);
+			case 'body':
+				return A4(
+					_user$project$Text_Component$TextComponent,
+					_elm_lang$core$Native_Utils.update(
+						_p41,
+						{body: value}),
+					_p38,
+					_p39,
+					_p40);
+			default:
+				return A4(_user$project$Text_Component$TextComponent, _p41, _p38, _p39, _p40);
+		}
+	});
+var _user$project$Text_Component$set_field = F3(
+	function (_p42, new_text_field, field_name) {
+		var _p43 = _p42;
+		var _p48 = _p43._0;
+		var _p47 = _p43._3;
+		var _p46 = _p43._2;
+		var _p45 = _p43._1;
+		var _p44 = field_name;
+		switch (_p44) {
+			case 'title':
+				return A4(
+					_user$project$Text_Component$TextComponent,
+					_p48,
+					_p45,
+					_elm_lang$core$Native_Utils.update(
+						_p46,
+						{title: new_text_field}),
+					_p47);
+			case 'source':
+				return A4(
+					_user$project$Text_Component$TextComponent,
+					_p48,
+					_p45,
+					_elm_lang$core$Native_Utils.update(
+						_p46,
+						{source: new_text_field}),
+					_p47);
+			case 'difficulty':
+				return A4(
+					_user$project$Text_Component$TextComponent,
+					_p48,
+					_p45,
+					_elm_lang$core$Native_Utils.update(
+						_p46,
+						{difficulty: new_text_field}),
+					_p47);
+			case 'author':
+				return A4(
+					_user$project$Text_Component$TextComponent,
+					_p48,
+					_p45,
+					_elm_lang$core$Native_Utils.update(
+						_p46,
+						{author: new_text_field}),
+					_p47);
+			case 'body':
+				return A4(
+					_user$project$Text_Component$TextComponent,
+					_p48,
+					_p45,
+					_elm_lang$core$Native_Utils.update(
+						_p46,
+						{body: new_text_field}),
+					_p47);
+			default:
+				return A4(_user$project$Text_Component$TextComponent, _p48, _p45, _p46, _p47);
+		}
+	});
 
 var _user$project$Text_Update$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
-		return {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$Native_Utils.update(
-				model,
-				{
-					text_components: _user$project$Text_Field$add_new_text(
-						_elm_lang$core$Array$fromList(
-							{ctor: '[]'}))
-				}),
-			_1: _elm_lang$core$Platform_Cmd$none
-		};
+		switch (_p0.ctor) {
+			case 'UpdateTextValue':
+				var _p1 = _p0._0;
+				var new_text_component = A3(_user$project$Text_Component$set_text, _p1, _p0._1, _p0._2);
+				var index = _user$project$Text_Component$index(_p1);
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							text_components: A3(_elm_lang$core$Array$set, index, new_text_component, model.text_components)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'UpdateTextField':
+				var _p2 = _p0._0;
+				var new_text_component = A3(_user$project$Text_Component$set_field, _p2, _p0._1, _p0._2);
+				var index = _user$project$Text_Component$index(_p2);
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							text_components: A3(_elm_lang$core$Array$set, index, new_text_component, model.text_components)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'ToggleEditable':
+				var _p5 = _p0._0;
+				var new_text_component = function () {
+					var _p3 = _p0._1;
+					switch (_p3.ctor) {
+						case 'Text':
+							var _p4 = _p3._0;
+							return A3(
+								_user$project$Text_Component$set_field,
+								_p5,
+								_user$project$Text_Component$switch_editable(_p4),
+								_p4.name);
+						case 'Question':
+							return A2(
+								_user$project$Text_Component$set_question,
+								_p5,
+								_user$project$Question_Field$switch_editable(_p3._0));
+						default:
+							return A2(
+								_user$project$Text_Component$set_answer,
+								_p5,
+								_user$project$Answer_Field$switch_editable(_p3._0));
+					}
+				}();
+				var index = _user$project$Text_Component$index(_p5);
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							text_components: A3(_elm_lang$core$Array$set, index, new_text_component, model.text_components)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'Hover':
+				var _p9 = _p0._0;
+				var _p8 = _p0._2;
+				var new_text_component = function () {
+					var _p6 = _p0._1;
+					switch (_p6.ctor) {
+						case 'Question':
+							return A2(
+								_user$project$Text_Component$set_question,
+								_p9,
+								A2(_user$project$Question_Field$hover, _p6._0, _p8));
+						case 'Answer':
+							return A2(
+								_user$project$Text_Component$set_answer,
+								_p9,
+								A2(_user$project$Answer_Field$hover, _p6._0, _p8));
+						default:
+							var _p7 = _p6._0;
+							return A3(
+								_user$project$Text_Component$set_field,
+								_p9,
+								_elm_lang$core$Native_Utils.update(
+									_p7,
+									{hover: _p8}),
+								_p7.name);
+					}
+				}();
+				var index = _user$project$Text_Component$index(_p9);
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							text_components: A3(_elm_lang$core$Array$set, index, new_text_component, model.text_components)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+		}
 	});
-var _user$project$Text_Update$UpdateID = F2(
+var _user$project$Text_Update$Answer = function (a) {
+	return {ctor: 'Answer', _0: a};
+};
+var _user$project$Text_Update$Question = function (a) {
+	return {ctor: 'Question', _0: a};
+};
+var _user$project$Text_Update$Text = function (a) {
+	return {ctor: 'Text', _0: a};
+};
+var _user$project$Text_Update$Hover = F3(
+	function (a, b, c) {
+		return {ctor: 'Hover', _0: a, _1: b, _2: c};
+	});
+var _user$project$Text_Update$ToggleEditable = F2(
 	function (a, b) {
-		return {ctor: 'UpdateID', _0: a, _1: b};
+		return {ctor: 'ToggleEditable', _0: a, _1: b};
+	});
+var _user$project$Text_Update$UpdateAnswerField = F2(
+	function (a, b) {
+		return {ctor: 'UpdateAnswerField', _0: a, _1: b};
+	});
+var _user$project$Text_Update$UpdateQuestionField = F2(
+	function (a, b) {
+		return {ctor: 'UpdateQuestionField', _0: a, _1: b};
+	});
+var _user$project$Text_Update$UpdateTextField = F3(
+	function (a, b, c) {
+		return {ctor: 'UpdateTextField', _0: a, _1: b, _2: c};
+	});
+var _user$project$Text_Update$UpdateTextValue = F3(
+	function (a, b, c) {
+		return {ctor: 'UpdateTextValue', _0: a, _1: b, _2: c};
 	});
 
-var _user$project$Text_View$edit_body = function (text_field) {
-	var text = _user$project$Text_Field$text(text_field.parent);
+var _user$project$Text_View$toggle_editable = F2(
+	function (event, params) {
+		return event(
+			params.msg(
+				A2(
+					_user$project$Text_Update$ToggleEditable,
+					params.parent,
+					_user$project$Text_Update$Text(params.field))));
+	});
+var _user$project$Text_View$edit_title = function (params) {
+	return A2(
+		_elm_lang$html$Html$input,
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
+			_1: {
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', params.text.title),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'title'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onInput(
+							function (_p0) {
+								return params.msg(
+									A3(_user$project$Text_Update$UpdateTextValue, params.parent, 'title', _p0));
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(_user$project$Text_View$toggle_editable, _elm_lang$html$Html_Events$onBlur, params),
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			}
+		},
+		{ctor: '[]'});
+};
+var _user$project$Text_View$hover = function (params) {
+	return {
+		ctor: '::',
+		_0: _elm_lang$html$Html_Attributes$classList(
+			{
+				ctor: '::',
+				_0: {ctor: '_Tuple2', _0: 'over', _1: params.field.hover},
+				_1: {ctor: '[]'}
+			}),
+		_1: {
+			ctor: '::',
+			_0: _elm_lang$html$Html_Events$onMouseOver(
+				params.msg(
+					A3(
+						_user$project$Text_Update$Hover,
+						params.parent,
+						_user$project$Text_Update$Text(params.field),
+						true))),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Events$onMouseLeave(
+					params.msg(
+						A3(
+							_user$project$Text_Update$Hover,
+							params.parent,
+							_user$project$Text_Update$Text(params.field),
+							false))),
+				_1: {ctor: '[]'}
+			}
+		}
+	};
+};
+var _user$project$Text_View$view_title = function (params) {
+	return A2(
+		_elm_lang$html$Html$div,
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			{
+				ctor: '::',
+				_0: A2(_user$project$Text_View$toggle_editable, _elm_lang$html$Html_Events$onClick, params),
+				_1: {ctor: '[]'}
+			},
+			_user$project$Text_View$hover(params)),
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text('Title: '),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(params.text.title),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Text_View$edit_body = function (params) {
 	return A2(
 		_elm_lang$html$Html$textarea,
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html_Events$onInput(
-				function (_p0) {
-					return text_field.msg(
-						A2(_user$project$Text_Update$UpdateID, text_field.attrs.id, _p0));
+				function (_p1) {
+					return params.msg(
+						A3(_user$project$Text_Update$UpdateTextValue, params.parent, 'body', _p1));
 				}),
 			_1: {
 				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', text_field.attrs.id),
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', params.field.id),
 				_1: {ctor: '[]'}
 			}
 		},
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html$text(text.body),
+			_0: _elm_lang$html$Html$text(params.text.body),
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Text_View$html_attrs = {ctor: '[]'};
-var _user$project$Text_View$view_body = function (text_field) {
-	var text = _user$project$Text_Field$text(text_field.parent);
+var _user$project$Text_View$edit_difficulty = function (params) {
 	return A2(
 		_elm_lang$html$Html$div,
-		_user$project$Text_View$html_attrs,
+		{ctor: '[]'},
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html$text('Text: '),
+			_0: _elm_lang$html$Html$text('Difficulty:  '),
 			_1: {
 				ctor: '::',
-				_0: _elm_lang$html$Html$text(text.body),
+				_0: A2(
+					_elm_lang$html$Html$select,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onInput(
+							function (_p2) {
+								return params.msg(
+									A3(_user$project$Text_Update$UpdateTextValue, params.parent, 'difficulty', _p2));
+							}),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$optgroup,
+							{ctor: '[]'},
+							A2(
+								_elm_lang$core$List$map,
+								function (_p3) {
+									var _p4 = _p3;
+									var _p5 = _p4._1;
+									return A2(
+										_elm_lang$html$Html$option,
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											{
+												ctor: '::',
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', _p4._0),
+												_1: {ctor: '[]'}
+											},
+											_elm_lang$core$Native_Utils.eq(_p5, params.text.difficulty) ? {
+												ctor: '::',
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'selected', ''),
+												_1: {ctor: '[]'}
+											} : {ctor: '[]'}),
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text(_p5),
+											_1: {ctor: '[]'}
+										});
+								},
+								params.difficulties)),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Text_View$view_body = function (params) {
+	return A2(
+		_elm_lang$html$Html$div,
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			{
+				ctor: '::',
+				_0: A2(_user$project$Text_View$toggle_editable, _elm_lang$html$Html_Events$onClick, params),
+				_1: {ctor: '[]'}
+			},
+			_user$project$Text_View$hover(params)),
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text('Body: '),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(params.text.body),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Text_View$edit_source = function (params) {
+	return A2(
+		_elm_lang$html$Html$input,
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
+			_1: {
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', params.text.source),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'source'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onInput(
+							function (_p6) {
+								return params.msg(
+									A3(_user$project$Text_Update$UpdateTextValue, params.parent, 'source', _p6));
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(_user$project$Text_View$toggle_editable, _elm_lang$html$Html_Events$onBlur, params),
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			}
+		},
+		{ctor: '[]'});
+};
+var _user$project$Text_View$view_source = function (params) {
+	return A2(
+		_elm_lang$html$Html$div,
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			{
+				ctor: '::',
+				_0: A2(_user$project$Text_View$toggle_editable, _elm_lang$html$Html_Events$onClick, params),
+				_1: {ctor: '[]'}
+			},
+			_user$project$Text_View$hover(params)),
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text('Source: '),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(params.text.source),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Text_View$edit_author = function (params) {
+	return A2(
+		_elm_lang$html$Html$input,
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
+			_1: {
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', params.text.author),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'author'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onInput(
+							function (_p7) {
+								return params.msg(
+									A3(_user$project$Text_Update$UpdateTextValue, params.parent, 'author', _p7));
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(_user$project$Text_View$toggle_editable, _elm_lang$html$Html_Events$onBlur, params),
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			}
+		},
+		{ctor: '[]'});
+};
+var _user$project$Text_View$view_author = function (params) {
+	return A2(
+		_elm_lang$html$Html$div,
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			{
+				ctor: '::',
+				_0: A2(_user$project$Text_View$toggle_editable, _elm_lang$html$Html_Events$onClick, params),
+				_1: {ctor: '[]'}
+			},
+			_user$project$Text_View$hover(params)),
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text('Author: '),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(params.text.author),
 				_1: {ctor: '[]'}
 			}
 		});
 };
 var _user$project$Text_View$view_editable = F3(
-	function (text_field, view, edit) {
-		var _p1 = text_field.attrs.editable;
-		if (_p1 === true) {
-			return edit(text_field);
+	function (params, view, edit) {
+		var _p8 = params.field.editable;
+		if (_p8 === true) {
+			return edit(params);
 		} else {
-			return view(text_field);
+			return view(params);
 		}
 	});
-var _user$project$Text_View$view_text_component = F2(
-	function (msg, text_component) {
-		var body_field = _user$project$Text_Field$body(text_component);
+var _user$project$Text_View$view_text_component = F3(
+	function (msg, text_difficulties, text_component) {
+		var difficulty_field = _user$project$Text_Component$difficulty(text_component);
+		var author_field = _user$project$Text_Component$author(text_component);
+		var source_field = _user$project$Text_Component$source(text_component);
+		var title_field = _user$project$Text_Component$title(text_component);
+		var body_field = _user$project$Text_Component$body(text_component);
+		var text = _user$project$Text_Component$text(text_component);
+		var params = function (field) {
+			return {parent: text_component, text: text, msg: msg, difficulties: text_difficulties, field: field};
+		};
 		return {
 			ctor: '::',
 			_0: A2(
@@ -10559,7 +11256,39 @@ var _user$project$Text_View$view_text_component = F2(
 								}),
 							_1: {ctor: '[]'}
 						},
-						{ctor: '[]'}),
+						{
+							ctor: '::',
+							_0: A3(
+								_user$project$Text_View$view_editable,
+								params(title_field),
+								_user$project$Text_View$view_title,
+								_user$project$Text_View$edit_title),
+							_1: {
+								ctor: '::',
+								_0: A3(
+									_user$project$Text_View$view_editable,
+									params(source_field),
+									_user$project$Text_View$view_source,
+									_user$project$Text_View$edit_source),
+								_1: {
+									ctor: '::',
+									_0: A3(
+										_user$project$Text_View$view_editable,
+										params(difficulty_field),
+										_user$project$Text_View$edit_difficulty,
+										_user$project$Text_View$edit_difficulty),
+									_1: {
+										ctor: '::',
+										_0: A3(
+											_user$project$Text_View$view_editable,
+											params(author_field),
+											_user$project$Text_View$view_author,
+											_user$project$Text_View$edit_author),
+										_1: {ctor: '[]'}
+									}
+								}
+							}
+						}),
 					_1: {
 						ctor: '::',
 						_0: A2(
@@ -10578,7 +11307,7 @@ var _user$project$Text_View$view_text_component = F2(
 								ctor: '::',
 								_0: A3(
 									_user$project$Text_View$view_editable,
-									{parent: text_component, msg: msg, attrs: body_field},
+									params(body_field),
 									_user$project$Text_View$view_body,
 									_user$project$Text_View$edit_body),
 								_1: {ctor: '[]'}
@@ -10589,8 +11318,8 @@ var _user$project$Text_View$view_text_component = F2(
 			_1: {ctor: '[]'}
 		};
 	});
-var _user$project$Text_View$view_text_components = F2(
-	function (msg, text_components) {
+var _user$project$Text_View$view_text_components = F3(
+	function (msg, text_components, text_difficulties) {
 		return A2(
 			_elm_lang$html$Html$span,
 			{ctor: '[]'},
@@ -10604,12 +11333,12 @@ var _user$project$Text_View$view_text_components = F2(
 				_elm_lang$core$Array$toList(
 					A2(
 						_elm_lang$core$Array$map,
-						_user$project$Text_View$view_text_component(msg),
+						A2(_user$project$Text_View$view_text_component, msg, text_difficulties),
 						text_components))));
 	});
-var _user$project$Text_View$TextField = F3(
-	function (a, b, c) {
-		return {parent: a, msg: b, attrs: c};
+var _user$project$Text_View$TextField = F5(
+	function (a, b, c, d, e) {
+		return {parent: a, msg: b, text: c, difficulties: d, field: e};
 	});
 
 var _user$project$Question_Encode$questionEncoder = function (question) {
@@ -10903,7 +11632,7 @@ var _user$project$Main$update = F2(
 						A2(
 							_elm_lang$core$Array$map,
 							function (c) {
-								return _user$project$Text_Field$text(c);
+								return _user$project$Text_Component$text(c);
 							},
 							model.text_components))
 				};
@@ -10942,8 +11671,9 @@ var _user$project$Main$update = F2(
 							var _p5 = _user$project$Text_Decode$decodeCreateRespErrors(
 								A2(_elm_lang$core$Debug$log, 'errors', _p4._0.body));
 							if (_p5.ctor === 'Ok') {
-								var err = A2(_elm_lang$core$Debug$log, 'displaying validations', _p5._0);
-								var new_text_components = A2(_user$project$Text_Field$update_errors, err, model.text_components);
+								var _p7 = _p5._0;
+								var new_text_components = A2(_user$project$Text_Component$update_errors, model.text_components, _p7);
+								var _p6 = A2(_elm_lang$core$Debug$log, 'displaying validations', _p7);
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
@@ -11030,7 +11760,7 @@ var _user$project$Main$view = function (model) {
 				_0: _user$project$Views$view_preview,
 				_1: {
 					ctor: '::',
-					_0: A2(_user$project$Text_View$view_text_components, _user$project$Main$TextComponentMsg, model.text_components),
+					_0: A3(_user$project$Text_View$view_text_components, _user$project$Main$TextComponentMsg, model.text_components, model.question_difficulties),
 					_1: {
 						ctor: '::',
 						_0: _user$project$Main$view_submit(model),
@@ -11069,7 +11799,7 @@ var _user$project$Main$init = function (flags) {
 			success_msg: _elm_lang$core$Maybe$Nothing,
 			error_msg: _elm_lang$core$Maybe$Nothing,
 			profile: _user$project$Profile$init_profile(flags),
-			text_components: _user$project$Text_Field$add_new_text(
+			text_components: _user$project$Text_Component$add_new_text(
 				_elm_lang$core$Array$fromList(
 					{ctor: '[]'})),
 			question_difficulties: {ctor: '[]'}

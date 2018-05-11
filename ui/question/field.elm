@@ -1,5 +1,5 @@
 module Question.Field exposing (QuestionField, generate_question_field, update_question_field, add_new_question
-  , delete_question, initial_question_fields)
+  , delete_question, initial_question_fields, attributes, index, hover, switch_editable)
 
 import Question.Model exposing (Question)
 
@@ -47,3 +47,16 @@ update_question_field new_question_field question_fields =
 
 initial_question_fields : Array QuestionField
 initial_question_fields = (Array.indexedMap generate_question_field Question.Model.initial_questions)
+
+switch_editable : QuestionField -> QuestionField
+switch_editable (QuestionField question attr answer_fields) =
+  QuestionField question { attr | editable = (if attr.editable then False else True), hover=False } answer_fields
+
+hover : QuestionField -> Bool -> QuestionField
+hover (QuestionField question attr answer_fields) hover = QuestionField question { attr | hover = hover } answer_fields
+
+attributes : QuestionField -> QuestionFieldAttributes
+attributes (QuestionField question attr answer_fields) = attr
+
+index : QuestionField -> Int
+index question_field = let attrs = (attributes question_field) in attrs.index

@@ -1,4 +1,5 @@
-module Answer.Field exposing (AnswerField, AnswerFeedbackField, generate_answer_field, update_question_index)
+module Answer.Field exposing (AnswerField, AnswerFeedbackField, generate_answer_field, update_question_index
+  , index, question_index, switch_editable, hover)
 
 import Field
 import Answer.Model exposing (Answer)
@@ -38,3 +39,19 @@ generate_answer_field i j answer = let
     , error = False
     , question_index = i
     , index = j } (generate_answer_feedback_field <| String.join "_" [answer_id, "feedback"])
+
+attributes : AnswerField -> Field.FieldAttributes AnswerFieldAttributes
+attributes (AnswerField answer attr feedback_field) = attr
+
+index : AnswerField -> Int
+index answer_field = let attrs = (attributes answer_field) in attrs.index
+
+switch_editable : AnswerField -> AnswerField
+switch_editable (AnswerField answer attr feedback) =
+  AnswerField answer { attr | editable = (if attr.editable then False else True), hover=False } feedback
+
+hover : AnswerField -> Bool -> AnswerField
+hover (AnswerField answer attr feedback_field) hover = AnswerField answer { attr | hover = hover } feedback_field
+
+question_index : AnswerField -> Int
+question_index answer_field = let attrs = (attributes answer_field) in attrs.question_index
