@@ -1,10 +1,9 @@
-module Text.Component exposing (TextComponent, TextField, emptyTextComponent, add_new_text, body, text, title, source
-  , difficulty, author, update_errors, question_fields, attributes, set_field, set_text, index
-  , set_answer, set_question, switch_editable)
+module Text.Component exposing (TextComponent, TextField, emptyTextComponent, body, text, title, source
+  , difficulty, author, question_fields, attributes, set_field, set_text, index, delete_question_field
+  , set_answer, set_question, switch_editable, add_new_question, toggle_question_menu, update_question_field)
 
 import Array exposing (Array)
 import Field
-import Dict exposing (Dict)
 
 import Text.Model exposing (Text, TextDifficulty)
 import Question.Field exposing (QuestionField, generate_question_field)
@@ -29,6 +28,8 @@ type alias TextComponentAttributes = { index: Int }
 
 type TextComponent = TextComponent Text TextComponentAttributes TextFields (Array QuestionField)
 
+type alias FieldName = String
+
 generate_text_field : Int -> String -> TextField
 generate_text_field i attr = {
     id=String.join "_" ["text", toString i, attr]
@@ -46,9 +47,6 @@ emptyTextComponent i = TextComponent Text.Model.emptyText { index=i } {
   ,  author=generate_text_field i "author"
   ,  body=generate_text_field i "body"
   } Question.Field.initial_question_fields
-
-add_new_text : Array TextComponent -> Array TextComponent
-add_new_text components = let arr_len = Array.length components in Array.push (emptyTextComponent arr_len) components
 
 switch_editable : TextField -> TextField
 switch_editable field = { field | editable = (if field.editable then False else True), hover = False }
@@ -114,7 +112,7 @@ set_answer (TextComponent text attr fields question_fields) answer_field =
      Just question_field -> TextComponent text attr fields (Array.set question_index question_field question_fields)
      _ -> TextComponent text attr fields question_fields
 
-set_text : TextComponent -> String -> String -> TextComponent
+set_text : TextComponent -> FieldName -> String -> TextComponent
 set_text (TextComponent text attr fields question_fields) field_name value =
   case field_name of
     "title" -> TextComponent { text | title=value } attr fields question_fields
@@ -124,7 +122,7 @@ set_text (TextComponent text attr fields question_fields) field_name value =
     "body" -> TextComponent { text | body=value }  attr fields question_fields
     _ -> (TextComponent text attr fields question_fields)
 
-set_field : TextComponent -> TextField -> String -> TextComponent
+set_field : TextComponent -> TextField -> FieldName -> TextComponent
 set_field (TextComponent text attr fields question_fields) new_text_field field_name =
   case field_name of
     "title" -> TextComponent text attr { fields | title = new_text_field } question_fields
@@ -137,6 +135,20 @@ set_field (TextComponent text attr fields question_fields) new_text_field field_
 question_fields : TextComponent -> Array QuestionField
 question_fields (TextComponent text attr fields question_fields) = question_fields
 
--- TODO: maps an error dictionary to a list of text components
-update_errors : Array TextComponent -> (Dict String String) -> Array TextComponent
-update_errors components errors = components
+update_question_field : TextComponent -> QuestionField -> TextComponent
+update_question_field (TextComponent text attr fields question_fields) question_field =
+    (TextComponent text attr fields (Question.Field.update_question_field question_field question_fields))
+
+delete_question_field : TextComponent -> QuestionField -> TextComponent
+delete_question_field (TextComponent text attr fields question_fields) question_field =
+    (TextComponent text attr fields (Question.Field.delete_question_field question_field question_fields))
+
+add_new_question : TextComponent -> TextComponent
+add_new_question (TextComponent text attr fields question_fields) =
+  (Question.Field.add_new_question question_fields |> TextComponent text attr fields)
+
+toggle_question_menu : TextComponent -> QuestionField -> TextComponent
+toggle_question_menu text_component question_field =  let
+    visible = if (Question.Field.menu_visible question_field) then False else True
+  in
+    set_question text_component (Question.Field.set_menu_visible question_field visible)

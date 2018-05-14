@@ -1,8 +1,11 @@
 module Text.View exposing (view_text_components)
 
 import Text.Model exposing (TextDifficulty)
+import Text.Component.Group exposing (TextComponentGroup)
 import Text.Component exposing (TextComponent, TextField)
 import Text.Update exposing (..)
+
+import Question.View
 
 import Html exposing (..)
 import Html.Attributes exposing (classList, attribute)
@@ -10,11 +13,9 @@ import Html.Attributes exposing (classList, attribute)
 import Array exposing (Array)
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
 
-import Debug
-
 -- wraps the text field along with other items for easy passing to view functions
 type alias TextField msg = {
-    parent: TextComponent
+    text_component: TextComponent
   , msg: (Text.Update.Msg -> msg)
   , text: Text.Model.Text
   , difficulties: List TextDifficulty
@@ -39,7 +40,7 @@ edit_author params = Html.input [
         attribute "type" "text"
       , attribute "value" params.text.author
       , attribute "id" "author"
-      , onInput (UpdateTextValue params.parent "author" >> params.msg)
+      , onInput (UpdateTextValue params.text_component "author" >> params.msg)
       , toggle_editable onBlur params ] [ ]
 
 view_source : (TextField msg) -> Html msg
@@ -53,7 +54,7 @@ edit_source params = Html.input [
         attribute "type" "text"
       , attribute "value" params.text.source
       , attribute "id" "source"
-      , onInput (UpdateTextValue params.parent "source" >> params.msg)
+      , onInput (UpdateTextValue params.text_component "source" >> params.msg)
       , toggle_editable onBlur params ] [ ]
 
 view_body : (TextField msg) -> Html msg
@@ -66,7 +67,7 @@ edit_difficulty : (TextField msg) -> Html msg
 edit_difficulty params = Html.div [] [
       Html.text "Difficulty:  "
     , Html.select [
-         onInput (UpdateTextValue params.parent "difficulty" >> params.msg) ] [
+         onInput (UpdateTextValue params.text_component "difficulty" >> params.msg) ] [
         Html.optgroup [] (List.map (\(k,v) ->
           Html.option ([attribute "value" k] ++ (if v == params.text.difficulty then [attribute "selected" ""] else []))
            [ Html.text v ]) params.difficulties)
@@ -75,17 +76,18 @@ edit_difficulty params = Html.div [] [
 
 edit_body : (TextField msg) -> Html msg
 edit_body params = Html.textarea [
-      onInput (UpdateTextValue params.parent "body" >> params.msg)
+      onInput (UpdateTextValue params.text_component "body" >> params.msg)
     , attribute "id" params.field.id ] [ Html.text params.text.body ]
 
 hover : (TextField msg) -> List (Attribute msg)
 hover params = [
     classList [ ("over", params.field.hover) ]
-  , onMouseOver (params.msg <| Hover params.parent (Text params.field) True)
-  , onMouseLeave (params.msg <| Hover params.parent (Text params.field) False) ]
+  , onMouseOver (params.msg <| Hover params.text_component (Text params.field) True)
+  , onMouseOut (params.msg <| Hover params.text_component (Text params.field) False)
+  , onMouseLeave (params.msg <| Hover params.text_component (Text params.field) False) ]
 
 toggle_editable : (msg -> Attribute msg) -> (TextField msg) -> Attribute msg
-toggle_editable event params = event <| params.msg (ToggleEditable params.parent (Text params.field))
+toggle_editable event params = event <| params.msg (ToggleEditable params.text_component (Text params.field))
 
 view_title : (TextField msg) -> Html msg
 view_title params = Html.div ([toggle_editable onClick params] ++ (hover params)) [
@@ -98,39 +100,40 @@ edit_title params = Html.input [
         attribute "type" "text"
       , attribute "value" params.text.title
       , attribute "id" "title"
-      , onInput (UpdateTextValue params.parent "title" >> params.msg)
+      , onInput (UpdateTextValue params.text_component "title" >> params.msg)
       , (toggle_editable onBlur params) ] [ ]
 
 
 view_text_component : (Msg -> msg) -> List TextDifficulty -> TextComponent -> List (Html msg)
 view_text_component msg text_difficulties text_component = let
     text = Text.Component.text text_component
+
     body_field = Text.Component.body text_component
     title_field = Text.Component.title text_component
     source_field = Text.Component.source text_component
     author_field = Text.Component.author text_component
     difficulty_field = Text.Component.difficulty text_component
-    params field = {parent=text_component, text=text, msg=msg, difficulties=text_difficulties, field=field}
-  in
-  [
-  -- text attributes
-  div [ classList [("text_properties", True)] ] [
-      div [ classList [("text_property_items", True)] ] [
-         view_editable (params title_field) view_title edit_title
-       , view_editable (params source_field) view_source edit_source
-       , view_editable (params difficulty_field) edit_difficulty edit_difficulty
-       , view_editable (params author_field) view_author edit_author
-      ]
-      , div [ classList [("body",True)] ]  [
-        view_editable (params body_field) view_body edit_body ]
-  ]
-  -- questions
-  -- , [ view_questions question_fields ]
-  ]
 
-view_text_components : (Msg -> msg) -> Array TextComponent -> List TextDifficulty -> Html msg
+    params field = {text_component=text_component, text=text, msg=msg, difficulties=text_difficulties, field=field}
+  in [
+  div [attribute "class" "text"] <| [
+    -- text attributes
+    div [ classList [("text_properties", True)] ] [
+        div [ classList [("text_property_items", True)] ] [
+           view_editable (params title_field) view_title edit_title
+         , view_editable (params source_field) view_source edit_source
+         , view_editable (params difficulty_field) edit_difficulty edit_difficulty
+         , view_editable (params author_field) view_author edit_author
+        ]
+        , div [ classList [("body",True)] ]  [
+          view_editable (params body_field) view_body edit_body
+        ]
+    ]
+  ] ++ [ Question.View.view_questions msg text_component (Text.Component.question_fields text_component) ] ]
+
+view_text_components : (Msg -> msg) -> TextComponentGroup -> List TextDifficulty -> Html msg
 view_text_components msg text_components text_difficulties =
-  Html.span []
-  <| List.foldl (++) []
-  <| Array.toList
-  <| Array.map (view_text_component msg text_difficulties) text_components
+    Html.div [attribute "class" "texts"]
+    <| List.foldr (++) []
+    <| Array.toList
+    <| Array.map (view_text_component msg text_difficulties) (Text.Component.Group.toArray text_components)

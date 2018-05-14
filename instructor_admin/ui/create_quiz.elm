@@ -22,6 +22,7 @@ import Text.View
 import Text.Update
 
 import Text.Component exposing (TextComponent, TextField)
+import Text.Component.Group exposing (TextComponentGroup)
 
 import Text.Encode
 import Text.Decode
@@ -42,7 +43,7 @@ type alias Model = {
   , profile : Profile.Profile
   , success_msg : Maybe String
   , error_msg : Maybe Text.Decode.TextCreateRespError
-  , text_components : Array TextComponent
+  , text_components : TextComponentGroup
   , question_difficulties : List TextDifficulty }
 
 type alias Filter = List String
@@ -53,7 +54,7 @@ init flags = ({
       , success_msg=Nothing
       , error_msg=Nothing
       , profile=Profile.init_profile flags
-      , text_components=Text.Component.add_new_text (Array.fromList [])
+      , text_components=Text.Component.Group.new_group
       , question_difficulties=[]
   }, retrieveTextDifficultyOptions)
 
@@ -80,7 +81,8 @@ update msg model = case msg of
     TextComponentMsg msg -> (Text.Update.update msg model)
 
     SubmitQuiz -> ({ model | error_msg = Nothing, success_msg = Nothing }
-      , post_text model.flags.csrftoken (Array.map (\c -> Text.Component.text c) model.text_components))
+      , post_text model.flags.csrftoken
+        (Array.map (\c -> Text.Component.text c) (Text.Component.Group.toArray model.text_components)))
       {-let questions = Array.map (\q_field ->
       let answer_fields = q_field.answer_fields
           question = q_field.question in
@@ -98,7 +100,7 @@ update msg model = case msg of
       Http.BadStatus resp -> case (Text.Decode.decodeCreateRespErrors (Debug.log "errors" resp.body)) of
         Ok errors -> let
           _ = (Debug.log "displaying validations" errors)
-          new_text_components = Text.Component.update_errors model.text_components errors
+          new_text_components = Text.Component.Group.update_errors model.text_components errors
         in ({ model | text_components = new_text_components }, Cmd.none)
         _ -> (model, Cmd.none)
       Http.BadPayload err resp -> (model, Cmd.none)
@@ -146,6 +148,9 @@ view_submit model = Html.div [classList [("submit_section", True)]] [
         Html.text "Save Quiz "
       , view_msg model.error_msg
       , view_success_msg model.success_msg
+    ]
+  , Html.div [attribute "class" "submit", onClick (TextComponentMsg Text.Update.AddText)] [
+        Html.text "Add Text"
     ]
   ]
 
