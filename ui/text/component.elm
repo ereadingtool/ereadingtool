@@ -1,6 +1,7 @@
 module Text.Component exposing (TextComponent, TextField, emptyTextComponent, body, text, title, source
   , difficulty, author, question_fields, attributes, set_field, set_text, index, delete_question_field
-  , set_answer, set_question, switch_editable, add_new_question, toggle_question_menu, update_question_field)
+  , set_answer, set_answer_text, set_question, switch_editable, add_new_question, toggle_question_menu
+  , update_question_field, set_answer_correct, set_answer_feedback)
 
 import Array exposing (Array)
 import Field
@@ -103,6 +104,24 @@ set_question (TextComponent text attr fields question_fields) question_field =
 set_answer : TextComponent -> Answer.Field.AnswerField -> TextComponent
 set_answer (TextComponent text attr fields question_fields) answer_field =
   TextComponent text attr fields (Question.Field.set_answer_field question_fields answer_field)
+
+set_answer_text : TextComponent -> Answer.Field.AnswerField -> String -> TextComponent
+set_answer_text text_component answer_field answer_text =
+  set_answer text_component (Answer.Field.set_answer_text answer_field answer_text)
+
+set_answer_correct : TextComponent -> Answer.Field.AnswerField -> TextComponent
+set_answer_correct text_component answer_field =
+  case (Question.Field.question_field_for_answer (question_fields text_component) answer_field) of
+    Just question_field ->
+      set_question text_component (Question.Field.set_answer_correct question_field answer_field)
+    _ -> text_component
+
+set_answer_feedback : TextComponent -> Answer.Field.AnswerField -> String -> TextComponent
+set_answer_feedback text_component answer_field feedback =
+  case (Question.Field.question_field_for_answer (question_fields text_component) answer_field) of
+    Just question_field ->
+      set_question text_component (Question.Field.set_answer_feedback question_field answer_field feedback)
+    _ -> text_component
 
 set_text : TextComponent -> FieldName -> String -> TextComponent
 set_text (TextComponent text attr fields question_fields) field_name value =

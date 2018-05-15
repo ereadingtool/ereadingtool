@@ -1,7 +1,7 @@
 module Question.Field exposing (QuestionField, QuestionType(..), generate_question_field, update_question_field
-  , add_new_question, delete_question, initial_question_fields, attributes, index, switch_editable
-  , set_question_type, question, menu_visible, id, error, editable, answers, set_menu_visible
-  , update_question, set_question_body, set_answer_field, delete_question_field)
+  , add_new_question, delete_question, initial_question_fields, attributes, index, switch_editable, set_answer_feedback
+  , set_question_type, question, menu_visible, id, error, editable, answers, set_menu_visible, set_answer_correct
+  , update_question, set_question_body, set_answer_field, delete_question_field, question_field_for_answer)
 
 import Question.Model exposing (Question)
 
@@ -44,6 +44,32 @@ set_answer_field question_fields answer_field =
         Array.set question_index (QuestionField question attr (Array.set answer_index answer_field answers)) question_fields
       _ ->
         question_fields
+
+set_answer_feedback : QuestionField -> AnswerField -> String -> QuestionField
+set_answer_feedback (QuestionField question attr answers) answer_field feedback =
+  let
+    index = Answer.Field.index answer_field
+    new_answer_field = Answer.Field.set_answer_feedback answer_field feedback
+  in
+    (QuestionField question attr (Array.set index new_answer_field answers))
+
+set_answer_correct : QuestionField -> AnswerField -> QuestionField
+set_answer_correct (QuestionField question attr answers) answer_field =
+  let
+    answer_index = Answer.Field.index answer_field
+    correct = Answer.Field.set_answer_correct
+    index = Answer.Field.index
+  in
+    QuestionField question attr
+      (Array.map (\a -> (if (index a) == answer_index then (correct a True) else (correct a False))) answers)
+
+
+question_field_for_answer : Array QuestionField -> AnswerField -> Maybe QuestionField
+question_field_for_answer question_fields answer_field =
+  let
+    question_index = Answer.Field.question_index answer_field
+  in
+    Array.get question_index question_fields
 
 question_index : QuestionField -> Int
 question_index (QuestionField _ attr _) = attr.index

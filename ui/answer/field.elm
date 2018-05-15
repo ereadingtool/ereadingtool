@@ -1,5 +1,6 @@
 module Answer.Field exposing (AnswerField, AnswerFeedbackField, generate_answer_field, update_question_index
-  , index, question_index, switch_editable, editable, answer, attributes, error, id, feedback_field)
+  , index, question_index, switch_editable, editable, answer, attributes, error, id, feedback_field
+  , set_answer_text, set_answer_correct, set_answer_feedback)
 
 import Field
 import Answer.Model exposing (Answer)
@@ -59,6 +60,18 @@ answer (AnswerField answer _ _) = answer
 switch_editable : AnswerField -> AnswerField
 switch_editable (AnswerField answer attr feedback) =
   AnswerField answer { attr | editable = (if attr.editable then False else True) } feedback
+
+set_answer_text : AnswerField -> String -> AnswerField
+set_answer_text (AnswerField answer attr feedback) text =
+  AnswerField { answer | text = text } attr feedback
+
+set_answer_correct : AnswerField -> Bool -> AnswerField
+set_answer_correct (AnswerField answer attr feedback) correct =
+  AnswerField { answer | correct = correct } attr feedback
+
+set_answer_feedback : AnswerField -> String -> AnswerField
+set_answer_feedback (AnswerField answer attr feedback) new_feedback =
+      AnswerField { answer | feedback = new_feedback } attr feedback
 
 editable : AnswerField -> Bool
 editable answer_field = let attrs = (attributes answer_field) in attrs.editable

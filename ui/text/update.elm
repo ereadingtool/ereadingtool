@@ -24,6 +24,7 @@ type Msg =
   -- answer msgs
   | UpdateAnswerField TextComponent Answer.Field.AnswerField
   | UpdateAnswerFieldValue TextComponent Answer.Field.AnswerField String
+  | UpdateAnswerFeedbackValue TextComponent Answer.Field.AnswerField String
   | UpdateAnswerFieldCorrect TextComponent Answer.Field.AnswerField Bool
 
   -- UI effects-related messages
@@ -33,55 +34,66 @@ type Msg =
 update : Msg
   ->   { a | text_components: TextComponentGroup}
   -> ( { a | text_components: TextComponentGroup}, Cmd msg )
-update msg model = case msg of
-  AddText ->
-    ({ model | text_components = (Text.Component.Group.add_new_text model.text_components) }, Cmd.none)
+update msg model =
+  let
+    update = Text.Component.Group.update_text_components model.text_components
+  in case msg of
+    -- text msgs
+    AddText ->
+      ({ model | text_components = Text.Component.Group.add_new_text model.text_components }, Cmd.none)
 
-  AddQuestion text_component -> ({ model | text_components =
-    (Text.Component.add_new_question text_component) |>
-    (Text.Component.Group.update_text_components model.text_components) }, Cmd.none)
+    UpdateTextValue text_component field_name input ->
+        ({ model | text_components = update
+           (Text.Component.set_text text_component field_name input)  }, Cmd.none)
 
-  UpdateQuestionField text_component question_field ->
-    ({ model | text_components =
-       (Text.Component.update_question_field text_component question_field) |>
-       (Text.Component.Group.update_text_components model.text_components) }, Cmd.none)
+    UpdateTextField text_component new_field field_name ->
+        ({ model | text_components = update
+           (Text.Component.set_field text_component new_field field_name)  }, Cmd.none)
 
-  UpdateQuestionFieldValue text_component question_field value ->
-    ({ model | text_components =
-       (Text.Component.update_question_field text_component (Question.Field.set_question_body question_field value)) |>
-       (Text.Component.Group.update_text_components model.text_components) }, Cmd.none)
+    -- question msgs
+    AddQuestion text_component ->
+      ({ model | text_components = update (Text.Component.add_new_question text_component) }, Cmd.none)
 
-  DeleteQuestion text_component question_field ->
-      ({ model | text_components =
-       (Text.Component.delete_question_field text_component question_field) |>
-       (Text.Component.Group.update_text_components model.text_components) }, Cmd.none)
+    UpdateQuestionField text_component question_field ->
+      ({ model | text_components = update (Text.Component.update_question_field text_component question_field) }, Cmd.none)
 
-  ToggleQuestionMenu text_component question_field ->
-      ({ model | text_components =
-         (Text.Component.toggle_question_menu text_component question_field) |>
-         (Text.Component.Group.update_text_components model.text_components) }, Cmd.none)
+    UpdateQuestionFieldValue text_component question_field value ->
+      ({ model | text_components = update
+        (Text.Component.update_question_field text_component (Question.Field.set_question_body question_field value))
+      }, Cmd.none)
 
-  UpdateAnswerField text_component answer_field -> (model, Cmd.none)
-  UpdateAnswerFieldValue text_component answer_field answer -> (model, Cmd.none)
-  UpdateAnswerFieldCorrect text_component answer_field correct -> (model, Cmd.none)
+    DeleteQuestion text_component question_field ->
+        ({ model | text_components = update
+           (Text.Component.delete_question_field text_component question_field)
+        }, Cmd.none)
 
-  UpdateTextValue text_component field_name input ->
-      ({ model | text_components =
-         (Text.Component.set_text text_component field_name input) |>
-         (Text.Component.Group.update_text_components model.text_components) }, Cmd.none)
+    ToggleQuestionMenu text_component question_field ->
+        ({ model | text_components = update
+           (Text.Component.toggle_question_menu text_component question_field)
+        }, Cmd.none)
 
-  UpdateTextField text_component new_field field_name ->
-      ({ model | text_components =
-         (Text.Component.set_field text_component new_field field_name) |>
-         (Text.Component.Group.update_text_components model.text_components) }, Cmd.none)
+    -- answer msgs
+    UpdateAnswerField text_component answer_field ->
+        ({ model | text_components = update (Text.Component.set_answer text_component answer_field)  }, Cmd.none)
 
-  ToggleEditable text_component field ->
-    let
-      new_text_component = (
-        case field of
-          Text field -> Text.Component.set_field text_component (Text.Component.switch_editable field) field.name
-          Question field -> Text.Component.set_question text_component (Question.Field.switch_editable field)
-          Answer field -> Text.Component.set_answer text_component (Answer.Field.switch_editable field))
-    in
-      ({ model | text_components =
-         Text.Component.Group.update_text_components model.text_components new_text_component }, Cmd.none)
+    UpdateAnswerFieldValue text_component answer_field text ->
+        ({ model | text_components = update (Text.Component.set_answer_text text_component answer_field text)  }, Cmd.none)
+
+    UpdateAnswerFeedbackValue text_component answer_field feedback ->
+          ({ model | text_components = update
+           (Text.Component.set_answer_feedback text_component answer_field feedback)  }, Cmd.none)
+
+    UpdateAnswerFieldCorrect text_component answer_field correct ->
+          ({ model | text_components = update
+            (Text.Component.set_answer_correct text_component answer_field)
+          }, Cmd.none)
+    -- ui msgs
+    ToggleEditable text_component field ->
+      let
+        new_text_component = (
+          case field of
+            Text field -> Text.Component.set_field text_component (Text.Component.switch_editable field) field.name
+            Question field -> Text.Component.set_question text_component (Question.Field.switch_editable field)
+            Answer field -> Text.Component.set_answer text_component (Answer.Field.switch_editable field))
+      in
+        ({ model | text_components = update new_text_component }, Cmd.none)

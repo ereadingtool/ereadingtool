@@ -49,7 +49,7 @@ edit_answer_feedback params answer_field =
           , attribute "rows" "5"
           , attribute "cols" "75"
           , onBlur (params.msg (ToggleEditable params.text_component (Answer answer_field)))
-          , onInput (UpdateAnswerFieldValue params.text_component answer_field >> params.msg)
+          , onInput (UpdateAnswerFeedbackValue params.text_component answer_field >> params.msg)
           , attribute "placeholder" "Give some feedback."
           , classList [ ("answer_feedback", True), ("input_error", feedback_field.error) ]
         ] [Html.text answer.feedback]
