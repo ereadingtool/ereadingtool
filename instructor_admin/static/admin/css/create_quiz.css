@@ -159,10 +159,6 @@ body {
     grid-template-columns: auto;
 }
 
-.over {
-    background-color: #d1e1ed;
-}
-
 @media screen and (min-width:300px) and (max-width: 568px) {
     .text_items {
         margin-top: 2%;
