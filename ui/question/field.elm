@@ -1,7 +1,7 @@
 module Question.Field exposing (QuestionField, QuestionType(..), generate_question_field, update_question_field
   , add_new_question, delete_question, initial_question_fields, attributes, index, set_hover, switch_editable
   , set_question_type, question, menu_visible, id, error, hover, editable, answers, set_menu_visible
-  , update_question, set_question_body, delete_question_field)
+  , update_question, set_question_body, set_answer_field, delete_question_field)
 
 import Question.Model exposing (Question)
 
@@ -34,6 +34,18 @@ generate_question_field i question = QuestionField question {
 add_new_question : Array QuestionField -> Array QuestionField
 add_new_question fields = let arr_len = Array.length fields in
   Array.push (generate_question_field arr_len (Question.Model.new_question arr_len)) fields
+
+set_answer_field : Array QuestionField -> AnswerField -> Array QuestionField
+set_answer_field question_fields answer_field =
+  let
+    question_index = Answer.Field.question_index answer_field
+    answer_index = Answer.Field.index answer_field
+  in
+    case (Array.get question_index question_fields) of
+      Just (QuestionField question attr answers) ->
+        Array.set question_index (QuestionField question attr (Array.set answer_index answer_field answers)) question_fields
+      _ ->
+        question_fields
 
 question_index : QuestionField -> Int
 question_index (QuestionField _ attr _) = attr.index

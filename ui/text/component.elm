@@ -104,13 +104,7 @@ set_question (TextComponent text attr fields question_fields) question_field =
 
 set_answer : TextComponent -> Answer.Field.AnswerField -> TextComponent
 set_answer (TextComponent text attr fields question_fields) answer_field =
-  let
-    answer_index = Answer.Field.index answer_field
-    question_index = Answer.Field.question_index answer_field
-  in
-    case (Array.get question_index question_fields) of
-     Just question_field -> TextComponent text attr fields (Array.set question_index question_field question_fields)
-     _ -> TextComponent text attr fields question_fields
+  TextComponent text attr fields (Question.Field.set_answer_field question_fields answer_field)
 
 set_text : TextComponent -> FieldName -> String -> TextComponent
 set_text (TextComponent text attr fields question_fields) field_name value =
