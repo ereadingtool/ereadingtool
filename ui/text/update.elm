@@ -28,7 +28,6 @@ type Msg =
 
   -- UI effects-related messages
   | ToggleEditable TextComponent Field
-  | Hover TextComponent Field Bool
 
 
 update : Msg
@@ -83,17 +82,6 @@ update msg model = case msg of
           Text field -> Text.Component.set_field text_component (Text.Component.switch_editable field) field.name
           Question field -> Text.Component.set_question text_component (Question.Field.switch_editable field)
           Answer field -> Text.Component.set_answer text_component (Answer.Field.switch_editable field))
-    in
-      ({ model | text_components =
-         Text.Component.Group.update_text_components model.text_components new_text_component }, Cmd.none)
-
-  Hover text_component field hover ->
-    let
-      new_text_component = (
-        case field of
-          Question field -> Text.Component.set_question text_component (Question.Field.set_hover field hover)
-          Answer field -> Text.Component.set_answer text_component (Answer.Field.set_hover field hover)
-          Text field -> Text.Component.set_field text_component { field | hover = hover } field.name )
     in
       ({ model | text_components =
          Text.Component.Group.update_text_components model.text_components new_text_component }, Cmd.none)

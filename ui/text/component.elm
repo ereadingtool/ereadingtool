@@ -12,7 +12,6 @@ import Answer.Field
 type alias TextField = {
     id : String
   , editable : Bool
-  , hover : Bool
   , error : Bool
   , name : String
   , index : Int }
@@ -34,7 +33,6 @@ generate_text_field : Int -> String -> TextField
 generate_text_field i attr = {
     id=String.join "_" ["text", toString i, attr]
   , editable=False
-  , hover=False
   , error=False
   , name=attr
   , index=i }
@@ -49,7 +47,7 @@ emptyTextComponent i = TextComponent Text.Model.emptyText { index=i } {
   } Question.Field.initial_question_fields
 
 switch_editable : TextField -> TextField
-switch_editable field = { field | editable = (if field.editable then False else True), hover = False }
+switch_editable field = { field | editable = (if field.editable then False else True) }
 
 title : TextComponent -> TextField
 title (TextComponent text attr fields question_fields) = fields.title

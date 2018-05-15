@@ -1,6 +1,6 @@
 module Question.Field exposing (QuestionField, QuestionType(..), generate_question_field, update_question_field
-  , add_new_question, delete_question, initial_question_fields, attributes, index, set_hover, switch_editable
-  , set_question_type, question, menu_visible, id, error, hover, editable, answers, set_menu_visible
+  , add_new_question, delete_question, initial_question_fields, attributes, index, switch_editable
+  , set_question_type, question, menu_visible, id, error, editable, answers, set_menu_visible
   , update_question, set_question_body, set_answer_field, delete_question_field)
 
 import Question.Model exposing (Question)
@@ -13,7 +13,6 @@ import Field
 type alias QuestionFieldAttributes = {
     id: String
   , editable: Bool
-  , hover: Bool
   , menu_visible: Bool
   , error: Bool
   , index: Int }
@@ -26,7 +25,6 @@ generate_question_field : Int -> Question -> QuestionField
 generate_question_field i question = QuestionField question {
     id = (String.join "_" ["question", toString i])
   , editable = False
-  , hover = False
   , menu_visible = False
   , error = False
   , index = i } (Array.indexedMap (Answer.Field.generate_answer_field i) question.answers)
@@ -85,7 +83,7 @@ set_question_type (QuestionField question attr answer_fields) question_type =
 
 switch_editable : QuestionField -> QuestionField
 switch_editable (QuestionField question attr answer_fields) =
-  QuestionField question { attr | editable = (if attr.editable then False else True), hover=False } answer_fields
+  QuestionField question { attr | editable = (if attr.editable then False else True) } answer_fields
 
 menu_visible : QuestionField -> Bool
 menu_visible question_field = let attrs = (attributes question_field) in attrs.menu_visible
@@ -93,10 +91,6 @@ menu_visible question_field = let attrs = (attributes question_field) in attrs.m
 set_question_body : QuestionField -> String -> QuestionField
 set_question_body (QuestionField question attr answer_fields) value =
   QuestionField { question | body = value } attr answer_fields
-
-set_hover : QuestionField -> Bool -> QuestionField
-set_hover (QuestionField question attr answer_fields) hover =
-  QuestionField question { attr | hover = hover } answer_fields
 
 set_menu_visible : QuestionField -> Bool -> QuestionField
 set_menu_visible (QuestionField question attr answer_fields) visible =
@@ -113,9 +107,6 @@ index question_field = let attrs = (attributes question_field) in attrs.index
 
 id : QuestionField -> String
 id question_field = let attrs = (attributes question_field) in attrs.id
-
-hover : QuestionField -> Bool
-hover question_field = let attrs = (attributes question_field) in attrs.hover
 
 editable : QuestionField -> Bool
 editable question_field = let attrs = (attributes question_field) in attrs.editable

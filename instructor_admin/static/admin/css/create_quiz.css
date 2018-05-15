@@ -141,6 +141,10 @@ body {
     grid-template-columns: 15% auto 20%;
 }
 
+.editable:hover {
+    background-color: #d1e1ed;
+}
+
 .text_property_items {
     font-size: 23px;
     font-weight: 300;

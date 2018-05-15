@@ -31,9 +31,11 @@ view_editable params view edit =
     _ -> view params
 
 view_author : (TextField msg) -> Html msg
-view_author params = Html.div ([toggle_editable onClick params] ++ hover params) [
-    Html.text "Author: "
-  , Html.text params.text.author ]
+view_author params = Html.div [
+    toggle_editable onClick params
+  , classList [("text_property", True), ("editable", True)] ] [
+      Html.text "Author: "
+    , Html.text params.text.author ]
 
 edit_author : (TextField msg) -> Html msg
 edit_author params = Html.input [
@@ -44,7 +46,10 @@ edit_author params = Html.input [
       , toggle_editable onBlur params ] [ ]
 
 view_source : (TextField msg) -> Html msg
-view_source params = Html.div ([toggle_editable onClick params] ++ hover params) [
+view_source params = Html.div [
+   toggle_editable onClick params
+ , attribute "class" "text_property"
+ , attribute "class" "editable"] [
      Html.text "Source: "
    , Html.text params.text.source
   ]
@@ -59,12 +64,12 @@ edit_source params = Html.input [
 
 view_body : (TextField msg) -> Html msg
 view_body params =
-  Html.div ([toggle_editable onClick params] ++ hover params) [
+  Html.div [toggle_editable onClick params, attribute "class" "text_property", attribute "class" "editable"] [
       Html.text "Body: "
     , Html.text params.text.body ]
 
 edit_difficulty : (TextField msg) -> Html msg
-edit_difficulty params = Html.div [] [
+edit_difficulty params = Html.div [attribute "class" "text_property"] [
       Html.text "Difficulty:  "
     , Html.select [
          onInput (UpdateTextValue params.text_component "difficulty" >> params.msg) ] [
@@ -79,18 +84,15 @@ edit_body params = Html.textarea [
       onInput (UpdateTextValue params.text_component "body" >> params.msg)
     , attribute "id" params.field.id ] [ Html.text params.text.body ]
 
-hover : (TextField msg) -> List (Attribute msg)
-hover params = [
-    classList [ ("over", params.field.hover) ]
-  , onMouseOver (params.msg <| Hover params.text_component (Text params.field) True)
-  , onMouseOut (params.msg <| Hover params.text_component (Text params.field) False)
-  , onMouseLeave (params.msg <| Hover params.text_component (Text params.field) False) ]
 
 toggle_editable : (msg -> Attribute msg) -> (TextField msg) -> Attribute msg
 toggle_editable event params = event <| params.msg (ToggleEditable params.text_component (Text params.field))
 
 view_title : (TextField msg) -> Html msg
-view_title params = Html.div ([toggle_editable onClick params] ++ (hover params)) [
+view_title params = Html.div [
+    toggle_editable onClick params
+  , attribute "class" "text_property"
+  , attribute "class" "editable"] [
       Html.text "Title: "
     , Html.text params.text.title
     ]

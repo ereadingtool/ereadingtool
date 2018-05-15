@@ -33,9 +33,8 @@ view_answer params answer_field =
     answer = Answer.Field.answer answer_field
   in
     Html.span [
-     onClick (params.msg (ToggleEditable params.text_component (Answer answer_field)))
-   , onMouseOver (params.msg (Hover params.text_component (Answer answer_field) True))
-   , onMouseLeave (params.msg (Hover params.text_component (Answer answer_field ) False))
+       onClick (params.msg (ToggleEditable params.text_component (Answer answer_field)))
+     , attribute "class" "editable"
    ] <| [ Html.text answer.text ] ++ (view_answer_feedback params answer_field)
 
 edit_answer_feedback : (AnswerFieldParams msg) -> AnswerField -> Html msg
@@ -74,8 +73,7 @@ edit_answer params answer_field =
 
 view_editable_answer : (AnswerFieldParams msg) -> AnswerField -> Html msg
 view_editable_answer params answer_field = div [
-    classList [("answer_item", True)
-              ,("over", Answer.Field.hover answer_field)] ] [
+    classList [("answer_item", True)] ] [
           Html.input [
               attribute "type" "radio"
             , attribute "name" (String.join "_" [

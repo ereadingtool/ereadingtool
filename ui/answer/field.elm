@@ -1,5 +1,5 @@
 module Answer.Field exposing (AnswerField, AnswerFeedbackField, generate_answer_field, update_question_index
-  , index, question_index, switch_editable, editable, set_hover, hover, answer, attributes, error, id, feedback_field)
+  , index, question_index, switch_editable, editable, answer, attributes, error, id, feedback_field)
 
 import Field
 import Answer.Model exposing (Answer)
@@ -12,7 +12,6 @@ type alias AnswerFeedbackField = {
 type alias AnswerFieldAttributes = {
     id: String
   , editable: Bool
-  , hover: Bool
   , error: Bool
   , question_index: Int
   , index: Int }
@@ -35,7 +34,6 @@ generate_answer_field i j answer = let
     AnswerField answer {
       id = answer_id
     , editable = False
-    , hover = False
     , error = False
     , question_index = i
     , index = j } (generate_answer_feedback_field <| String.join "_" [answer_id, "feedback"])
@@ -60,16 +58,10 @@ answer (AnswerField answer _ _) = answer
 
 switch_editable : AnswerField -> AnswerField
 switch_editable (AnswerField answer attr feedback) =
-  AnswerField answer { attr | editable = (if attr.editable then False else True), hover=False } feedback
+  AnswerField answer { attr | editable = (if attr.editable then False else True) } feedback
 
 editable : AnswerField -> Bool
 editable answer_field = let attrs = (attributes answer_field) in attrs.editable
-
-hover : AnswerField -> Bool
-hover answer_field = let attrs = (attributes answer_field) in attrs.hover
-
-set_hover : AnswerField -> Bool -> AnswerField
-set_hover (AnswerField answer attr feedback_field) hover = AnswerField answer { attr | hover = hover } feedback_field
 
 question_index : AnswerField -> Int
 question_index answer_field = let attrs = (attributes answer_field) in attrs.question_index

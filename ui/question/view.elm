@@ -37,11 +37,9 @@ view_question params question_field =
       attribute "id" (Question.Field.id question_field)
     , classList [
           ("question_item", True)
-        , ("over", Question.Field.hover question_field)
-        , ("input_error", Question.Field.error question_field) ]
+        , ("input_error", Question.Field.error question_field)
+        , ("editable", True) ]
     , toggle_editable onClick params question_field
-    , onMouseOver (params.msg <| Hover params.text_component (Question question_field) True)
-    , onMouseLeave (params.msg <| Hover params.text_component (Question question_field) False)
   ] [
        Html.text (if String.isEmpty params.question.body then
          "Click to write the question text." else

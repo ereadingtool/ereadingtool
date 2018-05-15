@@ -9613,16 +9613,6 @@ var _user$project$Answer_Encode$answersEncoder = function (answers) {
 				answers)));
 };
 
-var _user$project$Field$set_hover = F3(
-	function (field, hover, fields) {
-		return A3(
-			_elm_lang$core$Array$set,
-			field.index,
-			_elm_lang$core$Native_Utils.update(
-				field,
-				{hover: hover}),
-			fields);
-	});
 var _user$project$Field$toggle_editable = F2(
 	function (field, fields) {
 		return A3(
@@ -9632,7 +9622,6 @@ var _user$project$Field$toggle_editable = F2(
 				field,
 				{
 					editable: field.editable ? false : true,
-					hover: false,
 					error: false
 				}),
 			fields);
@@ -9663,10 +9652,6 @@ var _user$project$Answer_Field$editable = function (answer_field) {
 	var attrs = _user$project$Answer_Field$attributes(answer_field);
 	return attrs.editable;
 };
-var _user$project$Answer_Field$hover = function (answer_field) {
-	var attrs = _user$project$Answer_Field$attributes(answer_field);
-	return attrs.hover;
-};
 var _user$project$Answer_Field$question_index = function (answer_field) {
 	var attrs = _user$project$Answer_Field$attributes(answer_field);
 	return attrs.question_index;
@@ -9682,9 +9667,9 @@ var _user$project$Answer_Field$AnswerFeedbackField = F3(
 	function (a, b, c) {
 		return {id: a, editable: b, error: c};
 	});
-var _user$project$Answer_Field$AnswerFieldAttributes = F6(
-	function (a, b, c, d, e, f) {
-		return {id: a, editable: b, hover: c, error: d, question_index: e, index: f};
+var _user$project$Answer_Field$AnswerFieldAttributes = F5(
+	function (a, b, c, d, e) {
+		return {id: a, editable: b, error: c, question_index: d, index: e};
 	});
 var _user$project$Answer_Field$AnswerField = F3(
 	function (a, b, c) {
@@ -9726,7 +9711,7 @@ var _user$project$Answer_Field$generate_answer_field = F3(
 		return A3(
 			_user$project$Answer_Field$AnswerField,
 			answer,
-			{id: answer_id, editable: false, hover: false, error: false, question_index: i, index: j},
+			{id: answer_id, editable: false, error: false, question_index: i, index: j},
 			_user$project$Answer_Field$generate_answer_feedback_field(
 				A2(
 					_elm_lang$core$String$join,
@@ -9750,22 +9735,10 @@ var _user$project$Answer_Field$switch_editable = function (_p8) {
 		_elm_lang$core$Native_Utils.update(
 			_p10,
 			{
-				editable: _p10.editable ? false : true,
-				hover: false
+				editable: _p10.editable ? false : true
 			}),
 		_p9._2);
 };
-var _user$project$Answer_Field$set_hover = F2(
-	function (_p11, hover) {
-		var _p12 = _p11;
-		return A3(
-			_user$project$Answer_Field$AnswerField,
-			_p12._0,
-			_elm_lang$core$Native_Utils.update(
-				_p12._1,
-				{hover: hover}),
-			_p12._2);
-	});
 
 var _user$project$Question_Model$new_question = function (i) {
 	return {
@@ -9806,10 +9779,6 @@ var _user$project$Question_Field$id = function (question_field) {
 	var attrs = _user$project$Question_Field$attributes(question_field);
 	return attrs.id;
 };
-var _user$project$Question_Field$hover = function (question_field) {
-	var attrs = _user$project$Question_Field$attributes(question_field);
-	return attrs.hover;
-};
 var _user$project$Question_Field$editable = function (question_field) {
 	var attrs = _user$project$Question_Field$attributes(question_field);
 	return attrs.editable;
@@ -9838,9 +9807,9 @@ var _user$project$Question_Field$update_question_field = F2(
 			new_question_field,
 			question_fields);
 	});
-var _user$project$Question_Field$QuestionFieldAttributes = F6(
-	function (a, b, c, d, e, f) {
-		return {id: a, editable: b, hover: c, menu_visible: d, error: e, index: f};
+var _user$project$Question_Field$QuestionFieldAttributes = F5(
+	function (a, b, c, d, e) {
+		return {id: a, editable: b, menu_visible: c, error: d, index: e};
 	});
 var _user$project$Question_Field$Detail = {ctor: 'Detail'};
 var _user$project$Question_Field$MainIdea = {ctor: 'MainIdea'};
@@ -9867,7 +9836,6 @@ var _user$project$Question_Field$generate_question_field = F2(
 						}
 					}),
 				editable: false,
-				hover: false,
 				menu_visible: false,
 				error: false,
 				index: i
@@ -9979,8 +9947,7 @@ var _user$project$Question_Field$switch_editable = function (_p17) {
 		_elm_lang$core$Native_Utils.update(
 			_p19,
 			{
-				editable: _p19.editable ? false : true,
-				hover: false
+				editable: _p19.editable ? false : true
 			}),
 		_p18._2);
 };
@@ -9995,27 +9962,16 @@ var _user$project$Question_Field$set_question_body = F2(
 			_p21._1,
 			_p21._2);
 	});
-var _user$project$Question_Field$set_hover = F2(
-	function (_p22, hover) {
+var _user$project$Question_Field$set_menu_visible = F2(
+	function (_p22, visible) {
 		var _p23 = _p22;
 		return A3(
 			_user$project$Question_Field$QuestionField,
 			_p23._0,
 			_elm_lang$core$Native_Utils.update(
 				_p23._1,
-				{hover: hover}),
-			_p23._2);
-	});
-var _user$project$Question_Field$set_menu_visible = F2(
-	function (_p24, visible) {
-		var _p25 = _p24;
-		return A3(
-			_user$project$Question_Field$QuestionField,
-			_p25._0,
-			_elm_lang$core$Native_Utils.update(
-				_p25._1,
 				{menu_visible: visible}),
-			_p25._2);
+			_p23._2);
 	});
 
 var _user$project$Text_Model$emptyText = {id: _elm_lang$core$Maybe$Nothing, title: 'title', created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing, source: 'source', difficulty: '', author: 'author', question_count: 0, questions: _user$project$Question_Model$initial_questions, body: 'text'};
@@ -10081,8 +10037,7 @@ var _user$project$Text_Component$switch_editable = function (field) {
 	return _elm_lang$core$Native_Utils.update(
 		field,
 		{
-			editable: field.editable ? false : true,
-			hover: false
+			editable: field.editable ? false : true
 		});
 };
 var _user$project$Text_Component$generate_text_field = F2(
@@ -10105,15 +10060,14 @@ var _user$project$Text_Component$generate_text_field = F2(
 					}
 				}),
 			editable: false,
-			hover: false,
 			error: false,
 			name: attr,
 			index: i
 		};
 	});
-var _user$project$Text_Component$TextField = F6(
-	function (a, b, c, d, e, f) {
-		return {id: a, editable: b, hover: c, error: d, name: e, index: f};
+var _user$project$Text_Component$TextField = F5(
+	function (a, b, c, d, e) {
+		return {id: a, editable: b, error: c, name: d, index: e};
 	});
 var _user$project$Text_Component$TextFields = F5(
 	function (a, b, c, d, e) {
@@ -10529,7 +10483,7 @@ var _user$project$Text_Update$update = F2(
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			case 'ToggleEditable':
+			default:
 				var _p3 = _p0._0;
 				var new_text_component = function () {
 					var _p1 = _p0._1;
@@ -10562,42 +10516,6 @@ var _user$project$Text_Update$update = F2(
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			default:
-				var _p7 = _p0._0;
-				var _p6 = _p0._2;
-				var new_text_component = function () {
-					var _p4 = _p0._1;
-					switch (_p4.ctor) {
-						case 'Question':
-							return A2(
-								_user$project$Text_Component$set_question,
-								_p7,
-								A2(_user$project$Question_Field$set_hover, _p4._0, _p6));
-						case 'Answer':
-							return A2(
-								_user$project$Text_Component$set_answer,
-								_p7,
-								A2(_user$project$Answer_Field$set_hover, _p4._0, _p6));
-						default:
-							var _p5 = _p4._0;
-							return A3(
-								_user$project$Text_Component$set_field,
-								_p7,
-								_elm_lang$core$Native_Utils.update(
-									_p5,
-									{hover: _p6}),
-								_p5.name);
-					}
-				}();
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							text_components: A2(_user$project$Text_Component_Group$update_text_components, model.text_components, new_text_component)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
 		}
 	});
 var _user$project$Text_Update$Answer = function (a) {
@@ -10609,10 +10527,6 @@ var _user$project$Text_Update$Question = function (a) {
 var _user$project$Text_Update$Text = function (a) {
 	return {ctor: 'Text', _0: a};
 };
-var _user$project$Text_Update$Hover = F3(
-	function (a, b, c) {
-		return {ctor: 'Hover', _0: a, _1: b, _2: c};
-	});
 var _user$project$Text_Update$ToggleEditable = F2(
 	function (a, b) {
 		return {ctor: 'ToggleEditable', _0: a, _1: b};
@@ -10832,24 +10746,8 @@ var _user$project$Answer_View$view_answer = F2(
 							_user$project$Text_Update$Answer(answer_field)))),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onMouseOver(
-						params.msg(
-							A3(
-								_user$project$Text_Update$Hover,
-								params.text_component,
-								_user$project$Text_Update$Answer(answer_field),
-								true))),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onMouseLeave(
-							params.msg(
-								A3(
-									_user$project$Text_Update$Hover,
-									params.text_component,
-									_user$project$Text_Update$Answer(answer_field),
-									false))),
-						_1: {ctor: '[]'}
-					}
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'editable'),
+					_1: {ctor: '[]'}
 				}
 			},
 			A2(
@@ -10871,15 +10769,7 @@ var _user$project$Answer_View$view_editable_answer = F2(
 					{
 						ctor: '::',
 						_0: {ctor: '_Tuple2', _0: 'answer_item', _1: true},
-						_1: {
-							ctor: '::',
-							_0: {
-								ctor: '_Tuple2',
-								_0: 'over',
-								_1: _user$project$Answer_Field$hover(answer_field)
-							},
-							_1: {ctor: '[]'}
-						}
+						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
 			},
@@ -11769,16 +11659,12 @@ var _user$project$Question_View$view_question = F2(
 								ctor: '::',
 								_0: {
 									ctor: '_Tuple2',
-									_0: 'over',
-									_1: _user$project$Question_Field$hover(question_field)
+									_0: 'input_error',
+									_1: _user$project$Question_Field$error(question_field)
 								},
 								_1: {
 									ctor: '::',
-									_0: {
-										ctor: '_Tuple2',
-										_0: 'input_error',
-										_1: _user$project$Question_Field$error(question_field)
-									},
+									_0: {ctor: '_Tuple2', _0: 'editable', _1: true},
 									_1: {ctor: '[]'}
 								}
 							}
@@ -11786,27 +11672,7 @@ var _user$project$Question_View$view_question = F2(
 					_1: {
 						ctor: '::',
 						_0: A3(_user$project$Question_View$toggle_editable, _elm_lang$html$Html_Events$onClick, params, question_field),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onMouseOver(
-								params.msg(
-									A3(
-										_user$project$Text_Update$Hover,
-										params.text_component,
-										_user$project$Text_Update$Question(question_field),
-										true))),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onMouseLeave(
-									params.msg(
-										A3(
-											_user$project$Text_Update$Hover,
-											params.text_component,
-											_user$project$Text_Update$Question(question_field),
-											false))),
-								_1: {ctor: '[]'}
-							}
-						}
+						_1: {ctor: '[]'}
 					}
 				}
 			},
@@ -11935,6 +11801,32 @@ var _user$project$Text_View$toggle_editable = F2(
 					params.text_component,
 					_user$project$Text_Update$Text(params.field))));
 	});
+var _user$project$Text_View$view_title = function (params) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: A2(_user$project$Text_View$toggle_editable, _elm_lang$html$Html_Events$onClick, params),
+			_1: {
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'text_property'),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'editable'),
+					_1: {ctor: '[]'}
+				}
+			}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text('Title: '),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(params.text.title),
+				_1: {ctor: '[]'}
+			}
+		});
+};
 var _user$project$Text_View$edit_title = function (params) {
 	return A2(
 		_elm_lang$html$Html$input,
@@ -11965,69 +11857,6 @@ var _user$project$Text_View$edit_title = function (params) {
 		},
 		{ctor: '[]'});
 };
-var _user$project$Text_View$hover = function (params) {
-	return {
-		ctor: '::',
-		_0: _elm_lang$html$Html_Attributes$classList(
-			{
-				ctor: '::',
-				_0: {ctor: '_Tuple2', _0: 'over', _1: params.field.hover},
-				_1: {ctor: '[]'}
-			}),
-		_1: {
-			ctor: '::',
-			_0: _elm_lang$html$Html_Events$onMouseOver(
-				params.msg(
-					A3(
-						_user$project$Text_Update$Hover,
-						params.text_component,
-						_user$project$Text_Update$Text(params.field),
-						true))),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$html$Html_Events$onMouseOut(
-					params.msg(
-						A3(
-							_user$project$Text_Update$Hover,
-							params.text_component,
-							_user$project$Text_Update$Text(params.field),
-							false))),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onMouseLeave(
-						params.msg(
-							A3(
-								_user$project$Text_Update$Hover,
-								params.text_component,
-								_user$project$Text_Update$Text(params.field),
-								false))),
-					_1: {ctor: '[]'}
-				}
-			}
-		}
-	};
-};
-var _user$project$Text_View$view_title = function (params) {
-	return A2(
-		_elm_lang$html$Html$div,
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			{
-				ctor: '::',
-				_0: A2(_user$project$Text_View$toggle_editable, _elm_lang$html$Html_Events$onClick, params),
-				_1: {ctor: '[]'}
-			},
-			_user$project$Text_View$hover(params)),
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text('Title: '),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$html$Html$text(params.text.title),
-				_1: {ctor: '[]'}
-			}
-		});
-};
 var _user$project$Text_View$edit_body = function (params) {
 	return A2(
 		_elm_lang$html$Html$textarea,
@@ -12053,7 +11882,11 @@ var _user$project$Text_View$edit_body = function (params) {
 var _user$project$Text_View$edit_difficulty = function (params) {
 	return A2(
 		_elm_lang$html$Html$div,
-		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'text_property'),
+			_1: {ctor: '[]'}
+		},
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html$text('Difficulty:  '),
@@ -12110,14 +11943,19 @@ var _user$project$Text_View$edit_difficulty = function (params) {
 var _user$project$Text_View$view_body = function (params) {
 	return A2(
 		_elm_lang$html$Html$div,
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			{
+		{
+			ctor: '::',
+			_0: A2(_user$project$Text_View$toggle_editable, _elm_lang$html$Html_Events$onClick, params),
+			_1: {
 				ctor: '::',
-				_0: A2(_user$project$Text_View$toggle_editable, _elm_lang$html$Html_Events$onClick, params),
-				_1: {ctor: '[]'}
-			},
-			_user$project$Text_View$hover(params)),
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'text_property'),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'editable'),
+					_1: {ctor: '[]'}
+				}
+			}
+		},
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html$text('Body: '),
@@ -12161,14 +11999,19 @@ var _user$project$Text_View$edit_source = function (params) {
 var _user$project$Text_View$view_source = function (params) {
 	return A2(
 		_elm_lang$html$Html$div,
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			{
+		{
+			ctor: '::',
+			_0: A2(_user$project$Text_View$toggle_editable, _elm_lang$html$Html_Events$onClick, params),
+			_1: {
 				ctor: '::',
-				_0: A2(_user$project$Text_View$toggle_editable, _elm_lang$html$Html_Events$onClick, params),
-				_1: {ctor: '[]'}
-			},
-			_user$project$Text_View$hover(params)),
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'text_property'),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'editable'),
+					_1: {ctor: '[]'}
+				}
+			}
+		},
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html$text('Source: '),
@@ -12212,14 +12055,24 @@ var _user$project$Text_View$edit_author = function (params) {
 var _user$project$Text_View$view_author = function (params) {
 	return A2(
 		_elm_lang$html$Html$div,
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			{
+		{
+			ctor: '::',
+			_0: A2(_user$project$Text_View$toggle_editable, _elm_lang$html$Html_Events$onClick, params),
+			_1: {
 				ctor: '::',
-				_0: A2(_user$project$Text_View$toggle_editable, _elm_lang$html$Html_Events$onClick, params),
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'text_property', _1: true},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'editable', _1: true},
+							_1: {ctor: '[]'}
+						}
+					}),
 				_1: {ctor: '[]'}
-			},
-			_user$project$Text_View$hover(params)),
+			}
+		},
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html$text('Author: '),
