@@ -89,7 +89,7 @@ update msg model =
       let
         new_text_component = (
           case field of
-            Text field -> Text.Component.set_field text_component (Text.Component.switch_editable field) field.name
+            Text field -> Text.Component.set_field text_component (Text.Component.switch_editable field)
             Question field -> Text.Component.set_question text_component (Question.Field.switch_editable field)
             Answer field -> Text.Component.set_answer text_component (Answer.Field.switch_editable field))
       in
@@ -100,7 +100,7 @@ post_toggle_field field =
   let
     (field_editable, field_id) =
       case field of
-        Text field -> (field.editable, field.id)
+        Text field -> (Text.Component.editable field, Text.Component.text_field_id field)
         Question field -> (Question.Field.editable field, Question.Field.id field)
         Answer field -> (Answer.Field.editable field, Answer.Field.id field)
   in

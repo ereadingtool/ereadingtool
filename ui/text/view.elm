@@ -26,7 +26,7 @@ view_editable : (TextField msg)
   -> ((TextField msg) -> Html msg)
   -> Html msg
 view_editable params view edit =
-  case params.field.editable of
+  case (Text.Component.editable params.field) of
     True -> edit params
     _ -> view params
 
@@ -41,7 +41,7 @@ edit_author : (TextField msg) -> Html msg
 edit_author params = Html.input [
         attribute "type" "text"
       , attribute "value" params.text.author
-      , attribute "id" params.field.id
+      , attribute "id" (Text.Component.text_field_id params.field)
       , onInput (UpdateTextValue params.text_component "author" >> params.msg)
       , toggle_editable onBlur params ] [ ]
 
@@ -58,15 +58,21 @@ edit_source : (TextField msg) -> Html msg
 edit_source params = Html.input [
         attribute "type" "text"
       , attribute "value" params.text.source
-      , attribute "id" params.field.id
+      , attribute "id" (Text.Component.text_field_id params.field)
       , onInput (UpdateTextValue params.text_component "source" >> params.msg)
       , toggle_editable onBlur params ] [ ]
 
 view_body : (TextField msg) -> Html msg
-view_body params =
+view_body params = let _ = Debug.log "body field" params.field in
   Html.div [toggle_editable onClick params, attribute "class" "text_property", attribute "class" "editable"] [
       Html.text "Body: "
     , Html.text params.text.body ]
+
+edit_body : (TextField msg) -> Html msg
+edit_body params = Html.textarea [
+      onInput (UpdateTextValue params.text_component "body" >> params.msg)
+    , toggle_editable onBlur params
+    , attribute "id" (Text.Component.text_field_id params.field) ] [ Html.text params.text.body ]
 
 edit_difficulty : (TextField msg) -> Html msg
 edit_difficulty params = Html.div [attribute "class" "text_property"] [
@@ -78,12 +84,6 @@ edit_difficulty params = Html.div [attribute "class" "text_property"] [
            [ Html.text v ]) params.difficulties)
        ]
   ]
-
-edit_body : (TextField msg) -> Html msg
-edit_body params = Html.textarea [
-      onInput (UpdateTextValue params.text_component "body" >> params.msg)
-    , attribute "id" params.field.id ] [ Html.text params.text.body ]
-
 
 toggle_editable : (msg -> Attribute msg) -> (TextField msg) -> Attribute msg
 toggle_editable event params = event <| params.msg (ToggleEditable params.text_component (Text params.field))
@@ -101,7 +101,7 @@ edit_title : (TextField msg) -> Html msg
 edit_title params = Html.input [
         attribute "type" "text"
       , attribute "value" params.text.title
-      , attribute "id" params.field.id
+      , attribute "id" (Text.Component.text_field_id params.field)
       , onInput (UpdateTextValue params.text_component "title" >> params.msg)
       , (toggle_editable onBlur params) ] [ ]
 
