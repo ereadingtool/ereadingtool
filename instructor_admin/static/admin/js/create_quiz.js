@@ -9613,19 +9613,6 @@ var _user$project$Answer_Encode$answersEncoder = function (answers) {
 				answers)));
 };
 
-var _user$project$Field$toggle_editable = F2(
-	function (field, fields) {
-		return A3(
-			_elm_lang$core$Array$set,
-			field.index,
-			_elm_lang$core$Native_Utils.update(
-				field,
-				{
-					editable: field.editable ? false : true,
-					error: false
-				}),
-			fields);
-	});
 var _user$project$Field$fieldIDDecoder = _elm_lang$core$Json_Decode$int;
 
 var _user$project$Answer_Field$answer = function (_p0) {
@@ -10474,11 +10461,50 @@ var _user$project$Text_Component_Group$add_new_text = function (_p6) {
 			_p8));
 };
 
+var _user$project$Ports$selectAllInputText = _elm_lang$core$Native_Platform.outgoingPort(
+	'selectAllInputText',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$ckEditor = _elm_lang$core$Native_Platform.outgoingPort(
+	'ckEditor',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$ckEditorUpdate = _elm_lang$core$Native_Platform.incomingPort('ckEditorUpdate', _elm_lang$core$Json_Decode$string);
+
+var _user$project$Text_Update$post_toggle_field = function (field) {
+	var _p0 = function () {
+		var _p1 = field;
+		switch (_p1.ctor) {
+			case 'Text':
+				var _p2 = _p1._0;
+				return {ctor: '_Tuple2', _0: _p2.editable, _1: _p2.id};
+			case 'Question':
+				var _p3 = _p1._0;
+				return {
+					ctor: '_Tuple2',
+					_0: _user$project$Question_Field$editable(_p3),
+					_1: _user$project$Question_Field$id(_p3)
+				};
+			default:
+				var _p4 = _p1._0;
+				return {
+					ctor: '_Tuple2',
+					_0: _user$project$Answer_Field$editable(_p4),
+					_1: _user$project$Answer_Field$id(_p4)
+				};
+		}
+	}();
+	var field_editable = _p0._0;
+	var field_id = _p0._1;
+	return (!field_editable) ? _user$project$Ports$selectAllInputText(field_id) : _elm_lang$core$Platform_Cmd$none;
+};
 var _user$project$Text_Update$update = F2(
 	function (msg, model) {
 		var update = _user$project$Text_Component_Group$update_text_components(model.text_components);
-		var _p0 = msg;
-		switch (_p0.ctor) {
+		var _p5 = msg;
+		switch (_p5.ctor) {
 			case 'AddText':
 				return {
 					ctor: '_Tuple2',
@@ -10496,18 +10522,7 @@ var _user$project$Text_Update$update = F2(
 						model,
 						{
 							text_components: update(
-								A3(_user$project$Text_Component$set_text, _p0._0, _p0._1, _p0._2))
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'UpdateTextField':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							text_components: update(
-								A3(_user$project$Text_Component$set_field, _p0._0, _p0._1, _p0._2))
+								A3(_user$project$Text_Component$set_text, _p5._0, _p5._1, _p5._2))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -10518,7 +10533,7 @@ var _user$project$Text_Update$update = F2(
 						model,
 						{
 							text_components: update(
-								_user$project$Text_Component$add_new_question(_p0._0))
+								_user$project$Text_Component$add_new_question(_p5._0))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -10529,7 +10544,7 @@ var _user$project$Text_Update$update = F2(
 						model,
 						{
 							text_components: update(
-								A2(_user$project$Text_Component$update_question_field, _p0._0, _p0._1))
+								A2(_user$project$Text_Component$update_question_field, _p5._0, _p5._1))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -10542,8 +10557,8 @@ var _user$project$Text_Update$update = F2(
 							text_components: update(
 								A2(
 									_user$project$Text_Component$update_question_field,
-									_p0._0,
-									A2(_user$project$Question_Field$set_question_body, _p0._1, _p0._2)))
+									_p5._0,
+									A2(_user$project$Question_Field$set_question_body, _p5._1, _p5._2)))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -10554,7 +10569,7 @@ var _user$project$Text_Update$update = F2(
 						model,
 						{
 							text_components: update(
-								A2(_user$project$Text_Component$delete_question_field, _p0._0, _p0._1))
+								A2(_user$project$Text_Component$delete_question_field, _p5._0, _p5._1))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -10565,7 +10580,7 @@ var _user$project$Text_Update$update = F2(
 						model,
 						{
 							text_components: update(
-								A2(_user$project$Text_Component$toggle_question_menu, _p0._0, _p0._1))
+								A2(_user$project$Text_Component$toggle_question_menu, _p5._0, _p5._1))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -10576,7 +10591,7 @@ var _user$project$Text_Update$update = F2(
 						model,
 						{
 							text_components: update(
-								A2(_user$project$Text_Component$set_answer, _p0._0, _p0._1))
+								A2(_user$project$Text_Component$set_answer, _p5._0, _p5._1))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -10587,7 +10602,7 @@ var _user$project$Text_Update$update = F2(
 						model,
 						{
 							text_components: update(
-								A3(_user$project$Text_Component$set_answer_text, _p0._0, _p0._1, _p0._2))
+								A3(_user$project$Text_Component$set_answer_text, _p5._0, _p5._1, _p5._2))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -10598,7 +10613,7 @@ var _user$project$Text_Update$update = F2(
 						model,
 						{
 							text_components: update(
-								A3(_user$project$Text_Component$set_answer_feedback, _p0._0, _p0._1, _p0._2))
+								A3(_user$project$Text_Component$set_answer_feedback, _p5._0, _p5._1, _p5._2))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -10609,32 +10624,33 @@ var _user$project$Text_Update$update = F2(
 						model,
 						{
 							text_components: update(
-								A2(_user$project$Text_Component$set_answer_correct, _p0._0, _p0._1))
+								A2(_user$project$Text_Component$set_answer_correct, _p5._0, _p5._1))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			default:
-				var _p3 = _p0._0;
+				var _p9 = _p5._0;
+				var _p8 = _p5._1;
 				var new_text_component = function () {
-					var _p1 = _p0._1;
-					switch (_p1.ctor) {
+					var _p6 = _p8;
+					switch (_p6.ctor) {
 						case 'Text':
-							var _p2 = _p1._0;
+							var _p7 = _p6._0;
 							return A3(
 								_user$project$Text_Component$set_field,
-								_p3,
-								_user$project$Text_Component$switch_editable(_p2),
-								_p2.name);
+								_p9,
+								_user$project$Text_Component$switch_editable(_p7),
+								_p7.name);
 						case 'Question':
 							return A2(
 								_user$project$Text_Component$set_question,
-								_p3,
-								_user$project$Question_Field$switch_editable(_p1._0));
+								_p9,
+								_user$project$Question_Field$switch_editable(_p6._0));
 						default:
 							return A2(
 								_user$project$Text_Component$set_answer,
-								_p3,
-								_user$project$Answer_Field$switch_editable(_p1._0));
+								_p9,
+								_user$project$Answer_Field$switch_editable(_p6._0));
 					}
 				}();
 				return {
@@ -10644,7 +10660,7 @@ var _user$project$Text_Update$update = F2(
 						{
 							text_components: update(new_text_component)
 						}),
-					_1: _elm_lang$core$Platform_Cmd$none
+					_1: _user$project$Text_Update$post_toggle_field(_p8)
 				};
 		}
 	});
@@ -10697,10 +10713,6 @@ var _user$project$Text_Update$UpdateQuestionField = F2(
 		return {ctor: 'UpdateQuestionField', _0: a, _1: b};
 	});
 var _user$project$Text_Update$AddText = {ctor: 'AddText'};
-var _user$project$Text_Update$UpdateTextField = F3(
-	function (a, b, c) {
-		return {ctor: 'UpdateTextField', _0: a, _1: b, _2: c};
-	});
 var _user$project$Text_Update$UpdateTextValue = F3(
 	function (a, b, c) {
 		return {ctor: 'UpdateTextValue', _0: a, _1: b, _2: c};
@@ -10774,18 +10786,6 @@ var _user$project$Answer_View$edit_answer_feedback = F2(
 	});
 var _user$project$Answer_View$edit_answer = F2(
 	function (params, answer_field) {
-		var answer_feedback_field_id = A2(
-			_elm_lang$core$String$join,
-			'_',
-			{
-				ctor: '::',
-				_0: _user$project$Answer_Field$id(answer_field),
-				_1: {
-					ctor: '::',
-					_0: 'feedback',
-					_1: {ctor: '[]'}
-				}
-			});
 		var answer = _user$project$Answer_Field$answer(answer_field);
 		return A2(
 			_elm_lang$html$Html$span,
@@ -10802,7 +10802,10 @@ var _user$project$Answer_View$edit_answer = F2(
 							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', answer.text),
 							_1: {
 								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', answer_feedback_field_id),
+								_0: A2(
+									_elm_lang$html$Html_Attributes$attribute,
+									'id',
+									_user$project$Answer_Field$id(answer_field)),
 								_1: {
 									ctor: '::',
 									_0: _elm_lang$html$Html_Events$onInput(
@@ -11183,18 +11186,6 @@ var _user$project$HttpHelpers$post_with_headers = F4(
 				withCredentials: false
 			});
 	});
-
-var _user$project$Ports$selectAllInputText = _elm_lang$core$Native_Platform.outgoingPort(
-	'selectAllInputText',
-	function (v) {
-		return v;
-	});
-var _user$project$Ports$ckEditor = _elm_lang$core$Native_Platform.outgoingPort(
-	'ckEditor',
-	function (v) {
-		return v;
-	});
-var _user$project$Ports$ckEditorUpdate = _elm_lang$core$Native_Platform.incomingPort('ckEditorUpdate', _elm_lang$core$Json_Decode$string);
 
 var _user$project$Views$view_preview = A2(
 	_elm_lang$html$Html$div,
@@ -11972,7 +11963,7 @@ var _user$project$Text_View$edit_title = function (params) {
 				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', params.text.title),
 				_1: {
 					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'title'),
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', params.field.id),
 					_1: {
 						ctor: '::',
 						_0: _elm_lang$html$Html_Events$onInput(
@@ -12111,7 +12102,7 @@ var _user$project$Text_View$edit_source = function (params) {
 				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', params.text.source),
 				_1: {
 					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'source'),
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', params.field.id),
 					_1: {
 						ctor: '::',
 						_0: _elm_lang$html$Html_Events$onInput(
@@ -12167,7 +12158,7 @@ var _user$project$Text_View$edit_author = function (params) {
 				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', params.text.author),
 				_1: {
 					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'author'),
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', params.field.id),
 					_1: {
 						ctor: '::',
 						_0: _elm_lang$html$Html_Events$onInput(
@@ -12374,6 +12365,11 @@ var _user$project$Text_View$view_text_components = F3(
 var _user$project$Text_View$TextField = F5(
 	function (a, b, c, d, e) {
 		return {text_component: a, msg: b, text: c, difficulties: d, field: e};
+	});
+
+var _user$project$Text_Subscriptions$subscriptions = F2(
+	function (msg, model) {
+		return _elm_lang$core$Platform_Sub$none;
 	});
 
 var _user$project$Question_Encode$questionEncoder = function (question) {
@@ -12607,12 +12603,6 @@ var _user$project$Main$view_msg = function (msg) {
 	} else {
 		return _elm_lang$html$Html$text('');
 	}
-};
-var _user$project$Main$post_toggle_field = function (field) {
-	return (!field.editable) ? _user$project$Ports$selectAllInputText(field.id) : _elm_lang$core$Platform_Cmd$none;
-};
-var _user$project$Main$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$none;
 };
 var _user$project$Main$textDifficultyDecoder = _elm_lang$core$Json_Decode$keyValuePairs(_elm_lang$core$Json_Decode$string);
 var _user$project$Main$Model = F6(
@@ -12861,7 +12851,12 @@ var _user$project$Main$init = function (flags) {
 	};
 };
 var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
-	{init: _user$project$Main$init, view: _user$project$Main$view, subscriptions: _user$project$Main$subscriptions, update: _user$project$Main$update})(
+	{
+		init: _user$project$Main$init,
+		view: _user$project$Main$view,
+		subscriptions: _user$project$Text_Subscriptions$subscriptions(_user$project$Main$TextComponentMsg),
+		update: _user$project$Main$update
+	})(
 	A2(
 		_elm_lang$core$Json_Decode$andThen,
 		function (csrftoken) {

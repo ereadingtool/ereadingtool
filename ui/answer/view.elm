@@ -59,12 +59,11 @@ edit_answer : (AnswerFieldParams msg) -> AnswerField -> Html msg
 edit_answer params answer_field =
   let
     answer = Answer.Field.answer answer_field
-    answer_feedback_field_id = String.join "_" [Answer.Field.id answer_field, "feedback"]
   in Html.span [] [
     Html.input [
         attribute "type" "text"
       , attribute "value" answer.text
-      , attribute "id" answer_feedback_field_id
+      , attribute "id" (Answer.Field.id answer_field)
       , onInput (UpdateAnswerFieldValue params.text_component answer_field >> params.msg)
       , classList [ ("input_error", Answer.Field.error answer_field) ]
     ] []

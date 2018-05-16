@@ -41,7 +41,7 @@ edit_author : (TextField msg) -> Html msg
 edit_author params = Html.input [
         attribute "type" "text"
       , attribute "value" params.text.author
-      , attribute "id" "author"
+      , attribute "id" params.field.id
       , onInput (UpdateTextValue params.text_component "author" >> params.msg)
       , toggle_editable onBlur params ] [ ]
 
@@ -58,7 +58,7 @@ edit_source : (TextField msg) -> Html msg
 edit_source params = Html.input [
         attribute "type" "text"
       , attribute "value" params.text.source
-      , attribute "id" "source"
+      , attribute "id" params.field.id
       , onInput (UpdateTextValue params.text_component "source" >> params.msg)
       , toggle_editable onBlur params ] [ ]
 
@@ -101,7 +101,7 @@ edit_title : (TextField msg) -> Html msg
 edit_title params = Html.input [
         attribute "type" "text"
       , attribute "value" params.text.title
-      , attribute "id" "title"
+      , attribute "id" params.field.id
       , onInput (UpdateTextValue params.text_component "title" >> params.msg)
       , (toggle_editable onBlur params) ] [ ]
 

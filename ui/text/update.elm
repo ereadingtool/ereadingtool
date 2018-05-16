@@ -5,13 +5,13 @@ import Answer.Field exposing (AnswerField)
 
 import Text.Component exposing (TextField, TextComponent)
 import Text.Component.Group exposing (TextComponentGroup)
+import Ports exposing (selectAllInputText)
 
 type Field = Text TextField | Question QuestionField | Answer AnswerField
 
 type Msg =
   -- text msgs
     UpdateTextValue TextComponent String String
-  | UpdateTextField TextComponent Text.Component.TextField String
   | AddText
 
   -- question msgs
@@ -45,10 +45,6 @@ update msg model =
     UpdateTextValue text_component field_name input ->
         ({ model | text_components = update
            (Text.Component.set_text text_component field_name input)  }, Cmd.none)
-
-    UpdateTextField text_component new_field field_name ->
-        ({ model | text_components = update
-           (Text.Component.set_field text_component new_field field_name)  }, Cmd.none)
 
     -- question msgs
     AddQuestion text_component ->
@@ -87,6 +83,7 @@ update msg model =
           ({ model | text_components = update
             (Text.Component.set_answer_correct text_component answer_field)
           }, Cmd.none)
+
     -- ui msgs
     ToggleEditable text_component field ->
       let
@@ -96,4 +93,15 @@ update msg model =
             Question field -> Text.Component.set_question text_component (Question.Field.switch_editable field)
             Answer field -> Text.Component.set_answer text_component (Answer.Field.switch_editable field))
       in
-        ({ model | text_components = update new_text_component }, Cmd.none)
+        ({ model | text_components = update new_text_component }, post_toggle_field field)
+
+post_toggle_field : Field -> Cmd msg
+post_toggle_field field =
+  let
+    (field_editable, field_id) =
+      case field of
+        Text field -> (field.editable, field.id)
+        Question field -> (Question.Field.editable field, Question.Field.id field)
+        Answer field -> (Answer.Field.editable field, Answer.Field.id field)
+  in
+    if (not field_editable) then selectAllInputText field_id else Cmd.none

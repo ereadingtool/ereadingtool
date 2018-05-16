@@ -8,7 +8,6 @@ import Array exposing (Array)
 import Http
 import HttpHelpers exposing (post_with_headers)
 
-import Ports exposing (selectAllInputText, ckEditor, ckEditorUpdate)
 import Config exposing (text_api_endpoint)
 import Flags exposing (CSRFToken, Flags)
 
@@ -23,6 +22,7 @@ import Text.Update
 
 import Text.Component exposing (TextComponent, TextField)
 import Text.Component.Group exposing (TextComponentGroup)
+import Text.Subscriptions
 
 import Text.Encode
 import Text.Decode
@@ -66,15 +66,6 @@ retrieveTextDifficultyOptions =
   let request = Http.get (String.join "?" [text_api_endpoint, "difficulties=list"]) textDifficultyDecoder
   in Http.send UpdateTextDifficultyOptions request
 
-{-subscriptions : Model -> Sub Msg
-subscriptions model =
-  ckEditorUpdate UpdateBody-}
-
-subscriptions : Model -> Sub Msg
-subscriptions model = Sub.none
-
-post_toggle_field : { a | id: String, hover : Bool, index : Int, editable : Bool } -> Cmd Msg
-post_toggle_field field = if not field.editable then (selectAllInputText field.id) else Cmd.none
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = case msg of
@@ -126,7 +117,7 @@ main =
   Html.programWithFlags
     { init = init
     , view = view
-    , subscriptions = subscriptions
+    , subscriptions = Text.Subscriptions.subscriptions TextComponentMsg
     , update = update
     }
 
