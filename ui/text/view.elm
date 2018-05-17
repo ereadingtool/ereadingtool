@@ -63,15 +63,19 @@ edit_source params = Html.input [
       , toggle_editable onBlur params ] [ ]
 
 view_body : (TextField msg) -> Html msg
-view_body params = let _ = Debug.log "body field" params.field in
-  Html.div [toggle_editable onClick params, attribute "class" "text_property", attribute "class" "editable"] [
-      Html.text "Body: "
+view_body params =
+  Html.div [
+    toggle_editable onClick params
+  , attribute "class" "text_property"
+  , attribute "class" "editable"
+  , attribute "id" (Text.Component.text_field_id params.field)
+  ] [
+      Html.text "Text: "
     , Html.text params.text.body ]
 
 edit_body : (TextField msg) -> Html msg
 edit_body params = Html.textarea [
       onInput (UpdateTextValue params.text_component "body" >> params.msg)
-    , toggle_editable onBlur params
     , attribute "id" (Text.Component.text_field_id params.field) ] [ Html.text params.text.body ]
 
 edit_difficulty : (TextField msg) -> Html msg

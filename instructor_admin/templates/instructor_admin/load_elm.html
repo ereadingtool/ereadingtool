@@ -21,7 +21,7 @@
         window.requestAnimationFrame(function (timestamp) {
             if (CKEDITOR) {
                 CKEDITOR.inline(elem_id).on("change", function (evt) {
-                    app.ports.ckEditorUpdate.send(evt.editor.getData());
+                    app.ports.ckEditorUpdate.send([elem_id, evt.editor.getData()]);
                 });
             }
         });

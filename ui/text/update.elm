@@ -3,9 +3,9 @@ module Text.Update exposing (update, Msg(..), Field(..))
 import Question.Field exposing (QuestionField)
 import Answer.Field exposing (AnswerField)
 
-import Text.Component exposing (TextField, TextComponent)
+import Text.Component exposing (TextField(..), TextComponent)
 import Text.Component.Group exposing (TextComponentGroup)
-import Ports exposing (selectAllInputText)
+import Ports exposing (selectAllInputText, ckEditor, CKEditorID, CKEditorText)
 
 type Field = Text TextField | Question QuestionField | Answer AnswerField
 
@@ -13,6 +13,7 @@ type Msg =
   -- text msgs
     UpdateTextValue TextComponent String String
   | AddText
+  | UpdateTextBody (CKEditorID, CKEditorText)
 
   -- question msgs
   | UpdateQuestionField TextComponent Question.Field.QuestionField
@@ -45,6 +46,10 @@ update msg model =
     UpdateTextValue text_component field_name input ->
         ({ model | text_components = update
            (Text.Component.set_text text_component field_name input)  }, Cmd.none)
+
+    UpdateTextBody (ckeditor_id, ckeditor_text) ->
+        ({ model | text_components =
+           (Text.Component.Group.update_body_for_id model.text_components ckeditor_id ckeditor_text) }, Cmd.none)
 
     -- question msgs
     AddQuestion text_component ->
@@ -87,13 +92,16 @@ update msg model =
     -- ui msgs
     ToggleEditable text_component field ->
       let
+        extra_cmds = (case field of
+          Text text_field -> Text.Component.post_toggle_commands text_field
+          _ -> [Cmd.none])
         new_text_component = (
           case field of
             Text field -> Text.Component.set_field text_component (Text.Component.switch_editable field)
             Question field -> Text.Component.set_question text_component (Question.Field.switch_editable field)
             Answer field -> Text.Component.set_answer text_component (Answer.Field.switch_editable field))
       in
-        ({ model | text_components = update new_text_component }, post_toggle_field field)
+        ({ model | text_components = update new_text_component }, Cmd.batch <| extra_cmds ++ [post_toggle_field field])
 
 post_toggle_field : Field -> Cmd msg
 post_toggle_field field =

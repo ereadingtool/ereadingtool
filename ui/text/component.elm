@@ -1,7 +1,7 @@
-module Text.Component exposing (TextComponent, TextField, TextBodyFieldParams, emptyTextComponent, body, text, title, source
-  , difficulty, author, question_fields, attributes, set_field, set_text, index, delete_question_field
-  , set_answer, set_answer_text, set_question, switch_editable, add_new_question, toggle_question_menu
-  , update_question_field, set_answer_correct, set_answer_feedback, text_field_id, editable)
+module Text.Component exposing (TextComponent, TextField(..), TextBodyFieldParams, emptyTextComponent, body, text, title
+  , source, difficulty, author, question_fields, attributes, set_field, set_text, index, delete_question_field
+  , set_answer, set_answer_text, set_question, switch_editable, add_new_question, toggle_question_menu, update_body
+  , update_question_field, set_answer_correct, set_answer_feedback, text_field_id, editable, post_toggle_commands)
 
 import Array exposing (Array)
 import Field
@@ -9,6 +9,8 @@ import Field
 import Text.Model exposing (Text, TextDifficulty)
 import Question.Field exposing (QuestionField, generate_question_field)
 import Answer.Field
+
+import Ports exposing (ckEditor, CKEditorID, CKEditorText)
 
 type alias TextFieldParams = Field.FieldAttributes { name : String }
 type alias TextBodyFieldParams = Field.FieldAttributes { name : String, ckeditor_id : String }
@@ -116,6 +118,12 @@ editable text_field =
     Difficulty params -> params.editable
     Body params -> params.editable
     Author params -> params.editable
+
+post_toggle_commands : TextField -> List (Cmd msg)
+post_toggle_commands text_field =
+  case text_field of
+      Body params -> [ckEditor params.id]
+      _ -> [Cmd.none]
 
 body : TextComponent -> TextField
 body (TextComponent text attr fields question_fields) = fields.body

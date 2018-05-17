@@ -1,10 +1,11 @@
 module Text.Component.Group exposing (TextComponentGroup, update_text_components, add_new_text, update_errors
-  , new_group, toArray)
+  , new_group, toArray, update_body_for_id)
 
 import Array exposing (Array)
 import Dict exposing (Dict)
 
 import Text.Component exposing (TextComponent)
+import Ports exposing (ckEditor, CKEditorID, CKEditorText)
 
 type TextComponentGroup = TextComponentGroup (Array TextComponent)
 
@@ -29,3 +30,19 @@ add_new_text (TextComponentGroup text_components) = let
 
 toArray : TextComponentGroup -> Array TextComponent
 toArray (TextComponentGroup text_components) = text_components
+
+text_component : TextComponentGroup -> Int -> Maybe TextComponent
+text_component (TextComponentGroup text_components) index = Array.get index text_components
+
+update_body_for_id : TextComponentGroup -> CKEditorID -> CKEditorText -> TextComponentGroup
+update_body_for_id text_components ckeditor_id ckeditor_text =
+  case String.split "_" ckeditor_id of
+    ["text", i, "body"] ->
+      case String.toInt i of
+        Ok i ->
+          case text_component text_components i of
+             Just text_component ->
+               update_text_components text_components (Text.Component.update_body text_component ckeditor_text)
+             _ -> text_components
+        _ -> text_components
+    _ -> text_components
