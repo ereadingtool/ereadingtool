@@ -10563,6 +10563,14 @@ var _user$project$Text_Component_Group$toArray = function (_p2) {
 	var _p3 = _p2;
 	return _p3._0;
 };
+var _user$project$Text_Component_Group$toQuiz = function (text_components) {
+	return A2(
+		_elm_lang$core$Array$map,
+		function (c) {
+			return _user$project$Text_Component$text(c);
+		},
+		_user$project$Text_Component_Group$toArray(text_components));
+};
 var _user$project$Text_Component_Group$TextComponentGroup = function (a) {
 	return {ctor: 'TextComponentGroup', _0: a};
 };
@@ -12830,7 +12838,7 @@ var _user$project$Main$TextComponentMsg = function (a) {
 var _user$project$Main$Submitted = function (a) {
 	return {ctor: 'Submitted', _0: a};
 };
-var _user$project$Main$post_text = F2(
+var _user$project$Main$post_quiz = F2(
 	function (csrftoken, texts) {
 		var encoded_texts = _user$project$Text_Encode$textsEncoder(texts);
 		var req = A4(
@@ -12858,14 +12866,9 @@ var _user$project$Main$update = F2(
 						model,
 						{error_msg: _elm_lang$core$Maybe$Nothing, success_msg: _elm_lang$core$Maybe$Nothing}),
 					_1: A2(
-						_user$project$Main$post_text,
+						_user$project$Main$post_quiz,
 						model.flags.csrftoken,
-						A2(
-							_elm_lang$core$Array$map,
-							function (c) {
-								return _user$project$Text_Component$text(c);
-							},
-							_user$project$Text_Component_Group$toArray(model.text_components)))
+						_user$project$Text_Component_Group$toQuiz(model.text_components))
 				};
 			case 'Submitted':
 				if (_p2._0.ctor === 'Ok') {

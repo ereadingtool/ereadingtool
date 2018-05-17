@@ -72,15 +72,7 @@ update msg model = case msg of
     TextComponentMsg msg -> (Text.Update.update msg model)
 
     SubmitQuiz -> ({ model | error_msg = Nothing, success_msg = Nothing }
-      , post_text model.flags.csrftoken
-        (Array.map (\c -> Text.Component.text c) (Text.Component.Group.toArray model.text_components)))
-      {-let questions = Array.map (\q_field ->
-      let answer_fields = q_field.answer_fields
-          question = q_field.question in
-       { question | answers = Array.map (\a_field -> a_field.answer) q_field.answer_fields }) model.question_fields in
-       ({ model |
-           error_msg = Nothing
-         , success_msg = Nothing }, post_text model.flags.csrftoken model.text questions)-}
+      , post_quiz model.flags.csrftoken (Text.Component.Group.toQuiz model.text_components))
 
     Submitted (Ok text_create_resp) -> case text_create_resp.id of
        Just text_id -> ({ model
@@ -103,8 +95,8 @@ update msg model = case msg of
     UpdateTextDifficultyOptions (Err _) ->
       (model, Cmd.none)
 
-post_text : CSRFToken -> Array Text -> Cmd Msg
-post_text csrftoken texts =
+post_quiz : CSRFToken -> Array Text -> Cmd Msg
+post_quiz csrftoken texts =
   let encoded_texts = Text.Encode.textsEncoder texts
       req =
     post_with_headers text_api_endpoint [Http.header "X-CSRFToken" csrftoken] (Http.jsonBody encoded_texts)
