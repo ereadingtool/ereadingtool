@@ -1,7 +1,7 @@
 module Profile exposing (StudentProfile, studentProfile, studentDifficultyPreference, emptyStudentProfile,
   studentDifficulties, studentProfileDecoder, studentUserName, view_student_profile_header, retrieve_student_profile
   , view_instructor_profile_header, view_profile_header, InstructorProfile, init_profile, ProfileID, ProfileType
-  , StudentProfileParams, InstructorProfileParams, Profile)
+  , StudentProfileParams, InstructorProfileParams, Profile, emptyProfile, fromStudentProfile, fromInstructorProfile)
 
 import Text.Model as Text
 import Config exposing (student_api_endpoint)
@@ -29,6 +29,12 @@ type StudentProfile = StudentProfile StudentProfileParams
 type InstructorProfile = InstructorProfile InstructorProfileParams
 
 type Profile = Student StudentProfile | Instructor InstructorProfile | EmptyProfile
+
+fromStudentProfile : StudentProfile -> Profile
+fromStudentProfile student_profile = Student student_profile
+
+fromInstructorProfile : InstructorProfile -> Profile
+fromInstructorProfile instructor_profile = Instructor instructor_profile
 
 studentProfile : StudentProfileParams -> StudentProfile
 studentProfile params = StudentProfile params
@@ -64,6 +70,9 @@ init_profile flags =
           Just params -> Instructor (InstructorProfile params)
           _ -> EmptyProfile
         _ -> EmptyProfile
+
+emptyProfile : Profile
+emptyProfile = EmptyProfile
 
 view_profile_header : Profile -> Maybe (List (Html msg))
 view_profile_header profile =

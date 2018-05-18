@@ -139,7 +139,7 @@ view_submit model = Html.div [classList [("submit_section", True)]] [
 
 view : Model -> Html Msg
 view model = div [] [
-      Views.view_header (Profile.view_profile_header model.profile)
+      Views.view_header model.profile Nothing
     , (Views.view_preview)
     , (Text.View.view_text_components TextComponentMsg model.text_components model.question_difficulties)
     , (view_submit model)

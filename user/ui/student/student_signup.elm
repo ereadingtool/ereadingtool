@@ -16,6 +16,8 @@ import Http exposing (..)
 import Text.Model exposing (TextDifficulty)
 import Html.Events exposing (onClick, onBlur, onInput)
 
+import Profile
+
 type alias SignUpResp = { id: SignUp.UserID, redirect: SignUp.URI }
 
 type alias Flags = { csrftoken : Flags.CSRFToken, difficulties: List TextDifficulty }
@@ -129,7 +131,7 @@ view_content model = Html.div [ classList [("signup", True)] ] [
 
 view : Model -> Html Msg
 view model = div [] [
-    (Views.view_header Nothing)
+    (Views.view_header Profile.emptyProfile Nothing)
   , (Views.view_filter)
   , (view_content model)
   , (Views.view_footer)

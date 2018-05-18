@@ -1,4 +1,4 @@
-module Login exposing (init, view, subscriptions, update, Model, Msg)
+module Login exposing (init, view, subscriptions, update, Model, Msg, student_login, instructor_login)
 
 import Html exposing (Html, div)
 import Html.Attributes exposing (classList, attribute)
@@ -19,6 +19,7 @@ import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardc
 import Views
 import Flags
 
+import Profile
 
 type alias UserID = Int
 type alias URI = String
@@ -33,6 +34,8 @@ type Msg =
   | UpdateEmail String
   | UpdatePassword String
 
+type Login = StudentLogin SignUpURI Int | InstructorLogin SignUpURI Int
+
 type alias LoginParams = {
     username : String
   , password : String }
@@ -41,6 +44,24 @@ type alias Model = {
     flags : Flags.UnAuthedFlags
   , login_params : LoginParams
   , errors : Dict String String }
+
+signup_uri : Login -> URI
+signup_uri login = case login of
+  StudentLogin uri _ -> uri
+  InstructorLogin uri _ -> uri
+
+menu_index : Login -> Int
+menu_index login = case login of
+  StudentLogin _ menu_index -> menu_index
+  InstructorLogin _ menu_index -> menu_index
+
+student_login : URI -> Int -> Login
+student_login signup_uri menu_index =
+  StudentLogin signup_uri menu_index
+
+instructor_login : URI -> Int -> Login
+instructor_login signup_uri menu_index =
+  InstructorLogin signup_uri menu_index
 
 loginEncoder : LoginParams -> Encode.Value
 loginEncoder login_params = Encode.object [
@@ -166,10 +187,11 @@ view_content signup_uri model = Html.div [ classList [("login", True)] ] [
   ]
 
 -- VIEW
-view : SignUpURI -> Model -> Html Msg
-view signup_uri model = div [] [
-    (Views.view_header Nothing)
+view : Login -> Model -> Html Msg
+view login model =
+  div [] [
+    (Views.view_header Profile.emptyProfile (Just <| menu_index login))
   , (Views.view_filter)
-  , (view_content signup_uri model)
+  , (view_content (signup_uri login) model)
   , (Views.view_footer)
   ]

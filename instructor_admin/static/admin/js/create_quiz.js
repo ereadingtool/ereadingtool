@@ -11327,11 +11327,18 @@ var _user$project$Profile$InstructorProfile = function (a) {
 	return {ctor: 'InstructorProfile', _0: a};
 };
 var _user$project$Profile$EmptyProfile = {ctor: 'EmptyProfile'};
+var _user$project$Profile$emptyProfile = _user$project$Profile$EmptyProfile;
 var _user$project$Profile$Instructor = function (a) {
 	return {ctor: 'Instructor', _0: a};
 };
+var _user$project$Profile$fromInstructorProfile = function (instructor_profile) {
+	return _user$project$Profile$Instructor(instructor_profile);
+};
 var _user$project$Profile$Student = function (a) {
 	return {ctor: 'Student', _0: a};
+};
+var _user$project$Profile$fromStudentProfile = function (student_profile) {
+	return _user$project$Profile$Student(student_profile);
 };
 var _user$project$Profile$init_profile = function (flags) {
 	var _p11 = flags.profile_type;
@@ -11538,160 +11545,162 @@ var _user$project$Views$view_filter = A2(
 			}),
 		_1: {ctor: '[]'}
 	});
-var _user$project$Views$view_header = function (view_user_profile) {
+var _user$project$Views$view_user_profile_menu_item = function (view) {
+	var _p0 = view;
+	if (_p0.ctor === 'Just') {
+		return {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$span,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$classList(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				},
+				_p0._0),
+			_1: {ctor: '[]'}
+		};
+	} else {
+		return {ctor: '[]'};
+	}
+};
+var _user$project$Views$view_menu_item = function (_p1) {
+	var _p2 = _p1;
 	return A2(
-		_elm_lang$html$Html$div,
+		_elm_lang$html$Html$span,
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html_Attributes$classList(
 				{
 					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'header', _1: true},
-					_1: {ctor: '[]'}
+					_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
+					_1: {
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'menu_item_selected', _1: _p2._2},
+						_1: {ctor: '[]'}
+					}
 				}),
 			_1: {ctor: '[]'}
 		},
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html$text('E-Reader'),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$classList(
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'menu', _1: true},
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					},
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$span,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$classList(
-										{
-											ctor: '::',
-											_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$a,
-										{
-											ctor: '::',
-											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/admin'),
-											_1: {ctor: '[]'}
-										},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text('Quizzes'),
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								}),
-							_1: {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$span,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$classList(
-											{
-												ctor: '::',
-												_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
-												_1: {ctor: '[]'}
-											}),
-										_1: {ctor: '[]'}
-									},
-									{
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$a,
-											{
-												ctor: '::',
-												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/login/student/'),
-												_1: {ctor: '[]'}
-											},
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text('Student Login'),
-												_1: {ctor: '[]'}
-											}),
-										_1: {ctor: '[]'}
-									}),
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$span,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$classList(
-												{
-													ctor: '::',
-													_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
-													_1: {ctor: '[]'}
-												}),
-											_1: {ctor: '[]'}
-										},
-										{
-											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$a,
-												{
-													ctor: '::',
-													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/login/instructor/'),
-													_1: {ctor: '[]'}
-												},
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html$text('Instructor Login'),
-													_1: {ctor: '[]'}
-												}),
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								}
-							}
-						},
-						function () {
-							var _p0 = view_user_profile;
-							if (_p0.ctor === 'Just') {
-								return {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$span,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$classList(
-												{
-													ctor: '::',
-													_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
-													_1: {ctor: '[]'}
-												}),
-											_1: {ctor: '[]'}
-										},
-										_p0._0),
-									_1: {ctor: '[]'}
-								};
-							} else {
-								return {ctor: '[]'};
-							}
-						}())),
-				_1: {ctor: '[]'}
-			}
+			_0: A2(
+				_elm_lang$html$Html$a,
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', _p2._0),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(_p2._1),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
 		});
 };
+var _user$project$Views$view_menu = F2(
+	function (_p3, profile) {
+		var _p4 = _p3;
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$Array$toList(
+				A2(_elm_lang$core$Array$map, _user$project$Views$view_menu_item, _p4._0)),
+			_user$project$Views$view_user_profile_menu_item(
+				_user$project$Profile$view_profile_header(profile)));
+	});
+var _user$project$Views$MenuItem = F3(
+	function (a, b, c) {
+		return {ctor: 'MenuItem', _0: a, _1: b, _2: c};
+	});
+var _user$project$Views$set_selected_menu_item = F2(
+	function (_p5, select) {
+		var _p6 = _p5;
+		return A3(_user$project$Views$MenuItem, _p6._0, _p6._1, select);
+	});
+var _user$project$Views$MenuItems = function (a) {
+	return {ctor: 'MenuItems', _0: a};
+};
+var _user$project$Views$menu_items = _user$project$Views$MenuItems(
+	_elm_lang$core$Array$fromList(
+		{
+			ctor: '::',
+			_0: A3(_user$project$Views$MenuItem, '/admin/', 'Quizzes', false),
+			_1: {
+				ctor: '::',
+				_0: A3(_user$project$Views$MenuItem, '/login/student/', 'Student Login', false),
+				_1: {
+					ctor: '::',
+					_0: A3(_user$project$Views$MenuItem, '/login/instructor/', 'Instructor Login', false),
+					_1: {ctor: '[]'}
+				}
+			}
+		}));
+var _user$project$Views$set_selected = F3(
+	function (_p7, index, select) {
+		var _p8 = _p7;
+		var _p10 = _p8._0;
+		var _p9 = A2(_elm_lang$core$Array$get, index, _p10);
+		if (_p9.ctor === 'Just') {
+			return _user$project$Views$MenuItems(
+				A3(
+					_elm_lang$core$Array$set,
+					index,
+					A2(_user$project$Views$set_selected_menu_item, _p9._0, select),
+					_p10));
+		} else {
+			return _user$project$Views$MenuItems(_p10);
+		}
+	});
+var _user$project$Views$view_header = F2(
+	function (profile, selected_menu_item) {
+		var m_items = function () {
+			var _p11 = selected_menu_item;
+			if (_p11.ctor === 'Just') {
+				return A3(_user$project$Views$set_selected, _user$project$Views$menu_items, _p11._0, true);
+			} else {
+				return _user$project$Views$menu_items;
+			}
+		}();
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'header', _1: true},
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('E-Reader'),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$classList(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'menu', _1: true},
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						},
+						A2(_user$project$Views$view_menu, m_items, profile)),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
 
 var _user$project$Question_View$view_add_question = F3(
 	function (msg, text_component, fields) {
@@ -13008,8 +13017,7 @@ var _user$project$Main$view = function (model) {
 		{ctor: '[]'},
 		{
 			ctor: '::',
-			_0: _user$project$Views$view_header(
-				_user$project$Profile$view_profile_header(model.profile)),
+			_0: A2(_user$project$Views$view_header, model.profile, _elm_lang$core$Maybe$Nothing),
 			_1: {
 				ctor: '::',
 				_0: _user$project$Views$view_preview,

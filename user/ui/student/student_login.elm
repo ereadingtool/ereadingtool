@@ -10,7 +10,7 @@ main : Program Flags.UnAuthedFlags Login.Model Login.Msg
 main =
   Html.programWithFlags
     { init = Login.init
-    , view = (Login.view "/signup/student")
+    , view = (Login.view (Login.student_login "/signup/student" 1))
     , subscriptions = Login.subscriptions
     , update = (Login.update student_login_api_endpoint)
     }

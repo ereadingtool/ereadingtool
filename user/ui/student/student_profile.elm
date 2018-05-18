@@ -117,7 +117,7 @@ view_content model = Html.div [ classList [("profile", True)] ] [
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    (Views.view_header <| Just (Profile.view_student_profile_header model.profile))
+    (Views.view_header (Profile.fromStudentProfile model.profile) Nothing)
   , (Views.view_filter)
   , (view_content model)
   , (Views.view_footer)

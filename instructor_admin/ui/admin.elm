@@ -110,7 +110,7 @@ view_footer model = div [classList [("footer_items", True)] ] [
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    Views.view_header (Profile.view_profile_header model.profile)
+    Views.view_header model.profile Nothing
   , Views.view_filter
   , (view_texts model)
   , (view_footer model)

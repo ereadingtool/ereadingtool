@@ -6,6 +6,7 @@ import Dict exposing (Dict)
 import Views
 import Flags exposing (CSRFToken, Flags)
 
+import Profile
 
 -- UPDATE
 type Msg = Update
@@ -46,7 +47,7 @@ view_content model = Html.div [ classList [] ] [
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    (Views.view_header Nothing)
+    (Views.view_header (Profile.emptyProfile) Nothing)
   , (Views.view_filter)
   , (view_content model)
   , (Views.view_footer)

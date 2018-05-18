@@ -8,6 +8,7 @@ import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onM
 import Dict exposing (Dict)
 import Util exposing (is_valid_email)
 import Views
+import Profile
 
 
 type alias UserID = Int
@@ -130,7 +131,7 @@ view
     -> { a | show_passwords : Bool, errors : Dict String String }
     -> Html msg
 view email_msg password_msgs submit_msg model = div [] [
-    (Views.view_header Nothing)
+    (Views.view_header Profile.emptyProfile Nothing)
   , (Views.view_filter)
   , (view_content email_msg password_msgs submit_msg model)
   , (Views.view_footer)
