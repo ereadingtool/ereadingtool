@@ -11167,6 +11167,7 @@ var _user$project$Config$instructor_login_api_endpoint = '/api/instructor/login/
 var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signup/';
 var _user$project$Config$question_api_endpoint = '/api/question/';
 var _user$project$Config$text_api_endpoint = '/api/text/';
+var _user$project$Config$quiz_api_endpoint = '/api/quiz/';
 
 var _user$project$Profile$tupleDecoder = A3(
 	_elm_lang$core$Json_Decode$map2,
@@ -12843,7 +12844,7 @@ var _user$project$Main$post_quiz = F2(
 		var encoded_texts = _user$project$Text_Encode$textsEncoder(texts);
 		var req = A4(
 			_user$project$HttpHelpers$post_with_headers,
-			_user$project$Config$text_api_endpoint,
+			_user$project$Config$quiz_api_endpoint,
 			{
 				ctor: '::',
 				_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),

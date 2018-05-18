@@ -8,7 +8,7 @@ import Array exposing (Array)
 import Http
 import HttpHelpers exposing (post_with_headers)
 
-import Config exposing (text_api_endpoint)
+import Config exposing (text_api_endpoint, quiz_api_endpoint)
 import Flags exposing (CSRFToken, Flags)
 
 import Views
@@ -99,7 +99,7 @@ post_quiz : CSRFToken -> Array Text -> Cmd Msg
 post_quiz csrftoken texts =
   let encoded_texts = Text.Encode.textsEncoder texts
       req =
-    post_with_headers text_api_endpoint [Http.header "X-CSRFToken" csrftoken] (Http.jsonBody encoded_texts)
+    post_with_headers quiz_api_endpoint [Http.header "X-CSRFToken" csrftoken] (Http.jsonBody encoded_texts)
     <| Text.Decode.textCreateRespDecoder
   in
     Http.send Submitted req

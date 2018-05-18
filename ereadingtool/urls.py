@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include, reverse_lazy
 from django.views.generic import RedirectView
 
-from quiz.views import QuizView, QuizLoadElm
+from quiz.views import QuizView, QuizLoadElm, QuizAPIView
 from mixins.view import ElmLoadJsView, NoAuthElmLoadJsView, ElmLoadStudentSignUpView
 
 
@@ -30,6 +30,7 @@ urlpatterns = [
     path('', include('user.urls.instructor')),
     path('', include('user.urls.student')),
 
+    path('api/quiz/', QuizAPIView.as_view(), name='quiz-api'),
     path('api/text/', include('text.urls')),
     path('api/question/', include('question.urls')),
 

@@ -3,3 +3,4 @@ django-tagging
 ipython
 rjsmin
 django-csp
+hypothesis[django]
