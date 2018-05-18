@@ -30,7 +30,7 @@ urlpatterns = [
     path('', include('user.urls.instructor')),
     path('', include('user.urls.student')),
 
-    path('api/quiz/', QuizAPIView.as_view(), name='quiz-api'),
+    path('', include('quiz.urls')),
     path('api/text/', include('text.urls')),
     path('api/question/', include('question.urls')),
 

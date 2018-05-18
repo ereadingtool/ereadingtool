@@ -29,7 +29,7 @@ class TextDifficulty(models.Model):
 
 
 class Text(Timestamped, models.Model):
-    quiz = models.ForeignKey(Quiz, null=True, on_delete=models.SET_NULL)
+    quiz = models.ForeignKey(Quiz, null=True, related_name='texts', on_delete=models.SET_NULL)
 
     source = models.CharField(max_length=255, blank=False)
     difficulty = models.ForeignKey(TextDifficulty, null=True, related_name='texts', on_delete=models.SET_NULL)

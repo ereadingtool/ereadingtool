@@ -3,7 +3,7 @@ import json
 from django.views.generic import TemplateView
 from user.views.mixin import ProfileView
 from mixins.view import ElmLoadJsView
-from text.models import TextDifficulty
+from text.models import TextDifficulty, Text
 from django.db.models import ObjectDoesNotExist
 from django.db import IntegrityError
 
@@ -129,13 +129,21 @@ class QuizAPIView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         if 'pk' in kwargs:
             try:
-                quiz = Quiz.objects.get(pk=kwargs['pk'])
+                # TODO(andrew): disallow empty quizzes
+                # query reverse relation to consolidate queries
+                # since Text.quiz can be null this may raise ObjectDoesNotExist when the quiz itself exists
+                quiz_texts = Text.objects.select_related('quiz').filter(quiz=kwargs['pk'])
 
-                return HttpResponse(json.dumps(quiz.to_dict()))
+                if not quiz_texts:
+                    raise ObjectDoesNotExist()
+
+                quiz = quiz_texts[0].quiz
+
+                return HttpResponse(json.dumps(quiz.to_dict(texts=quiz_texts)))
             except ObjectDoesNotExist:
-                return HttpResponse(errors={'errors': {'quiz': "quiz with id {0} does not exist".format(
-                    kwargs['pk'])
-                }}, status=400)
+                return HttpResponse(
+                    json.dumps(
+                        {'errors': {'quiz': "quiz with id {0} does not exist".format(kwargs['pk'])}}), status=400)
 
         quizzes = [quiz.to_dict() for quiz in self.model.objects.all()]
 
@@ -143,11 +151,16 @@ class QuizAPIView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         try:
-            text_params = json.loads(request.body.decode('utf8'))
+            quiz_params = json.loads(request.body.decode('utf8'))
         except json.JSONDecodeError as e:
             return HttpResponse(json.dumps({'errors': {'json': str(e)}}), status=400)
 
         try:
+            # TODO (andrew): use json schema validation here (http://json-schema.org)
+            if not isinstance(quiz_params, dict) or 'texts' not in quiz_params:
+                raise ValidationError(message='bad payload.')
+
+            text_params = quiz_params.pop('texts')
             text_params, errors = QuizAPIView.validate_text_params(text_params)
         except ValidationError as e:
             return HttpResponse(json.dumps({'errors': e.message}),
@@ -157,7 +170,7 @@ class QuizAPIView(LoginRequiredMixin, View):
             return HttpResponse(json.dumps({'errors': errors}), status=400)
 
         try:
-            quiz = Quiz.create(text_params=text_params)
+            quiz = Quiz.create(text_params=text_params, **quiz_params)
             quiz.save()
 
             return HttpResponse(json.dumps({'id': quiz.pk}))

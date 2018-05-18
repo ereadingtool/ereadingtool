@@ -1,13 +1,13 @@
 from django.db import models
-from typing import TypeVar
+from typing import TypeVar, Optional
 
 
 class Quiz(models.Model):
     title = models.CharField(max_length=255, null=False, blank=False)
 
     @classmethod
-    def create(cls, text_params: dict) -> TypeVar('Quiz'):
-        quiz = Quiz.objects.create()
+    def create(cls, text_params: dict, **quiz_params: dict) -> TypeVar('Quiz'):
+        quiz = Quiz.objects.create(**quiz_params)
         quiz.save()
 
         texts = []
@@ -34,3 +34,9 @@ class Quiz(models.Model):
             texts.append(text)
 
         return quiz
+
+    def to_dict(self, texts: Optional[list]) -> dict:
+        return {
+            'title': self.title,
+            'texts': [text.to_dict() for text in (texts if texts else self.texts.objects.all())]
+        }
