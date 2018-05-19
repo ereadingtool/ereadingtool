@@ -2,7 +2,7 @@ module Text.Subscriptions exposing (..)
 
 import Ports exposing (selectAllInputText, ckEditor, ckEditorUpdate)
 import Text.Update exposing (Msg)
-import Text.Component.Group
+import Quiz.Model as Quiz exposing (Quiz)
 
-subscriptions : (Msg -> msg) -> { a | text_components: Text.Component.Group.TextComponentGroup} -> Sub msg
+subscriptions : (Msg -> msg) -> { a | quiz: Quiz} -> Sub msg
 subscriptions msg model = ckEditorUpdate (Text.Update.UpdateTextBody >> msg)

@@ -156,7 +156,7 @@ class QuizAPIView(LoginRequiredMixin, View):
             return HttpResponse(json.dumps({'errors': {'json': str(e)}}), status=400)
 
         try:
-            # TODO (andrew): use json schema validation here (http://json-schema.org)
+            # TODO (andrew): use json schema validation (http://json-schema.org)
             if not isinstance(quiz_params, dict) or 'texts' not in quiz_params:
                 raise ValidationError(message='bad payload.')
 

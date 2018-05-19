@@ -1,5 +1,5 @@
 module Text.Component.Group exposing (TextComponentGroup, update_text_components, add_new_text, update_errors
-  , new_group, toArray, update_body_for_id, toQuiz)
+  , new_group, toArray, update_body_for_id, toTexts)
 
 import Array exposing (Array)
 import Dict exposing (Dict)
@@ -32,8 +32,8 @@ add_new_text (TextComponentGroup text_components) = let
 toArray : TextComponentGroup -> Array TextComponent
 toArray (TextComponentGroup text_components) = text_components
 
-toQuiz : TextComponentGroup -> Array Text.Model.Text
-toQuiz text_components = Array.map (\c -> Text.Component.text c) (toArray text_components)
+toTexts : TextComponentGroup -> Array Text.Model.Text
+toTexts text_components = Array.map Text.Component.toText (toArray text_components)
 
 text_component : TextComponentGroup -> Int -> Maybe TextComponent
 text_component (TextComponentGroup text_components) index = Array.get index text_components

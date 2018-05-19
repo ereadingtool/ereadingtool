@@ -110,6 +110,24 @@ body {
     height: 100%;
 }
 
+.quiz_attributes {
+    display: grid;
+    grid-row-gap: 5%;
+    row-gap: 5%;
+
+    font: "Lucida Console";
+    font-size: 23px;
+    font-weight: 300;
+
+    margin-bottom: 15px;
+
+    grid-template-columns: 19% auto 15% 20%;
+}
+
+.quiz {
+    grid-column: 2;
+}
+
 .texts {
     display: grid;
     grid-row-gap: 2%;

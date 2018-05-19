@@ -1,8 +1,10 @@
 module Answer.Field exposing (AnswerField, AnswerFeedbackField, generate_answer_field, update_question_index
   , index, question_index, switch_editable, editable, answer, attributes, error, id, feedback_field
-  , set_answer_text, set_answer_correct, set_answer_feedback)
+  , set_answer_text, set_answer_correct, set_answer_feedback, toAnswers)
 
 import Field
+import Array exposing (Array)
+
 import Answer.Model exposing (Answer)
 
 type alias AnswerFeedbackField = {
@@ -38,6 +40,9 @@ generate_answer_field i j answer = let
     , error = False
     , question_index = i
     , index = j } (generate_answer_feedback_field <| String.join "_" [answer_id, "feedback"])
+
+toAnswers : Array AnswerField -> Array Answer
+toAnswers answer_fields = Array.map answer answer_fields
 
 feedback_field : AnswerField -> AnswerFeedbackField
 feedback_field (AnswerField _ _ feedback_field) = feedback_field

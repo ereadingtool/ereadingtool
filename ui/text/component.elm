@@ -1,7 +1,8 @@
 module Text.Component exposing (TextComponent, TextField(..), TextBodyFieldParams, emptyTextComponent, body, text, title
   , source, difficulty, author, question_fields, attributes, set_field, set_text, index, delete_question_field
   , set_answer, set_answer_text, set_question, switch_editable, add_new_question, toggle_question_menu, update_body
-  , update_question_field, set_answer_correct, set_answer_feedback, text_field_id, editable, post_toggle_commands)
+  , update_question_field, set_answer_correct, set_answer_feedback, text_field_id, editable, toText
+  , post_toggle_commands)
 
 import Array exposing (Array)
 import Field
@@ -213,3 +214,11 @@ toggle_question_menu text_component question_field =  let
     visible = if (Question.Field.menu_visible question_field) then False else True
   in
     set_question text_component (Question.Field.set_menu_visible question_field visible)
+
+toText : TextComponent -> Text
+toText text_component =
+  let
+    new_text = text text_component
+    questions = Question.Field.toQuestions (question_fields text_component)
+  in
+    { new_text | questions = questions }

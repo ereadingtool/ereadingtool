@@ -1,7 +1,7 @@
 module Question.Field exposing (QuestionField, QuestionType(..), generate_question_field, update_question_field
   , add_new_question, delete_question, initial_question_fields, attributes, index, switch_editable, set_answer_feedback
   , set_question_type, question, menu_visible, id, error, editable, answers, set_menu_visible, set_answer_correct
-  , update_question, set_question_body, set_answer_field, delete_question_field, question_field_for_answer)
+  , update_question, set_question_body, set_answer_field, delete_question_field, question_field_for_answer, toQuestions)
 
 import Question.Model exposing (Question)
 
@@ -20,6 +20,18 @@ type alias QuestionFieldAttributes = {
 type QuestionType = MainIdea | Detail
 
 type QuestionField = QuestionField Question (Field.FieldAttributes (QuestionFieldAttributes)) (Array AnswerField)
+
+toQuestions : Array QuestionField -> Array Question
+toQuestions question_fields =
+  Array.map toQuestion question_fields
+
+toQuestion : QuestionField -> Question
+toQuestion question_field =
+  let
+    new_question = question question_field
+    new_answers = Answer.Field.toAnswers (answers question_field)
+  in
+    { new_question | answers = new_answers }
 
 generate_question_field : Int -> Question -> QuestionField
 generate_question_field i question = QuestionField question {

@@ -2,6 +2,7 @@ module Text.Update exposing (update, Msg(..), Field(..))
 
 import Question.Field exposing (QuestionField)
 import Answer.Field exposing (AnswerField)
+import Quiz.Model as Quiz exposing (Quiz)
 
 import Text.Component exposing (TextField(..), TextComponent)
 import Text.Component.Group exposing (TextComponentGroup)
@@ -33,59 +34,61 @@ type Msg =
 
 
 update : Msg
-  ->   { a | text_components: TextComponentGroup}
-  -> ( { a | text_components: TextComponentGroup}, Cmd msg )
+  ->   { a | quiz: Quiz}
+  -> ( { a | quiz: Quiz}, Cmd msg )
 update msg model =
   let
-    update = Text.Component.Group.update_text_components model.text_components
+    text_components = Quiz.text_components model.quiz
+    update = Text.Component.Group.update_text_components text_components >> Quiz.set_text_components model.quiz
   in case msg of
     -- text msgs
     AddText ->
-      ({ model | text_components = Text.Component.Group.add_new_text model.text_components }, Cmd.none)
+      ({ model | quiz = Quiz.set_text_components model.quiz (Text.Component.Group.add_new_text text_components) }
+      , Cmd.none)
 
     UpdateTextValue text_component field_name input ->
-        ({ model | text_components = update
+        ({ model | quiz = update
            (Text.Component.set_text text_component field_name input)  }, Cmd.none)
 
     UpdateTextBody (ckeditor_id, ckeditor_text) ->
-        ({ model | text_components =
-           (Text.Component.Group.update_body_for_id model.text_components ckeditor_id ckeditor_text) }, Cmd.none)
+        ({ model | quiz = Quiz.set_text_components model.quiz
+           (Text.Component.Group.update_body_for_id text_components ckeditor_id ckeditor_text) }, Cmd.none)
 
     -- question msgs
     AddQuestion text_component ->
-      ({ model | text_components = update (Text.Component.add_new_question text_component) }, Cmd.none)
+      ({ model | quiz = update (Text.Component.add_new_question text_component) }, Cmd.none)
 
     UpdateQuestionField text_component question_field ->
-      ({ model | text_components = update (Text.Component.update_question_field text_component question_field) }, Cmd.none)
+      ({ model | quiz = update (Text.Component.update_question_field text_component question_field) }, Cmd.none)
 
     UpdateQuestionFieldValue text_component question_field value ->
-      ({ model | text_components = update
+      ({ model | quiz = update
         (Text.Component.update_question_field text_component (Question.Field.set_question_body question_field value))
       }, Cmd.none)
 
     DeleteQuestion text_component question_field ->
-        ({ model | text_components = update
+        ({ model | quiz = update
            (Text.Component.delete_question_field text_component question_field)
         }, Cmd.none)
 
     ToggleQuestionMenu text_component question_field ->
-        ({ model | text_components = update
+        ({ model | quiz = update
            (Text.Component.toggle_question_menu text_component question_field)
         }, Cmd.none)
 
     -- answer msgs
     UpdateAnswerField text_component answer_field ->
-        ({ model | text_components = update (Text.Component.set_answer text_component answer_field)  }, Cmd.none)
+        ({ model | quiz = update (Text.Component.set_answer text_component answer_field)  }, Cmd.none)
 
     UpdateAnswerFieldValue text_component answer_field text ->
-        ({ model | text_components = update (Text.Component.set_answer_text text_component answer_field text)  }, Cmd.none)
+        ({ model | quiz = update (Text.Component.set_answer_text text_component answer_field text)  }, Cmd.none)
 
     UpdateAnswerFeedbackValue text_component answer_field feedback ->
-          ({ model | text_components = update
+          ({ model | quiz = update
            (Text.Component.set_answer_feedback text_component answer_field feedback)  }, Cmd.none)
 
     UpdateAnswerFieldCorrect text_component answer_field correct ->
-          ({ model | text_components = update
+          ({ model | quiz = update
             (Text.Component.set_answer_correct text_component answer_field)
           }, Cmd.none)
 
@@ -101,7 +104,7 @@ update msg model =
             Question field -> Text.Component.set_question text_component (Question.Field.switch_editable field)
             Answer field -> Text.Component.set_answer text_component (Answer.Field.switch_editable field))
       in
-        ({ model | text_components = update new_text_component }, Cmd.batch <| extra_cmds ++ [post_toggle_field field])
+        ({ model | quiz = update new_text_component }, Cmd.batch <| extra_cmds ++ [post_toggle_field field])
 
 post_toggle_field : Field -> Cmd msg
 post_toggle_field field =
