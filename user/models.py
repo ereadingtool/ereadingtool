@@ -32,7 +32,10 @@ class Student(models.Model):
         return {
             'id': self.pk,
             'username': self.user.username,
-            'difficulty_preference': {self.difficulty_preference.slug: self.difficulty_preference.name}
+            'difficulty_preference': [self.difficulty_preference.slug, self.difficulty_preference.name]
             if self.difficulty_preference else None,
             'difficulties': difficulties
         }
+
+    def __str__(self):
+        return self.user.username
