@@ -99,7 +99,7 @@ view_difficulty model = let pref = (case Profile.studentDifficultyPreference mod
          onInput UpdateDifficulty ] [
         Html.optgroup [] (List.map (\(k,v) ->
           Html.option ([attribute "value" k] ++
-            (if v == pref then [attribute "selected" ""] else []))
+            (if k == pref then [attribute "selected" ""] else []))
            [ Html.text v ]) (Profile.studentDifficulties model.profile))
        ]
   ]

@@ -9943,14 +9943,14 @@ var _user$project$Main$view_difficulty = function (model) {
 							_elm_lang$core$List$map,
 							function (_p5) {
 								var _p6 = _p5;
-								var _p7 = _p6._1;
+								var _p7 = _p6._0;
 								return A2(
 									_elm_lang$html$Html$option,
 									A2(
 										_elm_lang$core$Basics_ops['++'],
 										{
 											ctor: '::',
-											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', _p6._0),
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', _p7),
 											_1: {ctor: '[]'}
 										},
 										_elm_lang$core$Native_Utils.eq(_p7, pref) ? {
@@ -9960,7 +9960,7 @@ var _user$project$Main$view_difficulty = function (model) {
 										} : {ctor: '[]'}),
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text(_p7),
+										_0: _elm_lang$html$Html$text(_p6._1),
 										_1: {ctor: '[]'}
 									});
 							},
