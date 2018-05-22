@@ -1,6 +1,7 @@
 import json
 
 from django.db.models import ObjectDoesNotExist
+from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.views.generic import View
 
@@ -27,13 +28,18 @@ class QuestionAPIView(LoginRequiredMixin, View):
 
         if 'text' in self.request.GET.keys():
             try:
+                try:
+                    int(self.request.GET['text'])
+                except ValueError:
+                    raise ValidationError(message='{0} is not a valid id'.format(self.request.GET['text']))
+
                 text = Text.objects.get(pk=self.request.GET['text'])
 
                 return HttpResponse(json.dumps([question.to_dict() for question in text.questions.all()]))
-            except ObjectDoesNotExist:
-                return HttpResponse(errors={"errors": {'text': "text with id {0} does not exist".format(
+            except (ObjectDoesNotExist, ValidationError):
+                return HttpResponse(json.dumps({"errors": {'text': "text with id {0} does not exist".format(
                     self.request.GET['text'])
-                }}, status=400)
+                }}), status=400)
 
         questions = [question.to_dict() for question in self.model.objects.all()]
 

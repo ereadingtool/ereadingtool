@@ -16,7 +16,7 @@ type MenuItem = MenuItem URI LinkText Selected
 
 type MenuItems = MenuItems (Array MenuItem)
 
-
+menu_items : MenuItems
 menu_items = MenuItems <| Array.fromList [
     MenuItem "/admin/" "Quizzes" False
   , MenuItem "/login/student/" "Student Login" False

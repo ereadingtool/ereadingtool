@@ -15,7 +15,6 @@
 {% endblock %}
 
 {% block body %}
-    <input type='hidden' name='quiz_id' value='{{ pk }}' />
     <script src="{% url "quiz-load-elm" pk %}"></script>
 {% endblock %}
 

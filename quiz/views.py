@@ -7,6 +7,8 @@ from text.models import TextDifficulty, Text
 from django.db.models import ObjectDoesNotExist
 from django.db import IntegrityError
 
+from django.http import Http404
+
 from django.core.exceptions import ValidationError
 from typing import TypeVar
 
@@ -27,6 +29,12 @@ class QuizView(ProfileView, TemplateView):
     template_name = 'quiz.html'
 
     model = Quiz
+
+    def get(self, request, *args, **kwargs):
+        if not self.model.objects.filter(pk=kwargs['pk']):
+            raise Http404('quiz does not exist')
+
+        return super(QuizView, self).get(request, *args, **kwargs)
 
 
 class QuizLoadElm(ElmLoadJsView):

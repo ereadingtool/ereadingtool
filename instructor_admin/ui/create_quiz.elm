@@ -9,7 +9,8 @@ import HttpHelpers exposing (post_with_headers)
 import Config exposing (text_api_endpoint, quiz_api_endpoint)
 import Flags exposing (CSRFToken, Flags)
 
-import Quiz.Model as Quiz exposing (Quiz)
+import Quiz.Model
+import Quiz.Component exposing (QuizComponent)
 import Quiz.Encode
 
 import Views
@@ -34,13 +35,13 @@ import Array exposing (Array)
 
 type QuizField = QuizField (Field.FieldAttributes {
     name : String
-  , view : Quiz -> QuizField -> Html Msg
-  , edit : Quiz -> QuizField -> Html Msg })
+  , view : QuizComponent -> QuizField -> Html Msg
+  , edit : QuizComponent -> QuizField -> Html Msg })
 
 new_quiz_field : Field.FieldAttributes {
     name : String
-  , view : Quiz -> QuizField -> Html Msg
-  , edit : Quiz -> QuizField -> Html Msg } -> QuizField
+  , view : QuizComponent -> QuizField -> Html Msg
+  , edit : QuizComponent -> QuizField -> Html Msg } -> QuizField
 new_quiz_field attrs = QuizField attrs
 
 update_quiz_field : Array QuizField -> QuizField -> Array QuizField
@@ -62,7 +63,7 @@ type alias Model = {
   , profile : Profile.Profile
   , success_msg : Maybe String
   , error_msg : Maybe Text.Decode.TextCreateRespError
-  , quiz : Quiz
+  , quiz_component : QuizComponent
   , quiz_fields : Array QuizField
   , question_difficulties : List TextDifficulty }
 
@@ -74,7 +75,7 @@ init flags = ({
       , success_msg=Nothing
       , error_msg=Nothing
       , profile=Profile.init_profile flags
-      , quiz=Quiz.emptyQuiz
+      , quiz_component=Quiz.Component.emptyQuizComponent
       , quiz_fields=Array.fromList [
           (new_quiz_field { id="quiz_title"
           , editable=False
@@ -101,7 +102,7 @@ update msg model = case msg of
     TextComponentMsg msg -> (Text.Update.update msg model)
 
     SubmitQuiz -> ({ model | error_msg = Nothing, success_msg = Nothing }
-      , post_quiz model.flags.csrftoken model.quiz)
+      , post_quiz model.flags.csrftoken (Quiz.Component.quiz model.quiz_component))
 
     Submitted (Ok text_create_resp) -> case text_create_resp.id of
        Just text_id -> ({ model
@@ -112,8 +113,8 @@ update msg model = case msg of
       Http.BadStatus resp -> case (Text.Decode.decodeCreateRespErrors (Debug.log "errors" resp.body)) of
         Ok errors -> let
           _ = (Debug.log "displaying validations" errors)
-          new_text_components = Text.Component.Group.update_errors (Quiz.text_components model.quiz) errors
-        in ({ model | quiz = (Quiz.set_text_components model.quiz new_text_components) }, Cmd.none)
+          new_text_components = Text.Component.Group.update_errors (Quiz.Component.text_components model.quiz_component) errors
+        in ({ model | quiz_component = (Quiz.Component.set_text_components model.quiz_component new_text_components) }, Cmd.none)
         _ -> (model, Cmd.none)
       Http.BadPayload err resp -> (model, Cmd.none)
       _ -> (model, Cmd.none)
@@ -125,13 +126,13 @@ update msg model = case msg of
       (model, Cmd.none)
 
     UpdateQuizAttributes attr_name attr_value ->
-      ({ model | quiz = Quiz.set_attributes model.quiz attr_name attr_value }, Cmd.none)
+      ({ model | quiz_component = Quiz.Component.set_quiz_attribute model.quiz_component attr_name attr_value }, Cmd.none)
 
     ToggleEditable ((QuizField attrs) as quiz_field) editable ->
       ({ model | quiz_fields = update_quiz_field model.quiz_fields (update_editable quiz_field editable) }
       , selectAllInputText attrs.id)
 
-post_quiz : CSRFToken -> Quiz -> Cmd Msg
+post_quiz : CSRFToken -> Quiz.Model.Quiz -> Cmd Msg
 post_quiz csrftoken quiz =
   let encoded_quiz = Quiz.Encode.quizEncoder quiz
       req =
@@ -173,33 +174,33 @@ view_submit model = Html.div [classList [("submit_section", True)]] [
     ]
   ]
 
-view_editable : Quiz -> QuizField -> Html Msg
-view_editable quiz ((QuizField attrs) as field) =
+view_editable : QuizComponent -> QuizField -> Html Msg
+view_editable quiz_component ((QuizField attrs) as field) =
   case attrs.editable of
-    True -> attrs.edit quiz field
-    _ -> attrs.view quiz field
+    True -> attrs.edit quiz_component field
+    _ -> attrs.view quiz_component field
 
-view_quiz_title : Quiz -> QuizField -> Html Msg
-view_quiz_title quiz quiz_field =
+view_quiz_title : QuizComponent -> QuizField -> Html Msg
+view_quiz_title quiz_component quiz_field =
   let
-    quiz_attrs = Quiz.attributes quiz
+    quiz = Quiz.Component.quiz quiz_component
   in
     Html.div [
       onClick (ToggleEditable quiz_field True)
     , attribute "class" "editable"
     ] [
         Html.text "Quiz Title: "
-      , Html.text quiz_attrs.title
+      , Html.text quiz.title
       ]
 
-edit_quiz_title : Quiz -> QuizField -> Html Msg
-edit_quiz_title quiz ((QuizField field_attrs) as quiz_field) =
+edit_quiz_title : QuizComponent -> QuizField -> Html Msg
+edit_quiz_title quiz_component ((QuizField field_attrs) as quiz_field) =
   let
-    quiz_attrs = Quiz.attributes quiz
+    quiz = Quiz.Component.quiz quiz_component
   in
     Html.input [
       attribute "type" "text"
-    , attribute "value" quiz_attrs.title
+    , attribute "value" quiz.title
     , attribute "id" field_attrs.id
     , onInput (UpdateQuizAttributes "title")
     , (onBlur (ToggleEditable quiz_field False)) ] [ ]
@@ -208,7 +209,7 @@ edit_quiz_title quiz ((QuizField field_attrs) as quiz_field) =
 view_quiz : Model -> Html Msg
 view_quiz model =
   div [attribute "class" "quiz_attributes"] [
-    div [attribute "class" "quiz"] <| Array.toList <| Array.map (view_editable model.quiz) model.quiz_fields
+    div [attribute "class" "quiz"] <| Array.toList <| Array.map (view_editable model.quiz_component) model.quiz_fields
   ]
 
 view : Model -> Html Msg
@@ -216,6 +217,6 @@ view model = div [] [
       Views.view_header model.profile Nothing
     , (Views.view_preview)
     , (view_quiz model)
-    , (Text.View.view_text_components TextComponentMsg (Quiz.text_components model.quiz) model.question_difficulties)
+    , (Text.View.view_text_components TextComponentMsg (Quiz.Component.text_components model.quiz_component) model.question_difficulties)
     , (view_submit model)
   ]

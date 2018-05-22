@@ -10066,6 +10066,27 @@ var _user$project$Text_Model$Text = function (a) {
 	};
 };
 
+var _user$project$Quiz_Model$set_texts = F2(
+	function (quiz, texts) {
+		return _elm_lang$core$Native_Utils.update(
+			quiz,
+			{texts: texts});
+	});
+var _user$project$Quiz_Model$new_quiz = {
+	id: _elm_lang$core$Maybe$Nothing,
+	title: '',
+	texts: _elm_lang$core$Array$fromList(
+		{
+			ctor: '::',
+			_0: _user$project$Text_Model$emptyText,
+			_1: {ctor: '[]'}
+		})
+};
+var _user$project$Quiz_Model$Quiz = F3(
+	function (a, b, c) {
+		return {id: a, title: b, texts: c};
+	});
+
 var _user$project$Ports$selectAllInputText = _elm_lang$core$Native_Platform.outgoingPort(
 	'selectAllInputText',
 	function (v) {
@@ -10649,45 +10670,42 @@ var _user$project$Text_Component_Group$add_new_text = function (_p11) {
 			_p13));
 };
 
-var _user$project$Quiz_Model$text_components = function (_p0) {
+var _user$project$Quiz_Component$text_components = function (_p0) {
 	var _p1 = _p0;
 	return _p1._1;
 };
-var _user$project$Quiz_Model$attributes = function (_p2) {
+var _user$project$Quiz_Component$quiz = function (_p2) {
 	var _p3 = _p2;
-	return _p3._0;
+	return A2(
+		_user$project$Quiz_Model$set_texts,
+		_p3._0,
+		_user$project$Text_Component_Group$toTexts(_p3._1));
 };
-var _user$project$Quiz_Model$QuizAttributes = function (a) {
-	return {title: a};
-};
-var _user$project$Quiz_Model$Quiz = F2(
+var _user$project$Quiz_Component$QuizComponent = F2(
 	function (a, b) {
-		return {ctor: 'Quiz', _0: a, _1: b};
+		return {ctor: 'QuizComponent', _0: a, _1: b};
 	});
-var _user$project$Quiz_Model$set_attributes = F3(
-	function (_p4, attr_name, value) {
+var _user$project$Quiz_Component$set_text_components = F2(
+	function (_p4, new_components) {
 		var _p5 = _p4;
-		var _p6 = attr_name;
-		if (_p6 === 'title') {
+		return A2(_user$project$Quiz_Component$QuizComponent, _p5._0, new_components);
+	});
+var _user$project$Quiz_Component$set_quiz_attribute = F3(
+	function (_p6, attr_name, value) {
+		var _p7 = _p6;
+		var _p8 = attr_name;
+		if (_p8 === 'title') {
 			return A2(
-				_user$project$Quiz_Model$Quiz,
+				_user$project$Quiz_Component$QuizComponent,
 				_elm_lang$core$Native_Utils.update(
-					_p5._0,
+					_p7._0,
 					{title: value}),
-				_p5._1);
+				_p7._1);
 		} else {
-			return _p5;
+			return _p7;
 		}
 	});
-var _user$project$Quiz_Model$emptyQuiz = A2(
-	_user$project$Quiz_Model$Quiz,
-	{title: ''},
-	_user$project$Text_Component_Group$new_group);
-var _user$project$Quiz_Model$set_text_components = F2(
-	function (_p7, new_components) {
-		var _p8 = _p7;
-		return A2(_user$project$Quiz_Model$Quiz, _p8._0, new_components);
-	});
+var _user$project$Quiz_Component$emptyQuizComponent = A2(_user$project$Quiz_Component$QuizComponent, _user$project$Quiz_Model$new_quiz, _user$project$Text_Component_Group$new_group);
 
 var _user$project$Text_Update$post_toggle_field = function (field) {
 	var _p0 = function () {
@@ -10722,11 +10740,11 @@ var _user$project$Text_Update$post_toggle_field = function (field) {
 };
 var _user$project$Text_Update$update = F2(
 	function (msg, model) {
-		var text_components = _user$project$Quiz_Model$text_components(model.quiz);
+		var text_components = _user$project$Quiz_Component$text_components(model.quiz_component);
 		var update = function (_p5) {
 			return A2(
-				_user$project$Quiz_Model$set_text_components,
-				model.quiz,
+				_user$project$Quiz_Component$set_text_components,
+				model.quiz_component,
 				A2(_user$project$Text_Component_Group$update_text_components, text_components, _p5));
 		};
 		var _p6 = msg;
@@ -10737,9 +10755,9 @@ var _user$project$Text_Update$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							quiz: A2(
-								_user$project$Quiz_Model$set_text_components,
-								model.quiz,
+							quiz_component: A2(
+								_user$project$Quiz_Component$set_text_components,
+								model.quiz_component,
 								_user$project$Text_Component_Group$add_new_text(text_components))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
@@ -10750,7 +10768,7 @@ var _user$project$Text_Update$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							quiz: update(
+							quiz_component: update(
 								A3(_user$project$Text_Component$set_text, _p6._0, _p6._1, _p6._2))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
@@ -10761,9 +10779,9 @@ var _user$project$Text_Update$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							quiz: A2(
-								_user$project$Quiz_Model$set_text_components,
-								model.quiz,
+							quiz_component: A2(
+								_user$project$Quiz_Component$set_text_components,
+								model.quiz_component,
 								A3(_user$project$Text_Component_Group$update_body_for_id, text_components, _p6._0._0, _p6._0._1))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
@@ -10774,7 +10792,7 @@ var _user$project$Text_Update$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							quiz: update(
+							quiz_component: update(
 								_user$project$Text_Component$add_new_question(_p6._0))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
@@ -10785,7 +10803,7 @@ var _user$project$Text_Update$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							quiz: update(
+							quiz_component: update(
 								A2(_user$project$Text_Component$update_question_field, _p6._0, _p6._1))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
@@ -10796,7 +10814,7 @@ var _user$project$Text_Update$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							quiz: update(
+							quiz_component: update(
 								A2(
 									_user$project$Text_Component$update_question_field,
 									_p6._0,
@@ -10810,7 +10828,7 @@ var _user$project$Text_Update$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							quiz: update(
+							quiz_component: update(
 								A2(_user$project$Text_Component$delete_question_field, _p6._0, _p6._1))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
@@ -10821,7 +10839,7 @@ var _user$project$Text_Update$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							quiz: update(
+							quiz_component: update(
 								A2(_user$project$Text_Component$toggle_question_menu, _p6._0, _p6._1))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
@@ -10832,7 +10850,7 @@ var _user$project$Text_Update$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							quiz: update(
+							quiz_component: update(
 								A2(_user$project$Text_Component$set_answer, _p6._0, _p6._1))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
@@ -10843,7 +10861,7 @@ var _user$project$Text_Update$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							quiz: update(
+							quiz_component: update(
 								A3(_user$project$Text_Component$set_answer_text, _p6._0, _p6._1, _p6._2))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
@@ -10854,7 +10872,7 @@ var _user$project$Text_Update$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							quiz: update(
+							quiz_component: update(
 								A3(_user$project$Text_Component$set_answer_feedback, _p6._0, _p6._1, _p6._2))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
@@ -10865,7 +10883,7 @@ var _user$project$Text_Update$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							quiz: update(
+							quiz_component: update(
 								A2(_user$project$Text_Component$set_answer_correct, _p6._0, _p6._1))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
@@ -10910,7 +10928,7 @@ var _user$project$Text_Update$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							quiz: update(new_text_component)
+							quiz_component: update(new_text_component)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$batch(
 						A2(
@@ -11569,23 +11587,20 @@ var _user$project$Text_Encode$textsEncoder = function (texts) {
 };
 
 var _user$project$Quiz_Encode$quizEncoder = function (quiz) {
-	var text_group = _user$project$Quiz_Model$text_components(quiz);
-	var attrs = _user$project$Quiz_Model$attributes(quiz);
 	return _elm_lang$core$Json_Encode$object(
 		{
 			ctor: '::',
 			_0: {
 				ctor: '_Tuple2',
 				_0: 'title',
-				_1: _elm_lang$core$Json_Encode$string(attrs.title)
+				_1: _elm_lang$core$Json_Encode$string(quiz.title)
 			},
 			_1: {
 				ctor: '::',
 				_0: {
 					ctor: '_Tuple2',
 					_0: 'texts',
-					_1: _user$project$Text_Encode$textsEncoder(
-						_user$project$Text_Component_Group$toTexts(text_group))
+					_1: _user$project$Text_Encode$textsEncoder(quiz.texts)
 				},
 				_1: {ctor: '[]'}
 			}
@@ -12894,15 +12909,15 @@ var _user$project$Text_Decode$textCreateRespDecoder = A4(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextCreateResp));
 
 var _user$project$Main$view_editable = F2(
-	function (quiz, _p0) {
+	function (quiz_component, _p0) {
 		var _p1 = _p0;
 		var _p4 = _p1;
 		var _p3 = _p1._0;
 		var _p2 = _p3.editable;
 		if (_p2 === true) {
-			return A2(_p3.edit, quiz, _p4);
+			return A2(_p3.edit, quiz_component, _p4);
 		} else {
-			return A2(_p3.view, quiz, _p4);
+			return A2(_p3.view, quiz_component, _p4);
 		}
 	});
 var _user$project$Main$view_quiz = function (model) {
@@ -12925,7 +12940,7 @@ var _user$project$Main$view_quiz = function (model) {
 				_elm_lang$core$Array$toList(
 					A2(
 						_elm_lang$core$Array$map,
-						_user$project$Main$view_editable(model.quiz),
+						_user$project$Main$view_editable(model.quiz_component),
 						model.quiz_fields))),
 			_1: {ctor: '[]'}
 		});
@@ -12969,7 +12984,7 @@ var _user$project$Main$update_quiz_field = F2(
 	});
 var _user$project$Main$Model = F7(
 	function (a, b, c, d, e, f, g) {
-		return {flags: a, profile: b, success_msg: c, error_msg: d, quiz: e, quiz_fields: f, question_difficulties: g};
+		return {flags: a, profile: b, success_msg: c, error_msg: d, quiz_component: e, quiz_fields: f, question_difficulties: g};
 	});
 var _user$project$Main$QuizField = function (a) {
 	return {ctor: 'QuizField', _0: a};
@@ -12994,8 +13009,8 @@ var _user$project$Main$ToggleEditable = F2(
 		return {ctor: 'ToggleEditable', _0: a, _1: b};
 	});
 var _user$project$Main$view_quiz_title = F2(
-	function (quiz, quiz_field) {
-		var quiz_attrs = _user$project$Quiz_Model$attributes(quiz);
+	function (quiz_component, quiz_field) {
+		var quiz = _user$project$Quiz_Component$quiz(quiz_component);
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -13013,15 +13028,15 @@ var _user$project$Main$view_quiz_title = F2(
 				_0: _elm_lang$html$Html$text('Quiz Title: '),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html$text(quiz_attrs.title),
+					_0: _elm_lang$html$Html$text(quiz.title),
 					_1: {ctor: '[]'}
 				}
 			});
 	});
 var _user$project$Main$edit_quiz_title = F2(
-	function (quiz, _p11) {
+	function (quiz_component, _p11) {
 		var _p12 = _p11;
-		var quiz_attrs = _user$project$Quiz_Model$attributes(quiz);
+		var quiz = _user$project$Quiz_Component$quiz(quiz_component);
 		return A2(
 			_elm_lang$html$Html$input,
 			{
@@ -13029,7 +13044,7 @@ var _user$project$Main$edit_quiz_title = F2(
 				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
 				_1: {
 					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', quiz_attrs.title),
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', quiz.title),
 					_1: {
 						ctor: '::',
 						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', _p12._0.id),
@@ -13082,7 +13097,10 @@ var _user$project$Main$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{error_msg: _elm_lang$core$Maybe$Nothing, success_msg: _elm_lang$core$Maybe$Nothing}),
-					_1: A2(_user$project$Main$post_quiz, model.flags.csrftoken, model.quiz)
+					_1: A2(
+						_user$project$Main$post_quiz,
+						model.flags.csrftoken,
+						_user$project$Quiz_Component$quiz(model.quiz_component))
 				};
 			case 'Submitted':
 				if (_p13._0.ctor === 'Ok') {
@@ -13122,7 +13140,7 @@ var _user$project$Main$update = F2(
 								var _p18 = _p16._0;
 								var new_text_components = A2(
 									_user$project$Text_Component_Group$update_errors,
-									_user$project$Quiz_Model$text_components(model.quiz),
+									_user$project$Quiz_Component$text_components(model.quiz_component),
 									_p18);
 								var _p17 = A2(_elm_lang$core$Debug$log, 'displaying validations', _p18);
 								return {
@@ -13130,7 +13148,7 @@ var _user$project$Main$update = F2(
 									_0: _elm_lang$core$Native_Utils.update(
 										model,
 										{
-											quiz: A2(_user$project$Quiz_Model$set_text_components, model.quiz, new_text_components)
+											quiz_component: A2(_user$project$Quiz_Component$set_text_components, model.quiz_component, new_text_components)
 										}),
 									_1: _elm_lang$core$Platform_Cmd$none
 								};
@@ -13161,7 +13179,7 @@ var _user$project$Main$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							quiz: A3(_user$project$Quiz_Model$set_attributes, model.quiz, _p13._0, _p13._1)
+							quiz_component: A3(_user$project$Quiz_Component$set_quiz_attribute, model.quiz_component, _p13._0, _p13._1)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -13261,7 +13279,7 @@ var _user$project$Main$view = function (model) {
 						_0: A3(
 							_user$project$Text_View$view_text_components,
 							_user$project$Main$TextComponentMsg,
-							_user$project$Quiz_Model$text_components(model.quiz),
+							_user$project$Quiz_Component$text_components(model.quiz_component),
 							model.question_difficulties),
 						_1: {
 							ctor: '::',
@@ -13302,7 +13320,7 @@ var _user$project$Main$init = function (flags) {
 			success_msg: _elm_lang$core$Maybe$Nothing,
 			error_msg: _elm_lang$core$Maybe$Nothing,
 			profile: _user$project$Profile$init_profile(flags),
-			quiz: _user$project$Quiz_Model$emptyQuiz,
+			quiz_component: _user$project$Quiz_Component$emptyQuizComponent,
 			quiz_fields: _elm_lang$core$Array$fromList(
 				{
 					ctor: '::',

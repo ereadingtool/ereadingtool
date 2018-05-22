@@ -20639,213 +20639,40 @@ var _jinjor$elm_html_parser$HtmlParser_Util$getElementById = F2(
 			nodes);
 	});
 
-var _user$project$Config$student_api_endpoint = '/api/student/';
-var _user$project$Config$student_login_api_endpoint = '/api/student/login/';
-var _user$project$Config$student_signup_api_endpoint = '/api/student/signup/';
-var _user$project$Config$instructor_login_api_endpoint = '/api/instructor/login/';
-var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signup/';
-var _user$project$Config$question_api_endpoint = '/api/question/';
-var _user$project$Config$text_api_endpoint = '/api/text/';
-
-var _user$project$Model$answerEncoder = function (answer) {
-	return _elm_lang$core$Json_Encode$object(
-		{
-			ctor: '::',
-			_0: {
-				ctor: '_Tuple2',
-				_0: 'text',
-				_1: _elm_lang$core$Json_Encode$string(answer.text)
-			},
-			_1: {
-				ctor: '::',
-				_0: {
-					ctor: '_Tuple2',
-					_0: 'correct',
-					_1: _elm_lang$core$Json_Encode$bool(answer.correct)
-				},
-				_1: {
-					ctor: '::',
-					_0: {
-						ctor: '_Tuple2',
-						_0: 'order',
-						_1: _elm_lang$core$Json_Encode$int(answer.order)
-					},
-					_1: {
-						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'feedback',
-							_1: _elm_lang$core$Json_Encode$string(answer.feedback)
-						},
-						_1: {ctor: '[]'}
-					}
-				}
-			}
-		});
-};
-var _user$project$Model$answersEncoder = function (answers) {
-	return _elm_lang$core$Json_Encode$list(
-		_elm_lang$core$Array$toList(
-			A2(
-				_elm_lang$core$Array$map,
-				function (answer) {
-					return _user$project$Model$answerEncoder(answer);
-				},
-				answers)));
-};
-var _user$project$Model$questionEncoder = function (question) {
-	return _elm_lang$core$Json_Encode$object(
-		{
-			ctor: '::',
-			_0: {
-				ctor: '_Tuple2',
-				_0: 'body',
-				_1: _elm_lang$core$Json_Encode$string(question.body)
-			},
-			_1: {
-				ctor: '::',
-				_0: {
-					ctor: '_Tuple2',
-					_0: 'order',
-					_1: _elm_lang$core$Json_Encode$int(question.order)
-				},
-				_1: {
-					ctor: '::',
-					_0: {
-						ctor: '_Tuple2',
-						_0: 'answers',
-						_1: _user$project$Model$answersEncoder(question.answers)
-					},
-					_1: {
-						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'question_type',
-							_1: _elm_lang$core$Json_Encode$string(question.question_type)
-						},
-						_1: {ctor: '[]'}
-					}
-				}
-			}
-		});
-};
-var _user$project$Model$questionsEncoder = function (questions) {
-	return _elm_lang$core$Json_Encode$list(
-		_elm_lang$core$Array$toList(
-			A2(
-				_elm_lang$core$Array$map,
-				function (question) {
-					return _user$project$Model$questionEncoder(question);
-				},
-				questions)));
-};
-var _user$project$Model$textEncoder = F2(
-	function (text, questions) {
-		return _elm_lang$core$Json_Encode$object(
+var _user$project$Answer_Model$generate_answer = function (i) {
+	return {
+		id: _elm_lang$core$Maybe$Nothing,
+		question_id: _elm_lang$core$Maybe$Nothing,
+		text: A2(
+			_elm_lang$core$String$join,
+			' ',
 			{
 				ctor: '::',
-				_0: {
-					ctor: '_Tuple2',
-					_0: 'title',
-					_1: _elm_lang$core$Json_Encode$string(text.title)
-				},
+				_0: 'Click to write choice',
 				_1: {
 					ctor: '::',
-					_0: {
-						ctor: '_Tuple2',
-						_0: 'source',
-						_1: _elm_lang$core$Json_Encode$string(text.source)
-					},
-					_1: {
-						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'difficulty',
-							_1: _elm_lang$core$Json_Encode$string(text.difficulty)
-						},
-						_1: {
-							ctor: '::',
-							_0: {
-								ctor: '_Tuple2',
-								_0: 'body',
-								_1: _elm_lang$core$Json_Encode$string(text.body)
-							},
-							_1: {
-								ctor: '::',
-								_0: {
-									ctor: '_Tuple2',
-									_0: 'questions',
-									_1: _user$project$Model$questionsEncoder(questions)
-								},
-								_1: {ctor: '[]'}
-							}
-						}
-					}
+					_0: _elm_lang$core$Basics$toString(i + 1),
+					_1: {ctor: '[]'}
 				}
-			});
-	});
-var _user$project$Model$textCreateRespErrDecoder = _elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string);
-var _user$project$Model$decodeCreateRespErrors = function (str) {
-	return A2(_elm_lang$core$Json_Decode$decodeString, _user$project$Model$textCreateRespErrDecoder, str);
+			}),
+		correct: false,
+		order: i,
+		feedback: ''
+	};
 };
-var _user$project$Model$textDifficultyDecoder = _elm_lang$core$Json_Decode$keyValuePairs(_elm_lang$core$Json_Decode$string);
-var _user$project$Model$emptyText = {id: _elm_lang$core$Maybe$Nothing, title: 'title', created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing, source: 'source', difficulty: '', author: 'author', question_count: 0, body: 'text'};
-var _user$project$Model$Text = F9(
-	function (a, b, c, d, e, f, g, h, i) {
-		return {id: a, title: b, created_dt: c, modified_dt: d, source: e, difficulty: f, author: g, question_count: h, body: i};
-	});
-var _user$project$Model$textDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'body',
-	_elm_lang$core$Json_Decode$string,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'question_count',
-		_elm_lang$core$Json_Decode$int,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'author',
-			_elm_lang$core$Json_Decode$string,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'difficulty',
-				_elm_lang$core$Json_Decode$string,
-				A3(
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'source',
-					_elm_lang$core$Json_Decode$string,
-					A3(
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'modified_dt',
-						_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
-						A3(
-							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'created_dt',
-							_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
-							A3(
-								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'title',
-								_elm_lang$core$Json_Decode$string,
-								A3(
-									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-									'id',
-									_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$Text))))))))));
-var _user$project$Model$textsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Model$textDecoder);
-var _user$project$Model$TextCreateResp = function (a) {
-	return {id: a};
+var _user$project$Answer_Model$generate_answers = function (n) {
+	return _elm_lang$core$Array$fromList(
+		A2(
+			_elm_lang$core$List$map,
+			_user$project$Answer_Model$generate_answer,
+			A2(_elm_lang$core$List$range, 0, n - 1)));
 };
-var _user$project$Model$textCreateRespDecoder = A4(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
-	'id',
-	_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$int),
-	_elm_lang$core$Maybe$Nothing,
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$TextCreateResp));
-var _user$project$Model$Answer = F6(
+var _user$project$Answer_Model$Answer = F6(
 	function (a, b, c, d, e, f) {
 		return {id: a, question_id: b, text: c, correct: d, order: e, feedback: f};
 	});
-var _user$project$Model$answerDecoder = A3(
+
+var _user$project$Answer_Decode$answerDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'feedback',
 	_elm_lang$core$Json_Decode$string,
@@ -20869,47 +20696,74 @@ var _user$project$Model$answerDecoder = A3(
 						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 						'id',
 						_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$Answer)))))));
-var _user$project$Model$answersDecoder = _elm_lang$core$Json_Decode$array(_user$project$Model$answerDecoder);
-var _user$project$Model$Question = F8(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Answer_Model$Answer)))))));
+var _user$project$Answer_Decode$answersDecoder = _elm_lang$core$Json_Decode$array(_user$project$Answer_Decode$answerDecoder);
+
+var _user$project$Config$student_api_endpoint = '/api/student/';
+var _user$project$Config$student_login_api_endpoint = '/api/student/login/';
+var _user$project$Config$student_signup_api_endpoint = '/api/student/signup/';
+var _user$project$Config$instructor_login_api_endpoint = '/api/instructor/login/';
+var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signup/';
+var _user$project$Config$question_api_endpoint = '/api/question/';
+var _user$project$Config$text_api_endpoint = '/api/text/';
+var _user$project$Config$quiz_api_endpoint = '/api/quiz/';
+
+var _user$project$Field$fieldIDDecoder = _elm_lang$core$Json_Decode$int;
+
+var _user$project$Question_Model$new_question = function (i) {
+	return {
+		id: _elm_lang$core$Maybe$Nothing,
+		text_id: _elm_lang$core$Maybe$Nothing,
+		created_dt: _elm_lang$core$Maybe$Nothing,
+		modified_dt: _elm_lang$core$Maybe$Nothing,
+		body: '',
+		order: i,
+		answers: _user$project$Answer_Model$generate_answers(4),
+		question_type: 'main_idea'
+	};
+};
+var _user$project$Question_Model$initial_questions = _elm_lang$core$Array$fromList(
+	{
+		ctor: '::',
+		_0: _user$project$Question_Model$new_question(0),
+		_1: {ctor: '[]'}
+	});
+var _user$project$Question_Model$Question = F8(
 	function (a, b, c, d, e, f, g, h) {
 		return {id: a, text_id: b, created_dt: c, modified_dt: d, body: e, order: f, answers: g, question_type: h};
 	});
-var _user$project$Model$questionDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'question_type',
-	_elm_lang$core$Json_Decode$string,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'answers',
-		_user$project$Model$answersDecoder,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'order',
-			_elm_lang$core$Json_Decode$int,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'body',
-				_elm_lang$core$Json_Decode$string,
-				A3(
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'modified_dt',
-					_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
-					A3(
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'created_dt',
-						_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
-						A3(
-							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'text_id',
-							_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-							A3(
-								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'id',
-								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Model$Question)))))))));
-var _user$project$Model$questionsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Model$questionDecoder);
 
+var _user$project$Text_Model$emptyText = {id: _elm_lang$core$Maybe$Nothing, title: 'title', created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing, source: 'source', difficulty: '', author: 'author', question_count: 0, questions: _user$project$Question_Model$initial_questions, body: 'text'};
+var _user$project$Text_Model$Text = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return {id: a, title: b, created_dt: c, modified_dt: d, source: e, difficulty: f, author: g, question_count: h, questions: i, body: j};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+
+var _user$project$Profile$tupleDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	F2(
+		function (v0, v1) {
+			return {ctor: '_Tuple2', _0: v0, _1: v1};
+		}),
+	A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
 var _user$project$Profile$view_instructor_profile_header = function (_p0) {
 	var _p1 = _p0;
 	return {
@@ -21002,19 +20856,11 @@ var _user$project$Profile$StudentProfileParams = F4(
 var _user$project$Profile$studentProfileParamsDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'difficulties',
-	_user$project$Model$textDifficultyDecoder,
+	_elm_lang$core$Json_Decode$list(_user$project$Profile$tupleDecoder),
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'difficulty_preference',
-		_elm_lang$core$Json_Decode$nullable(
-			A3(
-				_elm_lang$core$Json_Decode$map2,
-				F2(
-					function (v0, v1) {
-						return {ctor: '_Tuple2', _0: v0, _1: v1};
-					}),
-				A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string),
-				A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string))),
+		_elm_lang$core$Json_Decode$nullable(_user$project$Profile$tupleDecoder),
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 			'username',
@@ -21068,11 +20914,18 @@ var _user$project$Profile$InstructorProfile = function (a) {
 	return {ctor: 'InstructorProfile', _0: a};
 };
 var _user$project$Profile$EmptyProfile = {ctor: 'EmptyProfile'};
+var _user$project$Profile$emptyProfile = _user$project$Profile$EmptyProfile;
 var _user$project$Profile$Instructor = function (a) {
 	return {ctor: 'Instructor', _0: a};
 };
+var _user$project$Profile$fromInstructorProfile = function (instructor_profile) {
+	return _user$project$Profile$Instructor(instructor_profile);
+};
 var _user$project$Profile$Student = function (a) {
 	return {ctor: 'Student', _0: a};
+};
+var _user$project$Profile$fromStudentProfile = function (student_profile) {
+	return _user$project$Profile$Student(student_profile);
 };
 var _user$project$Profile$init_profile = function (flags) {
 	var _p11 = flags.profile_type;
@@ -21106,6 +20959,199 @@ var _user$project$Flags$Flags = F5(
 		return {csrftoken: a, profile_id: b, profile_type: c, instructor_profile: d, student_profile: e};
 	});
 
+var _user$project$Question_Decode$questionDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'question_type',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'answers',
+		_user$project$Answer_Decode$answersDecoder,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'order',
+			_elm_lang$core$Json_Decode$int,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'body',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'modified_dt',
+					_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'created_dt',
+						_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+						A3(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+							'text_id',
+							_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+							A3(
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+								'id',
+								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Question_Model$Question)))))))));
+var _user$project$Question_Decode$questionsDecoder = _elm_lang$core$Json_Decode$array(_user$project$Question_Decode$questionDecoder);
+
+var _user$project$Quiz_Model$set_texts = F2(
+	function (quiz, texts) {
+		return _elm_lang$core$Native_Utils.update(
+			quiz,
+			{texts: texts});
+	});
+var _user$project$Quiz_Model$new_quiz = {
+	id: _elm_lang$core$Maybe$Nothing,
+	title: '',
+	texts: _elm_lang$core$Array$fromList(
+		{
+			ctor: '::',
+			_0: _user$project$Text_Model$emptyText,
+			_1: {ctor: '[]'}
+		})
+};
+var _user$project$Quiz_Model$Quiz = F3(
+	function (a, b, c) {
+		return {id: a, title: b, texts: c};
+	});
+
+var _user$project$Text_Decode$textCreateRespErrDecoder = _elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string);
+var _user$project$Text_Decode$decodeCreateRespErrors = function (str) {
+	return A2(_elm_lang$core$Json_Decode$decodeString, _user$project$Text_Decode$textCreateRespErrDecoder, str);
+};
+var _user$project$Text_Decode$textDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'body',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'questions',
+		_user$project$Question_Decode$questionsDecoder,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'question_count',
+			_elm_lang$core$Json_Decode$int,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'author',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'difficulty',
+					_elm_lang$core$Json_Decode$string,
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'source',
+						_elm_lang$core$Json_Decode$string,
+						A3(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+							'modified_dt',
+							_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+							A3(
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+								'created_dt',
+								_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+								A3(
+									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+									'title',
+									_elm_lang$core$Json_Decode$string,
+									A3(
+										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+										'id',
+										_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$Text)))))))))));
+var _user$project$Text_Decode$textsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textDecoder);
+var _user$project$Text_Decode$TextCreateResp = function (a) {
+	return {id: a};
+};
+var _user$project$Text_Decode$textCreateRespDecoder = A4(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
+	'id',
+	_elm_lang$core$Json_Decode$maybe(_user$project$Field$fieldIDDecoder),
+	_elm_lang$core$Maybe$Nothing,
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextCreateResp));
+
+var _user$project$Quiz_Decode$quizDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'texts',
+	A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Array$fromList, _user$project$Text_Decode$textsDecoder),
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'title',
+		_elm_lang$core$Json_Decode$string,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'id',
+			_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Model$Quiz))));
+
+var _user$project$Views$view_preview = A2(
+	_elm_lang$html$Html$div,
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html_Attributes$classList(
+			{
+				ctor: '::',
+				_0: {ctor: '_Tuple2', _0: 'preview', _1: true},
+				_1: {ctor: '[]'}
+			}),
+		_1: {ctor: '[]'}
+	},
+	{
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'preview_menu', _1: true},
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$span,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$classList(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$button,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('Preview'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$input,
+								{
+									ctor: '::',
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Search texts..'),
+									_1: {ctor: '[]'}
+								},
+								{ctor: '[]'}),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			}),
+		_1: {ctor: '[]'}
+	});
 var _user$project$Views$view_footer = A2(
 	_elm_lang$html$Html$div,
 	{
@@ -21198,7 +21244,302 @@ var _user$project$Views$view_filter = A2(
 			}),
 		_1: {ctor: '[]'}
 	});
-var _user$project$Views$view_header = function (view_user_profile) {
+var _user$project$Views$view_user_profile_menu_item = function (view) {
+	var _p0 = view;
+	if (_p0.ctor === 'Just') {
+		return {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$span,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$classList(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				},
+				_p0._0),
+			_1: {ctor: '[]'}
+		};
+	} else {
+		return {ctor: '[]'};
+	}
+};
+var _user$project$Views$view_menu_item = function (_p1) {
+	var _p2 = _p1;
+	return A2(
+		_elm_lang$html$Html$span,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$classList(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
+					_1: {
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'menu_item_selected', _1: _p2._2},
+						_1: {ctor: '[]'}
+					}
+				}),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$a,
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', _p2._0),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(_p2._1),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Views$view_menu = F2(
+	function (_p3, profile) {
+		var _p4 = _p3;
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$Array$toList(
+				A2(_elm_lang$core$Array$map, _user$project$Views$view_menu_item, _p4._0)),
+			_user$project$Views$view_user_profile_menu_item(
+				_user$project$Profile$view_profile_header(profile)));
+	});
+var _user$project$Views$MenuItem = F3(
+	function (a, b, c) {
+		return {ctor: 'MenuItem', _0: a, _1: b, _2: c};
+	});
+var _user$project$Views$set_selected_menu_item = F2(
+	function (_p5, select) {
+		var _p6 = _p5;
+		return A3(_user$project$Views$MenuItem, _p6._0, _p6._1, select);
+	});
+var _user$project$Views$MenuItems = function (a) {
+	return {ctor: 'MenuItems', _0: a};
+};
+var _user$project$Views$menu_items = _user$project$Views$MenuItems(
+	_elm_lang$core$Array$fromList(
+		{
+			ctor: '::',
+			_0: A3(_user$project$Views$MenuItem, '/admin/', 'Quizzes', false),
+			_1: {
+				ctor: '::',
+				_0: A3(_user$project$Views$MenuItem, '/login/student/', 'Student Login', false),
+				_1: {
+					ctor: '::',
+					_0: A3(_user$project$Views$MenuItem, '/login/instructor/', 'Instructor Login', false),
+					_1: {ctor: '[]'}
+				}
+			}
+		}));
+var _user$project$Views$set_selected = F3(
+	function (_p7, index, select) {
+		var _p8 = _p7;
+		var _p10 = _p8._0;
+		var _p9 = A2(_elm_lang$core$Array$get, index, _p10);
+		if (_p9.ctor === 'Just') {
+			return _user$project$Views$MenuItems(
+				A3(
+					_elm_lang$core$Array$set,
+					index,
+					A2(_user$project$Views$set_selected_menu_item, _p9._0, select),
+					_p10));
+		} else {
+			return _user$project$Views$MenuItems(_p10);
+		}
+	});
+var _user$project$Views$view_header = F2(
+	function (profile, selected_menu_item) {
+		var m_items = function () {
+			var _p11 = selected_menu_item;
+			if (_p11.ctor === 'Just') {
+				return A3(_user$project$Views$set_selected, _user$project$Views$menu_items, _p11._0, true);
+			} else {
+				return _user$project$Views$menu_items;
+			}
+		}();
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'header', _1: true},
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('E-Reader'),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$classList(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'menu', _1: true},
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						},
+						A2(_user$project$Views$view_menu, m_items, profile)),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+
+var _user$project$Main$set_text = F2(
+	function (quiz_texts, _p0) {
+		var _p1 = _p0;
+		return A3(_elm_lang$core$Array$set, _p1._1.index, _p1, quiz_texts);
+	});
+var _user$project$Main$quiz_text = F2(
+	function (quiz_texts, _p2) {
+		var _p3 = _p2;
+		return A2(_elm_lang$core$Array$get, _p3._1.text_index, quiz_texts);
+	});
+var _user$project$Main$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$none;
+};
+var _user$project$Main$Flags = F6(
+	function (a, b, c, d, e, f) {
+		return {csrftoken: a, profile_id: b, profile_type: c, instructor_profile: d, student_profile: e, quiz_id: f};
+	});
+var _user$project$Main$Model = F4(
+	function (a, b, c, d) {
+		return {quiz: a, profile: b, texts: c, flags: d};
+	});
+var _user$project$Main$Select = F4(
+	function (a, b, c, d) {
+		return {ctor: 'Select', _0: a, _1: b, _2: c, _3: d};
+	});
+var _user$project$Main$view_answer = F3(
+	function (quiz_text, quiz_question, _p4) {
+		var _p5 = _p4;
+		var _p7 = _p5._1;
+		var _p6 = _p5._0;
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'answer', _1: true},
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$input,
+					{
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', _p7.id),
+						_1: {
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'name', _p7.name),
+							_1: {
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'radio'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onCheck(
+										A3(_user$project$Main$Select, quiz_text, quiz_question, _p5)),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html_Attributes$attribute,
+											'value',
+											_elm_lang$core$Basics$toString(_p6.order)),
+										_1: {ctor: '[]'}
+									}
+								}
+							}
+						}
+					},
+					{ctor: '[]'}),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(_p6.text),
+					_1: {
+						ctor: '::',
+						_0: _p5._2 ? A2(
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$em,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text(_p6.feedback),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}) : _elm_lang$html$Html$text(''),
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+	});
+var _user$project$Main$view_question = F2(
+	function (quiz_text, _p8) {
+		var _p9 = _p8;
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'question', _1: true},
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', _p9._1.id),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(_p9._0.body),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'answers'),
+							_1: {ctor: '[]'}
+						},
+						_elm_lang$core$Array$toList(
+							A2(
+								_elm_lang$core$Array$map,
+								A2(_user$project$Main$view_answer, quiz_text, _p9),
+								_p9._2))),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$Main$view_questions = function (_p10) {
+	var _p11 = _p10;
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -21206,154 +21547,19 @@ var _user$project$Views$view_header = function (view_user_profile) {
 			_0: _elm_lang$html$Html_Attributes$classList(
 				{
 					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'header', _1: true},
+					_0: {ctor: '_Tuple2', _0: 'questions', _1: true},
 					_1: {ctor: '[]'}
 				}),
 			_1: {ctor: '[]'}
 		},
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text('E-Reader'),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$classList(
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'menu', _1: true},
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					},
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$span,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$classList(
-										{
-											ctor: '::',
-											_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$a,
-										{
-											ctor: '::',
-											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/admin'),
-											_1: {ctor: '[]'}
-										},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text('Quizzes'),
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								}),
-							_1: {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$span,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$classList(
-											{
-												ctor: '::',
-												_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
-												_1: {ctor: '[]'}
-											}),
-										_1: {ctor: '[]'}
-									},
-									{
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$a,
-											{
-												ctor: '::',
-												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/login/student/'),
-												_1: {ctor: '[]'}
-											},
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text('Student Login'),
-												_1: {ctor: '[]'}
-											}),
-										_1: {ctor: '[]'}
-									}),
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$span,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$classList(
-												{
-													ctor: '::',
-													_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
-													_1: {ctor: '[]'}
-												}),
-											_1: {ctor: '[]'}
-										},
-										{
-											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$a,
-												{
-													ctor: '::',
-													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/login/instructor/'),
-													_1: {ctor: '[]'}
-												},
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html$text('Instructor Login'),
-													_1: {ctor: '[]'}
-												}),
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								}
-							}
-						},
-						function () {
-							var _p0 = view_user_profile;
-							if (_p0.ctor === 'Just') {
-								return {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$span,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$classList(
-												{
-													ctor: '::',
-													_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
-													_1: {ctor: '[]'}
-												}),
-											_1: {ctor: '[]'}
-										},
-										_p0._0),
-									_1: {ctor: '[]'}
-								};
-							} else {
-								return {ctor: '[]'};
-							}
-						}())),
-				_1: {ctor: '[]'}
-			}
-		});
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				_user$project$Main$view_question(_p11),
+				_p11._2)));
 };
-
-var _user$project$Main$view_text = function (text) {
+var _user$project$Main$view_text = function (_p12) {
+	var _p13 = _p12;
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -21381,295 +21587,13 @@ var _user$project$Main$view_text = function (text) {
 					_1: {ctor: '[]'}
 				},
 				_jinjor$elm_html_parser$HtmlParser_Util$toVirtualDom(
-					_jinjor$elm_html_parser$HtmlParser$parse(text.body))),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Main$unselect_answer_fields = function (answer_fields) {
-	return A2(
-		_elm_lang$core$Array$map,
-		function (answer_field) {
-			return _elm_lang$core$Native_Utils.update(
-				answer_field,
-				{selected: false});
-		},
-		answer_fields);
-};
-var _user$project$Main$update_question_field = F2(
-	function (question_field, question_fields) {
-		return A3(_elm_lang$core$Array$set, question_field.index, question_field, question_fields);
-	});
-var _user$project$Main$update_answer_field = F2(
-	function (answer_field, answer_fields) {
-		return A3(_elm_lang$core$Array$set, answer_field.index, answer_field, answer_fields);
-	});
-var _user$project$Main$gen_answer_field = F3(
-	function (question_field_index, answer_index, answer) {
-		return {
-			id: A2(
-				_elm_lang$core$String$join,
-				'_',
-				{
-					ctor: '::',
-					_0: 'question',
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$core$Basics$toString(question_field_index),
-						_1: {
-							ctor: '::',
-							_0: 'answer',
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$core$Basics$toString(answer.order),
-								_1: {ctor: '[]'}
-							}
-						}
-					}
-				}),
-			name: A2(
-				_elm_lang$core$String$join,
-				'_',
-				{
-					ctor: '::',
-					_0: 'question',
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$core$Basics$toString(question_field_index),
-						_1: {ctor: '[]'}
-					}
-				}),
-			answer: answer,
-			question_field_index: question_field_index,
-			selected: false,
-			index: answer_index
-		};
-	});
-var _user$project$Main$gen_question_field = F2(
-	function (index, question) {
-		return {
-			id: _elm_lang$core$Basics$toString(question.order),
-			index: index,
-			question: question,
-			answer_fields: A2(
-				_elm_lang$core$Array$indexedMap,
-				F2(
-					function (i, a) {
-						return A3(_user$project$Main$gen_answer_field, index, i, a);
-					}),
-				question.answers)
-		};
-	});
-var _user$project$Main$update = F2(
-	function (msg, model) {
-		var _p0 = msg;
-		switch (_p0.ctor) {
-			case 'UpdateText':
-				if (_p0._0.ctor === 'Ok') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{text: _p0._0._0}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				} else {
-					var _p1 = A2(_elm_lang$core$Debug$log, 'text error', _p0._0._0);
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			case 'UpdateQuestions':
-				if (_p0._0.ctor === 'Ok') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{
-								question_fields: A2(
-									_elm_lang$core$Array$indexedMap,
-									F2(
-										function (i, q) {
-											return A2(_user$project$Main$gen_question_field, i, q);
-										}),
-									_elm_lang$core$Array$fromList(_p0._0._0))
-							}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				} else {
-					var _p2 = A2(_elm_lang$core$Debug$log, 'questions error', _p0._0._0);
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			default:
-				var _p3 = _p0._0;
-				var new_answer_field = _elm_lang$core$Native_Utils.update(
-					_p0._1,
-					{selected: _p0._2});
-				var new_question_field = _elm_lang$core$Native_Utils.update(
-					_p3,
-					{
-						answer_fields: A2(
-							_user$project$Main$update_answer_field,
-							new_answer_field,
-							_user$project$Main$unselect_answer_fields(_p3.answer_fields))
-					});
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							question_fields: A2(_user$project$Main$update_question_field, new_question_field, model.question_fields)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-		}
-	});
-var _user$project$Main$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$none;
-};
-var _user$project$Main$Flags = F6(
-	function (a, b, c, d, e, f) {
-		return {csrftoken: a, profile_id: b, profile_type: c, instructor_profile: d, student_profile: e, quiz_id: f};
-	});
-var _user$project$Main$Model = F4(
-	function (a, b, c, d) {
-		return {text: a, question_fields: b, profile: c, flags: d};
-	});
-var _user$project$Main$AnswerField = F6(
-	function (a, b, c, d, e, f) {
-		return {id: a, name: b, answer: c, question_field_index: d, selected: e, index: f};
-	});
-var _user$project$Main$QuestionField = F4(
-	function (a, b, c, d) {
-		return {id: a, question: b, answer_fields: c, index: d};
-	});
-var _user$project$Main$Select = F3(
-	function (a, b, c) {
-		return {ctor: 'Select', _0: a, _1: b, _2: c};
-	});
-var _user$project$Main$view_answer = F2(
-	function (question_field, answer_field) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$classList(
-					{
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'answer', _1: true},
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$input,
-					{
-						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', answer_field.id),
-						_1: {
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'name', answer_field.name),
-							_1: {
-								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'radio'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onCheck(
-										A2(_user$project$Main$Select, question_field, answer_field)),
-									_1: {
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html_Attributes$attribute,
-											'value',
-											_elm_lang$core$Basics$toString(answer_field.answer.order)),
-										_1: {ctor: '[]'}
-									}
-								}
-							}
-						}
-					},
-					{ctor: '[]'}),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(answer_field.answer.text),
-					_1: {
-						ctor: '::',
-						_0: answer_field.selected ? A2(
-							_elm_lang$html$Html$div,
-							{ctor: '[]'},
-							{
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$em,
-									{ctor: '[]'},
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text(answer_field.answer.feedback),
-										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							}) : _elm_lang$html$Html$text(''),
-						_1: {ctor: '[]'}
-					}
-				}
-			});
-	});
-var _user$project$Main$view_answers = function (question_field) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'answers'),
-			_1: {ctor: '[]'}
-		},
-		_elm_lang$core$Array$toList(
-			A2(
-				_elm_lang$core$Array$map,
-				_user$project$Main$view_answer(question_field),
-				question_field.answer_fields)));
-};
-var _user$project$Main$view_question = function (question_field) {
-	var question = question_field.question;
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$classList(
-				{
-					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'question', _1: true},
-					_1: {ctor: '[]'}
-				}),
+					_jinjor$elm_html_parser$HtmlParser$parse(_p13._0.body))),
 			_1: {
 				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', question_field.id),
-				_1: {ctor: '[]'}
-			}
-		},
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text(question.body),
-			_1: {
-				ctor: '::',
-				_0: _user$project$Main$view_answers(question_field),
+				_0: _user$project$Main$view_questions(_p13),
 				_1: {ctor: '[]'}
 			}
 		});
-};
-var _user$project$Main$view_questions = function (questions) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$classList(
-				{
-					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'questions', _1: true},
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		},
-		_elm_lang$core$Array$toList(
-			A2(_elm_lang$core$Array$map, _user$project$Main$view_question, questions)));
 };
 var _user$project$Main$view_content = function (model) {
 	return A2(
@@ -21684,15 +21608,8 @@ var _user$project$Main$view_content = function (model) {
 				}),
 			_1: {ctor: '[]'}
 		},
-		{
-			ctor: '::',
-			_0: _user$project$Main$view_text(model.text),
-			_1: {
-				ctor: '::',
-				_0: _user$project$Main$view_questions(model.question_fields),
-				_1: {ctor: '[]'}
-			}
-		});
+		_elm_lang$core$Array$toList(
+			A2(_elm_lang$core$Array$map, _user$project$Main$view_text, model.texts)));
 };
 var _user$project$Main$view = function (model) {
 	return A2(
@@ -21700,8 +21617,7 @@ var _user$project$Main$view = function (model) {
 		{ctor: '[]'},
 		{
 			ctor: '::',
-			_0: _user$project$Views$view_header(
-				_user$project$Profile$view_profile_header(model.profile)),
+			_0: A2(_user$project$Views$view_header, model.profile, _elm_lang$core$Maybe$Nothing),
 			_1: {
 				ctor: '::',
 				_0: _user$project$Views$view_filter,
@@ -21717,13 +21633,12 @@ var _user$project$Main$view = function (model) {
 			}
 		});
 };
-var _user$project$Main$UpdateQuestions = function (a) {
-	return {ctor: 'UpdateQuestions', _0: a};
-};
-var _user$project$Main$UpdateText = function (a) {
-	return {ctor: 'UpdateText', _0: a};
-};
-var _user$project$Main$updateText = function (text_id) {
+var _user$project$Main$UpdateQuestions = F2(
+	function (a, b) {
+		return {ctor: 'UpdateQuestions', _0: a, _1: b};
+	});
+var _user$project$Main$updateText = function (_p14) {
+	var _p15 = _p14;
 	var question_req = A2(
 		_elm_lang$http$Http$get,
 		A2(
@@ -21743,53 +21658,219 @@ var _user$project$Main$updateText = function (text_id) {
 							_0: '=',
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$core$Basics$toString(text_id),
+								_0: _elm_lang$core$Basics$toString(_p15._0.id),
 								_1: {ctor: '[]'}
 							}
 						}
 					}
 				}
 			}),
-		_user$project$Model$questionsDecoder);
-	var text_req = A2(
+		_user$project$Question_Decode$questionsDecoder);
+	return A2(
+		_elm_lang$http$Http$send,
+		_user$project$Main$UpdateQuestions(_p15),
+		question_req);
+};
+var _user$project$Main$updateTextsForQuiz = function (quiz_texts) {
+	return _elm_lang$core$Platform_Cmd$batch(
+		A2(
+			_elm_lang$core$List$map,
+			_user$project$Main$updateText,
+			_elm_lang$core$Array$toList(quiz_texts)));
+};
+var _user$project$Main$UpdateQuiz = function (a) {
+	return {ctor: 'UpdateQuiz', _0: a};
+};
+var _user$project$Main$updateQuiz = function (quiz_id) {
+	var quiz_req = A2(
 		_elm_lang$http$Http$get,
 		A2(
-			_elm_lang$core$String$join,
-			'',
-			{
-				ctor: '::',
-				_0: _user$project$Config$text_api_endpoint,
-				_1: {
+			_elm_lang$core$Basics_ops['++'],
+			A2(
+				_elm_lang$core$String$join,
+				'',
+				{
 					ctor: '::',
-					_0: _elm_lang$core$Basics$toString(text_id),
-					_1: {ctor: '[]'}
-				}
-			}),
-		_user$project$Model$textDecoder);
+					_0: _user$project$Config$quiz_api_endpoint,
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$core$Basics$toString(quiz_id),
+						_1: {ctor: '[]'}
+					}
+				}),
+			'/'),
+		_user$project$Quiz_Decode$quizDecoder);
 	return _elm_lang$core$Platform_Cmd$batch(
 		{
 			ctor: '::',
-			_0: A2(_elm_lang$http$Http$send, _user$project$Main$UpdateText, text_req),
-			_1: {
-				ctor: '::',
-				_0: A2(_elm_lang$http$Http$send, _user$project$Main$UpdateQuestions, question_req),
-				_1: {ctor: '[]'}
-			}
+			_0: A2(_elm_lang$http$Http$send, _user$project$Main$UpdateQuiz, quiz_req),
+			_1: {ctor: '[]'}
 		});
 };
 var _user$project$Main$init = function (flags) {
 	return {
 		ctor: '_Tuple2',
 		_0: {
-			text: _user$project$Model$emptyText,
-			question_fields: _elm_lang$core$Array$fromList(
+			quiz: _user$project$Quiz_Model$new_quiz,
+			texts: _elm_lang$core$Array$fromList(
 				{ctor: '[]'}),
 			profile: _user$project$Profile$init_profile(flags),
 			flags: flags
 		},
-		_1: _user$project$Main$updateText(flags.quiz_id)
+		_1: _user$project$Main$updateQuiz(flags.quiz_id)
 	};
 };
+var _user$project$Main$QuizAnswer = F3(
+	function (a, b, c) {
+		return {ctor: 'QuizAnswer', _0: a, _1: b, _2: c};
+	});
+var _user$project$Main$gen_quiz_answer = F3(
+	function (question_index, answer_index, answer) {
+		return A3(
+			_user$project$Main$QuizAnswer,
+			answer,
+			{
+				id: A2(
+					_elm_lang$core$String$join,
+					'_',
+					{
+						ctor: '::',
+						_0: 'question',
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$core$Basics$toString(question_index),
+							_1: {
+								ctor: '::',
+								_0: 'answer',
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$core$Basics$toString(answer.order),
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}),
+				name: A2(
+					_elm_lang$core$String$join,
+					'_',
+					{
+						ctor: '::',
+						_0: 'question',
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$core$Basics$toString(question_index),
+							_1: {ctor: '[]'}
+						}
+					}),
+				question_index: question_index,
+				index: answer_index
+			},
+			false);
+	});
+var _user$project$Main$set_answer_selected = F2(
+	function (_p16, selected) {
+		var _p17 = _p16;
+		return A3(_user$project$Main$QuizAnswer, _p17._0, _p17._1, selected);
+	});
+var _user$project$Main$QuizQuestion = F3(
+	function (a, b, c) {
+		return {ctor: 'QuizQuestion', _0: a, _1: b, _2: c};
+	});
+var _user$project$Main$gen_quiz_question = F3(
+	function (text_index, index, question) {
+		return A3(
+			_user$project$Main$QuizQuestion,
+			question,
+			{
+				index: index,
+				text_index: text_index,
+				id: _elm_lang$core$Basics$toString(question.order)
+			},
+			A2(
+				_elm_lang$core$Array$indexedMap,
+				_user$project$Main$gen_quiz_answer(index),
+				question.answers));
+	});
+var _user$project$Main$set_answer = F2(
+	function (_p19, _p18) {
+		var _p20 = _p19;
+		var _p21 = _p18;
+		return A3(
+			_user$project$Main$QuizQuestion,
+			_p20._0,
+			_p20._1,
+			A3(_elm_lang$core$Array$set, _p21._1.index, _p21, _p20._2));
+	});
+var _user$project$Main$QuizText = F3(
+	function (a, b, c) {
+		return {ctor: 'QuizText', _0: a, _1: b, _2: c};
+	});
+var _user$project$Main$gen_quiz_text = F2(
+	function (index, text) {
+		return A3(
+			_user$project$Main$QuizText,
+			text,
+			{index: index},
+			A2(
+				_elm_lang$core$Array$indexedMap,
+				_user$project$Main$gen_quiz_question(index),
+				text.questions));
+	});
+var _user$project$Main$set_questions = F2(
+	function (_p22, new_questions) {
+		var _p23 = _p22;
+		return A3(_user$project$Main$QuizText, _p23._0, _p23._1, new_questions);
+	});
+var _user$project$Main$set_question = F2(
+	function (_p25, _p24) {
+		var _p26 = _p25;
+		var _p27 = _p24;
+		return A3(
+			_user$project$Main$QuizText,
+			_p26._0,
+			_p26._1,
+			A3(_elm_lang$core$Array$set, _p27._1.index, _p27, _p26._2));
+	});
+var _user$project$Main$update = F2(
+	function (msg, model) {
+		var _p28 = msg;
+		switch (_p28.ctor) {
+			case 'UpdateQuiz':
+				if (_p28._0.ctor === 'Ok') {
+					var _p29 = _p28._0._0;
+					var quiz_texts = A2(_elm_lang$core$Array$indexedMap, _user$project$Main$gen_quiz_text, _p29.texts);
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{quiz: _p29, texts: quiz_texts}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					var _p30 = A2(_elm_lang$core$Debug$log, 'quiz error', _p28._0._0);
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'UpdateQuestions':
+				if (_p28._1.ctor === 'Err') {
+					var _p31 = A2(_elm_lang$core$Debug$log, 'questions error', _p28._1._0);
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			default:
+				var new_quiz_answer = A2(_user$project$Main$set_answer_selected, _p28._2, _p28._3);
+				var new_quiz_question = A2(_user$project$Main$set_answer, _p28._1, new_quiz_answer);
+				var new_quiz_text = A2(_user$project$Main$set_question, _p28._0, new_quiz_question);
+				var new_quiz_texts = A2(_user$project$Main$set_text, model.texts, new_quiz_text);
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{texts: new_quiz_texts}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+		}
+	});
 var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 	{init: _user$project$Main$init, view: _user$project$Main$view, subscriptions: _user$project$Main$subscriptions, update: _user$project$Main$update})(
 	A2(

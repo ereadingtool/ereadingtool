@@ -13,13 +13,12 @@
     grid-column: 2;
 
     grid-template-columns: 10% auto 10%;
-    grid-auto-rows: 100px;
-
-    align-items: center;
-    justify-items: center;
 }
 
 .text_body {
+    align-items: center;
+    justify-items: center;
+
     grid-column: 2;
 }
 

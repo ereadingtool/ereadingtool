@@ -40,14 +40,18 @@ class Text(Timestamped, models.Model):
     author = models.CharField(max_length=255, blank=True)
 
     def to_dict(self):
+        questions = [question.to_dict() for question in self.questions.all()]
+        questions_count = len(list(questions))
+
         return {
             'id': self.pk,
             'title': self.title,
             'created_dt': self.created_dt.isoformat(),
             'modified_dt': self.modified_dt.isoformat(),
-            'question_count': len(list(self.questions.all())),
+            'question_count': questions_count,
+            'questions': questions,
             'source': self.source,
-            'difficulty': self.difficulty.name,
+            'difficulty': self.difficulty.slug,
             'body': self.body,
             'author': self.author
         }

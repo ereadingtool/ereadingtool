@@ -9,19 +9,35 @@ import Http exposing (..)
 
 import Array exposing (Array)
 
-import Field.Text exposing (Text, emptyText, textDecoder)
-import Field.Question exposing (Question, questionsDecoder)
-import Field.Answer exposing (Answer)
+import Text.Model exposing (Text, emptyText)
+
+import Question.Model exposing (Question)
+import Question.Decode exposing (questionsDecoder)
+
+import Quiz.Model as Quiz exposing (Quiz)
+import Quiz.Decode
+import Answer.Model exposing (Answer)
+
 import Views
 import Profile
 import Config exposing (..)
 import Flags exposing (CSRFToken)
 
+
+type alias Index = Int
+type alias ID = String
+type alias Name = String
+
+type alias QuestionIndex = Int
+type alias TextIndex = Int
+
+type alias Selected = Bool
+
 -- UPDATE
 type Msg =
-    UpdateText (Result Http.Error Text)
-  | UpdateQuestions (Result Http.Error (List Question))
-  | Select QuestionField AnswerField Bool
+    UpdateQuiz (Result Http.Error Quiz)
+  | UpdateQuestions QuizText (Result Http.Error (Array Question))
+  | Select QuizText QuizQuestion QuizAnswer Bool
 
 type alias Flags = {
     csrftoken : CSRFToken
@@ -32,93 +48,124 @@ type alias Flags = {
   , quiz_id : Int }
 
 type alias Model = {
-    text : Text
-  , question_fields : Array QuestionField
+    quiz : Quiz
   , profile : Profile.Profile
+  , texts : Array QuizText
   , flags : Flags }
 
-type alias AnswerField = {
-    id : String
-  , name : String
-  , answer : Answer
-  , question_field_index : Int
-  , selected : Bool
-  , index : Int }
+type alias QuizItemAttributes a = { a |
+    index : Int }
 
-type alias QuestionField = {
-    id : String
-  , question : Question
-  , answer_fields : Array AnswerField
-  , index : Int }
+type alias QuizAnswerAttributes = QuizItemAttributes { question_index : Int, name: String, id: String }
+type alias QuizQuestionAttributes = QuizItemAttributes { id:String, text_index: Int }
+
+type QuizAnswer = QuizAnswer Answer QuizAnswerAttributes Selected
+type QuizQuestion = QuizQuestion Question QuizQuestionAttributes (Array QuizAnswer)
+
+type QuizText = QuizText Text (QuizItemAttributes {}) (Array QuizQuestion)
 
 
 init : Flags -> (Model, Cmd Msg)
 init flags = ({
-    text=emptyText
-  , question_fields=Array.fromList []
+    quiz=Quiz.new_quiz
+  , texts=Array.fromList []
   , profile=Profile.init_profile flags
-  , flags=flags}, updateText flags.quiz_id)
+  , flags=flags}, updateQuiz flags.quiz_id)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
-updateText : Int -> Cmd Msg
-updateText text_id =
+updateQuiz : Int -> Cmd Msg
+updateQuiz quiz_id =
   let
-    text_req = Http.get (String.join "" [text_api_endpoint, (toString text_id)]) textDecoder
-    question_req = Http.get (String.join "" [question_api_endpoint, "?", "text", "=", (toString text_id)]) questionsDecoder
+    quiz_req = Http.get (String.join "" [quiz_api_endpoint, (toString quiz_id)] ++ "/") Quiz.Decode.quizDecoder
   in
-    Cmd.batch [Http.send UpdateText text_req, Http.send UpdateQuestions question_req]
+    Cmd.batch [Http.send UpdateQuiz quiz_req]
 
-gen_answer_field : Int -> Int -> Answer -> AnswerField
-gen_answer_field question_field_index answer_index answer = {
+updateTextsForQuiz : Array QuizText -> Cmd Msg
+updateTextsForQuiz quiz_texts =
+     Cmd.batch
+  <| List.map updateText
+  <| Array.toList quiz_texts
+
+updateText : QuizText -> Cmd Msg
+updateText ((QuizText text attrs questions) as quiz_text) =
+  let
+    question_req = Http.get (String.join "" [question_api_endpoint, "?", "text", "=", (toString text.id)]) questionsDecoder
+  in
+    Http.send (UpdateQuestions quiz_text) question_req
+
+gen_quiz_answer : Int -> Int -> Answer -> QuizAnswer
+gen_quiz_answer question_index answer_index answer =
+  QuizAnswer answer {
     -- question_field_index = question.order
-    id = String.join "_" [ "question", (toString question_field_index), "answer", (toString answer.order) ]
-  , name = String.join "_" [ "question", (toString question_field_index) ]
-  , answer = answer
-  , question_field_index = question_field_index
-  , selected = False
-  , index = answer_index }
+    id = String.join "_" [ "question", (toString question_index), "answer", (toString answer.order) ]
+  , name = String.join "_" [ "question", (toString question_index) ]
+  , question_index = question_index
+  , index = answer_index } False
 
-gen_question_field : Int -> Question -> QuestionField
-gen_question_field index question = {
-    id = (toString question.order)
-  , index = index
-  , question = question
-  , answer_fields = Array.indexedMap (\i a -> gen_answer_field index i a) question.answers }
+gen_quiz_question : Int -> Int -> Question -> QuizQuestion
+gen_quiz_question text_index index question =
+  QuizQuestion question
+    {index=index, text_index=text_index, id=(toString question.order)}
+  (Array.indexedMap (gen_quiz_answer index) question.answers)
 
-update_answer_field : AnswerField -> Array AnswerField -> Array AnswerField
-update_answer_field answer_field answer_fields = Array.set answer_field.index answer_field answer_fields
+quiz_text : Array QuizText -> QuizQuestion -> Maybe QuizText
+quiz_text quiz_texts (QuizQuestion question question_attr answers) =
+  Array.get question_attr.text_index quiz_texts
 
-update_question_field : QuestionField -> Array QuestionField -> Array QuestionField
-update_question_field question_field question_fields = Array.set question_field.index question_field question_fields
+gen_quiz_text : Int -> Text -> QuizText
+gen_quiz_text index text =
+  QuizText text {index=index} (Array.indexedMap (gen_quiz_question index) text.questions)
 
-unselect_answer_fields : Array AnswerField -> Array AnswerField
-unselect_answer_fields answer_fields = Array.map (\answer_field -> { answer_field | selected = False } ) answer_fields
+set_questions : QuizText -> Array QuizQuestion -> QuizText
+set_questions (QuizText text attrs _) new_questions =
+  QuizText text attrs new_questions
+
+set_answer_selected : QuizAnswer -> Bool -> QuizAnswer
+set_answer_selected (QuizAnswer answer attr _) selected =
+  QuizAnswer answer attr selected
+
+set_answer : QuizQuestion -> QuizAnswer -> QuizQuestion
+set_answer (QuizQuestion question question_attr answers) ((QuizAnswer _ answer_attr _) as new_quiz_answer) =
+  QuizQuestion question question_attr (Array.set answer_attr.index new_quiz_answer answers)
+
+set_question : QuizText -> QuizQuestion -> QuizText
+set_question (QuizText text text_attr questions) ((QuizQuestion question question_attr answers) as new_quiz_question) =
+  QuizText text text_attr (Array.set question_attr.index new_quiz_question questions)
+
+set_text : Array QuizText -> QuizText -> Array QuizText
+set_text quiz_texts ((QuizText _ attrs _) as quiz_text) =
+  Array.set attrs.index quiz_text quiz_texts
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    UpdateText (Ok text) ->
-      ({ model | text = text }, Cmd.none)
-    UpdateQuestions (Ok questions) ->
-      ({ model |
-        question_fields = Array.indexedMap (\i q -> gen_question_field i q) (Array.fromList questions) }, Cmd.none )
-
-    UpdateText (Err err) -> case (Debug.log "text error" err) of
-      _ -> (model, Cmd.none)
-    UpdateQuestions (Err err) -> case (Debug.log "questions error" err) of
-      _ -> (model, Cmd.none)
-
-    Select question_field answer_field selected ->
-      let new_answer_field = { answer_field | selected = selected }
-          new_question_field =
-        { question_field
-         | answer_fields = update_answer_field new_answer_field (unselect_answer_fields question_field.answer_fields) }
+    UpdateQuiz (Ok quiz) ->
+      let
+        quiz_texts = Array.indexedMap gen_quiz_text quiz.texts
       in
-        ({ model
-         | question_fields = update_question_field new_question_field model.question_fields }, Cmd.none)
+        ({ model | quiz = quiz, texts = quiz_texts }, Cmd.none)
+
+    UpdateQuiz (Err err) ->
+      case (Debug.log "quiz error" err) of
+        _ -> (model, Cmd.none)
+
+    UpdateQuestions quiz_text (Err err) ->
+      case (Debug.log "questions error" err) of
+        _ -> (model, Cmd.none)
+
+    Select quiz_text quiz_question quiz_answer selected ->
+      let
+        new_quiz_answer = set_answer_selected quiz_answer selected
+        new_quiz_question = set_answer quiz_question new_quiz_answer
+        new_quiz_text = set_question quiz_text new_quiz_question
+        new_quiz_texts = set_text model.texts new_quiz_text
+      in
+        ({ model | texts = new_quiz_texts }, Cmd.none)
+
+    _ -> (model, Cmd.none)
 
 main : Program Flags Model Msg
 main =
@@ -129,48 +176,44 @@ main =
     , update = update
     }
 
-view_answer : QuestionField -> AnswerField -> Html Msg
-view_answer question_field answer_field = div [ classList [("answer", True)] ] [
+view_answer : QuizText -> QuizQuestion -> QuizAnswer -> Html Msg
+view_answer quiz_text quiz_question ((QuizAnswer answer answer_attrs answer_selected) as quiz_answer) =
+  div [ classList [("answer", True)] ] [
    Html.input [
-     attribute "id" answer_field.id
-   , attribute "name" answer_field.name
+     attribute "id" answer_attrs.id
+   , attribute "name" answer_attrs.name
    , attribute "type" "radio"
-   , onCheck (Select question_field answer_field)
-   , attribute "value" (toString answer_field.answer.order)] []
- , Html.text answer_field.answer.text
- , (if answer_field.selected then
-     div [] [ Html.em [] [ Html.text answer_field.answer.feedback ] ] else Html.text "")]
+   , onCheck (Select quiz_text quiz_question quiz_answer)
+   , attribute "value" (toString answer.order)] []
+ , Html.text answer.text
+ , (if answer_selected then
+     div [] [ Html.em [] [ Html.text answer.feedback ] ] else Html.text "")]
 
-view_answers : QuestionField -> Html Msg
-view_answers question_field =
-  div [attribute "class" "answers"] (Array.toList <| Array.map (view_answer question_field) question_field.answer_fields)
-
-view_question : QuestionField -> Html Msg
-view_question question_field = let
-    question = question_field.question
-  in
-    div [ classList [("question", True)], attribute "id" question_field.id] [
+view_question : QuizText -> QuizQuestion -> Html Msg
+view_question quiz_text ((QuizQuestion question attrs answers) as quiz_question) =
+  div [ classList [("question", True)], attribute "id" attrs.id] [
         Html.text question.body
-      , (view_answers question_field)
-    ]
+      , div [attribute "class" "answers"] (Array.toList <| Array.map (view_answer quiz_text quiz_question) answers)
+  ]
 
-view_questions : Array QuestionField -> Html Msg
-view_questions questions = div [ classList[("questions", True)] ] (Array.toList <| Array.map view_question questions)
+view_questions : QuizText -> Html Msg
+view_questions ((QuizText text text_attr questions) as quiz_text) =
+  div [ classList[("questions", True)] ] (Array.toList <| Array.map (view_question quiz_text) questions)
 
-view_text : Text -> Html Msg
-view_text text = div [ classList[("text", True)] ] [
-    div [classList [("text_body", True)]] (HtmlParser.Util.toVirtualDom <| HtmlParser.parse text.body)
- ]
+view_text : QuizText -> Html Msg
+view_text ((QuizText text attrs questions) as quiz_text) =
+  div [ classList[("text", True)] ] <| [
+      div [classList [("text_body", True)]] (HtmlParser.Util.toVirtualDom <| HtmlParser.parse text.body)
+    , (view_questions quiz_text)
+  ]
 
 view_content : Model -> Html Msg
-view_content model = div [ classList [("quiz", True)] ] [
-    (view_text model.text)
-  , (view_questions model.question_fields) ]
+view_content model = div [ classList [("quiz", True)] ] (Array.toList <| Array.map view_text model.texts)
 
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    (Views.view_header (Profile.view_profile_header model.profile))
+    (Views.view_header model.profile Nothing)
   , (Views.view_filter)
   , (view_content model)
   , (Views.view_footer)
