@@ -48,14 +48,14 @@ class ElmLoadJsView(LoginRequiredMixin, ElmLoadJsBaseView):
             context['elm']['student_profile'] = {'quote': False, 'safe': True,
                                                  'value': json.dumps(profile.to_dict())}
             context['elm']['instructor_profile'] = {'quote': False, 'safe': True,
-                                                    'value': json.dumps(None)}
+                                                    'value': 'null'}
         except ObjectDoesNotExist:
             profile = self.request.user.instructor
 
             context['elm']['instructor_profile'] = {'quote': False, 'safe': True,
                                                     'value': json.dumps(profile.to_dict())}
             context['elm']['student_profile'] = {'quote': False, 'safe': True,
-                                                 'value': json.dumps(None)}
+                                                 'value': 'null'}
 
         context['elm']['profile_id'] = {
             'quote': False,

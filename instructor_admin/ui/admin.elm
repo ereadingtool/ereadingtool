@@ -7,13 +7,15 @@ import Date exposing (..)
 import Text.Model exposing (Text)
 import Text.Decode
 import Config exposing (..)
-import Flags exposing (Flags)
+import Flags
 
 import Views
 import Profile
 
 -- UPDATE
 type Msg = Update (Result Http.Error (List Text))
+
+type alias Flags = Flags.Flags {}
 
 type alias Model = {
     texts : List Text

@@ -7,7 +7,7 @@ type alias CSRFToken = String
 type alias UnAuthedFlags = {
     csrftoken : CSRFToken }
 
-type alias Flags = {
+type alias Flags a = { a |
    csrftoken : CSRFToken
  , profile_id : Profile.ProfileID
  , profile_type : Profile.ProfileType

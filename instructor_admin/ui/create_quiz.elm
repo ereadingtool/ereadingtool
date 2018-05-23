@@ -7,7 +7,7 @@ import Http
 import HttpHelpers exposing (post_with_headers)
 
 import Config exposing (text_api_endpoint, quiz_api_endpoint)
-import Flags exposing (CSRFToken, Flags)
+import Flags
 
 import Quiz.Model
 import Quiz.Component exposing (QuizComponent)
@@ -17,8 +17,10 @@ import Views
 import Profile
 import Debug
 import Json.Decode as Decode
+import Json.Encode
 
 import Text.Model exposing (Text, TextDifficulty)
+import Quiz.Model
 
 import Field
 import Text.View
@@ -31,6 +33,9 @@ import Ports exposing (selectAllInputText)
 
 import Text.Decode
 import Array exposing (Array)
+
+
+type alias Flags = Flags.Flags { quiz: Maybe Json.Encode.Value }
 
 
 type QuizField = QuizField (Field.FieldAttributes {
@@ -75,9 +80,12 @@ init flags = ({
       , success_msg=Nothing
       , error_msg=Nothing
       , profile=Profile.init_profile flags
-      , quiz_component=Quiz.Component.emptyQuizComponent
+      , quiz_component=(case flags.quiz of
+          Just quiz_json -> Quiz.Component.init_from_json quiz_json
+          _ -> Quiz.Component.emptyQuizComponent)
       , quiz_fields=Array.fromList [
-          (new_quiz_field { id="quiz_title"
+          (new_quiz_field {
+            id="quiz_title"
           , editable=False
           , error=False
           , view=view_quiz_title
@@ -109,15 +117,16 @@ update msg model = case msg of
          | success_msg = Just <| String.join " " <| [" success!", toString text_id]}, Cmd.none)
        _ -> (model, Cmd.none)
 
-    Submitted (Err err) -> case err of
-      Http.BadStatus resp -> case (Text.Decode.decodeCreateRespErrors (Debug.log "errors" resp.body)) of
-        Ok errors -> let
-          _ = (Debug.log "displaying validations" errors)
-          new_text_components = Text.Component.Group.update_errors (Quiz.Component.text_components model.quiz_component) errors
-        in ({ model | quiz_component = (Quiz.Component.set_text_components model.quiz_component new_text_components) }, Cmd.none)
+    Submitted (Err err) ->
+      case err of
+        Http.BadStatus resp -> case (Text.Decode.decodeCreateRespErrors (Debug.log "errors" resp.body)) of
+          Ok errors -> let
+            _ = (Debug.log "displaying validations" errors)
+            new_text_components = Text.Component.Group.update_errors (Quiz.Component.text_components model.quiz_component) errors
+          in ({ model | quiz_component = (Quiz.Component.set_text_components model.quiz_component new_text_components) }, Cmd.none)
+          _ -> (model, Cmd.none)
+        Http.BadPayload err resp -> (model, Cmd.none)
         _ -> (model, Cmd.none)
-      Http.BadPayload err resp -> (model, Cmd.none)
-      _ -> (model, Cmd.none)
 
     UpdateTextDifficultyOptions (Ok difficulties) ->
       ({ model | question_difficulties = difficulties }, Cmd.none)
@@ -132,7 +141,7 @@ update msg model = case msg of
       ({ model | quiz_fields = update_quiz_field model.quiz_fields (update_editable quiz_field editable) }
       , selectAllInputText attrs.id)
 
-post_quiz : CSRFToken -> Quiz.Model.Quiz -> Cmd Msg
+post_quiz : Flags.CSRFToken -> Quiz.Model.Quiz -> Cmd Msg
 post_quiz csrftoken quiz =
   let encoded_quiz = Quiz.Encode.quizEncoder quiz
       req =
@@ -209,7 +218,9 @@ edit_quiz_title quiz_component ((QuizField field_attrs) as quiz_field) =
 view_quiz : Model -> Html Msg
 view_quiz model =
   div [attribute "class" "quiz_attributes"] [
-    div [attribute "class" "quiz"] <| Array.toList <| Array.map (view_editable model.quiz_component) model.quiz_fields
+       div [attribute "class" "quiz"]
+    <| Array.toList
+    <| Array.map (view_editable model.quiz_component) model.quiz_fields
   ]
 
 view : Model -> Html Msg

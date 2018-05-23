@@ -1,14 +1,27 @@
-module Quiz.Component exposing (QuizComponent, emptyQuizComponent, text_components, set_text_components
+module Quiz.Component exposing (QuizComponent, init_from_json, emptyQuizComponent, text_components, set_text_components
   , quiz, set_quiz_attribute)
 
 import Quiz.Model as Quiz exposing (Quiz)
+import Quiz.Decode
+
 import Text.Component.Group exposing (TextComponentGroup)
 
+import Json.Encode
+import Json.Decode
 
 type alias QuizAttributeName = String
 
 type QuizComponent = QuizComponent Quiz TextComponentGroup
 
+
+init_from_json : Json.Encode.Value -> QuizComponent
+init_from_json quiz_json = case Json.Decode.decodeValue Quiz.Decode.quizDecoder quiz_json of
+  Ok quiz -> init quiz
+  Err err -> emptyQuizComponent
+
+init : Quiz -> QuizComponent
+init quiz =
+  QuizComponent quiz (Text.Component.Group.fromTexts quiz.texts)
 
 quiz : QuizComponent -> Quiz
 quiz (QuizComponent quiz component_group) =

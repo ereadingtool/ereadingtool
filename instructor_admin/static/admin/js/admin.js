@@ -9706,10 +9706,6 @@ var _user$project$Profile$init_profile = function (flags) {
 var _user$project$Flags$UnAuthedFlags = function (a) {
 	return {csrftoken: a};
 };
-var _user$project$Flags$Flags = F5(
-	function (a, b, c, d, e) {
-		return {csrftoken: a, profile_id: b, profile_type: c, instructor_profile: d, student_profile: e};
-	});
 
 var _user$project$Question_Decode$questionDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,

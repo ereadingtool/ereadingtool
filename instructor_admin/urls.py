@@ -1,9 +1,15 @@
 from django.urls import path
 from instructor_admin.views import TextAdminView, AdminCreateEditQuizView, AdminCreateEditElmLoadView
 
-
 urlpatterns = [
     path('', TextAdminView.as_view(), name='admin'),
-    path('create-quiz/load_elm.js', AdminCreateEditElmLoadView.as_view(), name='admin-create-quiz-elm-load'),
-    path('create-quiz', AdminCreateEditQuizView.as_view(), name='admin-create-quiz')
+
+    # template loads "load_elm.js" from either /quiz/<int:pk>/ or /quiz/
+    # e.g. /quiz/<int:pk>/load_elm.js or /quiz/load_elm.js
+    # (see template create_edit_quiz.html)
+    path('quiz/load_elm.js', AdminCreateEditElmLoadView.as_view(), name="create-edit-load-elm"),
+    path('quiz/', AdminCreateEditQuizView.as_view(), name='admin-create-edit-quiz'),
+
+    path('quiz/<int:pk>/load_elm.js', AdminCreateEditElmLoadView.as_view(), name="create-edit-load-elm"),
+    path('quiz/<int:pk>/', AdminCreateEditQuizView.as_view(), name='create-edit-load-elm'),
 ]

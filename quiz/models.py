@@ -35,9 +35,9 @@ class Quiz(models.Model):
 
         return quiz
 
-    def to_dict(self, texts: Optional[list]) -> dict:
+    def to_dict(self, texts: Optional[list]=None) -> dict:
         return {
             'id': self.pk,
             'title': self.title,
-            'texts': [text.to_dict() for text in (texts if texts else self.texts.objects.all())]
+            'texts': [text.to_dict() for text in (texts if texts else self.texts.all())]
         }

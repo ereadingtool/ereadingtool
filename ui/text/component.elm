@@ -1,7 +1,7 @@
 module Text.Component exposing (TextComponent, TextField(..), TextBodyFieldParams, emptyTextComponent, body, text, title
   , source, difficulty, author, question_fields, attributes, set_field, set_text, index, delete_question_field
   , set_answer, set_answer_text, set_question, switch_editable, add_new_question, toggle_question_menu, update_body
-  , update_question_field, set_answer_correct, set_answer_feedback, text_field_id, editable, toText
+  , update_question_field, set_answer_correct, set_answer_feedback, text_field_id, editable, toText, fromText
   , post_toggle_commands)
 
 import Array exposing (Array)
@@ -53,14 +53,23 @@ generate_body_text_field i = let base_field=generate_text_field_params i "body" 
   , index=base_field.index
   , ckeditor_id="" }
 
-emptyTextComponent : Int -> TextComponent
-emptyTextComponent i = TextComponent Text.Model.emptyText { index=i } {
+generate_text_fields : Int -> TextFields
+generate_text_fields i = {
      title=Title (generate_text_field_params i "title")
   ,  source=Source (generate_text_field_params i "source")
   ,  difficulty=Difficulty (generate_text_field_params i "difficulty")
   ,  author=Author (generate_text_field_params i "author")
   ,  body=Body (generate_body_text_field i)
-  } Question.Field.initial_question_fields
+  }
+
+fromText : Int -> Text -> TextComponent
+fromText i text =
+  TextComponent text { index=i } (generate_text_fields i) (Question.Field.fromQuestions text.questions)
+
+
+emptyTextComponent : Int -> TextComponent
+emptyTextComponent i =
+  TextComponent Text.Model.emptyText { index=i } (generate_text_fields i) Question.Field.initial_question_fields
 
 switch_editable : TextField -> TextField
 switch_editable text_field =

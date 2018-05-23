@@ -1,7 +1,8 @@
 module Question.Field exposing (QuestionField, QuestionType(..), generate_question_field, update_question_field
   , add_new_question, delete_question, initial_question_fields, attributes, index, switch_editable, set_answer_feedback
   , set_question_type, question, menu_visible, id, error, editable, answers, set_menu_visible, set_answer_correct
-  , update_question, set_question_body, set_answer_field, delete_question_field, question_field_for_answer, toQuestions)
+  , update_question, set_question_body, set_answer_field, delete_question_field, question_field_for_answer
+  , toQuestions, fromQuestions)
 
 import Question.Model exposing (Question)
 
@@ -10,16 +11,11 @@ import Answer.Field exposing (AnswerField, generate_answer_field)
 import Array exposing (Array)
 import Field
 
-type alias QuestionFieldAttributes = {
-    id: String
-  , editable: Bool
-  , menu_visible: Bool
-  , error: Bool
-  , index: Int }
+type alias QuestionFieldAttributes = Field.FieldAttributes { menu_visible: Bool }
 
 type QuestionType = MainIdea | Detail
 
-type QuestionField = QuestionField Question (Field.FieldAttributes (QuestionFieldAttributes)) (Array AnswerField)
+type QuestionField = QuestionField Question (Field.FieldAttributes QuestionFieldAttributes) (Array AnswerField)
 
 toQuestions : Array QuestionField -> Array Question
 toQuestions question_fields =
@@ -32,6 +28,10 @@ toQuestion question_field =
     new_answers = Answer.Field.toAnswers (answers question_field)
   in
     { new_question | answers = new_answers }
+
+fromQuestions : Array Question -> Array QuestionField
+fromQuestions questions =
+  Array.indexedMap generate_question_field questions
 
 generate_question_field : Int -> Question -> QuestionField
 generate_question_field i question = QuestionField question {
