@@ -1,5 +1,5 @@
 module Text.Component.Group exposing (TextComponentGroup, update_text_components, add_new_text, update_errors
-  , new_group, toArray, update_body_for_id, toTexts, fromTexts)
+  , new_group, toArray, update_body_for_id, toTexts, fromTexts, reinitialize_ck_editors)
 
 import Array exposing (Array)
 import Dict exposing (Dict)
@@ -41,6 +41,13 @@ fromTexts texts =
 
 text_component : TextComponentGroup -> Int -> Maybe TextComponent
 text_component (TextComponentGroup text_components) index = Array.get index text_components
+
+reinitialize_ck_editors : TextComponentGroup -> Cmd msg
+reinitialize_ck_editors text_component_group =
+  let
+    text_components = toArray text_component_group
+  in
+    Cmd.batch <| Array.toList <| Array.map Text.Component.reinitialize_ck_editor text_components
 
 update_body_for_id : TextComponentGroup -> CKEditorID -> CKEditorText -> TextComponentGroup
 update_body_for_id text_components ckeditor_id ckeditor_text =

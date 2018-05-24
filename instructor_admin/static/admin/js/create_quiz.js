@@ -6642,6 +6642,196 @@ var _elm_community$json_extra$Json_Decode_Extra$andMap = _elm_lang$core$Json_Dec
 var _elm_community$json_extra$Json_Decode_Extra_ops = _elm_community$json_extra$Json_Decode_Extra_ops || {};
 _elm_community$json_extra$Json_Decode_Extra_ops['|:'] = _elm_lang$core$Basics$flip(_elm_community$json_extra$Json_Decode_Extra$andMap);
 
+var _elm_lang$core$Process$kill = _elm_lang$core$Native_Scheduler.kill;
+var _elm_lang$core$Process$sleep = _elm_lang$core$Native_Scheduler.sleep;
+var _elm_lang$core$Process$spawn = _elm_lang$core$Native_Scheduler.spawn;
+
+var _elm_lang$dom$Native_Dom = function() {
+
+var fakeNode = {
+	addEventListener: function() {},
+	removeEventListener: function() {}
+};
+
+var onDocument = on(typeof document !== 'undefined' ? document : fakeNode);
+var onWindow = on(typeof window !== 'undefined' ? window : fakeNode);
+
+function on(node)
+{
+	return function(eventName, decoder, toTask)
+	{
+		return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback) {
+
+			function performTask(event)
+			{
+				var result = A2(_elm_lang$core$Json_Decode$decodeValue, decoder, event);
+				if (result.ctor === 'Ok')
+				{
+					_elm_lang$core$Native_Scheduler.rawSpawn(toTask(result._0));
+				}
+			}
+
+			node.addEventListener(eventName, performTask);
+
+			return function()
+			{
+				node.removeEventListener(eventName, performTask);
+			};
+		});
+	};
+}
+
+var rAF = typeof requestAnimationFrame !== 'undefined'
+	? requestAnimationFrame
+	: function(callback) { callback(); };
+
+function withNode(id, doStuff)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		rAF(function()
+		{
+			var node = document.getElementById(id);
+			if (node === null)
+			{
+				callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'NotFound', _0: id }));
+				return;
+			}
+			callback(_elm_lang$core$Native_Scheduler.succeed(doStuff(node)));
+		});
+	});
+}
+
+
+// FOCUS
+
+function focus(id)
+{
+	return withNode(id, function(node) {
+		node.focus();
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function blur(id)
+{
+	return withNode(id, function(node) {
+		node.blur();
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+
+// SCROLLING
+
+function getScrollTop(id)
+{
+	return withNode(id, function(node) {
+		return node.scrollTop;
+	});
+}
+
+function setScrollTop(id, desiredScrollTop)
+{
+	return withNode(id, function(node) {
+		node.scrollTop = desiredScrollTop;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function toBottom(id)
+{
+	return withNode(id, function(node) {
+		node.scrollTop = node.scrollHeight;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function getScrollLeft(id)
+{
+	return withNode(id, function(node) {
+		return node.scrollLeft;
+	});
+}
+
+function setScrollLeft(id, desiredScrollLeft)
+{
+	return withNode(id, function(node) {
+		node.scrollLeft = desiredScrollLeft;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function toRight(id)
+{
+	return withNode(id, function(node) {
+		node.scrollLeft = node.scrollWidth;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+
+// SIZE
+
+function width(options, id)
+{
+	return withNode(id, function(node) {
+		switch (options.ctor)
+		{
+			case 'Content':
+				return node.scrollWidth;
+			case 'VisibleContent':
+				return node.clientWidth;
+			case 'VisibleContentWithBorders':
+				return node.offsetWidth;
+			case 'VisibleContentWithBordersAndMargins':
+				var rect = node.getBoundingClientRect();
+				return rect.right - rect.left;
+		}
+	});
+}
+
+function height(options, id)
+{
+	return withNode(id, function(node) {
+		switch (options.ctor)
+		{
+			case 'Content':
+				return node.scrollHeight;
+			case 'VisibleContent':
+				return node.clientHeight;
+			case 'VisibleContentWithBorders':
+				return node.offsetHeight;
+			case 'VisibleContentWithBordersAndMargins':
+				var rect = node.getBoundingClientRect();
+				return rect.bottom - rect.top;
+		}
+	});
+}
+
+return {
+	onDocument: F3(onDocument),
+	onWindow: F3(onWindow),
+
+	focus: focus,
+	blur: blur,
+
+	getScrollTop: getScrollTop,
+	setScrollTop: F2(setScrollTop),
+	getScrollLeft: getScrollLeft,
+	setScrollLeft: F2(setScrollLeft),
+	toBottom: toBottom,
+	toRight: toRight,
+
+	height: F2(height),
+	width: F2(width)
+};
+
+}();
+
+var _elm_lang$dom$Dom_LowLevel$onWindow = _elm_lang$dom$Native_Dom.onWindow;
+var _elm_lang$dom$Dom_LowLevel$onDocument = _elm_lang$dom$Native_Dom.onDocument;
+
 var _elm_lang$virtual_dom$VirtualDom_Debug$wrap;
 var _elm_lang$virtual_dom$VirtualDom_Debug$wrapWithFlags;
 
@@ -9506,6 +9696,408 @@ var _elm_lang$http$Http$StringPart = F2(
 	});
 var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
 
+var _elm_lang$navigation$Native_Navigation = function() {
+
+
+// FAKE NAVIGATION
+
+function go(n)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		if (n !== 0)
+		{
+			history.go(n);
+		}
+		callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Native_Utils.Tuple0));
+	});
+}
+
+function pushState(url)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		history.pushState({}, '', url);
+		callback(_elm_lang$core$Native_Scheduler.succeed(getLocation()));
+	});
+}
+
+function replaceState(url)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		history.replaceState({}, '', url);
+		callback(_elm_lang$core$Native_Scheduler.succeed(getLocation()));
+	});
+}
+
+
+// REAL NAVIGATION
+
+function reloadPage(skipCache)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		document.location.reload(skipCache);
+		callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Native_Utils.Tuple0));
+	});
+}
+
+function setLocation(url)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		try
+		{
+			window.location = url;
+		}
+		catch(err)
+		{
+			// Only Firefox can throw a NS_ERROR_MALFORMED_URI exception here.
+			// Other browsers reload the page, so let's be consistent about that.
+			document.location.reload(false);
+		}
+		callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Native_Utils.Tuple0));
+	});
+}
+
+
+// GET LOCATION
+
+function getLocation()
+{
+	var location = document.location;
+
+	return {
+		href: location.href,
+		host: location.host,
+		hostname: location.hostname,
+		protocol: location.protocol,
+		origin: location.origin,
+		port_: location.port,
+		pathname: location.pathname,
+		search: location.search,
+		hash: location.hash,
+		username: location.username,
+		password: location.password
+	};
+}
+
+
+// DETECT IE11 PROBLEMS
+
+function isInternetExplorer11()
+{
+	return window.navigator.userAgent.indexOf('Trident') !== -1;
+}
+
+
+return {
+	go: go,
+	setLocation: setLocation,
+	reloadPage: reloadPage,
+	pushState: pushState,
+	replaceState: replaceState,
+	getLocation: getLocation,
+	isInternetExplorer11: isInternetExplorer11
+};
+
+}();
+
+var _elm_lang$navigation$Navigation$replaceState = _elm_lang$navigation$Native_Navigation.replaceState;
+var _elm_lang$navigation$Navigation$pushState = _elm_lang$navigation$Native_Navigation.pushState;
+var _elm_lang$navigation$Navigation$go = _elm_lang$navigation$Native_Navigation.go;
+var _elm_lang$navigation$Navigation$reloadPage = _elm_lang$navigation$Native_Navigation.reloadPage;
+var _elm_lang$navigation$Navigation$setLocation = _elm_lang$navigation$Native_Navigation.setLocation;
+var _elm_lang$navigation$Navigation_ops = _elm_lang$navigation$Navigation_ops || {};
+_elm_lang$navigation$Navigation_ops['&>'] = F2(
+	function (task1, task2) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (_p0) {
+				return task2;
+			},
+			task1);
+	});
+var _elm_lang$navigation$Navigation$notify = F3(
+	function (router, subs, location) {
+		var send = function (_p1) {
+			var _p2 = _p1;
+			return A2(
+				_elm_lang$core$Platform$sendToApp,
+				router,
+				_p2._0(location));
+		};
+		return A2(
+			_elm_lang$navigation$Navigation_ops['&>'],
+			_elm_lang$core$Task$sequence(
+				A2(_elm_lang$core$List$map, send, subs)),
+			_elm_lang$core$Task$succeed(
+				{ctor: '_Tuple0'}));
+	});
+var _elm_lang$navigation$Navigation$cmdHelp = F3(
+	function (router, subs, cmd) {
+		var _p3 = cmd;
+		switch (_p3.ctor) {
+			case 'Jump':
+				return _elm_lang$navigation$Navigation$go(_p3._0);
+			case 'New':
+				return A2(
+					_elm_lang$core$Task$andThen,
+					A2(_elm_lang$navigation$Navigation$notify, router, subs),
+					_elm_lang$navigation$Navigation$pushState(_p3._0));
+			case 'Modify':
+				return A2(
+					_elm_lang$core$Task$andThen,
+					A2(_elm_lang$navigation$Navigation$notify, router, subs),
+					_elm_lang$navigation$Navigation$replaceState(_p3._0));
+			case 'Visit':
+				return _elm_lang$navigation$Navigation$setLocation(_p3._0);
+			default:
+				return _elm_lang$navigation$Navigation$reloadPage(_p3._0);
+		}
+	});
+var _elm_lang$navigation$Navigation$killPopWatcher = function (popWatcher) {
+	var _p4 = popWatcher;
+	if (_p4.ctor === 'Normal') {
+		return _elm_lang$core$Process$kill(_p4._0);
+	} else {
+		return A2(
+			_elm_lang$navigation$Navigation_ops['&>'],
+			_elm_lang$core$Process$kill(_p4._0),
+			_elm_lang$core$Process$kill(_p4._1));
+	}
+};
+var _elm_lang$navigation$Navigation$onSelfMsg = F3(
+	function (router, location, state) {
+		return A2(
+			_elm_lang$navigation$Navigation_ops['&>'],
+			A3(_elm_lang$navigation$Navigation$notify, router, state.subs, location),
+			_elm_lang$core$Task$succeed(state));
+	});
+var _elm_lang$navigation$Navigation$subscription = _elm_lang$core$Native_Platform.leaf('Navigation');
+var _elm_lang$navigation$Navigation$command = _elm_lang$core$Native_Platform.leaf('Navigation');
+var _elm_lang$navigation$Navigation$Location = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return function (k) {
+											return {href: a, host: b, hostname: c, protocol: d, origin: e, port_: f, pathname: g, search: h, hash: i, username: j, password: k};
+										};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+var _elm_lang$navigation$Navigation$State = F2(
+	function (a, b) {
+		return {subs: a, popWatcher: b};
+	});
+var _elm_lang$navigation$Navigation$init = _elm_lang$core$Task$succeed(
+	A2(
+		_elm_lang$navigation$Navigation$State,
+		{ctor: '[]'},
+		_elm_lang$core$Maybe$Nothing));
+var _elm_lang$navigation$Navigation$Reload = function (a) {
+	return {ctor: 'Reload', _0: a};
+};
+var _elm_lang$navigation$Navigation$reload = _elm_lang$navigation$Navigation$command(
+	_elm_lang$navigation$Navigation$Reload(false));
+var _elm_lang$navigation$Navigation$reloadAndSkipCache = _elm_lang$navigation$Navigation$command(
+	_elm_lang$navigation$Navigation$Reload(true));
+var _elm_lang$navigation$Navigation$Visit = function (a) {
+	return {ctor: 'Visit', _0: a};
+};
+var _elm_lang$navigation$Navigation$load = function (url) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$Visit(url));
+};
+var _elm_lang$navigation$Navigation$Modify = function (a) {
+	return {ctor: 'Modify', _0: a};
+};
+var _elm_lang$navigation$Navigation$modifyUrl = function (url) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$Modify(url));
+};
+var _elm_lang$navigation$Navigation$New = function (a) {
+	return {ctor: 'New', _0: a};
+};
+var _elm_lang$navigation$Navigation$newUrl = function (url) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$New(url));
+};
+var _elm_lang$navigation$Navigation$Jump = function (a) {
+	return {ctor: 'Jump', _0: a};
+};
+var _elm_lang$navigation$Navigation$back = function (n) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$Jump(0 - n));
+};
+var _elm_lang$navigation$Navigation$forward = function (n) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$Jump(n));
+};
+var _elm_lang$navigation$Navigation$cmdMap = F2(
+	function (_p5, myCmd) {
+		var _p6 = myCmd;
+		switch (_p6.ctor) {
+			case 'Jump':
+				return _elm_lang$navigation$Navigation$Jump(_p6._0);
+			case 'New':
+				return _elm_lang$navigation$Navigation$New(_p6._0);
+			case 'Modify':
+				return _elm_lang$navigation$Navigation$Modify(_p6._0);
+			case 'Visit':
+				return _elm_lang$navigation$Navigation$Visit(_p6._0);
+			default:
+				return _elm_lang$navigation$Navigation$Reload(_p6._0);
+		}
+	});
+var _elm_lang$navigation$Navigation$Monitor = function (a) {
+	return {ctor: 'Monitor', _0: a};
+};
+var _elm_lang$navigation$Navigation$program = F2(
+	function (locationToMessage, stuff) {
+		var init = stuff.init(
+			_elm_lang$navigation$Native_Navigation.getLocation(
+				{ctor: '_Tuple0'}));
+		var subs = function (model) {
+			return _elm_lang$core$Platform_Sub$batch(
+				{
+					ctor: '::',
+					_0: _elm_lang$navigation$Navigation$subscription(
+						_elm_lang$navigation$Navigation$Monitor(locationToMessage)),
+					_1: {
+						ctor: '::',
+						_0: stuff.subscriptions(model),
+						_1: {ctor: '[]'}
+					}
+				});
+		};
+		return _elm_lang$html$Html$program(
+			{init: init, view: stuff.view, update: stuff.update, subscriptions: subs});
+	});
+var _elm_lang$navigation$Navigation$programWithFlags = F2(
+	function (locationToMessage, stuff) {
+		var init = function (flags) {
+			return A2(
+				stuff.init,
+				flags,
+				_elm_lang$navigation$Native_Navigation.getLocation(
+					{ctor: '_Tuple0'}));
+		};
+		var subs = function (model) {
+			return _elm_lang$core$Platform_Sub$batch(
+				{
+					ctor: '::',
+					_0: _elm_lang$navigation$Navigation$subscription(
+						_elm_lang$navigation$Navigation$Monitor(locationToMessage)),
+					_1: {
+						ctor: '::',
+						_0: stuff.subscriptions(model),
+						_1: {ctor: '[]'}
+					}
+				});
+		};
+		return _elm_lang$html$Html$programWithFlags(
+			{init: init, view: stuff.view, update: stuff.update, subscriptions: subs});
+	});
+var _elm_lang$navigation$Navigation$subMap = F2(
+	function (func, _p7) {
+		var _p8 = _p7;
+		return _elm_lang$navigation$Navigation$Monitor(
+			function (_p9) {
+				return func(
+					_p8._0(_p9));
+			});
+	});
+var _elm_lang$navigation$Navigation$InternetExplorer = F2(
+	function (a, b) {
+		return {ctor: 'InternetExplorer', _0: a, _1: b};
+	});
+var _elm_lang$navigation$Navigation$Normal = function (a) {
+	return {ctor: 'Normal', _0: a};
+};
+var _elm_lang$navigation$Navigation$spawnPopWatcher = function (router) {
+	var reportLocation = function (_p10) {
+		return A2(
+			_elm_lang$core$Platform$sendToSelf,
+			router,
+			_elm_lang$navigation$Native_Navigation.getLocation(
+				{ctor: '_Tuple0'}));
+	};
+	return _elm_lang$navigation$Native_Navigation.isInternetExplorer11(
+		{ctor: '_Tuple0'}) ? A3(
+		_elm_lang$core$Task$map2,
+		_elm_lang$navigation$Navigation$InternetExplorer,
+		_elm_lang$core$Process$spawn(
+			A3(_elm_lang$dom$Dom_LowLevel$onWindow, 'popstate', _elm_lang$core$Json_Decode$value, reportLocation)),
+		_elm_lang$core$Process$spawn(
+			A3(_elm_lang$dom$Dom_LowLevel$onWindow, 'hashchange', _elm_lang$core$Json_Decode$value, reportLocation))) : A2(
+		_elm_lang$core$Task$map,
+		_elm_lang$navigation$Navigation$Normal,
+		_elm_lang$core$Process$spawn(
+			A3(_elm_lang$dom$Dom_LowLevel$onWindow, 'popstate', _elm_lang$core$Json_Decode$value, reportLocation)));
+};
+var _elm_lang$navigation$Navigation$onEffects = F4(
+	function (router, cmds, subs, _p11) {
+		var _p12 = _p11;
+		var _p15 = _p12.popWatcher;
+		var stepState = function () {
+			var _p13 = {ctor: '_Tuple2', _0: subs, _1: _p15};
+			_v6_2:
+			do {
+				if (_p13._0.ctor === '[]') {
+					if (_p13._1.ctor === 'Just') {
+						return A2(
+							_elm_lang$navigation$Navigation_ops['&>'],
+							_elm_lang$navigation$Navigation$killPopWatcher(_p13._1._0),
+							_elm_lang$core$Task$succeed(
+								A2(_elm_lang$navigation$Navigation$State, subs, _elm_lang$core$Maybe$Nothing)));
+					} else {
+						break _v6_2;
+					}
+				} else {
+					if (_p13._1.ctor === 'Nothing') {
+						return A2(
+							_elm_lang$core$Task$map,
+							function (_p14) {
+								return A2(
+									_elm_lang$navigation$Navigation$State,
+									subs,
+									_elm_lang$core$Maybe$Just(_p14));
+							},
+							_elm_lang$navigation$Navigation$spawnPopWatcher(router));
+					} else {
+						break _v6_2;
+					}
+				}
+			} while(false);
+			return _elm_lang$core$Task$succeed(
+				A2(_elm_lang$navigation$Navigation$State, subs, _p15));
+		}();
+		return A2(
+			_elm_lang$navigation$Navigation_ops['&>'],
+			_elm_lang$core$Task$sequence(
+				A2(
+					_elm_lang$core$List$map,
+					A2(_elm_lang$navigation$Navigation$cmdHelp, router, subs),
+					cmds)),
+			stepState);
+	});
+_elm_lang$core$Native_Platform.effectManagers['Navigation'] = {pkg: 'elm-lang/navigation', init: _elm_lang$navigation$Navigation$init, onEffects: _elm_lang$navigation$Navigation$onEffects, onSelfMsg: _elm_lang$navigation$Navigation$onSelfMsg, tag: 'fx', cmdMap: _elm_lang$navigation$Navigation$cmdMap, subMap: _elm_lang$navigation$Navigation$subMap};
+
 var _user$project$Answer_Model$generate_answer = function (i) {
 	return {
 		id: _elm_lang$core$Maybe$Nothing,
@@ -10074,6 +10666,8 @@ var _user$project$Quiz_Model$set_texts = F2(
 var _user$project$Quiz_Model$new_quiz = {
 	id: _elm_lang$core$Maybe$Nothing,
 	title: '',
+	created_dt: _elm_lang$core$Maybe$Nothing,
+	modified_dt: _elm_lang$core$Maybe$Nothing,
 	texts: _elm_lang$core$Array$fromList(
 		{
 			ctor: '::',
@@ -10081,9 +10675,9 @@ var _user$project$Quiz_Model$new_quiz = {
 			_1: {ctor: '[]'}
 		})
 };
-var _user$project$Quiz_Model$Quiz = F3(
-	function (a, b, c) {
-		return {id: a, title: b, texts: c};
+var _user$project$Quiz_Model$Quiz = F5(
+	function (a, b, c, d, e) {
+		return {id: a, title: b, created_dt: c, modified_dt: d, texts: e};
 	});
 
 var _user$project$Question_Decode$questionDecoder = A3(
@@ -10121,10 +10715,6 @@ var _user$project$Question_Decode$questionDecoder = A3(
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Question_Model$Question)))))))));
 var _user$project$Question_Decode$questionsDecoder = _elm_lang$core$Json_Decode$array(_user$project$Question_Decode$questionDecoder);
 
-var _user$project$Text_Decode$textCreateRespErrDecoder = _elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string);
-var _user$project$Text_Decode$decodeCreateRespErrors = function (str) {
-	return A2(_elm_lang$core$Json_Decode$decodeString, _user$project$Text_Decode$textCreateRespErrDecoder, str);
-};
 var _user$project$Text_Decode$textDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'body',
@@ -10170,26 +10760,58 @@ var _user$project$Text_Decode$textsDecoder = _elm_lang$core$Json_Decode$list(_us
 var _user$project$Text_Decode$TextCreateResp = function (a) {
 	return {id: a};
 };
-var _user$project$Text_Decode$textCreateRespDecoder = A4(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
-	'id',
-	_elm_lang$core$Json_Decode$maybe(_user$project$Field$fieldIDDecoder),
-	_elm_lang$core$Maybe$Nothing,
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextCreateResp));
 
+var _user$project$Quiz_Decode$quizCreateRespErrDecoder = _elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string);
+var _user$project$Quiz_Decode$decodeRespErrors = function (str) {
+	return A2(_elm_lang$core$Json_Decode$decodeString, _user$project$Quiz_Decode$quizCreateRespErrDecoder, str);
+};
 var _user$project$Quiz_Decode$quizDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'texts',
 	A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Array$fromList, _user$project$Text_Decode$textsDecoder),
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'title',
-		_elm_lang$core$Json_Decode$string,
+		'modified_dt',
+		_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'id',
-			_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Model$Quiz))));
+			'created_dt',
+			_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'title',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'id',
+					_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Model$Quiz))))));
+var _user$project$Quiz_Decode$QuizCreateResp = F2(
+	function (a, b) {
+		return {id: a, redirect: b};
+	});
+var _user$project$Quiz_Decode$quizCreateRespDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'redirect',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'id',
+		_elm_lang$core$Json_Decode$int,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Decode$QuizCreateResp)));
+var _user$project$Quiz_Decode$QuizUpdateResp = F2(
+	function (a, b) {
+		return {id: a, updated: b};
+	});
+var _user$project$Quiz_Decode$quizUpdateRespDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'updated',
+	_elm_lang$core$Json_Decode$bool,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'id',
+		_elm_lang$core$Json_Decode$int,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Decode$QuizUpdateResp)));
 
 var _user$project$Ports$selectAllInputText = _elm_lang$core$Native_Platform.outgoingPort(
 	'selectAllInputText',
@@ -10215,6 +10837,11 @@ var _user$project$Ports$ckEditorUpdate = _elm_lang$core$Native_Platform.incoming
 				A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
 		},
 		A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string)));
+var _user$project$Ports$ckEditorSetHtml = _elm_lang$core$Native_Platform.outgoingPort(
+	'ckEditorSetHtml',
+	function (v) {
+		return [v._0, v._1];
+	});
 
 var _user$project$Text_Component$question_fields = function (_p0) {
 	var _p1 = _p0;
@@ -10306,6 +10933,26 @@ var _user$project$Text_Component$title = function (_p17) {
 	var _p18 = _p17;
 	return _p18._2.title;
 };
+var _user$project$Text_Component$reinitialize_ck_editor = function (text_component) {
+	var t = _user$project$Text_Component$text(text_component);
+	var _p19 = _user$project$Text_Component$body(text_component);
+	if (_p19.ctor === 'Body') {
+		var _p20 = _p19._0;
+		return _elm_lang$core$Platform_Cmd$batch(
+			{
+				ctor: '::',
+				_0: _user$project$Ports$ckEditor(_p20.id),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Ports$ckEditorSetHtml(
+						{ctor: '_Tuple2', _0: _p20.id, _1: t.body}),
+					_1: {ctor: '[]'}
+				}
+			});
+	} else {
+		return _elm_lang$core$Platform_Cmd$none;
+	}
+};
 var _user$project$Text_Component$generate_text_field_params = F2(
 	function (i, attr) {
 		return {
@@ -10379,23 +11026,23 @@ var _user$project$Text_Component$switch_editable = function (text_field) {
 				editable: params.editable ? false : true
 			});
 	};
-	var _p19 = text_field;
-	switch (_p19.ctor) {
+	var _p21 = text_field;
+	switch (_p21.ctor) {
 		case 'Title':
 			return _user$project$Text_Component$Title(
-				$switch(_p19._0));
+				$switch(_p21._0));
 		case 'Source':
 			return _user$project$Text_Component$Source(
-				$switch(_p19._0));
+				$switch(_p21._0));
 		case 'Difficulty':
 			return _user$project$Text_Component$Difficulty(
-				$switch(_p19._0));
+				$switch(_p21._0));
 		case 'Author':
 			return _user$project$Text_Component$Author(
-				$switch(_p19._0));
+				$switch(_p21._0));
 		default:
 			return _user$project$Text_Component$Body(
-				$switch(_p19._0));
+				$switch(_p21._0));
 	}
 };
 var _user$project$Text_Component$TextComponent = F4(
@@ -10420,102 +11067,102 @@ var _user$project$Text_Component$emptyTextComponent = function (i) {
 		_user$project$Question_Field$initial_question_fields);
 };
 var _user$project$Text_Component$update_title = F2(
-	function (_p20, title) {
-		var _p21 = _p20;
-		return A4(
-			_user$project$Text_Component$TextComponent,
-			_elm_lang$core$Native_Utils.update(
-				_p21._0,
-				{title: title}),
-			_p21._1,
-			_p21._2,
-			_p21._3);
-	});
-var _user$project$Text_Component$update_source = F2(
-	function (_p22, source) {
+	function (_p22, title) {
 		var _p23 = _p22;
 		return A4(
 			_user$project$Text_Component$TextComponent,
 			_elm_lang$core$Native_Utils.update(
 				_p23._0,
-				{source: source}),
+				{title: title}),
 			_p23._1,
 			_p23._2,
 			_p23._3);
 	});
-var _user$project$Text_Component$update_difficulty = F2(
-	function (_p24, difficulty) {
+var _user$project$Text_Component$update_source = F2(
+	function (_p24, source) {
 		var _p25 = _p24;
 		return A4(
 			_user$project$Text_Component$TextComponent,
 			_elm_lang$core$Native_Utils.update(
 				_p25._0,
-				{difficulty: difficulty}),
+				{source: source}),
 			_p25._1,
 			_p25._2,
 			_p25._3);
 	});
-var _user$project$Text_Component$update_author = F2(
-	function (_p26, author) {
+var _user$project$Text_Component$update_difficulty = F2(
+	function (_p26, difficulty) {
 		var _p27 = _p26;
 		return A4(
 			_user$project$Text_Component$TextComponent,
 			_elm_lang$core$Native_Utils.update(
 				_p27._0,
-				{author: author}),
+				{difficulty: difficulty}),
 			_p27._1,
 			_p27._2,
 			_p27._3);
 	});
-var _user$project$Text_Component$update_body = F2(
-	function (_p28, body) {
+var _user$project$Text_Component$update_author = F2(
+	function (_p28, author) {
 		var _p29 = _p28;
 		return A4(
 			_user$project$Text_Component$TextComponent,
 			_elm_lang$core$Native_Utils.update(
 				_p29._0,
-				{body: body}),
+				{author: author}),
 			_p29._1,
 			_p29._2,
 			_p29._3);
 	});
-var _user$project$Text_Component$set_question = F2(
-	function (_p30, question_field) {
+var _user$project$Text_Component$update_body = F2(
+	function (_p30, body) {
 		var _p31 = _p30;
+		return A4(
+			_user$project$Text_Component$TextComponent,
+			_elm_lang$core$Native_Utils.update(
+				_p31._0,
+				{body: body}),
+			_p31._1,
+			_p31._2,
+			_p31._3);
+	});
+var _user$project$Text_Component$set_question = F2(
+	function (_p32, question_field) {
+		var _p33 = _p32;
 		var question_index = _user$project$Question_Field$index(question_field);
 		return A4(
 			_user$project$Text_Component$TextComponent,
-			_p31._0,
-			_p31._1,
-			_p31._2,
-			A3(_elm_lang$core$Array$set, question_index, question_field, _p31._3));
+			_p33._0,
+			_p33._1,
+			_p33._2,
+			A3(_elm_lang$core$Array$set, question_index, question_field, _p33._3));
 	});
 var _user$project$Text_Component$set_answer_correct = F2(
 	function (text_component, answer_field) {
-		var _p32 = A2(
+		var _p34 = A2(
 			_user$project$Question_Field$question_field_for_answer,
 			_user$project$Text_Component$question_fields(text_component),
 			answer_field);
-		if (_p32.ctor === 'Just') {
+		if (_p34.ctor === 'Just') {
 			return A2(
 				_user$project$Text_Component$set_question,
 				text_component,
-				A2(_user$project$Question_Field$set_answer_correct, _p32._0, answer_field));
+				A2(_user$project$Question_Field$set_answer_correct, _p34._0, answer_field));
 		} else {
 			return text_component;
 		}
 	});
 var _user$project$Text_Component$set_answer_feedback = F3(
 	function (text_component, answer_field, feedback) {
-		var _p33 = A2(
+		var _p35 = A2(
 			_user$project$Question_Field$question_field_for_answer,
 			_user$project$Text_Component$question_fields(text_component),
 			answer_field);
-		if (_p33.ctor === 'Just') {
+		if (_p35.ctor === 'Just') {
 			return A2(
 				_user$project$Text_Component$set_question,
 				text_component,
-				A3(_user$project$Question_Field$set_answer_feedback, _p33._0, answer_field, feedback));
+				A3(_user$project$Question_Field$set_answer_feedback, _p35._0, answer_field, feedback));
 		} else {
 			return text_component;
 		}
@@ -10529,14 +11176,14 @@ var _user$project$Text_Component$toggle_question_menu = F2(
 			A2(_user$project$Question_Field$set_menu_visible, question_field, visible));
 	});
 var _user$project$Text_Component$set_answer = F2(
-	function (_p34, answer_field) {
-		var _p35 = _p34;
+	function (_p36, answer_field) {
+		var _p37 = _p36;
 		return A4(
 			_user$project$Text_Component$TextComponent,
-			_p35._0,
-			_p35._1,
-			_p35._2,
-			A2(_user$project$Question_Field$set_answer_field, _p35._3, answer_field));
+			_p37._0,
+			_p37._1,
+			_p37._2,
+			A2(_user$project$Question_Field$set_answer_field, _p37._3, answer_field));
 	});
 var _user$project$Text_Component$set_answer_text = F3(
 	function (text_component, answer_field, answer_text) {
@@ -10546,154 +11193,144 @@ var _user$project$Text_Component$set_answer_text = F3(
 			A2(_user$project$Answer_Field$set_answer_text, answer_field, answer_text));
 	});
 var _user$project$Text_Component$set_text = F3(
-	function (_p36, field_name, value) {
-		var _p37 = _p36;
-		var _p42 = _p37._0;
-		var _p41 = _p37._3;
-		var _p40 = _p37._2;
-		var _p39 = _p37._1;
-		var _p38 = field_name;
-		switch (_p38) {
+	function (_p38, field_name, value) {
+		var _p39 = _p38;
+		var _p44 = _p39._0;
+		var _p43 = _p39._3;
+		var _p42 = _p39._2;
+		var _p41 = _p39._1;
+		var _p40 = field_name;
+		switch (_p40) {
 			case 'title':
 				return A4(
 					_user$project$Text_Component$TextComponent,
 					_elm_lang$core$Native_Utils.update(
-						_p42,
+						_p44,
 						{title: value}),
-					_p39,
-					_p40,
-					_p41);
+					_p41,
+					_p42,
+					_p43);
 			case 'source':
 				return A4(
 					_user$project$Text_Component$TextComponent,
 					_elm_lang$core$Native_Utils.update(
-						_p42,
+						_p44,
 						{source: value}),
-					_p39,
-					_p40,
-					_p41);
+					_p41,
+					_p42,
+					_p43);
 			case 'difficulty':
 				return A4(
 					_user$project$Text_Component$TextComponent,
 					_elm_lang$core$Native_Utils.update(
-						_p42,
+						_p44,
 						{difficulty: value}),
-					_p39,
-					_p40,
-					_p41);
+					_p41,
+					_p42,
+					_p43);
 			case 'author':
 				return A4(
 					_user$project$Text_Component$TextComponent,
 					_elm_lang$core$Native_Utils.update(
-						_p42,
+						_p44,
 						{author: value}),
-					_p39,
-					_p40,
-					_p41);
+					_p41,
+					_p42,
+					_p43);
 			case 'body':
 				return A4(
 					_user$project$Text_Component$TextComponent,
 					_elm_lang$core$Native_Utils.update(
-						_p42,
+						_p44,
 						{body: value}),
-					_p39,
-					_p40,
-					_p41);
+					_p41,
+					_p42,
+					_p43);
 			default:
-				return A4(_user$project$Text_Component$TextComponent, _p42, _p39, _p40, _p41);
+				return A4(_user$project$Text_Component$TextComponent, _p44, _p41, _p42, _p43);
 		}
 	});
 var _user$project$Text_Component$set_field = F2(
-	function (_p43, new_text_field) {
-		var _p44 = _p43;
-		var _p49 = _p44._0;
-		var _p48 = _p44._3;
-		var _p47 = _p44._2;
-		var _p46 = _p44._1;
-		var _p45 = new_text_field;
-		switch (_p45.ctor) {
+	function (_p45, new_text_field) {
+		var _p46 = _p45;
+		var _p51 = _p46._0;
+		var _p50 = _p46._3;
+		var _p49 = _p46._2;
+		var _p48 = _p46._1;
+		var _p47 = new_text_field;
+		switch (_p47.ctor) {
 			case 'Title':
 				return A4(
 					_user$project$Text_Component$TextComponent,
-					_p49,
-					_p46,
+					_p51,
+					_p48,
 					_elm_lang$core$Native_Utils.update(
-						_p47,
+						_p49,
 						{
-							title: _user$project$Text_Component$Title(_p45._0)
+							title: _user$project$Text_Component$Title(_p47._0)
 						}),
-					_p48);
+					_p50);
 			case 'Source':
 				return A4(
 					_user$project$Text_Component$TextComponent,
-					_p49,
-					_p46,
+					_p51,
+					_p48,
 					_elm_lang$core$Native_Utils.update(
-						_p47,
+						_p49,
 						{
-							source: _user$project$Text_Component$Source(_p45._0)
+							source: _user$project$Text_Component$Source(_p47._0)
 						}),
-					_p48);
+					_p50);
 			case 'Difficulty':
 				return A4(
 					_user$project$Text_Component$TextComponent,
-					_p49,
-					_p46,
+					_p51,
+					_p48,
 					_elm_lang$core$Native_Utils.update(
-						_p47,
+						_p49,
 						{
-							difficulty: _user$project$Text_Component$Difficulty(_p45._0)
+							difficulty: _user$project$Text_Component$Difficulty(_p47._0)
 						}),
-					_p48);
+					_p50);
 			case 'Author':
 				return A4(
 					_user$project$Text_Component$TextComponent,
-					_p49,
-					_p46,
+					_p51,
+					_p48,
 					_elm_lang$core$Native_Utils.update(
-						_p47,
+						_p49,
 						{
-							author: _user$project$Text_Component$Author(_p45._0)
+							author: _user$project$Text_Component$Author(_p47._0)
 						}),
-					_p48);
+					_p50);
 			default:
 				return A4(
 					_user$project$Text_Component$TextComponent,
-					_p49,
-					_p46,
+					_p51,
+					_p48,
 					_elm_lang$core$Native_Utils.update(
-						_p47,
+						_p49,
 						{
-							body: _user$project$Text_Component$Body(_p45._0)
+							body: _user$project$Text_Component$Body(_p47._0)
 						}),
-					_p48);
+					_p50);
 		}
 	});
 var _user$project$Text_Component$set_body_field = F2(
-	function (_p50, new_body_params) {
-		var _p51 = _p50;
-		return A4(
-			_user$project$Text_Component$TextComponent,
-			_p51._0,
-			_p51._1,
-			_elm_lang$core$Native_Utils.update(
-				_p51._2,
-				{
-					body: _user$project$Text_Component$Body(new_body_params)
-				}),
-			_p51._3);
-	});
-var _user$project$Text_Component$update_question_field = F2(
-	function (_p52, question_field) {
+	function (_p52, new_body_params) {
 		var _p53 = _p52;
 		return A4(
 			_user$project$Text_Component$TextComponent,
 			_p53._0,
 			_p53._1,
-			_p53._2,
-			A2(_user$project$Question_Field$update_question_field, question_field, _p53._3));
+			_elm_lang$core$Native_Utils.update(
+				_p53._2,
+				{
+					body: _user$project$Text_Component$Body(new_body_params)
+				}),
+			_p53._3);
 	});
-var _user$project$Text_Component$delete_question_field = F2(
+var _user$project$Text_Component$update_question_field = F2(
 	function (_p54, question_field) {
 		var _p55 = _p54;
 		return A4(
@@ -10701,16 +11338,26 @@ var _user$project$Text_Component$delete_question_field = F2(
 			_p55._0,
 			_p55._1,
 			_p55._2,
-			A2(_user$project$Question_Field$delete_question_field, question_field, _p55._3));
+			A2(_user$project$Question_Field$update_question_field, question_field, _p55._3));
 	});
-var _user$project$Text_Component$add_new_question = function (_p56) {
-	var _p57 = _p56;
+var _user$project$Text_Component$delete_question_field = F2(
+	function (_p56, question_field) {
+		var _p57 = _p56;
+		return A4(
+			_user$project$Text_Component$TextComponent,
+			_p57._0,
+			_p57._1,
+			_p57._2,
+			A2(_user$project$Question_Field$delete_question_field, question_field, _p57._3));
+	});
+var _user$project$Text_Component$add_new_question = function (_p58) {
+	var _p59 = _p58;
 	return A4(
 		_user$project$Text_Component$TextComponent,
-		_p57._0,
-		_p57._1,
-		_p57._2,
-		_user$project$Question_Field$add_new_question(_p57._3));
+		_p59._0,
+		_p59._1,
+		_p59._2,
+		_user$project$Question_Field$add_new_question(_p59._3));
 };
 
 var _user$project$Text_Component_Group$text_component = F2(
@@ -10727,6 +11374,12 @@ var _user$project$Text_Component_Group$toTexts = function (text_components) {
 		_elm_lang$core$Array$map,
 		_user$project$Text_Component$toText,
 		_user$project$Text_Component_Group$toArray(text_components));
+};
+var _user$project$Text_Component_Group$reinitialize_ck_editors = function (text_component_group) {
+	var text_components = _user$project$Text_Component_Group$toArray(text_component_group);
+	return _elm_lang$core$Platform_Cmd$batch(
+		_elm_lang$core$Array$toList(
+			A2(_elm_lang$core$Array$map, _user$project$Text_Component$reinitialize_ck_editor, text_components)));
 };
 var _user$project$Text_Component_Group$TextComponentGroup = function (a) {
 	return {ctor: 'TextComponentGroup', _0: a};
@@ -10794,6 +11447,10 @@ var _user$project$Quiz_Component$text_components = function (_p0) {
 	var _p1 = _p0;
 	return _p1._1;
 };
+var _user$project$Quiz_Component$reinitialize_ck_editors = function (quiz_component) {
+	var text_component_group = _user$project$Quiz_Component$text_components(quiz_component);
+	return _user$project$Text_Component_Group$reinitialize_ck_editors(text_component_group);
+};
 var _user$project$Quiz_Component$quiz = function (_p2) {
 	var _p3 = _p2;
 	return A2(
@@ -10816,30 +11473,31 @@ var _user$project$Quiz_Component$set_text_components = F2(
 		var _p5 = _p4;
 		return A2(_user$project$Quiz_Component$QuizComponent, _p5._0, new_components);
 	});
+var _user$project$Quiz_Component$update_quiz_errors = F2(
+	function (quiz_component, errors) {
+		var new_text_components = A2(
+			_user$project$Text_Component_Group$update_errors,
+			_user$project$Quiz_Component$text_components(quiz_component),
+			errors);
+		var _p6 = A2(_elm_lang$core$Debug$log, 'quiz errors', errors);
+		return A2(_user$project$Quiz_Component$set_text_components, quiz_component, new_text_components);
+	});
 var _user$project$Quiz_Component$set_quiz_attribute = F3(
-	function (_p6, attr_name, value) {
-		var _p7 = _p6;
-		var _p8 = attr_name;
-		if (_p8 === 'title') {
+	function (_p7, attr_name, value) {
+		var _p8 = _p7;
+		var _p9 = attr_name;
+		if (_p9 === 'title') {
 			return A2(
 				_user$project$Quiz_Component$QuizComponent,
 				_elm_lang$core$Native_Utils.update(
-					_p7._0,
+					_p8._0,
 					{title: value}),
-				_p7._1);
+				_p8._1);
 		} else {
-			return _p7;
+			return _p8;
 		}
 	});
 var _user$project$Quiz_Component$emptyQuizComponent = A2(_user$project$Quiz_Component$QuizComponent, _user$project$Quiz_Model$new_quiz, _user$project$Text_Component_Group$new_group);
-var _user$project$Quiz_Component$init_from_json = function (quiz_json) {
-	var _p9 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Quiz_Decode$quizDecoder, quiz_json);
-	if (_p9.ctor === 'Ok') {
-		return _user$project$Quiz_Component$init(_p9._0);
-	} else {
-		return _user$project$Quiz_Component$emptyQuizComponent;
-	}
-};
 
 var _user$project$Text_Update$post_toggle_field = function (field) {
 	var _p0 = function () {
@@ -11313,6 +11971,7 @@ var _user$project$Answer_View$view_answer = F2(
 	});
 var _user$project$Answer_View$view_editable_answer = F2(
 	function (params, answer_field) {
+		var answer = _user$project$Answer_Field$answer(answer_field);
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -11329,41 +11988,48 @@ var _user$project$Answer_View$view_editable_answer = F2(
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$input,
-					{
-						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'radio'),
-						_1: {
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						{
 							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html_Attributes$attribute,
-								'name',
-								A2(
-									_elm_lang$core$String$join,
-									'_',
-									{
-										ctor: '::',
-										_0: 'question',
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$core$Basics$toString(params.question.order),
-											_1: {
-												ctor: '::',
-												_0: 'correct_answer',
-												_1: {ctor: '[]'}
-											}
-										}
-									})),
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'radio'),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onCheck(
-									function (_p2) {
-										return params.msg(
-											A3(_user$project$Text_Update$UpdateAnswerFieldCorrect, params.text_component, answer_field, _p2));
-									}),
-								_1: {ctor: '[]'}
+								_0: A2(
+									_elm_lang$html$Html_Attributes$attribute,
+									'name',
+									A2(
+										_elm_lang$core$String$join,
+										'_',
+										{
+											ctor: '::',
+											_0: 'question',
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$core$Basics$toString(params.question.order),
+												_1: {
+													ctor: '::',
+													_0: 'correct_answer',
+													_1: {ctor: '[]'}
+												}
+											}
+										})),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onCheck(
+										function (_p2) {
+											return params.msg(
+												A3(_user$project$Text_Update$UpdateAnswerFieldCorrect, params.text_component, answer_field, _p2));
+										}),
+									_1: {ctor: '[]'}
+								}
 							}
-						}
-					},
+						},
+						answer.correct ? {
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'checked', 'checked'),
+							_1: {ctor: '[]'}
+						} : {ctor: '[]'}),
 					{ctor: '[]'}),
 				_1: {
 					ctor: '::',
@@ -11392,6 +12058,113 @@ var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signu
 var _user$project$Config$question_api_endpoint = '/api/question/';
 var _user$project$Config$text_api_endpoint = '/api/text/';
 var _user$project$Config$quiz_api_endpoint = '/api/quiz/';
+
+var _user$project$Date_Utils$am_pm_fmt = function (date) {
+	var _p0 = _elm_lang$core$Native_Utils.cmp(
+		_elm_lang$core$Date$hour(date),
+		12) < 0;
+	if (_p0 === true) {
+		return 'AM';
+	} else {
+		return 'PM';
+	}
+};
+var _user$project$Date_Utils$pad_zero = F2(
+	function (zeros, num) {
+		var _p1 = _elm_lang$core$String$toInt(
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'1',
+				A2(_elm_lang$core$String$repeat, zeros - 1, '0')));
+		if (_p1.ctor === 'Ok') {
+			var _p2 = _elm_lang$core$Native_Utils.cmp(num, _p1._0) > 0;
+			if (_p2 === true) {
+				return _elm_lang$core$Basics$toString(num);
+			} else {
+				return A2(
+					_elm_lang$core$Basics_ops['++'],
+					A2(_elm_lang$core$String$repeat, zeros, '0'),
+					_elm_lang$core$Basics$toString(num));
+			}
+		} else {
+			return _elm_lang$core$Basics$toString(num);
+		}
+	});
+var _user$project$Date_Utils$hour_min_sec_fmt = function (date) {
+	return A2(
+		_elm_lang$core$String$join,
+		' ',
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$core$String$join,
+				':',
+				{
+					ctor: '::',
+					_0: A2(
+						_user$project$Date_Utils$pad_zero,
+						1,
+						_elm_lang$core$Date$hour(date) - 12),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_user$project$Date_Utils$pad_zero,
+							1,
+							_elm_lang$core$Date$minute(date)),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_user$project$Date_Utils$pad_zero,
+								1,
+								_elm_lang$core$Date$second(date)),
+							_1: {ctor: '[]'}
+						}
+					}
+				}),
+			_1: {
+				ctor: '::',
+				_0: _user$project$Date_Utils$am_pm_fmt(date),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Date_Utils$month_day_year_fmt = function (date) {
+	return A3(
+		_elm_lang$core$List$foldr,
+		F2(
+			function (x, y) {
+				return A2(_elm_lang$core$Basics_ops['++'], x, y);
+			}),
+		'',
+		A2(
+			_elm_lang$core$List$map,
+			function (s) {
+				return A2(_elm_lang$core$Basics_ops['++'], s, '  ');
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$core$Basics$toString(
+					_elm_lang$core$Date$month(date)),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$core$Basics_ops['++'],
+						_elm_lang$core$Basics$toString(
+							_elm_lang$core$Date$day(date)),
+						','),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Date_Utils$hour_min_sec_fmt(date),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$core$Basics$toString(
+								_elm_lang$core$Date$year(date)),
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			}));
+};
 
 var _user$project$Profile$tupleDecoder = A3(
 	_elm_lang$core$Json_Decode$map2,
@@ -11597,6 +12370,19 @@ var _user$project$HttpHelpers$post_with_headers = F4(
 		return _elm_lang$http$Http$request(
 			{
 				method: 'POST',
+				headers: headers,
+				url: url,
+				body: body,
+				expect: _elm_lang$http$Http$expectJson(decoder),
+				timeout: _elm_lang$core$Maybe$Nothing,
+				withCredentials: false
+			});
+	});
+var _user$project$HttpHelpers$put_with_headers = F4(
+	function (url, headers, body, decoder) {
+		return _elm_lang$http$Http$request(
+			{
+				method: 'PUT',
 				headers: headers,
 				url: url,
 				body: body,
@@ -12947,16 +13733,75 @@ var _user$project$Text_Subscriptions$subscriptions = F2(
 			});
 	});
 
+var _user$project$Main$view_quiz_date = F2(
+	function (quiz_component, quiz_field) {
+		var quiz = _user$project$Quiz_Component$quiz(quiz_component);
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'quiz_dates'),
+				_1: {ctor: '[]'}
+			},
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				function () {
+					var _p0 = quiz.modified_dt;
+					if (_p0.ctor === 'Just') {
+						return {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$span,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											'Last Modified: ',
+											_user$project$Date_Utils$month_day_year_fmt(_p0._0))),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						};
+					} else {
+						return {ctor: '[]'};
+					}
+				}(),
+				function () {
+					var _p1 = quiz.created_dt;
+					if (_p1.ctor === 'Just') {
+						return {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$span,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											'Created: ',
+											_user$project$Date_Utils$month_day_year_fmt(_p1._0))),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						};
+					} else {
+						return {ctor: '[]'};
+					}
+				}()));
+	});
 var _user$project$Main$view_editable = F2(
-	function (quiz_component, _p0) {
-		var _p1 = _p0;
-		var _p4 = _p1;
-		var _p3 = _p1._0;
-		var _p2 = _p3.editable;
-		if (_p2 === true) {
-			return A2(_p3.edit, quiz_component, _p4);
+	function (quiz_component, _p2) {
+		var _p3 = _p2;
+		var _p6 = _p3;
+		var _p5 = _p3._0;
+		var _p4 = _p5.editable;
+		if (_p4 === true) {
+			return A2(_p5.edit, quiz_component, _p6);
 		} else {
-			return A2(_p3.view, quiz_component, _p4);
+			return A2(_p5.view, quiz_component, _p6);
 		}
 	});
 var _user$project$Main$view_quiz = function (model) {
@@ -12984,10 +13829,10 @@ var _user$project$Main$view_quiz = function (model) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Main$view_success_msg = function (msg) {
+var _user$project$Main$view_msg = function (msg) {
 	var msg_str = function () {
-		var _p5 = msg;
-		if (_p5.ctor === 'Just') {
+		var _p7 = msg;
+		if (_p7.ctor === 'Just') {
 			return A2(
 				_elm_lang$core$String$join,
 				' ',
@@ -12996,7 +13841,7 @@ var _user$project$Main$view_success_msg = function (msg) {
 					_0: ' ',
 					_1: {
 						ctor: '::',
-						_0: _p5._0,
+						_0: _p7._0,
 						_1: {ctor: '[]'}
 					}
 				});
@@ -13006,24 +13851,68 @@ var _user$project$Main$view_success_msg = function (msg) {
 	}();
 	return _elm_lang$html$Html$text(msg_str);
 };
-var _user$project$Main$view_msg = function (msg) {
-	var _p6 = msg;
-	if (_p6.ctor === 'Just') {
+var _user$project$Main$view_msgs = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'msgs'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'error_msg'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _user$project$Main$view_msg(model.error_msg),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'success_msg'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _user$project$Main$view_msg(model.success_msg),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Main$view_error_msg = function (msg) {
+	var _p8 = msg;
+	if (_p8.ctor === 'Just') {
 		return _elm_lang$html$Html$text(
-			_elm_lang$core$Basics$toString(_p6._0));
+			_elm_lang$core$Basics$toString(_p8._0));
 	} else {
 		return _elm_lang$html$Html$text('');
 	}
 };
 var _user$project$Main$textDifficultyDecoder = _elm_lang$core$Json_Decode$keyValuePairs(_elm_lang$core$Json_Decode$string);
 var _user$project$Main$update_quiz_field = F2(
-	function (quiz_fields, _p7) {
-		var _p8 = _p7;
-		return A3(_elm_lang$core$Array$set, _p8._0.index, _p8, quiz_fields);
+	function (quiz_fields, _p9) {
+		var _p10 = _p9;
+		return A3(_elm_lang$core$Array$set, _p10._0.index, _p10, quiz_fields);
 	});
-var _user$project$Main$Model = F7(
-	function (a, b, c, d, e, f, g) {
-		return {flags: a, profile: b, success_msg: c, error_msg: d, quiz_component: e, quiz_fields: f, question_difficulties: g};
+var _user$project$Main$Model = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {flags: a, edit_mode: b, profile: c, success_msg: d, error_msg: e, quiz_component: f, quiz_fields: g, question_difficulties: h};
+	});
+var _user$project$Main$Task = F2(
+	function (a, b) {
+		return {ctor: 'Task', _0: a, _1: b};
 	});
 var _user$project$Main$QuizField = function (a) {
 	return {ctor: 'QuizField', _0: a};
@@ -13032,13 +13921,38 @@ var _user$project$Main$new_quiz_field = function (attrs) {
 	return _user$project$Main$QuizField(attrs);
 };
 var _user$project$Main$update_editable = F2(
-	function (_p9, editable) {
-		var _p10 = _p9;
+	function (_p11, editable) {
+		var _p12 = _p11;
 		return _user$project$Main$QuizField(
 			_elm_lang$core$Native_Utils.update(
-				_p10._0,
+				_p12._0,
 				{editable: editable}));
 	});
+var _user$project$Main$ClearMessages = function (a) {
+	return {ctor: 'ClearMessages', _0: a};
+};
+var _user$project$Main$QuizJSONDecode = function (a) {
+	return {ctor: 'QuizJSONDecode', _0: a};
+};
+var _user$project$Main$quizJSONtoComponent = function (quiz) {
+	var _p13 = quiz;
+	if (_p13.ctor === 'Just') {
+		return A2(
+			_elm_lang$core$Task$attempt,
+			_user$project$Main$QuizJSONDecode,
+			function () {
+				var _p14 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Quiz_Decode$quizDecoder, _p13._0);
+				if (_p14.ctor === 'Ok') {
+					return _elm_lang$core$Task$succeed(
+						_user$project$Quiz_Component$init(_p14._0));
+				} else {
+					return _elm_lang$core$Task$fail(_p14._0);
+				}
+			}());
+	} else {
+		return _elm_lang$core$Platform_Cmd$none;
+	}
+};
 var _user$project$Main$UpdateQuizAttributes = F2(
 	function (a, b) {
 		return {ctor: 'UpdateQuizAttributes', _0: a, _1: b};
@@ -13073,8 +13987,8 @@ var _user$project$Main$view_quiz_title = F2(
 			});
 	});
 var _user$project$Main$edit_quiz_title = F2(
-	function (quiz_component, _p11) {
-		var _p12 = _p11;
+	function (quiz_component, _p15) {
+		var _p16 = _p15;
 		var quiz = _user$project$Quiz_Component$quiz(quiz_component);
 		return A2(
 			_elm_lang$html$Html$input,
@@ -13086,7 +14000,7 @@ var _user$project$Main$edit_quiz_title = F2(
 					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', quiz.title),
 					_1: {
 						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', _p12._0.id),
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', _p16._0.id),
 						_1: {
 							ctor: '::',
 							_0: _elm_lang$html$Html_Events$onInput(
@@ -13094,7 +14008,7 @@ var _user$project$Main$edit_quiz_title = F2(
 							_1: {
 								ctor: '::',
 								_0: _elm_lang$html$Html_Events$onBlur(
-									A2(_user$project$Main$ToggleEditable, _p12, false)),
+									A2(_user$project$Main$ToggleEditable, _p16, false)),
 								_1: {ctor: '[]'}
 							}
 						}
@@ -13106,6 +14020,63 @@ var _user$project$Main$edit_quiz_title = F2(
 var _user$project$Main$TextComponentMsg = function (a) {
 	return {ctor: 'TextComponentMsg', _0: a};
 };
+var _user$project$Main$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$batch(
+		{
+			ctor: '::',
+			_0: A2(_user$project$Text_Subscriptions$subscriptions, _user$project$Main$TextComponentMsg, model),
+			_1: {
+				ctor: '::',
+				_0: function () {
+					var _p17 = model.success_msg;
+					if (_p17.ctor === 'Just') {
+						return A2(_elm_lang$core$Time$every, _elm_lang$core$Time$second * 3, _user$project$Main$ClearMessages);
+					} else {
+						return _elm_lang$core$Platform_Sub$none;
+					}
+				}(),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Main$Updated = function (a) {
+	return {ctor: 'Updated', _0: a};
+};
+var _user$project$Main$update_quiz = F2(
+	function (csrftoken, quiz) {
+		var _p18 = quiz.id;
+		if (_p18.ctor === 'Just') {
+			var encoded_quiz = _user$project$Quiz_Encode$quizEncoder(quiz);
+			var req = A4(
+				_user$project$HttpHelpers$put_with_headers,
+				A2(
+					_elm_lang$core$String$join,
+					'',
+					{
+						ctor: '::',
+						_0: _user$project$Config$quiz_api_endpoint,
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$core$Basics$toString(_p18._0),
+							_1: {
+								ctor: '::',
+								_0: '/',
+								_1: {ctor: '[]'}
+							}
+						}
+					}),
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
+					_1: {ctor: '[]'}
+				},
+				_elm_lang$http$Http$jsonBody(encoded_quiz),
+				_user$project$Quiz_Decode$quizUpdateRespDecoder);
+			return A2(_elm_lang$http$Http$send, _user$project$Main$Updated, req);
+		} else {
+			return _elm_lang$core$Platform_Cmd$none;
+		}
+	});
 var _user$project$Main$Submitted = function (a) {
 	return {ctor: 'Submitted', _0: a};
 };
@@ -13121,73 +14092,115 @@ var _user$project$Main$post_quiz = F2(
 				_1: {ctor: '[]'}
 			},
 			_elm_lang$http$Http$jsonBody(encoded_quiz),
-			_user$project$Text_Decode$textCreateRespDecoder);
+			_user$project$Quiz_Decode$quizCreateRespDecoder);
 		return A2(_elm_lang$http$Http$send, _user$project$Main$Submitted, req);
 	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p13 = msg;
-		switch (_p13.ctor) {
+		var _p19 = msg;
+		switch (_p19.ctor) {
 			case 'TextComponentMsg':
-				return A2(_user$project$Text_Update$update, _p13._0, model);
+				return A2(_user$project$Text_Update$update, _p19._0, model);
 			case 'SubmitQuiz':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{error_msg: _elm_lang$core$Maybe$Nothing, success_msg: _elm_lang$core$Maybe$Nothing}),
-					_1: A2(
-						_user$project$Main$post_quiz,
-						model.flags.csrftoken,
-						_user$project$Quiz_Component$quiz(model.quiz_component))
+					_1: function () {
+						var save_quiz = function () {
+							var _p20 = model.edit_mode;
+							if (_p20 === true) {
+								return _user$project$Main$update_quiz;
+							} else {
+								return _user$project$Main$post_quiz;
+							}
+						}();
+						return A2(
+							save_quiz,
+							model.flags.csrftoken,
+							_user$project$Quiz_Component$quiz(model.quiz_component));
+					}()
+				};
+			case 'QuizJSONDecode':
+				var _p21 = _p19._0;
+				if (_p21.ctor === 'Ok') {
+					var _p22 = _p21._0;
+					var quiz = _user$project$Quiz_Component$quiz(_p22);
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								quiz_component: _p22,
+								edit_mode: true,
+								success_msg: _elm_lang$core$Maybe$Just(
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										'editing \'',
+										A2(_elm_lang$core$Basics_ops['++'], quiz.title, '\' quiz')))
+							}),
+						_1: _user$project$Quiz_Component$reinitialize_ck_editors(_p22)
+					};
+				} else {
+					var _p23 = A2(_elm_lang$core$Debug$log, 'quiz decode error', _p21._0);
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								error_msg: _elm_lang$core$Maybe$Just('Something went wrong loading the quiz from the server.'),
+								success_msg: _elm_lang$core$Maybe$Just('Editing a new quiz')
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				}
+			case 'ClearMessages':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{success_msg: _elm_lang$core$Maybe$Nothing}),
+					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'Submitted':
-				if (_p13._0.ctor === 'Ok') {
-					var _p14 = _p13._0._0.id;
-					if (_p14.ctor === 'Just') {
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{
-									success_msg: _elm_lang$core$Maybe$Just(
-										A2(
-											_elm_lang$core$String$join,
-											' ',
-											{
-												ctor: '::',
-												_0: ' success!',
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$core$Basics$toString(_p14._0),
-													_1: {ctor: '[]'}
-												}
-											}))
-								}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					} else {
-						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-					}
+				if (_p19._0.ctor === 'Ok') {
+					var quiz = _user$project$Quiz_Component$quiz(model.quiz_component);
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								success_msg: _elm_lang$core$Maybe$Just(
+									A2(
+										_elm_lang$core$String$join,
+										' ',
+										{
+											ctor: '::',
+											_0: A2(
+												_elm_lang$core$Basics_ops['++'],
+												' saved \'',
+												A2(_elm_lang$core$Basics_ops['++'], quiz.title, '\'')),
+											_1: {ctor: '[]'}
+										})),
+								edit_mode: true
+							}),
+						_1: _elm_lang$navigation$Navigation$load(_p19._0._0.redirect)
+					};
 				} else {
-					var _p15 = _p13._0._0;
-					switch (_p15.ctor) {
+					var _p24 = _p19._0._0;
+					switch (_p24.ctor) {
 						case 'BadStatus':
-							var _p16 = _user$project$Text_Decode$decodeCreateRespErrors(
-								A2(_elm_lang$core$Debug$log, 'errors', _p15._0.body));
-							if (_p16.ctor === 'Ok') {
-								var _p18 = _p16._0;
-								var new_text_components = A2(
-									_user$project$Text_Component_Group$update_errors,
-									_user$project$Quiz_Component$text_components(model.quiz_component),
-									_p18);
-								var _p17 = A2(_elm_lang$core$Debug$log, 'displaying validations', _p18);
+							var _p27 = _p24._0;
+							var _p25 = A2(_elm_lang$core$Debug$log, 'submit quiz bad status error', _p27.body);
+							var _p26 = _user$project$Quiz_Decode$decodeRespErrors(_p27.body);
+							if (_p26.ctor === 'Ok') {
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
 										model,
 										{
-											quiz_component: A2(_user$project$Quiz_Component$set_text_components, model.quiz_component, new_text_components)
+											quiz_component: A2(_user$project$Quiz_Component$update_quiz_errors, model.quiz_component, _p26._0)
 										}),
 									_1: _elm_lang$core$Platform_Cmd$none
 								};
@@ -13195,18 +14208,69 @@ var _user$project$Main$update = F2(
 								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 							}
 						case 'BadPayload':
+							var _p28 = A2(_elm_lang$core$Debug$log, 'submit quiz bad payload error', _p24._1.body);
+							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+						default:
+							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					}
+				}
+			case 'Updated':
+				if (_p19._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								success_msg: _elm_lang$core$Maybe$Just(
+									A2(
+										_elm_lang$core$String$join,
+										' ',
+										{
+											ctor: '::',
+											_0: ' updated',
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$core$Basics$toString(_p19._0._0.id),
+												_1: {ctor: '[]'}
+											}
+										}))
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					var _p29 = _p19._0._0;
+					switch (_p29.ctor) {
+						case 'BadStatus':
+							var _p32 = _p29._0;
+							var _p30 = A2(_elm_lang$core$Debug$log, 'update error bad status', _p32);
+							var _p31 = _user$project$Quiz_Decode$decodeRespErrors(_p32.body);
+							if (_p31.ctor === 'Ok') {
+								return {
+									ctor: '_Tuple2',
+									_0: _elm_lang$core$Native_Utils.update(
+										model,
+										{
+											quiz_component: A2(_user$project$Quiz_Component$update_quiz_errors, model.quiz_component, _p31._0)
+										}),
+									_1: _elm_lang$core$Platform_Cmd$none
+								};
+							} else {
+								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+							}
+						case 'BadPayload':
+							var _p33 = A2(_elm_lang$core$Debug$log, 'update error bad payload', _p29._1);
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 						default:
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 					}
 				}
 			case 'UpdateTextDifficultyOptions':
-				if (_p13._0.ctor === 'Ok') {
+				if (_p19._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{question_difficulties: _p13._0._0}),
+							{question_difficulties: _p19._0._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
@@ -13218,7 +14282,7 @@ var _user$project$Main$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							quiz_component: A3(_user$project$Quiz_Component$set_quiz_attribute, model.quiz_component, _p13._0, _p13._1)
+							quiz_component: A3(_user$project$Quiz_Component$set_quiz_attribute, model.quiz_component, _p19._0, _p19._1)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -13231,9 +14295,9 @@ var _user$project$Main$update = F2(
 							quiz_fields: A2(
 								_user$project$Main$update_quiz_field,
 								model.quiz_fields,
-								A2(_user$project$Main$update_editable, _p13._0, _p13._1))
+								A2(_user$project$Main$update_editable, _p19._0, _p19._1))
 						}),
-					_1: _user$project$Ports$selectAllInputText(_p13._0._0.id)
+					_1: _user$project$Ports$selectAllInputText(_p19._0._0.id)
 				};
 		}
 	});
@@ -13269,12 +14333,8 @@ var _user$project$Main$view_submit = function (model) {
 					_0: _elm_lang$html$Html$text('Save Quiz '),
 					_1: {
 						ctor: '::',
-						_0: _user$project$Main$view_msg(model.error_msg),
-						_1: {
-							ctor: '::',
-							_0: _user$project$Main$view_success_msg(model.success_msg),
-							_1: {ctor: '[]'}
-						}
+						_0: _user$project$Main$view_msgs(model),
+						_1: {ctor: '[]'}
 					}
 				}),
 			_1: {
@@ -13356,36 +14416,39 @@ var _user$project$Main$init = function (flags) {
 		ctor: '_Tuple2',
 		_0: {
 			flags: flags,
+			edit_mode: false,
 			success_msg: _elm_lang$core$Maybe$Nothing,
 			error_msg: _elm_lang$core$Maybe$Nothing,
 			profile: _user$project$Profile$init_profile(flags),
-			quiz_component: function () {
-				var _p19 = flags.quiz;
-				if (_p19.ctor === 'Just') {
-					return _user$project$Quiz_Component$init_from_json(_p19._0);
-				} else {
-					return _user$project$Quiz_Component$emptyQuizComponent;
-				}
-			}(),
+			quiz_component: _user$project$Quiz_Component$emptyQuizComponent,
 			quiz_fields: _elm_lang$core$Array$fromList(
 				{
 					ctor: '::',
 					_0: _user$project$Main$new_quiz_field(
 						{id: 'quiz_title', editable: false, error: false, view: _user$project$Main$view_quiz_title, name: 'title', edit: _user$project$Main$edit_quiz_title, index: 0}),
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: _user$project$Main$new_quiz_field(
+							{id: 'quiz_date', editable: false, error: false, view: _user$project$Main$view_quiz_date, name: 'quiz_dates', edit: _user$project$Main$view_quiz_date, index: 1}),
+						_1: {ctor: '[]'}
+					}
 				}),
 			question_difficulties: {ctor: '[]'}
 		},
-		_1: _user$project$Main$retrieveTextDifficultyOptions
+		_1: _elm_lang$core$Platform_Cmd$batch(
+			{
+				ctor: '::',
+				_0: _user$project$Main$retrieveTextDifficultyOptions,
+				_1: {
+					ctor: '::',
+					_0: _user$project$Main$quizJSONtoComponent(flags.quiz),
+					_1: {ctor: '[]'}
+				}
+			})
 	};
 };
 var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
-	{
-		init: _user$project$Main$init,
-		view: _user$project$Main$view,
-		subscriptions: _user$project$Text_Subscriptions$subscriptions(_user$project$Main$TextComponentMsg),
-		update: _user$project$Main$update
-	})(
+	{init: _user$project$Main$init, view: _user$project$Main$view, subscriptions: _user$project$Main$subscriptions, update: _user$project$Main$update})(
 	A2(
 		_elm_lang$core$Json_Decode$andThen,
 		function (quiz) {

@@ -1,11 +1,12 @@
-module Quiz.Component exposing (QuizComponent, init_from_json, emptyQuizComponent, text_components, set_text_components
-  , quiz, set_quiz_attribute)
+module Quiz.Component exposing (QuizComponent, emptyQuizComponent, text_components, set_text_components
+  , quiz, set_quiz_attribute, init, update_quiz_errors, reinitialize_ck_editors)
 
 import Quiz.Model as Quiz exposing (Quiz)
 import Quiz.Decode
 
 import Text.Component.Group exposing (TextComponentGroup)
 
+import Dict exposing (Dict)
 import Json.Encode
 import Json.Decode
 
@@ -13,11 +14,6 @@ type alias QuizAttributeName = String
 
 type QuizComponent = QuizComponent Quiz TextComponentGroup
 
-
-init_from_json : Json.Encode.Value -> QuizComponent
-init_from_json quiz_json = case Json.Decode.decodeValue Quiz.Decode.quizDecoder quiz_json of
-  Ok quiz -> init quiz
-  Err err -> emptyQuizComponent
 
 init : Quiz -> QuizComponent
 init quiz =
@@ -44,3 +40,19 @@ set_quiz_attribute ((QuizComponent quiz components) as quiz_component) attr_name
 emptyQuizComponent : QuizComponent
 emptyQuizComponent =
   QuizComponent Quiz.new_quiz (Text.Component.Group.new_group)
+
+reinitialize_ck_editors : QuizComponent -> Cmd msg
+reinitialize_ck_editors quiz_component =
+  let
+    text_component_group = text_components quiz_component
+  in
+    Text.Component.Group.reinitialize_ck_editors text_component_group
+
+update_quiz_errors : QuizComponent -> Dict String String -> QuizComponent
+update_quiz_errors quiz_component errors =
+  let
+    _ = (Debug.log "quiz errors" errors)
+    new_text_components =
+      Text.Component.Group.update_errors (text_components quiz_component) errors
+  in
+    (set_text_components quiz_component new_text_components)

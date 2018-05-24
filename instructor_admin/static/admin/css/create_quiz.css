@@ -336,7 +336,7 @@ body {
 
 .submit_section {
     display: grid;
-    margin-top: 3%;
+    margin-top: 25px;
 
     grid-template-columns: 15% 20% auto 20% 20%;
 }
@@ -349,4 +349,11 @@ body {
 .input_error {
     border: 1px solid #ff0000;
     background-color: #ffeeee;
+}
+
+.quiz_dates {
+    display: grid;
+    grid-template-columns: auto;
+
+    margin-top: 25px;
 }

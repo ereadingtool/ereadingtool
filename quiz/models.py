@@ -1,8 +1,9 @@
 from django.db import models
 from typing import TypeVar, Optional
+from mixins.model import Timestamped
 
 
-class Quiz(models.Model):
+class Quiz(Timestamped, models.Model):
     title = models.CharField(max_length=255, null=False, blank=False)
 
     @classmethod
@@ -39,5 +40,7 @@ class Quiz(models.Model):
         return {
             'id': self.pk,
             'title': self.title,
+            'modified_dt': self.modified_dt.isoformat(),
+            'created_dt': self.created_dt.isoformat(),
             'texts': [text.to_dict() for text in (texts if texts else self.texts.all())]
         }

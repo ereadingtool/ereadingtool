@@ -176,3 +176,23 @@ body {
     background: #FFFFFF;
     border: solid 0.5px lightgrey;
 }
+
+.msgs {
+    display: grid;
+    grid-template-columns: auto;
+
+    z-index: 99;
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    font-size: 18px;
+}
+
+.success_msg {
+    background-color: #93c6ef;
+}
+
+.error_msg {
+    background-color: #ff2222;
+}

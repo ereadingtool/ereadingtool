@@ -1,5 +1,4 @@
-module Text.Decode exposing (textDecoder, textsDecoder, textCreateRespDecoder, decodeCreateRespErrors
-  , textCreateRespErrDecoder, TextCreateRespError, TextCreateResp)
+module Text.Decode exposing (textDecoder, textsDecoder, TextCreateResp)
 
 import Json.Decode as Decode
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
@@ -14,7 +13,6 @@ import Field
 
 type alias TextCreateResp = { id: Maybe Field.ID }
 
-type alias TextCreateRespError = Dict String String
 
 textDecoder : Decode.Decoder Text
 textDecoder =
@@ -33,13 +31,3 @@ textDecoder =
 textsDecoder : Decode.Decoder (List Text)
 textsDecoder = Decode.list textDecoder
 
-textCreateRespDecoder : Decode.Decoder (TextCreateResp)
-textCreateRespDecoder =
-  decode TextCreateResp
-    |> optional "id" (Decode.maybe Field.fieldIDDecoder) Nothing
-
-textCreateRespErrDecoder : Decode.Decoder (TextCreateRespError)
-textCreateRespErrDecoder = Decode.dict Decode.string
-
-decodeCreateRespErrors : String -> Result String TextCreateRespError
-decodeCreateRespErrors str = Decode.decodeString textCreateRespErrDecoder str

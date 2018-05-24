@@ -9,6 +9,8 @@ from django.db import IntegrityError
 
 from django.http import Http404
 
+from django.urls import reverse
+
 from django.core.exceptions import ValidationError
 from typing import TypeVar
 
@@ -181,6 +183,6 @@ class QuizAPIView(LoginRequiredMixin, View):
             quiz = Quiz.create(text_params=text_params, **quiz_params)
             quiz.save()
 
-            return HttpResponse(json.dumps({'id': quiz.pk}))
+            return HttpResponse(json.dumps({'id': quiz.pk, 'redirect': reverse('quiz-edit', kwargs={'pk': quiz.pk})}))
         except IntegrityError as e:
             return HttpResponse(json.dumps({'errors': 'something went wrong'}))

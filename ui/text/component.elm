@@ -2,7 +2,7 @@ module Text.Component exposing (TextComponent, TextField(..), TextBodyFieldParam
   , source, difficulty, author, question_fields, attributes, set_field, set_text, index, delete_question_field
   , set_answer, set_answer_text, set_question, switch_editable, add_new_question, toggle_question_menu, update_body
   , update_question_field, set_answer_correct, set_answer_feedback, text_field_id, editable, toText, fromText
-  , post_toggle_commands)
+  , post_toggle_commands, reinitialize_ck_editor)
 
 import Array exposing (Array)
 import Field
@@ -11,7 +11,7 @@ import Text.Model exposing (Text, TextDifficulty)
 import Question.Field exposing (QuestionField, generate_question_field)
 import Answer.Field
 
-import Ports exposing (ckEditor, CKEditorID, CKEditorText)
+import Ports exposing (ckEditor, ckEditorSetHtml, CKEditorID, CKEditorText)
 
 type alias TextFieldParams = Field.FieldAttributes { name : String }
 type alias TextBodyFieldParams = Field.FieldAttributes { name : String, ckeditor_id : String }
@@ -66,6 +66,15 @@ fromText : Int -> Text -> TextComponent
 fromText i text =
   TextComponent text { index=i } (generate_text_fields i) (Question.Field.fromQuestions text.questions)
 
+
+reinitialize_ck_editor : TextComponent -> Cmd msg
+reinitialize_ck_editor text_component =
+ let
+   t = text text_component
+ in
+   case body text_component of
+     Body params -> Cmd.batch [ckEditor params.id, ckEditorSetHtml (params.id, t.body)]
+     _ -> Cmd.none
 
 emptyTextComponent : Int -> TextComponent
 emptyTextComponent i =

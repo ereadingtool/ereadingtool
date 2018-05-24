@@ -59,28 +59,31 @@ edit_answer : (AnswerFieldParams msg) -> AnswerField -> Html msg
 edit_answer params answer_field =
   let
     answer = Answer.Field.answer answer_field
-  in Html.span [] [
-    Html.input [
-        attribute "type" "text"
-      , attribute "value" answer.text
-      , attribute "id" (Answer.Field.id answer_field)
-      , onInput (UpdateAnswerFieldValue params.text_component answer_field >> params.msg)
-      , classList [ ("input_error", Answer.Field.error answer_field) ]
-    ] []
-  , (edit_answer_feedback params answer_field)
-  ]
+  in
+    Html.span [] [
+      Html.input [
+          attribute "type" "text"
+        , attribute "value" answer.text
+        , attribute "id" (Answer.Field.id answer_field)
+        , onInput (UpdateAnswerFieldValue params.text_component answer_field >> params.msg)
+        , classList [ ("input_error", Answer.Field.error answer_field) ]
+      ] []
+    , (edit_answer_feedback params answer_field)
+    ]
 
 view_editable_answer : (AnswerFieldParams msg) -> AnswerField -> Html msg
-view_editable_answer params answer_field = div [
-    classList [("answer_item", True)] ] [
-          Html.input [
-              attribute "type" "radio"
-            , attribute "name" (String.join "_" [
-                  "question"
-                , toString params.question.order, "correct_answer"])
-            , onCheck (UpdateAnswerFieldCorrect params.text_component answer_field >> params.msg)
-          ] []
-       ,  (case (Answer.Field.editable answer_field) of
-             True -> edit_answer params answer_field
-             False -> view_answer params answer_field)
+view_editable_answer params answer_field =
+  let
+    answer = Answer.Field.answer answer_field
+  in
+    div [
+      classList [("answer_item", True)] ] [
+        Html.input ([
+           attribute "type" "radio"
+         , attribute "name" (String.join "_" ["question", toString params.question.order, "correct_answer"])
+         , onCheck (UpdateAnswerFieldCorrect params.text_component answer_field >> params.msg)
+        ] ++ (if answer.correct then [attribute "checked" "checked"] else [])) []
+    , (case (Answer.Field.editable answer_field) of
+         True -> edit_answer params answer_field
+         False -> view_answer params answer_field)
     ]
