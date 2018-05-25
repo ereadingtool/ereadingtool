@@ -9352,10 +9352,6 @@ var _user$project$Profile$init_profile = function (flags) {
 var _user$project$Flags$UnAuthedFlags = function (a) {
 	return {csrftoken: a};
 };
-var _user$project$Flags$Flags = F5(
-	function (a, b, c, d, e) {
-		return {csrftoken: a, profile_id: b, profile_type: c, instructor_profile: d, student_profile: e};
-	});
 
 var _user$project$Views$view_preview = A2(
 	_elm_lang$html$Html$div,
@@ -9503,12 +9499,12 @@ var _user$project$Views$view_filter = A2(
 						_elm_lang$html$Html$a,
 						{
 							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/admin/create-quiz'),
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/admin/quiz/'),
 							_1: {ctor: '[]'}
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('Create Text'),
+							_0: _elm_lang$html$Html$text('Create Quiz'),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}
@@ -9601,7 +9597,7 @@ var _user$project$Views$menu_items = _user$project$Views$MenuItems(
 	_elm_lang$core$Array$fromList(
 		{
 			ctor: '::',
-			_0: A3(_user$project$Views$MenuItem, '/admin/', 'Quizzes', false),
+			_0: A3(_user$project$Views$MenuItem, '/admin/quizzes/', 'Quizzes', false),
 			_1: {
 				ctor: '::',
 				_0: A3(_user$project$Views$MenuItem, '/login/student/', 'Student Login', false),

@@ -24,7 +24,8 @@ update_text_components (TextComponentGroup text_components) text_component =
   TextComponentGroup (Array.set (Text.Component.index text_component) text_component text_components)
 
 add_new_text : TextComponentGroup -> TextComponentGroup
-add_new_text (TextComponentGroup text_components) = let
+add_new_text (TextComponentGroup text_components) =
+  let
     arr_len = Array.length text_components
   in
     TextComponentGroup (Array.push (Text.Component.emptyTextComponent arr_len) text_components)

@@ -20954,10 +20954,6 @@ var _user$project$Profile$init_profile = function (flags) {
 var _user$project$Flags$UnAuthedFlags = function (a) {
 	return {csrftoken: a};
 };
-var _user$project$Flags$Flags = F5(
-	function (a, b, c, d, e) {
-		return {csrftoken: a, profile_id: b, profile_type: c, instructor_profile: d, student_profile: e};
-	});
 
 var _user$project$Question_Decode$questionDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -21003,6 +20999,8 @@ var _user$project$Quiz_Model$set_texts = F2(
 var _user$project$Quiz_Model$new_quiz = {
 	id: _elm_lang$core$Maybe$Nothing,
 	title: '',
+	created_dt: _elm_lang$core$Maybe$Nothing,
+	modified_dt: _elm_lang$core$Maybe$Nothing,
 	texts: _elm_lang$core$Array$fromList(
 		{
 			ctor: '::',
@@ -21010,15 +21008,15 @@ var _user$project$Quiz_Model$new_quiz = {
 			_1: {ctor: '[]'}
 		})
 };
-var _user$project$Quiz_Model$Quiz = F3(
-	function (a, b, c) {
-		return {id: a, title: b, texts: c};
+var _user$project$Quiz_Model$Quiz = F5(
+	function (a, b, c, d, e) {
+		return {id: a, title: b, created_dt: c, modified_dt: d, texts: e};
+	});
+var _user$project$Quiz_Model$QuizListItem = F5(
+	function (a, b, c, d, e) {
+		return {id: a, title: b, created_dt: c, modified_dt: d, text_count: e};
 	});
 
-var _user$project$Text_Decode$textCreateRespErrDecoder = _elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string);
-var _user$project$Text_Decode$decodeCreateRespErrors = function (str) {
-	return A2(_elm_lang$core$Json_Decode$decodeString, _user$project$Text_Decode$textCreateRespErrDecoder, str);
-};
 var _user$project$Text_Decode$textDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'body',
@@ -21064,26 +21062,80 @@ var _user$project$Text_Decode$textsDecoder = _elm_lang$core$Json_Decode$list(_us
 var _user$project$Text_Decode$TextCreateResp = function (a) {
 	return {id: a};
 };
-var _user$project$Text_Decode$textCreateRespDecoder = A4(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optional,
-	'id',
-	_elm_lang$core$Json_Decode$maybe(_user$project$Field$fieldIDDecoder),
-	_elm_lang$core$Maybe$Nothing,
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextCreateResp));
 
+var _user$project$Quiz_Decode$quizCreateRespErrDecoder = _elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string);
+var _user$project$Quiz_Decode$decodeRespErrors = function (str) {
+	return A2(_elm_lang$core$Json_Decode$decodeString, _user$project$Quiz_Decode$quizCreateRespErrDecoder, str);
+};
+var _user$project$Quiz_Decode$quizListItemDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'text_count',
+	_elm_lang$core$Json_Decode$int,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'modified_dt',
+		_elm_community$json_extra$Json_Decode_Extra$date,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'created_dt',
+			_elm_community$json_extra$Json_Decode_Extra$date,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'title',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'id',
+					_elm_lang$core$Json_Decode$int,
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Model$QuizListItem))))));
+var _user$project$Quiz_Decode$quizListDecoder = _elm_lang$core$Json_Decode$list(_user$project$Quiz_Decode$quizListItemDecoder);
 var _user$project$Quiz_Decode$quizDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'texts',
 	A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Array$fromList, _user$project$Text_Decode$textsDecoder),
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'title',
-		_elm_lang$core$Json_Decode$string,
+		'modified_dt',
+		_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'id',
-			_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Model$Quiz))));
+			'created_dt',
+			_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'title',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'id',
+					_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Model$Quiz))))));
+var _user$project$Quiz_Decode$QuizCreateResp = F2(
+	function (a, b) {
+		return {id: a, redirect: b};
+	});
+var _user$project$Quiz_Decode$quizCreateRespDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'redirect',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'id',
+		_elm_lang$core$Json_Decode$int,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Decode$QuizCreateResp)));
+var _user$project$Quiz_Decode$QuizUpdateResp = F2(
+	function (a, b) {
+		return {id: a, updated: b};
+	});
+var _user$project$Quiz_Decode$quizUpdateRespDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'updated',
+	_elm_lang$core$Json_Decode$bool,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'id',
+		_elm_lang$core$Json_Decode$int,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Decode$QuizUpdateResp)));
 
 var _user$project$Views$view_preview = A2(
 	_elm_lang$html$Html$div,
@@ -21231,12 +21283,12 @@ var _user$project$Views$view_filter = A2(
 						_elm_lang$html$Html$a,
 						{
 							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/admin/create-quiz'),
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/admin/quiz/'),
 							_1: {ctor: '[]'}
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('Create Text'),
+							_0: _elm_lang$html$Html$text('Create Quiz'),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}
@@ -21329,7 +21381,7 @@ var _user$project$Views$menu_items = _user$project$Views$MenuItems(
 	_elm_lang$core$Array$fromList(
 		{
 			ctor: '::',
-			_0: A3(_user$project$Views$MenuItem, '/admin/', 'Quizzes', false),
+			_0: A3(_user$project$Views$MenuItem, '/admin/quizzes/', 'Quizzes', false),
 			_1: {
 				ctor: '::',
 				_0: A3(_user$project$Views$MenuItem, '/login/student/', 'Student Login', false),

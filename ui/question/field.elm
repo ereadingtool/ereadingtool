@@ -29,21 +29,26 @@ toQuestion question_field =
   in
     { new_question | answers = new_answers }
 
-fromQuestions : Array Question -> Array QuestionField
-fromQuestions questions =
-  Array.indexedMap generate_question_field questions
+fromQuestions : Int -> Array Question -> Array QuestionField
+fromQuestions text_index questions =
+  Array.indexedMap (generate_question_field text_index) questions
 
-generate_question_field : Int -> Question -> QuestionField
-generate_question_field i question = QuestionField question {
-    id = (String.join "_" ["question", toString i])
-  , editable = False
-  , menu_visible = False
-  , error = False
-  , index = i } (Array.indexedMap (Answer.Field.generate_answer_field i) question.answers)
+generate_question_field : Int -> Int -> Question -> QuestionField
+generate_question_field text_index question_index question =
+  QuestionField question {
+      id = (String.join "_" ["text", toString text_index, "question", toString question_index])
+    , editable = False
+    , menu_visible = False
+    , error = False
+    , index = question_index } (Array.indexedMap (Answer.Field.generate_answer_field text_index question_index) question.answers)
 
-add_new_question : Array QuestionField -> Array QuestionField
-add_new_question fields = let arr_len = Array.length fields in
-  Array.push (generate_question_field arr_len (Question.Model.new_question arr_len)) fields
+add_new_question : Int -> Array QuestionField -> Array QuestionField
+add_new_question text_index fields =
+  let
+    new_question_index = Array.length fields
+  in
+    Array.push
+      (generate_question_field text_index new_question_index (Question.Model.new_question new_question_index)) fields
 
 set_answer_field : Array QuestionField -> AnswerField -> Array QuestionField
 set_answer_field question_fields answer_field =
@@ -107,8 +112,9 @@ update_question_field : QuestionField -> Array QuestionField -> Array QuestionFi
 update_question_field new_question_field question_fields =
   Array.set (question_index new_question_field) new_question_field question_fields
 
-initial_question_fields : Array QuestionField
-initial_question_fields = (Array.indexedMap generate_question_field Question.Model.initial_questions)
+initial_question_fields : Int -> Array QuestionField
+initial_question_fields text_index =
+  (Array.indexedMap (generate_question_field text_index) Question.Model.initial_questions)
 
 set_question_type : QuestionField -> QuestionType -> QuestionField
 set_question_type (QuestionField question attr answer_fields) question_type =

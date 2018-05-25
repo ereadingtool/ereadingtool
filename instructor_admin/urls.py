@@ -1,8 +1,8 @@
 from django.urls import path
-from instructor_admin.views import TextAdminView, AdminCreateEditQuizView, AdminCreateEditElmLoadView
+from instructor_admin.views import QuizAdminView, AdminCreateEditQuizView, AdminCreateEditElmLoadView
 
 urlpatterns = [
-    path('', TextAdminView.as_view(), name='admin'),
+    path('quizzes/', QuizAdminView.as_view(), name='admin'),
 
     # template loads "load_elm.js" from either /quiz/<int:pk>/ or /quiz/
     # e.g. /quiz/<int:pk>/load_elm.js or /quiz/load_elm.js

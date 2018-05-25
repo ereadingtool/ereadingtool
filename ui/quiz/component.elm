@@ -2,13 +2,10 @@ module Quiz.Component exposing (QuizComponent, emptyQuizComponent, text_componen
   , quiz, set_quiz_attribute, init, update_quiz_errors, reinitialize_ck_editors)
 
 import Quiz.Model as Quiz exposing (Quiz)
-import Quiz.Decode
 
 import Text.Component.Group exposing (TextComponentGroup)
 
 import Dict exposing (Dict)
-import Json.Encode
-import Json.Decode
 
 type alias QuizAttributeName = String
 

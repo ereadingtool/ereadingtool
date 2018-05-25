@@ -64,8 +64,7 @@ generate_text_fields i = {
 
 fromText : Int -> Text -> TextComponent
 fromText i text =
-  TextComponent text { index=i } (generate_text_fields i) (Question.Field.fromQuestions text.questions)
-
+  TextComponent text { index=i } (generate_text_fields i) (Question.Field.fromQuestions i text.questions)
 
 reinitialize_ck_editor : TextComponent -> Cmd msg
 reinitialize_ck_editor text_component =
@@ -78,7 +77,7 @@ reinitialize_ck_editor text_component =
 
 emptyTextComponent : Int -> TextComponent
 emptyTextComponent i =
-  TextComponent Text.Model.emptyText { index=i } (generate_text_fields i) Question.Field.initial_question_fields
+  TextComponent Text.Model.emptyText { index=i } (generate_text_fields i) (Question.Field.initial_question_fields i)
 
 switch_editable : TextField -> TextField
 switch_editable text_field =
@@ -225,7 +224,7 @@ delete_question_field (TextComponent text attr fields question_fields) question_
 
 add_new_question : TextComponent -> TextComponent
 add_new_question (TextComponent text attr fields question_fields) =
-  (Question.Field.add_new_question question_fields |> TextComponent text attr fields)
+  TextComponent text attr fields (Question.Field.add_new_question attr.index question_fields)
 
 toggle_question_menu : TextComponent -> QuestionField -> TextComponent
 toggle_question_menu text_component question_field =  let

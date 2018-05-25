@@ -164,7 +164,7 @@ body {
     grid-column: 2 / 2;
 }
 
-.text_item {
+.quiz_item {
     display: grid;
     grid-column: 2;
 

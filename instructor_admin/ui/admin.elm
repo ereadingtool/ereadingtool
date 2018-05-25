@@ -4,8 +4,9 @@ import Html.Attributes exposing (classList, attribute)
 import Http exposing (..)
 import Date exposing (..)
 
-import Text.Model exposing (Text)
-import Text.Decode
+import Quiz.Model exposing (QuizListItem)
+import Quiz.Decode
+
 import Config exposing (..)
 import Flags
 
@@ -13,12 +14,12 @@ import Views
 import Profile
 
 -- UPDATE
-type Msg = Update (Result Http.Error (List Text))
+type Msg = Update (Result Http.Error (List QuizListItem))
 
 type alias Flags = Flags.Flags {}
 
 type alias Model = {
-    texts : List Text
+    quizzes : List QuizListItem
   , profile : Profile.Profile
   , flags : Flags
   }
@@ -26,23 +27,30 @@ type alias Model = {
 type alias Filter = List String
 
 init : Flags -> (Model, Cmd Msg)
-init flags = ({ texts=[], profile=Profile.init_profile flags, flags=flags }, updateTexts [])
+init flags = ({
+      quizzes=[]
+    , profile=Profile.init_profile flags
+    , flags=flags
+  }, updateQuizzes [])
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
 
-updateTexts : Filter -> Cmd Msg
-updateTexts filter = let request = Http.get text_api_endpoint Text.Decode.textsDecoder in
-  Http.send Update request
+updateQuizzes : Filter -> Cmd Msg
+updateQuizzes filter =
+  let
+    request = Http.get quiz_api_endpoint Quiz.Decode.quizListDecoder
+  in
+    Http.send Update request
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    Update (Ok texts) ->
-      ({ model | texts = texts }, Cmd.none)
+    Update (Ok quizzes) ->
+      ({ model | quizzes = quizzes }, Cmd.none)
     -- handle user-friendly msgs
     Update (Err _) ->
       (model, Cmd.none)
@@ -63,31 +71,20 @@ month_day_year_fmt date = List.foldr (++) "" <| List.map (\s -> s ++ "  ")
     [toString <| Date.month date, (toString <| Date.day date) ++ ",", toString <| Date.year date]
 
 
-view_text : Text -> Html Msg
-view_text text = let
-   text_id = (case text.id of
-     Just id -> toString id
-     _ -> "") in
-   div [ classList[("text_item", True)] ] [
-     div [classList [("item_property", True)], attribute "data-id" (text_id)] [ Html.text "" ]
+view_quiz : QuizListItem -> Html Msg
+view_quiz quiz_list_item =
+   div [ classList[("quiz_item", True)] ] [
+     div [classList [("item_property", True)], attribute "data-id" (toString quiz_list_item.id)] [ Html.text "" ]
    , div [classList [("item_property", True)]] [
-       Html.a [attribute "href" ("/quiz/" ++ text_id)] [ Html.text text.title ]
+       Html.a [attribute "href" ("/admin/quiz/" ++ (toString quiz_list_item.id))] [ Html.text quiz_list_item.title ]
      , span [classList [("sub_description", True)]] [
-         Html.text <| "Modified:   " ++ (case text.modified_dt of
-           Just date -> month_day_year_fmt date
-           _ -> "")
+         Html.text <| "Modified:   " ++ (month_day_year_fmt quiz_list_item.modified_dt)
        ]
      ]
    , div [classList [("item_property", True)]] [
-       Html.text text.difficulty
-       , span [classList [("sub_description", True)]] [
-             Html.text "Difficulty"
-           ]
-     ]
-   , div [classList [("item_property", True)]] [
-        Html.text <| toString text.question_count
+        Html.text <| toString quiz_list_item.text_count
         , span [classList [("sub_description", True)]] [
-             Html.text "Questions"
+             Html.text "Texts"
            ]
      ]
    , div [classList [("item_property", True)]] [
@@ -98,14 +95,14 @@ view_text text = let
      ]   , div [classList [("action_menu", True)]] [ Html.text "" ]
  ]
 
-view_texts : Model -> Html Msg
-view_texts model = div [classList [("text_items", True)] ]
-   (List.map view_text model.texts)
+view_quizzes : Model -> Html Msg
+view_quizzes model =
+  div [classList [("text_items", True)] ] (List.map view_quiz model.quizzes)
 
 view_footer : Model -> Html Msg
 view_footer model = div [classList [("footer_items", True)] ] [
     div [classList [("footer", True), ("message", True)] ] [
-        Html.text <| "Showing " ++ toString (List.length model.texts) ++ " entries"
+        Html.text <| "Showing " ++ toString (List.length model.quizzes) ++ " entries"
     ]
  ]
 
@@ -114,6 +111,6 @@ view : Model -> Html Msg
 view model = div [] [
     Views.view_header model.profile Nothing
   , Views.view_filter
-  , (view_texts model)
+  , (view_quizzes model)
   , (view_footer model)
   ]

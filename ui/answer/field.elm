@@ -30,16 +30,17 @@ generate_answer_feedback_field id = {
   , editable = False
   , error = False }
 
-generate_answer_field : Int -> Int -> Answer -> AnswerField
-generate_answer_field i j answer = let
-    answer_id = String.join "_" ["question", toString i, "answer", toString j]
+generate_answer_field : Int -> Int -> Int -> Answer -> AnswerField
+generate_answer_field i j k answer =
+  let
+    answer_id = String.join "_" ["text", toString i, "question", toString j, "answer", toString k]
   in
     AnswerField answer {
       id = answer_id
     , editable = False
     , error = False
-    , question_index = i
-    , index = j } (generate_answer_feedback_field <| String.join "_" [answer_id, "feedback"])
+    , question_index = j
+    , index = k } (generate_answer_feedback_field <| String.join "_" [answer_id, "feedback"])
 
 toAnswers : Array AnswerField -> Array Answer
 toAnswers answer_fields = Array.map answer answer_fields

@@ -172,7 +172,7 @@ class QuizAPIView(LoginRequiredMixin, View):
                     json.dumps(
                         {'errors': {'quiz': "quiz with id {0} does not exist".format(kwargs['pk'])}}), status=400)
 
-        quizzes = [quiz.to_dict() for quiz in self.model.objects.all()]
+        quizzes = [quiz.to_summary_dict() for quiz in self.model.objects.all()]
 
         return HttpResponse(json.dumps(quizzes))
 

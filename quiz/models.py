@@ -36,6 +36,15 @@ class Quiz(Timestamped, models.Model):
 
         return quiz
 
+    def to_summary_dict(self) -> dict:
+        return {
+            'id': self.pk,
+            'title': self.title,
+            'modified_dt': self.modified_dt.isoformat(),
+            'created_dt': self.created_dt.isoformat(),
+            'text_count': self.texts.count()
+        }
+
     def to_dict(self, texts: Optional[list]=None) -> dict:
         return {
             'id': self.pk,

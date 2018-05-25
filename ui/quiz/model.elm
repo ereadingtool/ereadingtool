@@ -1,4 +1,4 @@
-module Quiz.Model exposing (Quiz, new_quiz, set_texts)
+module Quiz.Model exposing (Quiz, QuizListItem, new_quiz, set_texts)
 
 import Text.Model
 
@@ -12,6 +12,13 @@ type alias Quiz = {
   , modified_dt: Maybe Date
   , texts: Array Text.Model.Text }
 
+
+type alias QuizListItem = {
+    id: Int
+  , title: String
+  , created_dt: Date
+  , modified_dt: Date
+  , text_count: Int }
 
 new_quiz : Quiz
 new_quiz = {id=Nothing, title="", created_dt=Nothing, modified_dt=Nothing, texts=Array.fromList [Text.Model.emptyText]}

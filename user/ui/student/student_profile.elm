@@ -21,8 +21,10 @@ type Msg =
   | UpdateDifficulty String
   | Submitted (Result Error UpdateProfileResp )
 
+type alias Flags = Flags.Flags {}
+
 type alias Model = {
-    flags : Flags.Flags
+    flags : Flags
   , profile : Profile.StudentProfile
   , err_str : String
   , errors : Dict String String }
@@ -52,7 +54,7 @@ post_profile csrftoken profile =
   in
     Http.send Submitted req
 
-init : Flags.Flags -> (Model, Cmd Msg)
+init : Flags -> (Model, Cmd Msg)
 init flags = ({
     flags = flags
   , profile = Profile.emptyStudentProfile
@@ -82,7 +84,7 @@ update msg model = case msg of
       _ -> (model, Cmd.none)
 
 
-main : Program Flags.Flags Model Msg
+main : Program Flags Model Msg
 main =
   Html.programWithFlags
     { init = init

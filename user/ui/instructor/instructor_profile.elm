@@ -4,12 +4,14 @@ import Html.Attributes exposing (classList, attribute)
 import Dict exposing (Dict)
 
 import Views
-import Flags exposing (CSRFToken, Flags)
+import Flags exposing (CSRFToken)
 
 import Profile
 
 -- UPDATE
 type Msg = Update
+
+type alias Flags = Flags.Flags {}
 
 type alias Model = {
     flags : Flags

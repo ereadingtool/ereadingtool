@@ -36,9 +36,6 @@ urlpatterns = [
 
     path('admin/', include('instructor_admin.urls')),
 
-    path('quiz/<int:pk>/load_elm.js', QuizLoadElm.as_view(), name="quiz-load-elm"),
-    path('quiz/<int:pk>/', QuizView.as_view(), name="quiz"),
-
     path('django-admin/', admin.site.urls),
     path('', RedirectView.as_view(url=reverse_lazy('student-login')))
 ]

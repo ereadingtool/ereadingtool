@@ -8,8 +8,6 @@ from user.views.mixin import ProfileView
 from mixins.view import ElmLoadJsView
 from csp.decorators import csp_replace
 
-from django.core.exceptions import ObjectDoesNotExist
-
 from quiz.models import Quiz
 
 
@@ -17,10 +15,8 @@ class AdminView(ProfileView, LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('instructor-login')
 
 
-class TextAdminView(AdminView):
-    model = Text
-
-    fields = ('source', 'difficulty', 'body',)
+class QuizAdminView(AdminView):
+    model = Quiz
     template_name = 'instructor_admin/admin.html'
 
 
@@ -46,7 +42,7 @@ class AdminCreateEditElmLoadView(ElmLoadJsView):
         if 'pk' in context:
             try:
                 quiz = Quiz.objects.get(pk=context['pk'])
-            except ObjectDoesNotExist:
+            except Quiz.DoesNotExist:
                 pass
 
         context['elm']['quiz'] = {

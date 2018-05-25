@@ -1,7 +1,7 @@
 module Quiz.Decode exposing (quizDecoder, quizCreateRespDecoder, decodeRespErrors, QuizRespError
-  , quizUpdateRespDecoder, QuizCreateResp, QuizUpdateResp)
+  , quizUpdateRespDecoder, QuizCreateResp, QuizUpdateResp, quizListDecoder)
 
-import Quiz.Model exposing (Quiz)
+import Quiz.Model exposing (Quiz, QuizListItem)
 import Text.Decode
 
 import Array exposing (Array)
@@ -26,6 +26,20 @@ quizDecoder =
     |> required "created_dt" (Decode.nullable date)
     |> required "modified_dt" (Decode.nullable date)
     |> required "texts" (Decode.map Array.fromList (Text.Decode.textsDecoder))
+
+quizListItemDecoder : Decode.Decoder QuizListItem
+quizListItemDecoder =
+  decode QuizListItem
+    |> required "id" Decode.int
+    |> required "title" Decode.string
+    |> required "created_dt" date
+    |> required "modified_dt" date
+    |> required "text_count" Decode.int
+
+
+quizListDecoder : Decode.Decoder (List QuizListItem)
+quizListDecoder =
+  Decode.list quizListItemDecoder
 
 quizCreateRespDecoder : Decode.Decoder (QuizCreateResp)
 quizCreateRespDecoder =

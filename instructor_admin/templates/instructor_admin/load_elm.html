@@ -28,9 +28,12 @@
     });
 
     app.ports.ckEditorSetHtml.subscribe(function ([elem_id, html]) {
-        if (CKEDITOR) {
-            CKEDITOR.instances[elem_id].setData(html);
-        }
+        // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
+        window.requestAnimationFrame(function (timestamp) {
+            if (CKEDITOR) {
+                CKEDITOR.instances[elem_id].setData(html);
+            }
+        });
     });
 
 {% endblock %}
