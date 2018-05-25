@@ -8,12 +8,30 @@ body {
     font-size: 14px;
 }
 
+a {
+    color: #333333;
+    text-decoration: none;
+}
+
+a:hover {
+    padding-bottom: 5px;
+    border-bottom: solid #f2f2f2 3.5px;
+}
+
+.button {
+  font-size: 18px;
+  text-decoration: none;
+  background-color: #EEEEEE;
+  color: #333333;
+  padding: 10px 5px 10px 6px;
+}
+
 .header {
     grid-gap: 0;
     display: grid;
-    grid-template-rows: 67px;
+    grid-template-rows: 73px;
 
-    grid-template-columns: 15% 15% 15% 55%;
+    grid-template-columns: 15% 5% 5% 75%;
 
     background: #FFFFFF;
 
@@ -32,7 +50,7 @@ body {
     grid-area: 1 / 4;
     grid-template-columns: 20% 20% 20% 20% 20%;
 
-    grid-column-gap: 55px;
+    grid-column-gap: 90px;
 
     align-items: center;
     justify-items: center;
@@ -45,7 +63,7 @@ body {
 
 .menu_item_selected {
     padding-bottom: 5px;
-    border-bottom: solid #f2f2f2 5px;
+    border-bottom: solid #f2f2f2 3.5px;
 }
 
 .filter {

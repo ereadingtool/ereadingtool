@@ -165,7 +165,7 @@ view_errors model = case Dict.get "all" model.errors of
 
 view_submit : Model -> List (Html Msg)
 view_submit model = [
-    login_label (div [attribute "class" "login_submit"] [
+    login_label (div [classList [("login_submit", True), ("button", True)]] [
       Html.span [classList [("cursor", True)], onClick Submit ] [ Html.text "Login" ]
     ])
   ]

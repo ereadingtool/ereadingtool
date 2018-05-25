@@ -50,12 +50,12 @@ studentUserName (StudentProfile attrs) = attrs.username
 
 view_student_profile_header : StudentProfile -> List (Html msg)
 view_student_profile_header (StudentProfile attrs) = [
-    Html.div [] [ Html.text "Logged in as:" ], Html.a [attribute "href" "/profile/student/"] [ Html.text attrs.username ]
+    Html.div [] [ Html.a [attribute "href" "/profile/student/"] [ Html.text attrs.username ] ]
   ]
 
 view_instructor_profile_header : InstructorProfile -> List (Html msg)
 view_instructor_profile_header (InstructorProfile attrs) = [
-    Html.div [] [ Html.text "Logged in as:" ], Html.a [attribute "href" "/profile/instructor/"] [ Html.text attrs.username ]
+    Html.div [] [ Html.a [attribute "href" "/profile/instructor/"] [ Html.text attrs.username ] ]
   ]
 
 init_profile:
