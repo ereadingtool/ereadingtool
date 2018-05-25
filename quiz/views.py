@@ -4,10 +4,9 @@ from django.views.generic import TemplateView
 from user.views.mixin import ProfileView
 from mixins.view import ElmLoadJsView
 from text.models import TextDifficulty, Text
-from django.db.models import ObjectDoesNotExist
 from django.db import IntegrityError
 
-from django.http import Http404
+from django.http import Http404, HttpResponseNotAllowed
 
 from django.urls import reverse
 
@@ -32,7 +31,7 @@ class QuizView(ProfileView, TemplateView):
 
     model = Quiz
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs) -> HttpResponse:
         if not self.model.objects.filter(pk=kwargs['pk']):
             raise Http404('quiz does not exist')
 
@@ -40,7 +39,7 @@ class QuizView(ProfileView, TemplateView):
 
 
 class QuizLoadElm(ElmLoadJsView):
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict:
         context = super(QuizLoadElm, self).get_context_data(**kwargs)
 
         context['elm']['quiz_id'] = {'quote': False, 'safe': True, 'value': context['pk']}
@@ -118,7 +117,7 @@ class QuizAPIView(LoginRequiredMixin, View):
 
         try:
             text_param['difficulty'] = TextDifficulty.objects.get(slug=text_param['difficulty']).pk
-        except ObjectDoesNotExist:
+        except TextDifficulty.DoesNotExist:
             errors['{0}_difficulty'.format(text_key)] = "text difficulty {0} does not exist".format(
                 text_param['difficulty'])
 
@@ -136,21 +135,39 @@ class QuizAPIView(LoginRequiredMixin, View):
 
         return output_params, errors
 
-    def get(self, request, *args, **kwargs):
+    def put(self, request, *args, **kwargs) -> HttpResponse:
+        if 'pk' not in kwargs:
+            return HttpResponseNotAllowed(permitted_methods=['get', 'post'])
+
+        quiz_params, text_params, resp = self.validate_params(request.body.decode('utf8'))
+
+        if resp:
+            return resp
+
+        try:
+            quiz = Quiz.update(pk=kwargs['pk'], text_params=text_params, **quiz_params)
+
+            quiz.save()
+
+            return HttpResponse(json.dumps({'id': quiz.pk}))
+        except (Quiz.DoesNotExist, IntegrityError):
+            return HttpResponse(json.dumps({'errors': 'something went wrong'}))
+
+    def get(self, request, *args, **kwargs) -> HttpResponse:
         if 'pk' in kwargs:
             try:
                 # TODO(andrew): disallow empty quizzes
                 # query reverse relation to consolidate queries
-                # since Text.quiz can be null this may raise ObjectDoesNotExist when the quiz itself exists
+                # since Text.quiz can be null this may raise Text.DoesNotExist when the quiz itself exists
                 quiz_texts = Text.objects.select_related('quiz').filter(quiz=kwargs['pk'])
 
                 if not quiz_texts:
-                    raise ObjectDoesNotExist()
+                    raise Text.DoesNotExist()
 
                 quiz = quiz_texts[0].quiz
 
                 return HttpResponse(json.dumps(quiz.to_dict(texts=quiz_texts)))
-            except ObjectDoesNotExist:
+            except Text.DoesNotExist:
                 return HttpResponse(
                     json.dumps(
                         {'errors': {'quiz': "quiz with id {0} does not exist".format(kwargs['pk'])}}), status=400)
@@ -159,11 +176,13 @@ class QuizAPIView(LoginRequiredMixin, View):
 
         return HttpResponse(json.dumps(quizzes))
 
-    def post(self, request, *args, **kwargs):
+    def validate_params(self, quiz_params: str) -> (dict, dict, HttpResponse):
+        errors = resp = text_params = None
+
         try:
-            quiz_params = json.loads(request.body.decode('utf8'))
+            quiz_params = json.loads(quiz_params)
         except json.JSONDecodeError as e:
-            return HttpResponse(json.dumps({'errors': {'json': str(e)}}), status=400)
+            resp = HttpResponse(json.dumps({'errors': {'json': str(e)}}), status=400)
 
         try:
             # TODO (andrew): use json schema validation (http://json-schema.org)
@@ -173,16 +192,23 @@ class QuizAPIView(LoginRequiredMixin, View):
             text_params = quiz_params.pop('texts')
             text_params, errors = QuizAPIView.validate_text_params(text_params)
         except ValidationError as e:
-            return HttpResponse(json.dumps({'errors': e.message}),
-                                status=400)
+            resp = HttpResponse(json.dumps({'errors': e.message}), status=400)
 
         if errors:
-            return HttpResponse(json.dumps({'errors': errors}), status=400)
+            resp = HttpResponse(json.dumps({'errors': errors}), status=400)
+
+        return quiz_params, text_params, resp
+
+    def post(self, request, *args, **kwargs) -> HttpResponse:
+        quiz_params, text_params, resp = self.validate_params(request.body.decode('utf8'))
+
+        if resp:
+            return resp
 
         try:
             quiz = Quiz.create(text_params=text_params, **quiz_params)
             quiz.save()
 
             return HttpResponse(json.dumps({'id': quiz.pk, 'redirect': reverse('quiz-edit', kwargs={'pk': quiz.pk})}))
-        except IntegrityError as e:
+        except IntegrityError:
             return HttpResponse(json.dumps({'errors': 'something went wrong'}))

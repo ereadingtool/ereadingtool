@@ -7,11 +7,13 @@ class Quiz(Timestamped, models.Model):
     title = models.CharField(max_length=255, null=False, blank=False)
 
     @classmethod
+    def update(cls, pk: int, text_params: dict, **quiz_params: dict):
+        raise NotImplementedError
+
+    @classmethod
     def create(cls, text_params: dict, **quiz_params: dict) -> TypeVar('Quiz'):
         quiz = Quiz.objects.create(**quiz_params)
         quiz.save()
-
-        texts = []
 
         for text_param in text_params.values():
             text = text_param['text_form'].save(commit=False)
@@ -31,8 +33,6 @@ class Quiz(Timestamped, models.Model):
                     answer.question = question_obj
                     answer.order = j
                     answer.save()
-
-            texts.append(text)
 
         return quiz
 
