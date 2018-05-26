@@ -156,13 +156,11 @@ class QuizAPIView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs) -> HttpResponse:
         if 'pk' in kwargs:
             try:
-                # TODO(andrew): disallow empty quizzes
                 # query reverse relation to consolidate queries
-                # since Text.quiz can be null this may raise Text.DoesNotExist when the quiz itself exists
                 quiz_texts = Text.objects.select_related('quiz').filter(quiz=kwargs['pk'])
 
-                if not quiz_texts:
-                    raise Text.DoesNotExist()
+                if not quiz_texts.exists():
+                    raise Quiz.DoesNotExist()
 
                 quiz = quiz_texts[0].quiz
 

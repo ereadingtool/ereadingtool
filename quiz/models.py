@@ -1,10 +1,12 @@
 from django.db import models
 from typing import TypeVar, Optional
-from mixins.model import Timestamped
+from mixins.model import Timestamped, WriteLockable
 
 
-class Quiz(Timestamped, models.Model):
+class Quiz(WriteLockable, Timestamped, models.Model):
     title = models.CharField(max_length=255, null=False, blank=False)
+    last_modified_by = models.ForeignKey('user.Instructor', null=True, on_delete=models.SET_NULL,
+                                         related_name='last_modified_quiz')
 
     @classmethod
     def update(cls, pk: int, text_params: dict, **quiz_params: dict):
