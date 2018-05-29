@@ -9715,15 +9715,16 @@ var _user$project$Quiz_Model$new_quiz = {
 			ctor: '::',
 			_0: _user$project$Text_Model$emptyText,
 			_1: {ctor: '[]'}
-		})
+		}),
+	write_locker: _elm_lang$core$Maybe$Nothing
 };
-var _user$project$Quiz_Model$Quiz = F5(
-	function (a, b, c, d, e) {
-		return {id: a, title: b, created_dt: c, modified_dt: d, texts: e};
+var _user$project$Quiz_Model$Quiz = F6(
+	function (a, b, c, d, e, f) {
+		return {id: a, title: b, created_dt: c, modified_dt: d, texts: e, write_locker: f};
 	});
-var _user$project$Quiz_Model$QuizListItem = F5(
-	function (a, b, c, d, e) {
-		return {id: a, title: b, created_dt: c, modified_dt: d, text_count: e};
+var _user$project$Quiz_Model$QuizListItem = F6(
+	function (a, b, c, d, e, f) {
+		return {id: a, title: b, created_dt: c, modified_dt: d, text_count: e, write_locker: f};
 	});
 
 var _user$project$Question_Decode$questionDecoder = A3(
@@ -9813,47 +9814,55 @@ var _user$project$Quiz_Decode$decodeRespErrors = function (str) {
 };
 var _user$project$Quiz_Decode$quizListItemDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'text_count',
-	_elm_lang$core$Json_Decode$int,
+	'write_locker',
+	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'modified_dt',
-		_elm_community$json_extra$Json_Decode_Extra$date,
+		'text_count',
+		_elm_lang$core$Json_Decode$int,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'created_dt',
+			'modified_dt',
 			_elm_community$json_extra$Json_Decode_Extra$date,
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'title',
-				_elm_lang$core$Json_Decode$string,
+				'created_dt',
+				_elm_community$json_extra$Json_Decode_Extra$date,
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'id',
-					_elm_lang$core$Json_Decode$int,
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Model$QuizListItem))))));
+					'title',
+					_elm_lang$core$Json_Decode$string,
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'id',
+						_elm_lang$core$Json_Decode$int,
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Model$QuizListItem)))))));
 var _user$project$Quiz_Decode$quizListDecoder = _elm_lang$core$Json_Decode$list(_user$project$Quiz_Decode$quizListItemDecoder);
 var _user$project$Quiz_Decode$quizDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'texts',
-	A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Array$fromList, _user$project$Text_Decode$textsDecoder),
+	'write_locker',
+	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'modified_dt',
-		_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+		'texts',
+		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Array$fromList, _user$project$Text_Decode$textsDecoder),
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'created_dt',
+			'modified_dt',
 			_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'title',
-				_elm_lang$core$Json_Decode$string,
+				'created_dt',
+				_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'id',
-					_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Model$Quiz))))));
+					'title',
+					_elm_lang$core$Json_Decode$string,
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'id',
+						_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Model$Quiz)))))));
 var _user$project$Quiz_Decode$QuizCreateResp = F2(
 	function (a, b) {
 		return {id: a, redirect: b};

@@ -44,7 +44,8 @@ class Quiz(WriteLockable, Timestamped, models.Model):
             'title': self.title,
             'modified_dt': self.modified_dt.isoformat(),
             'created_dt': self.created_dt.isoformat(),
-            'text_count': self.texts.count()
+            'text_count': self.texts.count(),
+            'write_locker': str(self.write_locker) if self.write_locker else None
         }
 
     def to_dict(self, texts: Optional[list]=None) -> dict:
@@ -53,5 +54,6 @@ class Quiz(WriteLockable, Timestamped, models.Model):
             'title': self.title,
             'modified_dt': self.modified_dt.isoformat(),
             'created_dt': self.created_dt.isoformat(),
-            'texts': [text.to_dict() for text in (texts if texts else self.texts.all())]
+            'texts': [text.to_dict() for text in (texts if texts else self.texts.all())],
+            'write_locker': str(self.write_locker) if self.write_locker else None
         }

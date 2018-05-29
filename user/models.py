@@ -16,6 +16,9 @@ class Instructor(models.Model):
             'username': self.user.username
         }
 
+    def __str__(self):
+        return self.user.username
+
 
 class Student(models.Model):
     user = models.OneToOneField(ReaderUser, on_delete=models.CASCADE)

@@ -26,6 +26,7 @@ quizDecoder =
     |> required "created_dt" (Decode.nullable date)
     |> required "modified_dt" (Decode.nullable date)
     |> required "texts" (Decode.map Array.fromList (Text.Decode.textsDecoder))
+    |> required "write_locker" (Decode.nullable (Decode.string))
 
 quizListItemDecoder : Decode.Decoder QuizListItem
 quizListItemDecoder =
@@ -35,6 +36,7 @@ quizListItemDecoder =
     |> required "created_dt" date
     |> required "modified_dt" date
     |> required "text_count" Decode.int
+    |> required "write_locker" (Decode.nullable (Decode.string))
 
 
 quizListDecoder : Decode.Decoder (List QuizListItem)

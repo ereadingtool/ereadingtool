@@ -42,6 +42,7 @@ import Array exposing (Array)
 
 
 type alias Flags = Flags.Flags { quiz: Maybe Json.Encode.Value }
+type alias InstructorUser = String
 
 type QuizDecode = Task String Quiz.Model.Quiz
 
@@ -49,6 +50,8 @@ type QuizField = QuizField (Field.FieldAttributes {
     name : String
   , view : QuizComponent -> QuizField -> Html Msg
   , edit : QuizComponent -> QuizField -> Html Msg })
+
+type Mode = EditMode | CreateMode | ReadOnlyMode InstructorUser
 
 new_quiz_field : Field.FieldAttributes {
     name : String
@@ -75,7 +78,7 @@ type Msg =
 
 type alias Model = {
     flags : Flags
-  , edit_mode : Bool
+  , mode : Mode
   , profile : Profile.Profile
   , success_msg : Maybe String
   , error_msg : Maybe String
@@ -88,7 +91,7 @@ type alias Filter = List String
 init : Flags -> (Model, Cmd Msg)
 init flags = ({
         flags=flags
-      , edit_mode=False
+      , mode=CreateMode
       , success_msg=Nothing
       , error_msg=Nothing
       , profile=Profile.init_profile flags
@@ -137,13 +140,16 @@ update msg model = case msg of
       (Text.Update.update msg model)
 
     SubmitQuiz ->
-      ({ model | error_msg = Nothing, success_msg = Nothing }
-      , let
-          save_quiz = (case model.edit_mode of
-            True -> update_quiz
-            False -> post_quiz)
-        in
-          save_quiz model.flags.csrftoken (Quiz.Component.quiz model.quiz_component))
+      let
+        quiz = Quiz.Component.quiz model.quiz_component
+      in
+        case model.mode of
+          ReadOnlyMode write_locker ->
+            ({ model | success_msg = Just <| "Quiz is locked by " ++ write_locker}, Cmd.none)
+          EditMode ->
+            ({ model | error_msg = Nothing, success_msg = Nothing }, update_quiz model.flags.csrftoken quiz)
+          CreateMode ->
+            ({ model | error_msg = Nothing, success_msg = Nothing }, post_quiz model.flags.csrftoken quiz)
 
     QuizJSONDecode result ->
       case result of
@@ -151,11 +157,20 @@ update msg model = case msg of
           let
             quiz = Quiz.Component.quiz quiz_component
           in
-            ({ model |
-                 quiz_component = quiz_component
-               , edit_mode=True
-               , success_msg = (Just <| "editing '" ++ quiz.title ++ "' quiz")
-             }, Quiz.Component.reinitialize_ck_editors quiz_component)
+            case quiz.write_locker of
+              Just write_locker ->
+                ({ model |
+                     quiz_component=quiz_component
+                   , mode=ReadOnlyMode write_locker
+                   , error_msg=Just <| "READONLY: quiz is currently being edited by " ++ write_locker
+                 }, Quiz.Component.reinitialize_ck_editors quiz_component)
+              Nothing ->
+                ({ model |
+                     quiz_component=quiz_component
+                   , mode=EditMode
+                   , success_msg=Just <| "editing '" ++ quiz.title ++ "' quiz"
+                 }, Quiz.Component.reinitialize_ck_editors quiz_component)
+
         Err err -> let _ = Debug.log "quiz decode error" err in
           ({ model |
               error_msg = (Just <| "Something went wrong loading the quiz from the server.")
@@ -170,7 +185,7 @@ update msg model = case msg of
       in
          ({ model |
              success_msg = Just <| String.join " " [" saved '" ++ quiz.title ++ "'"]
-           , edit_mode=True }, Navigation.load quiz_create_resp.redirect)
+           , mode=EditMode }, Navigation.load quiz_create_resp.redirect)
 
     Updated (Ok quiz_update_resp) ->
       ({ model | success_msg = Just <| String.join " " [" updated", toString quiz_update_resp.id]}, Cmd.none)
@@ -255,12 +270,6 @@ main =
     , update = update
     }
 
-view_error_msg : Maybe Quiz.Decode.QuizRespError -> Html Msg
-view_error_msg msg =
-  case msg of
-    Just err -> Html.text <| toString err
-    _ -> Html.text ""
-
 view_msg : Maybe String -> Html Msg
 view_msg msg =
   let
@@ -277,10 +286,10 @@ view_msgs model = div [attribute "class" "msgs"] [
   ]
 
 view_submit : Model -> Html Msg
-view_submit model = Html.div [classList [("submit_section", True)]] [
+view_submit model =
+  Html.div [classList [("submit_section", True)]] [
     Html.div [attribute "class" "submit", onClick SubmitQuiz] [
         Html.text "Save Quiz "
-      , (view_msgs model)
     ]
   , Html.div [attribute "class" "submit", onClick (TextComponentMsg Text.Update.AddText)] [
         Html.text "Add Text"
@@ -341,10 +350,12 @@ view_quiz model =
   ]
 
 view : Model -> Html Msg
-view model = div [] [
+view model = div [] <| [
       Views.view_header model.profile Nothing
+    , (view_msgs model)
     , (Views.view_preview)
     , (view_quiz model)
     , (Text.View.view_text_components TextComponentMsg (Quiz.Component.text_components model.quiz_component) model.question_difficulties)
-    , (view_submit model)
-  ]
+  ] ++ (case model.mode of
+          ReadOnlyMode write_locker -> []
+          _ -> [view_submit model])
