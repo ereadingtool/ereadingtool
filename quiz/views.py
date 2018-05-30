@@ -3,7 +3,10 @@ import json
 from django.views.generic import TemplateView
 from user.views.mixin import ProfileView
 from mixins.view import ElmLoadJsView
+from mixins.model import WriteLocked
 from text.models import TextDifficulty, Text
+
+from question.models import Question
 from django.db import IntegrityError
 
 from django.http import Http404, HttpResponseNotAllowed
@@ -11,7 +14,7 @@ from django.http import Http404, HttpResponseNotAllowed
 from django.urls import reverse
 
 from django.core.exceptions import ValidationError
-from typing import TypeVar
+from typing import TypeVar, Optional, List
 
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -19,6 +22,7 @@ from django.urls import reverse_lazy
 from django.views.generic import View
 from django.http import HttpResponse
 
+from quiz.forms import QuizForm
 from question.forms import QuestionForm, AnswerForm
 from text.forms import TextForm, ModelForm
 
@@ -60,28 +64,52 @@ class QuizAPIView(LoginRequiredMixin, View):
         return errors
 
     @classmethod
-    def validate_text_params(cls, text_params: TypeVar('list(dict)')) -> (dict, dict):
+    def validate_text_params(cls, text_params: TypeVar('list(dict)'), errors: dict,
+                             texts: Optional[List[TypeVar('Text')]]=None) -> (dict, dict):
         new_text_params = {}
-        errors = {}
 
         for i, text_param in enumerate(text_params):
             new_text_params, errors = QuizAPIView.validate_text_param(
-                text_param=text_param,
-                order=i,
-                errors=errors,
-                output_params=new_text_params)
+               text_param=text_param,
+               order=i,
+               errors=errors,
+               text_instance=texts[i] if texts else None,
+               output_params=new_text_params)
 
         return new_text_params, errors
 
     @classmethod
-    def validate_question_param(cls, text_key: str, question_param: dict, errors: dict) -> (list, dict):
+    def validate_quiz_params(cls, quiz_params: dict, errors: dict,
+                             quiz: Optional[TypeVar('Quiz')]=None) -> (dict, dict):
+        quiz_form = QuizForm(instance=quiz, data=quiz_params)
+
+        if not quiz_form.is_valid():
+            errors = QuizAPIView.form_validation_errors(
+                    errors=errors,
+                    parent_key='quiz',
+                    form=quiz_form)
+
+        quiz_params = {'quiz': quiz, 'form': quiz_form}
+
+        return quiz_params, errors
+
+    @classmethod
+    def validate_question_param(cls, text_key: str, question_param: dict, errors: dict,
+                                question_instances: List[TypeVar('Question')]=None) -> (list, dict):
         questions = []
 
         for i, question_param in enumerate(question_param):
+            question_instance = None
+            answer_instances = []
+
             # question_type -> type
             question_param['type'] = question_param.pop('question_type')
 
-            question_form = QuestionForm(question_param)
+            if question_instances:
+                question_instance = question_instances[i]
+                answer_instances = question_instance.answers.all()
+
+            question_form = QuestionForm(instance=question_instance, data=question_param)
 
             if not question_form.is_valid():
                 errors = QuizAPIView.form_validation_errors(
@@ -92,7 +120,12 @@ class QuizAPIView(LoginRequiredMixin, View):
             question = {'form': question_form, 'answer_forms': []}
 
             for j, answer_param in enumerate(question_param['answers']):
-                answer_form = AnswerForm(answer_param)
+                answer_instance = None
+
+                if answer_instances:
+                    answer_instance = answer_instances[j]
+
+                answer_form = AnswerForm(instance=answer_instance, data=answer_param)
 
                 if not answer_form.is_valid():
                     errors = QuizAPIView.form_validation_errors(
@@ -107,7 +140,8 @@ class QuizAPIView(LoginRequiredMixin, View):
         return questions, errors
 
     @classmethod
-    def validate_text_param(cls, text_param: dict, order: int, errors: dict, output_params: dict) -> (dict, dict):
+    def validate_text_param(cls, text_param: dict, order: int, errors: dict, output_params: dict,
+                            text_instance: Optional[TypeVar('Text')]=None) -> (dict, dict):
         text_key = 'text_{0}'.format(order)
         text = {}
 
@@ -121,12 +155,16 @@ class QuizAPIView(LoginRequiredMixin, View):
             errors['{0}_difficulty'.format(text_key)] = "text difficulty {0} does not exist".format(
                 text_param['difficulty'])
 
-        text['text_form'] = TextForm(text_param)
+        text['text_form'] = TextForm(instance=text_instance, data=text_param)
 
         if 'questions' not in text_param:
             raise ValidationError(message="'questions' field is required.")
 
-        text['questions'], errors = QuizAPIView.validate_question_param(text_key, text_param['questions'], errors)
+        text['questions'], errors = QuizAPIView.validate_question_param(text_key,
+                                                                        text_param['questions'], errors,
+                                                                        question_instances=
+                                                                        text_instance.questions.all() if text_instance
+                                                                        else None)
 
         if not text['text_form'].is_valid():
             errors = QuizAPIView.form_validation_errors(errors=errors, parent_key=text_key, form=text['text_form'])
@@ -139,18 +177,27 @@ class QuizAPIView(LoginRequiredMixin, View):
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=['get', 'post'])
 
-        quiz_params, text_params, resp = self.validate_params(request.body.decode('utf8'))
-
-        if resp:
-            return resp
-
         try:
-            quiz = Quiz.update(pk=kwargs['pk'], text_params=text_params, **quiz_params)
+            quiz = Quiz.objects.get(pk=kwargs['pk'])
 
-            quiz.save()
+            quiz_params, text_params, resp = self.validate_params(request.body.decode('utf8'), quiz)
 
-            return HttpResponse(json.dumps({'id': quiz.pk}))
-        except (Quiz.DoesNotExist, IntegrityError):
+            if resp:
+                return resp
+
+            try:
+                quiz = Quiz.update(quiz_params=quiz_params, text_params=text_params)
+
+                quiz.save()
+
+                return HttpResponse(json.dumps({'id': quiz.pk}))
+            except WriteLocked:
+                return HttpResponse(json.dumps(
+                    {'errors': 'quiz {0} is locked.'.format(kwargs['pk'])}))
+            except IntegrityError:
+                return HttpResponse(json.dumps({'errors': 'something went wrong'}))
+
+        except Quiz.DoesNotExist:
             return HttpResponse(json.dumps({'errors': 'something went wrong'}))
 
     def get(self, request, *args, **kwargs) -> HttpResponse:
@@ -174,7 +221,7 @@ class QuizAPIView(LoginRequiredMixin, View):
 
         return HttpResponse(json.dumps(quizzes))
 
-    def validate_params(self, quiz_params: str) -> (dict, dict, HttpResponse):
+    def validate_params(self, quiz_params: str, quiz: Optional[TypeVar('Quiz')]=None) -> (dict, dict, HttpResponse):
         errors = resp = text_params = None
 
         try:
@@ -188,7 +235,11 @@ class QuizAPIView(LoginRequiredMixin, View):
                 raise ValidationError(message='bad payload.')
 
             text_params = quiz_params.pop('texts')
-            text_params, errors = QuizAPIView.validate_text_params(text_params)
+
+            quiz_params, errors = QuizAPIView.validate_quiz_params(quiz_params, {}, quiz)
+            text_params, errors = QuizAPIView.validate_text_params(text_params, errors,
+                                                                   texts=quiz.texts.all() if quiz else None)
+
         except ValidationError as e:
             resp = HttpResponse(json.dumps({'errors': e.message}), status=400)
 
@@ -204,7 +255,7 @@ class QuizAPIView(LoginRequiredMixin, View):
             return resp
 
         try:
-            quiz = Quiz.create(text_params=text_params, **quiz_params)
+            quiz = Quiz.create(text_params=text_params, quiz_params=quiz_params)
             quiz.save()
 
             return HttpResponse(json.dumps({'id': quiz.pk, 'redirect': reverse('quiz-edit', kwargs={'pk': quiz.pk})}))

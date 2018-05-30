@@ -53,8 +53,10 @@ class QuizTest(TestCase):
         quiz = Quiz.objects.get(pk=resp_content['id'])
 
         test_data['title'] = 'a new quiz title'
+        test_data['texts'][1]['author'] = 'J. K. Idding'
 
-        resp = self.client.put('/api/quiz/', json.dumps(test_data), content_type='application/json')
+        resp = self.client.put('/api/quiz/{pk}/'.format(pk=quiz.pk), json.dumps(test_data),
+                               content_type='application/json')
 
         self.assertEquals(resp.status_code, 200)
 
@@ -71,6 +73,31 @@ class QuizTest(TestCase):
         self.assertTrue(resp_content)
 
         self.assertEquals(resp_content['title'], 'a new quiz title')
+
+        self.assertEquals(resp_content['texts'][1]['author'], 'J. K. Idding')
+
+        test_data['texts'][1]['questions'][0]['body'] = 'A new question?'
+        test_data['texts'][1]['questions'][0]['answers'][1]['text'] = 'A new answer.'
+
+        _ = self.client.put('/api/quiz/{pk}/'.format(pk=quiz.pk), json.dumps(test_data),
+                            content_type='application/json')
+
+        self.assertEquals(resp.status_code, 200)
+
+        resp_content = json.loads(resp.content.decode('utf8'))
+
+        self.assertIn('id', resp_content)
+
+        resp = self.client.get('/api/quiz/{0}/'.format(quiz.id), content_type='application/json')
+
+        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        resp_content = json.loads(resp.content.decode('utf8'))
+
+        self.assertTrue(resp_content)
+
+        self.assertEquals(resp_content['texts'][1]['questions'][0]['body'], 'A new question?')
+        self.assertEquals(resp_content['texts'][1]['questions'][0]['answers'][1]['text'], 'A new answer.')
 
     def test_post_quiz(self):
         resp = self.client.post('/api/quiz/', json.dumps({"malformed": "json"}), content_type='application/json')

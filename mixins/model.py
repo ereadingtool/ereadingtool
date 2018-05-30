@@ -26,14 +26,17 @@ class WriteLockable(models.Model):
 
         super(WriteLockable, self).save(*args, **kwargs)
 
-    def lock(self):
+    def is_locked(self) -> bool:
+        return self.__class__.objects.filter(pk=self.pk, write_locked=True).exists()
+
+    def lock(self) -> bool:
         locked = bool(self.objects.filter(pk=self.pk).update(write_locked=True))
 
         self.write_locked = locked
 
         return locked
 
-    def unlock(self):
+    def unlock(self) -> bool:
         unlocked = bool(self.__class__.objects.filter(pk=self.pk).update(write_locked=False))
 
         self.write_locked = False if unlocked else True
