@@ -9808,9 +9808,14 @@ var _user$project$Text_Decode$TextCreateResp = function (a) {
 	return {id: a};
 };
 
-var _user$project$Quiz_Decode$quizCreateRespErrDecoder = _elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string);
 var _user$project$Quiz_Decode$decodeRespErrors = function (str) {
-	return A2(_elm_lang$core$Json_Decode$decodeString, _user$project$Quiz_Decode$quizCreateRespErrDecoder, str);
+	return A2(
+		_elm_lang$core$Json_Decode$decodeString,
+		A2(
+			_elm_lang$core$Json_Decode$field,
+			'errors',
+			_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string)),
+		str);
 };
 var _user$project$Quiz_Decode$quizListItemDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,

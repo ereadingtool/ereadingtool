@@ -100,6 +100,7 @@ init flags = ({
           (new_quiz_field {
             id="quiz_title"
           , editable=False
+          , error_string=""
           , error=False
           , view=view_quiz_title
           , name="title"
@@ -108,6 +109,7 @@ init flags = ({
         , (new_quiz_field {
             id="quiz_date"
           , editable=False
+          , error_string=""
           , error=False
           , view=view_quiz_date
           , name="quiz_dates"
@@ -184,15 +186,18 @@ update msg model = case msg of
          quiz = Quiz.Component.quiz model.quiz_component
       in
          ({ model |
-             success_msg = Just <| String.join " " [" saved '" ++ quiz.title ++ "'"]
+             success_msg = Just <| String.join " " [" created '" ++ quiz.title ++ "'"]
            , mode=EditMode }, Navigation.load quiz_create_resp.redirect)
 
     Updated (Ok quiz_update_resp) ->
-      ({ model | success_msg = Just <| String.join " " [" updated", toString quiz_update_resp.id]}, Cmd.none)
+      let
+         quiz = Quiz.Component.quiz model.quiz_component
+      in
+         ({ model | success_msg = Just <| String.join " " [" saved '" ++ quiz.title ++ "'"] }, Cmd.none)
 
     Submitted (Err err) ->
       case err of
-        Http.BadStatus resp -> let _ = Debug.log "submit quiz bad status error" resp.body in
+        Http.BadStatus resp ->
           case (Quiz.Decode.decodeRespErrors resp.body) of
             Ok errors ->
               ({ model | quiz_component = Quiz.Component.update_quiz_errors model.quiz_component errors }, Cmd.none)

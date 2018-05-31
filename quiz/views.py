@@ -190,10 +190,9 @@ class QuizAPIView(LoginRequiredMixin, View):
 
                 quiz.save()
 
-                return HttpResponse(json.dumps({'id': quiz.pk}))
+                return HttpResponse(json.dumps({'id': quiz.pk, 'updated': True}))
             except WriteLocked:
-                return HttpResponse(json.dumps(
-                    {'errors': 'quiz {0} is locked.'.format(kwargs['pk'])}))
+                return HttpResponse(json.dumps({'errors': 'quiz {0} is locked.'.format(kwargs['pk'])}))
             except IntegrityError:
                 return HttpResponse(json.dumps({'errors': 'something went wrong'}))
 

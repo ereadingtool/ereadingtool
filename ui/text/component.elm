@@ -1,8 +1,8 @@
-module Text.Component exposing (TextComponent, TextField(..), TextBodyFieldParams, emptyTextComponent, body, text, title
+module Text.Component exposing (TextComponent, TextField, emptyTextComponent, body, text, title
   , source, difficulty, author, question_fields, attributes, set_field, set_text, index, delete_question_field
   , set_answer, set_answer_text, set_question, switch_editable, add_new_question, toggle_question_menu, update_body
   , update_question_field, set_answer_correct, set_answer_feedback, text_field_id, editable, toText, fromText
-  , post_toggle_commands, reinitialize_ck_editor)
+  , post_toggle_commands, reinitialize_ck_editor, update_errors)
 
 import Array exposing (Array)
 import Field
@@ -13,15 +13,8 @@ import Answer.Field
 
 import Ports exposing (ckEditor, ckEditorSetHtml, CKEditorID, CKEditorText)
 
-type alias TextFieldParams = Field.FieldAttributes { name : String }
-type alias TextBodyFieldParams = Field.FieldAttributes { name : String, ckeditor_id : String }
+type alias TextField = Field.FieldAttributes { name : String }
 
-type TextField =
-    Title TextFieldParams
-  | Source TextFieldParams
-  | Difficulty TextFieldParams
-  | Author TextFieldParams
-  | Body TextBodyFieldParams
 
 type alias TextFields = {
     title: TextField
@@ -36,30 +29,23 @@ type TextComponent = TextComponent Text TextComponentAttributes TextFields (Arra
 
 type alias FieldName = String
 
-generate_text_field_params : Int -> String -> TextFieldParams
+generate_text_field_params : Int -> String -> TextField
 generate_text_field_params i attr = {
     id=String.join "_" ["text", toString i, attr]
   , editable=False
+  , error_string=""
   , error=False
   , name=attr
   , index=i }
 
-generate_body_text_field : Int -> TextBodyFieldParams
-generate_body_text_field i = let base_field=generate_text_field_params i "body" in {
-    id=base_field.id
-  , editable=base_field.editable
-  , error=base_field.error
-  , name=base_field.name
-  , index=base_field.index
-  , ckeditor_id="" }
 
 generate_text_fields : Int -> TextFields
 generate_text_fields i = {
-     title=Title (generate_text_field_params i "title")
-  ,  source=Source (generate_text_field_params i "source")
-  ,  difficulty=Difficulty (generate_text_field_params i "difficulty")
-  ,  author=Author (generate_text_field_params i "author")
-  ,  body=Body (generate_body_text_field i)
+     title=(generate_text_field_params i "title")
+  ,  source=(generate_text_field_params i "source")
+  ,  difficulty=(generate_text_field_params i "difficulty")
+  ,  author=(generate_text_field_params i "author")
+  ,  body=(generate_text_field_params i "body")
   }
 
 fromText : Int -> Text -> TextComponent
@@ -70,10 +56,9 @@ reinitialize_ck_editor : TextComponent -> Cmd msg
 reinitialize_ck_editor text_component =
  let
    t = text text_component
+   body_field = body text_component
  in
-   case body text_component of
-     Body params -> Cmd.batch [ckEditor params.id, ckEditorSetHtml (params.id, t.body)]
-     _ -> Cmd.none
+   Cmd.batch [ckEditor body_field.id, ckEditorSetHtml (body_field.id, t.body)]
 
 emptyTextComponent : Int -> TextComponent
 emptyTextComponent i =
@@ -82,17 +67,34 @@ emptyTextComponent i =
 switch_editable : TextField -> TextField
 switch_editable text_field =
   let
-    switch params = { params | editable = (if params.editable then False else True) }
+    switch field = { field | editable = (if field.editable then False else True) }
   in
-    case text_field of
-      Title params -> Title (switch params)
-      Source params -> Source (switch params)
-      Difficulty params -> Difficulty (switch params)
-      Author params -> Author (switch params)
-      Body params -> Body (switch params)
+    switch text_field
 
 title : TextComponent -> TextField
 title (TextComponent text attr fields question_fields) = fields.title
+
+update_errors : TextComponent -> (String, String) -> TextComponent
+update_errors ((TextComponent text attr fields question_fields) as text_component) (field_id, field_error) =
+  {- error keys could be
+       (title|source|difficulty|author|body)
+    || (question_i_answer_j)
+    || (question_i_answer_j_feedback) -}
+  let
+    error_key = String.split "_" field_id
+    first_key = List.head error_key
+  in
+    case first_key of
+      Just fst ->
+        if List.member fst ["title", "source", "difficulty", "author", "body"] then
+          case get_field text_component fst of
+            Just field ->
+              set_field text_component (update_field_error field field_error)
+            Nothing ->
+              text_component -- no matching field name
+        else -- update questions/answers errors
+          TextComponent text attr fields (Question.Field.update_errors question_fields (field_id, field_error))
+      _ -> text_component -- empty key
 
 update_title : TextComponent -> String -> TextComponent
 update_title (TextComponent text attr fields question_fields) title =
@@ -120,27 +122,15 @@ update_author (TextComponent text attr fields question_fields) author =
   TextComponent { text | author=author } attr fields question_fields
 
 text_field_id : TextField -> String
-text_field_id text_field =
-  case text_field of
-    Title params -> params.id
-    Source params -> params.id
-    Difficulty params -> params.id
-    Body params -> params.id
-    Author params -> params.id
+text_field_id text_field = text_field.id
 
 editable : TextField -> Bool
-editable text_field =
-  case text_field of
-    Title params -> params.editable
-    Source params -> params.editable
-    Difficulty params -> params.editable
-    Body params -> params.editable
-    Author params -> params.editable
+editable text_field = text_field.editable
 
 post_toggle_commands : TextField -> List (Cmd msg)
 post_toggle_commands text_field =
-  case text_field of
-      Body params -> [ckEditor params.id]
+  case text_field.name of
+      "body" -> [ckEditor text_field.id]
       _ -> [Cmd.none]
 
 body : TextComponent -> TextField
@@ -198,18 +188,29 @@ set_text (TextComponent text attr fields question_fields) field_name value =
     "body" -> TextComponent { text | body=value }  attr fields question_fields
     _ -> (TextComponent text attr fields question_fields)
 
-set_field : TextComponent -> TextField -> TextComponent
-set_field (TextComponent text attr fields question_fields) new_text_field =
-  case new_text_field of
-    Title params -> TextComponent text attr { fields | title = Title params } question_fields
-    Source params -> TextComponent text attr { fields | source = Source params } question_fields
-    Difficulty params -> TextComponent text attr { fields | difficulty = Difficulty params } question_fields
-    Author params -> TextComponent text attr { fields | author = Author params } question_fields
-    Body params -> TextComponent text attr { fields | body = Body params } question_fields
+update_field_error : TextField -> String -> TextField
+update_field_error text_field error_string =
+  { text_field | error = True, error_string = error_string }
 
-set_body_field : TextComponent -> TextBodyFieldParams -> TextComponent
-set_body_field (TextComponent text attr fields question_fields) new_body_params =
-  TextComponent text attr { fields | body = Body new_body_params } question_fields
+get_field : TextComponent -> FieldName -> Maybe TextField
+get_field (TextComponent text attr fields question_fields) field_name =
+  case field_name of
+    "title" -> Just fields.title
+    "source" -> Just fields.source
+    "difficulty" -> Just fields.difficulty
+    "author" -> Just fields.author
+    "body" -> Just fields.body
+    _ -> Nothing
+
+set_field : TextComponent -> TextField -> TextComponent
+set_field ((TextComponent text attr fields question_fields) as text_component) new_text_field =
+  case new_text_field.name of
+    "title" -> TextComponent text attr { fields | title = new_text_field } question_fields
+    "source" -> TextComponent text attr { fields | source = new_text_field } question_fields
+    "difficulty" -> TextComponent text attr { fields | difficulty = new_text_field } question_fields
+    "author" -> TextComponent text attr { fields | author = new_text_field } question_fields
+    "body" -> TextComponent text attr { fields | body = new_text_field } question_fields
+    _ -> text_component
 
 question_fields : TextComponent -> Array QuestionField
 question_fields (TextComponent text attr fields question_fields) = question_fields

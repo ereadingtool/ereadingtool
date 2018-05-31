@@ -2,7 +2,7 @@ module Question.Field exposing (QuestionField, QuestionType(..), generate_questi
   , add_new_question, delete_question, initial_question_fields, attributes, index, switch_editable, set_answer_feedback
   , set_question_type, question, menu_visible, id, error, editable, answers, set_menu_visible, set_answer_correct
   , update_question, set_question_body, set_answer_field, delete_question_field, question_field_for_answer
-  , toQuestions, fromQuestions)
+  , toQuestions, fromQuestions, update_errors)
 
 import Question.Model exposing (Question)
 
@@ -39,6 +39,7 @@ generate_question_field text_index question_index question =
       id = (String.join "_" ["text", toString text_index, "question", toString question_index])
     , editable = False
     , menu_visible = False
+    , error_string = ""
     , error = False
     , index = question_index } (Array.indexedMap (Answer.Field.generate_answer_field text_index question_index) question.answers)
 
@@ -49,6 +50,38 @@ add_new_question text_index fields =
   in
     Array.push
       (generate_question_field text_index new_question_index (Question.Model.new_question new_question_index)) fields
+
+update_errors : Array QuestionField -> (String, String) -> Array QuestionField
+update_errors question_fields (field_id, field_error) =
+  let
+    error_key = String.split "_" field_id
+  in
+    case error_key of
+      "question" :: question_index :: "answer" :: answer_index :: feedback ->
+        case String.toInt question_index of
+          Ok i ->
+            case String.toInt answer_index of
+              Ok j ->
+                case get_question_field question_fields i of
+                  Just question_field ->
+                    case Answer.Field.get_answer_field (answers question_field) j of
+                      Just answer_field ->
+                        set_answer_field question_fields
+                          (if List.isEmpty feedback then
+                            Answer.Field.update_error answer_field field_error
+                          else
+                            Answer.Field.update_feedback_error answer_field field_error)
+                      Nothing -> question_fields -- answer field does not exist
+                  Nothing ->
+                    question_fields -- question field does not exist
+              _ -> question_fields -- not a valid answer index
+          _ -> question_fields -- not a valid question index
+      _ -> -- no matching error key
+        question_fields
+
+get_question_field : Array QuestionField -> Int -> Maybe QuestionField
+get_question_field question_fields index =
+  Array.get index question_fields
 
 set_answer_field : Array QuestionField -> AnswerField -> Array QuestionField
 set_answer_field question_fields answer_field =

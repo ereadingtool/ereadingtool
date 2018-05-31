@@ -53,6 +53,7 @@ edit_answer_feedback params answer_field =
           , attribute "placeholder" "Give some feedback."
           , classList [ ("answer_feedback", True), ("input_error", feedback_field.error) ]
         ] [Html.text answer.feedback]
+      , div [] [Html.text feedback_field.error_string]
     ]
 
 edit_answer : (AnswerFieldParams msg) -> AnswerField -> Html msg

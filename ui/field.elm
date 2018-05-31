@@ -11,4 +11,4 @@ type alias Error = Bool
 fieldIDDecoder : Decode.Decoder (ID)
 fieldIDDecoder = Decode.int
 
-type alias FieldAttributes a = { a | id: String, editable: Bool, error: Bool, index: Int }
+type alias FieldAttributes a = { a | id: String, editable: Bool, error: Bool, index: Int, error_string: String }

@@ -14,10 +14,32 @@ type TextComponentGroup = TextComponentGroup (Array TextComponent)
 new_group : TextComponentGroup
 new_group = (TextComponentGroup (Array.fromList [Text.Component.emptyTextComponent 0]))
 
--- TODO: maps an error dictionary to a list of text components
+update_error : (String, String) -> Array TextComponent -> Array TextComponent
+update_error (field_id, field_error) text_components =
+  -- error keys begin with text_i_*
+  let
+    error_key = String.split "_" field_id
+  in
+    case error_key of
+      "text" :: index :: _ ->
+        case String.toInt index of
+          Ok i ->
+            case Array.get i text_components of
+              Just text_component ->
+                let
+                  -- only pass the relevant part of the error key
+                  text_component_error = String.join "_" (List.drop 2 error_key)
+                  new_text_component_with_errors =
+                    (Text.Component.update_errors text_component (text_component_error, field_error))
+                in
+                  Array.set i new_text_component_with_errors text_components
+              Nothing -> text_components -- text doesn't exist in the group
+          _ -> text_components -- not a valid index string
+      _ -> text_components -- not a valid error key
+
 update_errors : TextComponentGroup -> (Dict String String) -> TextComponentGroup
-update_errors (TextComponentGroup text_components) errors =
-   TextComponentGroup text_components
+update_errors ((TextComponentGroup text_components) as text_component_group) errors =
+   TextComponentGroup (Array.foldr update_error (toArray text_component_group) (Array.fromList <| Dict.toList errors))
 
 update_text_components : TextComponentGroup -> TextComponent -> TextComponentGroup
 update_text_components (TextComponentGroup text_components) text_component =

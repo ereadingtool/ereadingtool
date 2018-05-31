@@ -55,9 +55,5 @@ quizUpdateRespDecoder =
     |> required "id" Decode.int
     |> required "updated" Decode.bool
 
-
-quizCreateRespErrDecoder : Decode.Decoder (QuizRespError)
-quizCreateRespErrDecoder = Decode.dict Decode.string
-
 decodeRespErrors : String -> Result String QuizRespError
-decodeRespErrors str = Decode.decodeString quizCreateRespErrDecoder str
+decodeRespErrors str = Decode.decodeString (Decode.field "errors" (Decode.dict Decode.string)) str

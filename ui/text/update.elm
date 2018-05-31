@@ -4,7 +4,7 @@ import Question.Field exposing (QuestionField)
 import Answer.Field exposing (AnswerField)
 import Quiz.Component as Quiz exposing (QuizComponent)
 
-import Text.Component exposing (TextField(..), TextComponent)
+import Text.Component exposing (TextField, TextComponent)
 import Text.Component.Group exposing (TextComponentGroup)
 import Ports exposing (selectAllInputText, ckEditor, CKEditorID, CKEditorText)
 

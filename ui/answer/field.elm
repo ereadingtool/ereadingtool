@@ -1,6 +1,7 @@
 module Answer.Field exposing (AnswerField, AnswerFeedbackField, generate_answer_field, update_question_index
   , index, question_index, switch_editable, editable, answer, attributes, error, id, feedback_field
-  , set_answer_text, set_answer_correct, set_answer_feedback, toAnswers)
+  , set_answer_text, set_answer_correct, set_answer_feedback, toAnswers, get_answer_field, update_feedback_error
+  , update_error)
 
 import Field
 import Array exposing (Array)
@@ -8,14 +9,16 @@ import Array exposing (Array)
 import Answer.Model exposing (Answer)
 
 type alias AnswerFeedbackField = {
-    id : String
-  , editable : Bool
-  , error : Bool }
+    id: String
+  , editable: Bool
+  , error_string: String
+  , error: Bool }
 
 type alias AnswerFieldAttributes = {
     id: String
   , editable: Bool
   , error: Bool
+  , error_string: String
   , question_index: Int
   , index: Int }
 
@@ -28,6 +31,7 @@ generate_answer_feedback_field : String -> AnswerFeedbackField
 generate_answer_feedback_field id = {
     id = id
   , editable = False
+  , error_string = ""
   , error = False }
 
 generate_answer_field : Int -> Int -> Int -> Answer -> AnswerField
@@ -39,6 +43,7 @@ generate_answer_field i j k answer =
       id = answer_id
     , editable = False
     , error = False
+    , error_string = ""
     , question_index = j
     , index = k } (generate_answer_feedback_field <| String.join "_" [answer_id, "feedback"])
 
@@ -84,3 +89,15 @@ editable answer_field = let attrs = (attributes answer_field) in attrs.editable
 
 question_index : AnswerField -> Int
 question_index answer_field = let attrs = (attributes answer_field) in attrs.question_index
+
+get_answer_field : Array AnswerField -> Int -> Maybe AnswerField
+get_answer_field answer_fields index =
+  Array.get index answer_fields
+
+update_error : AnswerField -> String -> AnswerField
+update_error (AnswerField answer attr feedback) error_string =
+  AnswerField answer { attr | error = True, error_string = error_string } feedback
+
+update_feedback_error : AnswerField -> String -> AnswerField
+update_feedback_error (AnswerField answer attr feedback) error_string =
+  switch_editable (AnswerField answer attr { feedback | error = True, error_string = error_string })
