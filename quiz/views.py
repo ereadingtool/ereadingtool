@@ -1,32 +1,25 @@
 import json
-
-from django.views.generic import TemplateView
-from user.views.mixin import ProfileView
-from mixins.view import ElmLoadJsView
-from mixins.model import WriteLocked
-from text.models import TextDifficulty, Text
-
-from question.models import Question
-from django.db import IntegrityError
-
-from django.http import Http404, HttpResponseNotAllowed
-
-from django.urls import reverse
-
-from django.core.exceptions import ValidationError
 from typing import TypeVar, Optional, List
 
-
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
+from django.http import Http404, HttpResponseNotAllowed
+from django.http import HttpResponse, HttpRequest
+from django.urls import reverse
 from django.urls import reverse_lazy
+from django.views.generic import TemplateView
 from django.views.generic import View
-from django.http import HttpResponse
 
-from quiz.forms import QuizForm
+from mixins.model import WriteLocked
+from mixins.view import ElmLoadJsView
 from question.forms import QuestionForm, AnswerForm
-from text.forms import TextForm, ModelForm
-
+from question.models import Question
+from quiz.forms import QuizForm
 from quiz.models import Quiz
+from text.forms import TextForm, ModelForm
+from text.models import TextDifficulty, Text
+from user.views.mixin import ProfileView
 
 
 class QuizView(ProfileView, TemplateView):
@@ -35,7 +28,7 @@ class QuizView(ProfileView, TemplateView):
 
     model = Quiz
 
-    def get(self, request, *args, **kwargs) -> HttpResponse:
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if not self.model.objects.filter(pk=kwargs['pk']):
             raise Http404('quiz does not exist')
 
@@ -55,6 +48,8 @@ class QuizAPIView(LoginRequiredMixin, View):
     login_url = reverse_lazy('student-login')
 
     model = Quiz
+
+    allowed_methods = ['get', 'put', 'post', 'delete']
 
     @classmethod
     def form_validation_errors(cls, errors: dict, parent_key: str, form: ModelForm) -> dict:
@@ -173,9 +168,25 @@ class QuizAPIView(LoginRequiredMixin, View):
 
         return output_params, errors
 
-    def put(self, request, *args, **kwargs) -> HttpResponse:
+    def delete(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:
-            return HttpResponseNotAllowed(permitted_methods=['get', 'post'])
+            return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
+        try:
+            quiz = Quiz.objects.get(pk=kwargs['pk'])
+
+            try:
+                quiz.delete()
+
+                return HttpResponse(json.dumps({'id': quiz.pk, 'deleted': True}))
+            except WriteLocked:
+                return HttpResponse(json.dumps({'errors': 'quiz {0} is locked.'.format(kwargs['pk'])}))
+
+        except Quiz.DoesNotExist:
+            return HttpResponse(json.dumps({'errors': 'something went wrong'}))
+
+    def put(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        if 'pk' not in kwargs:
+            return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
 
         try:
             quiz = Quiz.objects.get(pk=kwargs['pk'])
@@ -199,7 +210,7 @@ class QuizAPIView(LoginRequiredMixin, View):
         except Quiz.DoesNotExist:
             return HttpResponse(json.dumps({'errors': 'something went wrong'}))
 
-    def get(self, request, *args, **kwargs) -> HttpResponse:
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' in kwargs:
             try:
                 # query reverse relation to consolidate queries
@@ -247,7 +258,7 @@ class QuizAPIView(LoginRequiredMixin, View):
 
         return quiz_params, text_params, resp
 
-    def post(self, request, *args, **kwargs) -> HttpResponse:
+    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         quiz_params, text_params, resp = self.validate_params(request.body.decode('utf8'))
 
         if resp:

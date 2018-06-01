@@ -129,6 +129,26 @@ class QuizTest(TestCase):
 
         self.assertEquals(resp_content['title'], 'quiz title')
 
+    def test_delete_quiz(self):
+        resp = self.client.post('/api/quiz/', json.dumps(self.get_test_data()), content_type='application/json')
+
+        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        self.assertEquals(Quiz.objects.count(), 1)
+
+        resp_content = json.loads(resp.content.decode('utf8'))
+
+        self.assertIn('id', resp_content)
+
+        resp = self.client.delete('/api/quiz/{0}/'.format(resp_content['id']), content_type='application/json')
+
+        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        resp_content = json.loads(resp.content.decode('utf8'))
+
+        self.assertTrue(resp_content)
+
+        self.assertTrue('deleted' in resp_content)
 
     def get_test_data(self):
         return {

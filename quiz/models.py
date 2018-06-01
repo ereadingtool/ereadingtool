@@ -85,3 +85,9 @@ class Quiz(WriteLockable, Timestamped, models.Model):
 
     def __str__(self):
         return self.title
+
+    def delete(self, *args, **kwargs):
+        if self.is_locked():
+            raise WriteLocked
+
+        super(Quiz, self).delete(*args, **kwargs)
