@@ -84,7 +84,7 @@ edit_difficulty params = Html.div [attribute "class" "text_property"] [
     , Html.select [
          onInput (UpdateTextValue params.text_component "difficulty" >> params.msg) ] [
         Html.optgroup [] (List.map (\(k,v) ->
-          Html.option ([attribute "value" k] ++ (if v == params.text.difficulty then [attribute "selected" ""] else []))
+          Html.option ([attribute "value" k] ++ (if k == params.text.difficulty then [attribute "selected" ""] else []))
            [ Html.text v ]) params.difficulties)
        ]
   ]

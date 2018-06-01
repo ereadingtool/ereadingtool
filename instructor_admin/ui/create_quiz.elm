@@ -44,8 +44,6 @@ import Array exposing (Array)
 type alias Flags = Flags.Flags { quiz: Maybe Json.Encode.Value }
 type alias InstructorUser = String
 
-type QuizDecode = Task String Quiz.Model.Quiz
-
 type QuizField = QuizField (Field.FieldAttributes {
     name : String
   , view : QuizComponent -> QuizField -> Html Msg
@@ -321,17 +319,17 @@ view_quiz_date quiz_component quiz_field =
            _ -> [])
 
 view_quiz_title : QuizComponent -> QuizField -> Html Msg
-view_quiz_title quiz_component quiz_field =
+view_quiz_title quiz_component ((QuizField attr) as quiz_field) =
   let
     quiz = Quiz.Component.quiz quiz_component
   in
     Html.div [
       onClick (ToggleEditable quiz_field True)
-    , attribute "class" "editable"
-    ] [
+    , classList [("editable", True), ("input_error", attr.error)]
+    ] <| [
         Html.text "Quiz Title: "
       , Html.text quiz.title
-      ]
+      ] ++ (if attr.error then [ ] else [])
 
 edit_quiz_title : QuizComponent -> QuizField -> Html Msg
 edit_quiz_title quiz_component ((QuizField field_attrs) as quiz_field) =

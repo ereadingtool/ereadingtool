@@ -13525,14 +13525,14 @@ var _user$project$Text_View$edit_difficulty = function (params) {
 								_elm_lang$core$List$map,
 								function (_p2) {
 									var _p3 = _p2;
-									var _p4 = _p3._1;
+									var _p4 = _p3._0;
 									return A2(
 										_elm_lang$html$Html$option,
 										A2(
 											_elm_lang$core$Basics_ops['++'],
 											{
 												ctor: '::',
-												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', _p3._0),
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', _p4),
 												_1: {ctor: '[]'}
 											},
 											_elm_lang$core$Native_Utils.eq(_p4, params.text.difficulty) ? {
@@ -13542,7 +13542,7 @@ var _user$project$Text_View$edit_difficulty = function (params) {
 											} : {ctor: '[]'}),
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html$text(_p4),
+											_0: _elm_lang$html$Html$text(_p3._1),
 											_1: {ctor: '[]'}
 										});
 								},
@@ -14070,10 +14070,6 @@ var _user$project$Main$Model = F8(
 	function (a, b, c, d, e, f, g, h) {
 		return {flags: a, mode: b, profile: c, success_msg: d, error_msg: e, quiz_component: f, quiz_fields: g, question_difficulties: h};
 	});
-var _user$project$Main$Task = F2(
-	function (a, b) {
-		return {ctor: 'Task', _0: a, _1: b};
-	});
 var _user$project$Main$QuizField = function (a) {
 	return {ctor: 'QuizField', _0: a};
 };
@@ -14127,33 +14123,47 @@ var _user$project$Main$ToggleEditable = F2(
 		return {ctor: 'ToggleEditable', _0: a, _1: b};
 	});
 var _user$project$Main$view_quiz_title = F2(
-	function (quiz_component, quiz_field) {
+	function (quiz_component, _p14) {
+		var _p15 = _p14;
+		var _p16 = _p15._0;
 		var quiz = _user$project$Quiz_Component$quiz(quiz_component);
 		return A2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
 				_0: _elm_lang$html$Html_Events$onClick(
-					A2(_user$project$Main$ToggleEditable, quiz_field, true)),
+					A2(_user$project$Main$ToggleEditable, _p15, true)),
 				_1: {
 					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'editable'),
+					_0: _elm_lang$html$Html_Attributes$classList(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'editable', _1: true},
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'input_error', _1: _p16.error},
+								_1: {ctor: '[]'}
+							}
+						}),
 					_1: {ctor: '[]'}
 				}
 			},
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html$text('Quiz Title: '),
-				_1: {
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text(quiz.title),
-					_1: {ctor: '[]'}
-				}
-			});
+					_0: _elm_lang$html$Html$text('Quiz Title: '),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(quiz.title),
+						_1: {ctor: '[]'}
+					}
+				},
+				_p16.error ? {ctor: '[]'} : {ctor: '[]'}));
 	});
 var _user$project$Main$edit_quiz_title = F2(
-	function (quiz_component, _p14) {
-		var _p15 = _p14;
+	function (quiz_component, _p17) {
+		var _p18 = _p17;
 		var quiz = _user$project$Quiz_Component$quiz(quiz_component);
 		return A2(
 			_elm_lang$html$Html$input,
@@ -14165,7 +14175,7 @@ var _user$project$Main$edit_quiz_title = F2(
 					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', quiz.title),
 					_1: {
 						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', _p15._0.id),
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', _p18._0.id),
 						_1: {
 							ctor: '::',
 							_0: _elm_lang$html$Html_Events$onInput(
@@ -14173,7 +14183,7 @@ var _user$project$Main$edit_quiz_title = F2(
 							_1: {
 								ctor: '::',
 								_0: _elm_lang$html$Html_Events$onBlur(
-									A2(_user$project$Main$ToggleEditable, _p15, false)),
+									A2(_user$project$Main$ToggleEditable, _p18, false)),
 								_1: {ctor: '[]'}
 							}
 						}
@@ -14193,8 +14203,8 @@ var _user$project$Main$subscriptions = function (model) {
 			_1: {
 				ctor: '::',
 				_0: function () {
-					var _p16 = model.success_msg;
-					if (_p16.ctor === 'Just') {
+					var _p19 = model.success_msg;
+					if (_p19.ctor === 'Just') {
 						return A2(_elm_lang$core$Time$every, _elm_lang$core$Time$second * 3, _user$project$Main$ClearMessages);
 					} else {
 						return _elm_lang$core$Platform_Sub$none;
@@ -14209,8 +14219,8 @@ var _user$project$Main$Updated = function (a) {
 };
 var _user$project$Main$update_quiz = F2(
 	function (csrftoken, quiz) {
-		var _p17 = quiz.id;
-		if (_p17.ctor === 'Just') {
+		var _p20 = quiz.id;
+		if (_p20.ctor === 'Just') {
 			var encoded_quiz = _user$project$Quiz_Encode$quizEncoder(quiz);
 			var req = A4(
 				_user$project$HttpHelpers$put_with_headers,
@@ -14222,7 +14232,7 @@ var _user$project$Main$update_quiz = F2(
 						_0: _user$project$Config$quiz_api_endpoint,
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$core$Basics$toString(_p17._0),
+							_0: _elm_lang$core$Basics$toString(_p20._0),
 							_1: {
 								ctor: '::',
 								_0: '/',
@@ -14262,14 +14272,14 @@ var _user$project$Main$post_quiz = F2(
 	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p18 = msg;
-		switch (_p18.ctor) {
+		var _p21 = msg;
+		switch (_p21.ctor) {
 			case 'TextComponentMsg':
-				return A2(_user$project$Text_Update$update, _p18._0, model);
+				return A2(_user$project$Text_Update$update, _p21._0, model);
 			case 'SubmitQuiz':
 				var quiz = _user$project$Quiz_Component$quiz(model.quiz_component);
-				var _p19 = model.mode;
-				switch (_p19.ctor) {
+				var _p22 = model.mode;
+				switch (_p22.ctor) {
 					case 'ReadOnlyMode':
 						return {
 							ctor: '_Tuple2',
@@ -14277,7 +14287,7 @@ var _user$project$Main$update = F2(
 								model,
 								{
 									success_msg: _elm_lang$core$Maybe$Just(
-										A2(_elm_lang$core$Basics_ops['++'], 'Quiz is locked by ', _p19._0))
+										A2(_elm_lang$core$Basics_ops['++'], 'Quiz is locked by ', _p22._0))
 								}),
 							_1: _elm_lang$core$Platform_Cmd$none
 						};
@@ -14299,24 +14309,24 @@ var _user$project$Main$update = F2(
 						};
 				}
 			case 'QuizJSONDecode':
-				var _p20 = _p18._0;
-				if (_p20.ctor === 'Ok') {
-					var _p23 = _p20._0;
-					var quiz = _user$project$Quiz_Component$quiz(_p23);
-					var _p21 = quiz.write_locker;
-					if (_p21.ctor === 'Just') {
-						var _p22 = _p21._0;
+				var _p23 = _p21._0;
+				if (_p23.ctor === 'Ok') {
+					var _p26 = _p23._0;
+					var quiz = _user$project$Quiz_Component$quiz(_p26);
+					var _p24 = quiz.write_locker;
+					if (_p24.ctor === 'Just') {
+						var _p25 = _p24._0;
 						return {
 							ctor: '_Tuple2',
 							_0: _elm_lang$core$Native_Utils.update(
 								model,
 								{
-									quiz_component: _p23,
-									mode: _user$project$Main$ReadOnlyMode(_p22),
+									quiz_component: _p26,
+									mode: _user$project$Main$ReadOnlyMode(_p25),
 									error_msg: _elm_lang$core$Maybe$Just(
-										A2(_elm_lang$core$Basics_ops['++'], 'READONLY: quiz is currently being edited by ', _p22))
+										A2(_elm_lang$core$Basics_ops['++'], 'READONLY: quiz is currently being edited by ', _p25))
 								}),
-							_1: _user$project$Quiz_Component$reinitialize_ck_editors(_p23)
+							_1: _user$project$Quiz_Component$reinitialize_ck_editors(_p26)
 						};
 					} else {
 						return {
@@ -14324,7 +14334,7 @@ var _user$project$Main$update = F2(
 							_0: _elm_lang$core$Native_Utils.update(
 								model,
 								{
-									quiz_component: _p23,
+									quiz_component: _p26,
 									mode: _user$project$Main$EditMode,
 									success_msg: _elm_lang$core$Maybe$Just(
 										A2(
@@ -14332,11 +14342,11 @@ var _user$project$Main$update = F2(
 											'editing \'',
 											A2(_elm_lang$core$Basics_ops['++'], quiz.title, '\' quiz')))
 								}),
-							_1: _user$project$Quiz_Component$reinitialize_ck_editors(_p23)
+							_1: _user$project$Quiz_Component$reinitialize_ck_editors(_p26)
 						};
 					}
 				} else {
-					var _p24 = A2(_elm_lang$core$Debug$log, 'quiz decode error', _p20._0);
+					var _p27 = A2(_elm_lang$core$Debug$log, 'quiz decode error', _p23._0);
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
@@ -14357,7 +14367,7 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'Submitted':
-				if (_p18._0.ctor === 'Ok') {
+				if (_p21._0.ctor === 'Ok') {
 					var quiz = _user$project$Quiz_Component$quiz(model.quiz_component);
 					return {
 						ctor: '_Tuple2',
@@ -14378,20 +14388,20 @@ var _user$project$Main$update = F2(
 										})),
 								mode: _user$project$Main$EditMode
 							}),
-						_1: _elm_lang$navigation$Navigation$load(_p18._0._0.redirect)
+						_1: _elm_lang$navigation$Navigation$load(_p21._0._0.redirect)
 					};
 				} else {
-					var _p25 = _p18._0._0;
-					switch (_p25.ctor) {
+					var _p28 = _p21._0._0;
+					switch (_p28.ctor) {
 						case 'BadStatus':
-							var _p26 = _user$project$Quiz_Decode$decodeRespErrors(_p25._0.body);
-							if (_p26.ctor === 'Ok') {
+							var _p29 = _user$project$Quiz_Decode$decodeRespErrors(_p28._0.body);
+							if (_p29.ctor === 'Ok') {
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
 										model,
 										{
-											quiz_component: A2(_user$project$Quiz_Component$update_quiz_errors, model.quiz_component, _p26._0)
+											quiz_component: A2(_user$project$Quiz_Component$update_quiz_errors, model.quiz_component, _p29._0)
 										}),
 									_1: _elm_lang$core$Platform_Cmd$none
 								};
@@ -14399,14 +14409,14 @@ var _user$project$Main$update = F2(
 								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 							}
 						case 'BadPayload':
-							var _p27 = A2(_elm_lang$core$Debug$log, 'submit quiz bad payload error', _p25._1.body);
+							var _p30 = A2(_elm_lang$core$Debug$log, 'submit quiz bad payload error', _p28._1.body);
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 						default:
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 					}
 				}
 			case 'Updated':
-				if (_p18._0.ctor === 'Ok') {
+				if (_p21._0.ctor === 'Ok') {
 					var quiz = _user$project$Quiz_Component$quiz(model.quiz_component);
 					return {
 						ctor: '_Tuple2',
@@ -14429,19 +14439,19 @@ var _user$project$Main$update = F2(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p28 = _p18._0._0;
-					switch (_p28.ctor) {
+					var _p31 = _p21._0._0;
+					switch (_p31.ctor) {
 						case 'BadStatus':
-							var _p31 = _p28._0;
-							var _p29 = A2(_elm_lang$core$Debug$log, 'update error bad status', _p31);
-							var _p30 = _user$project$Quiz_Decode$decodeRespErrors(_p31.body);
-							if (_p30.ctor === 'Ok') {
+							var _p34 = _p31._0;
+							var _p32 = A2(_elm_lang$core$Debug$log, 'update error bad status', _p34);
+							var _p33 = _user$project$Quiz_Decode$decodeRespErrors(_p34.body);
+							if (_p33.ctor === 'Ok') {
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
 										model,
 										{
-											quiz_component: A2(_user$project$Quiz_Component$update_quiz_errors, model.quiz_component, _p30._0)
+											quiz_component: A2(_user$project$Quiz_Component$update_quiz_errors, model.quiz_component, _p33._0)
 										}),
 									_1: _elm_lang$core$Platform_Cmd$none
 								};
@@ -14449,19 +14459,19 @@ var _user$project$Main$update = F2(
 								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 							}
 						case 'BadPayload':
-							var _p32 = A2(_elm_lang$core$Debug$log, 'update error bad payload', _p28._1);
+							var _p35 = A2(_elm_lang$core$Debug$log, 'update error bad payload', _p31._1);
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 						default:
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 					}
 				}
 			case 'UpdateTextDifficultyOptions':
-				if (_p18._0.ctor === 'Ok') {
+				if (_p21._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{question_difficulties: _p18._0._0}),
+							{question_difficulties: _p21._0._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
@@ -14473,7 +14483,7 @@ var _user$project$Main$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							quiz_component: A3(_user$project$Quiz_Component$set_quiz_attribute, model.quiz_component, _p18._0, _p18._1)
+							quiz_component: A3(_user$project$Quiz_Component$set_quiz_attribute, model.quiz_component, _p21._0, _p21._1)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -14486,9 +14496,9 @@ var _user$project$Main$update = F2(
 							quiz_fields: A2(
 								_user$project$Main$update_quiz_field,
 								model.quiz_fields,
-								A2(_user$project$Main$update_editable, _p18._0, _p18._1))
+								A2(_user$project$Main$update_editable, _p21._0, _p21._1))
 						}),
-					_1: _user$project$Ports$selectAllInputText(_p18._0._0.id)
+					_1: _user$project$Ports$selectAllInputText(_p21._0._0.id)
 				};
 		}
 	});
@@ -14579,8 +14589,8 @@ var _user$project$Main$view = function (model) {
 				}
 			},
 			function () {
-				var _p33 = model.mode;
-				if (_p33.ctor === 'ReadOnlyMode') {
+				var _p36 = model.mode;
+				if (_p36.ctor === 'ReadOnlyMode') {
 					return {ctor: '[]'};
 				} else {
 					return {
