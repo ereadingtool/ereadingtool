@@ -59,13 +59,13 @@ class QuizTagAPIView(LoginRequiredMixin, View):
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
 
         try:
-            tag = request.body.decode('utf8')
+            tag = json.loads(request.body.decode('utf8'))
             quiz = Quiz.objects.get(pk=kwargs['pk'])
 
             try:
                 quiz.tags.remove(tag)
 
-                return HttpResponse(json.dumps({'tag': tag, 'deleted': True}))
+                return HttpResponse(json.dumps(True))
             except IntegrityError:
                 return HttpResponse(json.dumps({'errors': 'something went wrong'}))
 
@@ -82,13 +82,16 @@ class QuizTagAPIView(LoginRequiredMixin, View):
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
 
         try:
-            tag = request.body.decode('utf8')
+            tag = json.loads(request.body.decode('utf8'))
             quiz = Quiz.objects.get(pk=kwargs['pk'])
 
             try:
-                quiz.tags.add(tag)
+                if isinstance(tag, list):
+                    quiz.tags.add(*tag)
+                else:
+                    quiz.tags.add(tag)
 
-                return HttpResponse(json.dumps({'tag': tag}))
+                return HttpResponse(json.dumps(tag))
             except IntegrityError:
                 return HttpResponse(json.dumps({'errors': 'something went wrong'}))
 
@@ -105,9 +108,9 @@ class QuizTagAPIView(LoginRequiredMixin, View):
             quiz = Quiz.objects.get(pk=kwargs['pk'])
 
             try:
-                tags = quiz.tags.all()
+                tags = [tag.name for tag in quiz.tags.all()]
 
-                return HttpResponse(json.dumps({'tags': tags}))
+                return HttpResponse(json.dumps(tags))
             except IntegrityError:
                 return HttpResponse(json.dumps({'errors': 'something went wrong'}))
 

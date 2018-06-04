@@ -59,6 +59,24 @@ class QuizTest(TestCase):
 
         self.assertEquals(quiz.tags.count(), 1)
 
+        self.assertEquals([tag.name for tag in quiz.tags.all()], ['Society and Societal Trends'])
+
+        resp = self.client.put('/api/quiz/{0}/tag/'.format(quiz.pk),
+                               json.dumps(['Sports', 'Science/Technology', 'Other']),
+                               content_type='application/json')
+
+        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        self.assertEquals(quiz.tags.count(), 4)
+
+        resp = self.client.delete('/api/quiz/{0}/tag/'.format(quiz.pk),
+                                  json.dumps('Other'),
+                                  content_type='application/json')
+
+        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        self.assertEquals(quiz.tags.count(), 3)
+
     def test_put_quiz(self):
         test_data = self.get_test_data()
 
