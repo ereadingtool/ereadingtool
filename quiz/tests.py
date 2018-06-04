@@ -39,6 +39,26 @@ class QuizTest(TestCase):
         self.assertTrue(logged_in, 'couldnt login with username="{0}" passwd="{1}"'.format(
             self.user.username, self.user_passwd))
 
+    def test_quiz_tags(self):
+        test_data = self.get_test_data()
+
+        resp = self.client.post('/api/quiz/', json.dumps(test_data), content_type='application/json')
+
+        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        self.assertEquals(Quiz.objects.count(), 1)
+
+        resp_content = json.loads(resp.content.decode('utf8'))
+
+        quiz = Quiz.objects.get(pk=resp_content['id'])
+
+        resp = self.client.put('/api/quiz/{0}/tag/'.format(quiz.pk), json.dumps('Society and Societal Trends'),
+                               content_type='application/json')
+
+        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        self.assertEquals(quiz.tags.count(), 1)
+
     def test_put_quiz(self):
         test_data = self.get_test_data()
 

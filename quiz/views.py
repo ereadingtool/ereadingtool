@@ -44,8 +44,81 @@ class QuizLoadElm(ElmLoadJsView):
         return context
 
 
+class QuizTagAPIView(LoginRequiredMixin, View):
+    login_url = reverse_lazy('instructor-login')
+
+    model = Quiz
+
+    allowed_methods = ['get', 'put', 'delete']
+
+    def delete(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        if 'pk' not in kwargs:
+            return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
+
+        if not len(request.body.decode('utf8')):
+            return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
+
+        try:
+            tag = request.body.decode('utf8')
+            quiz = Quiz.objects.get(pk=kwargs['pk'])
+
+            try:
+                quiz.tags.remove(tag)
+
+                return HttpResponse(json.dumps({'tag': tag, 'deleted': True}))
+            except IntegrityError:
+                return HttpResponse(json.dumps({'errors': 'something went wrong'}))
+
+        except Quiz.DoesNotExist:
+            return HttpResponse(json.dumps({'errors': 'something went wrong'}))
+        except UnicodeDecodeError:
+            return HttpResponse(json.dumps({'errors': 'tag not valid'}))
+
+    def put(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        if 'pk' not in kwargs:
+            return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
+
+        if not len(request.body.decode('utf8')):
+            return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
+
+        try:
+            tag = request.body.decode('utf8')
+            quiz = Quiz.objects.get(pk=kwargs['pk'])
+
+            try:
+                quiz.tags.add(tag)
+
+                return HttpResponse(json.dumps({'tag': tag}))
+            except IntegrityError:
+                return HttpResponse(json.dumps({'errors': 'something went wrong'}))
+
+        except Quiz.DoesNotExist:
+            return HttpResponse(json.dumps({'errors': 'something went wrong'}))
+        except UnicodeDecodeError:
+            return HttpResponse(json.dumps({'errors': 'tag not valid'}))
+
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        if 'pk' not in kwargs:
+            return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
+
+        try:
+            quiz = Quiz.objects.get(pk=kwargs['pk'])
+
+            try:
+                tags = quiz.tags.all()
+
+                return HttpResponse(json.dumps({'tags': tags}))
+            except IntegrityError:
+                return HttpResponse(json.dumps({'errors': 'something went wrong'}))
+
+        except Quiz.DoesNotExist:
+            return HttpResponse(json.dumps({'errors': 'something went wrong'}))
+        except UnicodeDecodeError:
+            return HttpResponse(json.dumps({'errors': 'tag not valid'}))
+
+
 class QuizAPIView(LoginRequiredMixin, View):
-    login_url = reverse_lazy('student-login')
+    login_url = reverse_lazy('instructor-login')
 
     model = Quiz
 

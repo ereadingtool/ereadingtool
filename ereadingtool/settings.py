@@ -43,7 +43,7 @@ INSTALLED_APPS = [
 
 # third-party apps
 INSTALLED_APPS += [
-    'tagging',
+    'taggit',
 ]
 
 # project apps
@@ -55,8 +55,7 @@ INSTALLED_APPS += [
     'quiz'
 ]
 
-FORCE_LOWERCASE_TAGS = True
-MAX_TAG_LENGTH = 50
+TAGGIT_CASE_INSENSITIVE = True
 
 AUTH_USER_MODEL = 'user.ReaderUser'
 
