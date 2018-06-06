@@ -91,6 +91,7 @@ class QuizTest(TestCase):
         quiz = Quiz.objects.get(pk=resp_content['id'])
 
         test_data['title'] = 'a new quiz title'
+        test_data['introduction'] = 'a new introduction'
         test_data['texts'][1]['author'] = 'J. K. Idding'
 
         resp = self.client.put('/api/quiz/{pk}/'.format(pk=quiz.pk), json.dumps(test_data),
@@ -114,11 +115,13 @@ class QuizTest(TestCase):
 
         self.assertEquals(resp_content['texts'][1]['author'], 'J. K. Idding')
 
+        self.assertEquals(resp_content['introduction'], 'a new introduction')
+
         test_data['texts'][1]['questions'][0]['body'] = 'A new question?'
         test_data['texts'][1]['questions'][0]['answers'][1]['text'] = 'A new answer.'
 
-        _ = self.client.put('/api/quiz/{pk}/'.format(pk=quiz.pk), json.dumps(test_data),
-                            content_type='application/json')
+        resp = self.client.put('/api/quiz/{pk}/'.format(pk=quiz.pk), json.dumps(test_data),
+                               content_type='application/json')
 
         self.assertEquals(resp.status_code, 200)
 
@@ -191,6 +194,7 @@ class QuizTest(TestCase):
     def get_test_data(self):
         return {
             'title': 'quiz title',
+            'introduction': 'an introductory text',
             'texts': [
                 {'title': 'title',
                  'source': 'source',

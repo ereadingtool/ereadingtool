@@ -14,7 +14,7 @@ class Quiz(WriteLockable, Timestamped, models.Model):
     last_modified_by = models.ForeignKey('user.Instructor', null=True, on_delete=models.SET_NULL,
                                          related_name='last_modified_quiz')
 
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)
 
     @classmethod
     def update(cls, quiz_params: dict, text_params: dict) -> TypeVar('Quiz'):
@@ -85,6 +85,7 @@ class Quiz(WriteLockable, Timestamped, models.Model):
         return {
             'id': self.pk,
             'title': self.title,
+            'introduction': self.introduction,
             'modified_dt': self.modified_dt.isoformat(),
             'created_dt': self.created_dt.isoformat(),
             'texts': [text.to_dict() for text in (texts if texts else self.texts.all())],
