@@ -7,6 +7,10 @@ from taggit.managers import TaggableManager
 
 class Quiz(WriteLockable, Timestamped, models.Model):
     title = models.CharField(max_length=255, null=False, blank=False)
+    introduction = models.CharField(max_length=512, null=False, blank=False)
+
+    created_by = models.ForeignKey('user.Instructor', null=True, on_delete=models.SET_NULL,
+                                   related_name='created_quizzes')
     last_modified_by = models.ForeignKey('user.Instructor', null=True, on_delete=models.SET_NULL,
                                          related_name='last_modified_quiz')
 

@@ -2,7 +2,7 @@ import json
 from typing import TypeVar, Optional, List
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import IntegrityError
 from django.http import Http404, HttpResponseNotAllowed
 from django.http import HttpResponse, HttpRequest
@@ -267,6 +267,8 @@ class QuizAPIView(LoginRequiredMixin, View):
         try:
             quiz = Quiz.objects.get(pk=kwargs['pk'])
 
+            profile = self.request.user.instructor
+
             quiz_params, text_params, resp = self.validate_params(request.body.decode('utf8'), quiz)
 
             if resp:
@@ -274,6 +276,7 @@ class QuizAPIView(LoginRequiredMixin, View):
 
             try:
                 quiz = Quiz.update(quiz_params=quiz_params, text_params=text_params)
+                quiz.last_modified_by = profile
 
                 quiz.save()
 
@@ -283,7 +286,7 @@ class QuizAPIView(LoginRequiredMixin, View):
             except IntegrityError:
                 return HttpResponse(json.dumps({'errors': 'something went wrong'}))
 
-        except Quiz.DoesNotExist:
+        except (Quiz.DoesNotExist, ObjectDoesNotExist):
             return HttpResponse(json.dumps({'errors': 'something went wrong'}))
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
@@ -341,9 +344,13 @@ class QuizAPIView(LoginRequiredMixin, View):
             return resp
 
         try:
+            profile = self.request.user.instructor
+
             quiz = Quiz.create(text_params=text_params, quiz_params=quiz_params)
+
+            quiz.created_by = profile
             quiz.save()
 
             return HttpResponse(json.dumps({'id': quiz.pk, 'redirect': reverse('quiz-edit', kwargs={'pk': quiz.pk})}))
-        except IntegrityError:
+        except (IntegrityError, ObjectDoesNotExist):
             return HttpResponse(json.dumps({'errors': 'something went wrong'}))

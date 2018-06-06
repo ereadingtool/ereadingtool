@@ -6,5 +6,5 @@ from quiz.models import Quiz
 class QuizForm(ModelForm):
     class Meta:
         model = Quiz
-        fields = ('title',)
+        fields = ('title', 'introduction', 'tags', )
 

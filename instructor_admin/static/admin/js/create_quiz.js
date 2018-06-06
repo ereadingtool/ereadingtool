@@ -10812,6 +10812,11 @@ var _user$project$Ports$ckEditorSetHtml = _elm_lang$core$Native_Platform.outgoin
 	function (v) {
 		return [v._0, v._1];
 	});
+var _user$project$Ports$select2 = _elm_lang$core$Native_Platform.outgoingPort(
+	'select2',
+	function (v) {
+		return v;
+	});
 
 var _user$project$Text_Component$question_fields = function (_p0) {
 	var _p1 = _p0;
