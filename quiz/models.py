@@ -47,7 +47,7 @@ class Quiz(WriteLockable, Timestamped, models.Model):
 
     @classmethod
     def create(cls, text_params: dict, quiz_params: dict) -> TypeVar('Quiz'):
-        quiz = Quiz.objects.create(**quiz_params['form'].data)
+        quiz = quiz_params['form'].save()
         quiz.save()
 
         for text_param in text_params.values():
@@ -86,6 +86,7 @@ class Quiz(WriteLockable, Timestamped, models.Model):
             'id': self.pk,
             'title': self.title,
             'introduction': self.introduction,
+            'tags': [tag.name for tag in self.tags.all()],
             'modified_dt': self.modified_dt.isoformat(),
             'created_dt': self.created_dt.isoformat(),
             'texts': [text.to_dict() for text in (texts if texts else self.texts.all())],

@@ -169,6 +169,8 @@ class QuizTest(TestCase):
         self.assertTrue(resp_content)
 
         self.assertEquals(resp_content['title'], 'quiz title')
+        self.assertEquals(resp_content['introduction'], 'an introductory text')
+        self.assertEquals(resp_content['tags'], ['Other', 'Science/Technology', 'Sports'])
 
     def test_delete_quiz(self):
         resp = self.client.post('/api/quiz/', json.dumps(self.get_test_data()), content_type='application/json')
@@ -195,6 +197,7 @@ class QuizTest(TestCase):
         return {
             'title': 'quiz title',
             'introduction': 'an introductory text',
+            'tags': ['Sports', 'Science/Technology', 'Other'],
             'texts': [
                 {'title': 'title',
                  'source': 'source',
