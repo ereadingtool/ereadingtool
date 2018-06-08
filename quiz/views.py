@@ -17,6 +17,7 @@ from question.forms import QuestionForm, AnswerForm
 from question.models import Question
 from quiz.forms import QuizForm
 from quiz.models import Quiz
+
 from text.forms import TextForm, ModelForm
 from text.models import TextDifficulty, Text
 from user.views.mixin import ProfileView
@@ -63,7 +64,7 @@ class QuizTagAPIView(LoginRequiredMixin, View):
             quiz = Quiz.objects.get(pk=kwargs['pk'])
 
             try:
-                quiz.tags.remove(tag)
+                quiz.remove_tag(tag)
 
                 return HttpResponse(json.dumps(True))
             except IntegrityError:
@@ -86,12 +87,9 @@ class QuizTagAPIView(LoginRequiredMixin, View):
             quiz = Quiz.objects.get(pk=kwargs['pk'])
 
             try:
-                if isinstance(tag, list):
-                    quiz.tags.add(*tag)
-                else:
-                    quiz.tags.add(tag)
+                quiz.add_tags(tag)
 
-                return HttpResponse(json.dumps(tag))
+                return HttpResponse(json.dumps(True))
             except IntegrityError:
                 return HttpResponse(json.dumps({'errors': 'something went wrong'}))
 

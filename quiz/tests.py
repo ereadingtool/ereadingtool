@@ -6,6 +6,7 @@ from hypothesis.strategies import just, text
 
 from ereadingtool.urls import reverse_lazy
 from quiz.models import Quiz
+from tag.models import Tag
 from text.models import TextDifficulty, Text
 from user.models import ReaderUser, Instructor
 
@@ -39,43 +40,68 @@ class QuizTest(TestCase):
         self.assertTrue(logged_in, 'couldnt login with username="{0}" passwd="{1}"'.format(
             self.user.username, self.user_passwd))
 
-    def test_quiz_tags(self):
-        test_data = self.get_test_data()
+    def create_quiz(self, diff_data: dict=None) -> Quiz:
+        quiz_data = self.get_test_data()
 
-        resp = self.client.post('/api/quiz/', json.dumps(test_data), content_type='application/json')
+        if diff_data:
+            quiz_data.update(diff_data)
+
+        resp = self.client.post('/api/quiz/', json.dumps(quiz_data), content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
-
-        self.assertEquals(Quiz.objects.count(), 1)
 
         resp_content = json.loads(resp.content.decode('utf8'))
 
         quiz = Quiz.objects.get(pk=resp_content['id'])
 
-        resp = self.client.put('/api/quiz/{0}/tag/'.format(quiz.pk), json.dumps('Society and Societal Trends'),
+        return quiz
+
+    def test_quiz_tags(self):
+        test_data = self.get_test_data()
+
+        quiz_one = self.create_quiz()
+        quiz_two = self.create_quiz(diff_data={'tags': ['Society and Societal Trends']})
+
+        resp = self.client.put('/api/quiz/{0}/tag/'.format(quiz_one.pk), json.dumps('Society and Societal Trends'),
                                content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
-        self.assertEquals(quiz.tags.count(), 1)
+        self.assertEquals(quiz_one.tags.count(), len(test_data['tags'])+1)
 
-        self.assertEquals([tag.name for tag in quiz.tags.all()], ['Society and Societal Trends'])
+        self.assertIn('Society and Societal Trends', [tag.name for tag in quiz_one.tags.all()])
 
-        resp = self.client.put('/api/quiz/{0}/tag/'.format(quiz.pk),
+        resp = self.client.put('/api/quiz/{0}/tag/'.format(quiz_one.pk),
                                json.dumps(['Sports', 'Science/Technology', 'Other']),
                                content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
-        self.assertEquals(quiz.tags.count(), 4)
+        self.assertEquals(quiz_one.tags.count(), 4)
 
-        resp = self.client.delete('/api/quiz/{0}/tag/'.format(quiz.pk),
+        resp = self.client.delete('/api/quiz/{0}/tag/'.format(quiz_one.pk),
                                   json.dumps('Other'),
                                   content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
-        self.assertEquals(quiz.tags.count(), 3)
+        self.assertEquals(quiz_one.tags.count(), 3)
+        self.assertEquals(quiz_two.tags.count(), 1)
+
+        resp = self.client.delete('/api/quiz/{0}/tag/'.format(quiz_two.pk),
+                                  json.dumps('Society and Societal Trends'),
+                                  content_type='application/json')
+
+        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        self.assertEquals(quiz_one.tags.count(), 3)
+        self.assertEquals(quiz_two.tags.count(), 0)
+
+        quiz_three = self.create_quiz(diff_data={'tags': ['Science/Technology']})
+
+        science_tech_tag = Tag.objects.get(name='Science/Technology')
+
+        self.assertEquals(science_tech_tag.quizzes.count(), 2)
 
     def test_put_quiz(self):
         test_data = self.get_test_data()
@@ -170,7 +196,7 @@ class QuizTest(TestCase):
 
         self.assertEquals(resp_content['title'], 'quiz title')
         self.assertEquals(resp_content['introduction'], 'an introductory text')
-        self.assertEquals(resp_content['tags'], ['Other', 'Science/Technology', 'Sports'])
+        self.assertEquals(resp_content['tags'], ['Sports', 'Science/Technology', 'Other'])
 
     def test_delete_quiz(self):
         resp = self.client.post('/api/quiz/', json.dumps(self.get_test_data()), content_type='application/json')

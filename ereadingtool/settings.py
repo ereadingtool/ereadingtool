@@ -43,7 +43,6 @@ INSTALLED_APPS = [
 
 # third-party apps
 INSTALLED_APPS += [
-    'taggit',
 ]
 
 # project apps
@@ -52,10 +51,9 @@ INSTALLED_APPS += [
     'text',
     'user',
     'instructor_admin',
-    'quiz'
+    'quiz',
+    'tag'
 ]
-
-TAGGIT_CASE_INSENSITIVE = True
 
 AUTH_USER_MODEL = 'user.ReaderUser'
 

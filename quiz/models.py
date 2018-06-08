@@ -1,11 +1,12 @@
-from django.db import models
 from typing import TypeVar, Optional
+
+from django.db import models
+
 from mixins.model import Timestamped, WriteLockable, WriteLocked
+from tag.models import Taggable
 
-from taggit.managers import TaggableManager
 
-
-class Quiz(WriteLockable, Timestamped, models.Model):
+class Quiz(Taggable, WriteLockable, Timestamped, models.Model):
     title = models.CharField(max_length=255, null=False, blank=False)
     introduction = models.CharField(max_length=512, null=False, blank=False)
 
@@ -13,8 +14,6 @@ class Quiz(WriteLockable, Timestamped, models.Model):
                                    related_name='created_quizzes')
     last_modified_by = models.ForeignKey('user.Instructor', null=True, on_delete=models.SET_NULL,
                                          related_name='last_modified_quiz')
-
-    tags = TaggableManager(blank=True)
 
     @classmethod
     def update(cls, quiz_params: dict, text_params: dict) -> TypeVar('Quiz'):
