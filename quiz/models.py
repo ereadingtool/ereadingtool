@@ -76,6 +76,9 @@ class Quiz(Taggable, WriteLockable, Timestamped, models.Model):
             'title': self.title,
             'modified_dt': self.modified_dt.isoformat(),
             'created_dt': self.created_dt.isoformat(),
+            'created_by': str(self.created_by),
+            'last_modified_by': str(self.last_modified_by),
+            'tags': [tag.name for tag in self.tags.all()],
             'text_count': self.texts.count(),
             'write_locker': str(self.write_locker) if self.write_locker else None
         }
@@ -85,6 +88,8 @@ class Quiz(Taggable, WriteLockable, Timestamped, models.Model):
             'id': self.pk,
             'title': self.title,
             'introduction': self.introduction,
+            'created_by': str(self.created_by),
+            'last_modified_by': str(self.last_modified_by),
             'tags': [tag.name for tag in self.tags.all()],
             'modified_dt': self.modified_dt.isoformat(),
             'created_dt': self.created_dt.isoformat(),

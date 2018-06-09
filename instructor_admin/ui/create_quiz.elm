@@ -40,6 +40,9 @@ import Ports exposing (selectAllInputText)
 
 import Array exposing (Array)
 
+import Ports exposing (ckEditor, ckEditorSetHtml, CKEditorID, CKEditorText)
+
+
 
 type alias Flags = Flags.Flags { quiz: Maybe Json.Encode.Value }
 type alias InstructorUser = String
@@ -105,6 +108,24 @@ init flags = ({
           , edit=edit_quiz_title
           , index=0 })
         , (new_quiz_field {
+            id="quiz_introduction"
+          , editable=False
+          , error_string=""
+          , error=False
+          , view=view_quiz_introduction
+          , name="introduction"
+          , edit=edit_quiz_introduction
+          , index=1 })
+        , (new_quiz_field {
+            id="quiz_tags"
+          , editable=False
+          , error_string=""
+          , error=False
+          , view=view_quiz_tags
+          , name="tags"
+          , edit=view_quiz_tags
+          , index=2 })
+        , (new_quiz_field {
             id="quiz_date"
           , editable=False
           , error_string=""
@@ -112,7 +133,7 @@ init flags = ({
           , view=view_quiz_date
           , name="quiz_dates"
           , edit=view_quiz_date
-          , index=1 })
+          , index=3 })
       ]
       , question_difficulties=[]
   }, Cmd.batch [ retrieveTextDifficultyOptions, (quizJSONtoComponent flags.quiz) ])
@@ -227,11 +248,18 @@ update msg model = case msg of
       (model, Cmd.none)
 
     UpdateQuizAttributes attr_name attr_value ->
-      ({ model | quiz_component = Quiz.Component.set_quiz_attribute model.quiz_component attr_name attr_value }, Cmd.none)
+      ({ model | quiz_component = Quiz.Component.set_quiz_attribute model.quiz_component attr_name attr_value }
+      , Cmd.none)
 
     ToggleEditable ((QuizField attrs) as quiz_field) editable ->
-      ({ model | quiz_fields = update_quiz_field model.quiz_fields (update_editable quiz_field editable) }
-      , selectAllInputText attrs.id)
+      let
+        post_toggle =
+          case attrs.name of
+            "introduction" -> ckEditor attrs.id
+            _ -> selectAllInputText attrs.id
+      in
+          ({ model | quiz_fields = update_quiz_field model.quiz_fields (update_editable quiz_field editable) }
+      , post_toggle)
 
 post_quiz : Flags.CSRFToken -> Quiz.Model.Quiz -> Cmd Msg
 post_quiz csrftoken quiz =
@@ -312,10 +340,20 @@ view_quiz_date quiz_component quiz_field =
   in
     Html.div [attribute "class" "quiz_dates"] <|
         (case quiz.modified_dt of
-           Just modified_dt -> [ span [] [ Html.text ("Last Modified: " ++ Date.Utils.month_day_year_fmt modified_dt) ]]
+           Just modified_dt ->
+             case quiz.last_modified_by of
+               Just last_modified_by ->
+                 [ span [] [ Html.text
+                   ("Last Modified by " ++ last_modified_by ++ " on " ++ Date.Utils.month_day_year_fmt modified_dt) ]]
+               _ -> []
            _ -> []) ++
         (case quiz.created_dt of
-           Just created_dt -> [ span [] [ Html.text ("Created: " ++ Date.Utils.month_day_year_fmt created_dt) ] ]
+           Just created_dt ->
+             case quiz.created_by of
+               Just created_by ->
+                 [ span [] [ Html.text
+                   ("Created by " ++ created_by ++ " on " ++ Date.Utils.month_day_year_fmt created_dt) ] ]
+               _ -> []
            _ -> [])
 
 view_quiz_title : QuizComponent -> QuizField -> Html Msg
@@ -329,7 +367,7 @@ view_quiz_title quiz_component ((QuizField attr) as quiz_field) =
     ] <| [
         Html.text "Quiz Title: "
       , Html.text quiz.title
-      ] ++ (if attr.error then [ ] else [])
+      ] ++ (if attr.error then [] else [])
 
 edit_quiz_title : QuizComponent -> QuizField -> Html Msg
 edit_quiz_title quiz_component ((QuizField field_attrs) as quiz_field) =
@@ -343,6 +381,44 @@ edit_quiz_title quiz_component ((QuizField field_attrs) as quiz_field) =
     , onInput (UpdateQuizAttributes "title")
     , (onBlur (ToggleEditable quiz_field False)) ] [ ]
 
+view_quiz_introduction : QuizComponent -> QuizField -> Html Msg
+view_quiz_introduction quiz_component ((QuizField attr) as quiz_field) =
+  let
+    quiz = Quiz.Component.quiz quiz_component
+  in
+    div [
+      onClick (ToggleEditable quiz_field True)
+    , attribute "id" attr.id
+    , classList [("editable", attr.editable), ("input_error", attr.error)]
+    ] <| [
+        Html.text "Quiz Introduction: "
+      , Html.text quiz.introduction
+      ] ++ (if attr.error then [] else [])
+
+edit_quiz_introduction : QuizComponent -> QuizField -> Html Msg
+edit_quiz_introduction quiz_component ((QuizField attr) as quiz_field) =
+  let
+    quiz = Quiz.Component.quiz quiz_component
+  in
+    Html.textarea [
+      attribute "id" attr.id
+    , onInput (UpdateQuizAttributes "introduction") ] [ Html.text quiz.introduction ]
+
+view_quiz_tags : QuizComponent -> QuizField -> Html Msg
+view_quiz_tags quiz_component ((QuizField attr) as quiz_field) =
+  let
+    quiz = Quiz.Component.quiz quiz_component
+  in
+    case quiz.tags of
+      Just tags ->
+        div [
+          onClick (ToggleEditable quiz_field True)
+        , classList [("editable", True), ("input_error", attr.error)]
+        ] <| [
+            Html.text "Tags: "
+          , div [ ] (List.map (\t -> Html.text t) tags)
+        ] ++ (if attr.error then [] else [])
+      _ -> div [] []
 
 view_quiz : Model -> Html Msg
 view_quiz model =

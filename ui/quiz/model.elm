@@ -8,6 +8,10 @@ import Array exposing (Array)
 type alias Quiz = {
     id: Maybe Int
   , title: String
+  , introduction: String
+  , created_by: Maybe String
+  , last_modified_by: Maybe String
+  , tags: Maybe (List String)
   , created_dt: Maybe Date
   , modified_dt: Maybe Date
   , texts: Array Text.Model.Text
@@ -17,6 +21,9 @@ type alias Quiz = {
 type alias QuizListItem = {
     id: Int
   , title: String
+  , created_by: String
+  , last_modified_by: Maybe String
+  , tags: Maybe (List String)
   , created_dt: Date
   , modified_dt: Date
   , text_count: Int
@@ -26,6 +33,10 @@ new_quiz : Quiz
 new_quiz = {
     id=Nothing
   , title=""
+  , introduction=""
+  , tags=Nothing
+  , created_by=Nothing
+  , last_modified_by=Nothing
   , created_dt=Nothing
   , modified_dt=Nothing
   , texts=Array.fromList [Text.Model.emptyText]

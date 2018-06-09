@@ -9708,6 +9708,10 @@ var _user$project$Quiz_Model$set_texts = F2(
 var _user$project$Quiz_Model$new_quiz = {
 	id: _elm_lang$core$Maybe$Nothing,
 	title: '',
+	introduction: '',
+	tags: _elm_lang$core$Maybe$Nothing,
+	created_by: _elm_lang$core$Maybe$Nothing,
+	last_modified_by: _elm_lang$core$Maybe$Nothing,
 	created_dt: _elm_lang$core$Maybe$Nothing,
 	modified_dt: _elm_lang$core$Maybe$Nothing,
 	texts: _elm_lang$core$Array$fromList(
@@ -9718,13 +9722,30 @@ var _user$project$Quiz_Model$new_quiz = {
 		}),
 	write_locker: _elm_lang$core$Maybe$Nothing
 };
-var _user$project$Quiz_Model$Quiz = F6(
-	function (a, b, c, d, e, f) {
-		return {id: a, title: b, created_dt: c, modified_dt: d, texts: e, write_locker: f};
-	});
-var _user$project$Quiz_Model$QuizListItem = F6(
-	function (a, b, c, d, e, f) {
-		return {id: a, title: b, created_dt: c, modified_dt: d, text_count: e, write_locker: f};
+var _user$project$Quiz_Model$Quiz = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return {id: a, title: b, introduction: c, created_by: d, last_modified_by: e, tags: f, created_dt: g, modified_dt: h, texts: i, write_locker: j};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+var _user$project$Quiz_Model$QuizListItem = F9(
+	function (a, b, c, d, e, f, g, h, i) {
+		return {id: a, title: b, created_by: c, last_modified_by: d, tags: e, created_dt: f, modified_dt: g, text_count: h, write_locker: i};
 	});
 
 var _user$project$Question_Decode$questionDecoder = A3(
@@ -9835,13 +9856,26 @@ var _user$project$Quiz_Decode$quizListItemDecoder = A3(
 				_elm_community$json_extra$Json_Decode_Extra$date,
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'title',
-					_elm_lang$core$Json_Decode$string,
+					'tags',
+					_elm_lang$core$Json_Decode$nullable(
+						_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
 					A3(
 						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'id',
-						_elm_lang$core$Json_Decode$int,
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Model$QuizListItem)))))));
+						'last_modified_by',
+						_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+						A3(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+							'created_by',
+							_elm_lang$core$Json_Decode$string,
+							A3(
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+								'title',
+								_elm_lang$core$Json_Decode$string,
+								A3(
+									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+									'id',
+									_elm_lang$core$Json_Decode$int,
+									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Model$QuizListItem))))))))));
 var _user$project$Quiz_Decode$quizListDecoder = _elm_lang$core$Json_Decode$list(_user$project$Quiz_Decode$quizListItemDecoder);
 var _user$project$Quiz_Decode$quizDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -9861,13 +9895,30 @@ var _user$project$Quiz_Decode$quizDecoder = A3(
 				_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'title',
-					_elm_lang$core$Json_Decode$string,
+					'tags',
+					_elm_lang$core$Json_Decode$nullable(
+						_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
 					A3(
 						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'id',
-						_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Model$Quiz)))))));
+						'last_modified_by',
+						_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+						A3(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+							'created_by',
+							_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+							A3(
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+								'introduction',
+								_elm_lang$core$Json_Decode$string,
+								A3(
+									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+									'title',
+									_elm_lang$core$Json_Decode$string,
+									A3(
+										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+										'id',
+										_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Model$Quiz)))))))))));
 var _user$project$Quiz_Decode$QuizCreateResp = F2(
 	function (a, b) {
 		return {id: a, redirect: b};

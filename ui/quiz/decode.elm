@@ -23,6 +23,10 @@ quizDecoder =
   decode Quiz
     |> required "id" (Decode.nullable (Decode.int))
     |> required "title" (Decode.string)
+    |> required "introduction" (Decode.string)
+    |> required "created_by" (Decode.nullable (Decode.string))
+    |> required "last_modified_by" (Decode.nullable (Decode.string))
+    |> required "tags" (Decode.nullable (Decode.list (Decode.string)))
     |> required "created_dt" (Decode.nullable date)
     |> required "modified_dt" (Decode.nullable date)
     |> required "texts" (Decode.map Array.fromList (Text.Decode.textsDecoder))
@@ -33,6 +37,9 @@ quizListItemDecoder =
   decode QuizListItem
     |> required "id" Decode.int
     |> required "title" Decode.string
+    |> required "created_by" (Decode.string)
+    |> required "last_modified_by" (Decode.nullable (Decode.string))
+    |> required "tags" (Decode.nullable (Decode.list (Decode.string)))
     |> required "created_dt" date
     |> required "modified_dt" date
     |> required "text_count" Decode.int
