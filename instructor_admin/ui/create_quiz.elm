@@ -40,7 +40,7 @@ import Ports exposing (selectAllInputText)
 
 import Array exposing (Array)
 
-import Ports exposing (ckEditor, ckEditorSetHtml, CKEditorID, CKEditorText)
+import Ports exposing (ckEditor, ckEditorSetHtml, CKEditorID, CKEditorText, addClassToCKEditor)
 
 
 
@@ -108,15 +108,6 @@ init flags = ({
           , edit=edit_quiz_title
           , index=0 })
         , (new_quiz_field {
-            id="quiz_introduction"
-          , editable=False
-          , error_string=""
-          , error=False
-          , view=view_quiz_introduction
-          , name="introduction"
-          , edit=edit_quiz_introduction
-          , index=1 })
-        , (new_quiz_field {
             id="quiz_tags"
           , editable=False
           , error_string=""
@@ -124,6 +115,15 @@ init flags = ({
           , view=view_quiz_tags
           , name="tags"
           , edit=view_quiz_tags
+          , index=1 })
+        , (new_quiz_field {
+            id="quiz_introduction"
+          , editable=False
+          , error_string=""
+          , error=False
+          , view=view_quiz_introduction
+          , name="introduction"
+          , edit=edit_quiz_introduction
           , index=2 })
         , (new_quiz_field {
             id="quiz_date"
@@ -255,7 +255,7 @@ update msg model = case msg of
       let
         post_toggle =
           case attrs.name of
-            "introduction" -> ckEditor attrs.id
+            "introduction" -> Cmd.batch [ckEditor attrs.id, addClassToCKEditor (attrs.id, "quiz_introduction")]
             _ -> selectAllInputText attrs.id
       in
           ({ model | quiz_fields = update_quiz_field model.quiz_fields (update_editable quiz_field editable) }
@@ -319,11 +319,17 @@ view_msgs model = div [attribute "class" "msgs"] [
 view_submit : Model -> Html Msg
 view_submit model =
   Html.div [classList [("submit_section", True)]] [
-    Html.div [attribute "class" "submit", onClick SubmitQuiz] [
-        Html.text "Save Quiz "
+    Html.div [attribute "class" "submit", onClick (TextComponentMsg Text.Update.AddText)] [
+        Html.img [
+          attribute "src" "/static/img/add_text.svg"
+        , attribute "height" "20px"
+        , attribute "width" "20px"] [], Html.text "Add Text"
     ]
-  , Html.div [attribute "class" "submit", onClick (TextComponentMsg Text.Update.AddText)] [
-        Html.text "Add Text"
+  , Html.div [attribute "class" "submit", onClick SubmitQuiz] [
+        Html.img [
+          attribute "src" "/static/img/save_disk.svg"
+        , attribute "height" "20px"
+        , attribute "width" "20px"] [], Html.text "Save Quiz "
     ]
   ]
 
@@ -363,10 +369,10 @@ view_quiz_title quiz_component ((QuizField attr) as quiz_field) =
   in
     Html.div [
       onClick (ToggleEditable quiz_field True)
-    , classList [("editable", True), ("input_error", attr.error)]
+    , classList [("editable", True), ("input_error", attr.error), ("quiz_attribute", True)]
     ] <| [
-        Html.text "Quiz Title: "
-      , Html.text quiz.title
+        Html.text "Title: "
+      , Html.span [] [ Html.text quiz.title ]
       ] ++ (if attr.error then [] else [])
 
 edit_quiz_title : QuizComponent -> QuizField -> Html Msg
@@ -379,6 +385,7 @@ edit_quiz_title quiz_component ((QuizField field_attrs) as quiz_field) =
     , attribute "value" quiz.title
     , attribute "id" field_attrs.id
     , onInput (UpdateQuizAttributes "title")
+    , classList [("quiz_attribute", True)]
     , (onBlur (ToggleEditable quiz_field False)) ] [ ]
 
 view_quiz_introduction : QuizComponent -> QuizField -> Html Msg
@@ -389,10 +396,10 @@ view_quiz_introduction quiz_component ((QuizField attr) as quiz_field) =
     div [
       onClick (ToggleEditable quiz_field True)
     , attribute "id" attr.id
-    , classList [("editable", attr.editable), ("input_error", attr.error)]
+    , classList [("editable", True), ("input_error", attr.error), ("quiz_attribute", True), ("quiz_introduction", True)]
     ] <| [
-        Html.text "Quiz Introduction: "
-      , Html.text quiz.introduction
+        Html.text "Intro: "
+      , div [attribute "class" "quiz_introduction"] [ Html.text quiz.introduction ]
       ] ++ (if attr.error then [] else [])
 
 edit_quiz_introduction : QuizComponent -> QuizField -> Html Msg
@@ -402,6 +409,7 @@ edit_quiz_introduction quiz_component ((QuizField attr) as quiz_field) =
   in
     Html.textarea [
       attribute "id" attr.id
+    , attribute "class" "quiz_introduction"
     , onInput (UpdateQuizAttributes "introduction") ] [ Html.text quiz.introduction ]
 
 view_quiz_tags : QuizComponent -> QuizField -> Html Msg
@@ -413,28 +421,31 @@ view_quiz_tags quiz_component ((QuizField attr) as quiz_field) =
       Just tags ->
         div [
           onClick (ToggleEditable quiz_field True)
-        , classList [("editable", True), ("input_error", attr.error)]
+        , classList [("editable", True), ("input_error", attr.error), ("quiz_attribute", True)]
         ] <| [
-            Html.text "Tags: "
+            Html.text "Tags"
           , div [ ] (List.map (\t -> Html.text t) tags)
         ] ++ (if attr.error then [] else [])
-      _ -> div [] []
+      _ -> div [classList [("editable", True), ("input_error", attr.error), ("quiz_attribute", True)]] [
+            Html.text "Tags: ", Html.text "[x Science] [x Tech] [x Other]"
+          ]
 
 view_quiz : Model -> Html Msg
 view_quiz model =
-  div [attribute "class" "quiz_attributes"] [
-       div [attribute "class" "quiz"]
+  div [attribute "class" "quiz_attributes"]
     <| Array.toList
     <| Array.map (view_editable model.quiz_component) model.quiz_fields
-  ]
 
 view : Model -> Html Msg
 view model = div [] <| [
       Views.view_header model.profile Nothing
     , (view_msgs model)
     , (Views.view_preview)
-    , (view_quiz model)
-    , (Text.View.view_text_components TextComponentMsg (Quiz.Component.text_components model.quiz_component) model.question_difficulties)
-  ] ++ (case model.mode of
+    , div [attribute "class" "quiz"] <| [
+        (view_quiz model)
+      , (Text.View.view_text_components TextComponentMsg
+          (Quiz.Component.text_components model.quiz_component) model.question_difficulties)
+    ] ++ (case model.mode of
           ReadOnlyMode write_locker -> []
           _ -> [view_submit model])
+  ]

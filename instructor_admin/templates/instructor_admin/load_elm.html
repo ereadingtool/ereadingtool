@@ -27,6 +27,19 @@
         });
     });
 
+    app.ports.addClassToCKEditor.subscribe(function ([ckeditor_instance, class_name]) {
+        // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
+        window.requestAnimationFrame(function (timestamp) {
+           if (CKEDITOR) {
+               var elem = document.getElementById(ckeditor_instance).nextSibling;
+
+               if (elem) {
+                    elem.classList.add(class_name);
+               }
+           }
+        });
+    });
+
     app.ports.ckEditorSetHtml.subscribe(function ([elem_id, html]) {
         // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
         window.requestAnimationFrame(function (timestamp) {

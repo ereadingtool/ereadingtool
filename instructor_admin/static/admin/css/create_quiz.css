@@ -1,5 +1,5 @@
 body {
-    background: #f9f9f9;
+    background: #FFFFFF;
     margin-top: 0;
     margin-right: 0;
     margin-left: 0;
@@ -14,7 +14,7 @@ body {
 
     grid-template-rows: 67px;
 
-    background: #FFFFFF;
+    background: #f9f9f9;
 
     font: "Lucida Console";
     font-size: 18px;
@@ -32,7 +32,7 @@ body {
     margin-top: 3%;
     margin-bottom: 4%;
 
-    background: #FFFFFF;
+    background: #f9f9f9;
 
     font: "Lucida Console";
     font-size: 18px;
@@ -102,7 +102,6 @@ body {
     font-weight: 300;
 
     margin-top: 4%;
-    grid-column: 2;
 }
 
 .body > textarea {
@@ -111,38 +110,54 @@ body {
 }
 
 .quiz_attributes {
+    grid-column: 2;
+    display: grid;
+
+    padding: 15px 20px 15px 20px;
+
+    background: #f9f9f9;
+
+    font-size: 23px;
+    font-weight: 300;
+
+    margin-top: 15px;
+
+    grid-template-columns: 50% 50%;
+}
+
+.quiz_attribute {
+    border-bottom: solid 2px white;
+    padding-left: 5px;
+}
+
+.quiz_introduction {
+    grid-column: 1 / 3;
+}
+
+.quiz {
     display: grid;
     grid-row-gap: 5%;
     row-gap: 5%;
 
     font: "Lucida Console";
-    font-size: 23px;
-    font-weight: 300;
+    font-size: 18px;
+    font-weight: 200;
 
     margin-bottom: 15px;
 
-    grid-template-columns: 19% auto 15% 20%;
-}
-
-.quiz {
-    grid-column: 2;
+    grid-template-columns: 20% auto 20%;
 }
 
 .texts {
+    grid-column: 2;
     display: grid;
-    grid-row-gap: 2%;
-    row-gap: 2%;
-
-    grid-template-columns: 5% auto 5%;
 }
 
 .text {
-    padding: 0 15px 15px 15px;
+    background: #f9f9f9;
+    padding: 10px 20px 15px 20px;
     display: grid;
-    margin-top: 2%;
-
-    grid-column: 2;
-    border-bottom: solid 1px darkgrey;
+    margin-top: 25px;
 }
 
 .text_content {
@@ -155,8 +170,6 @@ body {
     row-gap: 5%;
 
     margin-bottom: 15px;
-
-    grid-template-columns: 15% auto 20%;
 }
 
 .editable:hover {
@@ -171,10 +184,6 @@ body {
 
     grid-row-gap: 10%;
     row-gap: 10%;
-
-    grid-column: 2;
-
-    grid-template-columns: auto;
 }
 
 @media screen and (min-width:300px) and (max-width: 568px) {
@@ -236,18 +245,20 @@ body {
 }
 
 .question_section {
-    margin-top: 5%;
+    display: grid;
+
+    padding-top: 5%;
 
     grid-row-gap: 50px;
     row-gap: 50px;
 
-    display: grid;
-    grid-template-columns: 15% auto 20%;
+    grid-template-columns: 0% auto 0%;
 }
 
 .question_parts {
     display: grid;
     background: #FFFFFF;
+
     border: solid 1px lightgrey;
 
     grid-column: 2;
@@ -258,8 +269,7 @@ body {
 }
 
 .question {
-    padding: 20px 20px 20px 0px;
-    background: #FFFFFF;
+    padding: 5px 20px 20px 0px;
     display: grid;
     grid-row-gap: 15px;
     row-gap: 15px;
@@ -325,7 +335,6 @@ body {
 
 .add_question {
     margin-top: 10px;
-    grid-column: 2;
     cursor: pointer;
 }
 
@@ -336,13 +345,15 @@ body {
 
 .submit_section {
     display: grid;
-    margin-top: 25px;
+    grid-template-columns: 120px 120px auto;
+    grid-column: 2;
+    margin-top: 10px;
 
-    grid-template-columns: 15% 20% auto 20% 20%;
+    font-family: "Helvetica Neue";
+    font-size: 18px;
 }
 
 .submit {
-    grid-column: 2;
     cursor: pointer;
 }
 

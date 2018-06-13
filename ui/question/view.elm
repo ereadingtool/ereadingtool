@@ -104,15 +104,15 @@ view_editable_question msg text_component field = let
       ] ++ (Array.toList <| Array.map (Answer.View.view_editable_answer params) (Question.Field.answers field))
     , (view_question_menu params field)]
 
-view_add_question : (Msg -> msg) -> TextComponent -> Array QuestionField -> Html msg
-view_add_question msg text_component fields =
+view_add_question : (Msg -> msg) -> TextComponent -> Html msg
+view_add_question msg text_component =
   div [classList [("add_question", True)], (onClick (msg (AddQuestion text_component))) ] [
     Html.text "Add question"
   ]
 
 view_questions : (Msg -> msg) -> TextComponent -> Array QuestionField -> Html msg
 view_questions msg text_component fields =
-  div [ classList [("question_section", True)] ] <|
+  div [ classList [("question_section", True)] ]
     (  Array.toList
     <| Array.map (view_editable_question msg text_component) fields
-    ) ++ [ (view_add_question msg text_component fields) ]
+    )

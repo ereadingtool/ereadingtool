@@ -131,11 +131,13 @@ view_text_component msg text_difficulties text_component = let
          , view_editable (params difficulty_field) edit_difficulty edit_difficulty
          , view_editable (params author_field) view_author edit_author
         ]
-        , div [ classList [("body",True)] ]  [
+        , div [ classList [("body",True)] ] [
           view_editable (params body_field) view_body edit_body
         ]
     ]
-  ] ++ [ Question.View.view_questions msg text_component (Text.Component.question_fields text_component) ] ]
+  ] ++ [
+      Question.View.view_questions msg text_component (Text.Component.question_fields text_component)
+    , Question.View.view_add_question msg text_component  ] ]
 
 view_text_components : (Msg -> msg) -> TextComponentGroup -> List TextDifficulty -> Html msg
 view_text_components msg text_components text_difficulties =

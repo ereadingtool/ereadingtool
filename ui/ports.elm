@@ -9,3 +9,5 @@ type alias CKEditorText = String
 port ckEditorUpdate : ((CKEditorID, CKEditorText) -> msg) -> Sub msg
 
 port ckEditorSetHtml : (CKEditorID, String) -> Cmd msg
+
+port addClassToCKEditor : (String, String) -> Cmd msg

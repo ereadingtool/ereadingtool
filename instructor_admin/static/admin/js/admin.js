@@ -9989,25 +9989,14 @@ var _user$project$Views$view_preview = A2(
 					{
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$button,
-							{ctor: '[]'},
+							_elm_lang$html$Html$input,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text('Preview'),
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Search quizzes..'),
 								_1: {ctor: '[]'}
-							}),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$input,
-								{
-									ctor: '::',
-									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Search texts..'),
-									_1: {ctor: '[]'}
-								},
-								{ctor: '[]'}),
-							_1: {ctor: '[]'}
-						}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
 			}),
@@ -10082,7 +10071,7 @@ var _user$project$Views$view_filter = A2(
 					_elm_lang$html$Html$input,
 					{
 						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Search texts..'),
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Search quizzes..'),
 						_1: {ctor: '[]'}
 					},
 					{ctor: '[]'}),

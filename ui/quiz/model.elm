@@ -17,7 +17,6 @@ type alias Quiz = {
   , texts: Array Text.Model.Text
   , write_locker: Maybe String }
 
-
 type alias QuizListItem = {
     id: Int
   , title: String
