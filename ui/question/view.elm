@@ -107,7 +107,10 @@ view_editable_question msg text_component field = let
 view_add_question : (Msg -> msg) -> TextComponent -> Html msg
 view_add_question msg text_component =
   div [classList [("add_question", True)], (onClick (msg (AddQuestion text_component))) ] [
-    Html.text "Add question"
+    Html.img [
+          attribute "src" "/static/img/add_question.svg"
+        , attribute "height" "20px"
+        , attribute "width" "20px"] [], Html.text "Add question"
   ]
 
 view_questions : (Msg -> msg) -> TextComponent -> Array QuestionField -> Html msg

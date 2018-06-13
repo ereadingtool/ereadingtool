@@ -13075,8 +13075,27 @@ var _user$project$Question_View$view_add_question = F2(
 			},
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html$text('Add question'),
-				_1: {ctor: '[]'}
+				_0: A2(
+					_elm_lang$html$Html$img,
+					{
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/add_question.svg'),
+						_1: {
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '20px'),
+							_1: {
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '20px'),
+								_1: {ctor: '[]'}
+							}
+						}
+					},
+					{ctor: '[]'}),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Add question'),
+					_1: {ctor: '[]'}
+				}
 			});
 	});
 var _user$project$Question_View$view_question_type_menu_item = F2(
