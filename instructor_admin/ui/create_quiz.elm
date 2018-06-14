@@ -112,9 +112,9 @@ init flags = ({
           , editable=False
           , error_string=""
           , error=False
-          , view=view_quiz_tags
+          , view=view_edit_quiz_tags
           , name="tags"
-          , edit=view_quiz_tags
+          , edit=view_edit_quiz_tags
           , index=1 })
         , (new_quiz_field {
             id="quiz_introduction"
@@ -412,6 +412,14 @@ edit_quiz_introduction quiz_component ((QuizField attr) as quiz_field) =
     , attribute "class" "quiz_introduction"
     , onInput (UpdateQuizAttributes "introduction") ] [ Html.text quiz.introduction ]
 
+view_tag : String -> Html Msg
+view_tag tag = div [attribute "class" "quiz_tag"] [
+    Html.img [
+          attribute "src" "/static/img/cancel.svg"
+        , attribute "height" "13px"
+        , attribute "width" "13px"] [], Html.text tag
+  ]
+
 view_quiz_tags : QuizComponent -> QuizField -> Html Msg
 view_quiz_tags quiz_component ((QuizField attr) as quiz_field) =
   let
@@ -419,16 +427,19 @@ view_quiz_tags quiz_component ((QuizField attr) as quiz_field) =
   in
     case quiz.tags of
       Just tags ->
-        div [
-          onClick (ToggleEditable quiz_field True)
-        , classList [("editable", True), ("input_error", attr.error), ("quiz_attribute", True)]
-        ] <| [
-            Html.text "Tags"
-          , div [ ] (List.map (\t -> Html.text t) tags)
-        ] ++ (if attr.error then [] else [])
-      _ -> div [classList [("editable", True), ("input_error", attr.error), ("quiz_attribute", True)]] [
-            Html.text "Tags: ", Html.text "[x Science] [x Tech] [x Other]"
-          ]
+        div [attribute "class" "quiz_tags"] (List.map view_tag tags)
+      _ ->
+        div [attribute "class" "quiz_tags"] []
+
+view_edit_quiz_tags : QuizComponent -> QuizField -> Html Msg
+view_edit_quiz_tags quiz_component ((QuizField attr) as quiz_field) =
+  let
+    view = view_quiz_tags quiz_component quiz_field
+  in
+    div [classList [("input_error", attr.error), ("quiz_attribute", True)] ] [
+      view
+    , Html.input [attribute "placeholder" "add tags.."] []
+    ]
 
 view_quiz : Model -> Html Msg
 view_quiz model =
