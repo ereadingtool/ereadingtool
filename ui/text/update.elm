@@ -21,6 +21,8 @@ type Msg =
   | UpdateQuestionFieldValue TextComponent Question.Field.QuestionField String
   | ToggleQuestionMenu TextComponent Question.Field.QuestionField
   | DeleteQuestion TextComponent Question.Field.QuestionField
+  | SelectQuestion TextComponent Question.Field.QuestionField Bool
+  | DeleteSelectedQuestions TextComponent
   | AddQuestion TextComponent
 
   -- answer msgs
@@ -69,6 +71,19 @@ update msg model =
     DeleteQuestion text_component question_field ->
         ({ model | quiz_component = update
            (Text.Component.delete_question_field text_component question_field)
+        }, Cmd.none)
+
+    SelectQuestion text_component question_field selected ->
+        let
+          new_question_field = Question.Field.set_selected question_field selected
+        in
+          ({ model | quiz_component = update
+             (Text.Component.update_question_field text_component new_question_field)
+          }, Cmd.none)
+
+    DeleteSelectedQuestions text_component ->
+        ({ model | quiz_component = update
+           (Text.Component.delete_selected_question_fields text_component)
         }, Cmd.none)
 
     ToggleQuestionMenu text_component question_field ->

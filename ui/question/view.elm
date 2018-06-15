@@ -96,7 +96,7 @@ view_editable_question msg text_component field = let
     params = {text_component=text_component, question=Question.Field.question field, msg=msg}
   in
     div [classList [("question_parts", True)]] [
-      div [] [ Html.input [attribute "type" "checkbox"] [] ]
+      div [] [ Html.input [attribute "type" "checkbox", onCheck <| (SelectQuestion text_component field) >> msg] [] ]
     , div [classList [("question", True)]] <| [
          (case (Question.Field.editable field) of
             True -> edit_question params field
@@ -110,7 +110,23 @@ view_add_question msg text_component =
     Html.img [
           attribute "src" "/static/img/add_question.svg"
         , attribute "height" "20px"
-        , attribute "width" "20px"] [], Html.text "Add question"
+        , attribute "width" "20px"] [], Html.text "Add Question"
+  ]
+
+view_question_buttons : (Msg -> msg) -> TextComponent -> Html msg
+view_question_buttons msg text_component =
+  div [ classList [("question_buttons", True)] ] [
+    view_add_question msg text_component
+  , view_delete_selected msg text_component
+  ]
+
+view_delete_selected : (Msg -> msg) -> TextComponent -> Html msg
+view_delete_selected msg text_component =
+  div [classList [("delete_question", True)], (onClick (msg (DeleteSelectedQuestions text_component))) ] [
+    Html.img [
+          attribute "src" "/static/img/delete_question.svg"
+        , attribute "height" "20px"
+        , attribute "width" "20px"] [], Html.text "Delete Selected"
   ]
 
 view_questions : (Msg -> msg) -> TextComponent -> Array QuestionField -> Html msg

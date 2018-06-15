@@ -137,7 +137,7 @@ view_text_component msg text_difficulties text_component = let
     ]
   ] ++ [
       Question.View.view_questions msg text_component (Text.Component.question_fields text_component)
-    , Question.View.view_add_question msg text_component  ] ]
+    , Question.View.view_question_buttons msg text_component ] ]
 
 view_text_components : (Msg -> msg) -> TextComponentGroup -> List TextDifficulty -> Html msg
 view_text_components msg text_components text_difficulties =

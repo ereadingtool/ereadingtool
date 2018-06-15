@@ -10433,6 +10433,15 @@ var _user$project$Question_Field$editable = function (question_field) {
 	var attrs = _user$project$Question_Field$attributes(question_field);
 	return attrs.editable;
 };
+var _user$project$Question_Field$delete_selected = function (question_fields) {
+	return A2(
+		_elm_lang$core$Array$filter,
+		function (q) {
+			var q_attrs = _user$project$Question_Field$attributes(q);
+			return !q_attrs.selected;
+		},
+		question_fields);
+};
 var _user$project$Question_Field$menu_visible = function (question_field) {
 	var attrs = _user$project$Question_Field$attributes(question_field);
 	return attrs.menu_visible;
@@ -10511,6 +10520,7 @@ var _user$project$Question_Field$generate_question_field = F3(
 					}),
 				editable: false,
 				menu_visible: false,
+				selected: false,
 				error_string: '',
 				error: false,
 				index: question_index
@@ -10730,6 +10740,17 @@ var _user$project$Question_Field$set_menu_visible = F2(
 				_p36._1,
 				{menu_visible: visible}),
 			_p36._2);
+	});
+var _user$project$Question_Field$set_selected = F2(
+	function (_p37, selected) {
+		var _p38 = _p37;
+		return A3(
+			_user$project$Question_Field$QuestionField,
+			_p38._0,
+			_elm_lang$core$Native_Utils.update(
+				_p38._1,
+				{selected: selected}),
+			_p38._2);
 	});
 
 var _user$project$Text_Model$emptyText = {id: _elm_lang$core$Maybe$Nothing, title: 'title', created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing, source: 'source', difficulty: '', author: 'author', question_count: 0, questions: _user$project$Question_Model$initial_questions, body: 'text'};
@@ -11341,15 +11362,24 @@ var _user$project$Text_Component$delete_question_field = F2(
 			_p64._2,
 			A2(_user$project$Question_Field$delete_question_field, question_field, _p64._3));
 	});
-var _user$project$Text_Component$add_new_question = function (_p65) {
+var _user$project$Text_Component$delete_selected_question_fields = function (_p65) {
 	var _p66 = _p65;
-	var _p67 = _p66._1;
 	return A4(
 		_user$project$Text_Component$TextComponent,
 		_p66._0,
-		_p67,
+		_p66._1,
 		_p66._2,
-		A2(_user$project$Question_Field$add_new_question, _p67.index, _p66._3));
+		_user$project$Question_Field$delete_selected(_p66._3));
+};
+var _user$project$Text_Component$add_new_question = function (_p67) {
+	var _p68 = _p67;
+	var _p69 = _p68._1;
+	return A4(
+		_user$project$Text_Component$TextComponent,
+		_p68._0,
+		_p69,
+		_p68._2,
+		A2(_user$project$Question_Field$add_new_question, _p69.index, _p68._3));
 };
 
 var _user$project$Text_Component_Group$text_component = F2(
@@ -11653,6 +11683,29 @@ var _user$project$Text_Update$update = F2(
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
+			case 'SelectQuestion':
+				var new_question_field = A2(_user$project$Question_Field$set_selected, _p6._1, _p6._2);
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							quiz_component: update(
+								A2(_user$project$Text_Component$update_question_field, _p6._0, new_question_field))
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'DeleteSelectedQuestions':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							quiz_component: update(
+								_user$project$Text_Component$delete_selected_question_fields(_p6._0))
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 			case 'ToggleQuestionMenu':
 				return {
 					ctor: '_Tuple2',
@@ -11794,6 +11847,13 @@ var _user$project$Text_Update$UpdateAnswerField = F2(
 var _user$project$Text_Update$AddQuestion = function (a) {
 	return {ctor: 'AddQuestion', _0: a};
 };
+var _user$project$Text_Update$DeleteSelectedQuestions = function (a) {
+	return {ctor: 'DeleteSelectedQuestions', _0: a};
+};
+var _user$project$Text_Update$SelectQuestion = F3(
+	function (a, b, c) {
+		return {ctor: 'SelectQuestion', _0: a, _1: b, _2: c};
+	});
 var _user$project$Text_Update$DeleteQuestion = F2(
 	function (a, b) {
 		return {ctor: 'DeleteQuestion', _0: a, _1: b};
@@ -13053,6 +13113,51 @@ var _user$project$Quiz_Decode$quizUpdateRespDecoder = A3(
 		_elm_lang$core$Json_Decode$int,
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Decode$QuizUpdateResp)));
 
+var _user$project$Question_View$view_delete_selected = F2(
+	function (msg, text_component) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'delete_question', _1: true},
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(
+						msg(
+							_user$project$Text_Update$DeleteSelectedQuestions(text_component))),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$img,
+					{
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/delete_question.svg'),
+						_1: {
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '20px'),
+							_1: {
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '20px'),
+								_1: {ctor: '[]'}
+							}
+						}
+					},
+					{ctor: '[]'}),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Delete Selected'),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
 var _user$project$Question_View$view_add_question = F2(
 	function (msg, text_component) {
 		return A2(
@@ -13093,7 +13198,31 @@ var _user$project$Question_View$view_add_question = F2(
 					{ctor: '[]'}),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html$text('Add question'),
+					_0: _elm_lang$html$Html$text('Add Question'),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$Question_View$view_question_buttons = F2(
+	function (msg, text_component) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'question_buttons', _1: true},
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(_user$project$Question_View$view_add_question, msg, text_component),
+				_1: {
+					ctor: '::',
+					_0: A2(_user$project$Question_View$view_delete_selected, msg, text_component),
 					_1: {ctor: '[]'}
 				}
 			});
@@ -13410,7 +13539,15 @@ var _user$project$Question_View$view_editable_question = F3(
 							{
 								ctor: '::',
 								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'checkbox'),
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onCheck(
+										function (_p1) {
+											return msg(
+												A3(_user$project$Text_Update$SelectQuestion, text_component, field, _p1));
+										}),
+									_1: {ctor: '[]'}
+								}
 							},
 							{ctor: '[]'}),
 						_1: {ctor: '[]'}
@@ -13434,8 +13571,8 @@ var _user$project$Question_View$view_editable_question = F3(
 							{
 								ctor: '::',
 								_0: function () {
-									var _p1 = _user$project$Question_Field$editable(field);
-									if (_p1 === true) {
+									var _p2 = _user$project$Question_Field$editable(field);
+									if (_p2 === true) {
 										return A2(_user$project$Question_View$edit_question, params, field);
 									} else {
 										return A2(_user$project$Question_View$view_question, params, field);
@@ -13920,7 +14057,7 @@ var _user$project$Text_View$view_text_component = F3(
 							_user$project$Text_Component$question_fields(text_component)),
 						_1: {
 							ctor: '::',
-							_0: A2(_user$project$Question_View$view_add_question, msg, text_component),
+							_0: A2(_user$project$Question_View$view_question_buttons, msg, text_component),
 							_1: {ctor: '[]'}
 						}
 					})),
@@ -14009,7 +14146,14 @@ var _user$project$Main$view_quiz_tags = F2(
 					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'quiz_tags'),
 					_1: {ctor: '[]'}
 				},
-				A2(_elm_lang$core$List$map, _user$project$Main$view_tag, _p2._0));
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Tags: '),
+						_1: {ctor: '[]'}
+					},
+					A2(_elm_lang$core$List$map, _user$project$Main$view_tag, _p2._0)));
 		} else {
 			return A2(
 				_elm_lang$html$Html$div,
@@ -14018,7 +14162,11 @@ var _user$project$Main$view_quiz_tags = F2(
 					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'quiz_tags'),
 					_1: {ctor: '[]'}
 				},
-				{ctor: '[]'});
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Tags: '),
+					_1: {ctor: '[]'}
+				});
 		}
 	});
 var _user$project$Main$view_edit_quiz_tags = F2(

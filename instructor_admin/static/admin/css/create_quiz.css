@@ -360,9 +360,12 @@ body {
     background: #F7F7F7;
 }
 
-.add_question {
-    margin-top: 10px;
+.question_buttons {
+    display: grid;
     cursor: pointer;
+    margin-top: 20px;
+
+    grid-template-columns: repeat(2, 140px);
 }
 
 .delete {

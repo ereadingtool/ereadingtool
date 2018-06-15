@@ -2,7 +2,7 @@ module Question.Field exposing (QuestionField, QuestionType(..), generate_questi
   , add_new_question, delete_question, initial_question_fields, attributes, index, switch_editable, set_answer_feedback
   , set_question_type, question, menu_visible, id, error, editable, answers, set_menu_visible, set_answer_correct
   , update_question, set_question_body, set_answer_field, delete_question_field, question_field_for_answer
-  , toQuestions, fromQuestions, update_errors)
+  , toQuestions, fromQuestions, update_errors, set_selected, delete_selected)
 
 import Question.Model exposing (Question)
 
@@ -11,7 +11,7 @@ import Answer.Field exposing (AnswerField, generate_answer_field)
 import Array exposing (Array)
 import Field
 
-type alias QuestionFieldAttributes = Field.FieldAttributes { menu_visible: Bool }
+type alias QuestionFieldAttributes = Field.FieldAttributes { menu_visible: Bool, selected: Bool }
 
 type QuestionType = MainIdea | Detail
 
@@ -39,9 +39,11 @@ generate_question_field text_index question_index question =
       id = (String.join "_" ["text", toString text_index, "question", toString question_index])
     , editable = False
     , menu_visible = False
+    , selected = False
     , error_string = ""
     , error = False
-    , index = question_index } (Array.indexedMap (Answer.Field.generate_answer_field text_index question_index) question.answers)
+    , index = question_index }
+  (Array.indexedMap (Answer.Field.generate_answer_field text_index question_index) question.answers)
 
 add_new_question : Int -> Array QuestionField -> Array QuestionField
 add_new_question text_index fields =
@@ -172,6 +174,19 @@ set_question_body (QuestionField question attr answer_fields) value =
 set_menu_visible : QuestionField -> Bool -> QuestionField
 set_menu_visible (QuestionField question attr answer_fields) visible =
   QuestionField question { attr | menu_visible = visible } answer_fields
+
+set_selected : QuestionField -> Bool -> QuestionField
+set_selected (QuestionField question attr answer_fields) selected =
+  QuestionField question { attr | selected = selected } answer_fields
+
+delete_selected : Array QuestionField -> Array QuestionField
+delete_selected question_fields =
+  Array.filter (\q ->
+    let
+      q_attrs = attributes q
+    in
+      not q_attrs.selected
+  ) question_fields
 
 attributes : QuestionField -> QuestionFieldAttributes
 attributes (QuestionField question attr answer_fields) = attr

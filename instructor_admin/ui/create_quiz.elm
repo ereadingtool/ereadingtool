@@ -427,9 +427,9 @@ view_quiz_tags quiz_component ((QuizField attr) as quiz_field) =
   in
     case quiz.tags of
       Just tags ->
-        div [attribute "class" "quiz_tags"] (List.map view_tag tags)
+        div [attribute "class" "quiz_tags"] <| [ Html.text "Tags: " ] ++ (List.map view_tag tags)
       _ ->
-        div [attribute "class" "quiz_tags"] []
+        div [attribute "class" "quiz_tags"] [ Html.text "Tags: " ]
 
 view_edit_quiz_tags : QuizComponent -> QuizField -> Html Msg
 view_edit_quiz_tags quiz_component ((QuizField attr) as quiz_field) =
