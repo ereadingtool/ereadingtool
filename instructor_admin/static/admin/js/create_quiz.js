@@ -14868,7 +14868,7 @@ var _user$project$Main$edit_quiz_title = F2(
 var _user$project$Main$view_quiz_introduction = F3(
 	function (params, edit_view, quiz_intro) {
 		var _p8 = _user$project$Quiz_Field$intro_editable(quiz_intro);
-		if (_p8 === true) {
+		if (_p8 === false) {
 			return A2(
 				_elm_lang$html$Html$div,
 				{

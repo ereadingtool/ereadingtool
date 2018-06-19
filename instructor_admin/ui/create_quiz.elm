@@ -358,7 +358,7 @@ edit_quiz_title params quiz_title =
 view_quiz_introduction : QuizViewParams -> (QuizViewParams -> QuizIntro -> Html Msg) -> QuizIntro -> Html Msg
 view_quiz_introduction params edit_view quiz_intro =
   case (Quiz.Field.intro_editable quiz_intro) of
-    True -> div [
+    False -> div [
         onClick (ToggleEditable (Intro quiz_intro) True)
       , attribute "id" (Quiz.Field.intro_id quiz_intro)
       , classList [
@@ -368,7 +368,7 @@ view_quiz_introduction params edit_view quiz_intro =
           Html.text "Intro: "
         , div [attribute "class" "quiz_introduction"] [ Html.text params.quiz.introduction ]
         ] ++ (if (Quiz.Field.intro_error quiz_intro) then [] else [])
-    False -> edit_view params quiz_intro
+    True -> edit_view params quiz_intro
 
 edit_quiz_introduction : QuizViewParams -> QuizIntro -> Html Msg
 edit_quiz_introduction params quiz_intro =
