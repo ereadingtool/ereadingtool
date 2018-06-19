@@ -155,10 +155,10 @@ body {
     grid-column-gap: 5px;
     grid-row-gap: 5px;
 
-    grid-template-columns: repeat(2, 150px);
+    grid-template-columns: repeat(2, 200px);
     grid-auto-rows: auto;
 
-    margin-top: 2px;
+    margin-top: 5px;
 }
 
 .quiz_tag {
@@ -393,6 +393,10 @@ body {
     cursor: pointer;
 }
 
+.tag_delete_btn {
+    cursor: pointer;
+}
+
 .input_error {
     border: 1px solid #ff0000;
     background-color: #ffeeee;
@@ -400,7 +404,10 @@ body {
 
 .quiz_dates {
     display: grid;
+    grid-column: 1;
     grid-template-columns: auto;
+
+    font-size: 13px;
 
     margin-top: 25px;
 }

@@ -1,4 +1,4 @@
-module Quiz.Model exposing (Quiz, QuizListItem, new_quiz, set_texts)
+module Quiz.Model exposing (Quiz, QuizListItem, new_quiz, set_texts, set_tags)
 
 import Text.Model
 
@@ -43,3 +43,6 @@ new_quiz = {
 
 set_texts : Quiz -> Array Text.Model.Text -> Quiz
 set_texts quiz texts = { quiz | texts = texts }
+
+set_tags : Quiz -> Maybe (List String) -> Quiz
+set_tags quiz tags = { quiz | tags = tags }

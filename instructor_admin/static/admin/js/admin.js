@@ -9699,6 +9699,12 @@ var _user$project$Flags$UnAuthedFlags = function (a) {
 	return {csrftoken: a};
 };
 
+var _user$project$Quiz_Model$set_tags = F2(
+	function (quiz, tags) {
+		return _elm_lang$core$Native_Utils.update(
+			quiz,
+			{tags: tags});
+	});
 var _user$project$Quiz_Model$set_texts = F2(
 	function (quiz, texts) {
 		return _elm_lang$core$Native_Utils.update(

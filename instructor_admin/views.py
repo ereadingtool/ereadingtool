@@ -55,7 +55,13 @@ class AdminCreateEditElmLoadView(ElmLoadJsView):
         context['elm']['quiz'] = {
             'quote': False,
             'safe': True,
-            'value': json.dumps(quiz.to_dict()) if quiz else "null"
+            'value': json.dumps(quiz.to_dict() if quiz else None)
+        }
+
+        context['elm']['tags'] = {
+            'quote': False,
+            'safe': True,
+            'value': json.dumps([tag.name for tag in Quiz.tag_choices()])
         }
 
         return context

@@ -34,12 +34,14 @@ import Text.Update
 
 import Task
 
+import Dict exposing (Dict)
+
 import Text.Subscriptions
 
-import Ports exposing (ckEditor, ckEditorUpdate)
+import Ports exposing (ckEditor, ckEditorUpdate, clearInputText)
 
 
-type alias Flags = Flags.Flags { quiz: Maybe Json.Encode.Value }
+type alias Flags = Flags.Flags { quiz: Maybe Json.Encode.Value, tags: List String }
 type alias InstructorUser = String
 
 type Mode = EditMode | CreateMode | ReadOnlyMode InstructorUser
@@ -54,9 +56,12 @@ type Msg =
   | TextComponentMsg Text.Update.Msg
   | ToggleEditable QuizField Bool
   | UpdateQuizAttributes String String
-  | UpdateFromCKEditor (String, String)
+  | UpdateQuizIntro (String, String)
   | QuizJSONDecode (Result String QuizComponent)
+  | QuizTagsDecode (Result String (Dict String String))
   | ClearMessages Time.Time
+  | AddTagInput String String
+  | DeleteTag String
 
 type alias Model = {
     flags : Flags
@@ -65,7 +70,8 @@ type alias Model = {
   , success_msg : Maybe String
   , error_msg : Maybe String
   , quiz_component : QuizComponent
-  , question_difficulties : List TextDifficulty }
+  , question_difficulties : List TextDifficulty
+  , tags: Dict String String }
 
 type alias Filter = List String
 
@@ -78,10 +84,15 @@ init flags = ({
       , profile=Profile.init_profile flags
       , quiz_component=Quiz.Component.emptyQuizComponent
       , question_difficulties=[]
-  }, Cmd.batch [ retrieveTextDifficultyOptions, (quizJSONtoComponent flags.quiz) ])
+      , tags=Dict.fromList []
+  }, Cmd.batch [ retrieveTextDifficultyOptions, (quizJSONtoComponent flags.quiz), tagsToDict flags.tags ])
 
 textDifficultyDecoder : Decode.Decoder (List TextDifficulty)
 textDifficultyDecoder = Decode.keyValuePairs Decode.string
+
+tagsToDict : List String -> Cmd Msg
+tagsToDict tag_list =
+  Task.attempt QuizTagsDecode (Task.succeed <| Dict.fromList (List.map (\tag -> (tag, tag)) tag_list))
 
 quizJSONtoComponent : Maybe Json.Encode.Value -> Cmd Msg
 quizJSONtoComponent quiz =
@@ -138,6 +149,12 @@ update msg model = case msg of
           ({ model |
               error_msg = (Just <| "Something went wrong loading the quiz from the server.")
             , success_msg = (Just <| "Editing a new quiz") }, Cmd.none)
+
+    QuizTagsDecode result ->
+      case result of
+        Ok tag_dict ->
+          ({ model | tags=tag_dict }, Cmd.none)
+        _ -> (model, Cmd.none)
 
     ClearMessages time ->
       ({ model | success_msg = Nothing }, Cmd.none)
@@ -204,9 +221,19 @@ update msg model = case msg of
       ({ model | quiz_component = Quiz.Component.set_quiz_attribute model.quiz_component attr_name attr_value }
       , Cmd.none)
 
-    UpdateFromCKEditor (ck_id, ck_text) ->
+    UpdateQuizIntro (ck_id, ck_text) ->
        ({ model | quiz_component = Quiz.Component.set_quiz_attribute model.quiz_component "introduction" ck_text }
       , Cmd.none)
+
+    AddTagInput input_id input ->
+      case Dict.member input model.tags of
+        True ->
+          ({ model | quiz_component = Quiz.Component.add_tag model.quiz_component input }
+          , clearInputText input_id)
+        _ -> (model, Cmd.none)
+
+    DeleteTag tag ->
+      ({ model | quiz_component = Quiz.Component.remove_tag model.quiz_component tag }, Cmd.none)
 
 
 post_quiz : Flags.CSRFToken -> Quiz.Model.Quiz -> Cmd Msg
@@ -241,7 +268,7 @@ subscriptions model =
         Just msg -> Time.every (Time.second * 3) ClearMessages
         _ -> Sub.none)
       -- quiz introduction updates
-    , ckEditorUpdate UpdateFromCKEditor
+    , ckEditorUpdate UpdateQuizIntro
   ]
 
 main : Program Flags Model Msg
@@ -284,7 +311,6 @@ view_submit model =
         , attribute "width" "20px"] [], Html.text "Save Quiz "
     ]
   ]
-
 
 view_quiz_date : QuizViewParams -> Html Msg
 view_quiz_date params =
@@ -351,22 +377,27 @@ edit_quiz_introduction params quiz_intro =
     , attribute "class" "quiz_introduction"
     , onInput (UpdateQuizAttributes "introduction") ] [ Html.text params.quiz.introduction ]
 
-view_edit_quiz_tags : QuizViewParams -> QuizTags -> Html Msg
-view_edit_quiz_tags params quiz_tags =
+view_edit_quiz_tags : QuizViewParams -> Dict String String -> QuizTags -> Html Msg
+view_edit_quiz_tags params tag_dict quiz_tags =
   let
+    tags = Quiz.Component.tags params.quiz_component
     view_tag tag = div [attribute "class" "quiz_tag"] [
       Html.img [
           attribute "src" "/static/img/cancel.svg"
         , attribute "height" "13px"
-        , attribute "width" "13px" ] [], Html.text tag ]
+        , attribute "width" "13px"
+        , attribute "class" "tag_delete_btn"
+        , onClick (DeleteTag tag) ] [], Html.text tag ]
   in
     div [classList [("input_error", Quiz.Field.tag_error quiz_tags), ("quiz_attribute", True)] ] [
-        case params.quiz.tags of
-          Just tags ->
-            div [attribute "class" "quiz_tags"] <| [ Html.text "Tags: " ] ++ (List.map view_tag tags)
-          _ ->
-            div [attribute "class" "quiz_tags"] [ Html.text "Tags: " ]
-      , Html.input [attribute "placeholder" "add tags.."] []
+          datalist [attribute "id" "tag_list", attribute "type" "text"] <|
+            List.map (\tag -> option [attribute "value" tag] [ Html.text tag ]) (Dict.keys tag_dict)
+        , div [] [Html.text "Tags: "], div [attribute "class" "quiz_tags"] (List.map view_tag (Dict.keys tags))
+        , Html.input [
+            attribute "id" "add_tag"
+          , attribute "placeholder" "add tags.."
+          , attribute "list" "tag_list"
+          , onInput (AddTagInput "add_tag")] []
     ]
 
 view_quiz : Model -> Html Msg
@@ -377,7 +408,7 @@ view_quiz model =
   in
     div [attribute "class" "quiz_attributes"] [
       view_quiz_title params edit_quiz_title (Quiz.Field.title quiz_fields)
-    , view_edit_quiz_tags params (Quiz.Field.tags quiz_fields)
+    , view_edit_quiz_tags params model.tags (Quiz.Field.tags quiz_fields)
     , view_quiz_introduction params edit_quiz_introduction (Quiz.Field.intro quiz_fields)
     , view_quiz_date params
     ]

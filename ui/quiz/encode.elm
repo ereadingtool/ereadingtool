@@ -11,4 +11,8 @@ quizEncoder quiz =
       ("introduction", Encode.string quiz.introduction)
     , ("title", Encode.string quiz.title)
     , ("texts", textsEncoder quiz.texts)
+    , ("tags", Encode.list
+        (case quiz.tags of
+          Just tags -> List.map (\tag -> Encode.string tag) tags
+          _ -> []))
   ]

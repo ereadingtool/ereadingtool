@@ -9,10 +9,25 @@
         }
     }
 
+    function clearInputText(elem_id) {
+        var input = document.getElementById(elem_id);
+
+        if (input) {
+            input.value = '';
+        }
+    }
+
     app.ports.selectAllInputText.subscribe(function (elem_id) {
         // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
         window.requestAnimationFrame(function (timestamp) {
             selectAllText(elem_id);
+        });
+    });
+
+    app.ports.clearInputText.subscribe(function (elem_id) {
+        // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
+        window.requestAnimationFrame(function (timestamp) {
+            clearInputText(elem_id);
         });
     });
 
