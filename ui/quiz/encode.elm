@@ -8,6 +8,7 @@ import Json.Encode as Encode
 quizEncoder : Quiz.Model.Quiz -> Encode.Value
 quizEncoder quiz =
   Encode.object [
-      ("title", Encode.string quiz.title)
+      ("introduction", Encode.string quiz.introduction)
+    , ("title", Encode.string quiz.title)
     , ("texts", textsEncoder quiz.texts)
   ]

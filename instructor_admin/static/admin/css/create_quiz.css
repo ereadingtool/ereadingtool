@@ -180,10 +180,16 @@ body {
     display: grid;
 }
 
+#quiz_title {
+    line-height: 25px;
+    width: 80%;
+}
+
 .text {
+    display: grid;
+
     background: #f9f9f9;
     padding: 10px 20px 15px 20px;
-    display: grid;
     margin-top: 25px;
 }
 
