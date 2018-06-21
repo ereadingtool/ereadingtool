@@ -127,9 +127,10 @@ update msg model = case msg of
 
     QuizJSONDecode result ->
       case result of
-        Ok quiz_component ->
+        Ok quiz_comp ->
           let
-            quiz = Quiz.Component.quiz (Quiz.Component.set_intro_editable quiz_component True)
+            quiz_component = (Quiz.Component.set_intro_editable quiz_comp True)
+            quiz = Quiz.Component.quiz quiz_component
           in
             case quiz.write_locker of
               Just write_locker ->
@@ -334,48 +335,49 @@ view_quiz_date params =
 
 view_quiz_title : QuizViewParams -> (QuizViewParams -> QuizTitle -> Html Msg) -> QuizTitle -> Html Msg
 view_quiz_title params edit_view quiz_title =
-  case (Quiz.Field.title_editable quiz_title) of
-    False ->
-      Html.div [
-        onClick (ToggleEditable (Title quiz_title) True)
-      , classList [("editable", True), ("input_error", Quiz.Field.title_error quiz_title), ("quiz_attribute", True)]
-      ] <| [
-          Html.text "Title: "
-        , Html.span [] [ Html.text params.quiz.title ]
-      ] ++ (if (Quiz.Field.title_error quiz_title) then [] else [])
-    True -> edit_view params quiz_title
+  div [ onClick (ToggleEditable (Title quiz_title) True)
+      , attribute "id" "quiz_title_view"
+      , classList [("input_error", Quiz.Field.title_error quiz_title)]
+      ] [
+      div [] [ Html.text "Quiz Title" ]
+    , (case (Quiz.Field.title_editable quiz_title) of
+      False ->
+        div [attribute "class" "editable"] <|
+          [ Html.text params.quiz.title ] ++ (if (Quiz.Field.title_error quiz_title) then [] else [])
+      True -> div [] [ edit_view params quiz_title ])
+  ]
 
 edit_quiz_title : QuizViewParams -> QuizTitle -> Html Msg
 edit_quiz_title params quiz_title =
   Html.input [
-      attribute "type" "text"
+      attribute "id" (Quiz.Field.title_id quiz_title)
+    , attribute "type" "text"
     , attribute "value" params.quiz.title
-    , attribute "id" (Quiz.Field.title_id quiz_title)
     , onInput (UpdateQuizAttributes "title")
-    , classList [("quiz_attribute", True)]
     , (onBlur (ToggleEditable (Title quiz_title) False)) ] [ ]
 
 view_quiz_introduction : QuizViewParams -> (QuizViewParams -> QuizIntro -> Html Msg) -> QuizIntro -> Html Msg
 view_quiz_introduction params edit_view quiz_intro =
-  case (Quiz.Field.intro_editable quiz_intro) of
-    False -> div [
-        onClick (ToggleEditable (Intro quiz_intro) True)
-      , attribute "id" (Quiz.Field.intro_id quiz_intro)
-      , classList [
-          ("editable", True), ("input_error", Quiz.Field.intro_error quiz_intro), ("quiz_attribute", True)
-        , ("quiz_introduction", True)
-      ]] <| [
-          Html.text "Intro: "
-        , div [attribute "class" "quiz_introduction"] [ Html.text params.quiz.introduction ]
-        ] ++ (if (Quiz.Field.intro_error quiz_intro) then [] else [])
-    True -> edit_view params quiz_intro
+  div [
+        attribute "id" "quiz_intro_view"
+      , onClick (ToggleEditable (Intro quiz_intro) True)
+      , classList [("input_error", Quiz.Field.intro_error quiz_intro)]] [
+    div [] [ Html.text "Quiz Introduction" ]
+  , (case (Quiz.Field.intro_editable quiz_intro) of
+      False ->
+        div [attribute "class" "editable"] <|
+          [ Html.text params.quiz.introduction ] ++ (if (Quiz.Field.intro_error quiz_intro) then [] else [])
+      True -> edit_view params quiz_intro)
+  ]
 
 edit_quiz_introduction : QuizViewParams -> QuizIntro -> Html Msg
 edit_quiz_introduction params quiz_intro =
-  Html.textarea [
+  div [] [
+    textarea [
       attribute "id" (Quiz.Field.intro_id quiz_intro)
     , attribute "class" "quiz_introduction"
     , onInput (UpdateQuizAttributes "introduction") ] [ Html.text params.quiz.introduction ]
+  ]
 
 view_edit_quiz_tags : QuizViewParams -> Dict String String -> QuizTags -> Html Msg
 view_edit_quiz_tags params tag_dict quiz_tags =
@@ -389,15 +391,16 @@ view_edit_quiz_tags params tag_dict quiz_tags =
         , attribute "class" "tag_delete_btn"
         , onClick (DeleteTag tag) ] [], Html.text tag ]
   in
-    div [classList [("input_error", Quiz.Field.tag_error quiz_tags), ("quiz_attribute", True)] ] [
+    div [attribute "id" "quiz_tags_view", classList [("input_error", Quiz.Field.tag_error quiz_tags)] ] [
           datalist [attribute "id" "tag_list", attribute "type" "text"] <|
             List.map (\tag -> option [attribute "value" tag] [ Html.text tag ]) (Dict.keys tag_dict)
-        , div [] [Html.text "Tags: "], div [attribute "class" "quiz_tags"] (List.map view_tag (Dict.keys tags))
-        , Html.input [
+        , div [] [Html.text "Quiz Tags"]
+        , div [attribute "class" "quiz_tags"] (List.map view_tag (Dict.keys tags))
+        , div [] [ Html.input [
             attribute "id" "add_tag"
           , attribute "placeholder" "add tags.."
           , attribute "list" "tag_list"
-          , onInput (AddTagInput "add_tag")] []
+          , onInput (AddTagInput "add_tag")] [] ]
     ]
 
 view_quiz : Model -> Html Msg
@@ -406,10 +409,10 @@ view_quiz model =
     quiz_fields = Quiz.Component.quiz_fields model.quiz_component
     params = {quiz=Quiz.Component.quiz model.quiz_component, quiz_component=model.quiz_component}
   in
-    div [attribute "class" "quiz_attributes"] [
+    div [attribute "id" "quiz_attributes"] [
       view_quiz_title params edit_quiz_title (Quiz.Field.title quiz_fields)
-    , view_edit_quiz_tags params model.tags (Quiz.Field.tags quiz_fields)
     , view_quiz_introduction params edit_quiz_introduction (Quiz.Field.intro quiz_fields)
+    , view_edit_quiz_tags params model.tags (Quiz.Field.tags quiz_fields)
     , view_quiz_date params
     ]
 
@@ -418,7 +421,7 @@ view model = div [] <| [
       Views.view_header model.profile Nothing
     , (view_msgs model)
     , (Views.view_preview)
-    , div [attribute "class" "quiz"] <| [
+    , div [attribute "id" "quiz"] <| [
         (view_quiz model)
       , (Text.View.view_text_components TextComponentMsg
           (Quiz.Component.text_components model.quiz_component) model.question_difficulties)

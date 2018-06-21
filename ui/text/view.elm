@@ -33,54 +33,64 @@ view_editable params view edit =
 view_author : (TextField msg) -> Html msg
 view_author params = Html.div [
     toggle_editable onClick params
-  , classList [("text_property", True), ("editable", True)] ] [
-      Html.text "Author: "
-    , Html.text params.text.author ]
+  , attribute "class" "text_property"] [
+      div [] [ Html.text "Text Author" ]
+    , div [attribute "class" "editable"] [ Html.text params.text.author ]
+  ]
 
 edit_author : (TextField msg) -> Html msg
-edit_author params = Html.input [
-        attribute "type" "text"
-      , attribute "value" params.text.author
-      , attribute "id" (Text.Component.text_field_id params.field)
-      , onInput (UpdateTextValue params.text_component "author" >> params.msg)
-      , toggle_editable onBlur params ] [ ]
+edit_author params =
+  Html.div [] [
+     div [] [ Html.text "Text Author" ]
+   , Html.input [
+          attribute "type" "text"
+        , attribute "value" params.text.author
+        , attribute "id" (Text.Component.text_field_id params.field)
+        , onInput (UpdateTextValue params.text_component "author" >> params.msg)
+        , toggle_editable onBlur params ] [ ]
+  ]
 
 view_source : (TextField msg) -> Html msg
 view_source params = Html.div [
    toggle_editable onClick params
- , attribute "class" "text_property"
- , attribute "class" "editable"] [
-     Html.text "Source: "
-   , Html.text params.text.source
+ , attribute "class" "text_property"] [
+     div [] [ Html.text "Text Source" ]
+   , div [attribute "class" "editable"] [ Html.text params.text.source ]
   ]
 
 edit_source : (TextField msg) -> Html msg
-edit_source params = Html.input [
+edit_source params =
+  Html.div [] [
+    div [] [ Html.text "Text Title" ]
+  , Html.input [
         attribute "type" "text"
       , attribute "value" params.text.source
       , attribute "id" (Text.Component.text_field_id params.field)
       , onInput (UpdateTextValue params.text_component "source" >> params.msg)
       , toggle_editable onBlur params ] [ ]
+  ]
 
 view_body : (TextField msg) -> Html msg
 view_body params =
   Html.div [
-    toggle_editable onClick params
+    attribute "id" (Text.Component.text_field_id params.field)
+  , toggle_editable onClick params
   , attribute "class" "text_property"
-  , attribute "class" "editable"
-  , attribute "id" (Text.Component.text_field_id params.field)
-  ] [
-      Html.text "Text: "
-    , Html.text params.text.body ]
+  ] [ div [attribute "class" "editable"] [ Html.text params.text.body ]]
 
 edit_body : (TextField msg) -> Html msg
-edit_body params = Html.textarea [
-      onInput (UpdateTextValue params.text_component "body" >> params.msg)
-    , attribute "id" (Text.Component.text_field_id params.field) ] [ Html.text params.text.body ]
+edit_body params =
+  Html.div [] [
+    Html.textarea [
+        attribute "id" (Text.Component.text_field_id params.field)
+      , onInput (UpdateTextValue params.text_component "body" >> params.msg) ] [
+        Html.text params.text.body
+    ]
+  ]
 
 edit_difficulty : (TextField msg) -> Html msg
 edit_difficulty params = Html.div [attribute "class" "text_property"] [
-      Html.text "Difficulty:  "
+      Html.text "Text Difficulty"
     , Html.select [
          onInput (UpdateTextValue params.text_component "difficulty" >> params.msg) ] [
         Html.optgroup [] (List.map (\(k,v) ->
@@ -95,20 +105,21 @@ toggle_editable event params = event <| params.msg (ToggleEditable params.text_c
 view_title : (TextField msg) -> Html msg
 view_title params = Html.div [
     toggle_editable onClick params
-  , attribute "class" "text_property"
-  , attribute "class" "editable"] [
-      Html.text "Title: "
-    , Html.text params.text.title
-    ]
+  , attribute "class" "text_property" ] [
+      div [] [ Html.text "Text Title" ]
+    , div [attribute "class" "editable"] [ Html.text params.text.title ]
+  ]
 
 edit_title : (TextField msg) -> Html msg
-edit_title params = Html.input [
+edit_title params = Html.div [] [
+    div [] [ Html.text "Text Title" ]
+  , Html.input [
         attribute "type" "text"
       , attribute "value" params.text.title
       , attribute "id" (Text.Component.text_field_id params.field)
       , onInput (UpdateTextValue params.text_component "title" >> params.msg)
       , (toggle_editable onBlur params) ] [ ]
-
+  ]
 
 view_text_component : (Msg -> msg) -> List TextDifficulty -> TextComponent -> List (Html msg)
 view_text_component msg text_difficulties text_component = let
@@ -132,7 +143,8 @@ view_text_component msg text_difficulties text_component = let
          , view_editable (params author_field) view_author edit_author
         ]
         , div [ classList [("body",True)] ] [
-          view_editable (params body_field) view_body edit_body
+            div [] [ Html.text "Text Body" ]
+          , view_editable (params body_field) view_body edit_body
         ]
     ]
   ] ++ [

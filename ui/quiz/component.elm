@@ -22,7 +22,7 @@ type QuizComponent = QuizComponent Quiz QuizFields QuizTags TextComponentGroup
 
 init : Quiz -> QuizComponent
 init quiz =
-  QuizComponent quiz init_quiz_fields (Debug.log "tags" (tags_to_dict quiz.tags)) (Text.Component.Group.fromTexts quiz.texts)
+  QuizComponent quiz init_quiz_fields (tags_to_dict quiz.tags) (Text.Component.Group.fromTexts quiz.texts)
 
 quiz : QuizComponent -> Quiz
 quiz (QuizComponent quiz _ quiz_tags component_group) =
@@ -75,9 +75,10 @@ reinitialize_ck_editors : QuizComponent -> Cmd msg
 reinitialize_ck_editors ((QuizComponent quiz fields quiz_tags components) as quiz_component) =
   let
     text_component_group = text_components quiz_component
+    intro_field_id = Quiz.Field.intro_id (Quiz.Field.intro fields)
   in
     Cmd.batch [
-      Cmd.batch [ckEditor "quiz_introduction", ckEditorSetHtml ("quiz_introduction", quiz.introduction)]
+      Cmd.batch [ckEditor intro_field_id, ckEditorSetHtml (intro_field_id, quiz.introduction)]
     , Text.Component.Group.reinitialize_ck_editors text_component_group ]
 
 update_quiz_errors : QuizComponent -> Dict String String -> QuizComponent
