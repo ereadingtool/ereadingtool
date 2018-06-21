@@ -13996,7 +13996,14 @@ var _user$project$Text_View$edit_difficulty = function (params) {
 		},
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html$text('Text Difficulty'),
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Text Difficulty'),
+					_1: {ctor: '[]'}
+				}),
 			_1: {
 				ctor: '::',
 				_0: A2(

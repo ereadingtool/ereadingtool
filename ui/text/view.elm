@@ -90,7 +90,7 @@ edit_body params =
 
 edit_difficulty : (TextField msg) -> Html msg
 edit_difficulty params = Html.div [attribute "class" "text_property"] [
-      Html.text "Text Difficulty"
+      div [] [ Html.text "Text Difficulty" ]
     , Html.select [
          onInput (UpdateTextValue params.text_component "difficulty" >> params.msg) ] [
         Html.optgroup [] (List.map (\(k,v) ->
