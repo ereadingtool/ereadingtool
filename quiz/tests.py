@@ -4,6 +4,9 @@ from django.test import TestCase
 from hypothesis.extra.django.models import models
 from hypothesis.strategies import just, text
 
+from typing import Union, Any
+from django.test.client import Client
+
 from ereadingtool.urls import reverse_lazy
 from quiz.models import Quiz
 from tag.models import Tag
@@ -20,6 +23,23 @@ class QuizTest(TestCase):
         self.user_passwd = None
 
         self.quiz_endpoint = reverse_lazy('quiz-api')
+
+    def new_instructor(self, client: Client) -> Client:
+        user = models(ReaderUser, username=text(min_size=5, max_size=150)).example()
+        user_passwd = text(min_size=8, max_size=12).example()
+
+        user.set_password(user_passwd)
+        user.is_active = True
+        user.save()
+
+        instructor = models(Instructor, user=just(user)).example()
+        instructor.save()
+
+        logged_in = client.login(username=user.username, password=user_passwd)
+
+        self.assertTrue(logged_in, 'couldnt login with username="{0}" passwd="{1}"'.format(user.username, user_passwd))
+
+        return client
 
     def setUp(self):
         super(QuizTest, self).setUp()
@@ -165,6 +185,43 @@ class QuizTest(TestCase):
 
         self.assertEquals(resp_content['texts'][1]['questions'][0]['body'], 'A new question?')
         self.assertEquals(resp_content['texts'][1]['questions'][0]['answers'][1]['text'], 'A new answer.')
+
+    def test_quiz_lock(self):
+        other_instructor_client = self.new_instructor(Client())
+
+        resp = self.client.post('/api/quiz/', json.dumps(self.get_test_data()), content_type='application/json')
+
+        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        resp_content = json.loads(resp.content.decode('utf8'))
+
+        self.assertIn('id', resp_content)
+
+        quiz = Quiz.objects.get(pk=resp_content['id'])
+
+        resp = self.client.post('/api/quiz/{0}/lock/'.format(quiz.pk), content_type='application/json')
+
+        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        resp = other_instructor_client.post('/api/quiz/{0}/lock/'.format(quiz.pk), content_type='application/json')
+
+        self.assertEquals(resp.status_code, 500, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        resp = other_instructor_client.delete('/api/quiz/{0}/lock/'.format(quiz.pk), content_type='application/json')
+
+        self.assertEquals(resp.status_code, 500, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        resp = self.client.delete('/api/quiz/{0}/lock/'.format(quiz.pk), content_type='application/json')
+
+        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        resp = other_instructor_client.post('/api/quiz/{0}/lock/'.format(quiz.pk), content_type='application/json')
+
+        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        resp = self.client.post('/api/quiz/{0}/lock/'.format(quiz.pk), content_type='application/json')
+
+        self.assertEquals(resp.status_code, 500, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
     def test_post_quiz(self):
         resp = self.client.post('/api/quiz/', json.dumps({"malformed": "json"}), content_type='application/json')

@@ -1,5 +1,5 @@
 module Quiz.Decode exposing (quizDecoder, quizCreateRespDecoder, decodeRespErrors, QuizRespError
-  , quizUpdateRespDecoder, QuizCreateResp, QuizUpdateResp, quizListDecoder)
+  , quizUpdateRespDecoder, QuizCreateResp, QuizUpdateResp, quizListDecoder, quizLockRespDecoder, QuizLockResp)
 
 import Quiz.Model exposing (Quiz, QuizListItem)
 import Text.Decode
@@ -15,6 +15,7 @@ import Json.Decode.Extra exposing (date)
 
 type alias QuizCreateResp = { id: Int, redirect: String }
 type alias QuizUpdateResp = { id: Int, updated: Bool }
+type alias QuizLockResp = { locked: Bool }
 
 type alias QuizRespError = Dict String String
 
@@ -61,6 +62,11 @@ quizUpdateRespDecoder =
   decode QuizUpdateResp
     |> required "id" Decode.int
     |> required "updated" Decode.bool
+
+quizLockRespDecoder : Decode.Decoder (QuizLockResp)
+quizLockRespDecoder =
+  decode QuizLockResp
+    |> required "locked" Decode.bool
 
 decodeRespErrors : String -> Result String QuizRespError
 decodeRespErrors str = Decode.decodeString (Decode.field "errors" (Decode.dict Decode.string)) str

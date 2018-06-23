@@ -23,12 +23,12 @@ type alias TextDifficulty = (String, String)
 emptyText : Text
 emptyText = {
     id = Nothing
-  , title = "title"
+  , title = ""
   , created_dt = Nothing
   , modified_dt = Nothing
-  , source = "source"
+  , source = ""
   , difficulty = ""
-  , author = "author"
+  , author = ""
   , question_count = 0
   , questions = Question.Model.initial_questions
-  , body = "text" }
+  , body = "" }

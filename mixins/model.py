@@ -29,16 +29,16 @@ class WriteLockable(models.Model):
     def is_locked(self) -> bool:
         return self.__class__.objects.filter(pk=self.pk, write_locked=True).exists()
 
-    def lock(self) -> bool:
-        locked = bool(self.objects.filter(pk=self.pk).update(write_locked=True))
+    def lock(self, instructor) -> bool:
+        locked = bool(self.__class__.objects.filter(pk=self.pk).update(write_locked=True, write_locker=instructor))
 
         self.write_locked = locked
 
         return locked
 
     def unlock(self) -> bool:
-        unlocked = bool(self.__class__.objects.filter(pk=self.pk).update(write_locked=False))
+        unlocked = bool(self.__class__.objects.filter(pk=self.pk).update(write_locked=False, write_locker=None))
 
         self.write_locked = False if unlocked else True
 
-        return unlocked
+        return not unlocked

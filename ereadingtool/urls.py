@@ -17,9 +17,7 @@ from django.contrib import admin
 from django.urls import path, include, reverse_lazy
 from django.views.generic import RedirectView
 
-from quiz.views import QuizView, QuizLoadElm, QuizAPIView
 from mixins.view import ElmLoadJsView, NoAuthElmLoadJsView, ElmLoadStudentSignUpView
-
 
 urlpatterns = [
     path('load_elm.js', ElmLoadJsView.as_view(), name='load-elm'),

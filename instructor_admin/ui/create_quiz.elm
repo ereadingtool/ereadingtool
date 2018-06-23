@@ -4,7 +4,7 @@ import Html.Attributes exposing (classList, attribute)
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
 
 import Http
-import HttpHelpers exposing (post_with_headers, put_with_headers)
+import HttpHelpers exposing (post_with_headers, put_with_headers, delete_with_headers)
 
 import Config exposing (text_api_endpoint, quiz_api_endpoint)
 import Flags
@@ -15,7 +15,10 @@ import Quiz.Field exposing (QuizIntro, QuizTitle, QuizTags)
 import Quiz.Encode
 
 import Views
+
 import Profile
+import Instructor.Profile
+
 import Debug
 import Json.Decode as Decode
 import Json.Encode
@@ -40,8 +43,12 @@ import Text.Subscriptions
 
 import Ports exposing (ckEditor, ckEditorUpdate, clearInputText)
 
+type alias Flags = {
+    instructor_profile : Instructor.Profile.InstructorProfileParams
+  , csrftoken: Flags.CSRFToken
+  , quiz: Maybe Json.Encode.Value
+  , tags: List String }
 
-type alias Flags = Flags.Flags { quiz: Maybe Json.Encode.Value, tags: List String }
 type alias InstructorUser = String
 
 type Mode = EditMode | CreateMode | ReadOnlyMode InstructorUser
@@ -62,16 +69,20 @@ type Msg =
   | ClearMessages Time.Time
   | AddTagInput String String
   | DeleteTag String
+  | ToggleLock
+  | QuizLocked (Result Http.Error Quiz.Decode.QuizLockResp)
+  | QuizUnlocked (Result Http.Error Quiz.Decode.QuizLockResp)
 
 type alias Model = {
     flags : Flags
   , mode : Mode
-  , profile : Profile.Profile
+  , profile : Instructor.Profile.InstructorProfile
   , success_msg : Maybe String
   , error_msg : Maybe String
   , quiz_component : QuizComponent
   , question_difficulties : List TextDifficulty
-  , tags: Dict String String }
+  , tags: Dict String String
+  , write_locked: Bool }
 
 type alias Filter = List String
 
@@ -81,10 +92,11 @@ init flags = ({
       , mode=CreateMode
       , success_msg=Nothing
       , error_msg=Nothing
-      , profile=Profile.init_profile flags
+      , profile=Instructor.Profile.init_profile flags.instructor_profile
       , quiz_component=Quiz.Component.emptyQuizComponent
       , question_difficulties=[]
       , tags=Dict.fromList []
+      , write_locked=False
   }, Cmd.batch [ retrieveTextDifficultyOptions, (quizJSONtoComponent flags.quiz), tagsToDict flags.tags ])
 
 textDifficultyDecoder : Decode.Decoder (List TextDifficulty)
@@ -134,11 +146,21 @@ update msg model = case msg of
           in
             case quiz.write_locker of
               Just write_locker ->
-                ({ model |
-                     quiz_component=quiz_component
-                   , mode=ReadOnlyMode write_locker
-                   , error_msg=Just <| "READONLY: quiz is currently being edited by " ++ write_locker
-                 }, Quiz.Component.reinitialize_ck_editors quiz_component)
+                case write_locker /= (Instructor.Profile.username model.profile) of
+                  True ->
+                    ({ model |
+                         quiz_component=quiz_component
+                       , mode=ReadOnlyMode write_locker
+                       , error_msg=Just <| "READONLY: quiz is currently being edited by " ++ write_locker
+                       , write_locked=True
+                     }, Quiz.Component.reinitialize_ck_editors quiz_component)
+                  False ->
+                    ({ model |
+                         quiz_component=quiz_component
+                       , mode=EditMode
+                       , success_msg=Just <| "editing '" ++ quiz.title ++ "' quiz"
+                       , write_locked=True
+                    }, Quiz.Component.reinitialize_ck_editors quiz_component)
               Nothing ->
                 ({ model |
                      quiz_component=quiz_component
@@ -218,6 +240,27 @@ update msg model = case msg of
         _ ->
             (model, Cmd.none)
 
+    ToggleLock ->
+      let
+        quiz = Quiz.Component.quiz model.quiz_component
+
+        lock = post_lock model.flags.csrftoken quiz
+        unlock = delete_lock model.flags.csrftoken quiz
+      in
+        (model, if not model.write_locked then lock else unlock)
+
+    QuizLocked (Ok quiz_locked_resp) ->
+      ({ model | write_locked = (if quiz_locked_resp.locked then True else False)}, Cmd.none)
+
+    QuizUnlocked (Ok quiz_unlocked_resp) ->
+      ({ model | write_locked = (if not quiz_unlocked_resp.locked then False else True)}, Cmd.none)
+
+    QuizUnlocked (Err err) -> let _ = Debug.log "quiz unlock error" err in
+       (model, Cmd.none)
+
+    QuizLocked (Err err) -> let _ = Debug.log "quiz lock error" err in
+       (model, Cmd.none)
+
     UpdateQuizAttributes attr_name attr_value ->
       ({ model | quiz_component = Quiz.Component.set_quiz_attribute model.quiz_component attr_name attr_value }
       , Cmd.none)
@@ -237,12 +280,43 @@ update msg model = case msg of
       ({ model | quiz_component = Quiz.Component.remove_tag model.quiz_component tag }, Cmd.none)
 
 
+post_lock : Flags.CSRFToken -> Quiz.Model.Quiz -> Cmd Msg
+post_lock csrftoken quiz =
+  case quiz.id of
+    Just quiz_id ->
+      let
+        req =
+          post_with_headers
+            (String.join "" [quiz_api_endpoint, toString quiz_id, "/", "lock/"])
+            [Http.header "X-CSRFToken" csrftoken]
+            Http.emptyBody
+            Quiz.Decode.quizLockRespDecoder
+      in
+        Http.send QuizLocked req
+    _ -> Cmd.none
+
+delete_lock : Flags.CSRFToken -> Quiz.Model.Quiz -> Cmd Msg
+delete_lock csrftoken quiz =
+  case quiz.id of
+    Just quiz_id ->
+      let
+        req =
+          delete_with_headers
+            (String.join "" [quiz_api_endpoint, toString quiz_id, "/", "lock/"])
+            [Http.header "X-CSRFToken" csrftoken]
+            Http.emptyBody
+            Quiz.Decode.quizLockRespDecoder
+      in
+        Http.send QuizUnlocked req
+    _ -> Cmd.none
+
+
 post_quiz : Flags.CSRFToken -> Quiz.Model.Quiz -> Cmd Msg
 post_quiz csrftoken quiz =
-  let encoded_quiz = Quiz.Encode.quizEncoder quiz
-      req =
-    post_with_headers quiz_api_endpoint [Http.header "X-CSRFToken" csrftoken] (Http.jsonBody encoded_quiz)
-    <| Quiz.Decode.quizCreateRespDecoder
+  let
+    encoded_quiz = Quiz.Encode.quizEncoder quiz
+    req = post_with_headers quiz_api_endpoint [Http.header "X-CSRFToken" csrftoken] (Http.jsonBody encoded_quiz)
+      <| Quiz.Decode.quizCreateRespDecoder
   in
     Http.send Submitted req
 
@@ -403,6 +477,28 @@ view_edit_quiz_tags params tag_dict quiz_tags =
           , onInput (AddTagInput "add_tag")] [] ]
     ]
 
+view_edit_quiz_lock : QuizViewParams -> Model -> Html Msg
+view_edit_quiz_lock params model =
+  let
+    write_locked = model.write_locked
+  in
+    div [attribute "id" "quiz_lock"] [
+          div [] [Html.text <| (if write_locked then "Quiz Locked" else "Quiz Unlocked")]
+        , div [attribute "id" "lock_box", classList [("dimgray_bg", write_locked)], onClick ToggleLock] [
+            div [attribute "id" (if write_locked then "lock_right" else "lock_left")] []
+          ]
+    ]
+
+view_quiz_lock : QuizViewParams -> Model -> Html Msg
+view_quiz_lock params model =
+  case model.mode of
+    EditMode -> view_edit_quiz_lock params model
+    ReadOnlyMode write_locker ->
+      case write_locker == Instructor.Profile.username model.profile of
+        True -> view_edit_quiz_lock params model
+        _ -> div [] []
+    _ -> div [] []
+
 view_quiz : Model -> Html Msg
 view_quiz model =
   let
@@ -413,12 +509,13 @@ view_quiz model =
       view_quiz_title params edit_quiz_title (Quiz.Field.title quiz_fields)
     , view_quiz_introduction params edit_quiz_introduction (Quiz.Field.intro quiz_fields)
     , view_edit_quiz_tags params model.tags (Quiz.Field.tags quiz_fields)
+    , view_quiz_lock params model
     , view_quiz_date params
     ]
 
 view : Model -> Html Msg
 view model = div [] <| [
-      Views.view_header model.profile Nothing
+      Views.view_header (Profile.fromInstructorProfile model.profile) Nothing
     , (view_msgs model)
     , (Views.view_preview)
     , div [attribute "id" "quiz"] <| [

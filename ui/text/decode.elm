@@ -6,8 +6,6 @@ import Json.Decode.Extra exposing (date)
 
 import Question.Decode
 
-import Dict exposing (Dict)
-
 import Text.Model exposing (Text)
 import Field
 

@@ -40,7 +40,7 @@ view_author params = Html.div [
 
 edit_author : (TextField msg) -> Html msg
 edit_author params =
-  Html.div [] [
+  div [attribute "class" "text_property"] [
      div [] [ Html.text "Text Author" ]
    , Html.input [
           attribute "type" "text"
@@ -60,8 +60,8 @@ view_source params = Html.div [
 
 edit_source : (TextField msg) -> Html msg
 edit_source params =
-  Html.div [] [
-    div [] [ Html.text "Text Title" ]
+  div [attribute "class" "text_property"] [
+    div [] [ Html.text "Text Source" ]
   , Html.input [
         attribute "type" "text"
       , attribute "value" params.text.source
@@ -72,7 +72,7 @@ edit_source params =
 
 view_body : (TextField msg) -> Html msg
 view_body params =
-  Html.div [
+  div [
     attribute "id" (Text.Component.text_field_id params.field)
   , toggle_editable onClick params
   , attribute "class" "text_property"
@@ -103,15 +103,15 @@ toggle_editable : (msg -> Attribute msg) -> (TextField msg) -> Attribute msg
 toggle_editable event params = event <| params.msg (ToggleEditable params.text_component (Text params.field))
 
 view_title : (TextField msg) -> Html msg
-view_title params = Html.div [
-    toggle_editable onClick params
-  , attribute "class" "text_property" ] [
+view_title params =
+  div [toggle_editable onClick params, attribute "class" "text_property"] [
       div [] [ Html.text "Text Title" ]
     , div [attribute "class" "editable"] [ Html.text params.text.title ]
   ]
 
 edit_title : (TextField msg) -> Html msg
-edit_title params = Html.div [] [
+edit_title params =
+  div [attribute "class" "text_property"] [
     div [] [ Html.text "Text Title" ]
   , Html.input [
         attribute "type" "text"
