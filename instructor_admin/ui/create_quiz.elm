@@ -250,16 +250,49 @@ update msg model = case msg of
         (model, if not model.write_locked then lock else unlock)
 
     QuizLocked (Ok quiz_locked_resp) ->
-      ({ model | write_locked = (if quiz_locked_resp.locked then True else False)}, Cmd.none)
+      ({ model |
+        write_locked = (if quiz_locked_resp.locked then True else False)
+      , success_msg =
+          Just "quiz is locked for editing, other instructors can only view the quiz while it is locked." }, Cmd.none)
 
     QuizUnlocked (Ok quiz_unlocked_resp) ->
-      ({ model | write_locked = (if not quiz_unlocked_resp.locked then False else True)}, Cmd.none)
+      ({ model |
+        write_locked = (if quiz_unlocked_resp.locked then True else False)
+      , success_msg =
+          Just "quiz is unlocked for editing, other instructors can now edit the quiz." }, Cmd.none)
 
-    QuizUnlocked (Err err) -> let _ = Debug.log "quiz unlock error" err in
-       (model, Cmd.none)
+    QuizUnlocked (Err err) ->
+      case err of
+        Http.BadStatus resp -> let _ = Debug.log "update error bad status" resp in
+          case (Quiz.Decode.decodeRespErrors resp.body) of
+            Ok errors ->
+              let
+                errors_str = String.join " and " (Dict.values errors)
+              in
+                ({ model | success_msg = Just <| "Error trying to unlock the quiz: " ++ errors_str }, Cmd.none)
+            _ -> (model, Cmd.none)
 
-    QuizLocked (Err err) -> let _ = Debug.log "quiz lock error" err in
-       (model, Cmd.none)
+        Http.BadPayload err resp -> let _ = Debug.log "update error bad payload" resp in
+          (model, Cmd.none)
+
+        _ -> (model, Cmd.none)
+
+    QuizLocked (Err err) ->
+       case err of
+        Http.BadStatus resp -> let _ = Debug.log "update error bad status" resp in
+          case (Quiz.Decode.decodeRespErrors resp.body) of
+            Ok errors ->
+              let
+                errors_str = String.join " and " (Dict.values errors)
+              in
+                ({ model | success_msg = Just <| "Error trying to lock the quiz: " ++ errors_str }, Cmd.none)
+            _ -> (model, Cmd.none)
+
+        Http.BadPayload err resp -> let _ = Debug.log "update error bad payload" resp in
+          (model, Cmd.none)
+
+        _ -> (model, Cmd.none)
+
 
     UpdateQuizAttributes attr_name attr_value ->
       ({ model | quiz_component = Quiz.Component.set_quiz_attribute model.quiz_component attr_name attr_value }

@@ -15692,13 +15692,42 @@ var _user$project$Main$update = F2(
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								write_locked: (!_p15._0._0.locked) ? false : true
+								write_locked: _p15._0._0.locked ? true : false,
+								success_msg: _elm_lang$core$Maybe$Just('quiz is unlocked for editing, other instructors can now edit the quiz.')
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p33 = A2(_elm_lang$core$Debug$log, 'quiz unlock error', _p15._0._0);
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					var _p33 = _p15._0._0;
+					switch (_p33.ctor) {
+						case 'BadStatus':
+							var _p36 = _p33._0;
+							var _p34 = A2(_elm_lang$core$Debug$log, 'update error bad status', _p36);
+							var _p35 = _user$project$Quiz_Decode$decodeRespErrors(_p36.body);
+							if (_p35.ctor === 'Ok') {
+								var errors_str = A2(
+									_elm_lang$core$String$join,
+									' and ',
+									_elm_lang$core$Dict$values(_p35._0));
+								return {
+									ctor: '_Tuple2',
+									_0: _elm_lang$core$Native_Utils.update(
+										model,
+										{
+											success_msg: _elm_lang$core$Maybe$Just(
+												A2(_elm_lang$core$Basics_ops['++'], 'Error trying to unlock the quiz: ', errors_str))
+										}),
+									_1: _elm_lang$core$Platform_Cmd$none
+								};
+							} else {
+								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+							}
+						case 'BadPayload':
+							var _p37 = A2(_elm_lang$core$Debug$log, 'update error bad payload', _p33._1);
+							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+						default:
+							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					}
 				}
 			case 'QuizLocked':
 				if (_p15._0.ctor === 'Ok') {
@@ -15707,13 +15736,42 @@ var _user$project$Main$update = F2(
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								write_locked: _p15._0._0.locked ? true : false
+								write_locked: _p15._0._0.locked ? true : false,
+								success_msg: _elm_lang$core$Maybe$Just('quiz is locked for editing, other instructors can only view the quiz while it is locked.')
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p34 = A2(_elm_lang$core$Debug$log, 'quiz lock error', _p15._0._0);
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					var _p38 = _p15._0._0;
+					switch (_p38.ctor) {
+						case 'BadStatus':
+							var _p41 = _p38._0;
+							var _p39 = A2(_elm_lang$core$Debug$log, 'update error bad status', _p41);
+							var _p40 = _user$project$Quiz_Decode$decodeRespErrors(_p41.body);
+							if (_p40.ctor === 'Ok') {
+								var errors_str = A2(
+									_elm_lang$core$String$join,
+									' and ',
+									_elm_lang$core$Dict$values(_p40._0));
+								return {
+									ctor: '_Tuple2',
+									_0: _elm_lang$core$Native_Utils.update(
+										model,
+										{
+											success_msg: _elm_lang$core$Maybe$Just(
+												A2(_elm_lang$core$Basics_ops['++'], 'Error trying to lock the quiz: ', errors_str))
+										}),
+									_1: _elm_lang$core$Platform_Cmd$none
+								};
+							} else {
+								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+							}
+						case 'BadPayload':
+							var _p42 = A2(_elm_lang$core$Debug$log, 'update error bad payload', _p38._1);
+							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+						default:
+							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					}
 				}
 			case 'UpdateQuizAttributes':
 				return {
@@ -15736,15 +15794,15 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'AddTagInput':
-				var _p36 = _p15._1;
-				var _p35 = A2(_elm_lang$core$Dict$member, _p36, model.tags);
-				if (_p35 === true) {
+				var _p44 = _p15._1;
+				var _p43 = A2(_elm_lang$core$Dict$member, _p44, model.tags);
+				if (_p43 === true) {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								quiz_component: A2(_user$project$Quiz_Component$add_tag, model.quiz_component, _p36)
+								quiz_component: A2(_user$project$Quiz_Component$add_tag, model.quiz_component, _p44)
 							}),
 						_1: _user$project$Ports$clearInputText(_p15._0)
 					};
@@ -15897,8 +15955,8 @@ var _user$project$Main$view = function (model) {
 									}
 								},
 								function () {
-									var _p37 = model.mode;
-									if (_p37.ctor === 'ReadOnlyMode') {
+									var _p45 = model.mode;
+									if (_p45.ctor === 'ReadOnlyMode') {
 										return {ctor: '[]'};
 									} else {
 										return {
