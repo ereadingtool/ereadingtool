@@ -10870,6 +10870,12 @@ var _user$project$Ports$addClassToCKEditor = _elm_lang$core$Native_Platform.outg
 	function (v) {
 		return [v._0, v._1];
 	});
+var _user$project$Ports$confirm = _elm_lang$core$Native_Platform.outgoingPort(
+	'confirm',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$confirmation = _elm_lang$core$Native_Platform.incomingPort('confirmation', _elm_lang$core$Json_Decode$bool);
 
 var _user$project$Quiz_Field$post_toggle_title = function (_p0) {
 	var _p1 = _p0;
@@ -13393,6 +13399,19 @@ var _user$project$Quiz_Decode$quizUpdateRespDecoder = A3(
 		'id',
 		_elm_lang$core$Json_Decode$int,
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Decode$QuizUpdateResp)));
+var _user$project$Quiz_Decode$QuizDeleteResp = F2(
+	function (a, b) {
+		return {id: a, deleted: b};
+	});
+var _user$project$Quiz_Decode$quizDeleteRespDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'deleted',
+	_elm_lang$core$Json_Decode$bool,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'id',
+		_elm_lang$core$Json_Decode$int,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Decode$QuizDeleteResp)));
 var _user$project$Quiz_Decode$QuizLockResp = function (a) {
 	return {locked: a};
 };
@@ -14684,10 +14703,10 @@ var _user$project$Main$Intro = function (a) {
 var _user$project$Main$Title = function (a) {
 	return {ctor: 'Title', _0: a};
 };
-var _user$project$Main$QuizUnlocked = function (a) {
-	return {ctor: 'QuizUnlocked', _0: a};
+var _user$project$Main$QuizDelete = function (a) {
+	return {ctor: 'QuizDelete', _0: a};
 };
-var _user$project$Main$delete_lock = F2(
+var _user$project$Main$delete_quiz = F2(
 	function (csrftoken, quiz) {
 		var _p5 = quiz.id;
 		if (_p5.ctor === 'Just') {
@@ -14702,6 +14721,47 @@ var _user$project$Main$delete_lock = F2(
 						_1: {
 							ctor: '::',
 							_0: _elm_lang$core$Basics$toString(_p5._0),
+							_1: {
+								ctor: '::',
+								_0: '/',
+								_1: {ctor: '[]'}
+							}
+						}
+					}),
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
+					_1: {ctor: '[]'}
+				},
+				_elm_lang$http$Http$emptyBody,
+				_user$project$Quiz_Decode$quizDeleteRespDecoder);
+			return A2(_elm_lang$http$Http$send, _user$project$Main$QuizDelete, req);
+		} else {
+			return _elm_lang$core$Platform_Cmd$none;
+		}
+	});
+var _user$project$Main$ConfirmQuizDelete = function (a) {
+	return {ctor: 'ConfirmQuizDelete', _0: a};
+};
+var _user$project$Main$DeleteQuiz = {ctor: 'DeleteQuiz'};
+var _user$project$Main$QuizUnlocked = function (a) {
+	return {ctor: 'QuizUnlocked', _0: a};
+};
+var _user$project$Main$delete_lock = F2(
+	function (csrftoken, quiz) {
+		var _p6 = quiz.id;
+		if (_p6.ctor === 'Just') {
+			var req = A4(
+				_user$project$HttpHelpers$delete_with_headers,
+				A2(
+					_elm_lang$core$String$join,
+					'',
+					{
+						ctor: '::',
+						_0: _user$project$Config$quiz_api_endpoint,
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$core$Basics$toString(_p6._0),
 							_1: {
 								ctor: '::',
 								_0: '/',
@@ -14730,8 +14790,8 @@ var _user$project$Main$QuizLocked = function (a) {
 };
 var _user$project$Main$post_lock = F2(
 	function (csrftoken, quiz) {
-		var _p6 = quiz.id;
-		if (_p6.ctor === 'Just') {
+		var _p7 = quiz.id;
+		if (_p7.ctor === 'Just') {
 			var req = A4(
 				_user$project$HttpHelpers$post_with_headers,
 				A2(
@@ -14742,7 +14802,7 @@ var _user$project$Main$post_lock = F2(
 						_0: _user$project$Config$quiz_api_endpoint,
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$core$Basics$toString(_p6._0),
+							_0: _elm_lang$core$Basics$toString(_p7._0),
 							_1: {
 								ctor: '::',
 								_0: '/',
@@ -14831,15 +14891,15 @@ var _user$project$Main$view_edit_quiz_lock = F2(
 	});
 var _user$project$Main$view_quiz_lock = F2(
 	function (params, model) {
-		var _p7 = model.mode;
-		switch (_p7.ctor) {
+		var _p8 = model.mode;
+		switch (_p8.ctor) {
 			case 'EditMode':
 				return A2(_user$project$Main$view_edit_quiz_lock, params, model);
 			case 'ReadOnlyMode':
-				var _p8 = _elm_lang$core$Native_Utils.eq(
-					_p7._0,
+				var _p9 = _elm_lang$core$Native_Utils.eq(
+					_p8._0,
 					_user$project$Instructor_Profile$username(model.profile));
-				if (_p8 === true) {
+				if (_p9 === true) {
 					return A2(_user$project$Main$view_edit_quiz_lock, params, model);
 				} else {
 					return A2(
@@ -15038,18 +15098,18 @@ var _user$project$Main$QuizJSONDecode = function (a) {
 	return {ctor: 'QuizJSONDecode', _0: a};
 };
 var _user$project$Main$quizJSONtoComponent = function (quiz) {
-	var _p9 = quiz;
-	if (_p9.ctor === 'Just') {
+	var _p10 = quiz;
+	if (_p10.ctor === 'Just') {
 		return A2(
 			_elm_lang$core$Task$attempt,
 			_user$project$Main$QuizJSONDecode,
 			function () {
-				var _p10 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Quiz_Decode$quizDecoder, _p9._0);
-				if (_p10.ctor === 'Ok') {
+				var _p11 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Quiz_Decode$quizDecoder, _p10._0);
+				if (_p11.ctor === 'Ok') {
 					return _elm_lang$core$Task$succeed(
-						_user$project$Quiz_Component$init(_p10._0));
+						_user$project$Quiz_Component$init(_p11._0));
 				} else {
-					return _elm_lang$core$Task$fail(_p10._0);
+					return _elm_lang$core$Task$fail(_p11._0);
 				}
 			}());
 	} else {
@@ -15144,8 +15204,8 @@ var _user$project$Main$view_quiz_title = F3(
 				_1: {
 					ctor: '::',
 					_0: function () {
-						var _p11 = _user$project$Quiz_Field$title_editable(quiz_title);
-						if (_p11 === false) {
+						var _p12 = _user$project$Quiz_Field$title_editable(quiz_title);
+						if (_p12 === false) {
 							return A2(
 								_elm_lang$html$Html$div,
 								{
@@ -15254,8 +15314,8 @@ var _user$project$Main$view_quiz_introduction = F3(
 				_1: {
 					ctor: '::',
 					_0: function () {
-						var _p12 = _user$project$Quiz_Field$intro_editable(quiz_intro);
-						if (_p12 === false) {
+						var _p13 = _user$project$Quiz_Field$intro_editable(quiz_intro);
+						if (_p13 === false) {
 							return A2(
 								_elm_lang$html$Html$div,
 								{
@@ -15337,8 +15397,8 @@ var _user$project$Main$subscriptions = function (model) {
 			_1: {
 				ctor: '::',
 				_0: function () {
-					var _p13 = model.success_msg;
-					if (_p13.ctor === 'Just') {
+					var _p14 = model.success_msg;
+					if (_p14.ctor === 'Just') {
 						return A2(_elm_lang$core$Time$every, _elm_lang$core$Time$second * 3, _user$project$Main$ClearMessages);
 					} else {
 						return _elm_lang$core$Platform_Sub$none;
@@ -15347,7 +15407,11 @@ var _user$project$Main$subscriptions = function (model) {
 				_1: {
 					ctor: '::',
 					_0: _user$project$Ports$ckEditorUpdate(_user$project$Main$UpdateQuizIntro),
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: _user$project$Ports$confirmation(_user$project$Main$ConfirmQuizDelete),
+						_1: {ctor: '[]'}
+					}
 				}
 			}
 		});
@@ -15357,8 +15421,8 @@ var _user$project$Main$Updated = function (a) {
 };
 var _user$project$Main$update_quiz = F2(
 	function (csrftoken, quiz) {
-		var _p14 = quiz.id;
-		if (_p14.ctor === 'Just') {
+		var _p15 = quiz.id;
+		if (_p15.ctor === 'Just') {
 			var encoded_quiz = _user$project$Quiz_Encode$quizEncoder(quiz);
 			var req = A4(
 				_user$project$HttpHelpers$put_with_headers,
@@ -15370,7 +15434,7 @@ var _user$project$Main$update_quiz = F2(
 						_0: _user$project$Config$quiz_api_endpoint,
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$core$Basics$toString(_p14._0),
+							_0: _elm_lang$core$Basics$toString(_p15._0),
 							_1: {
 								ctor: '::',
 								_0: '/',
@@ -15410,14 +15474,14 @@ var _user$project$Main$post_quiz = F2(
 	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p15 = msg;
-		switch (_p15.ctor) {
+		var _p16 = msg;
+		switch (_p16.ctor) {
 			case 'TextComponentMsg':
-				return A2(_user$project$Text_Update$update, _p15._0, model);
+				return A2(_user$project$Text_Update$update, _p16._0, model);
 			case 'SubmitQuiz':
 				var quiz = _user$project$Quiz_Component$quiz(model.quiz_component);
-				var _p16 = model.mode;
-				switch (_p16.ctor) {
+				var _p17 = model.mode;
+				switch (_p17.ctor) {
 					case 'ReadOnlyMode':
 						return {
 							ctor: '_Tuple2',
@@ -15425,7 +15489,7 @@ var _user$project$Main$update = F2(
 								model,
 								{
 									success_msg: _elm_lang$core$Maybe$Just(
-										A2(_elm_lang$core$Basics_ops['++'], 'Quiz is locked by ', _p16._0))
+										A2(_elm_lang$core$Basics_ops['++'], 'Quiz is locked by ', _p17._0))
 								}),
 							_1: _elm_lang$core$Platform_Cmd$none
 						};
@@ -15447,26 +15511,26 @@ var _user$project$Main$update = F2(
 						};
 				}
 			case 'QuizJSONDecode':
-				var _p17 = _p15._0;
-				if (_p17.ctor === 'Ok') {
-					var quiz_component = A2(_user$project$Quiz_Component$set_intro_editable, _p17._0, true);
+				var _p18 = _p16._0;
+				if (_p18.ctor === 'Ok') {
+					var quiz_component = A2(_user$project$Quiz_Component$set_intro_editable, _p18._0, true);
 					var quiz = _user$project$Quiz_Component$quiz(quiz_component);
-					var _p18 = quiz.write_locker;
-					if (_p18.ctor === 'Just') {
-						var _p20 = _p18._0;
-						var _p19 = !_elm_lang$core$Native_Utils.eq(
-							_p20,
+					var _p19 = quiz.write_locker;
+					if (_p19.ctor === 'Just') {
+						var _p21 = _p19._0;
+						var _p20 = !_elm_lang$core$Native_Utils.eq(
+							_p21,
 							_user$project$Instructor_Profile$username(model.profile));
-						if (_p19 === true) {
+						if (_p20 === true) {
 							return {
 								ctor: '_Tuple2',
 								_0: _elm_lang$core$Native_Utils.update(
 									model,
 									{
 										quiz_component: quiz_component,
-										mode: _user$project$Main$ReadOnlyMode(_p20),
+										mode: _user$project$Main$ReadOnlyMode(_p21),
 										error_msg: _elm_lang$core$Maybe$Just(
-											A2(_elm_lang$core$Basics_ops['++'], 'READONLY: quiz is currently being edited by ', _p20)),
+											A2(_elm_lang$core$Basics_ops['++'], 'READONLY: quiz is currently being edited by ', _p21)),
 										write_locked: true
 									}),
 								_1: _user$project$Quiz_Component$reinitialize_ck_editors(quiz_component)
@@ -15507,7 +15571,7 @@ var _user$project$Main$update = F2(
 						};
 					}
 				} else {
-					var _p21 = A2(_elm_lang$core$Debug$log, 'quiz decode error', _p17._0);
+					var _p22 = A2(_elm_lang$core$Debug$log, 'quiz decode error', _p18._0);
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
@@ -15520,13 +15584,13 @@ var _user$project$Main$update = F2(
 					};
 				}
 			case 'QuizTagsDecode':
-				var _p22 = _p15._0;
-				if (_p22.ctor === 'Ok') {
+				var _p23 = _p16._0;
+				if (_p23.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{tags: _p22._0}),
+							{tags: _p23._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
@@ -15541,7 +15605,7 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'Submitted':
-				if (_p15._0.ctor === 'Ok') {
+				if (_p16._0.ctor === 'Ok') {
 					var quiz = _user$project$Quiz_Component$quiz(model.quiz_component);
 					return {
 						ctor: '_Tuple2',
@@ -15562,20 +15626,20 @@ var _user$project$Main$update = F2(
 										})),
 								mode: _user$project$Main$EditMode
 							}),
-						_1: _elm_lang$navigation$Navigation$load(_p15._0._0.redirect)
+						_1: _elm_lang$navigation$Navigation$load(_p16._0._0.redirect)
 					};
 				} else {
-					var _p23 = _p15._0._0;
-					switch (_p23.ctor) {
+					var _p24 = _p16._0._0;
+					switch (_p24.ctor) {
 						case 'BadStatus':
-							var _p24 = _user$project$Quiz_Decode$decodeRespErrors(_p23._0.body);
-							if (_p24.ctor === 'Ok') {
+							var _p25 = _user$project$Quiz_Decode$decodeRespErrors(_p24._0.body);
+							if (_p25.ctor === 'Ok') {
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
 										model,
 										{
-											quiz_component: A2(_user$project$Quiz_Component$update_quiz_errors, model.quiz_component, _p24._0)
+											quiz_component: A2(_user$project$Quiz_Component$update_quiz_errors, model.quiz_component, _p25._0)
 										}),
 									_1: _elm_lang$core$Platform_Cmd$none
 								};
@@ -15583,14 +15647,14 @@ var _user$project$Main$update = F2(
 								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 							}
 						case 'BadPayload':
-							var _p25 = A2(_elm_lang$core$Debug$log, 'submit quiz bad payload error', _p23._1.body);
+							var _p26 = A2(_elm_lang$core$Debug$log, 'submit quiz bad payload error', _p24._1.body);
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 						default:
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 					}
 				}
 			case 'Updated':
-				if (_p15._0.ctor === 'Ok') {
+				if (_p16._0.ctor === 'Ok') {
 					var quiz = _user$project$Quiz_Component$quiz(model.quiz_component);
 					return {
 						ctor: '_Tuple2',
@@ -15613,19 +15677,19 @@ var _user$project$Main$update = F2(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p26 = _p15._0._0;
-					switch (_p26.ctor) {
+					var _p27 = _p16._0._0;
+					switch (_p27.ctor) {
 						case 'BadStatus':
-							var _p29 = _p26._0;
-							var _p27 = A2(_elm_lang$core$Debug$log, 'update error bad status', _p29);
-							var _p28 = _user$project$Quiz_Decode$decodeRespErrors(_p29.body);
-							if (_p28.ctor === 'Ok') {
+							var _p30 = _p27._0;
+							var _p28 = A2(_elm_lang$core$Debug$log, 'update error bad status', _p30);
+							var _p29 = _user$project$Quiz_Decode$decodeRespErrors(_p30.body);
+							if (_p29.ctor === 'Ok') {
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
 										model,
 										{
-											quiz_component: A2(_user$project$Quiz_Component$update_quiz_errors, model.quiz_component, _p28._0)
+											quiz_component: A2(_user$project$Quiz_Component$update_quiz_errors, model.quiz_component, _p29._0)
 										}),
 									_1: _elm_lang$core$Platform_Cmd$none
 								};
@@ -15633,37 +15697,37 @@ var _user$project$Main$update = F2(
 								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 							}
 						case 'BadPayload':
-							var _p30 = A2(_elm_lang$core$Debug$log, 'update error bad payload', _p26._1);
+							var _p31 = A2(_elm_lang$core$Debug$log, 'update error bad payload', _p27._1);
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 						default:
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 					}
 				}
 			case 'UpdateTextDifficultyOptions':
-				if (_p15._0.ctor === 'Ok') {
+				if (_p16._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{question_difficulties: _p15._0._0}),
+							{question_difficulties: _p16._0._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'ToggleEditable':
-				var _p32 = _p15._1;
-				var _p31 = _p15._0;
-				switch (_p31.ctor) {
+				var _p33 = _p16._1;
+				var _p32 = _p16._0;
+				switch (_p32.ctor) {
 					case 'Title':
 						return {
 							ctor: '_Tuple2',
 							_0: _elm_lang$core$Native_Utils.update(
 								model,
 								{
-									quiz_component: A2(_user$project$Quiz_Component$set_title_editable, model.quiz_component, _p32)
+									quiz_component: A2(_user$project$Quiz_Component$set_title_editable, model.quiz_component, _p33)
 								}),
-							_1: _user$project$Quiz_Field$post_toggle_title(_p31._0)
+							_1: _user$project$Quiz_Field$post_toggle_title(_p32._0)
 						};
 					case 'Intro':
 						return {
@@ -15671,9 +15735,9 @@ var _user$project$Main$update = F2(
 							_0: _elm_lang$core$Native_Utils.update(
 								model,
 								{
-									quiz_component: A2(_user$project$Quiz_Component$set_intro_editable, model.quiz_component, _p32)
+									quiz_component: A2(_user$project$Quiz_Component$set_intro_editable, model.quiz_component, _p33)
 								}),
-							_1: _user$project$Quiz_Field$post_toggle_intro(_p31._0)
+							_1: _user$project$Quiz_Field$post_toggle_intro(_p32._0)
 						};
 					default:
 						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
@@ -15688,29 +15752,29 @@ var _user$project$Main$update = F2(
 					_1: (!model.write_locked) ? lock : unlock
 				};
 			case 'QuizUnlocked':
-				if (_p15._0.ctor === 'Ok') {
+				if (_p16._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								write_locked: _p15._0._0.locked ? true : false,
+								write_locked: _p16._0._0.locked ? true : false,
 								success_msg: _elm_lang$core$Maybe$Just('quiz is unlocked for editing, other instructors can now edit the quiz.')
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p33 = _p15._0._0;
-					switch (_p33.ctor) {
+					var _p34 = _p16._0._0;
+					switch (_p34.ctor) {
 						case 'BadStatus':
-							var _p36 = _p33._0;
-							var _p34 = A2(_elm_lang$core$Debug$log, 'update error bad status', _p36);
-							var _p35 = _user$project$Quiz_Decode$decodeRespErrors(_p36.body);
-							if (_p35.ctor === 'Ok') {
+							var _p37 = _p34._0;
+							var _p35 = A2(_elm_lang$core$Debug$log, 'update error bad status', _p37);
+							var _p36 = _user$project$Quiz_Decode$decodeRespErrors(_p37.body);
+							if (_p36.ctor === 'Ok') {
 								var errors_str = A2(
 									_elm_lang$core$String$join,
 									' and ',
-									_elm_lang$core$Dict$values(_p35._0));
+									_elm_lang$core$Dict$values(_p36._0));
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
@@ -15725,36 +15789,36 @@ var _user$project$Main$update = F2(
 								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 							}
 						case 'BadPayload':
-							var _p37 = A2(_elm_lang$core$Debug$log, 'update error bad payload', _p33._1);
+							var _p38 = A2(_elm_lang$core$Debug$log, 'update error bad payload', _p34._1);
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 						default:
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 					}
 				}
 			case 'QuizLocked':
-				if (_p15._0.ctor === 'Ok') {
+				if (_p16._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								write_locked: _p15._0._0.locked ? true : false,
+								write_locked: _p16._0._0.locked ? true : false,
 								success_msg: _elm_lang$core$Maybe$Just('quiz is locked for editing, other instructors can only view the quiz while it is locked.')
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p38 = _p15._0._0;
-					switch (_p38.ctor) {
+					var _p39 = _p16._0._0;
+					switch (_p39.ctor) {
 						case 'BadStatus':
-							var _p41 = _p38._0;
-							var _p39 = A2(_elm_lang$core$Debug$log, 'update error bad status', _p41);
-							var _p40 = _user$project$Quiz_Decode$decodeRespErrors(_p41.body);
-							if (_p40.ctor === 'Ok') {
+							var _p42 = _p39._0;
+							var _p40 = A2(_elm_lang$core$Debug$log, 'update error bad status', _p42);
+							var _p41 = _user$project$Quiz_Decode$decodeRespErrors(_p42.body);
+							if (_p41.ctor === 'Ok') {
 								var errors_str = A2(
 									_elm_lang$core$String$join,
 									' and ',
-									_elm_lang$core$Dict$values(_p40._0));
+									_elm_lang$core$Dict$values(_p41._0));
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
@@ -15769,7 +15833,7 @@ var _user$project$Main$update = F2(
 								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 							}
 						case 'BadPayload':
-							var _p42 = A2(_elm_lang$core$Debug$log, 'update error bad payload', _p38._1);
+							var _p43 = A2(_elm_lang$core$Debug$log, 'update error bad payload', _p39._1);
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 						default:
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
@@ -15781,7 +15845,7 @@ var _user$project$Main$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							quiz_component: A3(_user$project$Quiz_Component$set_quiz_attribute, model.quiz_component, _p15._0, _p15._1)
+							quiz_component: A3(_user$project$Quiz_Component$set_quiz_attribute, model.quiz_component, _p16._0, _p16._1)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -15791,36 +15855,89 @@ var _user$project$Main$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							quiz_component: A3(_user$project$Quiz_Component$set_quiz_attribute, model.quiz_component, 'introduction', _p15._0._1)
+							quiz_component: A3(_user$project$Quiz_Component$set_quiz_attribute, model.quiz_component, 'introduction', _p16._0._1)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'AddTagInput':
-				var _p44 = _p15._1;
-				var _p43 = A2(_elm_lang$core$Dict$member, _p44, model.tags);
-				if (_p43 === true) {
+				var _p45 = _p16._1;
+				var _p44 = A2(_elm_lang$core$Dict$member, _p45, model.tags);
+				if (_p44 === true) {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								quiz_component: A2(_user$project$Quiz_Component$add_tag, model.quiz_component, _p44)
+								quiz_component: A2(_user$project$Quiz_Component$add_tag, model.quiz_component, _p45)
 							}),
-						_1: _user$project$Ports$clearInputText(_p15._0)
+						_1: _user$project$Ports$clearInputText(_p16._0)
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
-			default:
+			case 'DeleteTag':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							quiz_component: A2(_user$project$Quiz_Component$remove_tag, model.quiz_component, _p15._0)
+							quiz_component: A2(_user$project$Quiz_Component$remove_tag, model.quiz_component, _p16._0)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
+			case 'DeleteQuiz':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _user$project$Ports$confirm('Are you sure you want to delete this quiz?')
+				};
+			case 'ConfirmQuizDelete':
+				var _p46 = _p16._0;
+				if (_p46 === true) {
+					var quiz = _user$project$Quiz_Component$quiz(model.quiz_component);
+					return {
+						ctor: '_Tuple2',
+						_0: model,
+						_1: A2(_user$project$Main$delete_quiz, model.flags.csrftoken, quiz)
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			default:
+				if (_p16._0.ctor === 'Ok') {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					var _p47 = _p16._0._0;
+					switch (_p47.ctor) {
+						case 'BadStatus':
+							var _p50 = _p47._0;
+							var _p48 = A2(_elm_lang$core$Debug$log, 'delete quiz error bad status', _p50);
+							var _p49 = _user$project$Quiz_Decode$decodeRespErrors(_p50.body);
+							if (_p49.ctor === 'Ok') {
+								var errors_str = A2(
+									_elm_lang$core$String$join,
+									' and ',
+									_elm_lang$core$Dict$values(_p49._0));
+								return {
+									ctor: '_Tuple2',
+									_0: _elm_lang$core$Native_Utils.update(
+										model,
+										{
+											success_msg: _elm_lang$core$Maybe$Just(
+												A2(_elm_lang$core$Basics_ops['++'], 'Error trying to delete the quiz: ', errors_str))
+										}),
+									_1: _elm_lang$core$Platform_Cmd$none
+								};
+							} else {
+								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+							}
+						case 'BadPayload':
+							var _p51 = A2(_elm_lang$core$Debug$log, 'delete quiz error bad payload', _p47._1);
+							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+						default:
+							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					}
+				}
 		}
 	});
 var _user$project$Main$SubmitQuiz = {ctor: 'SubmitQuiz'};
@@ -15908,11 +16025,56 @@ var _user$project$Main$view_submit = function (model) {
 							{ctor: '[]'}),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('Save Quiz '),
+							_0: _elm_lang$html$Html$text('Save Quiz'),
 							_1: {ctor: '[]'}
 						}
 					}),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{ctor: '[]'}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'submit'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$DeleteQuiz),
+									_1: {ctor: '[]'}
+								}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('Delete Quiz'),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$img,
+										{
+											ctor: '::',
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/delete_quiz.svg'),
+											_1: {
+												ctor: '::',
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '18px'),
+												_1: {
+													ctor: '::',
+													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '18px'),
+													_1: {ctor: '[]'}
+												}
+											}
+										},
+										{ctor: '[]'}),
+									_1: {ctor: '[]'}
+								}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}
 			}
 		});
 };
@@ -15957,8 +16119,8 @@ var _user$project$Main$view = function (model) {
 									}
 								},
 								function () {
-									var _p45 = model.mode;
-									if (_p45.ctor === 'ReadOnlyMode') {
+									var _p52 = model.mode;
+									if (_p52.ctor === 'ReadOnlyMode') {
 										return {ctor: '[]'};
 									} else {
 										return {

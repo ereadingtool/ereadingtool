@@ -504,12 +504,16 @@ body {
 
 .submit_section {
     display: grid;
-    grid-template-columns: 120px 120px auto;
+    grid-template-columns: 120px 120px auto 120px;
     grid-column: 2;
     margin-top: 10px;
 
     font-family: "Helvetica Neue";
     font-size: 18px;
+}
+
+.submit > img {
+    margin-left: 10px;
 }
 
 .submit {

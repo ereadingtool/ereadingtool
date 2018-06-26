@@ -9951,6 +9951,19 @@ var _user$project$Quiz_Decode$quizUpdateRespDecoder = A3(
 		'id',
 		_elm_lang$core$Json_Decode$int,
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Decode$QuizUpdateResp)));
+var _user$project$Quiz_Decode$QuizDeleteResp = F2(
+	function (a, b) {
+		return {id: a, deleted: b};
+	});
+var _user$project$Quiz_Decode$quizDeleteRespDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'deleted',
+	_elm_lang$core$Json_Decode$bool,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'id',
+		_elm_lang$core$Json_Decode$int,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Decode$QuizDeleteResp)));
 var _user$project$Quiz_Decode$QuizLockResp = function (a) {
 	return {locked: a};
 };

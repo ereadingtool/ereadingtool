@@ -41,7 +41,7 @@ import Dict exposing (Dict)
 
 import Text.Subscriptions
 
-import Ports exposing (ckEditor, ckEditorUpdate, clearInputText)
+import Ports exposing (ckEditor, ckEditorUpdate, clearInputText, confirm, confirmation)
 
 type alias Flags = {
     instructor_profile : Instructor.Profile.InstructorProfileParams
@@ -72,6 +72,9 @@ type Msg =
   | ToggleLock
   | QuizLocked (Result Http.Error Quiz.Decode.QuizLockResp)
   | QuizUnlocked (Result Http.Error Quiz.Decode.QuizLockResp)
+  | DeleteQuiz
+  | ConfirmQuizDelete Bool
+  | QuizDelete (Result Http.Error Quiz.Decode.QuizDeleteResp)
 
 type alias Model = {
     flags : Flags
@@ -311,6 +314,38 @@ update msg model = case msg of
     DeleteTag tag ->
       ({ model | quiz_component = Quiz.Component.remove_tag model.quiz_component tag }, Cmd.none)
 
+    DeleteQuiz ->
+      (model, confirm "Are you sure you want to delete this quiz?")
+
+    ConfirmQuizDelete confirm ->
+      case confirm of
+        True ->
+          let
+            quiz = Quiz.Component.quiz model.quiz_component
+          in
+            (model, delete_quiz model.flags.csrftoken quiz)
+        False ->
+          (model, Cmd.none)
+
+    QuizDelete (Ok quiz_delete) ->
+      (model, Cmd.none)
+
+    QuizDelete (Err err) ->
+      case err of
+        Http.BadStatus resp -> let _ = Debug.log "delete quiz error bad status" resp in
+          case (Quiz.Decode.decodeRespErrors resp.body) of
+            Ok errors ->
+              let
+                errors_str = String.join " and " (Dict.values errors)
+              in
+                ({ model | success_msg = Just <| "Error trying to delete the quiz: " ++ errors_str }, Cmd.none)
+            _ -> (model, Cmd.none)
+
+        Http.BadPayload err resp -> let _ = Debug.log "delete quiz error bad payload" resp in
+          (model, Cmd.none)
+
+        _ -> (model, Cmd.none)
+
 
 post_lock : Flags.CSRFToken -> Quiz.Model.Quiz -> Cmd Msg
 post_lock csrftoken quiz =
@@ -365,6 +400,18 @@ update_quiz csrftoken quiz =
         Http.send Updated req
     _ -> Cmd.none
 
+delete_quiz : Flags.CSRFToken -> Quiz.Model.Quiz -> Cmd Msg
+delete_quiz csrftoken quiz =
+  case quiz.id of
+    Just quiz_id ->
+      let
+        req = delete_with_headers
+          (String.join "" [quiz_api_endpoint, toString quiz_id, "/"]) [Http.header "X-CSRFToken" csrftoken]
+          (Http.emptyBody) Quiz.Decode.quizDeleteRespDecoder
+      in
+        Http.send QuizDelete req
+    _ -> Cmd.none
+
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.batch [
@@ -376,6 +423,8 @@ subscriptions model =
         _ -> Sub.none)
       -- quiz introduction updates
     , ckEditorUpdate UpdateQuizIntro
+      -- handle quiz delete confirmation
+    , confirmation ConfirmQuizDelete
   ]
 
 main : Program Flags Model Msg
@@ -415,7 +464,14 @@ view_submit model =
         Html.img [
           attribute "src" "/static/img/save_disk.svg"
         , attribute "height" "20px"
-        , attribute "width" "20px"] [], Html.text "Save Quiz "
+        , attribute "width" "20px"] [], Html.text "Save Quiz"
+    ]
+  , Html.div [] []
+  , Html.div [attribute "class" "submit", onClick DeleteQuiz] [
+         Html.text "Delete Quiz", Html.img [
+          attribute "src" "/static/img/delete_quiz.svg"
+        , attribute "height" "18px"
+        , attribute "width" "18px"] []
     ]
   ]
 
