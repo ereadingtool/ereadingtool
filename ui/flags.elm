@@ -12,5 +12,5 @@ type alias Flags a = { a |
    csrftoken : CSRFToken
  , profile_id : Profile.ProfileID
  , profile_type : Profile.ProfileType
- , instructor_profile : Instructor.Profile.InstructorProfileParams
- , student_profile : Profile.StudentProfileParams }
+ , instructor_profile : Maybe Instructor.Profile.InstructorProfileParams
+ , student_profile : Maybe Profile.StudentProfileParams }

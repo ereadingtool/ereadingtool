@@ -9680,16 +9680,18 @@ var _user$project$Profile$fromStudentProfile = function (student_profile) {
 	return _user$project$Profile$Student(student_profile);
 };
 var _user$project$Profile$init_profile = function (flags) {
-	var _p9 = flags.profile_type;
-	switch (_p9) {
-		case 'student':
+	var _p9 = flags.instructor_profile;
+	if (_p9.ctor === 'Just') {
+		return _user$project$Profile$Instructor(
+			_user$project$Instructor_Profile$init_profile(_p9._0));
+	} else {
+		var _p10 = flags.student_profile;
+		if (_p10.ctor === 'Just') {
 			return _user$project$Profile$Student(
-				_user$project$Profile$StudentProfile(flags.student_profile));
-		case 'instructor':
-			return _user$project$Profile$Instructor(
-				_user$project$Instructor_Profile$init_profile(flags.instructor_profile));
-		default:
+				_user$project$Profile$StudentProfile(_p10._0));
+		} else {
 			return _user$project$Profile$EmptyProfile;
+		}
 	}
 };
 
@@ -10648,81 +10650,93 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 										A2(
 											_elm_lang$core$Json_Decode$field,
 											'student_profile',
-											A2(
-												_elm_lang$core$Json_Decode$andThen,
-												function (difficulties) {
-													return A2(
-														_elm_lang$core$Json_Decode$andThen,
-														function (difficulty_preference) {
-															return A2(
+											_elm_lang$core$Json_Decode$oneOf(
+												{
+													ctor: '::',
+													_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+													_1: {
+														ctor: '::',
+														_0: A2(
+															_elm_lang$core$Json_Decode$map,
+															_elm_lang$core$Maybe$Just,
+															A2(
 																_elm_lang$core$Json_Decode$andThen,
-																function (id) {
+																function (difficulties) {
 																	return A2(
 																		_elm_lang$core$Json_Decode$andThen,
-																		function (username) {
-																			return _elm_lang$core$Json_Decode$succeed(
-																				{difficulties: difficulties, difficulty_preference: difficulty_preference, id: id, username: username});
+																		function (difficulty_preference) {
+																			return A2(
+																				_elm_lang$core$Json_Decode$andThen,
+																				function (id) {
+																					return A2(
+																						_elm_lang$core$Json_Decode$andThen,
+																						function (username) {
+																							return _elm_lang$core$Json_Decode$succeed(
+																								{difficulties: difficulties, difficulty_preference: difficulty_preference, id: id, username: username});
+																						},
+																						A2(_elm_lang$core$Json_Decode$field, 'username', _elm_lang$core$Json_Decode$string));
+																				},
+																				A2(
+																					_elm_lang$core$Json_Decode$field,
+																					'id',
+																					_elm_lang$core$Json_Decode$oneOf(
+																						{
+																							ctor: '::',
+																							_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																							_1: {
+																								ctor: '::',
+																								_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$int),
+																								_1: {ctor: '[]'}
+																							}
+																						})));
 																		},
-																		A2(_elm_lang$core$Json_Decode$field, 'username', _elm_lang$core$Json_Decode$string));
+																		A2(
+																			_elm_lang$core$Json_Decode$field,
+																			'difficulty_preference',
+																			_elm_lang$core$Json_Decode$oneOf(
+																				{
+																					ctor: '::',
+																					_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																					_1: {
+																						ctor: '::',
+																						_0: A2(
+																							_elm_lang$core$Json_Decode$map,
+																							_elm_lang$core$Maybe$Just,
+																							A2(
+																								_elm_lang$core$Json_Decode$andThen,
+																								function (x0) {
+																									return A2(
+																										_elm_lang$core$Json_Decode$andThen,
+																										function (x1) {
+																											return _elm_lang$core$Json_Decode$succeed(
+																												{ctor: '_Tuple2', _0: x0, _1: x1});
+																										},
+																										A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
+																								},
+																								A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string))),
+																						_1: {ctor: '[]'}
+																					}
+																				})));
 																},
 																A2(
 																	_elm_lang$core$Json_Decode$field,
-																	'id',
-																	_elm_lang$core$Json_Decode$oneOf(
-																		{
-																			ctor: '::',
-																			_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-																			_1: {
-																				ctor: '::',
-																				_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$int),
-																				_1: {ctor: '[]'}
-																			}
-																		})));
-														},
-														A2(
-															_elm_lang$core$Json_Decode$field,
-															'difficulty_preference',
-															_elm_lang$core$Json_Decode$oneOf(
-																{
-																	ctor: '::',
-																	_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-																	_1: {
-																		ctor: '::',
-																		_0: A2(
-																			_elm_lang$core$Json_Decode$map,
-																			_elm_lang$core$Maybe$Just,
-																			A2(
-																				_elm_lang$core$Json_Decode$andThen,
-																				function (x0) {
-																					return A2(
-																						_elm_lang$core$Json_Decode$andThen,
-																						function (x1) {
-																							return _elm_lang$core$Json_Decode$succeed(
-																								{ctor: '_Tuple2', _0: x0, _1: x1});
-																						},
-																						A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
-																				},
-																				A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string))),
-																		_1: {ctor: '[]'}
-																	}
-																})));
-												},
-												A2(
-													_elm_lang$core$Json_Decode$field,
-													'difficulties',
-													_elm_lang$core$Json_Decode$list(
-														A2(
-															_elm_lang$core$Json_Decode$andThen,
-															function (x0) {
-																return A2(
-																	_elm_lang$core$Json_Decode$andThen,
-																	function (x1) {
-																		return _elm_lang$core$Json_Decode$succeed(
-																			{ctor: '_Tuple2', _0: x0, _1: x1});
-																	},
-																	A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
-															},
-															A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string)))))));
+																	'difficulties',
+																	_elm_lang$core$Json_Decode$list(
+																		A2(
+																			_elm_lang$core$Json_Decode$andThen,
+																			function (x0) {
+																				return A2(
+																					_elm_lang$core$Json_Decode$andThen,
+																					function (x1) {
+																						return _elm_lang$core$Json_Decode$succeed(
+																							{ctor: '_Tuple2', _0: x0, _1: x1});
+																					},
+																					A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
+																			},
+																			A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string)))))),
+														_1: {ctor: '[]'}
+													}
+												})));
 								},
 								A2(_elm_lang$core$Json_Decode$field, 'profile_type', _elm_lang$core$Json_Decode$string));
 						},
@@ -10731,30 +10745,42 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 				A2(
 					_elm_lang$core$Json_Decode$field,
 					'instructor_profile',
-					A2(
-						_elm_lang$core$Json_Decode$andThen,
-						function (id) {
-							return A2(
-								_elm_lang$core$Json_Decode$andThen,
-								function (username) {
-									return _elm_lang$core$Json_Decode$succeed(
-										{id: id, username: username});
-								},
-								A2(_elm_lang$core$Json_Decode$field, 'username', _elm_lang$core$Json_Decode$string));
-						},
-						A2(
-							_elm_lang$core$Json_Decode$field,
-							'id',
-							_elm_lang$core$Json_Decode$oneOf(
-								{
-									ctor: '::',
-									_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-									_1: {
-										ctor: '::',
-										_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$int),
-										_1: {ctor: '[]'}
-									}
-								})))));
+					_elm_lang$core$Json_Decode$oneOf(
+						{
+							ctor: '::',
+							_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$core$Json_Decode$map,
+									_elm_lang$core$Maybe$Just,
+									A2(
+										_elm_lang$core$Json_Decode$andThen,
+										function (id) {
+											return A2(
+												_elm_lang$core$Json_Decode$andThen,
+												function (username) {
+													return _elm_lang$core$Json_Decode$succeed(
+														{id: id, username: username});
+												},
+												A2(_elm_lang$core$Json_Decode$field, 'username', _elm_lang$core$Json_Decode$string));
+										},
+										A2(
+											_elm_lang$core$Json_Decode$field,
+											'id',
+											_elm_lang$core$Json_Decode$oneOf(
+												{
+													ctor: '::',
+													_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+													_1: {
+														ctor: '::',
+														_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$int),
+														_1: {ctor: '[]'}
+													}
+												})))),
+								_1: {ctor: '[]'}
+							}
+						})));
 		},
 		A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string)));
 

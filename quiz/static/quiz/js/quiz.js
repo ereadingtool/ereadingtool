@@ -20733,7 +20733,7 @@ var _user$project$Question_Model$Question = F8(
 		return {id: a, text_id: b, created_dt: c, modified_dt: d, body: e, order: f, answers: g, question_type: h};
 	});
 
-var _user$project$Text_Model$emptyText = {id: _elm_lang$core$Maybe$Nothing, title: 'title', created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing, source: 'source', difficulty: '', author: 'author', question_count: 0, questions: _user$project$Question_Model$initial_questions, body: 'text'};
+var _user$project$Text_Model$emptyText = {id: _elm_lang$core$Maybe$Nothing, title: '', created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing, source: '', difficulty: '', author: '', question_count: 0, questions: _user$project$Question_Model$initial_questions, body: ''};
 var _user$project$Text_Model$Text = function (a) {
 	return function (b) {
 		return function (c) {
@@ -20756,15 +20756,7 @@ var _user$project$Text_Model$Text = function (a) {
 	};
 };
 
-var _user$project$Profile$tupleDecoder = A3(
-	_elm_lang$core$Json_Decode$map2,
-	F2(
-		function (v0, v1) {
-			return {ctor: '_Tuple2', _0: v0, _1: v1};
-		}),
-	A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
-var _user$project$Profile$view_instructor_profile_header = function (_p0) {
+var _user$project$Instructor_Profile$view_instructor_profile_header = function (_p0) {
 	var _p1 = _p0;
 	return {
 		ctor: '::',
@@ -20790,8 +20782,31 @@ var _user$project$Profile$view_instructor_profile_header = function (_p0) {
 		_1: {ctor: '[]'}
 	};
 };
-var _user$project$Profile$view_student_profile_header = function (_p2) {
+var _user$project$Instructor_Profile$username = function (_p2) {
 	var _p3 = _p2;
+	return _p3._0.username;
+};
+var _user$project$Instructor_Profile$InstructorProfileParams = F2(
+	function (a, b) {
+		return {id: a, username: b};
+	});
+var _user$project$Instructor_Profile$InstructorProfile = function (a) {
+	return {ctor: 'InstructorProfile', _0: a};
+};
+var _user$project$Instructor_Profile$init_profile = function (params) {
+	return _user$project$Instructor_Profile$InstructorProfile(params);
+};
+
+var _user$project$Profile$tupleDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	F2(
+		function (v0, v1) {
+			return {ctor: '_Tuple2', _0: v0, _1: v1};
+		}),
+	A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
+var _user$project$Profile$view_student_profile_header = function (_p0) {
+	var _p1 = _p0;
 	return {
 		ctor: '::',
 		_0: A2(
@@ -20808,7 +20823,7 @@ var _user$project$Profile$view_student_profile_header = function (_p2) {
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(_p3._0.username),
+						_0: _elm_lang$html$Html$text(_p1._0.username),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
@@ -20817,29 +20832,29 @@ var _user$project$Profile$view_student_profile_header = function (_p2) {
 	};
 };
 var _user$project$Profile$view_profile_header = function (profile) {
-	var _p4 = profile;
-	switch (_p4.ctor) {
+	var _p2 = profile;
+	switch (_p2.ctor) {
 		case 'Instructor':
 			return _elm_lang$core$Maybe$Just(
-				_user$project$Profile$view_instructor_profile_header(_p4._0));
+				_user$project$Instructor_Profile$view_instructor_profile_header(_p2._0));
 		case 'Student':
 			return _elm_lang$core$Maybe$Just(
-				_user$project$Profile$view_student_profile_header(_p4._0));
+				_user$project$Profile$view_student_profile_header(_p2._0));
 		default:
 			return _elm_lang$core$Maybe$Nothing;
 	}
 };
-var _user$project$Profile$studentUserName = function (_p5) {
+var _user$project$Profile$studentUserName = function (_p3) {
+	var _p4 = _p3;
+	return _p4._0.username;
+};
+var _user$project$Profile$studentDifficulties = function (_p5) {
 	var _p6 = _p5;
-	return _p6._0.username;
+	return _p6._0.difficulties;
 };
-var _user$project$Profile$studentDifficulties = function (_p7) {
+var _user$project$Profile$studentDifficultyPreference = function (_p7) {
 	var _p8 = _p7;
-	return _p8._0.difficulties;
-};
-var _user$project$Profile$studentDifficultyPreference = function (_p9) {
-	var _p10 = _p9;
-	return _p10._0.difficulty_preference;
+	return _p8._0.difficulty_preference;
 };
 var _user$project$Profile$StudentProfileParams = F4(
 	function (a, b, c, d) {
@@ -20862,10 +20877,6 @@ var _user$project$Profile$studentProfileParamsDecoder = A3(
 				'id',
 				_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Profile$StudentProfileParams)))));
-var _user$project$Profile$InstructorProfileParams = F2(
-	function (a, b) {
-		return {id: a, username: b};
-	});
 var _user$project$Profile$StudentProfile = function (a) {
 	return {ctor: 'StudentProfile', _0: a};
 };
@@ -20902,9 +20913,6 @@ var _user$project$Profile$retrieve_student_profile = F2(
 			_user$project$Profile$studentProfileDecoder);
 		return A2(_elm_lang$http$Http$send, msg, request);
 	});
-var _user$project$Profile$InstructorProfile = function (a) {
-	return {ctor: 'InstructorProfile', _0: a};
-};
 var _user$project$Profile$EmptyProfile = {ctor: 'EmptyProfile'};
 var _user$project$Profile$emptyProfile = _user$project$Profile$EmptyProfile;
 var _user$project$Profile$Instructor = function (a) {
@@ -20920,26 +20928,18 @@ var _user$project$Profile$fromStudentProfile = function (student_profile) {
 	return _user$project$Profile$Student(student_profile);
 };
 var _user$project$Profile$init_profile = function (flags) {
-	var _p11 = flags.profile_type;
-	switch (_p11) {
-		case 'student':
-			var _p12 = flags.student_profile;
-			if (_p12.ctor === 'Just') {
-				return _user$project$Profile$Student(
-					_user$project$Profile$StudentProfile(_p12._0));
-			} else {
-				return _user$project$Profile$EmptyProfile;
-			}
-		case 'instructor':
-			var _p13 = flags.instructor_profile;
-			if (_p13.ctor === 'Just') {
-				return _user$project$Profile$Instructor(
-					_user$project$Profile$InstructorProfile(_p13._0));
-			} else {
-				return _user$project$Profile$EmptyProfile;
-			}
-		default:
+	var _p9 = flags.instructor_profile;
+	if (_p9.ctor === 'Just') {
+		return _user$project$Profile$Instructor(
+			_user$project$Instructor_Profile$init_profile(_p9._0));
+	} else {
+		var _p10 = flags.student_profile;
+		if (_p10.ctor === 'Just') {
+			return _user$project$Profile$Student(
+				_user$project$Profile$StudentProfile(_p10._0));
+		} else {
 			return _user$project$Profile$EmptyProfile;
+		}
 	}
 };
 
@@ -20982,6 +20982,12 @@ var _user$project$Question_Decode$questionDecoder = A3(
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Question_Model$Question)))))))));
 var _user$project$Question_Decode$questionsDecoder = _elm_lang$core$Json_Decode$array(_user$project$Question_Decode$questionDecoder);
 
+var _user$project$Quiz_Model$set_tags = F2(
+	function (quiz, tags) {
+		return _elm_lang$core$Native_Utils.update(
+			quiz,
+			{tags: tags});
+	});
 var _user$project$Quiz_Model$set_texts = F2(
 	function (quiz, texts) {
 		return _elm_lang$core$Native_Utils.update(
@@ -20991,6 +20997,10 @@ var _user$project$Quiz_Model$set_texts = F2(
 var _user$project$Quiz_Model$new_quiz = {
 	id: _elm_lang$core$Maybe$Nothing,
 	title: '',
+	introduction: '',
+	tags: _elm_lang$core$Maybe$Nothing,
+	created_by: _elm_lang$core$Maybe$Nothing,
+	last_modified_by: _elm_lang$core$Maybe$Nothing,
 	created_dt: _elm_lang$core$Maybe$Nothing,
 	modified_dt: _elm_lang$core$Maybe$Nothing,
 	texts: _elm_lang$core$Array$fromList(
@@ -20998,15 +21008,33 @@ var _user$project$Quiz_Model$new_quiz = {
 			ctor: '::',
 			_0: _user$project$Text_Model$emptyText,
 			_1: {ctor: '[]'}
-		})
+		}),
+	write_locker: _elm_lang$core$Maybe$Nothing
 };
-var _user$project$Quiz_Model$Quiz = F5(
-	function (a, b, c, d, e) {
-		return {id: a, title: b, created_dt: c, modified_dt: d, texts: e};
-	});
-var _user$project$Quiz_Model$QuizListItem = F5(
-	function (a, b, c, d, e) {
-		return {id: a, title: b, created_dt: c, modified_dt: d, text_count: e};
+var _user$project$Quiz_Model$Quiz = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return {id: a, title: b, introduction: c, created_by: d, last_modified_by: e, tags: f, created_dt: g, modified_dt: h, texts: i, write_locker: j};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+var _user$project$Quiz_Model$QuizListItem = F9(
+	function (a, b, c, d, e, f, g, h, i) {
+		return {id: a, title: b, created_by: c, last_modified_by: d, tags: e, created_dt: f, modified_dt: g, text_count: h, write_locker: i};
 	});
 
 var _user$project$Text_Decode$textDecoder = A3(
@@ -21055,53 +21083,96 @@ var _user$project$Text_Decode$TextCreateResp = function (a) {
 	return {id: a};
 };
 
-var _user$project$Quiz_Decode$quizCreateRespErrDecoder = _elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string);
 var _user$project$Quiz_Decode$decodeRespErrors = function (str) {
-	return A2(_elm_lang$core$Json_Decode$decodeString, _user$project$Quiz_Decode$quizCreateRespErrDecoder, str);
+	return A2(
+		_elm_lang$core$Json_Decode$decodeString,
+		A2(
+			_elm_lang$core$Json_Decode$field,
+			'errors',
+			_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string)),
+		str);
 };
 var _user$project$Quiz_Decode$quizListItemDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'text_count',
-	_elm_lang$core$Json_Decode$int,
+	'write_locker',
+	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'modified_dt',
-		_elm_community$json_extra$Json_Decode_Extra$date,
+		'text_count',
+		_elm_lang$core$Json_Decode$int,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'created_dt',
+			'modified_dt',
 			_elm_community$json_extra$Json_Decode_Extra$date,
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'title',
-				_elm_lang$core$Json_Decode$string,
+				'created_dt',
+				_elm_community$json_extra$Json_Decode_Extra$date,
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'id',
-					_elm_lang$core$Json_Decode$int,
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Model$QuizListItem))))));
+					'tags',
+					_elm_lang$core$Json_Decode$nullable(
+						_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'last_modified_by',
+						_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+						A3(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+							'created_by',
+							_elm_lang$core$Json_Decode$string,
+							A3(
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+								'title',
+								_elm_lang$core$Json_Decode$string,
+								A3(
+									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+									'id',
+									_elm_lang$core$Json_Decode$int,
+									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Model$QuizListItem))))))))));
 var _user$project$Quiz_Decode$quizListDecoder = _elm_lang$core$Json_Decode$list(_user$project$Quiz_Decode$quizListItemDecoder);
 var _user$project$Quiz_Decode$quizDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'texts',
-	A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Array$fromList, _user$project$Text_Decode$textsDecoder),
+	'write_locker',
+	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'modified_dt',
-		_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+		'texts',
+		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Array$fromList, _user$project$Text_Decode$textsDecoder),
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'created_dt',
+			'modified_dt',
 			_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'title',
-				_elm_lang$core$Json_Decode$string,
+				'created_dt',
+				_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'id',
-					_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Model$Quiz))))));
+					'tags',
+					_elm_lang$core$Json_Decode$nullable(
+						_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'last_modified_by',
+						_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+						A3(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+							'created_by',
+							_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+							A3(
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+								'introduction',
+								_elm_lang$core$Json_Decode$string,
+								A3(
+									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+									'title',
+									_elm_lang$core$Json_Decode$string,
+									A3(
+										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+										'id',
+										_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Model$Quiz)))))))))));
 var _user$project$Quiz_Decode$QuizCreateResp = F2(
 	function (a, b) {
 		return {id: a, redirect: b};
@@ -21128,6 +21199,14 @@ var _user$project$Quiz_Decode$quizUpdateRespDecoder = A3(
 		'id',
 		_elm_lang$core$Json_Decode$int,
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Decode$QuizUpdateResp)));
+var _user$project$Quiz_Decode$QuizLockResp = function (a) {
+	return {locked: a};
+};
+var _user$project$Quiz_Decode$quizLockRespDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'locked',
+	_elm_lang$core$Json_Decode$bool,
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Decode$QuizLockResp));
 
 var _user$project$Views$view_preview = A2(
 	_elm_lang$html$Html$div,
@@ -21172,25 +21251,14 @@ var _user$project$Views$view_preview = A2(
 					{
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$button,
-							{ctor: '[]'},
+							_elm_lang$html$Html$input,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text('Preview'),
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Search quizzes..'),
 								_1: {ctor: '[]'}
-							}),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$input,
-								{
-									ctor: '::',
-									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Search texts..'),
-									_1: {ctor: '[]'}
-								},
-								{ctor: '[]'}),
-							_1: {ctor: '[]'}
-						}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
 			}),
@@ -21265,7 +21333,7 @@ var _user$project$Views$view_filter = A2(
 					_elm_lang$html$Html$input,
 					{
 						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Search texts..'),
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Search quizzes..'),
 						_1: {ctor: '[]'}
 					},
 					{ctor: '[]'}),
@@ -21445,6 +21513,17 @@ var _user$project$Views$view_header = F2(
 			});
 	});
 
+var _user$project$Main$view_quiz_introduction = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'quiz_intro'),
+			_1: {ctor: '[]'}
+		},
+		_jinjor$elm_html_parser$HtmlParser_Util$toVirtualDom(
+			_jinjor$elm_html_parser$HtmlParser$parse(model.quiz.introduction)));
+};
 var _user$project$Main$set_text = F2(
 	function (quiz_texts, _p0) {
 		var _p1 = _p0;
@@ -21667,11 +21746,15 @@ var _user$project$Main$view = function (model) {
 				_0: _user$project$Views$view_filter,
 				_1: {
 					ctor: '::',
-					_0: _user$project$Main$view_content(model),
+					_0: _user$project$Main$view_quiz_introduction(model),
 					_1: {
 						ctor: '::',
-						_0: _user$project$Views$view_footer,
-						_1: {ctor: '[]'}
+						_0: _user$project$Main$view_content(model),
+						_1: {
+							ctor: '::',
+							_0: _user$project$Views$view_footer,
+							_1: {ctor: '[]'}
+						}
 					}
 				}
 			}

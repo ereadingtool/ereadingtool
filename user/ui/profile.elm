@@ -53,13 +53,18 @@ view_student_profile_header (StudentProfile attrs) = [
   ]
 
 init_profile:
- { a | instructor_profile : InstructorProfileParams, profile_type : String, student_profile : StudentProfileParams }
+ { a | instructor_profile : Maybe InstructorProfileParams, student_profile : Maybe StudentProfileParams }
     -> Profile
 init_profile flags =
-  case flags.profile_type of
-    "student" -> Student (StudentProfile flags.student_profile)
-    "instructor" -> Instructor (Instructor.Profile.init_profile flags.instructor_profile)
-    _ -> EmptyProfile
+  case flags.instructor_profile of
+    Just instructor_profile_params ->
+      Instructor (Instructor.Profile.init_profile instructor_profile_params)
+    Nothing ->
+      case flags.student_profile of
+        Just student_profile_params ->
+          Student (StudentProfile student_profile_params)
+        Nothing ->
+          EmptyProfile
 
 emptyProfile : Profile
 emptyProfile = EmptyProfile

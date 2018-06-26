@@ -9246,7 +9246,7 @@ var _user$project$Question_Model$Question = F8(
 		return {id: a, text_id: b, created_dt: c, modified_dt: d, body: e, order: f, answers: g, question_type: h};
 	});
 
-var _user$project$Text_Model$emptyText = {id: _elm_lang$core$Maybe$Nothing, title: 'title', created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing, source: 'source', difficulty: '', author: 'author', question_count: 0, questions: _user$project$Question_Model$initial_questions, body: 'text'};
+var _user$project$Text_Model$emptyText = {id: _elm_lang$core$Maybe$Nothing, title: '', created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing, source: '', difficulty: '', author: '', question_count: 0, questions: _user$project$Question_Model$initial_questions, body: ''};
 var _user$project$Text_Model$Text = function (a) {
 	return function (b) {
 		return function (c) {
@@ -9269,15 +9269,7 @@ var _user$project$Text_Model$Text = function (a) {
 	};
 };
 
-var _user$project$Profile$tupleDecoder = A3(
-	_elm_lang$core$Json_Decode$map2,
-	F2(
-		function (v0, v1) {
-			return {ctor: '_Tuple2', _0: v0, _1: v1};
-		}),
-	A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
-var _user$project$Profile$view_instructor_profile_header = function (_p0) {
+var _user$project$Instructor_Profile$view_instructor_profile_header = function (_p0) {
 	var _p1 = _p0;
 	return {
 		ctor: '::',
@@ -9303,8 +9295,31 @@ var _user$project$Profile$view_instructor_profile_header = function (_p0) {
 		_1: {ctor: '[]'}
 	};
 };
-var _user$project$Profile$view_student_profile_header = function (_p2) {
+var _user$project$Instructor_Profile$username = function (_p2) {
 	var _p3 = _p2;
+	return _p3._0.username;
+};
+var _user$project$Instructor_Profile$InstructorProfileParams = F2(
+	function (a, b) {
+		return {id: a, username: b};
+	});
+var _user$project$Instructor_Profile$InstructorProfile = function (a) {
+	return {ctor: 'InstructorProfile', _0: a};
+};
+var _user$project$Instructor_Profile$init_profile = function (params) {
+	return _user$project$Instructor_Profile$InstructorProfile(params);
+};
+
+var _user$project$Profile$tupleDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	F2(
+		function (v0, v1) {
+			return {ctor: '_Tuple2', _0: v0, _1: v1};
+		}),
+	A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
+var _user$project$Profile$view_student_profile_header = function (_p0) {
+	var _p1 = _p0;
 	return {
 		ctor: '::',
 		_0: A2(
@@ -9321,7 +9336,7 @@ var _user$project$Profile$view_student_profile_header = function (_p2) {
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(_p3._0.username),
+						_0: _elm_lang$html$Html$text(_p1._0.username),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
@@ -9330,29 +9345,29 @@ var _user$project$Profile$view_student_profile_header = function (_p2) {
 	};
 };
 var _user$project$Profile$view_profile_header = function (profile) {
-	var _p4 = profile;
-	switch (_p4.ctor) {
+	var _p2 = profile;
+	switch (_p2.ctor) {
 		case 'Instructor':
 			return _elm_lang$core$Maybe$Just(
-				_user$project$Profile$view_instructor_profile_header(_p4._0));
+				_user$project$Instructor_Profile$view_instructor_profile_header(_p2._0));
 		case 'Student':
 			return _elm_lang$core$Maybe$Just(
-				_user$project$Profile$view_student_profile_header(_p4._0));
+				_user$project$Profile$view_student_profile_header(_p2._0));
 		default:
 			return _elm_lang$core$Maybe$Nothing;
 	}
 };
-var _user$project$Profile$studentUserName = function (_p5) {
+var _user$project$Profile$studentUserName = function (_p3) {
+	var _p4 = _p3;
+	return _p4._0.username;
+};
+var _user$project$Profile$studentDifficulties = function (_p5) {
 	var _p6 = _p5;
-	return _p6._0.username;
+	return _p6._0.difficulties;
 };
-var _user$project$Profile$studentDifficulties = function (_p7) {
+var _user$project$Profile$studentDifficultyPreference = function (_p7) {
 	var _p8 = _p7;
-	return _p8._0.difficulties;
-};
-var _user$project$Profile$studentDifficultyPreference = function (_p9) {
-	var _p10 = _p9;
-	return _p10._0.difficulty_preference;
+	return _p8._0.difficulty_preference;
 };
 var _user$project$Profile$StudentProfileParams = F4(
 	function (a, b, c, d) {
@@ -9375,10 +9390,6 @@ var _user$project$Profile$studentProfileParamsDecoder = A3(
 				'id',
 				_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Profile$StudentProfileParams)))));
-var _user$project$Profile$InstructorProfileParams = F2(
-	function (a, b) {
-		return {id: a, username: b};
-	});
 var _user$project$Profile$StudentProfile = function (a) {
 	return {ctor: 'StudentProfile', _0: a};
 };
@@ -9415,9 +9426,6 @@ var _user$project$Profile$retrieve_student_profile = F2(
 			_user$project$Profile$studentProfileDecoder);
 		return A2(_elm_lang$http$Http$send, msg, request);
 	});
-var _user$project$Profile$InstructorProfile = function (a) {
-	return {ctor: 'InstructorProfile', _0: a};
-};
 var _user$project$Profile$EmptyProfile = {ctor: 'EmptyProfile'};
 var _user$project$Profile$emptyProfile = _user$project$Profile$EmptyProfile;
 var _user$project$Profile$Instructor = function (a) {
@@ -9433,26 +9441,18 @@ var _user$project$Profile$fromStudentProfile = function (student_profile) {
 	return _user$project$Profile$Student(student_profile);
 };
 var _user$project$Profile$init_profile = function (flags) {
-	var _p11 = flags.profile_type;
-	switch (_p11) {
-		case 'student':
-			var _p12 = flags.student_profile;
-			if (_p12.ctor === 'Just') {
-				return _user$project$Profile$Student(
-					_user$project$Profile$StudentProfile(_p12._0));
-			} else {
-				return _user$project$Profile$EmptyProfile;
-			}
-		case 'instructor':
-			var _p13 = flags.instructor_profile;
-			if (_p13.ctor === 'Just') {
-				return _user$project$Profile$Instructor(
-					_user$project$Profile$InstructorProfile(_p13._0));
-			} else {
-				return _user$project$Profile$EmptyProfile;
-			}
-		default:
+	var _p9 = flags.instructor_profile;
+	if (_p9.ctor === 'Just') {
+		return _user$project$Profile$Instructor(
+			_user$project$Instructor_Profile$init_profile(_p9._0));
+	} else {
+		var _p10 = flags.student_profile;
+		if (_p10.ctor === 'Just') {
+			return _user$project$Profile$Student(
+				_user$project$Profile$StudentProfile(_p10._0));
+		} else {
 			return _user$project$Profile$EmptyProfile;
+		}
 	}
 };
 
@@ -9460,6 +9460,19 @@ var _user$project$Flags$UnAuthedFlags = function (a) {
 	return {csrftoken: a};
 };
 
+var _user$project$HttpHelpers$delete_with_headers = F4(
+	function (url, headers, body, decoder) {
+		return _elm_lang$http$Http$request(
+			{
+				method: 'DELETE',
+				headers: headers,
+				url: url,
+				body: body,
+				expect: _elm_lang$http$Http$expectJson(decoder),
+				timeout: _elm_lang$core$Maybe$Nothing,
+				withCredentials: false
+			});
+	});
 var _user$project$HttpHelpers$post_with_headers = F4(
 	function (url, headers, body, decoder) {
 		return _elm_lang$http$Http$request(
@@ -9530,25 +9543,14 @@ var _user$project$Views$view_preview = A2(
 					{
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$button,
-							{ctor: '[]'},
+							_elm_lang$html$Html$input,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text('Preview'),
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Search quizzes..'),
 								_1: {ctor: '[]'}
-							}),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$input,
-								{
-									ctor: '::',
-									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Search texts..'),
-									_1: {ctor: '[]'}
-								},
-								{ctor: '[]'}),
-							_1: {ctor: '[]'}
-						}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
 			}),
@@ -9623,7 +9625,7 @@ var _user$project$Views$view_filter = A2(
 					_elm_lang$html$Html$input,
 					{
 						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Search texts..'),
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Search quizzes..'),
 						_1: {ctor: '[]'}
 					},
 					{ctor: '[]'}),

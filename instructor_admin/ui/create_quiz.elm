@@ -293,7 +293,6 @@ update msg model = case msg of
 
         _ -> (model, Cmd.none)
 
-
     UpdateQuizAttributes attr_name attr_value ->
       ({ model | quiz_component = Quiz.Component.set_quiz_attribute model.quiz_component attr_name attr_value }
       , Cmd.none)

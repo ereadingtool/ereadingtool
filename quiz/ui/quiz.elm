@@ -20,6 +20,8 @@ import Answer.Model exposing (Answer)
 
 import Views
 import Profile
+import Instructor.Profile
+
 import Config exposing (..)
 import Flags exposing (CSRFToken)
 
@@ -43,7 +45,7 @@ type alias Flags = {
     csrftoken : CSRFToken
   , profile_id : Profile.ProfileID
   , profile_type : Profile.ProfileType
-  , instructor_profile : Maybe Profile.InstructorProfileParams
+  , instructor_profile : Maybe Instructor.Profile.InstructorProfileParams
   , student_profile : Maybe Profile.StudentProfileParams
   , quiz_id : Int }
 
@@ -53,8 +55,7 @@ type alias Model = {
   , texts : Array QuizText
   , flags : Flags }
 
-type alias QuizItemAttributes a = { a |
-    index : Int }
+type alias QuizItemAttributes a = { a | index : Int }
 
 type alias QuizAnswerAttributes = QuizItemAttributes { question_index : Int, name: String, id: String }
 type alias QuizQuestionAttributes = QuizItemAttributes { id:String, text_index: Int }
@@ -92,7 +93,8 @@ updateTextsForQuiz quiz_texts =
 updateText : QuizText -> Cmd Msg
 updateText ((QuizText text attrs questions) as quiz_text) =
   let
-    question_req = Http.get (String.join "" [question_api_endpoint, "?", "text", "=", (toString text.id)]) questionsDecoder
+    question_req =
+      Http.get (String.join "" [question_api_endpoint, "?", "text", "=", (toString text.id)]) questionsDecoder
   in
     Http.send (UpdateQuestions quiz_text) question_req
 
@@ -207,6 +209,10 @@ view_text ((QuizText text attrs questions) as quiz_text) =
     , (view_questions quiz_text)
   ]
 
+view_quiz_introduction : Model -> Html Msg
+view_quiz_introduction model =
+  div [attribute "id" "quiz_intro"] (HtmlParser.Util.toVirtualDom <| HtmlParser.parse model.quiz.introduction)
+
 view_content : Model -> Html Msg
 view_content model = div [ classList [("quiz", True)] ] (Array.toList <| Array.map view_text model.texts)
 
@@ -215,6 +221,7 @@ view : Model -> Html Msg
 view model = div [] [
     (Views.view_header model.profile Nothing)
   , (Views.view_filter)
+  , (view_quiz_introduction model)
   , (view_content model)
   , (Views.view_footer)
   ]

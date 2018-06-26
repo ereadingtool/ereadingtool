@@ -12672,16 +12672,18 @@ var _user$project$Profile$fromStudentProfile = function (student_profile) {
 	return _user$project$Profile$Student(student_profile);
 };
 var _user$project$Profile$init_profile = function (flags) {
-	var _p9 = flags.profile_type;
-	switch (_p9) {
-		case 'student':
+	var _p9 = flags.instructor_profile;
+	if (_p9.ctor === 'Just') {
+		return _user$project$Profile$Instructor(
+			_user$project$Instructor_Profile$init_profile(_p9._0));
+	} else {
+		var _p10 = flags.student_profile;
+		if (_p10.ctor === 'Just') {
 			return _user$project$Profile$Student(
-				_user$project$Profile$StudentProfile(flags.student_profile));
-		case 'instructor':
-			return _user$project$Profile$Instructor(
-				_user$project$Instructor_Profile$init_profile(flags.instructor_profile));
-		default:
+				_user$project$Profile$StudentProfile(_p10._0));
+		} else {
 			return _user$project$Profile$EmptyProfile;
+		}
 	}
 };
 
