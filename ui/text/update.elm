@@ -14,6 +14,7 @@ type Msg =
   -- text msgs
     UpdateTextValue TextComponent String String
   | AddText
+  | DeleteText TextComponent
   | UpdateTextBody (CKEditorID, CKEditorText)
 
   -- question msgs
@@ -45,7 +46,13 @@ update msg model =
   in case msg of
     -- text msgs
     AddText ->
-      ({ model | quiz_component = Quiz.set_text_components model.quiz_component (Text.Component.Group.add_new_text text_components) }
+      ({ model | quiz_component =
+        Quiz.set_text_components model.quiz_component (Text.Component.Group.add_new_text text_components) }
+      , Cmd.none)
+
+    DeleteText text_component ->
+      ({ model | quiz_component =
+        Quiz.set_text_components model.quiz_component (Text.Component.Group.delete_text text_components text_component) }
       , Cmd.none)
 
     UpdateTextValue text_component field_name input ->

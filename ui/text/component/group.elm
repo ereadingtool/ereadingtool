@@ -1,5 +1,5 @@
 module Text.Component.Group exposing (TextComponentGroup, update_text_components, add_new_text, update_errors
-  , new_group, toArray, update_body_for_id, toTexts, fromTexts, reinitialize_ck_editors)
+  , new_group, toArray, update_body_for_id, toTexts, fromTexts, reinitialize_ck_editors, delete_text)
 
 import Array exposing (Array)
 import Dict exposing (Dict)
@@ -51,6 +51,18 @@ add_new_text (TextComponentGroup text_components) =
     arr_len = Array.length text_components
   in
     TextComponentGroup (Array.push (Text.Component.emptyTextComponent arr_len) text_components)
+
+delete_text : TextComponentGroup -> TextComponent -> TextComponentGroup
+delete_text (TextComponentGroup text_components) text_component =
+  let
+    index = Text.Component.index
+    arr_len = Array.length text_components
+    component_index = index text_component
+    new_text_components =
+        Array.indexedMap (\i text_component -> Text.Component.set_index text_component i)
+     <| Array.filter (\text_component -> index text_component /= component_index) text_components
+  in
+    TextComponentGroup new_text_components
 
 toArray : TextComponentGroup -> Array TextComponent
 toArray (TextComponentGroup text_components) = text_components

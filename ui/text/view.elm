@@ -8,7 +8,7 @@ import Text.Update exposing (..)
 import Question.View
 
 import Html exposing (..)
-import Html.Attributes exposing (classList, attribute)
+import Html.Attributes exposing (classList, attribute, class)
 
 import Array exposing (Array)
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
@@ -149,7 +149,8 @@ view_text_component msg text_difficulties text_component = let
     ]
   ] ++ [
       Question.View.view_questions msg text_component (Text.Component.question_fields text_component)
-    , Question.View.view_question_buttons msg text_component ] ]
+    , Question.View.view_question_buttons msg text_component
+    , div [class "cursor", onClick (msg <| DeleteText text_component)] [ Html.text "Delete Text" ] ] ]
 
 view_text_components : (Msg -> msg) -> TextComponentGroup -> List TextDifficulty -> Html msg
 view_text_components msg text_components text_difficulties =

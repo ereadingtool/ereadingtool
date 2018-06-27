@@ -2,7 +2,7 @@ module Text.Component exposing (TextComponent, TextField, emptyTextComponent, bo
   , source, difficulty, author, question_fields, attributes, set_field, set_text, index, delete_question_field
   , set_answer, set_answer_text, set_question, switch_editable, add_new_question, toggle_question_menu, update_body
   , update_question_field, set_answer_correct, set_answer_feedback, text_field_id, editable, toText, fromText
-  , post_toggle_commands, reinitialize_ck_editor, update_errors, delete_selected_question_fields)
+  , post_toggle_commands, reinitialize_ck_editor, update_errors, delete_selected_question_fields, set_index)
 
 import Array exposing (Array)
 import Field
@@ -148,6 +148,10 @@ attributes (TextComponent text attr fields question_fields) = attr
 
 index : TextComponent -> Int
 index text_component = let attrs = (attributes text_component) in attrs.index
+
+set_index : TextComponent -> Int -> TextComponent
+set_index (TextComponent text attr fields question_fields) index =
+  TextComponent text { attr | index = index } fields question_fields
 
 set_question : TextComponent -> QuestionField -> TextComponent
 set_question (TextComponent text attr fields question_fields) question_field =

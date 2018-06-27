@@ -16,7 +16,7 @@ body {
 
     background: #f9f9f9;
 
-    font: "Lucida Console";
+    font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 18px;
 
     align-items: center;
@@ -34,7 +34,7 @@ body {
 
     background: #f9f9f9;
 
-    font: "Lucida Console";
+    font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 18px;
 
     align-items: right;
@@ -98,7 +98,7 @@ body {
 }
 
 .body {
-    font-family: "Sans-Serif";
+    font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 17px;
 
     margin-top: 4%;
@@ -144,7 +144,7 @@ body {
 }
 
 #quiz_attributes > div > div:nth-child(1) {
-    font-family: "Sans-Serif";
+    font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 17px;
     color: #000e2d;
 }
@@ -160,7 +160,7 @@ body {
 #quiz_lock {
     display: grid;
 
-    font-family: "Sans-Serif";
+    font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 17px;
 
     grid-column: 1;
@@ -212,7 +212,7 @@ body {
     grid-row-gap: 5%;
     row-gap: 5%;
 
-    font: "Lucida Console";
+    font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 18px;
     font-weight: 200;
 
@@ -237,7 +237,7 @@ body {
 
 
 #quiz_tags_view > div {
-    font-family: "Sans-Serif";
+    font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 18px;
     color: #000e2d;
 }
@@ -248,7 +248,7 @@ body {
 
     padding: 2px;
 
-    font: "Lucida Console";
+    font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 18px;
     font-weight: 200;
 
@@ -329,7 +329,7 @@ body {
 }
 
 .text_property > div:nth-child(1) {
-    font-family: "Sans-Serif";
+    font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 17px;
     color: #000e2d;
 }
@@ -368,17 +368,6 @@ body {
         text-overflow: ellipsis;
         white-space: nowrap;
     }
-}
-
-.media {
-  display: flex;
-  flex-wrap: wrap;
-  margin-bottom: 2em;
-}
-
-.media > * {
-  flex: 1 1 250px;
-  margin: 10px;
 }
 
 .footer_items {
@@ -451,7 +440,7 @@ body {
 
     background: #FFFFFF;
 
-    font-family: "Helvetica Neue";
+    font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 14px;
 
     border: solid 0.5px lightgrey;
@@ -508,12 +497,17 @@ body {
     grid-column: 2;
     margin-top: 10px;
 
-    font-family: "Helvetica Neue";
+    font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 18px;
 }
 
 .submit > img {
     margin-left: 10px;
+}
+
+/* TODO(andrew): cleanup */
+.cursor {
+    cursor: pointer;
 }
 
 .submit {
