@@ -294,6 +294,10 @@ body {
     margin-top: 25px;
 }
 
+.text > .cursor {
+    margin-top: 10px;
+}
+
 .text_content {
     grid-column: 2;
 }
