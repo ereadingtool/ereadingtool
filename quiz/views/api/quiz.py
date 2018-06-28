@@ -152,7 +152,10 @@ class QuizAPIView(LoginRequiredMixin, View):
             try:
                 quiz.delete()
 
-                return HttpResponse(json.dumps({'id': quiz.pk, 'deleted': True}))
+                return HttpResponse(json.dumps({
+                    'id': kwargs['pk'],
+                    'deleted': True,
+                    'redirect': str(reverse_lazy('admin'))}))
             except WriteLocked:
                 return HttpResponseServerError(json.dumps({'errors': 'quiz {0} is locked.'.format(kwargs['pk'])}))
 

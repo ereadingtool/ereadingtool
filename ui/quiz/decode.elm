@@ -16,7 +16,7 @@ import Json.Decode.Extra exposing (date)
 
 type alias QuizCreateResp = { id: Int, redirect: String }
 type alias QuizUpdateResp = { id: Int, updated: Bool }
-type alias QuizDeleteResp = { id: Int, deleted: Bool }
+type alias QuizDeleteResp = { id: Int, redirect: String, deleted: Bool }
 type alias QuizLockResp = { locked: Bool }
 
 type alias QuizRespError = Dict String String
@@ -69,6 +69,7 @@ quizDeleteRespDecoder : Decode.Decoder (QuizDeleteResp)
 quizDeleteRespDecoder =
   decode QuizDeleteResp
     |> required "id" Decode.int
+    |> required "redirect" Decode.string
     |> required "deleted" Decode.bool
 
 quizLockRespDecoder : Decode.Decoder (QuizLockResp)

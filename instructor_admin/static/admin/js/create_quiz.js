@@ -13450,9 +13450,9 @@ var _user$project$Quiz_Decode$quizUpdateRespDecoder = A3(
 		'id',
 		_elm_lang$core$Json_Decode$int,
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Decode$QuizUpdateResp)));
-var _user$project$Quiz_Decode$QuizDeleteResp = F2(
-	function (a, b) {
-		return {id: a, deleted: b};
+var _user$project$Quiz_Decode$QuizDeleteResp = F3(
+	function (a, b, c) {
+		return {id: a, redirect: b, deleted: c};
 	});
 var _user$project$Quiz_Decode$quizDeleteRespDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -13460,9 +13460,13 @@ var _user$project$Quiz_Decode$quizDeleteRespDecoder = A3(
 	_elm_lang$core$Json_Decode$bool,
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'id',
-		_elm_lang$core$Json_Decode$int,
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Decode$QuizDeleteResp)));
+		'redirect',
+		_elm_lang$core$Json_Decode$string,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'id',
+			_elm_lang$core$Json_Decode$int,
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Quiz_Decode$QuizDeleteResp))));
 var _user$project$Quiz_Decode$QuizLockResp = function (a) {
 	return {locked: a};
 };
@@ -15977,19 +15981,26 @@ var _user$project$Main$update = F2(
 				}
 			default:
 				if (_p16._0.ctor === 'Ok') {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					var _p48 = _p16._0._0;
+					var _p47 = A2(_elm_lang$core$Debug$log, 'quiz delete', _p48);
+					return {
+						ctor: '_Tuple2',
+						_0: model,
+						_1: _elm_lang$navigation$Navigation$load(_p48.redirect)
+					};
 				} else {
-					var _p47 = _p16._0._0;
-					switch (_p47.ctor) {
+					var _p55 = _p16._0._0;
+					var _p49 = _p55;
+					switch (_p49.ctor) {
 						case 'BadStatus':
-							var _p50 = _p47._0;
-							var _p48 = A2(_elm_lang$core$Debug$log, 'delete quiz error bad status', _p50);
-							var _p49 = _user$project$Quiz_Decode$decodeRespErrors(_p50.body);
-							if (_p49.ctor === 'Ok') {
+							var _p52 = _p49._0;
+							var _p50 = A2(_elm_lang$core$Debug$log, 'delete quiz error bad status', _p52);
+							var _p51 = _user$project$Quiz_Decode$decodeRespErrors(_p52.body);
+							if (_p51.ctor === 'Ok') {
 								var errors_str = A2(
 									_elm_lang$core$String$join,
 									' and ',
-									_elm_lang$core$Dict$values(_p49._0));
+									_elm_lang$core$Dict$values(_p51._0));
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
@@ -16004,9 +16015,10 @@ var _user$project$Main$update = F2(
 								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 							}
 						case 'BadPayload':
-							var _p51 = A2(_elm_lang$core$Debug$log, 'delete quiz error bad payload', _p47._1);
+							var _p53 = A2(_elm_lang$core$Debug$log, 'delete quiz error bad payload', _p49._1);
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 						default:
+							var _p54 = A2(_elm_lang$core$Debug$log, 'delete quiz error bad payload', _p55);
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 					}
 				}
@@ -16191,8 +16203,8 @@ var _user$project$Main$view = function (model) {
 									}
 								},
 								function () {
-									var _p52 = model.mode;
-									if (_p52.ctor === 'ReadOnlyMode') {
+									var _p56 = model.mode;
+									if (_p56.ctor === 'ReadOnlyMode') {
 										return {ctor: '[]'};
 									} else {
 										return {

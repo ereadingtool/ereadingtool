@@ -15,6 +15,7 @@ import Quiz.Field exposing (QuizIntro, QuizTitle, QuizTags)
 import Quiz.Encode
 
 import Views
+import Navigation
 
 import Profile
 import Instructor.Profile
@@ -327,8 +328,8 @@ update msg model = case msg of
         False ->
           (model, Cmd.none)
 
-    QuizDelete (Ok quiz_delete) ->
-      (model, Cmd.none)
+    QuizDelete (Ok quiz_delete) -> let _ = Debug.log "quiz delete" quiz_delete in
+      (model, Navigation.load quiz_delete.redirect )
 
     QuizDelete (Err err) ->
       case err of
@@ -344,7 +345,8 @@ update msg model = case msg of
         Http.BadPayload err resp -> let _ = Debug.log "delete quiz error bad payload" resp in
           (model, Cmd.none)
 
-        _ -> (model, Cmd.none)
+        _ -> let _ = Debug.log "delete quiz error bad payload" err in
+          (model, Cmd.none)
 
 
 post_lock : Flags.CSRFToken -> Quiz.Model.Quiz -> Cmd Msg
