@@ -81,7 +81,7 @@ view_editable_answer params answer_field =
       classList [("answer_item", True)] ] [
         Html.input ([
            attribute "type" "radio"
-         , attribute "name" (String.join "_" [(Answer.Field.id answer_field), "correct_answer"])
+         , attribute "name" (Answer.Field.name answer_field)
          , onCheck (UpdateAnswerFieldCorrect params.text_component answer_field >> params.msg)
         ] ++ (if answer.correct then [attribute "checked" "checked"] else [])) []
     , (case (Answer.Field.editable answer_field) of

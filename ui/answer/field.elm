@@ -1,5 +1,5 @@
 module Answer.Field exposing (AnswerField, AnswerFeedbackField, generate_answer_field, update_question_index
-  , index, question_index, switch_editable, editable, answer, attributes, error, id, feedback_field
+  , index, question_index, switch_editable, editable, answer, attributes, error, id, name, feedback_field
   , set_answer_text, set_answer_correct, set_answer_feedback, toAnswers, get_answer_field, update_feedback_error
   , update_error)
 
@@ -16,6 +16,7 @@ type alias AnswerFeedbackField = {
 
 type alias AnswerFieldAttributes = {
     id: String
+  , name: String
   , editable: Bool
   , error: Bool
   , error_string: String
@@ -38,9 +39,11 @@ generate_answer_field : Int -> Int -> Int -> Answer -> AnswerField
 generate_answer_field i j k answer =
   let
     answer_id = String.join "_" ["text", toString i, "question", toString j, "answer", toString k]
+    answer_name = String.join "_" ["text", toString i, "question", toString j, "correct_answer"]
   in
     AnswerField answer {
       id = answer_id
+    , name = answer_name
     , editable = False
     , error = False
     , error_string = ""
@@ -55,6 +58,9 @@ feedback_field (AnswerField _ _ feedback_field) = feedback_field
 
 attributes : AnswerField -> Field.FieldAttributes AnswerFieldAttributes
 attributes (AnswerField answer attr feedback_field) = attr
+
+name : AnswerField -> String
+name answer_field = let attrs = (attributes answer_field) in attrs.name
 
 id : AnswerField -> String
 id answer_field = let attrs = (attributes answer_field) in attrs.id
