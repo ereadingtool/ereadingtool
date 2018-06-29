@@ -36,10 +36,6 @@ test_text_component_group : Text.Component.Group.TextComponentGroup
 test_text_component_group =
   Quiz.Component.text_components test_quiz_component
 
-test_empty_answer_field : Answer.Field.AnswerField
-test_empty_answer_field =
-  Answer.Field.generate_answer_field 0 0 0 (Answer.Model.generate_answer 0)
-
 test_answer_field_mutual_exclusion : Expectation
 test_answer_field_mutual_exclusion =
   case Text.Component.Group.text_component test_text_component_group 0 of
