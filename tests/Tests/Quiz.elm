@@ -2,12 +2,12 @@ module Tests.Quiz exposing (..)
 
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, int, list, string)
-import Test exposing (..)
 
 import Html
 import Html.Attributes as Attr
+import Dict exposing (Dict)
 
-import Test exposing (test, describe)
+import Test exposing (Test, test, describe)
 import Test.Html.Query as Query
 import Test.Html.Selector exposing (attribute, text, tag)
 import Test.Html.Event as Event
@@ -27,6 +27,29 @@ import Text.Component
 import Text.Component.Group
 
 type Msg = TextMsg
+
+type alias ElementID = String
+type alias ErrorMsg = String
+
+text_difficulties : List TextDifficulty
+text_difficulties = [("intermediate-mid", "Intermediate Mid"), ("advanced-low", "Advanced-Low")]
+
+example_quiz_errors : Dict String String
+example_quiz_errors =
+  Dict.fromList [
+  -- quiz
+    ("quiz_title", "This field is required.")
+  , ("quiz_introduction", "An introduction is required.")
+  -- texts
+  , ("text_0_title", "A title is required.")
+  , ("text_0_source", "A source is required.")
+  , ("text_0_difficulty", "A difficulty is required.")
+  , ("text_0_author", "An author is required.")
+  , ("text_0_body", "A text body is required.")
+  -- questions/answers
+  , ("text_0_question_0_answer_0", "An answer text is required.")
+  , ("text_0_question_0_answer_0_feedback", "Feedback is required.")
+  ]
 
 test_quiz_component : Quiz.Component.QuizComponent
 test_quiz_component =
@@ -58,14 +81,36 @@ test_answer_field_mutual_exclusion =
     _ ->
       Expect.pass
 
-text_difficulties : List TextDifficulty
-text_difficulties = [("intermediate-mid", "Intermediate Mid"), ("advanced-low", "Advanced-Low")]
+test_quiz_errors : Quiz.Component.QuizComponent -> List Test
+test_quiz_errors quiz_component =
+  let
+    html =
+      Text.View.view_text_components (\_ -> TextMsg) (Quiz.Component.text_components quiz_component) text_difficulties
+  in
+    List.map
+      (\((k, v) as err) ->
+        test ("quiz error for " ++ k ++ " is visible") <| \() -> test_quiz_error html err)
+      (Dict.toList example_quiz_errors)
+
+test_quiz_error : Html.Html msg -> (ElementID, ErrorMsg) -> Expectation
+test_quiz_error html (element_id, error_msg) =
+    html
+ |> Query.fromHtml
+ |> Query.findAll [
+      attribute <| Attr.id element_id
+    , attribute <| Attr.class "input_error"
+    ]
+ |> Query.count (Expect.equal 1)
+
 
 suite : Test
 suite =
-    describe "questions" [
-      describe "answers" [
-        test "radio buttons can be selected mutually exclusively (same name attributes)" <|
-          \() -> test_answer_field_mutual_exclusion
-      ]
+      describe "quiz" [
+        describe "questions" [
+          describe "answers" [
+            test "radio buttons can be selected mutually exclusively (same name attributes)" <|
+              \() -> test_answer_field_mutual_exclusion
+          ]
+        ]
+      , describe "errors" (test_quiz_errors (Quiz.Component.update_quiz_errors test_quiz_component example_quiz_errors))
     ]
