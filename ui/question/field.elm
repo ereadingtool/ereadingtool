@@ -2,7 +2,7 @@ module Question.Field exposing (QuestionField, QuestionType(..), generate_questi
   , add_new_question, delete_question, initial_question_fields, attributes, index, switch_editable, set_answer_feedback
   , set_question_type, question, menu_visible, id, error, editable, answers, set_menu_visible, set_answer_correct
   , update_question, set_question_body, set_answer_field, delete_question_field, question_field_for_answer
-  , toQuestions, fromQuestions, update_errors, set_selected, delete_selected)
+  , toQuestions, fromQuestions, update_errors, set_selected, delete_selected, get_question_field)
 
 import Question.Model exposing (Question)
 

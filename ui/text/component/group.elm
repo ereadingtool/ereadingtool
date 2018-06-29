@@ -1,5 +1,5 @@
 module Text.Component.Group exposing (TextComponentGroup, update_text_components, add_new_text, update_errors
-  , new_group, toArray, update_body_for_id, toTexts, fromTexts, reinitialize_ck_editors, delete_text)
+  ,new_group, toArray, update_body_for_id, toTexts, fromTexts, reinitialize_ck_editors, delete_text, text_component)
 
 import Array exposing (Array)
 import Dict exposing (Dict)
