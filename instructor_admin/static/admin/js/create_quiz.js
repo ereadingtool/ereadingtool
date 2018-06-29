@@ -15943,25 +15943,34 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'UpdateQuizIntro':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							quiz_component: A3(_user$project$Quiz_Component$set_quiz_attribute, model.quiz_component, 'introduction', _p16._0._1)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'AddTagInput':
-				var _p45 = _p16._1;
-				var _p44 = A2(_elm_lang$core$Dict$member, _p45, model.tags);
-				if (_p44 === true) {
+				var _p44 = _p16._0._0;
+				if (_p44 === 'quiz_introduction') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								quiz_component: A2(_user$project$Quiz_Component$add_tag, model.quiz_component, _p45)
+								quiz_component: A3(
+									_user$project$Quiz_Component$set_quiz_attribute,
+									model.quiz_component,
+									'introduction',
+									A2(_elm_lang$core$Debug$log, 'quiz intro', _p16._0._1))
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'AddTagInput':
+				var _p46 = _p16._1;
+				var _p45 = A2(_elm_lang$core$Dict$member, _p46, model.tags);
+				if (_p45 === true) {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								quiz_component: A2(_user$project$Quiz_Component$add_tag, model.quiz_component, _p46)
 							}),
 						_1: _user$project$Ports$clearInputText(_p16._0)
 					};
@@ -15985,8 +15994,8 @@ var _user$project$Main$update = F2(
 					_1: _user$project$Ports$confirm('Are you sure you want to delete this quiz?')
 				};
 			case 'ConfirmQuizDelete':
-				var _p46 = _p16._0;
-				if (_p46 === true) {
+				var _p47 = _p16._0;
+				if (_p47 === true) {
 					var quiz = _user$project$Quiz_Component$quiz(model.quiz_component);
 					return {
 						ctor: '_Tuple2',
@@ -15998,26 +16007,26 @@ var _user$project$Main$update = F2(
 				}
 			default:
 				if (_p16._0.ctor === 'Ok') {
-					var _p48 = _p16._0._0;
-					var _p47 = A2(_elm_lang$core$Debug$log, 'quiz delete', _p48);
+					var _p49 = _p16._0._0;
+					var _p48 = A2(_elm_lang$core$Debug$log, 'quiz delete', _p49);
 					return {
 						ctor: '_Tuple2',
 						_0: model,
-						_1: _elm_lang$navigation$Navigation$load(_p48.redirect)
+						_1: _elm_lang$navigation$Navigation$load(_p49.redirect)
 					};
 				} else {
-					var _p55 = _p16._0._0;
-					var _p49 = _p55;
-					switch (_p49.ctor) {
+					var _p56 = _p16._0._0;
+					var _p50 = _p56;
+					switch (_p50.ctor) {
 						case 'BadStatus':
-							var _p52 = _p49._0;
-							var _p50 = A2(_elm_lang$core$Debug$log, 'delete quiz error bad status', _p52);
-							var _p51 = _user$project$Quiz_Decode$decodeRespErrors(_p52.body);
-							if (_p51.ctor === 'Ok') {
+							var _p53 = _p50._0;
+							var _p51 = A2(_elm_lang$core$Debug$log, 'delete quiz error bad status', _p53);
+							var _p52 = _user$project$Quiz_Decode$decodeRespErrors(_p53.body);
+							if (_p52.ctor === 'Ok') {
 								var errors_str = A2(
 									_elm_lang$core$String$join,
 									' and ',
-									_elm_lang$core$Dict$values(_p51._0));
+									_elm_lang$core$Dict$values(_p52._0));
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
@@ -16032,10 +16041,10 @@ var _user$project$Main$update = F2(
 								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 							}
 						case 'BadPayload':
-							var _p53 = A2(_elm_lang$core$Debug$log, 'delete quiz error bad payload', _p49._1);
+							var _p54 = A2(_elm_lang$core$Debug$log, 'delete quiz error bad payload', _p50._1);
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 						default:
-							var _p54 = A2(_elm_lang$core$Debug$log, 'delete quiz error bad payload', _p55);
+							var _p55 = A2(_elm_lang$core$Debug$log, 'delete quiz error bad payload', _p56);
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 					}
 				}
@@ -16220,8 +16229,8 @@ var _user$project$Main$view = function (model) {
 									}
 								},
 								function () {
-									var _p56 = model.mode;
-									if (_p56.ctor === 'ReadOnlyMode') {
+									var _p57 = model.mode;
+									if (_p57.ctor === 'ReadOnlyMode') {
 										return {ctor: '[]'};
 									} else {
 										return {

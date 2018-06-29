@@ -302,8 +302,11 @@ update msg model = case msg of
       , Cmd.none)
 
     UpdateQuizIntro (ck_id, ck_text) ->
-       ({ model | quiz_component = Quiz.Component.set_quiz_attribute model.quiz_component "introduction" ck_text }
-      , Cmd.none)
+      case ck_id of
+       "quiz_introduction" ->
+         ({ model | quiz_component =
+           Quiz.Component.set_quiz_attribute model.quiz_component "introduction" ck_text }, Cmd.none)
+       _ -> (model, Cmd.none)
 
     AddTagInput input_id input ->
       case Dict.member input model.tags of
