@@ -12,7 +12,11 @@ import Test.Html.Query as Query
 import Test.Html.Selector exposing (attribute, text, tag)
 import Test.Html.Event as Event
 
+import Instructor.Profile
+
 import Quiz.Component
+import Quiz.View
+import Quiz.Create exposing (..)
 
 import Question.Field
 import Question.Model
@@ -59,6 +63,26 @@ test_text_component_group : Text.Component.Group.TextComponentGroup
 test_text_component_group =
   Quiz.Component.text_components test_quiz_component
 
+test_tags : Dict String String
+test_tags =
+  Dict.fromList [
+    ("Litrary Arts", "Literary Arts")
+  ]
+
+test_profile : Instructor.Profile.InstructorProfile
+test_profile =
+  Instructor.Profile.init_profile {id=Just 1, username="an_instructor@ereadingtool.com"}
+
+test_quiz_view_params : Quiz.Component.QuizComponent -> QuizViewParams
+test_quiz_view_params quiz_component = {
+    quiz=Quiz.Component.quiz quiz_component
+  , quiz_component=quiz_component
+  , quiz_fields=Quiz.Component.quiz_fields quiz_component
+  , tags=test_tags
+  , profile=test_profile
+  , write_locked=False
+  , mode=CreateMode }
+
 test_answer_field_mutual_exclusion : Expectation
 test_answer_field_mutual_exclusion =
   case Text.Component.Group.text_component test_text_component_group 0 of
@@ -84,8 +108,7 @@ test_answer_field_mutual_exclusion =
 test_quiz_errors : Quiz.Component.QuizComponent -> List Test
 test_quiz_errors quiz_component =
   let
-    html =
-      Text.View.view_text_components (\_ -> TextMsg) (Quiz.Component.text_components quiz_component) text_difficulties
+    html = Quiz.View.view_quiz (test_quiz_view_params quiz_component)
   in
     List.map
       (\((k, v) as err) ->

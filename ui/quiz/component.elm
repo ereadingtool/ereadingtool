@@ -1,6 +1,6 @@
 module Quiz.Component exposing (QuizComponent, emptyQuizComponent, text_components, set_text_components
   , quiz, set_quiz_attribute, init, update_quiz_errors, reinitialize_ck_editors, set_title_editable
-  , set_intro_editable, QuizViewParams, quiz_fields, add_tag, remove_tag, tags)
+  , set_intro_editable, quiz_fields, add_tag, remove_tag, tags)
 
 import Quiz.Model as Quiz exposing (Quiz)
 import Quiz.Field exposing (QuizFields, init_quiz_fields, QuizIntro, QuizTitle, QuizTags)
@@ -11,10 +11,6 @@ import Dict exposing (Dict)
 import Ports exposing (ckEditor, ckEditorSetHtml, CKEditorID, CKEditorText, addClassToCKEditor, selectAllInputText)
 
 type alias QuizAttributeName = String
-
-type alias QuizViewParams = {
-    quiz: Quiz
-  , quiz_component: QuizComponent }
 
 type alias QuizTags = Dict String String
 
