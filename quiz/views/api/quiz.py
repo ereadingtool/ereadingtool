@@ -29,7 +29,7 @@ class QuizAPIView(LoginRequiredMixin, View):
     @classmethod
     def form_validation_errors(cls, errors: dict, parent_key: str, form: ModelForm) -> dict:
         for k in form.errors.keys():
-            errors['_'.join([parent_key, k])] = str(form.errors[k].data[0].message)
+            errors['_'.join([parent_key, k])] = '. '.join([err for err in form.errors[k]])
 
         return errors
 

@@ -12,6 +12,7 @@ from quiz.models import Quiz
 from tag.models import Tag
 from text.models import TextDifficulty, Text
 from user.models import ReaderUser, Instructor
+from question.models import Answer
 
 
 class QuizTest(TestCase):
@@ -222,6 +223,26 @@ class QuizTest(TestCase):
         resp = self.client.post('/api/quiz/{0}/lock/'.format(quiz.pk), content_type='application/json')
 
         self.assertEquals(resp.status_code, 500, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+    def test_post_quiz_max_char_limits(self):
+        test_data = self.get_test_data()
+
+        answer_feedback_limit = Answer._meta.get_field('feedback').max_length
+
+        test_data['texts'][0]['questions'][0]['answers'][0]['feedback'] = 'a' * (answer_feedback_limit +1)
+
+        resp = self.client.post('/api/quiz/', json.dumps(test_data), content_type='application/json')
+
+        self.assertEquals(resp.status_code, 400, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        resp_content = json.loads(resp.content.decode('utf8'))
+
+        self.assertIn('errors', resp_content)
+        self.assertIn('text_0_question_0_answer_0_feedback', resp_content['errors'])
+
+        self.assertEquals(resp_content['errors']['text_0_question_0_answer_0_feedback'],
+                          'Ensure this value has at most '
+                          '{0} characters (it has {1}).'.format(answer_feedback_limit, (answer_feedback_limit+1)))
 
     def test_post_quiz(self):
         resp = self.client.post('/api/quiz/', json.dumps({"malformed": "json"}), content_type='application/json')
