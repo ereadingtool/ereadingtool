@@ -3,14 +3,11 @@ module Quiz.Create exposing (Flags, Mode(..), Msg(..), QuizField(..), Model, Qui
 import Time
 import Dict exposing (Dict)
 
-import Json.Decode as Decode
 import Json.Encode
 
 import Http
-import HttpHelpers exposing (post_with_headers, put_with_headers, delete_with_headers)
 
 import Text.Model exposing (Text, TextDifficulty)
-import Text.View
 import Text.Update
 
 import Instructor.Profile
@@ -19,7 +16,6 @@ import Flags
 import Quiz.Model
 import Quiz.Component exposing (QuizComponent)
 import Quiz.Field exposing (QuizIntro, QuizTitle, QuizTags)
-import Quiz.Encode
 import Quiz.Decode
 
 import Instructor.Profile
@@ -68,7 +64,7 @@ type alias Model = {
   , success_msg : Maybe String
   , error_msg : Maybe String
   , quiz_component : QuizComponent
-  , question_difficulties : List TextDifficulty
+  , text_difficulties : List TextDifficulty
   , tags: Dict String String
   , write_locked: Bool }
 
@@ -79,5 +75,6 @@ type alias QuizViewParams = {
   , profile: Instructor.Profile.InstructorProfile
   , tags: Dict String String
   , write_locked: WriteLocked
-  , mode: Mode }
+  , mode: Mode
+  , text_difficulties: List TextDifficulty }
 

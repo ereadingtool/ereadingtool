@@ -1,8 +1,6 @@
 import Html exposing (..)
 import Html.Attributes exposing (classList, attribute)
 
-import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
-
 import Http
 import HttpHelpers exposing (post_with_headers, put_with_headers, delete_with_headers)
 
@@ -33,7 +31,6 @@ import Quiz.Decode
 
 import Time
 
-import Text.View
 import Text.Update
 
 import Task
@@ -54,7 +51,7 @@ init flags = ({
       , error_msg=Nothing
       , profile=Instructor.Profile.init_profile flags.instructor_profile
       , quiz_component=Quiz.Component.emptyQuizComponent
-      , question_difficulties=[]
+      , text_difficulties=[]
       , tags=Dict.fromList []
       , write_locked=False
   }, Cmd.batch [ retrieveTextDifficultyOptions, (quizJSONtoComponent flags.quiz), tagsToDict flags.tags ])
@@ -183,7 +180,7 @@ update msg model = case msg of
         _ -> (model, Cmd.none)
 
     UpdateTextDifficultyOptions (Ok difficulties) ->
-      ({ model | question_difficulties = difficulties }, Cmd.none)
+      ({ model | text_difficulties = difficulties }, Cmd.none)
 
     -- handle user-friendly msgs
     UpdateTextDifficultyOptions (Err _) ->
@@ -412,30 +409,6 @@ view_msgs model = div [attribute "class" "msgs"] [
   , div [attribute "class" "success_msg"] [ view_msg model.success_msg ]
   ]
 
-view_submit : Model -> Html Msg
-view_submit model =
-  Html.div [classList [("submit_section", True)]] [
-    Html.div [attribute "class" "submit", onClick (TextComponentMsg Text.Update.AddText)] [
-        Html.img [
-          attribute "src" "/static/img/add_text.svg"
-        , attribute "height" "20px"
-        , attribute "width" "20px"] [], Html.text "Add Text"
-    ]
-  , Html.div [attribute "class" "submit", onClick DeleteQuiz] [
-         Html.text "Delete Quiz", Html.img [
-          attribute "src" "/static/img/delete_quiz.svg"
-        , attribute "height" "18px"
-        , attribute "width" "18px"] []
-    ]
-  , Html.div [] []
-  , Html.div [attribute "class" "submit", onClick SubmitQuiz] [
-        Html.img [
-          attribute "src" "/static/img/save_disk.svg"
-        , attribute "height" "20px"
-        , attribute "width" "20px"] [], Html.text "Save Quiz"
-    ]
-  ]
-
 view : Model -> Html Msg
 view model =
   let
@@ -446,17 +419,12 @@ view model =
       , tags=model.tags
       , profile=model.profile
       , write_locked=model.write_locked
-      , mode=model.mode }
+      , mode=model.mode
+      , text_difficulties=model.text_difficulties }
   in
-    div [] <| [
+    div [] [
         Views.view_header (Profile.fromInstructorProfile model.profile) Nothing
-      , (view_msgs model)
-      , (Views.view_preview)
-      , div [attribute "id" "quiz"] <| [
-          (Quiz.View.view_quiz quiz_view_params)
-        , (Text.View.view_text_components TextComponentMsg
-            (Quiz.Component.text_components model.quiz_component) model.question_difficulties)
-      ] ++ (case model.mode of
-            ReadOnlyMode write_locker -> []
-            _ -> [view_submit model])
+      , view_msgs model
+      , Views.view_preview
+      , Quiz.View.view_quiz quiz_view_params
     ]

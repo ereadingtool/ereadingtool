@@ -66,7 +66,13 @@ test_text_component_group =
 test_tags : Dict String String
 test_tags =
   Dict.fromList [
-    ("Litrary Arts", "Literary Arts")
+    ("Literary Arts", "Literary Arts")
+  ]
+
+test_text_difficulties : List TextDifficulty
+test_text_difficulties =
+  [
+    ("intermediate_mid", "Intermediate Mid")
   ]
 
 test_profile : Instructor.Profile.InstructorProfile
@@ -81,7 +87,8 @@ test_quiz_view_params quiz_component = {
   , tags=test_tags
   , profile=test_profile
   , write_locked=False
-  , mode=CreateMode }
+  , mode=CreateMode
+  , text_difficulties=test_text_difficulties }
 
 test_answer_field_mutual_exclusion : Expectation
 test_answer_field_mutual_exclusion =

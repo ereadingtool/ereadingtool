@@ -14,6 +14,8 @@ import Date.Utils
 import Instructor.Profile exposing (InstructorProfile)
 
 import Quiz.Create exposing (..)
+import Text.View
+import Text.Update
 
 
 view_quiz_date : QuizViewParams -> Html Msg
@@ -128,8 +130,8 @@ view_quiz_lock params =
         _ -> div [] []
     _ -> div [] []
 
-view_quiz : QuizViewParams -> Html Msg
-view_quiz params =
+view_quiz_attributes : QuizViewParams -> Html Msg
+view_quiz_attributes params =
   div [attribute "id" "quiz_attributes"] [
      view_quiz_title params edit_quiz_title (Quiz.Field.title params.quiz_fields)
    , view_quiz_introduction params edit_quiz_introduction (Quiz.Field.intro params.quiz_fields)
@@ -137,3 +139,37 @@ view_quiz params =
    , view_quiz_lock params
    , view_quiz_date params
   ]
+
+view_submit : Html Msg
+view_submit =
+  Html.div [classList [("submit_section", True)]] [
+    Html.div [attribute "class" "submit", onClick (TextComponentMsg Text.Update.AddText)] [
+        Html.img [
+          attribute "src" "/static/img/add_text.svg"
+        , attribute "height" "20px"
+        , attribute "width" "20px"] [], Html.text "Add Text"
+    ]
+  , Html.div [attribute "class" "submit", onClick DeleteQuiz] [
+         Html.text "Delete Quiz", Html.img [
+          attribute "src" "/static/img/delete_quiz.svg"
+        , attribute "height" "18px"
+        , attribute "width" "18px"] []
+    ]
+  , Html.div [] []
+  , Html.div [attribute "class" "submit", onClick SubmitQuiz] [
+        Html.img [
+          attribute "src" "/static/img/save_disk.svg"
+        , attribute "height" "20px"
+        , attribute "width" "20px"] [], Html.text "Save Quiz"
+    ]
+  ]
+
+view_quiz : QuizViewParams -> Html Msg
+view_quiz params =
+  div [attribute "id" "quiz"] <| [
+    (view_quiz_attributes params)
+  , (Text.View.view_text_components TextComponentMsg (Quiz.Component.text_components params.quiz_component)
+    params.text_difficulties)
+  ] ++ (case params.mode of
+            ReadOnlyMode write_locker -> []
+            _ -> [view_submit])
