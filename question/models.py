@@ -42,7 +42,7 @@ class Answer(models.Model):
 
     text = models.CharField(max_length=255, blank=False)
     correct = models.BooleanField(default=False, blank=False)
-    feedback = models.CharField(max_length=255, blank=False)
+    feedback = models.CharField(max_length=2048, blank=False)
 
     def __str__(self):
         return '{order}'.format(order=self.order)
