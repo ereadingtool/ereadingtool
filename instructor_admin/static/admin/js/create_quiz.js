@@ -12199,6 +12199,17 @@ var _user$project$Text_Update$UpdateTextValue = F3(
 		return {ctor: 'UpdateTextValue', _0: a, _1: b, _2: c};
 	});
 
+var _user$project$Config$answer_feedback_limit = 2048;
+var _user$project$Config$text_char_limit = 2048;
+var _user$project$Config$student_api_endpoint = '/api/student/';
+var _user$project$Config$student_login_api_endpoint = '/api/student/login/';
+var _user$project$Config$student_signup_api_endpoint = '/api/student/signup/';
+var _user$project$Config$instructor_login_api_endpoint = '/api/instructor/login/';
+var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signup/';
+var _user$project$Config$question_api_endpoint = '/api/question/';
+var _user$project$Config$text_api_endpoint = '/api/text/';
+var _user$project$Config$quiz_api_endpoint = '/api/quiz/';
+
 var _user$project$Answer_View$edit_answer_feedback = F2(
 	function (params, answer_field) {
 		var answer = _user$project$Answer_Field$answer(answer_field);
@@ -12266,11 +12277,42 @@ var _user$project$Answer_View$edit_answer_feedback = F2(
 					ctor: '::',
 					_0: A2(
 						_elm_lang$html$Html$div,
-						{ctor: '[]'},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text(feedback_field.error_string),
+							_0: _elm_lang$html$Html_Attributes$classList(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'chars_remaining', _1: true},
+									_1: {
+										ctor: '::',
+										_0: {
+											ctor: '_Tuple2',
+											_0: 'error',
+											_1: _elm_lang$core$Native_Utils.cmp(
+												_user$project$Config$answer_feedback_limit - _elm_lang$core$String$length(answer.feedback),
+												0) < 0
+										},
+										_1: {ctor: '[]'}
+									}
+								}),
 							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									'Characters remaining ',
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										_elm_lang$core$Basics$toString(
+											_user$project$Config$answer_feedback_limit - _elm_lang$core$String$length(answer.feedback)),
+										'.'))),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(feedback_field.error_string),
+								_1: {ctor: '[]'}
+							}
 						}),
 					_1: {ctor: '[]'}
 				}
@@ -12453,15 +12495,6 @@ var _user$project$Answer_View$AnswerFieldParams = F3(
 	function (a, b, c) {
 		return {text_component: a, question: b, msg: c};
 	});
-
-var _user$project$Config$student_api_endpoint = '/api/student/';
-var _user$project$Config$student_login_api_endpoint = '/api/student/login/';
-var _user$project$Config$student_signup_api_endpoint = '/api/student/signup/';
-var _user$project$Config$instructor_login_api_endpoint = '/api/instructor/login/';
-var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signup/';
-var _user$project$Config$question_api_endpoint = '/api/question/';
-var _user$project$Config$text_api_endpoint = '/api/text/';
-var _user$project$Config$quiz_api_endpoint = '/api/quiz/';
 
 var _user$project$Date_Utils$am_pm_fmt = function (date) {
 	var _p0 = _elm_lang$core$Native_Utils.cmp(
@@ -14628,7 +14661,49 @@ var _user$project$Text_View$view_text_component = F3(
 													params(body_field),
 													_user$project$Text_View$view_body,
 													_user$project$Text_View$edit_body),
-												_1: {ctor: '[]'}
+												_1: {
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$div,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$classList(
+																{
+																	ctor: '::',
+																	_0: {ctor: '_Tuple2', _0: 'chars_remaining', _1: true},
+																	_1: {
+																		ctor: '::',
+																		_0: {
+																			ctor: '_Tuple2',
+																			_0: 'error',
+																			_1: _elm_lang$core$Native_Utils.cmp(
+																				_user$project$Config$text_char_limit - _elm_lang$core$String$length(text.body),
+																				0) < 0
+																		},
+																		_1: {ctor: '[]'}
+																	}
+																}),
+															_1: {ctor: '[]'}
+														},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text(
+																A2(
+																	_elm_lang$core$Basics_ops['++'],
+																	'Characters remaining ',
+																	A2(
+																		_elm_lang$core$Basics_ops['++'],
+																		_elm_lang$core$Basics$toString(
+																			_user$project$Config$text_char_limit - _elm_lang$core$String$length(text.body)),
+																		'.'))),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$html$Html$text(body_field.error_string),
+																_1: {ctor: '[]'}
+															}
+														}),
+													_1: {ctor: '[]'}
+												}
 											}
 										}),
 									_1: {ctor: '[]'}

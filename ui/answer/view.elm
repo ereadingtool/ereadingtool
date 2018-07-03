@@ -11,6 +11,8 @@ import Text.Component exposing (TextComponent)
 
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
 
+import Config exposing (answer_feedback_limit)
+
 type alias AnswerFieldParams msg = {
     text_component: TextComponent
   , question: Question.Model.Question
@@ -53,7 +55,16 @@ edit_answer_feedback params answer_field =
           , attribute "placeholder" "Give some feedback."
           , classList [ ("answer_feedback", True), ("input_error", feedback_field.error) ]
         ] [Html.text answer.feedback]
-      , div [] [Html.text feedback_field.error_string]
+      , div [
+        classList [
+            ("chars_remaining", True)
+          , ("error", (answer_feedback_limit - (String.length answer.feedback)) < 0)
+        ] ] [
+        Html.text
+         <| "Characters remaining "
+         ++ (toString (answer_feedback_limit - (String.length answer.feedback)))
+         ++ "."
+      , Html.text feedback_field.error_string ]
     ]
 
 edit_answer : (AnswerFieldParams msg) -> AnswerField -> Html msg
