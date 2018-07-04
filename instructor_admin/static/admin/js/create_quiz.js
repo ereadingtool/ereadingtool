@@ -14122,11 +14122,24 @@ var _user$project$Text_View$view_title = function (params) {
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: A2(_user$project$Text_View$toggle_editable, _elm_lang$html$Html_Events$onClick, params),
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', params.field.id),
 			_1: {
 				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'text_property'),
-				_1: {ctor: '[]'}
+				_0: A2(_user$project$Text_View$toggle_editable, _elm_lang$html$Html_Events$onClick, params),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$classList(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'text_property', _1: true},
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'input_error', _1: params.field.error},
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {ctor: '[]'}
+				}
 			}
 		},
 		{
@@ -14162,8 +14175,21 @@ var _user$project$Text_View$edit_title = function (params) {
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'text_property'),
-			_1: {ctor: '[]'}
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', params.field.id),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'text_property', _1: true},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'input_error', _1: params.field.error},
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			}
 		},
 		{
 			ctor: '::',
@@ -14353,8 +14379,21 @@ var _user$project$Text_View$edit_source = function (params) {
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'text_property'),
-			_1: {ctor: '[]'}
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', params.field.id),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'text_property', _1: true},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'input_error', _1: params.field.error},
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			}
 		},
 		{
 			ctor: '::',
@@ -14408,11 +14447,24 @@ var _user$project$Text_View$view_source = function (params) {
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: A2(_user$project$Text_View$toggle_editable, _elm_lang$html$Html_Events$onClick, params),
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', params.field.id),
 			_1: {
 				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'text_property'),
-				_1: {ctor: '[]'}
+				_0: A2(_user$project$Text_View$toggle_editable, _elm_lang$html$Html_Events$onClick, params),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$classList(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'text_property', _1: true},
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'input_error', _1: params.field.error},
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {ctor: '[]'}
+				}
 			}
 		},
 		{

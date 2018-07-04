@@ -53,16 +53,21 @@ edit_author params =
   ]
 
 view_source : (TextField msg) -> Html msg
-view_source params = Html.div [
-   toggle_editable onClick params
- , attribute "class" "text_property"] [
+view_source params =
+  Html.div [
+     attribute "id" params.field.id
+   , toggle_editable onClick params
+   , classList [("text_property", True), ("input_error", params.field.error)] ] [
      div [] [ Html.text "Text Source" ]
    , div [attribute "class" "editable"] [ Html.text params.text.source ]
   ]
 
 edit_source : (TextField msg) -> Html msg
 edit_source params =
-  div [attribute "class" "text_property"] [
+  div [
+    attribute "id" params.field.id
+  , classList [("text_property", True), ("input_error", params.field.error)]
+  ] [
     div [] [ Html.text "Text Source" ]
   , Html.input [
         attribute "type" "text"
@@ -106,14 +111,17 @@ toggle_editable event params = event <| params.msg (ToggleEditable params.text_c
 
 view_title : (TextField msg) -> Html msg
 view_title params =
-  div [toggle_editable onClick params, attribute "class" "text_property"] [
+  div [
+      attribute "id" params.field.id
+    , toggle_editable onClick params, classList [("text_property", True)
+    , ("input_error", params.field.error)] ] [
       div [] [ Html.text "Text Title" ]
     , div [attribute "class" "editable"] [ Html.text params.text.title ]
   ]
 
 edit_title : (TextField msg) -> Html msg
 edit_title params =
-  div [attribute "class" "text_property"] [
+  div [attribute "id" params.field.id, classList[("text_property", True), ("input_error", params.field.error)]] [
     div [] [ Html.text "Text Title" ]
   , Html.input [
         attribute "type" "text"

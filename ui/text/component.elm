@@ -15,7 +15,6 @@ import Ports exposing (ckEditor, ckEditorSetHtml, CKEditorID, CKEditorText)
 
 type alias TextField = Field.FieldAttributes { name : String }
 
-
 type alias TextFields = {
     title: TextField
   , source: TextField
