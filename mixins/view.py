@@ -4,7 +4,7 @@ from rjsmin import jsmin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.db.models import ObjectDoesNotExist
-from text.models import TextDifficulty
+from text_old.models import TextDifficulty
 
 from django.views.decorators.vary import vary_on_cookie
 from django.views.decorators.cache import cache_control

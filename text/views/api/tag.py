@@ -7,7 +7,7 @@ from django.http import HttpResponseNotAllowed
 from django.urls import reverse_lazy
 from django.views.generic import View
 
-from quiz.models import Quiz
+from text.models import Quiz
 
 
 class QuizTagAPIView(LoginRequiredMixin, View):

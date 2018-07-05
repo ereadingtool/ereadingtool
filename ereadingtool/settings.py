@@ -48,10 +48,10 @@ INSTALLED_APPS += [
 # project apps
 INSTALLED_APPS += [
     'question',
-    'text',
+    'text_old',
     'user',
     'instructor_admin',
-    'quiz',
+    'text',
     'tag'
 ]
 
@@ -78,7 +78,7 @@ TEMPLATES = [
             os.path.join(BASE_DIR, 'user/templates'),
             os.path.join(BASE_DIR, 'question/templates'),
             os.path.join(BASE_DIR, 'instructor_admin/templates'),
-            os.path.join(BASE_DIR, 'quiz/templates')
+            os.path.join(BASE_DIR, 'text/templates')
         ]
         ,
         'APP_DIRS': True,

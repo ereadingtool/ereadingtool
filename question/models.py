@@ -1,10 +1,10 @@
 from django.db import models
 from mixins.model import Timestamped
-from text.models import Text
+from text_old.models import TextSection
 
 
 class Question(Timestamped, models.Model):
-    text = models.ForeignKey(Text, blank=False, related_name='questions', on_delete=models.CASCADE)
+    text_section = models.ForeignKey(TextSection, blank=False, related_name='questions', on_delete=models.CASCADE)
 
     body = models.TextField(blank=False)
     order = models.PositiveIntegerField(default=0, editable=False)
@@ -22,7 +22,7 @@ class Question(Timestamped, models.Model):
     def to_dict(self):
         return {
             'id': self.pk,
-            'text_id': self.text.pk,
+            'text_section_id': self.text_section.pk,
             'created_dt': self.created_dt.isoformat(),
             'modified_dt': self.modified_dt.isoformat(),
             'body': self.body,
@@ -45,7 +45,7 @@ class Answer(models.Model):
     feedback = models.CharField(max_length=2048, blank=False)
 
     def __str__(self):
-        return '{order}'.format(order=self.order)
+        return f'{self.order}'
 
     def to_dict(self):
         return {

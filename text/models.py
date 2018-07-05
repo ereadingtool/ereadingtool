@@ -1,6 +1,9 @@
+from typing import TypeVar, Optional
+
 from django.db import models
-from mixins.model import Timestamped
-from quiz.models import Quiz
+
+from mixins.model import Timestamped, WriteLockable, WriteLocked
+from tag.models import Taggable
 
 
 class TextDifficulty(models.Model):
@@ -28,16 +31,117 @@ class TextDifficulty(models.Model):
                 difficulty.save()
 
 
-class Text(Timestamped, models.Model):
-    quiz = models.ForeignKey(Quiz, related_name='texts', on_delete=models.CASCADE)
+class Text(Taggable, WriteLockable, Timestamped, models.Model):
+    introduction = models.CharField(max_length=512, null=False, blank=False)
 
+    title = models.CharField(max_length=255, null=False, blank=False)
     source = models.CharField(max_length=255, blank=False)
     difficulty = models.ForeignKey(TextDifficulty, null=True, related_name='texts', on_delete=models.SET_NULL)
-
-    body = models.TextField(blank=False)
-
-    title = models.CharField(max_length=255, blank=True)
     author = models.CharField(max_length=255, blank=True)
+
+    created_by = models.ForeignKey('user.Instructor', null=True, on_delete=models.SET_NULL,
+                                   related_name='created_texts')
+    last_modified_by = models.ForeignKey('user.Instructor', null=True, on_delete=models.SET_NULL,
+                                         related_name='last_modified_text')
+
+    @classmethod
+    def update(cls, text_params: dict, text_sections_params: list(dict)) -> TypeVar('Text'):
+        if text_params['text'].write_locked:
+            raise WriteLocked
+
+        text = text_params['form'].save()
+        text.save()
+
+        for section_params in text_sections_params:
+            text_section = section_params['text_section_form'].save(commit=False)
+            text_section.text = text
+            text_section.save()
+
+            for i, question in enumerate(section_params['questions']):
+                question_obj = question['form'].save(commit=False)
+
+                question_obj.text = text
+                question_obj.order = i
+                question_obj.save()
+
+                for j, answer_form in enumerate(question['answer_forms']):
+                    answer = answer_form.save(commit=False)
+
+                    answer.question = question_obj
+                    answer.order = j
+                    answer.save()
+
+        return text
+
+    @classmethod
+    def create(cls, text_params: dict, text_section_params: list(dict)) -> TypeVar('Text'):
+        text = text_params['form'].save()
+        text.save()
+
+        for section_params in text_section_params:
+            text_section = section_params['text_section_form'].save(commit=False)
+            text_section.text = text
+            text_section.save()
+
+            for i, question in enumerate(section_params['questions']):
+                question_obj = question['form'].save(commit=False)
+
+                question_obj.text_section = text_section
+                question_obj.order = i
+                question_obj.save()
+
+                for j, answer_form in enumerate(question['answer_forms']):
+                    answer = answer_form.save(commit=False)
+
+                    answer.question = question_obj
+                    answer.order = j
+                    answer.save()
+
+        return text
+
+    def to_summary_dict(self) -> dict:
+        return {
+            'id': self.pk,
+            'title': self.title,
+            'modified_dt': self.modified_dt.isoformat(),
+            'created_dt': self.created_dt.isoformat(),
+            'created_by': str(self.created_by),
+            'last_modified_by': str(self.last_modified_by) if self.last_modified_by else None,
+            'tags': [tag.name for tag in self.tags.all()],
+            'text_section_count': self.sections.count(),
+            'write_locker': str(self.write_locker) if self.write_locker else None
+        }
+
+    def to_dict(self, text_sections: Optional[list]=None) -> dict:
+        return {
+            'id': self.pk,
+            'title': self.title,
+            'introduction': self.introduction,
+            'created_by': str(self.created_by),
+            'last_modified_by': str(self.last_modified_by) if self.last_modified_by else None,
+            'tags': [tag.name for tag in self.tags.all()],
+            'modified_dt': self.modified_dt.isoformat(),
+            'created_dt': self.created_dt.isoformat(),
+            'sections': [text_section.to_dict() for text_section in
+                         (text_sections if text_sections else self.sections.all())],
+            'write_locker': str(self.write_locker) if self.write_locker else None
+        }
+
+    def __str__(self):
+        return self.title
+
+    def delete(self, *args, **kwargs):
+        if self.is_locked():
+            raise WriteLocked
+
+        super(Text, self).delete(*args, **kwargs)
+
+
+class TextSection(Timestamped, models.Model):
+    text = models.ForeignKey(Text, blank=False, related_name='sections', on_delete=models.SET_NULL)
+
+    order = models.IntegerField(blank=False)
+    body = models.TextField(max_length=2048, blank=False)
 
     def to_dict(self):
         questions = [question.to_dict() for question in self.questions.all()]
@@ -45,16 +149,12 @@ class Text(Timestamped, models.Model):
 
         return {
             'id': self.pk,
-            'title': self.title,
             'created_dt': self.created_dt.isoformat(),
             'modified_dt': self.modified_dt.isoformat(),
             'question_count': questions_count,
             'questions': questions,
-            'source': self.source,
-            'difficulty': self.difficulty.slug,
             'body': self.body,
-            'author': self.author
         }
 
     def __str__(self):
-        return '{title}'.format(title=self.title)
+        return self.text.title

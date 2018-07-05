@@ -4,7 +4,7 @@ from django.db.models import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.views.generic import View
 
-from text.models import Text, TextDifficulty
+from text_old.models import Text, TextDifficulty
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 

@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 
 from mixins.view import ElmLoadJsView
-from quiz.models import Quiz
+from text.models import Quiz
 from user.views.mixin import ProfileView
 
 

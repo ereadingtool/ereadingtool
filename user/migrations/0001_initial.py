@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
             name='Student',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('difficulty_preference', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='students', to='text.TextDifficulty')),
+                ('difficulty_preference', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='students', to='text_old.TextDifficulty')),
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),

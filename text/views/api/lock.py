@@ -6,13 +6,13 @@ from django.http import HttpResponseNotAllowed
 from django.urls import reverse_lazy
 from django.views.generic import View
 
-from quiz.models import Quiz
+from text.models import Text
 
 
-class QuizLockAPIView(LoginRequiredMixin, View):
+class TextLockAPIView(LoginRequiredMixin, View):
     login_url = reverse_lazy('instructor-login')
 
-    model = Quiz
+    model = Text
 
     allowed_methods = ['post', 'delete']
 
@@ -21,16 +21,16 @@ class QuizLockAPIView(LoginRequiredMixin, View):
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
 
         try:
-            quiz = Quiz.objects.get(pk=kwargs['pk'])
+            text = Text.objects.get(pk=kwargs['pk'])
 
-            if quiz.is_locked():
+            if text.is_locked():
                 return HttpResponseServerError(json.dumps({'errors':
-                                                           'quiz is locked by {0}'.format(quiz.write_locker)}))
+                                                           'text is locked by {0}'.format(text.write_locker)}))
 
-            locked = quiz.lock(self.request.user.instructor)
+            locked = text.lock(self.request.user.instructor)
 
             return HttpResponse(json.dumps({'locked': locked}))
-        except Quiz.DoesNotExist:
+        except Text.DoesNotExist:
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
 
     def delete(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
@@ -38,14 +38,14 @@ class QuizLockAPIView(LoginRequiredMixin, View):
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
 
         try:
-            quiz = Quiz.objects.get(pk=kwargs['pk'])
+            text = Text.objects.get(pk=kwargs['pk'])
 
-            if quiz.is_locked() and quiz.write_locker != self.request.user.instructor:
+            if text.is_locked() and text.write_locker != self.request.user.instructor:
                 return HttpResponseServerError(json.dumps({'errors':
-                                                           'quiz is locked by {0}'.format(quiz.write_locker)}))
+                                                           'quiz is locked by {0}'.format(text.write_locker)}))
 
-            locked = quiz.unlock()
+            locked = text.unlock()
 
             return HttpResponse(json.dumps({'locked': locked}))
-        except Quiz.DoesNotExist:
+        except Text.DoesNotExist:
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))

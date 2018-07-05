@@ -13,16 +13,16 @@ from django.views.generic import View
 from mixins.model import WriteLocked
 from question.forms import QuestionForm, AnswerForm
 from question.models import Question
-from quiz.forms import QuizForm
-from quiz.models import Quiz
-from text.forms import TextForm, ModelForm
-from text.models import TextDifficulty, Text
+from text.forms import TextForm
+from text.models import Text
+from text_old.forms import TextForm, ModelForm
+from text_old.models import TextDifficulty, Text
 
 
 class QuizAPIView(LoginRequiredMixin, View):
     login_url = reverse_lazy('instructor-login')
 
-    model = Quiz
+    model = Text
 
     allowed_methods = ['get', 'put', 'post', 'delete']
 
@@ -167,17 +167,17 @@ class QuizAPIView(LoginRequiredMixin, View):
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
 
         try:
-            quiz = Quiz.objects.get(pk=kwargs['pk'])
+            text = Text.objects.get(pk=kwargs['pk'])
 
             profile = self.request.user.instructor
 
-            quiz_params, text_params, resp = self.validate_params(request.body.decode('utf8'), quiz)
+            quiz_params, text_params, resp = self.validate_params(request.body.decode('utf8'), text)
 
             if resp:
                 return resp
 
             try:
-                quiz = Quiz.update(quiz_params=quiz_params, text_params=text_params)
+                quiz = Text.update(quiz_params=quiz_params, text_params=text_params)
                 quiz.last_modified_by = profile
 
                 quiz.save()

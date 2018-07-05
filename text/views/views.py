@@ -15,11 +15,11 @@ from mixins.model import WriteLocked
 from mixins.view import ElmLoadJsView
 from question.forms import QuestionForm, AnswerForm
 from question.models import Question
-from quiz.forms import QuizForm
-from quiz.models import Quiz
+from text.forms import QuizForm
+from text.models import Quiz
 
-from text.forms import TextForm, ModelForm
-from text.models import TextDifficulty, Text
+from text_old.forms import TextForm, ModelForm
+from text_old.models import TextDifficulty, Text
 from user.views.mixin import ProfileView
 
 

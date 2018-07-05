@@ -23,7 +23,7 @@ class Taggable(models.Model):
     class Meta:
         abstract = True
 
-    tags = models.ManyToManyField(Tag, related_name='quizzes')
+    tags = models.ManyToManyField(Tag, related_name='texts')
 
     def add_tag(self, tag_name: str):
         tag, created = Tag.objects.get_or_create(name=tag_name)
