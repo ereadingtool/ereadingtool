@@ -64,7 +64,7 @@ edit_quiz_title params quiz_title =
 view_quiz_introduction : QuizViewParams -> (QuizViewParams -> QuizIntro -> Html Msg) -> QuizIntro -> Html Msg
 view_quiz_introduction params edit_view quiz_intro =
   div [
-        attribute "id" "quiz_intro_view"
+        attribute "id" (Quiz.Field.intro_id quiz_intro)
       , onClick (ToggleEditable (Intro quiz_intro) True)
       , classList [("input_error", Quiz.Field.intro_error quiz_intro)]] [
     div [] [ Html.text "Quiz Introduction" ]
@@ -80,7 +80,7 @@ edit_quiz_introduction params quiz_intro =
   div [] [
     textarea [
       attribute "id" (Quiz.Field.intro_id quiz_intro)
-    , attribute "class" "quiz_introduction"
+    , classList [("quiz_introduction", True), ("input_error", Quiz.Field.intro_error quiz_intro)]
     , onInput (UpdateQuizAttributes "introduction") ] [ Html.text params.quiz.introduction ]
   ]
 

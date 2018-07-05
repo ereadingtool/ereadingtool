@@ -15218,7 +15218,20 @@ var _user$project$Quiz_View$edit_quiz_introduction = F2(
 							_user$project$Quiz_Field$intro_id(quiz_intro)),
 						_1: {
 							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'quiz_introduction'),
+							_0: _elm_lang$html$Html_Attributes$classList(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'quiz_introduction', _1: true},
+									_1: {
+										ctor: '::',
+										_0: {
+											ctor: '_Tuple2',
+											_0: 'input_error',
+											_1: _user$project$Quiz_Field$intro_error(quiz_intro)
+										},
+										_1: {ctor: '[]'}
+									}
+								}),
 							_1: {
 								ctor: '::',
 								_0: _elm_lang$html$Html_Events$onInput(
@@ -15241,7 +15254,10 @@ var _user$project$Quiz_View$view_quiz_introduction = F3(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'quiz_intro_view'),
+				_0: A2(
+					_elm_lang$html$Html_Attributes$attribute,
+					'id',
+					_user$project$Quiz_Field$intro_id(quiz_intro)),
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html_Events$onClick(
