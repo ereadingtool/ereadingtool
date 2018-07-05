@@ -136,7 +136,7 @@ class TextTest(TestCase):
 
         text = Text.objects.get(pk=resp_content['id'])
 
-        test_data['title'] = 'a new quiz title'
+        test_data['title'] = 'a new text title'
         test_data['introduction'] = 'a new introduction'
         test_data['texts'][1]['author'] = 'J. K. Idding'
 
@@ -157,7 +157,7 @@ class TextTest(TestCase):
 
         self.assertTrue(resp_content)
 
-        self.assertEquals(resp_content['title'], 'a new quiz title')
+        self.assertEquals(resp_content['title'], 'a new text title')
 
         self.assertEquals(resp_content['texts'][1]['author'], 'J. K. Idding')
 
@@ -243,7 +243,7 @@ class TextTest(TestCase):
                           'Ensure this value has at most '
                           '{0} characters (it has {1}).'.format(answer_feedback_limit, (answer_feedback_limit+1)))
 
-    def test_post_quiz(self):
+    def test_post_text(self):
         resp = self.client.post('/api/text/', json.dumps({"malformed": "json"}), content_type='application/json')
 
         self.assertEquals(resp.status_code, 400)
@@ -259,11 +259,11 @@ class TextTest(TestCase):
         self.assertIn('id', resp_content)
         self.assertIn('redirect', resp_content)
 
-        quiz = Text.objects.get(pk=resp_content['id'])
+        text = Text.objects.get(pk=resp_content['id'])
 
         self.assertEquals(Text.objects.count(), 2)
 
-        resp = self.client.get('/api/text/{0}/'.format(quiz.id), content_type='application/json')
+        resp = self.client.get('/api/text/{0}/'.format(text.id), content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
@@ -271,7 +271,7 @@ class TextTest(TestCase):
 
         self.assertTrue(resp_content)
 
-        self.assertEquals(resp_content['title'], 'quiz title')
+        self.assertEquals(resp_content['title'], 'text title')
         self.assertEquals(resp_content['introduction'], 'an introductory text')
         self.assertEquals(resp_content['tags'], ['Sports', 'Science/Technology', 'Other'])
 
