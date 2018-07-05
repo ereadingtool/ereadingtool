@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.views.generic import View
 
-from text_old.models import Text
+from text.models import Text
 from question.models import Question
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy

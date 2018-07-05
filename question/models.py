@@ -1,6 +1,6 @@
 from django.db import models
 from mixins.model import Timestamped
-from text_old.models import TextSection
+from text.models import TextSection
 
 
 class Question(Timestamped, models.Model):

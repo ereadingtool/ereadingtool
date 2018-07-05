@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from text_old.models import TextDifficulty
+from text.models import TextDifficulty
 
 
 class ReaderUser(AbstractUser):

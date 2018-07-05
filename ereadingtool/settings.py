@@ -48,7 +48,6 @@ INSTALLED_APPS += [
 # project apps
 INSTALLED_APPS += [
     'question',
-    'text_old',
     'user',
     'instructor_admin',
     'text',

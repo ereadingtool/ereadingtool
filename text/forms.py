@@ -1,14 +1,14 @@
 from django.forms import ModelForm, ValidationError, CharField
 
 from tag.models import Tag
-from text_old.models import Text
+from text.models import Text
 
-from typing import List
+from typing import List, AnyStr
 from django.utils.translation import ugettext as _
 
 
 class TagField(CharField):
-    def clean(self, value: List[str]) -> List[Tag]:
+    def clean(self, value: List[AnyStr]) -> List[Tag]:
         if isinstance(value, list) and not all(map(lambda t: isinstance(t, str), value)):
             raise ValidationError(
                 _('not a list of tag name strings'))
@@ -25,4 +25,4 @@ class TextForm(ModelForm):
 
     class Meta:
         model = Text
-        fields = ('introduction', 'tags', 'source', 'difficulty', 'body', 'title', 'author',)
+        fields = ('introduction', 'tags', 'source', 'difficulty', 'title', 'author',)

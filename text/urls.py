@@ -1,17 +1,17 @@
 from django.urls import path
-from text.views.template import QuizLoadElm, QuizView
+from text.views.template import TextLoadElm, TextView
 
-from text.views.api.quiz import QuizAPIView
-from text.views.api.tag import QuizTagAPIView
+from text.views.api.text import TextAPIView
+from text.views.api.tag import TextTagAPIView
 from text.views.api.lock import TextLockAPIView
 
 urlpatterns = [
-    path('api/quiz/<int:pk>/', QuizAPIView.as_view(), name='quiz-api'),
-    path('api/quiz/', QuizAPIView.as_view(), name='quiz-api'),
+    path('api/text/<int:pk>/', TextAPIView.as_view(), name='text-api'),
+    path('api/text/', TextAPIView.as_view(), name='text-api'),
 
-    path('api/quiz/<int:pk>/tag/', QuizTagAPIView.as_view(), name='quiz-tag-api'),
-    path('api/quiz/<int:pk>/lock/', TextLockAPIView.as_view(), name='quiz-lock-api'),
+    path('api/text/<int:pk>/tag/', TextTagAPIView.as_view(), name='text-tag-api'),
+    path('api/text/<int:pk>/lock/', TextLockAPIView.as_view(), name='text-lock-api'),
 
-    path('quiz/<int:pk>/load_elm.js', QuizLoadElm.as_view(), name='quiz-load-elm'),
-    path('quiz/<int:pk>/', QuizView.as_view(), name='quiz'),
+    path('text/<int:pk>/load_elm.js', TextLoadElm.as_view(), name='text-load-elm'),
+    path('text/<int:pk>/', TextView.as_view(), name='text'),
 ]

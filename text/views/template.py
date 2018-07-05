@@ -4,28 +4,28 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 
 from mixins.view import ElmLoadJsView
-from text.models import Quiz
+from text.models import Text
 from user.views.mixin import ProfileView
 
 
-class QuizView(ProfileView, TemplateView):
+class TextView(ProfileView, TemplateView):
     login_url = reverse_lazy('student-login')
-    template_name = 'quiz.html'
+    template_name = 'text.html'
 
-    model = Quiz
+    model = Text
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if not self.model.objects.filter(pk=kwargs['pk']):
             raise Http404('quiz does not exist')
 
-        return super(QuizView, self).get(request, *args, **kwargs)
+        return super(TextView, self).get(request, *args, **kwargs)
 
 
-class QuizLoadElm(ElmLoadJsView):
+class TextLoadElm(ElmLoadJsView):
     def get_context_data(self, **kwargs) -> dict:
-        context = super(QuizLoadElm, self).get_context_data(**kwargs)
+        context = super(TextLoadElm, self).get_context_data(**kwargs)
 
-        context['elm']['quiz_id'] = {'quote': False, 'safe': True, 'value': context['pk']}
+        context['elm']['text_id'] = {'quote': False, 'safe': True, 'value': context['pk']}
 
         return context
 

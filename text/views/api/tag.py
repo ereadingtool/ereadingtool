@@ -7,13 +7,13 @@ from django.http import HttpResponseNotAllowed
 from django.urls import reverse_lazy
 from django.views.generic import View
 
-from text.models import Quiz
+from text.models import Text
 
 
-class QuizTagAPIView(LoginRequiredMixin, View):
+class TextTagAPIView(LoginRequiredMixin, View):
     login_url = reverse_lazy('instructor-login')
 
-    model = Quiz
+    model = Text
 
     allowed_methods = ['get', 'put', 'delete']
 
@@ -26,16 +26,16 @@ class QuizTagAPIView(LoginRequiredMixin, View):
 
         try:
             tag = json.loads(request.body.decode('utf8'))
-            quiz = Quiz.objects.get(pk=kwargs['pk'])
+            text = Text.objects.get(pk=kwargs['pk'])
 
             try:
-                quiz.remove_tag(tag)
+                text.remove_tag(tag)
 
                 return HttpResponse(json.dumps(True))
             except IntegrityError:
                 return HttpResponse(json.dumps({'errors': 'something went wrong'}))
 
-        except Quiz.DoesNotExist:
+        except Text.DoesNotExist:
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
         except UnicodeDecodeError:
             return HttpResponseServerError(json.dumps({'errors': 'tag not valid'}))
@@ -49,16 +49,16 @@ class QuizTagAPIView(LoginRequiredMixin, View):
 
         try:
             tag = json.loads(request.body.decode('utf8'))
-            quiz = Quiz.objects.get(pk=kwargs['pk'])
+            text = Text.objects.get(pk=kwargs['pk'])
 
             try:
-                quiz.add_tags(tag)
+                text.add_tags(tag)
 
                 return HttpResponse(json.dumps(True))
             except IntegrityError:
                 return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
 
-        except Quiz.DoesNotExist:
+        except Text.DoesNotExist:
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
         except UnicodeDecodeError:
             return HttpResponseServerError(json.dumps({'errors': 'tag not valid'}))
@@ -68,16 +68,16 @@ class QuizTagAPIView(LoginRequiredMixin, View):
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
 
         try:
-            quiz = Quiz.objects.get(pk=kwargs['pk'])
+            text = Text.objects.get(pk=kwargs['pk'])
 
             try:
-                tags = [tag.name for tag in quiz.tags.all()]
+                tags = [tag.name for tag in text.tags.all()]
 
                 return HttpResponse(json.dumps(tags))
             except IntegrityError:
                 return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
 
-        except Quiz.DoesNotExist:
+        except Text.DoesNotExist:
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
         except UnicodeDecodeError:
             return HttpResponseServerError(json.dumps({'errors': 'tag not valid'}))

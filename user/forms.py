@@ -4,7 +4,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.core.validators import validate_email
 from django.utils.translation import ugettext_lazy as _
 
-from text_old.models import TextDifficulty
+from text.models import TextDifficulty
 from user.models import ReaderUser, Instructor, Student
 
 

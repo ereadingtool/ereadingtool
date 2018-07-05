@@ -18,4 +18,3 @@ class TextDifficultyAdmin(admin.ModelAdmin):
 
 admin.site.register(TextDifficulty, TextDifficultyAdmin)
 admin.site.register(Text, TextAdmin)
-

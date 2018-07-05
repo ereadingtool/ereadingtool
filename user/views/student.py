@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 
-from text_old.models import TextDifficulty
+from text.models import TextDifficulty
 from user.forms import StudentSignUpForm, StudentLoginForm, StudentForm
 from user.models import Student
 from user.views.api import APIView

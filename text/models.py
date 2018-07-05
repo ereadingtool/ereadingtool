@@ -1,4 +1,4 @@
-from typing import TypeVar, Optional
+from typing import TypeVar, Optional, List, Dict
 
 from django.db import models
 
@@ -45,7 +45,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
                                          related_name='last_modified_text')
 
     @classmethod
-    def update(cls, text_params: dict, text_sections_params: list(dict)) -> TypeVar('Text'):
+    def update(cls, text_params: Dict, text_sections_params: List[Dict]) -> TypeVar('Text'):
         if text_params['text'].write_locked:
             raise WriteLocked
 
@@ -74,7 +74,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
         return text
 
     @classmethod
-    def create(cls, text_params: dict, text_section_params: list(dict)) -> TypeVar('Text'):
+    def create(cls, text_params: Dict, text_section_params: List[Dict]) -> TypeVar('Text'):
         text = text_params['form'].save()
         text.save()
 
@@ -99,7 +99,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
 
         return text
 
-    def to_summary_dict(self) -> dict:
+    def to_summary_dict(self) -> Dict:
         return {
             'id': self.pk,
             'title': self.title,
@@ -112,7 +112,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
             'write_locker': str(self.write_locker) if self.write_locker else None
         }
 
-    def to_dict(self, text_sections: Optional[list]=None) -> dict:
+    def to_dict(self, text_sections: Optional[List]=None) -> Dict:
         return {
             'id': self.pk,
             'title': self.title,
@@ -138,12 +138,12 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
 
 
 class TextSection(Timestamped, models.Model):
-    text = models.ForeignKey(Text, blank=False, related_name='sections', on_delete=models.SET_NULL)
+    text = models.ForeignKey(Text, null=True, related_name='sections', on_delete=models.SET_NULL)
 
     order = models.IntegerField(blank=False)
     body = models.TextField(max_length=2048, blank=False)
 
-    def to_dict(self):
+    def to_dict(self) -> Dict:
         questions = [question.to_dict() for question in self.questions.all()]
         questions_count = len(list(questions))
 
