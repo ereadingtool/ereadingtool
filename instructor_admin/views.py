@@ -25,7 +25,7 @@ class AdminCreateEditTextView(AdminView):
     model = Text
 
     fields = ('source', 'difficulty', 'body',)
-    template_name = 'instructor_admin/create_edit_quiz.html'
+    template_name = 'instructor_admin/create_edit_text.html'
 
     def get(self, request, *args, **kwargs) -> HttpResponse:
         if 'pk' in kwargs and not self.model.objects.filter(pk=kwargs['pk']):
@@ -52,7 +52,7 @@ class AdminCreateEditElmLoadView(ElmLoadJsView):
             except Text.DoesNotExist:
                 pass
 
-        context['elm']['quiz'] = {
+        context['elm']['text'] = {
             'quote': False,
             'safe': True,
             'value': json.dumps(text.to_dict() if text else None)

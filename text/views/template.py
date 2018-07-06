@@ -16,7 +16,7 @@ class TextView(ProfileView, TemplateView):
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if not self.model.objects.filter(pk=kwargs['pk']):
-            raise Http404('quiz does not exist')
+            raise Http404('text does not exist')
 
         return super(TextView, self).get(request, *args, **kwargs)
 

@@ -1,5 +1,3 @@
-import jsonschema
-
 from typing import TypeVar, Optional, List, Dict
 
 from django.db import models
@@ -62,20 +60,20 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
                 'author': {'type': 'string'},
                 'text_sections': {'type': 'array', 'items': TextSection.to_json_schema()}
             },
-            'required': ['introduction', 'title', 'source', 'difficulty', 'author', 'text_sections']
+            'required': ['introduction', 'title', 'source', 'author', 'text_sections']
         }
 
         return schema
 
     @classmethod
-    def update(cls, text_params: Dict, text_sections_params: List[Dict]) -> TypeVar('Text'):
+    def update(cls, text_params: Dict, text_sections_params: Dict) -> TypeVar('Text'):
         if text_params['text'].write_locked:
             raise WriteLocked
 
         text = text_params['form'].save()
         text.save()
 
-        for section_params in text_sections_params:
+        for section_params in text_sections_params.values():
             text_section = section_params['text_section_form'].save(commit=False)
             text_section.text = text
             text_section.save()
@@ -97,11 +95,11 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
         return text
 
     @classmethod
-    def create(cls, text_params: Dict, text_sections_params: List[Dict]) -> TypeVar('Text'):
+    def create(cls, text_params: Dict, text_sections_params: Dict) -> TypeVar('Text'):
         text = text_params['form'].save()
         text.save()
 
-        for section_params in text_sections_params:
+        for section_params in text_sections_params.values():
             text_section = section_params['text_section_form'].save(commit=False)
             text_section.text = text
             text_section.save()
@@ -140,13 +138,15 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
             'id': self.pk,
             'title': self.title,
             'introduction': self.introduction,
+            'author': self.author,
+            'difficulty': self.difficulty.slug,
             'created_by': str(self.created_by),
             'last_modified_by': str(self.last_modified_by) if self.last_modified_by else None,
             'tags': [tag.name for tag in self.tags.all()],
             'modified_dt': self.modified_dt.isoformat(),
             'created_dt': self.created_dt.isoformat(),
-            'sections': [text_section.to_dict() for text_section in
-                         (text_sections if text_sections else self.sections.all())],
+            'text_sections': [text_section.to_dict() for text_section in
+                              (text_sections if text_sections else self.sections.all())],
             'write_locker': str(self.write_locker) if self.write_locker else None
         }
 
@@ -171,10 +171,28 @@ class TextSection(Timestamped, models.Model):
         schema = {
             'type': 'object',
             'properties': {
-                'order': {'type': 'string'},
-                'body': {'type': 'string'}
+                'order': {'type': 'integer'},
+                'body': {'type': 'string'},
+                'questions': {'type': 'array', 'items': {
+                    'type': 'object',
+                    'properties': {
+                        'body': {'type': 'string'},
+                        'order': {'type': 'integer'},
+                        'question_type': {'type': 'string', 'enum': ['main_idea', 'detail']},
+                        'answer': {'type': 'array', 'items': {
+                            'properties': {
+                                'order': {'type': 'integer'},
+                                'text': {'type': 'string'},
+                                'correct': {'type': 'boolean'},
+                                'feedback': {'type': 'string'}
+                            },
+                            'required': ['text', 'correct', 'feedback']}
+                        }
+                    },
+                    'required': ['body', 'question_type', 'answers']}
+                }
             },
-            'required': ['body', 'order']
+            'required': ['body']
         }
 
         return schema

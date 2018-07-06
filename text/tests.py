@@ -4,12 +4,12 @@ from django.test import TestCase
 from hypothesis.extra.django.models import models
 from hypothesis.strategies import just, text
 
-from typing import Union, Any
+from typing import Dict
 from django.test.client import Client
 
 from ereadingtool.urls import reverse_lazy
 from tag.models import Tag
-from text.models import TextDifficulty, Text
+from text.models import TextDifficulty, Text, TextSection
 from user.models import ReaderUser, Instructor
 from question.models import Answer
 
@@ -134,11 +134,12 @@ class TextTest(TestCase):
 
         resp_content = json.loads(resp.content.decode('utf8'))
 
+
         text = Text.objects.get(pk=resp_content['id'])
 
         test_data['title'] = 'a new text title'
         test_data['introduction'] = 'a new introduction'
-        test_data['texts'][1]['author'] = 'J. K. Idding'
+        test_data['author'] = 'J. K. Idding'
 
         resp = self.client.put('/api/text/{pk}/'.format(pk=text.pk), json.dumps(test_data),
                                content_type='application/json')
@@ -156,15 +157,15 @@ class TextTest(TestCase):
         resp_content = json.loads(resp.content.decode('utf8'))
 
         self.assertTrue(resp_content)
+
+        self.assertIn('difficulty', resp_content)
 
         self.assertEquals(resp_content['title'], 'a new text title')
-
-        self.assertEquals(resp_content['texts'][1]['author'], 'J. K. Idding')
-
         self.assertEquals(resp_content['introduction'], 'a new introduction')
+        self.assertEquals(resp_content['author'], 'J. K. Idding')
 
-        test_data['texts'][1]['questions'][0]['body'] = 'A new question?'
-        test_data['texts'][1]['questions'][0]['answers'][1]['text'] = 'A new answer.'
+        test_data['text_sections'][1]['questions'][0]['body'] = 'A new question?'
+        test_data['text_sections'][1]['questions'][0]['answers'][1]['text'] = 'A new answer.'
 
         resp = self.client.put('/api/text/{pk}/'.format(pk=text.pk), json.dumps(test_data),
                                content_type='application/json')
@@ -183,8 +184,8 @@ class TextTest(TestCase):
 
         self.assertTrue(resp_content)
 
-        self.assertEquals(resp_content['texts'][1]['questions'][0]['body'], 'A new question?')
-        self.assertEquals(resp_content['texts'][1]['questions'][0]['answers'][1]['text'], 'A new answer.')
+        self.assertEquals(resp_content['text_sections'][1]['questions'][0]['body'], 'A new question?')
+        self.assertEquals(resp_content['text_sections'][1]['questions'][0]['answers'][1]['text'], 'A new answer.')
 
     def test_text_lock(self):
         other_instructor_client = self.new_instructor(Client())
@@ -228,7 +229,7 @@ class TextTest(TestCase):
 
         answer_feedback_limit = Answer._meta.get_field('feedback').max_length
 
-        test_data['texts'][0]['questions'][0]['answers'][0]['feedback'] = 'a' * (answer_feedback_limit +1)
+        test_data['text_sections'][0]['questions'][0]['answers'][0]['feedback'] = 'a' * (answer_feedback_limit +1)
 
         resp = self.client.post('/api/text/', json.dumps(test_data), content_type='application/json')
 
@@ -237,18 +238,20 @@ class TextTest(TestCase):
         resp_content = json.loads(resp.content.decode('utf8'))
 
         self.assertIn('errors', resp_content)
-        self.assertIn('text_0_question_0_answer_0_feedback', resp_content['errors'])
+        self.assertIn('textsection_0_question_0_answer_0_feedback', resp_content['errors'])
 
-        self.assertEquals(resp_content['errors']['text_0_question_0_answer_0_feedback'],
+        self.assertEquals(resp_content['errors']['textsection_0_question_0_answer_0_feedback'],
                           'Ensure this value has at most '
                           '{0} characters (it has {1}).'.format(answer_feedback_limit, (answer_feedback_limit+1)))
 
     def test_post_text(self):
+        test_data = self.get_test_data()
+
         resp = self.client.post('/api/text/', json.dumps({"malformed": "json"}), content_type='application/json')
 
         self.assertEquals(resp.status_code, 400)
 
-        resp = self.client.post('/api/text/', json.dumps(self.get_test_data()), content_type='application/json')
+        resp = self.client.post('/api/text/', json.dumps(test_data), content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
@@ -261,7 +264,7 @@ class TextTest(TestCase):
 
         text = Text.objects.get(pk=resp_content['id'])
 
-        self.assertEquals(Text.objects.count(), 2)
+        self.assertEquals(TextSection.objects.count(), 2)
 
         resp = self.client.get('/api/text/{0}/'.format(text.id), content_type='application/json')
 
@@ -271,9 +274,9 @@ class TextTest(TestCase):
 
         self.assertTrue(resp_content)
 
-        self.assertEquals(resp_content['title'], 'text title')
-        self.assertEquals(resp_content['introduction'], 'an introductory text')
-        self.assertEquals(resp_content['tags'], ['Sports', 'Science/Technology', 'Other'])
+        self.assertEquals(resp_content['title'], test_data['title'])
+        self.assertEquals(resp_content['introduction'], test_data['introduction'])
+        self.assertEquals(resp_content['tags'], test_data['tags'])
 
     def test_delete_text(self):
         resp = self.client.post('/api/text/', json.dumps(self.get_test_data()), content_type='application/json')
@@ -296,14 +299,13 @@ class TextTest(TestCase):
 
         self.assertTrue('deleted' in resp_content)
 
-    def get_test_data(self):
+    def get_test_data(self) -> Dict:
         return {
             'title': 'text title',
             'introduction': 'an introduction to the text',
             'tags': ['Sports', 'Science/Technology', 'Other'],
             'author': 'author',
             'source': 'source',
-            'difficulty': '',
             'text_sections': [
                 {'order': 0,
                  'body': '<p style="text-align:center">section one</p>\n',

@@ -2,19 +2,19 @@
 {% load static %}
 
 {% block title %}
-    <title>{{ quiz.title }}</title>
+    <title>{{ text.title }}</title>
 {% endblock %}
 
 {% block styles %}
     <link rel="stylesheet" href="{% static "css/ereader.css" %}"/>
-    <link rel="stylesheet" href="{% static "quiz/css/quiz.css" %}"/>
+    <link rel="stylesheet" href="{% static "text/css/text.css" %}"/>
 {% endblock %}
 
 {% block scripts %}
-    <script src="{% static "quiz/js/quiz.js" %}"></script>
+    <script src="{% static "text/js/text.js" %}"></script>
 {% endblock %}
 
 {% block body %}
-    <script src="{% url "quiz-load-elm" pk %}"></script>
+    <script src="{% url "text-load-elm" pk %}"></script>
 {% endblock %}
 

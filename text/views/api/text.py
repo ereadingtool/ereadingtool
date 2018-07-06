@@ -15,7 +15,7 @@ from mixins.model import WriteLocked
 from question.forms import QuestionForm, AnswerForm
 from question.models import Question
 
-from text.forms import TextForm, ModelForm
+from text.forms import TextForm, TextSectionForm, ModelForm
 from text.models import TextDifficulty, Text, TextSection
 
 
@@ -35,15 +35,15 @@ class TextAPIView(LoginRequiredMixin, View):
 
     @classmethod
     def validate_text_section_params(cls, text_section_params: List[Dict], errors: Dict,
-                                     texts: Optional[List[TypeVar('Text')]]=None) -> (Dict, Dict):
+                                     text_sections: Optional[List[TypeVar('TextSection')]]=None) -> (Dict, Dict):
         new_text_params = {}
 
-        for i, text_param in enumerate(text_section_params):
-            new_text_params, errors = TextAPIView.validate_text_param(
-               text_param=text_param,
+        for i, text_section_param in enumerate(text_section_params):
+            new_text_params, errors = TextAPIView.validate_text_section_param(
+               text_section_param=text_section_param,
                order=i,
                errors=errors,
-               text_instance=texts[i] if texts else None,
+               text_section_instance=text_sections[i] if text_sections else None,
                output_params=new_text_params)
 
         return new_text_params, errors
@@ -51,12 +51,21 @@ class TextAPIView(LoginRequiredMixin, View):
     @classmethod
     def validate_text_params(cls, text_params: Dict, errors: Dict,
                              text: Optional[TypeVar('Text')]=None) -> (Dict, Dict):
+        # default difficulty
+        if 'difficulty' not in text_params or not text_params['difficulty']:
+            text_params['difficulty'] = 'intermediate_mid'
+
+        try:
+            text_params['difficulty'] = TextDifficulty.objects.get(slug=text_params['difficulty']).pk
+        except TextDifficulty.DoesNotExist:
+            errors['text_difficulty'] = f"text difficulty {text_params['difficulty']} does not exist"
+
         text_form = TextForm(instance=text, data=text_params)
 
         if not text_form.is_valid():
-            errors = TextAPIView.form_validation_errors(
+            errors = cls.form_validation_errors(
                     errors=errors,
-                    parent_key='text',
+                    parent_key='',
                     form=text_form)
 
         text_params = {'text': text, 'form': text_form}
@@ -110,36 +119,29 @@ class TextAPIView(LoginRequiredMixin, View):
         return questions, errors
 
     @classmethod
-    def validate_text_param(cls, text_param: dict, order: int, errors: dict, output_params: dict,
-                            text_instance: Optional[TypeVar('Text')]=None) -> (dict, dict):
-        text_key = 'text_{0}'.format(order)
-        text = {}
+    def validate_text_section_param(cls, text_section_param: dict, order: int, errors: dict, output_params: dict,
+                                    text_section_instance: Optional[TypeVar('TextSection')]=None) -> (dict, dict):
+        text_section = dict()
+        text_section_key = f'textsection_{order}'
 
-        # default difficulty
-        if 'difficulty' not in text_param or not text_param['difficulty']:
-            text_param['difficulty'] = 'intermediate_mid'
+        text_section_param['order'] = order
 
-        try:
-            text_param['difficulty'] = TextDifficulty.objects.get(slug=text_param['difficulty']).pk
-        except TextDifficulty.DoesNotExist:
-            errors['{0}_difficulty'.format(text_key)] = "text difficulty {0} does not exist".format(
-                text_param['difficulty'])
+        text_section['text_section_form'] = TextSectionForm(instance=text_section_instance, data=text_section_param)
 
-        text['text_form'] = TextForm(instance=text_instance, data=text_param)
-
-        if 'questions' not in text_param:
+        if 'questions' not in text_section_param:
             raise ValidationError(message="'questions' field is required.")
 
-        text['questions'], errors = TextAPIView.validate_question_param(text_key,
-                                                                        text_param['questions'], errors,
-                                                                        question_instances=
-                                                                        text_instance.questions.all() if text_instance
-                                                                        else None)
+        text_section['questions'], errors = TextAPIView.validate_question_param(
+            text_section_key,
+            text_section_param['questions'],
+            errors,
+            question_instances=text_section_instance.questions.all() if text_section_instance else None)
 
-        if not text['text_form'].is_valid():
-            errors = TextAPIView.form_validation_errors(errors=errors, parent_key=text_key, form=text['text_form'])
+        if not text_section['text_section_form'].is_valid():
+            errors = TextAPIView.form_validation_errors(errors=errors, parent_key=text_section_key,
+                                                        form=text_section['text_section_form'])
 
-        output_params[text_key] = text
+        output_params[text_section_key] = text_section
 
         return output_params, errors
 
@@ -202,7 +204,7 @@ class TextAPIView(LoginRequiredMixin, View):
 
                 text = text_sections[0].text
 
-                return HttpResponse(json.dumps(text.to_dict(texts=text_sections)))
+                return HttpResponse(json.dumps(text.to_dict(text_sections=text_sections)))
             except Text.DoesNotExist:
                 return HttpResponseServerError(
                     json.dumps(
@@ -226,16 +228,23 @@ class TextAPIView(LoginRequiredMixin, View):
             text_sections_params = text_params.pop('text_sections')
 
             text_params, errors = TextAPIView.validate_text_params(text_params, {}, text)
-            text_params, errors = TextAPIView.validate_text_section_params(text_sections_params, errors,
-                                                                           texts=text.texts.all() if text else None)
-
+            text_sections_params, errors = TextAPIView.validate_text_section_params(text_sections_params,
+                                                                                    errors,
+                                                                                    text_sections=text.sections.all()
+                                                                                    if text else None)
         except jsonschema.ValidationError as e:
+            resp = HttpResponse(json.dumps({
+                'errors': {
+                    'malformed_json': e.message + ' at ' + '_'.join([str(path) for path in e.relative_path])
+                }
+            }), status=400)
+        except ValidationError as e:
             resp = HttpResponse(json.dumps({'errors': e.message}), status=400)
 
         if errors:
             resp = HttpResponse(json.dumps({'errors': errors}), status=400)
 
-        return text_params, text_params, resp
+        return text_params, text_sections_params, resp
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         text_params, text_sections_params, resp = self.validate_params(request.body.decode('utf8'))
@@ -252,5 +261,5 @@ class TextAPIView(LoginRequiredMixin, View):
             text.save()
 
             return HttpResponse(json.dumps({'id': text.pk, 'redirect': reverse('text-edit', kwargs={'pk': text.pk})}))
-        except (IntegrityError, ObjectDoesNotExist):
+        except (IntegrityError, ObjectDoesNotExist) as e:
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))

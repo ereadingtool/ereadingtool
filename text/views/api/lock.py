@@ -42,7 +42,7 @@ class TextLockAPIView(LoginRequiredMixin, View):
 
             if text.is_locked() and text.write_locker != self.request.user.instructor:
                 return HttpResponseServerError(json.dumps({'errors':
-                                                           'quiz is locked by {0}'.format(text.write_locker)}))
+                                                           'text is locked by {0}'.format(text.write_locker)}))
 
             locked = text.unlock()
 
