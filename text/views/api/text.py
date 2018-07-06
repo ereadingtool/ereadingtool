@@ -1,4 +1,5 @@
 import json
+import jsonschema
 from typing import TypeVar, Optional, List, Dict, AnyStr
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -15,7 +16,7 @@ from question.forms import QuestionForm, AnswerForm
 from question.models import Question
 
 from text.forms import TextForm, ModelForm
-from text.models import TextDifficulty, Text
+from text.models import TextDifficulty, Text, TextSection
 
 
 class TextAPIView(LoginRequiredMixin, View):
@@ -55,7 +56,7 @@ class TextAPIView(LoginRequiredMixin, View):
         if not text_form.is_valid():
             errors = TextAPIView.form_validation_errors(
                     errors=errors,
-                    parent_key='quiz',
+                    parent_key='text',
                     form=text_form)
 
         text_params = {'text': text, 'form': text_form}
@@ -146,19 +147,19 @@ class TextAPIView(LoginRequiredMixin, View):
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
         try:
-            quiz = Quiz.objects.get(pk=kwargs['pk'])
+            text = Text.objects.get(pk=kwargs['pk'])
 
             try:
-                quiz.delete()
+                text.delete()
 
                 return HttpResponse(json.dumps({
                     'id': kwargs['pk'],
                     'deleted': True,
                     'redirect': str(reverse_lazy('admin'))}))
             except WriteLocked:
-                return HttpResponseServerError(json.dumps({'errors': 'quiz {0} is locked.'.format(kwargs['pk'])}))
+                return HttpResponseServerError(json.dumps({'errors': 'text {0} is locked.'.format(kwargs['pk'])}))
 
-        except Quiz.DoesNotExist:
+        except Text.DoesNotExist:
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
 
     def put(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
@@ -170,76 +171,74 @@ class TextAPIView(LoginRequiredMixin, View):
 
             profile = self.request.user.instructor
 
-            quiz_params, text_params, resp = self.validate_params(request.body.decode('utf8'), text)
+            text_params, text_sections_params, resp = self.validate_params(request.body.decode('utf8'), text)
 
             if resp:
                 return resp
 
             try:
-                quiz = Text.update(quiz_params=quiz_params, text_params=text_params)
-                quiz.last_modified_by = profile
+                text = Text.update(text_params=text_params, text_sections_params=text_sections_params)
+                text.last_modified_by = profile
 
-                quiz.save()
+                text.save()
 
-                return HttpResponse(json.dumps({'id': quiz.pk, 'updated': True}))
+                return HttpResponse(json.dumps({'id': text.pk, 'updated': True}))
             except WriteLocked:
-                return HttpResponseServerError(json.dumps({'errors': 'quiz {0} is locked.'.format(kwargs['pk'])}))
+                return HttpResponseServerError(json.dumps({'errors': 'text {0} is locked.'.format(kwargs['pk'])}))
             except IntegrityError:
                 return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
 
-        except (Quiz.DoesNotExist, ObjectDoesNotExist):
+        except (Text.DoesNotExist, ObjectDoesNotExist):
             return HttpResponse(json.dumps({'errors': 'something went wrong'}))
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' in kwargs:
             try:
                 # query reverse relation to consolidate queries
-                quiz_texts = Text.objects.select_related('quiz').filter(quiz=kwargs['pk'])
+                text_sections = TextSection.objects.select_related('text').filter(text=kwargs['pk'])
 
-                if not quiz_texts.exists():
-                    raise Quiz.DoesNotExist()
+                if not text_sections.exists():
+                    raise Text.DoesNotExist()
 
-                quiz = quiz_texts[0].quiz
+                text = text_sections[0].text
 
-                return HttpResponse(json.dumps(quiz.to_dict(texts=quiz_texts)))
+                return HttpResponse(json.dumps(text.to_dict(texts=text_sections)))
             except Text.DoesNotExist:
                 return HttpResponseServerError(
                     json.dumps(
-                        {'errors': {'quiz': "quiz with id {0} does not exist".format(kwargs['pk'])}}), status=400)
+                        {'errors': {'text': "text with id {0} does not exist".format(kwargs['pk'])}}), status=400)
 
-        quizzes = [quiz.to_summary_dict() for quiz in self.model.objects.all()]
+        texts = [text.to_summary_dict() for text in self.model.objects.all()]
 
-        return HttpResponse(json.dumps(quizzes))
+        return HttpResponse(json.dumps(texts))
 
-    def validate_params(self, quiz_params: str, quiz: Optional[TypeVar('Quiz')]=None) -> (dict, dict, HttpResponse):
-        errors = resp = text_params = None
+    def validate_params(self, text_params: AnyStr, text: Optional[TypeVar('Text')]=None) -> (Dict, Dict, HttpResponse):
+        errors = resp = text_sections_params = None
 
         try:
-            quiz_params = json.loads(quiz_params)
+            text_params = json.loads(text_params)
         except json.JSONDecodeError as e:
             resp = HttpResponse(json.dumps({'errors': {'json': str(e)}}), status=400)
 
         try:
-            # TODO (andrew): use json schema validation (http://json-schema.org)
-            if not isinstance(quiz_params, dict) or 'texts' not in quiz_params:
-                raise ValidationError(message='bad payload.')
+            jsonschema.validate(text_params, Text.to_json_schema())
 
-            text_params = quiz_params.pop('texts')
+            text_sections_params = text_params.pop('text_sections')
 
-            quiz_params, errors = TextAPIView.validate_text_params(quiz_params, {}, quiz)
-            text_params, errors = TextAPIView.validate_text_section_params(text_params, errors,
-                                                                           texts=quiz.texts.all() if quiz else None)
+            text_params, errors = TextAPIView.validate_text_params(text_params, {}, text)
+            text_params, errors = TextAPIView.validate_text_section_params(text_sections_params, errors,
+                                                                           texts=text.texts.all() if text else None)
 
-        except ValidationError as e:
+        except jsonschema.ValidationError as e:
             resp = HttpResponse(json.dumps({'errors': e.message}), status=400)
 
         if errors:
             resp = HttpResponse(json.dumps({'errors': errors}), status=400)
 
-        return quiz_params, text_params, resp
+        return text_params, text_params, resp
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        quiz_params, text_params, resp = self.validate_params(request.body.decode('utf8'))
+        text_params, text_sections_params, resp = self.validate_params(request.body.decode('utf8'))
 
         if resp:
             return resp
@@ -247,11 +246,11 @@ class TextAPIView(LoginRequiredMixin, View):
         try:
             profile = self.request.user.instructor
 
-            quiz = Quiz.create(text_params=text_params, quiz_params=quiz_params)
+            text = Text.create(text_params=text_params, text_sections_params=text_sections_params)
 
-            quiz.created_by = profile
-            quiz.save()
+            text.created_by = profile
+            text.save()
 
-            return HttpResponse(json.dumps({'id': quiz.pk, 'redirect': reverse('quiz-edit', kwargs={'pk': quiz.pk})}))
+            return HttpResponse(json.dumps({'id': text.pk, 'redirect': reverse('text-edit', kwargs={'pk': text.pk})}))
         except (IntegrityError, ObjectDoesNotExist):
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))

@@ -1,3 +1,5 @@
+import jsonschema
+
 from typing import TypeVar, Optional, List, Dict
 
 from django.db import models
@@ -23,6 +25,10 @@ class TextDifficulty(models.Model):
         }
 
     @classmethod
+    def difficulty_keys(cls):
+        return [difficulty.slug for difficulty in cls.objects.all()]
+
+    @classmethod
     def setup_default(cls):
         for params in [('intermediate_mid', 'Intermediate-Mid'), ('advanced_low', 'Advanced-Low'),
                        ('advanced_mid', 'Advanced-Mid'), ('intermediate_high', 'Intermediate-High')]:
@@ -43,6 +49,23 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
                                    related_name='created_texts')
     last_modified_by = models.ForeignKey('user.Instructor', null=True, on_delete=models.SET_NULL,
                                          related_name='last_modified_text')
+
+    @classmethod
+    def to_json_schema(cls) -> Dict:
+        schema = {
+            'type': 'object',
+            'properties': {
+                'introduction': {'type': 'string'},
+                'title': {'type': 'string'},
+                'source': {'type': 'string'},
+                'difficulty': {'type': 'string', 'enum': TextDifficulty.difficulty_keys()},
+                'author': {'type': 'string'},
+                'text_sections': {'type': 'array', 'items': TextSection.to_json_schema()}
+            },
+            'required': ['introduction', 'title', 'source', 'difficulty', 'author', 'text_sections']
+        }
+
+        return schema
 
     @classmethod
     def update(cls, text_params: Dict, text_sections_params: List[Dict]) -> TypeVar('Text'):
@@ -74,11 +97,11 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
         return text
 
     @classmethod
-    def create(cls, text_params: Dict, text_section_params: List[Dict]) -> TypeVar('Text'):
+    def create(cls, text_params: Dict, text_sections_params: List[Dict]) -> TypeVar('Text'):
         text = text_params['form'].save()
         text.save()
 
-        for section_params in text_section_params:
+        for section_params in text_sections_params:
             text_section = section_params['text_section_form'].save(commit=False)
             text_section.text = text
             text_section.save()
@@ -142,6 +165,19 @@ class TextSection(Timestamped, models.Model):
 
     order = models.IntegerField(blank=False)
     body = models.TextField(max_length=2048, blank=False)
+
+    @classmethod
+    def to_json_schema(cls) -> Dict:
+        schema = {
+            'type': 'object',
+            'properties': {
+                'order': {'type': 'string'},
+                'body': {'type': 'string'}
+            },
+            'required': ['body', 'order']
+        }
+
+        return schema
 
     def to_dict(self) -> Dict:
         questions = [question.to_dict() for question in self.questions.all()]
