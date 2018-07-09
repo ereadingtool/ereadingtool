@@ -164,7 +164,7 @@ class TextSection(Timestamped, models.Model):
     text = models.ForeignKey(Text, null=True, related_name='sections', on_delete=models.SET_NULL)
 
     order = models.IntegerField(blank=False)
-    body = models.TextField(max_length=2048, blank=False)
+    body = models.TextField(blank=False)
 
     @classmethod
     def to_json_schema(cls) -> Dict:
@@ -192,7 +192,7 @@ class TextSection(Timestamped, models.Model):
                     'required': ['body', 'question_type', 'answers']}
                 }
             },
-            'required': ['body']
+            'required': ['body', 'questions']
         }
 
         return schema

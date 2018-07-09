@@ -134,7 +134,6 @@ class TextTest(TestCase):
 
         resp_content = json.loads(resp.content.decode('utf8'))
 
-
         text = Text.objects.get(pk=resp_content['id'])
 
         test_data['title'] = 'a new text title'
@@ -226,10 +225,14 @@ class TextTest(TestCase):
 
     def test_post_text_max_char_limits(self):
         test_data = self.get_test_data()
+        test_text_section_body_size = 4096
 
         answer_feedback_limit = Answer._meta.get_field('feedback').max_length
 
-        test_data['text_sections'][0]['questions'][0]['answers'][0]['feedback'] = 'a' * (answer_feedback_limit +1)
+        # answer feedback limited
+        test_data['text_sections'][0]['questions'][0]['answers'][0]['feedback'] = 'a' * (answer_feedback_limit + 1)
+        # no limit for text section bodies
+        test_data['text_sections'][0]['body'] = 'a' * test_text_section_body_size
 
         resp = self.client.post('/api/text/', json.dumps(test_data), content_type='application/json')
 
@@ -243,6 +246,24 @@ class TextTest(TestCase):
         self.assertEquals(resp_content['errors']['textsection_0_question_0_answer_0_feedback'],
                           'Ensure this value has at most '
                           '{0} characters (it has {1}).'.format(answer_feedback_limit, (answer_feedback_limit+1)))
+
+        self.assertNotIn('textsection_0_body', resp_content['errors'])
+
+        test_data['text_sections'][0]['questions'][0]['answers'][0]['feedback'] = 'a'
+
+        resp = self.client.post('/api/text/', json.dumps(test_data), content_type='application/json')
+
+        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        resp_content = json.loads(resp.content.decode('utf8'))
+
+        self.assertNotIn('errors', resp_content)
+        self.assertIn('id', resp_content)
+
+        # ensure db doesn't truncate
+        text_section = TextSection.objects.get(pk=resp_content['id'])
+
+        self.assertEquals(len(text_section.body), test_text_section_body_size)
 
     def test_post_text(self):
         test_data = self.get_test_data()
