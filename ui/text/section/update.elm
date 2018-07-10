@@ -12,28 +12,28 @@ type Field = Text TextField | Question QuestionField | Answer AnswerField
 
 type Msg =
   -- text msgs
-    UpdateTextValue TextComponent String String
+    UpdateTextValue TextSectionComponent String String
   | AddText
-  | DeleteText TextComponent
+  | DeleteText TextSectionComponent
   | UpdateTextBody (CKEditorID, CKEditorText)
 
   -- question msgs
-  | UpdateQuestionField TextComponent Question.Field.QuestionField
-  | UpdateQuestionFieldValue TextComponent Question.Field.QuestionField String
-  | ToggleQuestionMenu TextComponent Question.Field.QuestionField
-  | DeleteQuestion TextComponent Question.Field.QuestionField
-  | SelectQuestion TextComponent Question.Field.QuestionField Bool
-  | DeleteSelectedQuestions TextComponent
-  | AddQuestion TextComponent
+  | UpdateQuestionField TextSectionComponent Question.Field.QuestionField
+  | UpdateQuestionFieldValue TextSectionComponent Question.Field.QuestionField String
+  | ToggleQuestionMenu TextSectionComponent Question.Field.QuestionField
+  | DeleteQuestion TextSectionComponent Question.Field.QuestionField
+  | SelectQuestion TextSectionComponent Question.Field.QuestionField Bool
+  | DeleteSelectedQuestions TextSectionComponent
+  | AddQuestion TextSectionComponent
 
   -- answer msgs
-  | UpdateAnswerField TextComponent Answer.Field.AnswerField
-  | UpdateAnswerFieldValue TextComponent Answer.Field.AnswerField String
-  | UpdateAnswerFeedbackValue TextComponent Answer.Field.AnswerField String
-  | UpdateAnswerFieldCorrect TextComponent Answer.Field.AnswerField Bool
+  | UpdateAnswerField TextSectionComponent Answer.Field.AnswerField
+  | UpdateAnswerFieldValue TextSectionComponent Answer.Field.AnswerField String
+  | UpdateAnswerFeedbackValue TextSectionComponent Answer.Field.AnswerField String
+  | UpdateAnswerFieldCorrect TextSectionComponent Answer.Field.AnswerField Bool
 
   -- UI effects-related messages
-  | ToggleEditable TextComponent Field
+  | ToggleEditable TextSectionComponent Field
 
 
 update : Msg
