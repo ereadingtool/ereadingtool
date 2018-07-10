@@ -14,7 +14,7 @@ import Instructor.Profile
 import Flags
 
 import Text.Model
-import Text.Component exposing (TextComponent)
+import Text.Section.Component exposing (TextSectionComponent)
 import Text.Field exposing (TextIntro, TextTitle, TextTags)
 import Text.Decode
 
@@ -24,7 +24,7 @@ import Instructor.Profile
 type alias Flags = {
     instructor_profile : Instructor.Profile.InstructorProfileParams
   , csrftoken: Flags.CSRFToken
-  , quiz: Maybe Json.Encode.Value
+  , text: Maybe Json.Encode.Value
   , tags: List String }
 
 type alias InstructorUser = String

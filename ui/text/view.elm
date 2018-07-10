@@ -1,4 +1,4 @@
-module Quiz.View exposing (..)
+module Text.View exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (classList, attribute)
@@ -6,89 +6,89 @@ import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck)
 
 import Dict exposing (Dict)
 
-import Quiz.Component exposing (QuizComponent)
-import Quiz.Field exposing (QuizIntro, QuizTitle, QuizTags)
+import Text.Component exposing (TextComponent)
+import Text.Field exposing (TextIntro, TextTitle, TextTags)
 
 import Date.Utils
 
 import Instructor.Profile exposing (InstructorProfile)
 
-import Quiz.Create exposing (..)
+import Text.Create exposing (..)
 import Text.View
 import Text.Update
 
 
-view_quiz_date : QuizViewParams -> Html Msg
-view_quiz_date params =
-  Html.div [attribute "class" "quiz_dates"] <|
-        (case params.quiz.modified_dt of
+view_text_date : TextViewParams -> Html Msg
+view_text_date params =
+  Html.div [attribute "class" "text_dates"] <|
+        (case params.text.modified_dt of
            Just modified_dt ->
-             case params.quiz.last_modified_by of
+             case params.text.last_modified_by of
                Just last_modified_by ->
                  [ span [] [ Html.text
                    ("Last Modified by " ++ last_modified_by ++ " on " ++ Date.Utils.month_day_year_fmt modified_dt) ]]
                _ -> []
            _ -> []) ++
-        (case params.quiz.created_dt of
+        (case params.text.created_dt of
            Just created_dt ->
-             case params.quiz.created_by of
+             case params.text.created_by of
                Just created_by ->
                  [ span [] [ Html.text
                    ("Created by " ++ created_by ++ " on " ++ Date.Utils.month_day_year_fmt created_dt) ] ]
                _ -> []
            _ -> [])
 
-view_quiz_title : QuizViewParams -> (QuizViewParams -> QuizTitle -> Html Msg) -> QuizTitle -> Html Msg
-view_quiz_title params edit_view quiz_title =
-  div [ onClick (ToggleEditable (Title quiz_title) True)
-      , attribute "id" "quiz_title_view"
-      , classList [("input_error", Quiz.Field.title_error quiz_title)]
+view_text_title : TextViewParams -> (TextViewParams -> TextTitle -> Html Msg) -> TextTitle -> Html Msg
+view_text_title params edit_view text_title =
+  div [ onClick (ToggleEditable (Title text_title) True)
+      , attribute "id" "text_title_view"
+      , classList [("input_error", Text.Field.title_error text_title)]
       ] [
-      div [] [ Html.text "Quiz Title" ]
-    , (case (Quiz.Field.title_editable quiz_title) of
+      div [] [ Html.text "Text Title" ]
+    , (case (Text.Field.title_editable text_title) of
       False ->
         div [attribute "class" "editable"] <|
-          [ Html.text params.quiz.title ] ++ (if (Quiz.Field.title_error quiz_title) then [] else [])
-      True -> div [] [ edit_view params quiz_title ])
+          [ Html.text params.text.title ] ++ (if (Text.Field.title_error text_title) then [] else [])
+      True -> div [] [ edit_view params text_title ])
   ]
 
-edit_quiz_title : QuizViewParams -> QuizTitle -> Html Msg
-edit_quiz_title params quiz_title =
+edit_text_title : TextViewParams -> TextTitle -> Html Msg
+edit_text_title params text_title =
   Html.input [
-      attribute "id" (Quiz.Field.title_id quiz_title)
+      attribute "id" (Text.Field.title_id text_title)
     , attribute "type" "text"
-    , attribute "value" params.quiz.title
-    , onInput (UpdateQuizAttributes "title")
-    , (onBlur (ToggleEditable (Title quiz_title) False)) ] [ ]
+    , attribute "value" params.text.title
+    , onInput (UpdateTextAttributes "title")
+    , (onBlur (ToggleEditable (Title text_title) False)) ] [ ]
 
-view_quiz_introduction : QuizViewParams -> (QuizViewParams -> QuizIntro -> Html Msg) -> QuizIntro -> Html Msg
-view_quiz_introduction params edit_view quiz_intro =
+view_text_introduction : TextViewParams -> (TextViewParams -> TextIntro -> Html Msg) -> TextIntro -> Html Msg
+view_text_introduction params edit_view text_intro =
   div [
-        attribute "id" (Quiz.Field.intro_id quiz_intro)
-      , onClick (ToggleEditable (Intro quiz_intro) True)
-      , classList [("input_error", Quiz.Field.intro_error quiz_intro)]] [
-    div [] [ Html.text "Quiz Introduction" ]
-  , (case (Quiz.Field.intro_editable quiz_intro) of
+        attribute "id" (Text.Field.intro_id text_intro)
+      , onClick (ToggleEditable (Intro text_intro) True)
+      , classList [("input_error", Text.Field.intro_error text_intro)]] [
+    div [] [ Html.text "Text Introduction" ]
+  , (case (Text.Field.intro_editable text_intro) of
       False ->
         div [attribute "class" "editable"] <|
-          [ Html.text params.quiz.introduction ] ++ (if (Quiz.Field.intro_error quiz_intro) then [] else [])
-      True -> edit_view params quiz_intro)
+          [ Html.text params.text.introduction ] ++ (if (Text.Field.intro_error text_intro) then [] else [])
+      True -> edit_view params text_intro)
   ]
 
-edit_quiz_introduction : QuizViewParams -> QuizIntro -> Html Msg
-edit_quiz_introduction params quiz_intro =
+edit_text_introduction : TextViewParams -> TextIntro -> Html Msg
+edit_text_introduction params text_intro =
   div [] [
     textarea [
-      attribute "id" (Quiz.Field.intro_id quiz_intro)
-    , classList [("quiz_introduction", True), ("input_error", Quiz.Field.intro_error quiz_intro)]
-    , onInput (UpdateQuizAttributes "introduction") ] [ Html.text params.quiz.introduction ]
+      attribute "id" (Text.Field.intro_id text_intro)
+    , classList [("text_introduction", True), ("input_error", Text.Field.intro_error text_intro)]
+    , onInput (UpdateTextAttributes "introduction") ] [ Html.text params.text.introduction ]
   ]
 
-view_edit_quiz_tags : QuizViewParams -> QuizTags -> Html Msg
-view_edit_quiz_tags params quiz_tags =
+view_edit_text_tags : TextViewParams -> TextTags -> Html Msg
+view_edit_text_tags params text_tags =
   let
-    tags = Quiz.Component.tags params.quiz_component
-    view_tag tag = div [attribute "class" "quiz_tag"] [
+    tags = Text.Component.tags params.text_component
+    view_tag tag = div [attribute "class" "text_tag"] [
       Html.img [
           attribute "src" "/static/img/cancel.svg"
         , attribute "height" "13px"
@@ -96,11 +96,11 @@ view_edit_quiz_tags params quiz_tags =
         , attribute "class" "tag_delete_btn"
         , onClick (DeleteTag tag) ] [], Html.text tag ]
   in
-    div [attribute "id" "quiz_tags_view", classList [("input_error", Quiz.Field.tag_error quiz_tags)] ] [
+    div [attribute "id" "text_tags_view", classList [("input_error", Text.Field.tag_error text_tags)] ] [
           datalist [attribute "id" "tag_list", attribute "type" "text"] <|
             List.map (\tag -> option [attribute "value" tag] [ Html.text tag ]) (Dict.keys params.tags)
-        , div [] [Html.text "Quiz Tags"]
-        , div [attribute "class" "quiz_tags"] (List.map view_tag (Dict.keys tags))
+        , div [] [Html.text "Text Tags"]
+        , div [attribute "class" "text_tags"] (List.map view_tag (Dict.keys tags))
         , div [] [ Html.input [
             attribute "id" "add_tag"
           , attribute "placeholder" "add tags.."
@@ -108,36 +108,36 @@ view_edit_quiz_tags params quiz_tags =
           , onInput (AddTagInput "add_tag")] [] ]
     ]
 
-view_edit_quiz_lock : QuizViewParams -> Html Msg
-view_edit_quiz_lock params =
+view_edit_text_lock : TextViewParams -> Html Msg
+view_edit_text_lock params =
   let
     write_locked = params.write_locked
   in
-    div [attribute "id" "quiz_lock"] [
-          div [] [Html.text <| (if write_locked then "Quiz Locked" else "Quiz Unlocked")]
+    div [attribute "id" "text_lock"] [
+          div [] [Html.text <| (if write_locked then "Text Locked" else "Text Unlocked")]
         , div [attribute "id" "lock_box", classList [("dimgray_bg", write_locked)], onClick ToggleLock] [
             div [attribute "id" (if write_locked then "lock_right" else "lock_left")] []
           ]
     ]
 
-view_quiz_lock : QuizViewParams -> Html Msg
-view_quiz_lock params =
+view_text_lock : TextViewParams -> Html Msg
+view_text_lock params =
   case params.mode of
-    EditMode -> view_edit_quiz_lock params
+    EditMode -> view_edit_text_lock params
     ReadOnlyMode write_locker ->
       case write_locker == Instructor.Profile.username params.profile of
-        True -> view_edit_quiz_lock params
+        True -> view_edit_text_lock params
         _ -> div [] []
     _ -> div [] []
 
-view_quiz_attributes : QuizViewParams -> Html Msg
-view_quiz_attributes params =
-  div [attribute "id" "quiz_attributes"] [
-     view_quiz_title params edit_quiz_title (Quiz.Field.title params.quiz_fields)
-   , view_quiz_introduction params edit_quiz_introduction (Quiz.Field.intro params.quiz_fields)
-   , view_edit_quiz_tags params (Quiz.Field.tags params.quiz_fields)
-   , view_quiz_lock params
-   , view_quiz_date params
+view_text_attributes : TextViewParams -> Html Msg
+view_text_attributes params =
+  div [attribute "id" "text_attributes"] [
+     view_text_title params edit_text_title (Text.Field.title params.text_fields)
+   , view_text_introduction params edit_text_introduction (Text.Field.intro params.text_fields)
+   , view_edit_text_tags params (Text.Field.tags params.text_fields)
+   , view_text_lock params
+   , view_text_date params
   ]
 
 view_submit : Html Msg
@@ -149,26 +149,26 @@ view_submit =
         , attribute "height" "20px"
         , attribute "width" "20px"] [], Html.text "Add Text"
     ]
-  , Html.div [attribute "class" "submit", onClick DeleteQuiz] [
-         Html.text "Delete Quiz", Html.img [
-          attribute "src" "/static/img/delete_quiz.svg"
+  , Html.div [attribute "class" "submit", onClick DeleteText] [
+         Html.text "Delete Text", Html.img [
+          attribute "src" "/static/img/delete_text.svg"
         , attribute "height" "18px"
         , attribute "width" "18px"] []
     ]
   , Html.div [] []
-  , Html.div [attribute "class" "submit", onClick SubmitQuiz] [
+  , Html.div [attribute "class" "submit", onClick SubmitText] [
         Html.img [
           attribute "src" "/static/img/save_disk.svg"
         , attribute "height" "20px"
-        , attribute "width" "20px"] [], Html.text "Save Quiz"
+        , attribute "width" "20px"] [], Html.text "Save Text"
     ]
   ]
 
-view_quiz : QuizViewParams -> Html Msg
-view_quiz params =
-  div [attribute "id" "quiz"] <| [
-    (view_quiz_attributes params)
-  , (Text.View.view_text_components TextComponentMsg (Quiz.Component.text_components params.quiz_component)
+view_text : TextViewParams -> Html Msg
+view_text params =
+  div [attribute "id" "text"] <| [
+    (view_text_attributes params)
+  , (Text.View.view_text_components TextComponentMsg (Text.Component.text_components params.text_component)
     params.text_difficulties)
   ] ++ (case params.mode of
             ReadOnlyMode write_locker -> []

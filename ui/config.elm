@@ -1,8 +1,5 @@
 module Config exposing (..)
 
-quiz_api_endpoint : String
-quiz_api_endpoint = "/api/quiz/"
-
 text_api_endpoint : String
 text_api_endpoint = "/api/text/"
 
@@ -24,8 +21,8 @@ student_login_api_endpoint = "/api/student/login/"
 student_api_endpoint : String
 student_api_endpoint = "/api/student/"
 
-text_char_limit : Int
-text_char_limit = 2048
+text_intro_limit : Int
+text_intro_limit = 2048
 
 answer_feedback_limit : Int
 answer_feedback_limit = 2048

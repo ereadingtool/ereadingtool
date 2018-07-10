@@ -18,7 +18,7 @@ type MenuItems = MenuItems (Array MenuItem)
 
 menu_items : MenuItems
 menu_items = MenuItems <| Array.fromList [
-    MenuItem "/admin/quizzes/" "Quizzes" False
+    MenuItem "/admin/texts/" "Texts" False
   , MenuItem "/login/student/" "Student Login" False
   , MenuItem "/login/instructor/" "Instructor Login" False
   ]
@@ -64,8 +64,8 @@ view_header profile selected_menu_item =
 view_filter : Html msg
 view_filter = div [classList [("filter_items", True)] ] [
      div [classList [("filter", True)] ] [
-         Html.input [attribute "placeholder" "Search quizzes.."] []
-       , Html.a [attribute "href" "/admin/quiz/"] [Html.text "Create Quiz"]
+         Html.input [attribute "placeholder" "Search texts.."] []
+       , Html.a [attribute "href" "/admin/text/"] [Html.text "Create Text"]
      ]
  ]
 
@@ -81,7 +81,7 @@ view_preview  =
     div [ classList [("preview", True)] ] [
       div [ classList [("preview_menu", True)] ] [
             span [ classList [("menu_item", True)] ] [
-              Html.input [attribute "placeholder" "Search quizzes.."] []
+              Html.input [attribute "placeholder" "Search texts.."] []
             ]
       ]
     ]

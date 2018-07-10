@@ -13,7 +13,7 @@ import Html.Attributes exposing (classList, attribute, class)
 import Array exposing (Array)
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
 
-import Config exposing (text_char_limit)
+import Config exposing (text_intro_limit)
 
 -- wraps the text field along with other items for easy passing to view functions
 type alias TextField msg = {
@@ -155,8 +155,8 @@ view_text_component msg text_difficulties text_component = let
         , div [ classList [("body",True)] ] [
             div [] [ Html.text "Text Body" ]
           , view_editable (params body_field) view_body edit_body
-          , div [ classList [("chars_remaining", True), ("error", (text_char_limit - (String.length text.body)) < 0) ] ] [
-              Html.text <| "Characters remaining " ++ (toString (text_char_limit - (String.length text.body))) ++ "."
+          , div [ classList [("chars_remaining", True), ("error", (text_intro_limit - (String.length text.body)) < 0) ] ] [
+              Html.text <| "Characters remaining " ++ (toString (text_intro_limit - (String.length text.body))) ++ "."
             , Html.text body_field.error_string
           ]
         ]
