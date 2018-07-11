@@ -142,6 +142,45 @@ view_author params edit_author text_author =
      ]
     True -> div [] [ edit_author params text_author ]
 
+edit_difficulty : QuizViewParams -> TextDifficulty -> Html Msg
+edit_difficulty params text_difficulty =
+  div [attribute "class" "text_property"] [
+      div [] [ Html.text "Text Difficulty" ]
+    , Html.select [
+         onInput (UpdateQuizAttributes "difficulty") ] [
+        Html.optgroup [] (List.map (\(k,v) ->
+          Html.option ([attribute "value" k] ++ (if k == params.quiz.difficulty then [attribute "selected" ""] else []))
+           [ Html.text v ]) params.text_difficulties)
+       ]
+  ]
+
+view_source : QuizViewParams -> (QuizViewParams -> TextSource -> Html Msg) -> TextSource -> Html Msg
+view_source params edit_view text_source =
+  case (Quiz.Field.source_editable text_source) of
+    False ->
+       div [
+        attribute "id" (Quiz.Field.source_id text_source)
+      , (onBlur (ToggleEditable (Source text_source) True))
+      , classList [("text_property", True), ("input_error", (Quiz.Field.source_error text_source))] ] [
+        div [] [ Html.text "Text Source" ]
+      , div [attribute "class" "editable"] [ Html.text params.quiz.source ]
+     ]
+    True -> edit_view params text_source
+
+edit_source : QuizViewParams -> TextSource -> Html Msg
+edit_source params text_source =
+  div [
+    attribute "id" (Quiz.Field.source_id text_source)
+  , classList [("text_property", True), ("input_error", (Quiz.Field.source_error text_source))]
+  ] [
+    div [] [ Html.text "Text Source" ]
+  , Html.input [
+        attribute "type" "text"
+      , attribute "value" params.quiz.source
+      , onInput (UpdateQuizAttributes "source")
+      , (onBlur (ToggleEditable (Source text_source) False)) ] [ ]
+  ]
+
 edit_author : QuizViewParams -> TextAuthor -> Html Msg
 edit_author params text_author =
   div [attribute "class" "text_property"] [
@@ -161,6 +200,8 @@ view_quiz_attributes params =
    , view_quiz_introduction params edit_quiz_introduction (Quiz.Field.intro params.quiz_fields)
    , view_edit_quiz_tags params (Quiz.Field.tags params.quiz_fields)
    , view_author params edit_author (Quiz.Field.author params.quiz_fields)
+   , edit_difficulty params (Quiz.Field.difficulty params.quiz_fields)
+   , view_source params edit_source (Quiz.Field.source params.quiz_fields)
    , view_quiz_lock params
    , view_quiz_date params
   ]

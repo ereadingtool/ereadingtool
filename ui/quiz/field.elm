@@ -82,6 +82,15 @@ author_error (TextAuthor attrs) = attrs.error
 author_editable : TextAuthor -> Bool
 author_editable (TextAuthor attrs) = attrs.editable
 
+source_id : TextSource -> String
+source_id (TextSource attrs) = attrs.id
+
+source_error : TextSource -> Bool
+source_error (TextSource attrs) = attrs.error
+
+source_editable : TextSource -> Bool
+source_editable (TextSource attrs) = attrs.editable
+
 post_toggle_intro : QuizIntro -> Cmd msg
 post_toggle_intro (QuizIntro attrs) =
   Cmd.batch [ckEditor attrs.id, addClassToCKEditor (attrs.id, "quiz_introduction")]

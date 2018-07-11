@@ -24,8 +24,5 @@ student_login_api_endpoint = "/api/student/login/"
 student_api_endpoint : String
 student_api_endpoint = "/api/student/"
 
-text_char_limit : Int
-text_char_limit = 2048
-
 answer_feedback_limit : Int
 answer_feedback_limit = 2048

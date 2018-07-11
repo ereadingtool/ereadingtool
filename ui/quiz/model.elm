@@ -10,6 +10,8 @@ type alias Quiz = {
   , title: String
   , introduction: String
   , author: String
+  , source: String
+  , difficulty: String
   , created_by: Maybe String
   , last_modified_by: Maybe String
   , tags: Maybe (List String)
@@ -22,6 +24,7 @@ type alias QuizListItem = {
     id: Int
   , title: String
   , author: String
+  , difficulty: String
   , created_by: String
   , last_modified_by: Maybe String
   , tags: Maybe (List String)
@@ -35,6 +38,8 @@ new_quiz = {
     id=Nothing
   , title=""
   , author=""
+  , source=""
+  , difficulty=""
   , introduction=""
   , tags=Nothing
   , created_by=Nothing

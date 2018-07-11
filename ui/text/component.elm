@@ -1,5 +1,5 @@
 module Text.Component exposing (TextComponent, TextField, emptyTextComponent, body, text, title
-  , source, difficulty, author, question_fields, attributes, set_field, set_text, index, delete_question_field
+  , question_fields, attributes, set_field, set_text, index, delete_question_field
   , set_answer, set_answer_text, set_question, switch_editable, add_new_question, toggle_question_menu, update_body
   , update_question_field, set_answer_correct, set_answer_feedback, text_field_id, editable, toText, fromText
   , post_toggle_commands, reinitialize_ck_editor, update_errors, delete_selected_question_fields, set_index)
@@ -95,7 +95,7 @@ update_errors ((TextComponent text attr fields question_fields) as text_componen
           TextComponent text attr fields (Question.Field.update_errors question_fields (field_id, field_error))
       _ -> text_component -- empty key
 
-update_title : TextComponent -> String -> TextComponent
+{-update_title : TextComponent -> String -> TextComponent
 update_title (TextComponent text attr fields question_fields) title =
   TextComponent { text | title=title } attr fields question_fields
 
@@ -118,7 +118,7 @@ author (TextComponent text attr fields question_fields) = fields.author
 
 update_author : TextComponent -> String -> TextComponent
 update_author (TextComponent text attr fields question_fields) author =
-  TextComponent { text | author=author } attr fields question_fields
+  TextComponent { text | author=author } attr fields question_fields-}
 
 text_field_id : TextField -> String
 text_field_id text_field = text_field.id
@@ -184,10 +184,6 @@ set_answer_feedback text_component answer_field feedback =
 set_text : TextComponent -> FieldName -> String -> TextComponent
 set_text (TextComponent text attr fields question_fields) field_name value =
   case field_name of
-    "title" -> TextComponent { text | title=value } attr fields question_fields
-    "source" -> TextComponent { text | source=value } attr fields question_fields
-    "difficulty" -> TextComponent { text | difficulty=value }  attr fields question_fields
-    "author" -> TextComponent { text | author=value }  attr fields question_fields
     "body" -> TextComponent { text | body=value }  attr fields question_fields
     _ -> (TextComponent text attr fields question_fields)
 
