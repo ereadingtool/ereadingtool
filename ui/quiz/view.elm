@@ -7,13 +7,13 @@ import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck)
 import Dict exposing (Dict)
 
 import Quiz.Component exposing (QuizComponent)
-import Quiz.Field exposing (QuizIntro, QuizTitle, QuizTags)
+import Quiz.Field exposing (QuizIntro, QuizTitle, QuizTags, TextAuthor, TextSource, TextDifficulty)
 
 import Date.Utils
 
 import Instructor.Profile exposing (InstructorProfile)
 
-import Quiz.Create exposing (..)
+import Text.Create exposing (..)
 import Text.View
 import Text.Update
 
@@ -44,7 +44,7 @@ view_quiz_title params edit_view quiz_title =
       , attribute "id" "quiz_title_view"
       , classList [("input_error", Quiz.Field.title_error quiz_title)]
       ] [
-      div [] [ Html.text "Quiz Title" ]
+      div [] [ Html.text "Text Title" ]
     , (case (Quiz.Field.title_editable quiz_title) of
       False ->
         div [attribute "class" "editable"] <|
@@ -67,7 +67,7 @@ view_quiz_introduction params edit_view quiz_intro =
         attribute "id" (Quiz.Field.intro_id quiz_intro)
       , onClick (ToggleEditable (Intro quiz_intro) True)
       , classList [("input_error", Quiz.Field.intro_error quiz_intro)]] [
-    div [] [ Html.text "Quiz Introduction" ]
+    div [] [ Html.text "Text Introduction" ]
   , (case (Quiz.Field.intro_editable quiz_intro) of
       False ->
         div [attribute "class" "editable"] <|
@@ -99,7 +99,7 @@ view_edit_quiz_tags params quiz_tags =
     div [attribute "id" "quiz_tags_view", classList [("input_error", Quiz.Field.tag_error quiz_tags)] ] [
           datalist [attribute "id" "tag_list", attribute "type" "text"] <|
             List.map (\tag -> option [attribute "value" tag] [ Html.text tag ]) (Dict.keys params.tags)
-        , div [] [Html.text "Quiz Tags"]
+        , div [] [Html.text "Text Tags"]
         , div [attribute "class" "quiz_tags"] (List.map view_tag (Dict.keys tags))
         , div [] [ Html.input [
             attribute "id" "add_tag"
@@ -130,12 +130,37 @@ view_quiz_lock params =
         _ -> div [] []
     _ -> div [] []
 
+view_author : QuizViewParams -> (QuizViewParams -> TextAuthor -> Html Msg) -> TextAuthor -> Html Msg
+view_author params edit_author text_author =
+  case (Quiz.Field.author_editable text_author) of
+    False ->
+      div [
+       (onBlur (ToggleEditable (Author text_author) False))
+     , attribute "class" "text_property"] [
+         div [] [ Html.text "Text Author" ]
+       , div [attribute "class" "editable"] [ Html.text params.quiz.author ]
+     ]
+    True -> div [] [ edit_author params text_author ]
+
+edit_author : QuizViewParams -> TextAuthor -> Html Msg
+edit_author params text_author =
+  div [attribute "class" "text_property"] [
+     div [] [ Html.text "Text Author" ]
+   , Html.input [
+          attribute "type" "text"
+        , attribute "value" params.quiz.author
+        , attribute "id" (Quiz.Field.author_id text_author)
+        , onInput (UpdateQuizAttributes "author")
+        , onBlur (ToggleEditable (Author text_author) True) ] [ ]
+  ]
+
 view_quiz_attributes : QuizViewParams -> Html Msg
 view_quiz_attributes params =
   div [attribute "id" "quiz_attributes"] [
      view_quiz_title params edit_quiz_title (Quiz.Field.title params.quiz_fields)
    , view_quiz_introduction params edit_quiz_introduction (Quiz.Field.intro params.quiz_fields)
    , view_edit_quiz_tags params (Quiz.Field.tags params.quiz_fields)
+   , view_author params edit_author (Quiz.Field.author params.quiz_fields)
    , view_quiz_lock params
    , view_quiz_date params
   ]
@@ -166,7 +191,7 @@ view_submit =
 
 view_quiz : QuizViewParams -> Html Msg
 view_quiz params =
-  div [attribute "id" "quiz"] <| [
+  div [attribute "id" "text"] <| [
     (view_quiz_attributes params)
   , (Text.View.view_text_components TextComponentMsg (Quiz.Component.text_components params.quiz_component)
     params.text_difficulties)

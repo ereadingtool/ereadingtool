@@ -9,29 +9,48 @@ type alias QuizFieldAttributes = (Field.FieldAttributes { name: String })
 type QuizTitle = QuizTitle QuizFieldAttributes
 type QuizIntro = QuizIntro QuizFieldAttributes
 type QuizTags = QuizTags QuizFieldAttributes
+type TextAuthor = TextAuthor QuizFieldAttributes
+type TextSource = TextSource QuizFieldAttributes
+type TextDifficulty = TextDifficulty QuizFieldAttributes
 
-type QuizFields = QuizFields QuizTitle QuizIntro QuizTags
+type QuizFields = QuizFields QuizTitle QuizIntro QuizTags TextAuthor TextSource TextDifficulty
 
-
-intro : QuizFields -> QuizIntro
-intro (QuizFields _ quiz_intro _) =
-  quiz_intro
 
 title : QuizFields -> QuizTitle
-title (QuizFields quiz_title _ _) =
+title (QuizFields quiz_title _ _ _ _ _) =
   quiz_title
 
+intro : QuizFields -> QuizIntro
+intro (QuizFields _ quiz_intro _ _ _ _) =
+  quiz_intro
+
 tags : QuizFields -> QuizTags
-tags (QuizFields _ _ quiz_tags) =
+tags (QuizFields _ _ quiz_tags _ _ _) =
   quiz_tags
 
+author : QuizFields -> TextAuthor
+author (QuizFields _ _ _ text_author _ _) =
+  text_author
+
+source : QuizFields -> TextSource
+source (QuizFields _ _ _ _ text_source _) =
+  text_source
+
+difficulty : QuizFields -> TextDifficulty
+difficulty (QuizFields _ _ _ _ _ text_difficulty) =
+  text_difficulty
+
 set_intro : QuizFields -> QuizFieldAttributes -> QuizFields
-set_intro (QuizFields quiz_title _ quiz_tags) field_attrs =
-  QuizFields quiz_title (QuizIntro field_attrs) quiz_tags
+set_intro (QuizFields quiz_title _ quiz_tags text_author text_source text_difficulty) field_attrs =
+  QuizFields quiz_title (QuizIntro field_attrs) quiz_tags text_author text_source text_difficulty
 
 set_title : QuizFields -> QuizFieldAttributes -> QuizFields
-set_title (QuizFields _ quiz_intro quiz_tags) field_attrs =
-  QuizFields (QuizTitle field_attrs) quiz_intro quiz_tags
+set_title (QuizFields _ quiz_intro quiz_tags text_author text_source text_difficulty) field_attrs =
+  QuizFields (QuizTitle field_attrs) quiz_intro quiz_tags text_author text_source text_difficulty
+
+set_author : QuizFields -> QuizFieldAttributes -> QuizFields
+set_author (QuizFields text_title text_intro text_tags text_author text_source text_difficulty) field_attrs =
+  QuizFields text_title text_intro text_tags (TextAuthor field_attrs) text_source text_difficulty
 
 intro_error : QuizIntro -> Bool
 intro_error (QuizIntro attrs) = attrs.error
@@ -53,6 +72,15 @@ title_error (QuizTitle attrs) = attrs.error
 
 tag_error : QuizTags -> Bool
 tag_error (QuizTags attrs) = attrs.error
+
+author_id : TextAuthor -> String
+author_id (TextAuthor attrs) = attrs.id
+
+author_error : TextAuthor -> Bool
+author_error (TextAuthor attrs) = attrs.error
+
+author_editable : TextAuthor -> Bool
+author_editable (TextAuthor attrs) = attrs.editable
 
 post_toggle_intro : QuizIntro -> Cmd msg
 post_toggle_intro (QuizIntro attrs) =
@@ -86,3 +114,26 @@ init_quiz_fields =
       , error=False
       , name="tags"
       , index=1 }))
+  (TextAuthor ({
+        id="text_author"
+      , editable=False
+      , error_string=""
+      , error=False
+      , name="author"
+      , index=3 }))
+  (TextSource ({
+        id="text_source"
+      , editable=False
+      , error_string=""
+      , error=False
+      , name="source"
+      , index=4 }))
+  (TextDifficulty ({
+        id="text_difficulty"
+      , editable=False
+      , error_string=""
+      , error=False
+      , name="difficulty"
+      , index=5 }))
+
+

@@ -41,7 +41,7 @@ import Text.Subscriptions
 
 import Ports exposing (ckEditor, ckEditorUpdate, clearInputText, confirm, confirmation)
 
-import Quiz.Create exposing (..)
+import Text.Create exposing (..)
 
 init : Flags -> (Model, Cmd Msg)
 init flags = ({
@@ -54,7 +54,7 @@ init flags = ({
       , text_difficulties=[]
       , tags=Dict.fromList []
       , write_locked=False
-  }, Cmd.batch [ retrieveTextDifficultyOptions, (quizJSONtoComponent flags.quiz), tagsToDict flags.tags ])
+  }, Cmd.batch [ retrieveTextDifficultyOptions, (quizJSONtoComponent flags.text), tagsToDict flags.tags ])
 
 textDifficultyDecoder : Decode.Decoder (List TextDifficulty)
 textDifficultyDecoder = Decode.keyValuePairs Decode.string

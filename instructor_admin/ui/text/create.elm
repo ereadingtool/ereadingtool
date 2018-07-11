@@ -1,4 +1,4 @@
-module Quiz.Create exposing (Flags, Mode(..), Msg(..), QuizField(..), Model, QuizViewParams)
+module Text.Create exposing (Flags, Mode(..), Msg(..), QuizField(..), Model, QuizViewParams)
 
 import Time
 import Dict exposing (Dict)
@@ -15,7 +15,7 @@ import Flags
 
 import Quiz.Model
 import Quiz.Component exposing (QuizComponent)
-import Quiz.Field exposing (QuizIntro, QuizTitle, QuizTags)
+import Quiz.Field exposing (QuizIntro, QuizTitle, QuizTags, TextAuthor, TextSource, TextDifficulty)
 import Quiz.Decode
 
 import Instructor.Profile
@@ -24,7 +24,7 @@ import Instructor.Profile
 type alias Flags = {
     instructor_profile : Instructor.Profile.InstructorProfileParams
   , csrftoken: Flags.CSRFToken
-  , quiz: Maybe Json.Encode.Value
+  , text: Maybe Json.Encode.Value
   , tags: List String }
 
 type alias InstructorUser = String
@@ -34,10 +34,16 @@ type alias WriteLocked = Bool
 
 type Mode = EditMode | CreateMode | ReadOnlyMode InstructorUser
 
-type QuizField = Title QuizTitle | Intro QuizIntro | Tags QuizTags
+type QuizField =
+    Title QuizTitle
+  | Intro QuizIntro
+  | Tags QuizTags
+  | Author TextAuthor
+  | Source TextSource
+  | Difficulty Quiz.Field.TextDifficulty
 
 type Msg =
-    UpdateTextDifficultyOptions (Result Http.Error (List TextDifficulty))
+    UpdateTextDifficultyOptions (Result Http.Error (List Text.Model.TextDifficulty))
   | SubmitQuiz
   | Submitted (Result Http.Error Quiz.Decode.QuizCreateResp)
   | Updated (Result Http.Error Quiz.Decode.QuizUpdateResp)
@@ -64,7 +70,7 @@ type alias Model = {
   , success_msg : Maybe String
   , error_msg : Maybe String
   , quiz_component : QuizComponent
-  , text_difficulties : List TextDifficulty
+  , text_difficulties : List Text.Model.TextDifficulty
   , tags: Dict String String
   , write_locked: Bool }
 
@@ -76,5 +82,5 @@ type alias QuizViewParams = {
   , tags: Dict String String
   , write_locked: WriteLocked
   , mode: Mode
-  , text_difficulties: List TextDifficulty }
+  , text_difficulties: List Text.Model.TextDifficulty }
 

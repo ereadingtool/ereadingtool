@@ -210,7 +210,7 @@ body {
     background: black;
 }
 
-#quiz {
+#text {
     display: grid;
     grid-row-gap: 5%;
     row-gap: 5%;
