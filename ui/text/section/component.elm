@@ -1,7 +1,7 @@
-module Text.Section.Component exposing (TextSectionComponent, TextField, emptyTextComponent, body, text
-  , question_fields, attributes, set_field, set_text, index, delete_question_field
+module Text.Section.Component exposing (TextSectionComponent, TextField, emptyTextComponent, body, text, title
+  , source, difficulty, author, question_fields, attributes, set_field, set_text, index, delete_question_field
   , set_answer, set_answer_text, set_question, switch_editable, add_new_question, toggle_question_menu, update_body
-  , update_question_field, set_answer_correct, set_answer_feedback, text_field_id, editable, toText
+  , update_question_field, set_answer_correct, set_answer_feedback, text_field_id, editable, toText, fromText
   , post_toggle_commands, reinitialize_ck_editor, update_errors, delete_selected_question_fields, set_index)
 
 import Array exposing (Array)

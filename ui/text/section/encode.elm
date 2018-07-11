@@ -1,20 +1,24 @@
-module Text.Section.Encode exposing (textSectionEncoder, textSectionsEncoder)
+module Text.Encode exposing (textEncoder, textsEncoder)
 
-import Text.Section.Model exposing (TextSection)
+import Text.Model exposing (Text)
 import Question.Encode
 
 import Json.Encode as Encode
 
 import Array exposing (Array)
 
-textSectionEncoder : TextSection -> Encode.Value
-textSectionEncoder text = Encode.object [
-      ("body", Encode.string text.body)
+textEncoder : Text -> Encode.Value
+textEncoder text = Encode.object [
+      ("title", Encode.string text.title)
+    , ("source", Encode.string text.source)
+    , ("difficulty", Encode.string text.difficulty)
+    , ("body", Encode.string text.body)
+    , ("author", Encode.string text.author)
     , ("questions", (Question.Encode.questionsEncoder text.questions))
   ]
 
-textSectionsEncoder : Array TextSection -> Encode.Value
-textSectionsEncoder texts =
+textsEncoder : Array Text -> Encode.Value
+textsEncoder texts =
      Encode.list
   <| Array.toList
-  <| Array.map (\text -> textSectionEncoder text) texts
+  <| Array.map (\text -> textEncoder text) texts

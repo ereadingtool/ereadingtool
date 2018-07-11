@@ -117,7 +117,7 @@ body {
     background-color: white;
 }
 
-#text_attributes {
+#quiz_attributes {
     grid-column: 2;
     display: grid;
 
@@ -133,7 +133,7 @@ body {
     grid-template-columns: 100%;
 }
 
-#text_intro_view {
+#quiz_intro_view {
     display: grid;
 
     grid-column: 1;
@@ -146,21 +146,21 @@ body {
     margin-bottom: 15px;
 }
 
-#text_attributes > div > div:nth-child(1) {
+#quiz_attributes > div > div:nth-child(1) {
     font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 17px;
     color: #000e2d;
 }
 
-#text_intro_view div:nth-child(2) {
+#quiz_intro_view div:nth-child(2) {
     background: white;
 }
 
-.text_introduction {
+.quiz_introduction {
     padding: 15px;
 }
 
-#text_lock {
+#quiz_lock {
     display: grid;
 
     font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -210,7 +210,7 @@ body {
     background: black;
 }
 
-#text {
+#quiz {
     display: grid;
     grid-row-gap: 5%;
     row-gap: 5%;
@@ -224,7 +224,7 @@ body {
     grid-template-columns: 15% auto 15%;
 }
 
-#text_tags_view {
+#quiz_tags_view {
     display: grid;
 
     grid-column: 1;
@@ -239,14 +239,14 @@ body {
 }
 
 
-#text_tags_view > div {
+#quiz_tags_view > div {
     font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 18px;
     color: #000e2d;
 }
 
 
-.text_tag {
+.quiz_tag {
     display: inline-block;
 
     padding: 2px;
@@ -263,7 +263,7 @@ body {
     border-radius: 5px;
 }
 
-.text_tag > img {
+.quiz_tag > img {
     margin-left: 2px;
     margin-right: 2px;
 }
@@ -273,7 +273,7 @@ body {
     display: grid;
 }
 
-#text_title_view {
+#quiz_title_view {
     display: grid;
     grid-column: 1;
 
@@ -540,7 +540,7 @@ body {
     font-style: italic;
 }
 
-.text_dates {
+.quiz_dates {
     display: grid;
     grid-column: 1;
     grid-template-columns: auto;
