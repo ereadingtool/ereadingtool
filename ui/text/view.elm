@@ -84,57 +84,6 @@ edit_text_introduction params text_intro =
     , onInput (UpdateTextAttributes "introduction") ] [ Html.text params.text.introduction ]
   ]
 
-view_author : TextViewParams -> Html Msg
-view_author params = Html.div [
-    toggle_editable onClick params
-  , attribute "class" "text_property"] [
-      div [] [ Html.text "Text Author" ]
-    , div [attribute "class" "editable"] [ Html.text params.text.author ]
-  ]
-
-edit_author : TextViewParams -> Html Msg
-edit_author params =
-  div [attribute "class" "text_property"] [
-     div [] [ Html.text "Text Author" ]
-   , Html.input [
-          attribute "type" "text"
-        , attribute "value" params.text.author
-        , attribute "id" (Text.Component.text_field_id params.field)
-        , onInput (UpdateTextValue params.text_component "author" >> params.msg)
-        , toggle_editable onBlur params ] [ ]
-]
-
-view_source : TextViewParams -> Html Msg
-view_source params = Html.div [
-   toggle_editable onClick params
- , attribute "class" "text_property"] [
-     div [] [ Html.text "Text Source" ]
-   , div [attribute "class" "editable"] [ Html.text params.text.source ]
-  ]
-
-edit_source : TextViewParams -> Html Msg
-edit_source params =
-  div [attribute "class" "text_property"] [
-    div [] [ Html.text "Text Source" ]
-  , Html.input [
-        attribute "type" "text"
-      , attribute "value" params.text.source
-      , attribute "id" (Text.Component.text_field_id params.field)
-      , onInput (UpdateTextValue params.text_component "source" >> params.msg)
-      , toggle_editable onBlur params ] [ ]
-  ]
-
-edit_difficulty : TextViewParams -> Html msg
-edit_difficulty params = Html.div [attribute "class" "text_property"] [
-      div [] [ Html.text "Text Difficulty" ]
-    , Html.select [
-         onInput (UpdateTextValue params.text_component "difficulty" >> params.msg) ] [
-        Html.optgroup [] (List.map (\(k,v) ->
-          Html.option ([attribute "value" k] ++ (if k == params.text.difficulty then [attribute "selected" ""] else []))
-           [ Html.text v ]) params.difficulties)
-       ]
-  ]
-
 view_edit_text_tags : TextViewParams -> TextTags -> Html Msg
 view_edit_text_tags params text_tags =
   let
@@ -219,7 +168,7 @@ view_text : TextViewParams -> Html Msg
 view_text params =
   div [attribute "id" "text"] <| [
     (view_text_attributes params)
-  , (Text.View.view_text_section_components TextComponentMsg (Text.Component.text_section_components params.text_component)
+  , (Text.View.view_text_components TextComponentMsg (Text.Component.text_components params.text_component)
     params.text_difficulties)
   ] ++ (case params.mode of
             ReadOnlyMode write_locker -> []

@@ -61,7 +61,7 @@ test_text_component =
 
 test_text_component_group : Text.Component.Group.TextComponentGroup
 test_text_component_group =
-  Text.Component.text_section_components test_text_component
+  Text.Component.text_components test_text_component
 
 test_tags : Dict String String
 test_tags =
@@ -98,7 +98,7 @@ test_answer_field_mutual_exclusion =
         Just question_field ->
           case Answer.Field.get_answer_field (Question.Field.answers question_field) 0 of
             Just answer_field ->
-              Text.View.view_text_section_components (\_ -> TextMsg) test_text_component_group text_difficulties
+              Text.View.view_text_components (\_ -> TextMsg) test_text_component_group text_difficulties
                 |> Query.fromHtml
                 |> Query.findAll [
                    attribute <| Attr.name (Answer.Field.name answer_field)

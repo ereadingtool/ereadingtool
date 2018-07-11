@@ -5,9 +5,7 @@ import Answer.Field exposing (AnswerField)
 import Text.Component as Text exposing (TextComponent)
 
 import Text.Component exposing (TextField, TextComponent)
-import Text.Section.Component exposing (TextSectionComponent)
-
-import Text.Section.Component.Group exposing (TextSectionComponentGroup)
+import Text.Component.Group exposing (TextComponentGroup)
 import Ports exposing (selectAllInputText, ckEditor, CKEditorID, CKEditorText)
 
 type Field = Text TextField | Question QuestionField | Answer AnswerField
@@ -43,22 +41,18 @@ update : Msg
   -> ( { a | text_component: TextComponent}, Cmd msg )
 update msg model =
   let
-    text_section_components = Text.text_section_components model.text_component
-    update =
-         Text.Section.Component.Group.update_section_components text_section_components
-      >> Text.set_text_section_components model.text_component
+    text_components = Text.text_components model.text_component
+    update = Text.Component.Group.update_text_components text_components >> Text.set_text_components model.text_component
   in case msg of
     -- text msgs
     AddText ->
       ({ model | text_component =
-        Text.set_text_section_components model.text_component
-          (Text.Section.Component.Group.add_new_text_section text_section_components) }
+        Text.set_text_components model.text_component (Text.Component.Group.add_new_text text_components) }
       , Cmd.none)
 
     DeleteText text_component ->
       ({ model | text_component =
-        Text.set_text_section_components model.text_component
-          (Text.Section.Component.Group.delete_text_section text_section_components text_component) }
+        Text.set_text_components model.text_component (Text.Component.Group.delete_text text_components text_component) }
       , Cmd.none)
 
     UpdateTextValue text_component field_name input ->
@@ -66,64 +60,58 @@ update msg model =
            (Text.Component.set_text text_component field_name input)  }, Cmd.none)
 
     UpdateTextBody (ckeditor_id, ckeditor_text) ->
-        ({ model | text_component = Text.set_text_section_components model.text_component
-             (Text.Section.Component.Group.update_body_for_id text_section_components ckeditor_id ckeditor_text) }
-           , Cmd.none)
+        ({ model | text_component = Text.set_text_components model.text_component
+           (Text.Component.Group.update_body_for_id text_components ckeditor_id ckeditor_text) }, Cmd.none)
 
     -- question msgs
-    AddQuestion text_section ->
-      ({ model | text_component =
-          update (Text.Section.Component.add_new_question text_section) }, Cmd.none)
+    AddQuestion text_component ->
+      ({ model | text_component = update (Text.Component.add_new_question text_component) }, Cmd.none)
 
-    UpdateQuestionField text_section question_field ->
-      ({ model | text_component =
-          update (Text.Section.Component.update_question_field text_section question_field) }, Cmd.none)
+    UpdateQuestionField text_component question_field ->
+      ({ model | text_component = update (Text.Component.update_question_field text_component question_field) }, Cmd.none)
 
-    UpdateQuestionFieldValue text_section question_field value ->
+    UpdateQuestionFieldValue text_component question_field value ->
       ({ model | text_component = update
-        (Text.Section.Component.update_question_field text_section
-          (Question.Field.set_question_body question_field value))
+        (Text.Component.update_question_field text_component (Question.Field.set_question_body question_field value))
       }, Cmd.none)
 
-    DeleteQuestion text_section question_field ->
+    DeleteQuestion text_component question_field ->
         ({ model | text_component = update
-           (Text.Section.Component.delete_question_field text_section question_field)
+           (Text.Component.delete_question_field text_component question_field)
         }, Cmd.none)
 
-    SelectQuestion text_section question_field selected ->
+    SelectQuestion text_component question_field selected ->
         let
           new_question_field = Question.Field.set_selected question_field selected
         in
           ({ model | text_component = update
-             (Text.Section.Component.update_question_field text_section new_question_field)
+             (Text.Component.update_question_field text_component new_question_field)
           }, Cmd.none)
 
-    DeleteSelectedQuestions text_section ->
+    DeleteSelectedQuestions text_component ->
         ({ model | text_component = update
-           (Text.Section.Component.delete_selected_question_fields text_section)
+           (Text.Component.delete_selected_question_fields text_component)
         }, Cmd.none)
 
-    ToggleQuestionMenu text_section question_field ->
+    ToggleQuestionMenu text_component question_field ->
         ({ model | text_component = update
-           (Text.Section.Component.toggle_question_menu text_section question_field)
+           (Text.Component.toggle_question_menu text_component question_field)
         }, Cmd.none)
 
     -- answer msgs
-    UpdateAnswerField text_section answer_field ->
-        ({ model | text_component =
-            update (Text.Section.Component.set_answer text_section answer_field)  }, Cmd.none)
+    UpdateAnswerField text_component answer_field ->
+        ({ model | text_component = update (Text.Component.set_answer text_component answer_field)  }, Cmd.none)
 
-    UpdateAnswerFieldValue text_section answer_field text ->
-        ({ model | text_component =
-            update (Text.Section.Component.set_answer_text text_section answer_field text)  }, Cmd.none)
+    UpdateAnswerFieldValue text_component answer_field text ->
+        ({ model | text_component = update (Text.Component.set_answer_text text_component answer_field text)  }, Cmd.none)
 
-    UpdateAnswerFeedbackValue text_section answer_field feedback ->
-          ({ model | text_component =
-            update (Text.Section.Component.set_answer_feedback text_section answer_field feedback)  }, Cmd.none)
-
-    UpdateAnswerFieldCorrect text_section answer_field correct ->
+    UpdateAnswerFeedbackValue text_component answer_field feedback ->
           ({ model | text_component = update
-            (Text.Section.Component.set_answer_correct text_section answer_field)
+           (Text.Component.set_answer_feedback text_component answer_field feedback)  }, Cmd.none)
+
+    UpdateAnswerFieldCorrect text_component answer_field correct ->
+          ({ model | text_component = update
+            (Text.Component.set_answer_correct text_component answer_field)
           }, Cmd.none)
 
     -- ui msgs
