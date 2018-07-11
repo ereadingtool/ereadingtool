@@ -1,4 +1,4 @@
-module Text.Create exposing (Flags, Mode(..), Msg(..), TextField(..), Model, TextViewParams)
+module Quiz.Create exposing (Flags, Mode(..), Msg(..), QuizField(..), Model, QuizViewParams)
 
 import Time
 import Dict exposing (Dict)
@@ -13,10 +13,10 @@ import Text.Update
 import Instructor.Profile
 import Flags
 
-import Text.Model
-import Text.Component exposing (TextComponent)
-import Text.Field exposing (TextIntro, TextTitle, TextTags)
-import Text.Decode
+import Quiz.Model
+import Quiz.Component exposing (QuizComponent)
+import Quiz.Field exposing (QuizIntro, QuizTitle, QuizTags)
+import Quiz.Decode
 
 import Instructor.Profile
 
@@ -34,28 +34,28 @@ type alias WriteLocked = Bool
 
 type Mode = EditMode | CreateMode | ReadOnlyMode InstructorUser
 
-type TextField = Title TextTitle | Intro TextIntro | Tags TextTags
+type QuizField = Title QuizTitle | Intro QuizIntro | Tags QuizTags
 
 type Msg =
     UpdateTextDifficultyOptions (Result Http.Error (List TextDifficulty))
-  | SubmitText
-  | Submitted (Result Http.Error Text.Decode.TextCreateResp)
-  | Updated (Result Http.Error Text.Decode.TextUpdateResp)
+  | SubmitQuiz
+  | Submitted (Result Http.Error Quiz.Decode.QuizCreateResp)
+  | Updated (Result Http.Error Quiz.Decode.QuizUpdateResp)
   | TextComponentMsg Text.Update.Msg
-  | ToggleEditable TextField Bool
-  | UpdateTextAttributes String String
-  | UpdateTextIntro (String, String)
-  | TextJSONDecode (Result String TextSectionComponent)
-  | TextTagsDecode (Result String (Dict String String))
+  | ToggleEditable QuizField Bool
+  | UpdateQuizAttributes String String
+  | UpdateQuizIntro (String, String)
+  | QuizJSONDecode (Result String QuizComponent)
+  | QuizTagsDecode (Result String (Dict String String))
   | ClearMessages Time.Time
   | AddTagInput String String
   | DeleteTag String
   | ToggleLock
-  | TextLocked (Result Http.Error Text.Decode.TextLockResp)
-  | TextUnlocked (Result Http.Error Text.Decode.TextLockResp)
-  | DeleteText
-  | ConfirmTextDelete Bool
-  | TextDelete (Result Http.Error Text.Decode.TextDeleteResp)
+  | QuizLocked (Result Http.Error Quiz.Decode.QuizLockResp)
+  | QuizUnlocked (Result Http.Error Quiz.Decode.QuizLockResp)
+  | DeleteQuiz
+  | ConfirmQuizDelete Bool
+  | QuizDelete (Result Http.Error Quiz.Decode.QuizDeleteResp)
 
 type alias Model = {
     flags : Flags
@@ -63,15 +63,15 @@ type alias Model = {
   , profile : Instructor.Profile.InstructorProfile
   , success_msg : Maybe String
   , error_msg : Maybe String
-  , text_component : TextSectionComponent
+  , quiz_component : QuizComponent
   , text_difficulties : List TextDifficulty
   , tags: Dict String String
   , write_locked: Bool }
 
-type alias TextViewParams = {
-    text: Text.Model.Text
-  , text_component: TextSectionComponent
-  , text_fields: Text.Field.TextFields
+type alias QuizViewParams = {
+    quiz: Quiz.Model.Quiz
+  , quiz_component: QuizComponent
+  , quiz_fields: Quiz.Field.QuizFields
   , profile: Instructor.Profile.InstructorProfile
   , tags: Dict String String
   , write_locked: WriteLocked

@@ -14,7 +14,7 @@ import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onM
 import Config exposing (answer_feedback_limit)
 
 type alias AnswerFieldParams msg = {
-    text_component: TextSectionComponent
+    text_component: TextComponent
   , question: Question.Model.Question
   , msg: (Text.Update.Msg -> msg) }
 

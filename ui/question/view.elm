@@ -13,7 +13,7 @@ import Array exposing (Array)
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
 
 type alias QuestionFieldParams msg = {
-    text_component: TextSectionComponent
+    text_component: TextComponent
   , question: Question.Model.Question
   , msg: (Text.Update.Msg -> msg) }
 
@@ -91,7 +91,7 @@ view_question_menu params field =
         ] (view_menu_items params field)
     ]
 
-view_editable_question : (Msg -> msg) -> TextSectionComponent -> QuestionField -> Html msg
+view_editable_question : (Msg -> msg) -> TextComponent -> QuestionField -> Html msg
 view_editable_question msg text_component field = let
     params = {text_component=text_component, question=Question.Field.question field, msg=msg}
   in
@@ -104,7 +104,7 @@ view_editable_question msg text_component field = let
       ] ++ (Array.toList <| Array.map (Answer.View.view_editable_answer params) (Question.Field.answers field))
     , (view_question_menu params field)]
 
-view_add_question : (Msg -> msg) -> TextSectionComponent -> Html msg
+view_add_question : (Msg -> msg) -> TextComponent -> Html msg
 view_add_question msg text_component =
   div [classList [("add_question", True)], (onClick (msg (AddQuestion text_component))) ] [
     Html.img [
@@ -113,14 +113,14 @@ view_add_question msg text_component =
         , attribute "width" "20px"] [], Html.text "Add Question"
   ]
 
-view_question_buttons : (Msg -> msg) -> TextSectionComponent -> Html msg
+view_question_buttons : (Msg -> msg) -> TextComponent -> Html msg
 view_question_buttons msg text_component =
   div [ classList [("question_buttons", True)] ] [
     view_add_question msg text_component
   , view_delete_selected msg text_component
   ]
 
-view_delete_selected : (Msg -> msg) -> TextSectionComponent -> Html msg
+view_delete_selected : (Msg -> msg) -> TextComponent -> Html msg
 view_delete_selected msg text_component =
   div [classList [("delete_question", True)], (onClick (msg (DeleteSelectedQuestions text_component))) ] [
     Html.img [
@@ -129,7 +129,7 @@ view_delete_selected msg text_component =
         , attribute "width" "20px"] [], Html.text "Delete Selected"
   ]
 
-view_questions : (Msg -> msg) -> TextSectionComponent -> Array QuestionField -> Html msg
+view_questions : (Msg -> msg) -> TextComponent -> Array QuestionField -> Html msg
 view_questions msg text_component fields =
   div [ classList [("question_section", True)] ]
     (  Array.toList

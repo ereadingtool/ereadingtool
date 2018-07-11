@@ -1,54 +1,34 @@
-module Text.Model exposing (Text, TextListItem, TextDifficulty, new_text, set_sections, set_tags)
+module Text.Model exposing (Text, TextDifficulty, emptyText)
 
-import Text.Model
-import Text.Section.Model
+import Question.Model
+import Field
 
 import Date exposing (Date)
 import Array exposing (Array)
 
-type alias TextDifficulty = (String, String)
-
 type alias Text = {
-    id: Maybe Int
+    id: Maybe Field.ID
   , title: String
-  , introduction: String
-  , author: String
-  , source: String
-  , difficulty: String
-  , created_by: Maybe String
-  , last_modified_by: Maybe String
-  , tags: Maybe (List String)
   , created_dt: Maybe Date
   , modified_dt: Maybe Date
-  , sections: Array Text.Section.Model.TextSection
-  , write_locker: Maybe String }
+  , source: String
+  , difficulty: String
+  , author: String
+  , question_count : Int
+  , questions : Array Question.Model.Question
+  , body : String }
 
-type alias TextListItem = {
-    id: Int
-  , title: String
-  , created_by: String
-  , last_modified_by: Maybe String
-  , tags: Maybe (List String)
-  , created_dt: Date
-  , modified_dt: Date
-  , text_count: Int
-  , write_locker: Maybe String }
+type alias TextDifficulty = (String, String)
 
-new_text : Text
-new_text = {
-    id=Nothing
-  , title=""
-  , introduction=""
-  , tags=Nothing
-  , created_by=Nothing
-  , last_modified_by=Nothing
-  , created_dt=Nothing
-  , modified_dt=Nothing
-  , sections=Array.fromList [Text.Section.Model.emptyTextSection]
-  , write_locker=Nothing }
-
-set_sections : Text -> Array Text.Section.Model.TextSection -> Text
-set_sections text text_sections = { text | sections = text_sections }
-
-set_tags : Text -> Maybe (List String) -> Text
-set_tags text tags = { text | tags = tags }
+emptyText : Text
+emptyText = {
+    id = Nothing
+  , title = ""
+  , created_dt = Nothing
+  , modified_dt = Nothing
+  , source = ""
+  , difficulty = ""
+  , author = ""
+  , question_count = 0
+  , questions = Question.Model.initial_questions
+  , body = "" }
