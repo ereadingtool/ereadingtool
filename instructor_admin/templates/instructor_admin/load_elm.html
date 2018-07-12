@@ -34,7 +34,7 @@
     app.ports.ckEditor.subscribe(function (elem_id) {
         // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
         window.requestAnimationFrame(function (timestamp) {
-            if (CKEDITOR) {
+            if (CKEDITOR && ! CKEDITOR.instances[elem_id]) {
                 CKEDITOR.inline(elem_id).on("change", function (evt) {
                     app.ports.ckEditorUpdate.send([elem_id, evt.editor.getData()]);
                 });

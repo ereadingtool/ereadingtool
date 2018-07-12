@@ -10916,100 +10916,109 @@ var _user$project$Ports$confirm = _elm_lang$core$Native_Platform.outgoingPort(
 	});
 var _user$project$Ports$confirmation = _elm_lang$core$Native_Platform.incomingPort('confirmation', _elm_lang$core$Json_Decode$bool);
 
-var _user$project$Quiz_Field$post_toggle_title = function (_p0) {
+var _user$project$Quiz_Field$post_toggle_source = function (_p0) {
 	var _p1 = _p0;
 	return _user$project$Ports$selectAllInputText(_p1._0.id);
 };
-var _user$project$Quiz_Field$post_toggle_intro = function (_p2) {
+var _user$project$Quiz_Field$post_toggle_author = function (_p2) {
 	var _p3 = _p2;
 	var _p4 = _p3._0;
+	return _p4.editable ? _user$project$Ports$selectAllInputText(_p4.id) : _elm_lang$core$Platform_Cmd$none;
+};
+var _user$project$Quiz_Field$post_toggle_title = function (_p5) {
+	var _p6 = _p5;
+	return _user$project$Ports$selectAllInputText(_p6._0.id);
+};
+var _user$project$Quiz_Field$post_toggle_intro = function (_p7) {
+	var _p8 = _p7;
+	var _p9 = _p8._0;
 	return _elm_lang$core$Platform_Cmd$batch(
 		{
 			ctor: '::',
-			_0: _user$project$Ports$ckEditor(_p4.id),
+			_0: _user$project$Ports$ckEditor(_p9.id),
 			_1: {
 				ctor: '::',
 				_0: _user$project$Ports$addClassToCKEditor(
-					{ctor: '_Tuple2', _0: _p4.id, _1: 'quiz_introduction'}),
+					{ctor: '_Tuple2', _0: _p9.id, _1: 'quiz_introduction'}),
 				_1: {ctor: '[]'}
 			}
 		});
 };
-var _user$project$Quiz_Field$source_editable = function (_p5) {
-	var _p6 = _p5;
-	return _p6._0.editable;
+var _user$project$Quiz_Field$source_editable = function (_p10) {
+	var _p11 = _p10;
+	return _p11._0.editable;
 };
-var _user$project$Quiz_Field$source_error = function (_p7) {
-	var _p8 = _p7;
-	return _p8._0.error;
+var _user$project$Quiz_Field$source_error = function (_p12) {
+	var _p13 = _p12;
+	return _p13._0.error;
 };
-var _user$project$Quiz_Field$source_id = function (_p9) {
-	var _p10 = _p9;
-	return _p10._0.id;
+var _user$project$Quiz_Field$source_id = function (_p14) {
+	var _p15 = _p14;
+	return _p15._0.id;
 };
-var _user$project$Quiz_Field$author_editable = function (_p11) {
-	var _p12 = _p11;
-	return _p12._0.editable;
+var _user$project$Quiz_Field$author_editable = function (_p16) {
+	var _p17 = _p16;
+	return _p17._0.editable;
 };
-var _user$project$Quiz_Field$author_error = function (_p13) {
-	var _p14 = _p13;
-	return _p14._0.error;
+var _user$project$Quiz_Field$author_error = function (_p18) {
+	var _p19 = _p18;
+	return _p19._0.error;
 };
-var _user$project$Quiz_Field$author_id = function (_p15) {
-	var _p16 = _p15;
-	return _p16._0.id;
+var _user$project$Quiz_Field$author_id = function (_p20) {
+	var _p21 = _p20;
+	return _p21._0.id;
 };
-var _user$project$Quiz_Field$tag_error = function (_p17) {
-	var _p18 = _p17;
-	return _p18._0.error;
+var _user$project$Quiz_Field$tag_error = function (_p22) {
+	var _p23 = _p22;
+	return _p23._0.error;
 };
-var _user$project$Quiz_Field$title_error = function (_p19) {
-	var _p20 = _p19;
-	return _p20._0.error;
+var _user$project$Quiz_Field$title_error = function (_p24) {
+	var _p25 = _p24;
+	return _p25._0.error;
 };
-var _user$project$Quiz_Field$title_id = function (_p21) {
-	var _p22 = _p21;
-	return _p22._0.id;
+var _user$project$Quiz_Field$title_id = function (_p26) {
+	var _p27 = _p26;
+	return _p27._0.id;
 };
-var _user$project$Quiz_Field$title_editable = function (_p23) {
-	var _p24 = _p23;
-	return _p24._0.editable;
+var _user$project$Quiz_Field$title_editable = function (_p28) {
+	var _p29 = _p28;
+	return _p29._0.editable;
 };
-var _user$project$Quiz_Field$intro_id = function (_p25) {
-	var _p26 = _p25;
-	return _p26._0.id;
+var _user$project$Quiz_Field$intro_id = function (_p30) {
+	var _p31 = _p30;
+	return _p31._0.id;
 };
-var _user$project$Quiz_Field$intro_editable = function (_p27) {
-	var _p28 = _p27;
-	return _p28._0.editable;
+var _user$project$Quiz_Field$intro_editable = function (_p32) {
+	var _p33 = _p32;
+	return _p33._0.editable;
 };
-var _user$project$Quiz_Field$intro_error = function (_p29) {
-	var _p30 = _p29;
-	return _p30._0.error;
+var _user$project$Quiz_Field$intro_error = function (_p34) {
+	var _p35 = _p34;
+	return _p35._0.error;
 };
-var _user$project$Quiz_Field$difficulty = function (_p31) {
-	var _p32 = _p31;
-	return _p32._5;
+var _user$project$Quiz_Field$difficulty = function (_p36) {
+	var _p37 = _p36;
+	return _p37._5;
 };
-var _user$project$Quiz_Field$source = function (_p33) {
-	var _p34 = _p33;
-	return _p34._4;
+var _user$project$Quiz_Field$source = function (_p38) {
+	var _p39 = _p38;
+	return _p39._4;
 };
-var _user$project$Quiz_Field$author = function (_p35) {
-	var _p36 = _p35;
-	return _p36._3;
+var _user$project$Quiz_Field$author = function (_p40) {
+	var _p41 = _p40;
+	return _p41._3;
 };
-var _user$project$Quiz_Field$tags = function (_p37) {
-	var _p38 = _p37;
-	return _p38._2;
+var _user$project$Quiz_Field$tags = function (_p42) {
+	var _p43 = _p42;
+	return _p43._2;
 };
-var _user$project$Quiz_Field$intro = function (_p39) {
-	var _p40 = _p39;
-	return _p40._1;
+var _user$project$Quiz_Field$intro = function (_p44) {
+	var _p45 = _p44;
+	return _p45._1;
 };
-var _user$project$Quiz_Field$title = function (_p41) {
-	var _p42 = _p41;
-	return _p42._0;
+var _user$project$Quiz_Field$title = function (_p46) {
+	var _p47 = _p46;
+	return _p47._0;
 };
 var _user$project$Quiz_Field$QuizTitle = function (a) {
 	return {ctor: 'QuizTitle', _0: a};
@@ -11034,40 +11043,52 @@ var _user$project$Quiz_Field$QuizFields = F6(
 		return {ctor: 'QuizFields', _0: a, _1: b, _2: c, _3: d, _4: e, _5: f};
 	});
 var _user$project$Quiz_Field$set_intro = F2(
-	function (_p43, field_attrs) {
-		var _p44 = _p43;
+	function (_p48, field_attrs) {
+		var _p49 = _p48;
 		return A6(
 			_user$project$Quiz_Field$QuizFields,
-			_p44._0,
+			_p49._0,
 			_user$project$Quiz_Field$QuizIntro(field_attrs),
-			_p44._2,
-			_p44._3,
-			_p44._4,
-			_p44._5);
+			_p49._2,
+			_p49._3,
+			_p49._4,
+			_p49._5);
 	});
 var _user$project$Quiz_Field$set_title = F2(
-	function (_p45, field_attrs) {
-		var _p46 = _p45;
+	function (_p50, field_attrs) {
+		var _p51 = _p50;
 		return A6(
 			_user$project$Quiz_Field$QuizFields,
 			_user$project$Quiz_Field$QuizTitle(field_attrs),
-			_p46._1,
-			_p46._2,
-			_p46._3,
-			_p46._4,
-			_p46._5);
+			_p51._1,
+			_p51._2,
+			_p51._3,
+			_p51._4,
+			_p51._5);
 	});
 var _user$project$Quiz_Field$set_author = F2(
-	function (_p47, field_attrs) {
-		var _p48 = _p47;
+	function (_p52, field_attrs) {
+		var _p53 = _p52;
 		return A6(
 			_user$project$Quiz_Field$QuizFields,
-			_p48._0,
-			_p48._1,
-			_p48._2,
+			_p53._0,
+			_p53._1,
+			_p53._2,
 			_user$project$Quiz_Field$TextAuthor(field_attrs),
-			_p48._4,
-			_p48._5);
+			_p53._4,
+			_p53._5);
+	});
+var _user$project$Quiz_Field$set_source = F2(
+	function (_p54, field_attrs) {
+		var _p55 = _p54;
+		return A6(
+			_user$project$Quiz_Field$QuizFields,
+			_p55._0,
+			_p55._1,
+			_p55._2,
+			_p55._3,
+			_user$project$Quiz_Field$TextSource(field_attrs),
+			_p55._5);
 	});
 var _user$project$Quiz_Field$init_quiz_fields = A6(
 	_user$project$Quiz_Field$QuizFields,
@@ -11663,34 +11684,54 @@ var _user$project$Text_Component_Group$fromTexts = function (texts) {
 		A2(_elm_lang$core$Array$indexedMap, _user$project$Text_Component$fromText, texts));
 };
 
-var _user$project$Quiz_Component$tags = function (_p0) {
+var _user$project$Quiz_Component$post_toggle_source = function (_p0) {
 	var _p1 = _p0;
-	return _p1._2;
+	return _user$project$Quiz_Field$post_toggle_source(
+		_user$project$Quiz_Field$source(_p1._1));
+};
+var _user$project$Quiz_Component$post_toggle_author = function (_p2) {
+	var _p3 = _p2;
+	return _user$project$Quiz_Field$post_toggle_author(
+		_user$project$Quiz_Field$author(_p3._1));
+};
+var _user$project$Quiz_Component$post_toggle_intro = function (_p4) {
+	var _p5 = _p4;
+	return _user$project$Quiz_Field$post_toggle_intro(
+		_user$project$Quiz_Field$intro(_p5._1));
+};
+var _user$project$Quiz_Component$post_toggle_title = function (_p6) {
+	var _p7 = _p6;
+	return _user$project$Quiz_Field$post_toggle_title(
+		_user$project$Quiz_Field$title(_p7._1));
+};
+var _user$project$Quiz_Component$tags = function (_p8) {
+	var _p9 = _p8;
+	return _p9._2;
 };
 var _user$project$Quiz_Component$tags_to_dict = function (tags) {
-	var _p2 = tags;
-	if (_p2.ctor === 'Just') {
+	var _p10 = tags;
+	if (_p10.ctor === 'Just') {
 		return _elm_lang$core$Dict$fromList(
 			A2(
 				_elm_lang$core$List$map,
 				function (tag) {
 					return {ctor: '_Tuple2', _0: tag, _1: tag};
 				},
-				_p2._0));
+				_p10._0));
 	} else {
 		return _elm_lang$core$Dict$fromList(
 			{ctor: '[]'});
 	}
 };
-var _user$project$Quiz_Component$text_components = function (_p3) {
-	var _p4 = _p3;
-	return _p4._3;
+var _user$project$Quiz_Component$text_components = function (_p11) {
+	var _p12 = _p11;
+	return _p12._3;
 };
-var _user$project$Quiz_Component$reinitialize_ck_editors = function (_p5) {
-	var _p6 = _p5;
+var _user$project$Quiz_Component$reinitialize_ck_editors = function (_p13) {
+	var _p14 = _p13;
 	var intro_field_id = _user$project$Quiz_Field$intro_id(
-		_user$project$Quiz_Field$intro(_p6._1));
-	var text_component_group = _user$project$Quiz_Component$text_components(_p6);
+		_user$project$Quiz_Field$intro(_p14._1));
+	var text_component_group = _user$project$Quiz_Component$text_components(_p14);
 	return _elm_lang$core$Platform_Cmd$batch(
 		{
 			ctor: '::',
@@ -11701,7 +11742,7 @@ var _user$project$Quiz_Component$reinitialize_ck_editors = function (_p5) {
 					_1: {
 						ctor: '::',
 						_0: _user$project$Ports$ckEditorSetHtml(
-							{ctor: '_Tuple2', _0: intro_field_id, _1: _p6._0.introduction}),
+							{ctor: '_Tuple2', _0: intro_field_id, _1: _p14._0.introduction}),
 						_1: {ctor: '[]'}
 					}
 				}),
@@ -11716,20 +11757,20 @@ var _user$project$Quiz_Component$set_quiz_fields = F2(
 	function (quiz_component, quiz_fields) {
 		return quiz_component;
 	});
-var _user$project$Quiz_Component$quiz_fields = function (_p7) {
-	var _p8 = _p7;
-	return _p8._1;
+var _user$project$Quiz_Component$quiz_fields = function (_p15) {
+	var _p16 = _p15;
+	return _p16._1;
 };
-var _user$project$Quiz_Component$quiz = function (_p9) {
-	var _p10 = _p9;
+var _user$project$Quiz_Component$quiz = function (_p17) {
+	var _p18 = _p17;
 	return A2(
 		_user$project$Quiz_Model$set_tags,
 		A2(
 			_user$project$Quiz_Model$set_texts,
-			_p10._0,
-			_user$project$Text_Component_Group$toTexts(_p10._3)),
+			_p18._0,
+			_user$project$Text_Component_Group$toTexts(_p18._3)),
 		_elm_lang$core$Maybe$Just(
-			_elm_lang$core$Dict$keys(_p10._2)));
+			_elm_lang$core$Dict$keys(_p18._2)));
 };
 var _user$project$Quiz_Component$QuizComponent = F4(
 	function (a, b, c, d) {
@@ -11744,37 +11785,65 @@ var _user$project$Quiz_Component$init = function (quiz) {
 		_user$project$Text_Component_Group$fromTexts(quiz.texts));
 };
 var _user$project$Quiz_Component$set_intro_editable = F2(
-	function (_p11, editable) {
-		var _p12 = _p11;
-		var _p14 = _p12._1;
-		var _p13 = _user$project$Quiz_Field$intro(_p14);
-		var intro_field_attrs = _p13._0;
+	function (_p19, editable) {
+		var _p20 = _p19;
+		var _p22 = _p20._1;
+		var _p21 = _user$project$Quiz_Field$intro(_p22);
+		var intro_field_attrs = _p21._0;
 		var new_quiz_fields = A2(
 			_user$project$Quiz_Field$set_intro,
-			_p14,
+			_p22,
 			_elm_lang$core$Native_Utils.update(
 				intro_field_attrs,
 				{editable: editable}));
-		return A4(_user$project$Quiz_Component$QuizComponent, _p12._0, new_quiz_fields, _p12._2, _p12._3);
+		return A4(_user$project$Quiz_Component$QuizComponent, _p20._0, new_quiz_fields, _p20._2, _p20._3);
 	});
 var _user$project$Quiz_Component$set_title_editable = F2(
-	function (_p15, editable) {
-		var _p16 = _p15;
-		var _p18 = _p16._1;
-		var _p17 = _user$project$Quiz_Field$title(_p18);
-		var title_field_attrs = _p17._0;
+	function (_p23, editable) {
+		var _p24 = _p23;
+		var _p26 = _p24._1;
+		var _p25 = _user$project$Quiz_Field$title(_p26);
+		var title_field_attrs = _p25._0;
 		var new_quiz_fields = A2(
 			_user$project$Quiz_Field$set_title,
-			_p18,
+			_p26,
 			_elm_lang$core$Native_Utils.update(
 				title_field_attrs,
 				{editable: editable}));
-		return A4(_user$project$Quiz_Component$QuizComponent, _p16._0, new_quiz_fields, _p16._2, _p16._3);
+		return A4(_user$project$Quiz_Component$QuizComponent, _p24._0, new_quiz_fields, _p24._2, _p24._3);
+	});
+var _user$project$Quiz_Component$set_author_editable = F2(
+	function (_p27, editable) {
+		var _p28 = _p27;
+		var _p30 = _p28._1;
+		var _p29 = _user$project$Quiz_Field$author(_p30);
+		var text_author_attrs = _p29._0;
+		var new_quiz_fields = A2(
+			_user$project$Quiz_Field$set_author,
+			_p30,
+			_elm_lang$core$Native_Utils.update(
+				text_author_attrs,
+				{editable: editable}));
+		return A4(_user$project$Quiz_Component$QuizComponent, _p28._0, new_quiz_fields, _p28._2, _p28._3);
+	});
+var _user$project$Quiz_Component$set_source_editable = F2(
+	function (_p31, editable) {
+		var _p32 = _p31;
+		var _p34 = _p32._1;
+		var _p33 = _user$project$Quiz_Field$source(_p34);
+		var text_source_attrs = _p33._0;
+		var new_quiz_fields = A2(
+			_user$project$Quiz_Field$set_source,
+			_p34,
+			_elm_lang$core$Native_Utils.update(
+				text_source_attrs,
+				{editable: editable}));
+		return A4(_user$project$Quiz_Component$QuizComponent, _p32._0, new_quiz_fields, _p32._2, _p32._3);
 	});
 var _user$project$Quiz_Component$set_text_components = F2(
-	function (_p19, new_components) {
-		var _p20 = _p19;
-		return A4(_user$project$Quiz_Component$QuizComponent, _p20._0, _p20._1, _p20._2, new_components);
+	function (_p35, new_components) {
+		var _p36 = _p35;
+		return A4(_user$project$Quiz_Component$QuizComponent, _p36._0, _p36._1, _p36._2, new_components);
 	});
 var _user$project$Quiz_Component$update_quiz_errors = F2(
 	function (quiz_component, errors) {
@@ -11782,38 +11851,65 @@ var _user$project$Quiz_Component$update_quiz_errors = F2(
 			_user$project$Text_Component_Group$update_errors,
 			_user$project$Quiz_Component$text_components(quiz_component),
 			errors);
-		var _p21 = A2(_elm_lang$core$Debug$log, 'quiz errors', errors);
+		var _p37 = A2(_elm_lang$core$Debug$log, 'quiz errors', errors);
 		return A2(_user$project$Quiz_Component$set_text_components, quiz_component, new_text_components);
 	});
 var _user$project$Quiz_Component$set_quiz_attribute = F3(
-	function (_p22, attr_name, value) {
-		var _p23 = _p22;
-		var _p28 = _p23._2;
-		var _p27 = _p23._0;
-		var _p26 = _p23._1;
-		var _p25 = _p23._3;
-		var _p24 = attr_name;
-		switch (_p24) {
+	function (_p38, attr_name, value) {
+		var _p39 = _p38;
+		var _p44 = _p39._2;
+		var _p43 = _p39._0;
+		var _p42 = _p39._1;
+		var _p41 = _p39._3;
+		var _p40 = attr_name;
+		switch (_p40) {
 			case 'title':
 				return A4(
 					_user$project$Quiz_Component$QuizComponent,
 					_elm_lang$core$Native_Utils.update(
-						_p27,
+						_p43,
 						{title: value}),
-					_p26,
-					_p28,
-					_p25);
+					_p42,
+					_p44,
+					_p41);
 			case 'introduction':
 				return A4(
 					_user$project$Quiz_Component$QuizComponent,
 					_elm_lang$core$Native_Utils.update(
-						_p27,
+						_p43,
 						{introduction: value}),
-					_p26,
-					_p28,
-					_p25);
+					_p42,
+					_p44,
+					_p41);
+			case 'author':
+				return A4(
+					_user$project$Quiz_Component$QuizComponent,
+					_elm_lang$core$Native_Utils.update(
+						_p43,
+						{author: value}),
+					_p42,
+					_p44,
+					_p41);
+			case 'source':
+				return A4(
+					_user$project$Quiz_Component$QuizComponent,
+					_elm_lang$core$Native_Utils.update(
+						_p43,
+						{source: value}),
+					_p42,
+					_p44,
+					_p41);
+			case 'difficulty':
+				return A4(
+					_user$project$Quiz_Component$QuizComponent,
+					_elm_lang$core$Native_Utils.update(
+						_p43,
+						{difficulty: value}),
+					_p42,
+					_p44,
+					_p41);
 			default:
-				return _p23;
+				return _p39;
 		}
 	});
 var _user$project$Quiz_Component$emptyQuizComponent = A4(
@@ -11824,24 +11920,24 @@ var _user$project$Quiz_Component$emptyQuizComponent = A4(
 		{ctor: '[]'}),
 	_user$project$Text_Component_Group$new_group);
 var _user$project$Quiz_Component$add_tag = F2(
-	function (_p29, tag) {
-		var _p30 = _p29;
+	function (_p45, tag) {
+		var _p46 = _p45;
 		return A4(
 			_user$project$Quiz_Component$QuizComponent,
-			_p30._0,
-			_p30._1,
-			A3(_elm_lang$core$Dict$insert, tag, tag, _p30._2),
-			_p30._3);
+			_p46._0,
+			_p46._1,
+			A3(_elm_lang$core$Dict$insert, tag, tag, _p46._2),
+			_p46._3);
 	});
 var _user$project$Quiz_Component$remove_tag = F2(
-	function (_p31, tag) {
-		var _p32 = _p31;
+	function (_p47, tag) {
+		var _p48 = _p47;
 		return A4(
 			_user$project$Quiz_Component$QuizComponent,
-			_p32._0,
-			_p32._1,
-			A2(_elm_lang$core$Dict$remove, tag, _p32._2),
-			_p32._3);
+			_p48._0,
+			_p48._1,
+			A2(_elm_lang$core$Dict$remove, tag, _p48._2),
+			_p48._3);
 	});
 
 var _user$project$Text_Update$post_toggle_field = function (field) {
@@ -12183,7 +12279,6 @@ var _user$project$Text_Update$UpdateTextValue = F3(
 	});
 
 var _user$project$Config$answer_feedback_limit = 2048;
-var _user$project$Config$text_char_limit = 2048;
 var _user$project$Config$student_api_endpoint = '/api/student/';
 var _user$project$Config$student_login_api_endpoint = '/api/student/login/';
 var _user$project$Config$student_signup_api_endpoint = '/api/student/signup/';
@@ -14203,7 +14298,11 @@ var _user$project$Text_View$view_text_component = F3(
 											{ctor: '[]'},
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html$text('Text Body'),
+												_0: _elm_lang$html$Html$text(
+													A2(
+														_elm_lang$core$Basics_ops['++'],
+														'Text Section ',
+														_elm_lang$core$Basics$toString(text.order + 1))),
 												_1: {ctor: '[]'}
 											}),
 										_1: {
@@ -14419,63 +14518,6 @@ var _user$project$Quiz_View$view_submit = A2(
 			}
 		}
 	});
-var _user$project$Quiz_View$edit_author = F2(
-	function (params, text_author) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'text_property'),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{ctor: '[]'},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('Text Author'),
-						_1: {ctor: '[]'}
-					}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$input,
-						{
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
-							_1: {
-								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', params.quiz.author),
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html_Attributes$attribute,
-										'id',
-										_user$project$Quiz_Field$author_id(text_author)),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Events$onInput(
-											_user$project$Text_Create$UpdateQuizAttributes('author')),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onBlur(
-												A2(
-													_user$project$Text_Create$ToggleEditable,
-													_user$project$Text_Create$Author(text_author),
-													true)),
-											_1: {ctor: '[]'}
-										}
-									}
-								}
-							}
-						},
-						{ctor: '[]'}),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
 var _user$project$Quiz_View$edit_source = F2(
 	function (params, text_source) {
 		return A2(
@@ -14560,7 +14602,7 @@ var _user$project$Quiz_View$view_source = F3(
 						_user$project$Quiz_Field$source_id(text_source)),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onBlur(
+						_0: _elm_lang$html$Html_Events$onClick(
 							A2(
 								_user$project$Text_Create$ToggleEditable,
 								_user$project$Text_Create$Source(text_source),
@@ -14682,62 +14724,121 @@ var _user$project$Quiz_View$edit_difficulty = F2(
 				}
 			});
 	});
-var _user$project$Quiz_View$view_author = F3(
-	function (params, edit_author, text_author) {
-		var _p4 = _user$project$Quiz_Field$author_editable(text_author);
-		if (_p4 === false) {
-			return A2(
-				_elm_lang$html$Html$div,
-				{
+var _user$project$Quiz_View$edit_author = F2(
+	function (params, text_author) {
+		return A2(
+			_elm_lang$html$Html$input,
+			{
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
+				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onBlur(
-						A2(
-							_user$project$Text_Create$ToggleEditable,
-							_user$project$Text_Create$Author(text_author),
-							false)),
-					_1: {
-						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'text_property'),
-						_1: {ctor: '[]'}
-					}
-				},
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('Text Author'),
-							_1: {ctor: '[]'}
-						}),
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', params.quiz.author),
 					_1: {
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$div,
-							{
+							_elm_lang$html$Html_Attributes$attribute,
+							'id',
+							_user$project$Quiz_Field$author_id(text_author)),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onInput(
+								_user$project$Text_Create$UpdateQuizAttributes('author')),
+							_1: {
 								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'editable'),
+								_0: _elm_lang$html$Html_Events$onBlur(
+									A2(
+										_user$project$Text_Create$ToggleEditable,
+										_user$project$Text_Create$Author(text_author),
+										false)),
 								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text(params.quiz.author),
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
+							}
+						}
 					}
-				});
-		} else {
-			return A2(
-				_elm_lang$html$Html$div,
-				{ctor: '[]'},
-				{
+				}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(params.quiz.author),
+				_1: {ctor: '[]'}
+			});
+	});
+var _user$project$Quiz_View$view_author = F3(
+	function (params, edit_author, text_author) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_author_view'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Text Author'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
 					ctor: '::',
-					_0: A2(edit_author, params, text_author),
+					_0: function () {
+						var _p4 = _user$project$Quiz_Field$author_editable(text_author);
+						if (_p4 === false) {
+							return A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html_Attributes$attribute,
+										'id',
+										_user$project$Quiz_Field$author_id(text_author)),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onClick(
+											A2(
+												_user$project$Text_Create$ToggleEditable,
+												_user$project$Text_Create$Author(text_author),
+												true)),
+										_1: {
+											ctor: '::',
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'text_property'),
+											_1: {ctor: '[]'}
+										}
+									}
+								},
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$div,
+										{
+											ctor: '::',
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'editable'),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text(params.quiz.author),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								});
+						} else {
+							return A2(
+								_elm_lang$html$Html$div,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: A2(edit_author, params, text_author),
+									_1: {ctor: '[]'}
+								});
+						}
+					}(),
 					_1: {ctor: '[]'}
-				});
-		}
+				}
+			});
 	});
 var _user$project$Quiz_View$view_edit_quiz_lock = function (params) {
 	var write_locked = params.write_locked;
@@ -15031,10 +15132,7 @@ var _user$project$Quiz_View$view_quiz_introduction = F3(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html_Attributes$attribute,
-					'id',
-					_user$project$Quiz_Field$intro_id(quiz_intro)),
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'quiz_intro_view'),
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html_Events$onClick(
@@ -15072,13 +15170,22 @@ var _user$project$Quiz_View$view_quiz_introduction = F3(
 					ctor: '::',
 					_0: function () {
 						var _p7 = _user$project$Quiz_Field$intro_editable(quiz_intro);
-						if (_p7 === false) {
+						if (_p7 === true) {
+							return A2(edit_view, params, quiz_intro);
+						} else {
 							return A2(
 								_elm_lang$html$Html$div,
 								{
 									ctor: '::',
-									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'editable'),
-									_1: {ctor: '[]'}
+									_0: A2(
+										_elm_lang$html$Html_Attributes$attribute,
+										'id',
+										_user$project$Quiz_Field$intro_id(quiz_intro)),
+									_1: {
+										ctor: '::',
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'editable'),
+										_1: {ctor: '[]'}
+									}
 								},
 								A2(
 									_elm_lang$core$Basics_ops['++'],
@@ -15088,8 +15195,6 @@ var _user$project$Quiz_View$view_quiz_introduction = F3(
 										_1: {ctor: '[]'}
 									},
 									_user$project$Quiz_Field$intro_error(quiz_intro) ? {ctor: '[]'} : {ctor: '[]'}));
-						} else {
-							return A2(edit_view, params, quiz_intro);
 						}
 					}(),
 					_1: {ctor: '[]'}
@@ -15309,36 +15414,36 @@ var _user$project$Quiz_View$view_quiz_attributes = function (params) {
 					_user$project$Quiz_Field$intro(params.quiz_fields)),
 				_1: {
 					ctor: '::',
-					_0: A2(
-						_user$project$Quiz_View$view_edit_quiz_tags,
+					_0: A3(
+						_user$project$Quiz_View$view_author,
 						params,
-						_user$project$Quiz_Field$tags(params.quiz_fields)),
+						_user$project$Quiz_View$edit_author,
+						_user$project$Quiz_Field$author(params.quiz_fields)),
 					_1: {
 						ctor: '::',
-						_0: A3(
-							_user$project$Quiz_View$view_author,
+						_0: A2(
+							_user$project$Quiz_View$edit_difficulty,
 							params,
-							_user$project$Quiz_View$edit_author,
-							_user$project$Quiz_Field$author(params.quiz_fields)),
+							_user$project$Quiz_Field$difficulty(params.quiz_fields)),
 						_1: {
 							ctor: '::',
-							_0: A2(
-								_user$project$Quiz_View$edit_difficulty,
+							_0: A3(
+								_user$project$Quiz_View$view_source,
 								params,
-								_user$project$Quiz_Field$difficulty(params.quiz_fields)),
+								_user$project$Quiz_View$edit_source,
+								_user$project$Quiz_Field$source(params.quiz_fields)),
 							_1: {
 								ctor: '::',
-								_0: A3(
-									_user$project$Quiz_View$view_source,
-									params,
-									_user$project$Quiz_View$edit_source,
-									_user$project$Quiz_Field$source(params.quiz_fields)),
+								_0: _user$project$Quiz_View$view_quiz_lock(params),
 								_1: {
 									ctor: '::',
-									_0: _user$project$Quiz_View$view_quiz_lock(params),
+									_0: _user$project$Quiz_View$view_quiz_date(params),
 									_1: {
 										ctor: '::',
-										_0: _user$project$Quiz_View$view_quiz_date(params),
+										_0: A2(
+											_user$project$Quiz_View$view_edit_quiz_tags,
+											params,
+											_user$project$Quiz_Field$tags(params.quiz_fields)),
 										_1: {ctor: '[]'}
 									}
 								}
@@ -15923,32 +16028,54 @@ var _user$project$Main$update = F2(
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'ToggleEditable':
-				var _p23 = _p6._1;
-				var _p22 = _p6._0;
-				switch (_p22.ctor) {
-					case 'Title':
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{
-									quiz_component: A2(_user$project$Quiz_Component$set_title_editable, model.quiz_component, _p23)
-								}),
-							_1: _user$project$Quiz_Field$post_toggle_title(_p22._0)
-						};
-					case 'Intro':
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{
-									quiz_component: A2(_user$project$Quiz_Component$set_intro_editable, model.quiz_component, _p23)
-								}),
-							_1: _user$project$Quiz_Field$post_toggle_intro(_p22._0)
-						};
-					default:
-						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
+				var _p26 = _p6._1;
+				var _p22 = function () {
+					var _p23 = _p6._0;
+					switch (_p23.ctor) {
+						case 'Title':
+							return {
+								ctor: '_Tuple2',
+								_0: A2(_user$project$Quiz_Component$set_title_editable, model.quiz_component, _p26),
+								_1: _user$project$Quiz_Component$post_toggle_title
+							};
+						case 'Intro':
+							return {
+								ctor: '_Tuple2',
+								_0: A2(_user$project$Quiz_Component$set_intro_editable, model.quiz_component, _p26),
+								_1: _user$project$Quiz_Component$post_toggle_intro
+							};
+						case 'Author':
+							var _p24 = A2(_elm_lang$core$Debug$log, 'editable', _p26);
+							return {
+								ctor: '_Tuple2',
+								_0: A2(_user$project$Quiz_Component$set_author_editable, model.quiz_component, _p26),
+								_1: _user$project$Quiz_Component$post_toggle_author
+							};
+						case 'Source':
+							return {
+								ctor: '_Tuple2',
+								_0: A2(_user$project$Quiz_Component$set_source_editable, model.quiz_component, _p26),
+								_1: _user$project$Quiz_Component$post_toggle_source
+							};
+						default:
+							return {
+								ctor: '_Tuple2',
+								_0: model.quiz_component,
+								_1: function (_p25) {
+									return _elm_lang$core$Platform_Cmd$none;
+								}
+							};
+					}
+				}();
+				var quiz_component = _p22._0;
+				var post_toggle_cmds = _p22._1;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{quiz_component: quiz_component}),
+					_1: post_toggle_cmds(quiz_component)
+				};
 			case 'ToggleLock':
 				var quiz = _user$project$Quiz_Component$quiz(model.quiz_component);
 				var lock = A2(_user$project$Main$post_lock, model.flags.csrftoken, quiz);
@@ -15971,17 +16098,17 @@ var _user$project$Main$update = F2(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p24 = _p6._0._0;
-					switch (_p24.ctor) {
+					var _p27 = _p6._0._0;
+					switch (_p27.ctor) {
 						case 'BadStatus':
-							var _p27 = _p24._0;
-							var _p25 = A2(_elm_lang$core$Debug$log, 'update error bad status', _p27);
-							var _p26 = _user$project$Quiz_Decode$decodeRespErrors(_p27.body);
-							if (_p26.ctor === 'Ok') {
+							var _p30 = _p27._0;
+							var _p28 = A2(_elm_lang$core$Debug$log, 'update error bad status', _p30);
+							var _p29 = _user$project$Quiz_Decode$decodeRespErrors(_p30.body);
+							if (_p29.ctor === 'Ok') {
 								var errors_str = A2(
 									_elm_lang$core$String$join,
 									' and ',
-									_elm_lang$core$Dict$values(_p26._0));
+									_elm_lang$core$Dict$values(_p29._0));
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
@@ -15996,7 +16123,7 @@ var _user$project$Main$update = F2(
 								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 							}
 						case 'BadPayload':
-							var _p28 = A2(_elm_lang$core$Debug$log, 'update error bad payload', _p24._1);
+							var _p31 = A2(_elm_lang$core$Debug$log, 'update error bad payload', _p27._1);
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 						default:
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
@@ -16015,17 +16142,17 @@ var _user$project$Main$update = F2(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p29 = _p6._0._0;
-					switch (_p29.ctor) {
+					var _p32 = _p6._0._0;
+					switch (_p32.ctor) {
 						case 'BadStatus':
-							var _p32 = _p29._0;
-							var _p30 = A2(_elm_lang$core$Debug$log, 'update error bad status', _p32);
-							var _p31 = _user$project$Quiz_Decode$decodeRespErrors(_p32.body);
-							if (_p31.ctor === 'Ok') {
+							var _p35 = _p32._0;
+							var _p33 = A2(_elm_lang$core$Debug$log, 'update error bad status', _p35);
+							var _p34 = _user$project$Quiz_Decode$decodeRespErrors(_p35.body);
+							if (_p34.ctor === 'Ok') {
 								var errors_str = A2(
 									_elm_lang$core$String$join,
 									' and ',
-									_elm_lang$core$Dict$values(_p31._0));
+									_elm_lang$core$Dict$values(_p34._0));
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
@@ -16040,7 +16167,7 @@ var _user$project$Main$update = F2(
 								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 							}
 						case 'BadPayload':
-							var _p33 = A2(_elm_lang$core$Debug$log, 'update error bad payload', _p29._1);
+							var _p36 = A2(_elm_lang$core$Debug$log, 'update error bad payload', _p32._1);
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 						default:
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
@@ -16057,8 +16184,8 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'UpdateQuizIntro':
-				var _p34 = _p6._0._0;
-				if (_p34 === 'quiz_introduction') {
+				var _p37 = _p6._0._0;
+				if (_p37 === 'quiz_introduction') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
@@ -16072,15 +16199,15 @@ var _user$project$Main$update = F2(
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'AddTagInput':
-				var _p36 = _p6._1;
-				var _p35 = A2(_elm_lang$core$Dict$member, _p36, model.tags);
-				if (_p35 === true) {
+				var _p39 = _p6._1;
+				var _p38 = A2(_elm_lang$core$Dict$member, _p39, model.tags);
+				if (_p38 === true) {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								quiz_component: A2(_user$project$Quiz_Component$add_tag, model.quiz_component, _p36)
+								quiz_component: A2(_user$project$Quiz_Component$add_tag, model.quiz_component, _p39)
 							}),
 						_1: _user$project$Ports$clearInputText(_p6._0)
 					};
@@ -16104,8 +16231,8 @@ var _user$project$Main$update = F2(
 					_1: _user$project$Ports$confirm('Are you sure you want to delete this quiz?')
 				};
 			case 'ConfirmQuizDelete':
-				var _p37 = _p6._0;
-				if (_p37 === true) {
+				var _p40 = _p6._0;
+				if (_p40 === true) {
 					var quiz = _user$project$Quiz_Component$quiz(model.quiz_component);
 					return {
 						ctor: '_Tuple2',
@@ -16117,26 +16244,26 @@ var _user$project$Main$update = F2(
 				}
 			default:
 				if (_p6._0.ctor === 'Ok') {
-					var _p39 = _p6._0._0;
-					var _p38 = A2(_elm_lang$core$Debug$log, 'quiz delete', _p39);
+					var _p42 = _p6._0._0;
+					var _p41 = A2(_elm_lang$core$Debug$log, 'quiz delete', _p42);
 					return {
 						ctor: '_Tuple2',
 						_0: model,
-						_1: _elm_lang$navigation$Navigation$load(_p39.redirect)
+						_1: _elm_lang$navigation$Navigation$load(_p42.redirect)
 					};
 				} else {
-					var _p46 = _p6._0._0;
-					var _p40 = _p46;
-					switch (_p40.ctor) {
+					var _p49 = _p6._0._0;
+					var _p43 = _p49;
+					switch (_p43.ctor) {
 						case 'BadStatus':
-							var _p43 = _p40._0;
-							var _p41 = A2(_elm_lang$core$Debug$log, 'delete quiz error bad status', _p43);
-							var _p42 = _user$project$Quiz_Decode$decodeRespErrors(_p43.body);
-							if (_p42.ctor === 'Ok') {
+							var _p46 = _p43._0;
+							var _p44 = A2(_elm_lang$core$Debug$log, 'delete quiz error bad status', _p46);
+							var _p45 = _user$project$Quiz_Decode$decodeRespErrors(_p46.body);
+							if (_p45.ctor === 'Ok') {
 								var errors_str = A2(
 									_elm_lang$core$String$join,
 									' and ',
-									_elm_lang$core$Dict$values(_p42._0));
+									_elm_lang$core$Dict$values(_p45._0));
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
@@ -16151,28 +16278,28 @@ var _user$project$Main$update = F2(
 								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 							}
 						case 'BadPayload':
-							var _p44 = A2(_elm_lang$core$Debug$log, 'delete quiz error bad payload', _p40._1);
+							var _p47 = A2(_elm_lang$core$Debug$log, 'delete quiz error bad payload', _p43._1);
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 						default:
-							var _p45 = A2(_elm_lang$core$Debug$log, 'delete quiz error bad payload', _p46);
+							var _p48 = A2(_elm_lang$core$Debug$log, 'delete quiz error bad payload', _p49);
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 					}
 				}
 		}
 	});
 var _user$project$Main$quizJSONtoComponent = function (quiz) {
-	var _p47 = quiz;
-	if (_p47.ctor === 'Just') {
+	var _p50 = quiz;
+	if (_p50.ctor === 'Just') {
 		return A2(
 			_elm_lang$core$Task$attempt,
 			_user$project$Text_Create$QuizJSONDecode,
 			function () {
-				var _p48 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Quiz_Decode$quizDecoder, _p47._0);
-				if (_p48.ctor === 'Ok') {
+				var _p51 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Quiz_Decode$quizDecoder, _p50._0);
+				if (_p51.ctor === 'Ok') {
 					return _elm_lang$core$Task$succeed(
-						_user$project$Quiz_Component$init(_p48._0));
+						_user$project$Quiz_Component$init(_p51._0));
 				} else {
-					return _elm_lang$core$Task$fail(_p48._0);
+					return _elm_lang$core$Task$fail(_p51._0);
 				}
 			}());
 	} else {

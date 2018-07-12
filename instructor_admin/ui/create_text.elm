@@ -9,7 +9,6 @@ import Flags
 
 import Quiz.Model
 import Quiz.Component exposing (QuizComponent)
-import Quiz.Field exposing (QuizIntro, QuizTitle, QuizTags)
 import Quiz.Encode
 
 import Views
@@ -187,15 +186,25 @@ update msg model = case msg of
       (model, Cmd.none)
 
     ToggleEditable quiz_field editable ->
-      case quiz_field of
-        Title quiz_title ->
-            ({ model | quiz_component = Quiz.Component.set_title_editable model.quiz_component editable }
-          , Quiz.Field.post_toggle_title quiz_title)
-        Intro quiz_intro ->
-            ({ model | quiz_component = Quiz.Component.set_intro_editable model.quiz_component editable }
-          , Quiz.Field.post_toggle_intro quiz_intro)
-        _ ->
-            (model, Cmd.none)
+      let
+        (quiz_component, post_toggle_cmds) = (
+          case quiz_field of
+            Title quiz_title ->
+              ( Quiz.Component.set_title_editable model.quiz_component editable
+              , Quiz.Component.post_toggle_title)
+            Intro quiz_intro ->
+              ( Quiz.Component.set_intro_editable model.quiz_component editable
+              , Quiz.Component.post_toggle_intro)
+            Author text_author -> let _ = Debug.log "editable" editable in
+              ( Quiz.Component.set_author_editable model.quiz_component editable
+              , Quiz.Component.post_toggle_author)
+            Source text_source ->
+              ( Quiz.Component.set_source_editable model.quiz_component editable
+              , Quiz.Component.post_toggle_source)
+            _ ->
+              (model.quiz_component, \_ -> Cmd.none))
+       in
+         ({ model | quiz_component = quiz_component}, post_toggle_cmds quiz_component)
 
     ToggleLock ->
       let

@@ -194,6 +194,9 @@ class TextAPIView(LoginRequiredMixin, View):
             return HttpResponse(json.dumps({'errors': 'something went wrong'}))
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        if 'difficulties' in request.GET.keys():
+            return HttpResponse(json.dumps({d.slug: d.name for d in TextDifficulty.objects.all()}))
+
         if 'pk' in kwargs:
             try:
                 # query reverse relation to consolidate queries

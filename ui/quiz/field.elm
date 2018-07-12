@@ -52,6 +52,10 @@ set_author : QuizFields -> QuizFieldAttributes -> QuizFields
 set_author (QuizFields text_title text_intro text_tags text_author text_source text_difficulty) field_attrs =
   QuizFields text_title text_intro text_tags (TextAuthor field_attrs) text_source text_difficulty
 
+set_source : QuizFields -> QuizFieldAttributes -> QuizFields
+set_source (QuizFields text_title text_intro text_tags text_author text_source text_difficulty) field_attrs =
+  QuizFields text_title text_intro text_tags text_author (TextSource field_attrs) text_difficulty
+
 intro_error : QuizIntro -> Bool
 intro_error (QuizIntro attrs) = attrs.error
 
@@ -97,6 +101,17 @@ post_toggle_intro (QuizIntro attrs) =
 
 post_toggle_title : QuizTitle -> Cmd msg
 post_toggle_title (QuizTitle attrs) =
+  selectAllInputText attrs.id
+
+post_toggle_author : TextAuthor -> Cmd msg
+post_toggle_author (TextAuthor attrs) =
+  if attrs.editable then
+    selectAllInputText attrs.id
+  else
+    Cmd.none
+
+post_toggle_source : TextSource -> Cmd msg
+post_toggle_source (TextSource attrs) =
   selectAllInputText attrs.id
 
 init_quiz_fields : QuizFields

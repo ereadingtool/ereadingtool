@@ -64,15 +64,16 @@ edit_quiz_title params quiz_title =
 view_quiz_introduction : QuizViewParams -> (QuizViewParams -> QuizIntro -> Html Msg) -> QuizIntro -> Html Msg
 view_quiz_introduction params edit_view quiz_intro =
   div [
-        attribute "id" (Quiz.Field.intro_id quiz_intro)
+        attribute "id" "quiz_intro_view"
       , onClick (ToggleEditable (Intro quiz_intro) True)
       , classList [("input_error", Quiz.Field.intro_error quiz_intro)]] [
     div [] [ Html.text "Text Introduction" ]
   , (case (Quiz.Field.intro_editable quiz_intro) of
+      True ->
+        edit_view params quiz_intro
       False ->
-        div [attribute "class" "editable"] <|
-          [ Html.text params.quiz.introduction ] ++ (if (Quiz.Field.intro_error quiz_intro) then [] else [])
-      True -> edit_view params quiz_intro)
+        div [attribute "id" (Quiz.Field.intro_id quiz_intro), attribute "class" "editable"] <|
+          [ Html.text params.quiz.introduction ] ++ (if (Quiz.Field.intro_error quiz_intro) then [] else []))
   ]
 
 edit_quiz_introduction : QuizViewParams -> QuizIntro -> Html Msg
@@ -132,15 +133,27 @@ view_quiz_lock params =
 
 view_author : QuizViewParams -> (QuizViewParams -> TextAuthor -> Html Msg) -> TextAuthor -> Html Msg
 view_author params edit_author text_author =
-  case (Quiz.Field.author_editable text_author) of
-    False ->
-      div [
-       (onBlur (ToggleEditable (Author text_author) False))
-     , attribute "class" "text_property"] [
-         div [] [ Html.text "Text Author" ]
-       , div [attribute "class" "editable"] [ Html.text params.quiz.author ]
-     ]
-    True -> div [] [ edit_author params text_author ]
+  div [attribute "id" "text_author_view"] [
+      div [] [ Html.text "Text Author" ]
+    , (case (Quiz.Field.author_editable text_author) of
+       False ->
+          div [
+           attribute "id" (Quiz.Field.author_id text_author)
+         , onClick (ToggleEditable (Author text_author) True)
+         , attribute "class" "text_property"] [
+           div [attribute "class" "editable"] [ Html.text params.quiz.author ]
+         ]
+       True -> div [] [ edit_author params text_author ])
+  ]
+
+edit_author : QuizViewParams -> TextAuthor -> Html Msg
+edit_author params text_author =
+  Html.input [
+    attribute "type" "text"
+  , attribute "value" params.quiz.author
+  , attribute "id" (Quiz.Field.author_id text_author)
+  , onInput (UpdateQuizAttributes "author")
+  , onBlur (ToggleEditable (Author text_author) False) ] [ Html.text params.quiz.author ]
 
 edit_difficulty : QuizViewParams -> TextDifficulty -> Html Msg
 edit_difficulty params text_difficulty =
@@ -160,7 +173,7 @@ view_source params edit_view text_source =
     False ->
        div [
         attribute "id" (Quiz.Field.source_id text_source)
-      , (onBlur (ToggleEditable (Source text_source) True))
+      , onClick (ToggleEditable (Source text_source) True)
       , classList [("text_property", True), ("input_error", (Quiz.Field.source_error text_source))] ] [
         div [] [ Html.text "Text Source" ]
       , div [attribute "class" "editable"] [ Html.text params.quiz.source ]
@@ -181,29 +194,18 @@ edit_source params text_source =
       , (onBlur (ToggleEditable (Source text_source) False)) ] [ ]
   ]
 
-edit_author : QuizViewParams -> TextAuthor -> Html Msg
-edit_author params text_author =
-  div [attribute "class" "text_property"] [
-     div [] [ Html.text "Text Author" ]
-   , Html.input [
-          attribute "type" "text"
-        , attribute "value" params.quiz.author
-        , attribute "id" (Quiz.Field.author_id text_author)
-        , onInput (UpdateQuizAttributes "author")
-        , onBlur (ToggleEditable (Author text_author) True) ] [ ]
-  ]
 
 view_quiz_attributes : QuizViewParams -> Html Msg
 view_quiz_attributes params =
   div [attribute "id" "quiz_attributes"] [
      view_quiz_title params edit_quiz_title (Quiz.Field.title params.quiz_fields)
    , view_quiz_introduction params edit_quiz_introduction (Quiz.Field.intro params.quiz_fields)
-   , view_edit_quiz_tags params (Quiz.Field.tags params.quiz_fields)
    , view_author params edit_author (Quiz.Field.author params.quiz_fields)
    , edit_difficulty params (Quiz.Field.difficulty params.quiz_fields)
    , view_source params edit_source (Quiz.Field.source params.quiz_fields)
    , view_quiz_lock params
    , view_quiz_date params
+   , view_edit_quiz_tags params (Quiz.Field.tags params.quiz_fields)
   ]
 
 view_submit : Html Msg

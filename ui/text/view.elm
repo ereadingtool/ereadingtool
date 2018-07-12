@@ -13,8 +13,6 @@ import Html.Attributes exposing (classList, attribute, class)
 import Array exposing (Array)
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
 
-import Config exposing (text_char_limit)
-
 -- wraps the text field along with other items for easy passing to view functions
 type alias TextField msg = {
     text_component: TextComponent
@@ -64,7 +62,7 @@ view_text_component msg text_difficulties text_component =
     -- text attributes
     div [ classList [("text_properties", True)] ] [
         div [ classList [("body",True)] ] [
-            div [] [ Html.text "Text Body" ]
+            div [] [ Html.text ("Text Section " ++ (toString (text.order+1))) ]
           , view_editable (params body_field) view_body edit_body
         ]
     ]
