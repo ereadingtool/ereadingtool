@@ -53,7 +53,7 @@ update msg model =
     AddText ->
       ({ model | text_component =
         Text.Component.set_text_section_components model.text_component
-        (Text.Section.Component.Group.add_new_text text_section_group) }
+        (Text.Section.Component.Group.add_new_text_section text_section_group) }
       , Cmd.none)
 
     DeleteTextSection text_section_component ->

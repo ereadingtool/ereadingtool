@@ -1,6 +1,6 @@
-module Text.Section.Component.Group exposing (TextSectionComponentGroup, update_components, add_new_text
+module Text.Section.Component.Group exposing (TextSectionComponentGroup, update_components, add_new_text_section
   , update_errors,new_group, toArray, update_body_for_id, toTextSections, fromTextSections, reinitialize_ck_editors, delete_text_section
-  , text_component)
+  , text_section_component)
 
 import Array exposing (Array)
 import Dict exposing (Dict)
@@ -47,8 +47,8 @@ update_components : TextSectionComponentGroup -> TextSectionComponent -> TextSec
 update_components (TextSectionComponentGroup text_components) text_component =
   TextSectionComponentGroup (Array.set (Text.Section.Component.index text_component) text_component text_components)
 
-add_new_text : TextSectionComponentGroup -> TextSectionComponentGroup
-add_new_text (TextSectionComponentGroup text_components) =
+add_new_text_section : TextSectionComponentGroup -> TextSectionComponentGroup
+add_new_text_section (TextSectionComponentGroup text_components) =
   let
     arr_len = Array.length text_components
   in
@@ -76,8 +76,8 @@ fromTextSections : Array Text.Section.Model.TextSection -> TextSectionComponentG
 fromTextSections text_sections =
   TextSectionComponentGroup (Array.indexedMap Text.Section.Component.fromTextSection text_sections)
 
-text_component : TextSectionComponentGroup -> Int -> Maybe TextSectionComponent
-text_component (TextSectionComponentGroup text_components) index = Array.get index text_components
+text_section_component : TextSectionComponentGroup -> Int -> Maybe TextSectionComponent
+text_section_component (TextSectionComponentGroup text_components) index = Array.get index text_components
 
 reinitialize_ck_editors : TextSectionComponentGroup -> Cmd msg
 reinitialize_ck_editors text_component_group =
@@ -87,14 +87,14 @@ reinitialize_ck_editors text_component_group =
     Cmd.batch <| Array.toList <| Array.map Text.Section.Component.reinitialize_ck_editor text_components
 
 update_body_for_id : TextSectionComponentGroup -> CKEditorID -> CKEditorText -> TextSectionComponentGroup
-update_body_for_id text_components ckeditor_id ckeditor_text =
+update_body_for_id text_sections ckeditor_id ckeditor_text =
   case String.split "_" ckeditor_id of
     ["text", i, "body"] ->
       case String.toInt i of
         Ok i ->
-          case text_component text_components i of
+          case text_section_component text_sections i of
              Just text_component ->
-               update_components text_components (Text.Section.Component.update_body text_component ckeditor_text)
-             _ -> text_components
-        _ -> text_components
-    _ -> text_components
+               update_components text_sections (Text.Section.Component.update_body text_component ckeditor_text)
+             _ -> text_sections -- text section not found
+        _ -> text_sections -- not a valid index
+    _ -> text_sections -- not a valid key

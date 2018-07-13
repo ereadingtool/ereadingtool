@@ -11482,7 +11482,7 @@ var _user$project$Text_Section_Component$add_new_question = function (_p48) {
 		A2(_user$project$Question_Field$add_new_question, _p50.index, _p49._3));
 };
 
-var _user$project$Text_Section_Component_Group$text_component = F2(
+var _user$project$Text_Section_Component_Group$text_section_component = F2(
 	function (_p0, index) {
 		var _p1 = _p0;
 		return A2(_elm_lang$core$Array$get, index, _p1._0);
@@ -11565,28 +11565,28 @@ var _user$project$Text_Section_Component_Group$update_components = F2(
 				_p13._0));
 	});
 var _user$project$Text_Section_Component_Group$update_body_for_id = F3(
-	function (text_components, ckeditor_id, ckeditor_text) {
+	function (text_sections, ckeditor_id, ckeditor_text) {
 		var _p14 = A2(_elm_lang$core$String$split, '_', ckeditor_id);
 		if ((((((_p14.ctor === '::') && (_p14._0 === 'text')) && (_p14._1.ctor === '::')) && (_p14._1._1.ctor === '::')) && (_p14._1._1._0 === 'body')) && (_p14._1._1._1.ctor === '[]')) {
 			var _p15 = _elm_lang$core$String$toInt(_p14._1._0);
 			if (_p15.ctor === 'Ok') {
-				var _p16 = A2(_user$project$Text_Section_Component_Group$text_component, text_components, _p15._0);
+				var _p16 = A2(_user$project$Text_Section_Component_Group$text_section_component, text_sections, _p15._0);
 				if (_p16.ctor === 'Just') {
 					return A2(
 						_user$project$Text_Section_Component_Group$update_components,
-						text_components,
+						text_sections,
 						A2(_user$project$Text_Section_Component$update_body, _p16._0, ckeditor_text));
 				} else {
-					return text_components;
+					return text_sections;
 				}
 			} else {
-				return text_components;
+				return text_sections;
 			}
 		} else {
-			return text_components;
+			return text_sections;
 		}
 	});
-var _user$project$Text_Section_Component_Group$add_new_text = function (_p17) {
+var _user$project$Text_Section_Component_Group$add_new_text_section = function (_p17) {
 	var _p18 = _p17;
 	var _p19 = _p18._0;
 	var arr_len = _elm_lang$core$Array$length(_p19);
@@ -11931,7 +11931,7 @@ var _user$project$Text_Update$update = F2(
 							text_component: A2(
 								_user$project$Text_Component$set_text_section_components,
 								model.text_component,
-								_user$project$Text_Section_Component_Group$add_new_text(text_section_group))
+								_user$project$Text_Section_Component_Group$add_new_text_section(text_section_group))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};

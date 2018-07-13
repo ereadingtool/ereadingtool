@@ -9,10 +9,10 @@ import Http exposing (..)
 
 import Array exposing (Array)
 
-import Text.Model exposing (Text, emptyTextSection)
+import Text.Section.Model exposing (TextSection, emptyTextSection)
+import Text.Model exposing (Text)
 
 import Question.Model exposing (Question)
-import Question.Decode exposing (questionsDecoder)
 
 import Text.Model as Texts exposing (Text)
 import Text.Decode
@@ -37,9 +37,9 @@ type alias Selected = Bool
 
 -- UPDATE
 type Msg =
-    UpdateTexts (Result Http.Error TextSection)
-  | UpdateQuestions TextsText (Result Http.Error (Array Question))
-  | Select TextsText TextsQuestion TextsAnswer Bool
+    UpdateText (Result Http.Error Text)
+  | UpdateQuestions Section (Result Http.Error (Array Question))
+  | Select Section TextQuestion TextAnswer Bool
 
 type alias Flags = {
     csrftoken : CSRFToken
@@ -50,107 +50,93 @@ type alias Flags = {
   , text_id : Int }
 
 type alias Model = {
-    text : TextSection
+    text : Text
   , profile : Profile.Profile
-  , texts : Array TextsText
+  , sections : Array Section
   , flags : Flags }
 
-type alias TextsItemAttributes a = { a | index : Int }
+type alias TextItemAttributes a = { a | index : Int }
 
-type alias TextsAnswerAttributes = TextsItemAttributes { question_index : Int, name: String, id: String }
-type alias TextsQuestionAttributes = TextsItemAttributes { id:String, text_index: Int }
+type alias TextAnswerAttributes = TextItemAttributes { question_index : Int, name: String, id: String }
+type alias TextQuestionAttributes = TextItemAttributes { id:String, text_section_index: Int }
 
-type TextsAnswer = TextsAnswer Answer TextsAnswerAttributes Selected
-type TextsQuestion = TextsQuestion Question TextsQuestionAttributes (Array TextsAnswer)
+type TextAnswer = TextAnswer Answer TextAnswerAttributes Selected
+type TextQuestion = TextQuestion Question TextQuestionAttributes (Array TextAnswer)
 
-type TextsText = TextsText TextSection (TextsItemAttributes {}) (Array TextsQuestion)
+type Section = Section TextSection (TextItemAttributes {}) (Array TextQuestion)
 
 
 init : Flags -> (Model, Cmd Msg)
 init flags = ({
     text=Texts.new_text
-  , texts=Array.fromList []
+  , sections=Array.fromList []
   , profile=Profile.init_profile flags
-  , flags=flags}, updateTexts flags.text_id)
+  , flags=flags}, updateText flags.text_id)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
-updateTexts : Int -> Cmd Msg
-updateTexts text_id =
+updateText : Int -> Cmd Msg
+updateText text_id =
   let
-    text_req = Http.get (String.join "" [text_section_api_endpoint, (toString text_id)] ++ "/") Text.Decode.textDecoder
+    text_req = Http.get (String.join "" [text_api_endpoint, (toString text_id)] ++ "/") Text.Decode.textDecoder
   in
-    Cmd.batch [Http.send UpdateTexts text_req]
+    Cmd.batch [Http.send UpdateText text_req]
 
-updateTextsForTexts : Array TextsText -> Cmd Msg
-updateTextsForTexts text_texts =
-     Cmd.batch
-  <| List.map updateText
-  <| Array.toList text_texts
-
-updateText : TextsText -> Cmd Msg
-updateText ((TextsText text attrs questions) as text_text) =
-  let
-    question_req =
-      Http.get (String.join "" [question_api_endpoint, "?", "text", "=", (toString text.id)]) questionsDecoder
-  in
-    Http.send (UpdateQuestions text_text) question_req
-
-gen_text_answer : Int -> Int -> Answer -> TextsAnswer
+gen_text_answer : Int -> Int -> Answer -> TextAnswer
 gen_text_answer question_index answer_index answer =
-  TextsAnswer answer {
+  TextAnswer answer {
     -- question_field_index = question.order
     id = String.join "_" [ "question", (toString question_index), "answer", (toString answer.order) ]
   , name = String.join "_" [ "question", (toString question_index) ]
   , question_index = question_index
   , index = answer_index } False
 
-gen_text_question : Int -> Int -> Question -> TextsQuestion
-gen_text_question text_index index question =
-  TextsQuestion question
-    {index=index, text_index=text_index, id=(toString question.order)}
+gen_text_question : Int -> Int -> Question -> TextQuestion
+gen_text_question text_section_index index question =
+  TextQuestion question
+    {index=index, text_section_index=text_section_index, id=(toString question.order)}
   (Array.indexedMap (gen_text_answer index) question.answers)
 
-text_text : Array TextsText -> TextsQuestion -> Maybe TextsText
-text_text text_texts (TextsQuestion question question_attr answers) =
-  Array.get question_attr.text_index text_texts
+text_section : Array Section -> TextQuestion -> Maybe Section
+text_section text_sections (TextQuestion question question_attr answers) =
+  Array.get question_attr.text_section_index text_sections
 
-gen_text_text : Int -> TextSection -> TextsText
-gen_text_text index text =
-  TextsText text {index=index} (Array.indexedMap (gen_text_question index) text.questions)
+gen_text_sections : Int -> TextSection -> Section
+gen_text_sections index text_section =
+  Section text_section {index=index} (Array.indexedMap (gen_text_question index) text_section.questions)
 
-set_questions : TextsText -> Array TextsQuestion -> TextsText
-set_questions (TextsText text attrs _) new_questions =
-  TextsText text attrs new_questions
+set_questions : Section -> Array TextQuestion -> Section
+set_questions (Section text attrs _) new_questions =
+  Section text attrs new_questions
 
-set_answer_selected : TextsAnswer -> Bool -> TextsAnswer
-set_answer_selected (TextsAnswer answer attr _) selected =
-  TextsAnswer answer attr selected
+set_answer_selected : TextAnswer -> Bool -> TextAnswer
+set_answer_selected (TextAnswer answer attr _) selected =
+  TextAnswer answer attr selected
 
-set_answer : TextsQuestion -> TextsAnswer -> TextsQuestion
-set_answer (TextsQuestion question question_attr answers) ((TextsAnswer _ answer_attr _) as new_text_answer) =
-  TextsQuestion question question_attr (Array.set answer_attr.index new_text_answer answers)
+set_answer : TextQuestion -> TextAnswer -> TextQuestion
+set_answer (TextQuestion question question_attr answers) ((TextAnswer _ answer_attr _) as new_text_answer) =
+  TextQuestion question question_attr (Array.set answer_attr.index new_text_answer answers)
 
-set_question : TextsText -> TextsQuestion -> TextsText
-set_question (TextsText text text_attr questions) ((TextsQuestion question question_attr answers) as new_text_question) =
-  TextsText text text_attr (Array.set question_attr.index new_text_question questions)
+set_question : Section -> TextQuestion -> Section
+set_question (Section text text_attr questions) ((TextQuestion question question_attr answers) as new_text_question) =
+  Section text text_attr (Array.set question_attr.index new_text_question questions)
 
-set_text : Array TextsText -> TextsText -> Array TextsText
-set_text text_texts ((TextsText _ attrs _) as text_text) =
+set_text_section : Array Section -> Section -> Array Section
+set_text_section text_texts ((Section _ attrs _) as text_text) =
   Array.set attrs.index text_text text_texts
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    UpdateTexts (Ok text) ->
+    UpdateText (Ok text) ->
       let
-        text_texts = Array.indexedMap gen_text_text text.texts
+        text_sections = Array.indexedMap gen_text_sections text.sections
       in
-        ({ model | text = text, texts = text_texts }, Cmd.none)
+        ({ model | text = text, sections = text_sections }, Cmd.none)
 
-    UpdateTexts (Err err) ->
+    UpdateText (Err err) ->
       case (Debug.log "text error" err) of
         _ -> (model, Cmd.none)
 
@@ -158,14 +144,14 @@ update msg model =
       case (Debug.log "questions error" err) of
         _ -> (model, Cmd.none)
 
-    Select text_text text_question text_answer selected ->
+    Select text_section text_question text_answer selected ->
       let
         new_text_answer = set_answer_selected text_answer selected
         new_text_question = set_answer text_question new_text_answer
-        new_text_text = set_question text_text new_text_question
-        new_text_texts = set_text model.texts new_text_text
+        new_text_section = set_question text_section new_text_question
+        new_sections = set_text_section model.sections new_text_section
       in
-        ({ model | texts = new_text_texts }, Cmd.none)
+        ({ model | sections = new_sections }, Cmd.none)
 
     _ -> (model, Cmd.none)
 
@@ -178,8 +164,8 @@ main =
     , update = update
     }
 
-view_answer : TextsText -> TextsQuestion -> TextsAnswer -> Html Msg
-view_answer text_text text_question ((TextsAnswer answer answer_attrs answer_selected) as text_answer) =
+view_answer : Section -> TextQuestion -> TextAnswer -> Html Msg
+view_answer text_text text_question ((TextAnswer answer answer_attrs answer_selected) as text_answer) =
   div [ classList [("answer", True)] ] [
    Html.input [
      attribute "id" answer_attrs.id
@@ -191,19 +177,19 @@ view_answer text_text text_question ((TextsAnswer answer answer_attrs answer_sel
  , (if answer_selected then
      div [] [ Html.em [] [ Html.text answer.feedback ] ] else Html.text "")]
 
-view_question : TextsText -> TextsQuestion -> Html Msg
-view_question text_text ((TextsQuestion question attrs answers) as text_question) =
+view_question : Section -> TextQuestion -> Html Msg
+view_question text_text ((TextQuestion question attrs answers) as text_question) =
   div [ classList [("question", True)], attribute "id" attrs.id] [
         Html.text question.body
       , div [attribute "class" "answers"] (Array.toList <| Array.map (view_answer text_text text_question) answers)
   ]
 
-view_questions : TextsText -> Html Msg
-view_questions ((TextsText text text_attr questions) as text_text) =
+view_questions : Section -> Html Msg
+view_questions ((Section text text_attr questions) as text_text) =
   div [ classList[("questions", True)] ] (Array.toList <| Array.map (view_question text_text) questions)
 
-view_text : TextsText -> Html Msg
-view_text ((TextsText text attrs questions) as text_text) =
+view_text : Section -> Html Msg
+view_text ((Section text attrs questions) as text_text) =
   div [ classList[("text", True)] ] <| [
       div [classList [("text_body", True)]] (HtmlParser.Util.toVirtualDom <| HtmlParser.parse text.body)
     , (view_questions text_text)
@@ -214,7 +200,7 @@ view_text_introduction model =
   div [attribute "id" "text_intro"] (HtmlParser.Util.toVirtualDom <| HtmlParser.parse model.text.introduction)
 
 view_content : Model -> Html Msg
-view_content model = div [ classList [("text", True)] ] (Array.toList <| Array.map view_text model.texts)
+view_content model = div [ classList [("text", True)] ] (Array.toList <| Array.map view_text model.sections)
 
 -- VIEW
 view : Model -> Html Msg
