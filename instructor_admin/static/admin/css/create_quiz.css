@@ -117,7 +117,7 @@ body {
     background-color: white;
 }
 
-#quiz_attributes {
+#text_attributes {
     grid-column: 2;
     display: grid;
 
@@ -133,7 +133,7 @@ body {
     grid-template-columns: 100%;
 }
 
-#quiz_intro_view {
+#text_intro_view {
     display: grid;
 
     grid-column: 1;
@@ -146,21 +146,21 @@ body {
     margin-bottom: 15px;
 }
 
-#quiz_attributes > div > div:nth-child(1) {
+#text_attributes > div > div:nth-child(1) {
     font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 17px;
     color: #000e2d;
 }
 
-#quiz_intro_view div:nth-child(2) {
+#text_intro_view div:nth-child(2) {
     background: white;
 }
 
-.quiz_introduction {
+.text_introduction {
     padding: 15px;
 }
 
-#quiz_lock {
+#text_lock {
     display: grid;
 
     font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -224,7 +224,7 @@ body {
     grid-template-columns: 15% auto 15%;
 }
 
-#quiz_tags_view {
+#text_tags_view {
     display: grid;
 
     grid-column: 1;
@@ -239,14 +239,14 @@ body {
 }
 
 
-#quiz_tags_view > div {
+#text_tags_view > div {
     font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 18px;
     color: #000e2d;
 }
 
 
-.quiz_tag {
+.text_tag {
     display: inline-block;
 
     padding: 2px;
@@ -263,7 +263,7 @@ body {
     border-radius: 5px;
 }
 
-.quiz_tag > img {
+.text_tag > img {
     margin-left: 2px;
     margin-right: 2px;
 }
@@ -273,7 +273,7 @@ body {
     display: grid;
 }
 
-#quiz_title_view {
+#text_title_view {
     display: grid;
     grid-column: 1;
 
@@ -540,7 +540,7 @@ body {
     font-style: italic;
 }
 
-.quiz_dates {
+.text_dates {
     display: grid;
     grid-column: 1;
     grid-template-columns: auto;
