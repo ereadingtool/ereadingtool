@@ -56,7 +56,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
                 'introduction': {'type': 'string'},
                 'title': {'type': 'string'},
                 'source': {'type': 'string'},
-                'difficulty': {'type': 'string', 'enum': TextDifficulty.difficulty_keys()},
+                'difficulty': {'type': 'string', 'enum': [''] + TextDifficulty.difficulty_keys()},
                 'author': {'type': 'string'},
                 'text_sections': {'type': 'array', 'items': TextSection.to_json_schema()}
             },

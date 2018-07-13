@@ -194,7 +194,7 @@ update msg model = case msg of
             Intro text_intro ->
               ( Text.Component.set_intro_editable model.text_component editable
               , Text.Component.post_toggle_intro)
-            Author text_author -> let _ = Debug.log "editable" editable in
+            Author text_author ->
               ( Text.Component.set_author_editable model.text_component editable
               , Text.Component.post_toggle_author)
             Source text_source ->

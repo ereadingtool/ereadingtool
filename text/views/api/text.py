@@ -65,7 +65,7 @@ class TextAPIView(LoginRequiredMixin, View):
         if not text_form.is_valid():
             errors = cls.form_validation_errors(
                     errors=errors,
-                    parent_key='',
+                    parent_key='text',
                     form=text_form)
 
         text_params = {'text': text, 'form': text_form}
@@ -238,7 +238,9 @@ class TextAPIView(LoginRequiredMixin, View):
         except jsonschema.ValidationError as e:
             resp = HttpResponse(json.dumps({
                 'errors': {
-                    'malformed_json': e.message + ' at ' + '_'.join([str(path) for path in e.relative_path])
+                    'malformed_json': e.message + (
+                        ' at ' + '_'.join([str(path) for path in e.relative_path])
+                        if e.relative_path else '')
                 }
             }), status=400)
         except ValidationError as e:

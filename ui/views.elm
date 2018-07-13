@@ -65,7 +65,7 @@ view_filter : Html msg
 view_filter = div [classList [("filter_items", True)] ] [
      div [classList [("filter", True)] ] [
          Html.input [attribute "placeholder" "Search texts.."] []
-       , Html.a [attribute "href" "/admin/text/"] [Html.text "Create A Text."]
+       , Html.a [attribute "href" "/admin/text/"] [Html.text "Create A Text"]
      ]
  ]
 

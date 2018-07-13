@@ -10,7 +10,10 @@ textEncoder text =
   Encode.object [
       ("introduction", Encode.string text.introduction)
     , ("title", Encode.string text.title)
-    , ("sections", textSectionsEncoder text.sections)
+    , ("source", Encode.string text.source)
+    , ("author", Encode.string text.author)
+    , ("difficulty", Encode.string text.difficulty)
+    , ("text_sections", textSectionsEncoder text.sections)
     , ("tags", Encode.list
         (case text.tags of
           Just tags -> List.map (\tag -> Encode.string tag) tags
