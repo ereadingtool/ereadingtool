@@ -21372,7 +21372,7 @@ var _user$project$Views$view_filter = A2(
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('Create Texts'),
+							_0: _elm_lang$html$Html$text('Create A Text.'),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}
