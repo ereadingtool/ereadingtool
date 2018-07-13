@@ -1,4 +1,4 @@
-module Text.Create exposing (Flags, Mode(..), Msg(..), QuizField(..), Model, QuizViewParams)
+module Text.Create exposing (Flags, Mode(..), Msg(..), TextField(..), Model, TextViewParams)
 
 import Time
 import Dict exposing (Dict)
@@ -13,10 +13,10 @@ import Text.Update
 import Instructor.Profile
 import Flags
 
-import Quiz.Model
-import Quiz.Component exposing (QuizComponent)
-import Quiz.Field exposing (QuizIntro, QuizTitle, QuizTags, TextAuthor, TextSource, TextDifficulty)
-import Quiz.Decode
+import Text.Model
+import Text.Component exposing (TextComponent)
+import Text.Field exposing (TextIntro, TextTitle, TextTags, TextAuthor, TextSource, TextDifficulty)
+import Text.Decode
 
 import Instructor.Profile
 
@@ -34,34 +34,34 @@ type alias WriteLocked = Bool
 
 type Mode = EditMode | CreateMode | ReadOnlyMode InstructorUser
 
-type QuizField =
-    Title QuizTitle
-  | Intro QuizIntro
-  | Tags QuizTags
+type TextField =
+    Title TextTitle
+  | Intro TextIntro
+  | Tags TextTags
   | Author TextAuthor
   | Source TextSource
-  | Difficulty Quiz.Field.TextDifficulty
+  | Difficulty Text.Field.TextDifficulty
 
 type Msg =
     UpdateTextDifficultyOptions (Result Http.Error (List Text.Model.TextDifficulty))
-  | SubmitQuiz
-  | Submitted (Result Http.Error Quiz.Decode.QuizCreateResp)
-  | Updated (Result Http.Error Quiz.Decode.QuizUpdateResp)
+  | SubmitText
+  | Submitted (Result Http.Error Text.Decode.TextCreateResp)
+  | Updated (Result Http.Error Text.Decode.TextUpdateResp)
   | TextComponentMsg Text.Update.Msg
-  | ToggleEditable QuizField Bool
-  | UpdateQuizAttributes String String
-  | UpdateQuizIntro (String, String)
-  | QuizJSONDecode (Result String QuizComponent)
-  | QuizTagsDecode (Result String (Dict String String))
+  | ToggleEditable TextField Bool
+  | UpdateTextAttributes String String
+  | UpdateTextIntro (String, String)
+  | TextJSONDecode (Result String TextComponent)
+  | TextTagsDecode (Result String (Dict String String))
   | ClearMessages Time.Time
   | AddTagInput String String
   | DeleteTag String
   | ToggleLock
-  | QuizLocked (Result Http.Error Quiz.Decode.QuizLockResp)
-  | QuizUnlocked (Result Http.Error Quiz.Decode.QuizLockResp)
-  | DeleteQuiz
-  | ConfirmQuizDelete Bool
-  | QuizDelete (Result Http.Error Quiz.Decode.QuizDeleteResp)
+  | TextLocked (Result Http.Error Text.Decode.TextLockResp)
+  | TextUnlocked (Result Http.Error Text.Decode.TextLockResp)
+  | DeleteText
+  | ConfirmTextDelete Bool
+  | TextDelete (Result Http.Error Text.Decode.TextDeleteResp)
 
 type alias Model = {
     flags : Flags
@@ -69,15 +69,15 @@ type alias Model = {
   , profile : Instructor.Profile.InstructorProfile
   , success_msg : Maybe String
   , error_msg : Maybe String
-  , quiz_component : QuizComponent
+  , text_component : TextComponent
   , text_difficulties : List Text.Model.TextDifficulty
   , tags: Dict String String
   , write_locked: Bool }
 
-type alias QuizViewParams = {
-    quiz: Quiz.Model.Quiz
-  , quiz_component: QuizComponent
-  , quiz_fields: Quiz.Field.QuizFields
+type alias TextViewParams = {
+    text: Text.Model.Text
+  , text_component: TextComponent
+  , text_fields: Text.Field.TextFields
   , profile: Instructor.Profile.InstructorProfile
   , tags: Dict String String
   , write_locked: WriteLocked

@@ -1,8 +1,5 @@
 module Config exposing (..)
 
-quiz_api_endpoint : String
-quiz_api_endpoint = "/api/quiz/"
-
 text_api_endpoint : String
 text_api_endpoint = "/api/text/"
 

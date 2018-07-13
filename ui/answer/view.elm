@@ -7,14 +7,14 @@ import Question.Model
 import Answer.Field exposing (AnswerField)
 
 import Text.Update exposing (..)
-import Text.Component exposing (TextComponent)
+import Text.Section.Component exposing (TextSectionComponent)
 
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
 
 import Config exposing (answer_feedback_limit)
 
 type alias AnswerFieldParams msg = {
-    text_component: TextComponent
+    text_component: TextSectionComponent
   , question: Question.Model.Question
   , msg: (Text.Update.Msg -> msg) }
 

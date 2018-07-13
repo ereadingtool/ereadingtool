@@ -1,20 +1,18 @@
-module Text.Encode exposing (textEncoder, textsEncoder)
+module Text.Encode exposing (textEncoder)
 
-import Text.Model exposing (Text)
-import Question.Encode
+import Text.Model
+import Text.Section.Encode exposing (textSectionsEncoder)
 
 import Json.Encode as Encode
 
-import Array exposing (Array)
-
-textEncoder : Text -> Encode.Value
-textEncoder text = Encode.object [
-   ("body", Encode.string text.body)
- , ("questions", (Question.Encode.questionsEncoder text.questions))
- ]
-
-textsEncoder : Array Text -> Encode.Value
-textsEncoder texts =
-     Encode.list
-  <| Array.toList
-  <| Array.map (\text -> textEncoder text) texts
+textEncoder : Text.Model.Text -> Encode.Value
+textEncoder text =
+  Encode.object [
+      ("introduction", Encode.string text.introduction)
+    , ("title", Encode.string text.title)
+    , ("sections", textSectionsEncoder text.sections)
+    , ("tags", Encode.list
+        (case text.tags of
+          Just tags -> List.map (\tag -> Encode.string tag) tags
+          _ -> []))
+  ]

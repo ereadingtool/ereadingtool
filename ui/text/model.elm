@@ -1,23 +1,58 @@
-module Text.Model exposing (Text, TextDifficulty, emptyText)
+module Text.Model exposing (Text, TextListItem, TextDifficulty, new_text, set_sections, set_tags)
 
-import Question.Model
-import Field
+import Text.Section.Model exposing (emptyTextSection)
 
 import Date exposing (Date)
 import Array exposing (Array)
 
-type alias Text = {
-    order: Int
-  , body : String
-  , question_count : Int
-  , questions : Array Question.Model.Question
-  }
-
 type alias TextDifficulty = (String, String)
 
-emptyText : Text
-emptyText = {
-    order = 0
-  , question_count = 0
-  , questions = Question.Model.initial_questions
-  , body = "" }
+type alias Text = {
+    id: Maybe Int
+  , title: String
+  , introduction: String
+  , author: String
+  , source: String
+  , difficulty: String
+  , created_by: Maybe String
+  , last_modified_by: Maybe String
+  , tags: Maybe (List String)
+  , created_dt: Maybe Date
+  , modified_dt: Maybe Date
+  , sections: Array Text.Section.Model.TextSection
+  , write_locker: Maybe String }
+
+type alias TextListItem = {
+    id: Int
+  , title: String
+  , author: String
+  , difficulty: String
+  , created_by: String
+  , last_modified_by: Maybe String
+  , tags: Maybe (List String)
+  , created_dt: Date
+  , modified_dt: Date
+  , text_count: Int
+  , write_locker: Maybe String }
+
+new_text : Text
+new_text = {
+    id=Nothing
+  , title=""
+  , author=""
+  , source=""
+  , difficulty=""
+  , introduction=""
+  , tags=Nothing
+  , created_by=Nothing
+  , last_modified_by=Nothing
+  , created_dt=Nothing
+  , modified_dt=Nothing
+  , sections=Array.fromList [Text.Section.Model.emptyTextSection]
+  , write_locker=Nothing }
+
+set_sections : Text -> Array Text.Section.Model.TextSection -> Text
+set_sections text text_sections = { text | sections = text_sections }
+
+set_tags : Text -> Maybe (List String) -> Text
+set_tags text tags = { text | tags = tags }
