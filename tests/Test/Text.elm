@@ -1,4 +1,4 @@
-module Tests.Texts exposing (..)
+module Test.Text exposing (..)
 
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, int, list, string)
@@ -15,8 +15,13 @@ import Test.Html.Event as Event
 import Instructor.Profile
 
 import Text.Component
-import Texts.View
-import Texts.Create exposing (..)
+import Text.Section.Component
+import Text.Section.Component.Group exposing (TextSectionComponentGroup)
+
+import Text.View
+import Text.Section.View
+
+import Text.Create exposing (..)
 
 import Question.Field
 import Question.Model
@@ -28,7 +33,7 @@ import Text.View
 import Text.Model exposing (TextDifficulty)
 
 import Text.Component
-import Text.Component.Group
+import Text.Section.Component.Group
 
 type Msg = TextMsg
 
@@ -55,12 +60,12 @@ example_text_errors =
   , ("text_0_question_0_answer_0_feedback", "Feedback is required.")
   ]
 
-test_text_component : Text.Component.TextsComponent
+test_text_component : Text.Component.TextComponent
 test_text_component =
-  Text.Component.emptyTextsComponent
+  Text.Component.emptyTextComponent
 
-test_text_component_group : Text.Component.Group.TextComponentGroup
-test_text_component_group =
+test_text_section_component_group : TextSectionComponentGroup
+test_text_section_component_group =
   Text.Component.text_section_components test_text_component
 
 test_tags : Dict String String
@@ -79,7 +84,7 @@ test_profile : Instructor.Profile.InstructorProfile
 test_profile =
   Instructor.Profile.init_profile {id=Just 1, username="an_instructor@ereadingtool.com"}
 
-test_text_view_params : Text.Component.TextsComponent -> TextsViewParams
+test_text_view_params : Text.Component.TextComponent -> TextViewParams
 test_text_view_params text_component = {
     text=Text.Component.text text_component
   , text_component=text_component
@@ -92,13 +97,13 @@ test_text_view_params text_component = {
 
 test_answer_field_mutual_exclusion : Expectation
 test_answer_field_mutual_exclusion =
-  case Text.Component.Group.text_component test_text_component_group 0 of
+  case Text.Section.Component.Group.text_section_component test_text_section_component_group 0 of
     Just component ->
-      case Question.Field.get_question_field (Text.Component.question_fields component) 0 of
+      case Question.Field.get_question_field (Text.Section.Component.question_fields component) 0 of
         Just question_field ->
           case Answer.Field.get_answer_field (Question.Field.answers question_field) 0 of
             Just answer_field ->
-              Text.View.view_text_components (\_ -> TextMsg) test_text_component_group text_difficulties
+              Text.Section.View.view_text_section_components (\_ -> TextMsg) test_text_section_component_group text_difficulties
                 |> Query.fromHtml
                 |> Query.findAll [
                    attribute <| Attr.name (Answer.Field.name answer_field)
@@ -112,10 +117,10 @@ test_answer_field_mutual_exclusion =
     _ ->
       Expect.pass
 
-test_text_errors : Text.Component.TextsComponent -> List Test
+test_text_errors : Text.Component.TextComponent -> List Test
 test_text_errors text_component =
   let
-    html = Texts.View.view_text (test_text_view_params text_component)
+    html = Text.View.view_text (test_text_view_params text_component)
   in
     List.map
       (\((k, v) as err) ->
