@@ -36,7 +36,7 @@ fromQuestions text_index questions =
 generate_question_field : Int -> Int -> Question -> QuestionField
 generate_question_field text_index question_index question =
   QuestionField question {
-      id = (String.join "_" ["text", toString text_index, "question", toString question_index])
+      id = (String.join "_" ["textsection", toString text_index, "question", toString question_index])
     , editable = False
     , menu_visible = False
     , selected = False

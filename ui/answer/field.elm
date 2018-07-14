@@ -38,8 +38,8 @@ generate_answer_feedback_field id = {
 generate_answer_field : Int -> Int -> Int -> Answer -> AnswerField
 generate_answer_field i j k answer =
   let
-    answer_id = String.join "_" ["text", toString i, "question", toString j, "answer", toString k]
-    answer_name = String.join "_" ["text", toString i, "question", toString j, "correct_answer"]
+    answer_id = String.join "_" ["textsection", toString i, "question", toString j, "answer", toString k]
+    answer_name = String.join "_" ["textsection", toString i, "question", toString j, "correct_answer"]
   in
     AnswerField answer {
       id = answer_id
