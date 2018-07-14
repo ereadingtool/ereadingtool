@@ -8,7 +8,6 @@ module Text.Section.Component exposing (TextSectionComponent, TextSectionField, 
 import Array exposing (Array)
 import Field
 
-import Text.Model
 import Text.Section.Model exposing (TextSection)
 
 import Question.Field exposing (QuestionField, generate_question_field)
@@ -29,7 +28,7 @@ type alias FieldName = String
 
 generate_text_section_field_params : Int -> String -> TextSectionField
 generate_text_section_field_params i attr = {
-    id=String.join "_" ["text", toString i, attr]
+    id=String.join "_" ["textsection", toString i, attr]
   , editable=False
   , error_string=""
   , error=False
@@ -66,13 +65,10 @@ switch_editable text_field =
   in
     switch text_field
 
-{-title : TextSectionComponent -> TextField
-title (TextSectionComponent text attr fields question_fields) = fields.title-}
-
 update_errors : TextSectionComponent -> (String, String) -> TextSectionComponent
 update_errors ((TextSectionComponent text attr fields question_fields) as text_section) (field_id, field_error) =
   {- error keys could be
-       (title|source|difficulty|author|body)
+       body
     || (question_i_answer_j)
     || (question_i_answer_j_feedback) -}
   let
@@ -81,7 +77,7 @@ update_errors ((TextSectionComponent text attr fields question_fields) as text_s
   in
     case first_key of
       Just fst ->
-        if List.member fst ["title", "source", "difficulty", "author", "body"] then
+        if List.member fst ["body"] then
           case get_field text_section fst of
             Just field ->
               set_field text_section (update_field_error field field_error)
@@ -160,7 +156,7 @@ set_field_value (TextSectionComponent text attr fields question_fields) field_na
 
 update_field_error : TextSectionField -> String -> TextSectionField
 update_field_error text_field error_string =
-  { text_field | error = True, error_string = error_string }
+  { text_field | editable=True, error = True, error_string = error_string }
 
 get_field : TextSectionComponent -> FieldName -> Maybe TextSectionField
 get_field (TextSectionComponent text attr fields question_fields) field_name =

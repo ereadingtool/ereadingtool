@@ -17,27 +17,27 @@ new_group : TextSectionComponentGroup
 new_group = (TextSectionComponentGroup (Array.fromList [Text.Section.Component.emptyTextSectionComponent 0]))
 
 update_error : (String, String) -> Array TextSectionComponent -> Array TextSectionComponent
-update_error (field_id, field_error) text_components =
+update_error (field_id, field_error) text_section_components =
   -- error keys begin with text_i_*
   let
     error_key = String.split "_" field_id
   in
     case error_key of
-      "text" :: index :: _ ->
+      "textsection" :: index :: _ ->
         case String.toInt index of
           Ok i ->
-            case Array.get i text_components of
-              Just text_component ->
+            case Array.get i text_section_components of
+              Just text_section_component ->
                 let
                   -- only pass the relevant part of the error key
                   text_component_error = String.join "_" (List.drop 2 error_key)
                   new_text_component_with_errors =
-                    (Text.Section.Component.update_errors text_component (text_component_error, field_error))
+                    (Text.Section.Component.update_errors text_section_component (text_component_error, field_error))
                 in
-                  Array.set i new_text_component_with_errors text_components
-              Nothing -> text_components -- text doesn't exist in the group
-          _ -> text_components -- not a valid index string
-      _ -> text_components -- not a valid error key
+                  Array.set i new_text_component_with_errors text_section_components
+              Nothing -> text_section_components -- section doesn't exist in the group
+          _ -> text_section_components -- not a valid index string
+      _ -> text_section_components -- not a valid error key
 
 update_errors : TextSectionComponentGroup -> (Dict String String) -> TextSectionComponentGroup
 update_errors ((TextSectionComponentGroup text_components) as text_component_group) errors =

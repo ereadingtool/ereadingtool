@@ -46,18 +46,15 @@ text_difficulties = [("intermediate-mid", "Intermediate Mid"), ("advanced-low", 
 example_text_errors : Dict String String
 example_text_errors =
   Dict.fromList [
-  -- text
-    ("text_title", "This field is required.")
-  , ("text_introduction", "An introduction is required.")
-  -- texts
-  , ("text_0_title", "A title is required.")
-  , ("text_0_source", "A source is required.")
-  , ("text_0_difficulty", "A difficulty is required.")
-  , ("text_0_author", "An author is required.")
-  , ("text_0_body", "A text body is required.")
-  -- questions/answers
-  , ("text_0_question_0_answer_0", "An answer text is required.")
-  , ("text_0_question_0_answer_0_feedback", "Feedback is required.")
+      ("text_title","This field is required.")
+    , ("text_introduction","This field is required.")
+    , ("text_source","This field is required.")
+    , ("textsection_0_body","This field is required.")
+    , ("textsection_0_question_0_answer_0_feedback","This field is required.")
+    , ("textsection_0_question_0_answer_1_feedback","This field is required.")
+    , ("textsection_0_question_0_answer_2_feedback","This field is required.")
+    , ("textsection_0_question_0_answer_3_feedback","This field is required.")
+    , ("textsection_0_question_0_body","This field is required.")
   ]
 
 test_text_component : Text.Component.TextComponent

@@ -146,6 +146,11 @@ body {
     margin-bottom: 15px;
 }
 
+#text_author_view {
+    display: grid;
+    grid-column: 1;
+}
+
 #text_attributes > div > div:nth-child(1) {
     font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 17px;

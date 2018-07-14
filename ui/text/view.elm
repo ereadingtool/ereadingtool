@@ -42,13 +42,12 @@ view_text_title : TextViewParams -> (TextViewParams -> TextTitle -> Html Msg) ->
 view_text_title params edit_view text_title =
   div [ onClick (ToggleEditable (Title text_title) True)
       , attribute "id" "text_title_view"
-      , classList [("input_error", Text.Field.title_error text_title)]
-      ] [
+      ] <| [
       div [] [ Html.text "Text Title" ]
     , (case (Text.Field.title_editable text_title) of
       False ->
         div [attribute "class" "editable"] <|
-          [ Html.text params.text.title ] ++ (if (Text.Field.title_error text_title) then [] else [])
+          [ Html.text params.text.title ]
       True -> div [] [ edit_view params text_title ])
   ]
 
@@ -58,6 +57,7 @@ edit_text_title params text_title =
       attribute "id" (Text.Field.title_id text_title)
     , attribute "type" "text"
     , attribute "value" params.text.title
+    , classList [("input_error", Text.Field.title_error text_title)]
     , onInput (UpdateTextAttributes "title")
     , (onBlur (ToggleEditable (Title text_title) False)) ] [ ]
 
@@ -65,8 +65,7 @@ view_text_introduction : TextViewParams -> (TextViewParams -> TextIntro -> Html 
 view_text_introduction params edit_view text_intro =
   div [
         attribute "id" "text_intro_view"
-      , onClick (ToggleEditable (Intro text_intro) True)
-      , classList [("input_error", Text.Field.intro_error text_intro)]] [
+      , onClick (ToggleEditable (Intro text_intro) True) ] [
     div [] [ Html.text "Text Introduction" ]
   , (case (Text.Field.intro_editable text_intro) of
       True ->
@@ -133,16 +132,17 @@ view_text_lock params =
 
 view_author : TextViewParams -> (TextViewParams -> TextAuthor -> Html Msg) -> TextAuthor -> Html Msg
 view_author params edit_author text_author =
-  div [attribute "id" "text_author_view"] [
+  div [attribute "id" "text_author_view", attribute "class" "text_property"] [
       div [] [ Html.text "Text Author" ]
     , (case (Text.Field.author_editable text_author) of
        False ->
           div [
-           attribute "id" (Text.Field.author_id text_author)
-         , onClick (ToggleEditable (Author text_author) True)
-         , attribute "class" "text_property"] [
-           div [attribute "class" "editable"] [ Html.text params.text.author ]
-         ]
+            attribute "id" (Text.Field.author_id text_author)
+          , attribute "class" "editable"
+          , onClick (ToggleEditable (Author text_author) True)
+          ] [
+            div [] [ Html.text params.text.author ]
+          ]
        True -> div [] [ edit_author params text_author ])
   ]
 
@@ -152,8 +152,9 @@ edit_author params text_author =
     attribute "type" "text"
   , attribute "value" params.text.author
   , attribute "id" (Text.Field.author_id text_author)
+  , classList [("input_error", Text.Field.author_error text_author)]
   , onInput (UpdateTextAttributes "author")
-  , onBlur (ToggleEditable (Author text_author) False) ] [ Html.text params.text.author ]
+  , onBlur (ToggleEditable (Author text_author) False) ] [ Html.text "stuff" ]
 
 edit_difficulty : TextViewParams -> TextDifficulty -> Html Msg
 edit_difficulty params text_difficulty =
@@ -172,10 +173,9 @@ view_source params edit_view text_source =
   case (Text.Field.source_editable text_source) of
     False ->
        div [
-        attribute "id" (Text.Field.source_id text_source)
-      , onClick (ToggleEditable (Source text_source) True)
-      , classList [("text_property", True), ("input_error", (Text.Field.source_error text_source))] ] [
-        div [] [ Html.text "Text Source" ]
+        onClick (ToggleEditable (Source text_source) True)
+      , classList [("text_property", True)] ] [
+        div [attribute "id" (Text.Field.source_id text_source)] [ Html.text "Text Source" ]
       , div [attribute "class" "editable"] [ Html.text params.text.source ]
      ]
     True -> edit_view params text_source
@@ -183,17 +183,17 @@ view_source params edit_view text_source =
 edit_source : TextViewParams -> TextSource -> Html Msg
 edit_source params text_source =
   div [
-    attribute "id" (Text.Field.source_id text_source)
-  , classList [("text_property", True), ("input_error", (Text.Field.source_error text_source))]
+    classList [("text_property", True)]
   ] [
     div [] [ Html.text "Text Source" ]
   , Html.input [
-        attribute "type" "text"
+        attribute "id" (Text.Field.source_id text_source)
+      , attribute "type" "text"
       , attribute "value" params.text.source
+      , classList [("input_error", Text.Field.source_error text_source)]
       , onInput (UpdateTextAttributes "source")
       , (onBlur (ToggleEditable (Source text_source) False)) ] [ ]
   ]
-
 
 view_text_attributes : TextViewParams -> Html Msg
 view_text_attributes params =

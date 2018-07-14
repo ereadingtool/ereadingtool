@@ -43,9 +43,10 @@ view_body params =
 
 edit_body : (TextField msg) -> Html msg
 edit_body params =
-  Html.div [] [
+  div [] [
     Html.textarea [
         attribute "id" (Text.Section.Component.text_field_id params.field)
+      , classList [ ("input_error", params.field.error) ]
       , onInput (UpdateTextValue params.text_section_component "body" >> params.msg) ] [
         Html.text params.text_section.body
     ]
@@ -77,7 +78,7 @@ view_text_section_component msg text_difficulties text_section_component =
   ] ++ [
       Question.View.view_questions msg text_section_component (Text.Section.Component.question_fields text_section_component)
     , Question.View.view_question_buttons msg text_section_component
-    , div [class "cursor", onClick (msg <| DeleteTextSection text_section_component)] [ Html.text "Delete Text" ] ] ]
+    , div [class "cursor", onClick (msg <| DeleteTextSection text_section_component)] [ Html.text "Delete Text Section" ] ] ]
 
 view_text_section_components : (Msg -> msg) -> TextSectionComponentGroup -> List TextDifficulty -> Html msg
 view_text_section_components msg text_components text_difficulties =

@@ -16,6 +16,33 @@ type TextDifficulty = TextDifficulty TextFieldAttributes
 type TextFields = TextFields TextTitle TextIntro TextTags TextAuthor TextSource TextDifficulty
 
 
+update_error : (String, String) -> TextFields -> TextFields
+update_error (field_id, field_error)
+  ((TextFields
+    (TextTitle title_attrs)
+    (TextIntro intro_attrs)
+    (TextTags tags_attrs)
+    (TextAuthor author_attrs)
+    (TextSource source_attrs)
+    (TextDifficulty difficulty_attrs)) as text_fields) =
+  let
+    -- error keys begin with text_*
+    error_key = String.split "_" field_id
+  in
+    case error_key of
+      "text" :: field_name :: [] ->
+        case field_name of
+          "introduction" ->
+            set_intro text_fields { intro_attrs | error_string = field_error, editable=True, error = True }
+          "title" ->
+            set_title text_fields { title_attrs | error_string = field_error, editable=True, error = True }
+          "author" ->
+            set_author text_fields { author_attrs | error_string = field_error, editable=True, error = True }
+          "source" ->
+            set_source text_fields { source_attrs | error_string = field_error, editable=True, error = True }
+          _ -> text_fields -- not a valid field name
+      _ -> text_fields -- no text errors
+
 title : TextFields -> TextTitle
 title (TextFields text_title _ _ _ _ _) =
   text_title
@@ -56,8 +83,15 @@ set_source : TextFields -> TextFieldAttributes -> TextFields
 set_source (TextFields text_title text_intro text_tags text_author text_source text_difficulty) field_attrs =
   TextFields text_title text_intro text_tags text_author (TextSource field_attrs) text_difficulty
 
+set_difficulty : TextFields -> TextFieldAttributes -> TextFields
+set_difficulty (TextFields text_title text_intro text_tags text_author text_source text_difficulty) field_attrs =
+  TextFields text_title text_intro text_tags text_author text_source (TextDifficulty field_attrs)
+
 intro_error : TextIntro -> Bool
 intro_error (TextIntro attrs) = attrs.error
+
+intro_error_string : TextIntro -> String
+intro_error_string (TextIntro attrs) = attrs.error_string
 
 intro_editable : TextIntro -> Bool
 intro_editable (TextIntro attrs) = attrs.editable
@@ -73,6 +107,9 @@ title_id (TextTitle attrs) = attrs.id
 
 title_error : TextTitle -> Bool
 title_error (TextTitle attrs) = attrs.error
+
+title_error_string : TextTitle -> String
+title_error_string (TextTitle attrs) = attrs.error_string
 
 tag_error : TextTags -> Bool
 tag_error (TextTags attrs) = attrs.error

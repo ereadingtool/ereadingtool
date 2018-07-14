@@ -10972,53 +10972,61 @@ var _user$project$Text_Field$tag_error = function (_p22) {
 	var _p23 = _p22;
 	return _p23._0.error;
 };
-var _user$project$Text_Field$title_error = function (_p24) {
+var _user$project$Text_Field$title_error_string = function (_p24) {
 	var _p25 = _p24;
-	return _p25._0.error;
+	return _p25._0.error_string;
 };
-var _user$project$Text_Field$title_id = function (_p26) {
+var _user$project$Text_Field$title_error = function (_p26) {
 	var _p27 = _p26;
-	return _p27._0.id;
+	return _p27._0.error;
 };
-var _user$project$Text_Field$title_editable = function (_p28) {
+var _user$project$Text_Field$title_id = function (_p28) {
 	var _p29 = _p28;
-	return _p29._0.editable;
+	return _p29._0.id;
 };
-var _user$project$Text_Field$intro_id = function (_p30) {
+var _user$project$Text_Field$title_editable = function (_p30) {
 	var _p31 = _p30;
-	return _p31._0.id;
+	return _p31._0.editable;
 };
-var _user$project$Text_Field$intro_editable = function (_p32) {
+var _user$project$Text_Field$intro_id = function (_p32) {
 	var _p33 = _p32;
-	return _p33._0.editable;
+	return _p33._0.id;
 };
-var _user$project$Text_Field$intro_error = function (_p34) {
+var _user$project$Text_Field$intro_editable = function (_p34) {
 	var _p35 = _p34;
-	return _p35._0.error;
+	return _p35._0.editable;
 };
-var _user$project$Text_Field$difficulty = function (_p36) {
+var _user$project$Text_Field$intro_error_string = function (_p36) {
 	var _p37 = _p36;
-	return _p37._5;
+	return _p37._0.error_string;
 };
-var _user$project$Text_Field$source = function (_p38) {
+var _user$project$Text_Field$intro_error = function (_p38) {
 	var _p39 = _p38;
-	return _p39._4;
+	return _p39._0.error;
 };
-var _user$project$Text_Field$author = function (_p40) {
+var _user$project$Text_Field$difficulty = function (_p40) {
 	var _p41 = _p40;
-	return _p41._3;
+	return _p41._5;
 };
-var _user$project$Text_Field$tags = function (_p42) {
+var _user$project$Text_Field$source = function (_p42) {
 	var _p43 = _p42;
-	return _p43._2;
+	return _p43._4;
 };
-var _user$project$Text_Field$intro = function (_p44) {
+var _user$project$Text_Field$author = function (_p44) {
 	var _p45 = _p44;
-	return _p45._1;
+	return _p45._3;
 };
-var _user$project$Text_Field$title = function (_p46) {
+var _user$project$Text_Field$tags = function (_p46) {
 	var _p47 = _p46;
-	return _p47._0;
+	return _p47._2;
+};
+var _user$project$Text_Field$intro = function (_p48) {
+	var _p49 = _p48;
+	return _p49._1;
+};
+var _user$project$Text_Field$title = function (_p50) {
+	var _p51 = _p50;
+	return _p51._0;
 };
 var _user$project$Text_Field$TextTitle = function (a) {
 	return {ctor: 'TextTitle', _0: a};
@@ -11043,52 +11051,110 @@ var _user$project$Text_Field$TextFields = F6(
 		return {ctor: 'TextFields', _0: a, _1: b, _2: c, _3: d, _4: e, _5: f};
 	});
 var _user$project$Text_Field$set_intro = F2(
-	function (_p48, field_attrs) {
-		var _p49 = _p48;
-		return A6(
-			_user$project$Text_Field$TextFields,
-			_p49._0,
-			_user$project$Text_Field$TextIntro(field_attrs),
-			_p49._2,
-			_p49._3,
-			_p49._4,
-			_p49._5);
-	});
-var _user$project$Text_Field$set_title = F2(
-	function (_p50, field_attrs) {
-		var _p51 = _p50;
-		return A6(
-			_user$project$Text_Field$TextFields,
-			_user$project$Text_Field$TextTitle(field_attrs),
-			_p51._1,
-			_p51._2,
-			_p51._3,
-			_p51._4,
-			_p51._5);
-	});
-var _user$project$Text_Field$set_author = F2(
 	function (_p52, field_attrs) {
 		var _p53 = _p52;
 		return A6(
 			_user$project$Text_Field$TextFields,
 			_p53._0,
-			_p53._1,
+			_user$project$Text_Field$TextIntro(field_attrs),
 			_p53._2,
-			_user$project$Text_Field$TextAuthor(field_attrs),
+			_p53._3,
 			_p53._4,
 			_p53._5);
 	});
-var _user$project$Text_Field$set_source = F2(
+var _user$project$Text_Field$set_title = F2(
 	function (_p54, field_attrs) {
 		var _p55 = _p54;
 		return A6(
 			_user$project$Text_Field$TextFields,
-			_p55._0,
+			_user$project$Text_Field$TextTitle(field_attrs),
 			_p55._1,
 			_p55._2,
 			_p55._3,
-			_user$project$Text_Field$TextSource(field_attrs),
+			_p55._4,
 			_p55._5);
+	});
+var _user$project$Text_Field$set_author = F2(
+	function (_p56, field_attrs) {
+		var _p57 = _p56;
+		return A6(
+			_user$project$Text_Field$TextFields,
+			_p57._0,
+			_p57._1,
+			_p57._2,
+			_user$project$Text_Field$TextAuthor(field_attrs),
+			_p57._4,
+			_p57._5);
+	});
+var _user$project$Text_Field$set_source = F2(
+	function (_p58, field_attrs) {
+		var _p59 = _p58;
+		return A6(
+			_user$project$Text_Field$TextFields,
+			_p59._0,
+			_p59._1,
+			_p59._2,
+			_p59._3,
+			_user$project$Text_Field$TextSource(field_attrs),
+			_p59._5);
+	});
+var _user$project$Text_Field$update_error = F2(
+	function (_p61, _p60) {
+		var _p62 = _p61;
+		var _p67 = _p62._1;
+		var _p63 = _p60;
+		var _p66 = _p63;
+		var error_key = A2(_elm_lang$core$String$split, '_', _p62._0);
+		var _p64 = error_key;
+		if ((((_p64.ctor === '::') && (_p64._0 === 'text')) && (_p64._1.ctor === '::')) && (_p64._1._1.ctor === '[]')) {
+			var _p65 = _p64._1._0;
+			switch (_p65) {
+				case 'introduction':
+					return A2(
+						_user$project$Text_Field$set_intro,
+						_p66,
+						_elm_lang$core$Native_Utils.update(
+							_p63._1._0,
+							{error_string: _p67, editable: true, error: true}));
+				case 'title':
+					return A2(
+						_user$project$Text_Field$set_title,
+						_p66,
+						_elm_lang$core$Native_Utils.update(
+							_p63._0._0,
+							{error_string: _p67, editable: true, error: true}));
+				case 'author':
+					return A2(
+						_user$project$Text_Field$set_author,
+						_p66,
+						_elm_lang$core$Native_Utils.update(
+							_p63._3._0,
+							{error_string: _p67, editable: true, error: true}));
+				case 'source':
+					return A2(
+						_user$project$Text_Field$set_source,
+						_p66,
+						_elm_lang$core$Native_Utils.update(
+							_p63._4._0,
+							{error_string: _p67, editable: true, error: true}));
+				default:
+					return _p66;
+			}
+		} else {
+			return _p66;
+		}
+	});
+var _user$project$Text_Field$set_difficulty = F2(
+	function (_p68, field_attrs) {
+		var _p69 = _p68;
+		return A6(
+			_user$project$Text_Field$TextFields,
+			_p69._0,
+			_p69._1,
+			_p69._2,
+			_p69._3,
+			_p69._4,
+			_user$project$Text_Field$TextDifficulty(field_attrs));
 	});
 var _user$project$Text_Field$init_text_fields = A6(
 	_user$project$Text_Field$TextFields,
@@ -11123,7 +11189,7 @@ var _user$project$Text_Section_Component$update_field_error = F2(
 	function (text_field, error_string) {
 		return _elm_lang$core$Native_Utils.update(
 			text_field,
-			{error: true, error_string: error_string});
+			{editable: true, error: true, error_string: error_string});
 	});
 var _user$project$Text_Section_Component$attributes = function (_p5) {
 	var _p6 = _p5;
@@ -11399,24 +11465,8 @@ var _user$project$Text_Section_Component$update_errors = F2(
 				_p38,
 				{
 					ctor: '::',
-					_0: 'title',
-					_1: {
-						ctor: '::',
-						_0: 'source',
-						_1: {
-							ctor: '::',
-							_0: 'difficulty',
-							_1: {
-								ctor: '::',
-								_0: 'author',
-								_1: {
-									ctor: '::',
-									_0: 'body',
-									_1: {ctor: '[]'}
-								}
-							}
-						}
-					}
+					_0: 'body',
+					_1: {ctor: '[]'}
 				})) {
 				var _p37 = A2(_user$project$Text_Section_Component$get_field, _p41, _p38);
 				if (_p37.ctor === 'Just') {
@@ -11504,15 +11554,15 @@ var _user$project$Text_Section_Component_Group$reinitialize_ck_editors = functio
 			A2(_elm_lang$core$Array$map, _user$project$Text_Section_Component$reinitialize_ck_editor, text_components)));
 };
 var _user$project$Text_Section_Component_Group$update_error = F2(
-	function (_p4, text_components) {
+	function (_p4, text_section_components) {
 		var _p5 = _p4;
 		var error_key = A2(_elm_lang$core$String$split, '_', _p5._0);
 		var _p6 = error_key;
-		if (((_p6.ctor === '::') && (_p6._0 === 'text')) && (_p6._1.ctor === '::')) {
+		if (((_p6.ctor === '::') && (_p6._0 === 'textsection')) && (_p6._1.ctor === '::')) {
 			var _p7 = _elm_lang$core$String$toInt(_p6._1._0);
 			if (_p7.ctor === 'Ok') {
 				var _p9 = _p7._0;
-				var _p8 = A2(_elm_lang$core$Array$get, _p9, text_components);
+				var _p8 = A2(_elm_lang$core$Array$get, _p9, text_section_components);
 				if (_p8.ctor === 'Just') {
 					var text_component_error = A2(
 						_elm_lang$core$String$join,
@@ -11522,15 +11572,15 @@ var _user$project$Text_Section_Component_Group$update_error = F2(
 						_user$project$Text_Section_Component$update_errors,
 						_p8._0,
 						{ctor: '_Tuple2', _0: text_component_error, _1: _p5._1});
-					return A3(_elm_lang$core$Array$set, _p9, new_text_component_with_errors, text_components);
+					return A3(_elm_lang$core$Array$set, _p9, new_text_component_with_errors, text_section_components);
 				} else {
-					return text_components;
+					return text_section_components;
 				}
 			} else {
-				return text_components;
+				return text_section_components;
 			}
 		} else {
-			return text_components;
+			return text_section_components;
 		}
 	});
 var _user$project$Text_Section_Component_Group$TextSectionComponentGroup = function (a) {
@@ -11785,71 +11835,62 @@ var _user$project$Text_Component$set_text_section_components = F2(
 		var _p36 = _p35;
 		return A4(_user$project$Text_Component$TextComponent, _p36._0, _p36._1, _p36._2, new_components);
 	});
-var _user$project$Text_Component$update_text_errors = F2(
-	function (text_component, errors) {
-		var new_text_components = A2(
-			_user$project$Text_Section_Component_Group$update_errors,
-			_user$project$Text_Component$text_section_components(text_component),
-			errors);
-		var _p37 = A2(_elm_lang$core$Debug$log, 'text errors', errors);
-		return A2(_user$project$Text_Component$set_text_section_components, text_component, new_text_components);
-	});
 var _user$project$Text_Component$set_text_attribute = F3(
-	function (_p38, attr_name, value) {
-		var _p39 = _p38;
-		var _p44 = _p39._2;
-		var _p43 = _p39._0;
-		var _p42 = _p39._1;
-		var _p41 = _p39._3;
-		var _p40 = attr_name;
-		switch (_p40) {
+	function (_p37, attr_name, value) {
+		var _p38 = _p37;
+		var _p43 = _p38._2;
+		var _p42 = _p38._0;
+		var _p41 = _p38._1;
+		var _p40 = _p38._3;
+		var _p39 = attr_name;
+		switch (_p39) {
 			case 'title':
 				return A4(
 					_user$project$Text_Component$TextComponent,
 					_elm_lang$core$Native_Utils.update(
-						_p43,
+						_p42,
 						{title: value}),
-					_p42,
-					_p44,
-					_p41);
+					_p41,
+					_p43,
+					_p40);
 			case 'introduction':
 				return A4(
 					_user$project$Text_Component$TextComponent,
 					_elm_lang$core$Native_Utils.update(
-						_p43,
+						_p42,
 						{introduction: value}),
-					_p42,
-					_p44,
-					_p41);
+					_p41,
+					_p43,
+					_p40);
 			case 'author':
 				return A4(
 					_user$project$Text_Component$TextComponent,
 					_elm_lang$core$Native_Utils.update(
-						_p43,
+						_p42,
 						{author: value}),
-					_p42,
-					_p44,
-					_p41);
+					_p41,
+					_p43,
+					_p40);
 			case 'source':
 				return A4(
 					_user$project$Text_Component$TextComponent,
 					_elm_lang$core$Native_Utils.update(
-						_p43,
+						_p42,
 						{source: value}),
-					_p42,
-					_p44,
-					_p41);
+					_p41,
+					_p43,
+					_p40);
 			case 'difficulty':
 				return A4(
 					_user$project$Text_Component$TextComponent,
 					_elm_lang$core$Native_Utils.update(
-						_p43,
+						_p42,
 						{difficulty: value}),
-					_p42,
-					_p44,
-					_p41);
+					_p41,
+					_p43,
+					_p40);
 			default:
-				return _p39;
+				return _p38;
 		}
 	});
 var _user$project$Text_Component$emptyTextComponent = A4(
@@ -11859,25 +11900,46 @@ var _user$project$Text_Component$emptyTextComponent = A4(
 	_elm_lang$core$Dict$fromList(
 		{ctor: '[]'}),
 	_user$project$Text_Section_Component_Group$new_group);
-var _user$project$Text_Component$add_tag = F2(
-	function (_p45, tag) {
-		var _p46 = _p45;
-		return A4(
+var _user$project$Text_Component$update_text_errors = F2(
+	function (_p44, errors) {
+		var _p45 = _p44;
+		var new_text_component = A4(
 			_user$project$Text_Component$TextComponent,
-			_p46._0,
-			_p46._1,
-			A3(_elm_lang$core$Dict$insert, tag, tag, _p46._2),
-			_p46._3);
+			_p45._0,
+			A3(
+				_elm_lang$core$Array$foldr,
+				_user$project$Text_Field$update_error,
+				_p45._1,
+				_elm_lang$core$Array$fromList(
+					_elm_lang$core$Dict$toList(errors))),
+			_p45._2,
+			_p45._3);
+		var text_sections = A2(
+			_user$project$Text_Section_Component_Group$update_errors,
+			_user$project$Text_Component$text_section_components(new_text_component),
+			errors);
+		var _p46 = A2(_elm_lang$core$Debug$log, 'text errors', errors);
+		return A2(_user$project$Text_Component$set_text_section_components, new_text_component, text_sections);
 	});
-var _user$project$Text_Component$remove_tag = F2(
+var _user$project$Text_Component$add_tag = F2(
 	function (_p47, tag) {
 		var _p48 = _p47;
 		return A4(
 			_user$project$Text_Component$TextComponent,
 			_p48._0,
 			_p48._1,
-			A2(_elm_lang$core$Dict$remove, tag, _p48._2),
+			A3(_elm_lang$core$Dict$insert, tag, tag, _p48._2),
 			_p48._3);
+	});
+var _user$project$Text_Component$remove_tag = F2(
+	function (_p49, tag) {
+		var _p50 = _p49;
+		return A4(
+			_user$project$Text_Component$TextComponent,
+			_p50._0,
+			_p50._1,
+			A2(_elm_lang$core$Dict$remove, tag, _p50._2),
+			_p50._3);
 	});
 
 var _user$project$Text_Update$post_toggle_field = function (field) {
@@ -14147,12 +14209,21 @@ var _user$project$Text_Section_View$edit_body = function (params) {
 						_user$project$Text_Section_Component$text_field_id(params.field)),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onInput(
-							function (_p0) {
-								return params.msg(
-									A3(_user$project$Text_Update$UpdateTextValue, params.text_section_component, 'body', _p0));
+						_0: _elm_lang$html$Html_Attributes$classList(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'input_error', _1: params.field.error},
+								_1: {ctor: '[]'}
 							}),
-						_1: {ctor: '[]'}
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onInput(
+								function (_p0) {
+									return params.msg(
+										A3(_user$project$Text_Update$UpdateTextValue, params.text_section_component, 'body', _p0));
+								}),
+							_1: {ctor: '[]'}
+						}
 					}
 				},
 				{
@@ -14309,7 +14380,7 @@ var _user$project$Text_Section_View$view_text_section_component = F3(
 									},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text('Delete Text'),
+										_0: _elm_lang$html$Html$text('Delete Text Section'),
 										_1: {ctor: '[]'}
 									}),
 								_1: {ctor: '[]'}
@@ -14487,28 +14558,13 @@ var _user$project$Text_View$edit_source = F2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html_Attributes$attribute,
-					'id',
-					_user$project$Text_Field$source_id(text_source)),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$classList(
-						{
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'text_property', _1: true},
-							_1: {
-								ctor: '::',
-								_0: {
-									ctor: '_Tuple2',
-									_0: 'input_error',
-									_1: _user$project$Text_Field$source_error(text_source)
-								},
-								_1: {ctor: '[]'}
-							}
-						}),
-					_1: {ctor: '[]'}
-				}
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'text_property', _1: true},
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
 			},
 			{
 				ctor: '::',
@@ -14526,22 +14582,42 @@ var _user$project$Text_View$edit_source = F2(
 						_elm_lang$html$Html$input,
 						{
 							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
+							_0: A2(
+								_elm_lang$html$Html_Attributes$attribute,
+								'id',
+								_user$project$Text_Field$source_id(text_source)),
 							_1: {
 								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', params.text.source),
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
 								_1: {
 									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onInput(
-										_user$project$Text_Create$UpdateTextAttributes('source')),
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', params.text.source),
 									_1: {
 										ctor: '::',
-										_0: _elm_lang$html$Html_Events$onBlur(
-											A2(
-												_user$project$Text_Create$ToggleEditable,
-												_user$project$Text_Create$Source(text_source),
-												false)),
-										_1: {ctor: '[]'}
+										_0: _elm_lang$html$Html_Attributes$classList(
+											{
+												ctor: '::',
+												_0: {
+													ctor: '_Tuple2',
+													_0: 'input_error',
+													_1: _user$project$Text_Field$source_error(text_source)
+												},
+												_1: {ctor: '[]'}
+											}),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onInput(
+												_user$project$Text_Create$UpdateTextAttributes('source')),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Events$onBlur(
+													A2(
+														_user$project$Text_Create$ToggleEditable,
+														_user$project$Text_Create$Source(text_source),
+														false)),
+												_1: {ctor: '[]'}
+											}
+										}
 									}
 								}
 							}
@@ -14559,42 +14635,34 @@ var _user$project$Text_View$view_source = F3(
 				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html_Attributes$attribute,
-						'id',
-						_user$project$Text_Field$source_id(text_source)),
+					_0: _elm_lang$html$Html_Events$onClick(
+						A2(
+							_user$project$Text_Create$ToggleEditable,
+							_user$project$Text_Create$Source(text_source),
+							true)),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onClick(
-							A2(
-								_user$project$Text_Create$ToggleEditable,
-								_user$project$Text_Create$Source(text_source),
-								true)),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$classList(
-								{
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'text_property', _1: true},
-									_1: {
-										ctor: '::',
-										_0: {
-											ctor: '_Tuple2',
-											_0: 'input_error',
-											_1: _user$project$Text_Field$source_error(text_source)
-										},
-										_1: {ctor: '[]'}
-									}
-								}),
-							_1: {ctor: '[]'}
-						}
+						_0: _elm_lang$html$Html_Attributes$classList(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'text_property', _1: true},
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
 					}
 				},
 				{
 					ctor: '::',
 					_0: A2(
 						_elm_lang$html$Html$div,
-						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html_Attributes$attribute,
+								'id',
+								_user$project$Text_Field$source_id(text_source)),
+							_1: {ctor: '[]'}
+						},
 						{
 							ctor: '::',
 							_0: _elm_lang$html$Html$text('Text Source'),
@@ -14705,16 +14773,29 @@ var _user$project$Text_View$edit_author = F2(
 							_user$project$Text_Field$author_id(text_author)),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onInput(
-								_user$project$Text_Create$UpdateTextAttributes('author')),
+							_0: _elm_lang$html$Html_Attributes$classList(
+								{
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'input_error',
+										_1: _user$project$Text_Field$author_error(text_author)
+									},
+									_1: {ctor: '[]'}
+								}),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onBlur(
-									A2(
-										_user$project$Text_Create$ToggleEditable,
-										_user$project$Text_Create$Author(text_author),
-										false)),
-								_1: {ctor: '[]'}
+								_0: _elm_lang$html$Html_Events$onInput(
+									_user$project$Text_Create$UpdateTextAttributes('author')),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onBlur(
+										A2(
+											_user$project$Text_Create$ToggleEditable,
+											_user$project$Text_Create$Author(text_author),
+											false)),
+									_1: {ctor: '[]'}
+								}
 							}
 						}
 					}
@@ -14722,7 +14803,7 @@ var _user$project$Text_View$edit_author = F2(
 			},
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html$text(params.text.author),
+				_0: _elm_lang$html$Html$text('stuff'),
 				_1: {ctor: '[]'}
 			});
 	});
@@ -14733,7 +14814,11 @@ var _user$project$Text_View$view_author = F3(
 			{
 				ctor: '::',
 				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_author_view'),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'text_property'),
+					_1: {ctor: '[]'}
+				}
 			},
 			{
 				ctor: '::',
@@ -14760,14 +14845,14 @@ var _user$project$Text_View$view_author = F3(
 										_user$project$Text_Field$author_id(text_author)),
 									_1: {
 										ctor: '::',
-										_0: _elm_lang$html$Html_Events$onClick(
-											A2(
-												_user$project$Text_Create$ToggleEditable,
-												_user$project$Text_Create$Author(text_author),
-												true)),
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'editable'),
 										_1: {
 											ctor: '::',
-											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'text_property'),
+											_0: _elm_lang$html$Html_Events$onClick(
+												A2(
+													_user$project$Text_Create$ToggleEditable,
+													_user$project$Text_Create$Author(text_author),
+													true)),
 											_1: {ctor: '[]'}
 										}
 									}
@@ -14776,11 +14861,7 @@ var _user$project$Text_View$view_author = F3(
 									ctor: '::',
 									_0: A2(
 										_elm_lang$html$Html$div,
-										{
-											ctor: '::',
-											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'editable'),
-											_1: {ctor: '[]'}
-										},
+										{ctor: '[]'},
 										{
 											ctor: '::',
 											_0: _elm_lang$html$Html$text(params.text.author),
@@ -15103,20 +15184,7 @@ var _user$project$Text_View$view_text_introduction = F3(
 							_user$project$Text_Create$ToggleEditable,
 							_user$project$Text_Create$Intro(text_intro),
 							true)),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$classList(
-							{
-								ctor: '::',
-								_0: {
-									ctor: '_Tuple2',
-									_0: 'input_error',
-									_1: _user$project$Text_Field$intro_error(text_intro)
-								},
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					}
+					_1: {ctor: '[]'}
 				}
 			},
 			{
@@ -15182,16 +15250,29 @@ var _user$project$Text_View$edit_text_title = F2(
 						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', params.text.title),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onInput(
-								_user$project$Text_Create$UpdateTextAttributes('title')),
+							_0: _elm_lang$html$Html_Attributes$classList(
+								{
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'input_error',
+										_1: _user$project$Text_Field$title_error(text_title)
+									},
+									_1: {ctor: '[]'}
+								}),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onBlur(
-									A2(
-										_user$project$Text_Create$ToggleEditable,
-										_user$project$Text_Create$Title(text_title),
-										false)),
-								_1: {ctor: '[]'}
+								_0: _elm_lang$html$Html_Events$onInput(
+									_user$project$Text_Create$UpdateTextAttributes('title')),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onBlur(
+										A2(
+											_user$project$Text_Create$ToggleEditable,
+											_user$project$Text_Create$Title(text_title),
+											false)),
+									_1: {ctor: '[]'}
+								}
 							}
 						}
 					}
@@ -15213,20 +15294,7 @@ var _user$project$Text_View$view_text_title = F3(
 				_1: {
 					ctor: '::',
 					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_title_view'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$classList(
-							{
-								ctor: '::',
-								_0: {
-									ctor: '_Tuple2',
-									_0: 'input_error',
-									_1: _user$project$Text_Field$title_error(text_title)
-								},
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					}
+					_1: {ctor: '[]'}
 				}
 			},
 			{
@@ -15251,14 +15319,11 @@ var _user$project$Text_View$view_text_title = F3(
 									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'editable'),
 									_1: {ctor: '[]'}
 								},
-								A2(
-									_elm_lang$core$Basics_ops['++'],
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text(params.text.title),
-										_1: {ctor: '[]'}
-									},
-									_user$project$Text_Field$title_error(text_title) ? {ctor: '[]'} : {ctor: '[]'}));
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(params.text.title),
+									_1: {ctor: '[]'}
+								});
 						} else {
 							return A2(
 								_elm_lang$html$Html$div,

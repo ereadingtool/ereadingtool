@@ -8,6 +8,7 @@ import Text.Field exposing (TextFields, init_text_fields, TextIntro, TextTitle, 
 
 import Text.Section.Component.Group exposing (TextSectionComponentGroup)
 
+import Array
 import Dict exposing (Dict)
 import Ports exposing (ckEditor, ckEditorSetHtml, CKEditorID, CKEditorText, addClassToCKEditor, selectAllInputText)
 
@@ -23,7 +24,9 @@ init text =
 
 text : TextComponent -> Text
 text (TextComponent text _ text_tags component_group) =
-  Text.set_tags (Text.set_sections text (Text.Section.Component.Group.toTextSections component_group)) (Just <| Dict.keys text_tags)
+  Text.set_tags
+    (Text.set_sections text (Text.Section.Component.Group.toTextSections component_group))
+    (Just <| Dict.keys text_tags)
 
 text_fields : TextComponent -> TextFields
 text_fields (TextComponent _ text_fields _ _) =
@@ -99,13 +102,16 @@ reinitialize_ck_editors ((TextComponent text fields text_tags components) as tex
     , Text.Section.Component.Group.reinitialize_ck_editors text_component_group ]
 
 update_text_errors : TextComponent -> Dict String String -> TextComponent
-update_text_errors text_component errors =
+update_text_errors (TextComponent text fields text_tags components) errors =
   let
     _ = (Debug.log "text errors" errors)
-    new_text_components =
-      Text.Section.Component.Group.update_errors (text_section_components text_component) errors
+    new_text_component =
+      TextComponent
+        text (Array.foldr Text.Field.update_error fields (Array.fromList <| Dict.toList errors)) text_tags components
+    text_sections =
+      Text.Section.Component.Group.update_errors (text_section_components new_text_component) errors
   in
-    (set_text_section_components text_component new_text_components)
+    (set_text_section_components new_text_component text_sections)
 
 tags_to_dict : Maybe (List String) -> Dict String String
 tags_to_dict tags =
