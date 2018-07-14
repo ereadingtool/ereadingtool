@@ -139,6 +139,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
             'title': self.title,
             'introduction': self.introduction,
             'author': self.author,
+            'source': self.source,
             'difficulty': self.difficulty.slug,
             'created_by': str(self.created_by),
             'last_modified_by': str(self.last_modified_by) if self.last_modified_by else None,
@@ -203,6 +204,7 @@ class TextSection(Timestamped, models.Model):
 
         return {
             'id': self.pk,
+            'order': self.order,
             'created_dt': self.created_dt.isoformat(),
             'modified_dt': self.modified_dt.isoformat(),
             'question_count': questions_count,

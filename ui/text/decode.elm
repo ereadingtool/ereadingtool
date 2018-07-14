@@ -35,7 +35,7 @@ textDecoder =
     |> required "tags" (Decode.nullable (Decode.list (Decode.string)))
     |> required "created_dt" (Decode.nullable date)
     |> required "modified_dt" (Decode.nullable date)
-    |> required "sections" (Decode.map Array.fromList (Text.Section.Decode.textSectionsDecoder))
+    |> required "text_sections" (Decode.map Array.fromList (Text.Section.Decode.textSectionsDecoder))
     |> required "write_locker" (Decode.nullable (Decode.string))
 
 textListItemDecoder : Decode.Decoder TextListItem

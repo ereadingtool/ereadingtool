@@ -10283,7 +10283,7 @@ var _user$project$Answer_Field$generate_answer_field = F4(
 			'_',
 			{
 				ctor: '::',
-				_0: 'text',
+				_0: 'textsection',
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$core$Basics$toString(i),
@@ -10307,7 +10307,7 @@ var _user$project$Answer_Field$generate_answer_field = F4(
 			'_',
 			{
 				ctor: '::',
-				_0: 'text',
+				_0: 'textsection',
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$core$Basics$toString(i),
@@ -10531,7 +10531,7 @@ var _user$project$Question_Field$generate_question_field = F3(
 					'_',
 					{
 						ctor: '::',
-						_0: 'text',
+						_0: 'textsection',
 						_1: {
 							ctor: '::',
 							_0: _elm_lang$core$Basics$toString(text_index),
@@ -10583,85 +10583,125 @@ var _user$project$Question_Field$initial_question_fields = function (text_index)
 		_user$project$Question_Field$generate_question_field(text_index),
 		_user$project$Question_Model$initial_questions);
 };
+var _user$project$Question_Field$update_error = F2(
+	function (_p8, error_string) {
+		var _p9 = _p8;
+		return A3(
+			_user$project$Question_Field$QuestionField,
+			_p9._0,
+			_elm_lang$core$Native_Utils.update(
+				_p9._1,
+				{editable: true, error: true, error_string: error_string}),
+			_p9._2);
+	});
 var _user$project$Question_Field$set_answer_field = F2(
 	function (question_fields, answer_field) {
 		var answer_index = _user$project$Answer_Field$index(answer_field);
 		var question_index = _user$project$Answer_Field$question_index(answer_field);
-		var _p8 = A2(_elm_lang$core$Array$get, question_index, question_fields);
-		if (_p8.ctor === 'Just') {
+		var _p10 = A2(_elm_lang$core$Array$get, question_index, question_fields);
+		if (_p10.ctor === 'Just') {
 			return A3(
 				_elm_lang$core$Array$set,
 				question_index,
 				A3(
 					_user$project$Question_Field$QuestionField,
-					_p8._0._0,
-					_p8._0._1,
-					A3(_elm_lang$core$Array$set, answer_index, answer_field, _p8._0._2)),
+					_p10._0._0,
+					_p10._0._1,
+					A3(_elm_lang$core$Array$set, answer_index, answer_field, _p10._0._2)),
 				question_fields);
 		} else {
 			return question_fields;
 		}
 	});
 var _user$project$Question_Field$update_errors = F2(
-	function (question_fields, _p9) {
-		var _p10 = _p9;
-		var _p17 = _p10._1;
-		var error_key = A2(_elm_lang$core$String$split, '_', _p10._0);
-		var _p11 = error_key;
-		if ((((((_p11.ctor === '::') && (_p11._0 === 'question')) && (_p11._1.ctor === '::')) && (_p11._1._1.ctor === '::')) && (_p11._1._1._0 === 'answer')) && (_p11._1._1._1.ctor === '::')) {
-			var _p12 = _elm_lang$core$String$toInt(_p11._1._0);
-			if (_p12.ctor === 'Ok') {
-				var _p13 = _elm_lang$core$String$toInt(_p11._1._1._1._0);
-				if (_p13.ctor === 'Ok') {
-					var _p14 = A2(_user$project$Question_Field$get_question_field, question_fields, _p12._0);
-					if (_p14.ctor === 'Just') {
-						var _p15 = A2(
-							_user$project$Answer_Field$get_answer_field,
-							_user$project$Question_Field$answers(_p14._0),
-							_p13._0);
-						if (_p15.ctor === 'Just') {
-							var _p16 = _p15._0;
-							return A2(
-								_user$project$Question_Field$set_answer_field,
-								question_fields,
-								_elm_lang$core$List$isEmpty(_p11._1._1._1._1) ? A2(_user$project$Answer_Field$update_error, _p16, _p17) : A2(_user$project$Answer_Field$update_feedback_error, _p16, _p17));
+	function (question_fields, _p11) {
+		var _p12 = _p11;
+		var _p21 = _p12._1;
+		var error_key = A2(_elm_lang$core$String$split, '_', _p12._0);
+		var _p13 = error_key;
+		_v7_2:
+		do {
+			if ((((_p13.ctor === '::') && (_p13._0 === 'question')) && (_p13._1.ctor === '::')) && (_p13._1._1.ctor === '::')) {
+				if (_p13._1._1._1.ctor === '::') {
+					if (_p13._1._1._0 === 'answer') {
+						var _p14 = _elm_lang$core$String$toInt(_p13._1._0);
+						if (_p14.ctor === 'Ok') {
+							var _p15 = _elm_lang$core$String$toInt(_p13._1._1._1._0);
+							if (_p15.ctor === 'Ok') {
+								var _p16 = A2(_user$project$Question_Field$get_question_field, question_fields, _p14._0);
+								if (_p16.ctor === 'Just') {
+									var _p17 = A2(
+										_user$project$Answer_Field$get_answer_field,
+										_user$project$Question_Field$answers(_p16._0),
+										_p15._0);
+									if (_p17.ctor === 'Just') {
+										var _p18 = _p17._0;
+										return A2(
+											_user$project$Question_Field$set_answer_field,
+											question_fields,
+											_elm_lang$core$List$isEmpty(_p13._1._1._1._1) ? A2(_user$project$Answer_Field$update_error, _p18, _p21) : A2(_user$project$Answer_Field$update_feedback_error, _p18, _p21));
+									} else {
+										return question_fields;
+									}
+								} else {
+									return question_fields;
+								}
+							} else {
+								return question_fields;
+							}
 						} else {
 							return question_fields;
 						}
 					} else {
-						return question_fields;
+						break _v7_2;
 					}
 				} else {
-					return question_fields;
+					if (_p13._1._1._0 === 'body') {
+						var _p19 = _elm_lang$core$String$toInt(_p13._1._0);
+						if (_p19.ctor === 'Ok') {
+							var _p20 = A2(_user$project$Question_Field$get_question_field, question_fields, _p19._0);
+							if (_p20.ctor === 'Just') {
+								return A2(
+									_user$project$Question_Field$update_question_field,
+									A2(_user$project$Question_Field$update_error, _p20._0, _p21),
+									question_fields);
+							} else {
+								return question_fields;
+							}
+						} else {
+							return question_fields;
+						}
+					} else {
+						break _v7_2;
+					}
 				}
 			} else {
-				return question_fields;
+				break _v7_2;
 			}
-		} else {
-			return question_fields;
-		}
+		} while(false);
+		return question_fields;
 	});
 var _user$project$Question_Field$set_answer_feedback = F3(
-	function (_p18, answer_field, feedback) {
-		var _p19 = _p18;
+	function (_p22, answer_field, feedback) {
+		var _p23 = _p22;
 		var new_answer_field = A2(_user$project$Answer_Field$set_answer_feedback, answer_field, feedback);
 		var index = _user$project$Answer_Field$index(answer_field);
 		return A3(
 			_user$project$Question_Field$QuestionField,
-			_p19._0,
-			_p19._1,
-			A3(_elm_lang$core$Array$set, index, new_answer_field, _p19._2));
+			_p23._0,
+			_p23._1,
+			A3(_elm_lang$core$Array$set, index, new_answer_field, _p23._2));
 	});
 var _user$project$Question_Field$set_answer_correct = F2(
-	function (_p20, answer_field) {
-		var _p21 = _p20;
+	function (_p24, answer_field) {
+		var _p25 = _p24;
 		var index = _user$project$Answer_Field$index;
 		var correct = _user$project$Answer_Field$set_answer_correct;
 		var answer_index = _user$project$Answer_Field$index(answer_field);
 		return A3(
 			_user$project$Question_Field$QuestionField,
-			_p21._0,
-			_p21._1,
+			_p25._0,
+			_p25._1,
 			A2(
 				_elm_lang$core$Array$map,
 				function (a) {
@@ -10669,32 +10709,32 @@ var _user$project$Question_Field$set_answer_correct = F2(
 						index(a),
 						answer_index) ? A2(correct, a, true) : A2(correct, a, false);
 				},
-				_p21._2));
+				_p25._2));
 	});
 var _user$project$Question_Field$update_question = F2(
-	function (_p22, new_question) {
-		var _p23 = _p22;
-		return A3(_user$project$Question_Field$QuestionField, new_question, _p23._1, _p23._2);
+	function (_p26, new_question) {
+		var _p27 = _p26;
+		return A3(_user$project$Question_Field$QuestionField, new_question, _p27._1, _p27._2);
 	});
 var _user$project$Question_Field$delete_question = F2(
 	function (index, fields) {
 		return A2(
 			_elm_lang$core$Array$indexedMap,
 			F2(
-				function (i, _p24) {
-					var _p25 = _p24;
+				function (i, _p28) {
+					var _p29 = _p28;
 					return A3(
 						_user$project$Question_Field$QuestionField,
-						_p25._0,
+						_p29._0,
 						_elm_lang$core$Native_Utils.update(
-							_p25._1,
+							_p29._1,
 							{index: i}),
 						A2(
 							_elm_lang$core$Array$map,
 							function (answer_field) {
 								return A2(_user$project$Answer_Field$update_question_index, answer_field, i);
 							},
-							_p25._2));
+							_p29._2));
 				}),
 			A2(
 				_elm_lang$core$Array$filter,
@@ -10708,19 +10748,19 @@ var _user$project$Question_Field$delete_question = F2(
 var _user$project$Question_Field$delete_question_field = F2(
 	function (question_field, question_fields) {
 		return A2(
-			function (_p26) {
+			function (_p30) {
 				return _user$project$Question_Field$delete_question(
-					_user$project$Question_Field$index(_p26));
+					_user$project$Question_Field$index(_p30));
 			},
 			question_field,
 			question_fields);
 	});
 var _user$project$Question_Field$set_question_type = F2(
-	function (_p27, question_type) {
-		var _p28 = _p27;
+	function (_p31, question_type) {
+		var _p32 = _p31;
 		var q_type = function () {
-			var _p29 = question_type;
-			if (_p29.ctor === 'MainIdea') {
+			var _p33 = question_type;
+			if (_p33.ctor === 'MainIdea') {
 				return 'main_idea';
 			} else {
 				return 'detail';
@@ -10729,56 +10769,56 @@ var _user$project$Question_Field$set_question_type = F2(
 		return A3(
 			_user$project$Question_Field$QuestionField,
 			_elm_lang$core$Native_Utils.update(
-				_p28._0,
+				_p32._0,
 				{question_type: q_type}),
-			_p28._1,
-			_p28._2);
+			_p32._1,
+			_p32._2);
 	});
-var _user$project$Question_Field$switch_editable = function (_p30) {
-	var _p31 = _p30;
-	var _p32 = _p31._1;
+var _user$project$Question_Field$switch_editable = function (_p34) {
+	var _p35 = _p34;
+	var _p36 = _p35._1;
 	return A3(
 		_user$project$Question_Field$QuestionField,
-		_p31._0,
+		_p35._0,
 		_elm_lang$core$Native_Utils.update(
-			_p32,
+			_p36,
 			{
-				editable: _p32.editable ? false : true
+				editable: _p36.editable ? false : true
 			}),
-		_p31._2);
+		_p35._2);
 };
 var _user$project$Question_Field$set_question_body = F2(
-	function (_p33, value) {
-		var _p34 = _p33;
-		return A3(
-			_user$project$Question_Field$QuestionField,
-			_elm_lang$core$Native_Utils.update(
-				_p34._0,
-				{body: value}),
-			_p34._1,
-			_p34._2);
-	});
-var _user$project$Question_Field$set_menu_visible = F2(
-	function (_p35, visible) {
-		var _p36 = _p35;
-		return A3(
-			_user$project$Question_Field$QuestionField,
-			_p36._0,
-			_elm_lang$core$Native_Utils.update(
-				_p36._1,
-				{menu_visible: visible}),
-			_p36._2);
-	});
-var _user$project$Question_Field$set_selected = F2(
-	function (_p37, selected) {
+	function (_p37, value) {
 		var _p38 = _p37;
 		return A3(
 			_user$project$Question_Field$QuestionField,
-			_p38._0,
 			_elm_lang$core$Native_Utils.update(
-				_p38._1,
-				{selected: selected}),
+				_p38._0,
+				{body: value}),
+			_p38._1,
 			_p38._2);
+	});
+var _user$project$Question_Field$set_menu_visible = F2(
+	function (_p39, visible) {
+		var _p40 = _p39;
+		return A3(
+			_user$project$Question_Field$QuestionField,
+			_p40._0,
+			_elm_lang$core$Native_Utils.update(
+				_p40._1,
+				{menu_visible: visible}),
+			_p40._2);
+	});
+var _user$project$Question_Field$set_selected = F2(
+	function (_p41, selected) {
+		var _p42 = _p41;
+		return A3(
+			_user$project$Question_Field$QuestionField,
+			_p42._0,
+			_elm_lang$core$Native_Utils.update(
+				_p42._1,
+				{selected: selected}),
+			_p42._2);
 	});
 
 var _user$project$Text_Section_Model$emptyTextSection = {order: 0, question_count: 0, questions: _user$project$Question_Model$initial_questions, body: ''};
@@ -11270,7 +11310,7 @@ var _user$project$Text_Section_Component$generate_text_section_field_params = F2
 				'_',
 				{
 					ctor: '::',
-					_0: 'text',
+					_0: 'textsection',
 					_1: {
 						ctor: '::',
 						_0: _elm_lang$core$Basics$toString(i),
@@ -13396,7 +13436,7 @@ var _user$project$Question_Decode$questionDecoder = A3(
 						_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
 						A3(
 							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'text_id',
+							'text_section_id',
 							_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
 							A3(
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -13489,7 +13529,7 @@ var _user$project$Text_Decode$textDecoder = A3(
 	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'sections',
+		'text_sections',
 		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Array$fromList, _user$project$Text_Section_Decode$textSectionsDecoder),
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,

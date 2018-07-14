@@ -13,7 +13,7 @@ questionDecoder : Decode.Decoder Question
 questionDecoder =
   decode Question
     |> required "id" (Decode.nullable Decode.int)
-    |> required "text_id" (Decode.nullable Decode.int)
+    |> required "text_section_id" (Decode.nullable Decode.int)
     |> required "created_dt" (Decode.nullable date)
     |> required "modified_dt" (Decode.nullable date)
     |> required "body" Decode.string

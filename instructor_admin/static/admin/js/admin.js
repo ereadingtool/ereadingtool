@@ -9791,7 +9791,7 @@ var _user$project$Question_Decode$questionDecoder = A3(
 						_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
 						A3(
 							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'text_id',
+							'text_section_id',
 							_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
 							A3(
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -9884,7 +9884,7 @@ var _user$project$Text_Decode$textDecoder = A3(
 	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'sections',
+		'text_sections',
 		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Array$fromList, _user$project$Text_Section_Decode$textSectionsDecoder),
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
