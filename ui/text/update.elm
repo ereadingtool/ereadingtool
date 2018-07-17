@@ -34,6 +34,7 @@ type Msg =
   | UpdateAnswerFieldValue TextSectionComponent Answer.Field.AnswerField String
   | UpdateAnswerFeedbackValue TextSectionComponent Answer.Field.AnswerField String
   | UpdateAnswerFieldCorrect TextSectionComponent Answer.Field.AnswerField Bool
+  | DeleteAnswer TextSectionComponent Answer.Field.AnswerField
 
   -- UI effects-related messages
   | ToggleEditable TextSectionComponent Field
@@ -83,43 +84,47 @@ update msg model =
       }, Cmd.none)
 
     DeleteQuestion text_component question_field ->
-        ({ model | text_component = update
-           (Text.Section.Component.delete_question_field text_component question_field)
-        }, Cmd.none)
+      ({ model | text_component = update
+         (Text.Section.Component.delete_question_field text_component question_field)
+      }, Cmd.none)
 
     SelectQuestion text_component question_field selected ->
-        let
-          new_question_field = Question.Field.set_selected question_field selected
-        in
-          ({ model | text_component = update
-             (Text.Section.Component.update_question_field text_component new_question_field)
-          }, Cmd.none)
+      let
+        new_question_field = Question.Field.set_selected question_field selected
+      in
+        ({ model | text_component = update
+           (Text.Section.Component.update_question_field text_component new_question_field)
+        }, Cmd.none)
 
     DeleteSelectedQuestions text_component ->
-        ({ model | text_component = update
-           (Text.Section.Component.delete_selected_question_fields text_component)
-        }, Cmd.none)
+      ({ model | text_component = update
+         (Text.Section.Component.delete_selected_question_fields text_component)
+      }, Cmd.none)
 
     ToggleQuestionMenu text_component question_field ->
-        ({ model | text_component = update
-           (Text.Section.Component.toggle_question_menu text_component question_field)
-        }, Cmd.none)
+      ({ model | text_component = update
+         (Text.Section.Component.toggle_question_menu text_component question_field)
+      }, Cmd.none)
 
     -- answer msgs
     UpdateAnswerField text_component answer_field ->
-        ({ model | text_component = update (Text.Section.Component.set_answer text_component answer_field)  }, Cmd.none)
+      ({ model | text_component = update (Text.Section.Component.set_answer text_component answer_field)  }, Cmd.none)
 
     UpdateAnswerFieldValue text_component answer_field text ->
-        ({ model | text_component = update (Text.Section.Component.set_answer_text text_component answer_field text)  }, Cmd.none)
+      ({ model | text_component = update (Text.Section.Component.set_answer_text text_component answer_field text)  }, Cmd.none)
 
     UpdateAnswerFeedbackValue text_component answer_field feedback ->
-          ({ model | text_component = update
-           (Text.Section.Component.set_answer_feedback text_component answer_field feedback)  }, Cmd.none)
+      ({ model | text_component = update
+         (Text.Section.Component.set_answer_feedback text_component answer_field feedback)  }, Cmd.none)
 
     UpdateAnswerFieldCorrect text_component answer_field correct ->
-          ({ model | text_component = update
-            (Text.Section.Component.set_answer_correct text_component answer_field)
-          }, Cmd.none)
+      ({ model | text_component = update
+        (Text.Section.Component.set_answer_correct text_component answer_field)
+      }, Cmd.none)
+
+    DeleteAnswer text_section_component answer_field ->
+      ({ model | text_component = update
+           (Text.Section.Component.delete_answer text_section_component answer_field)  }, Cmd.none)
 
     -- ui msgs
     ToggleEditable text_component field ->
@@ -134,6 +139,7 @@ update msg model =
             Answer field -> Text.Section.Component.set_answer text_component (Answer.Field.switch_editable field))
       in
         ({ model | text_component = update new_text_component }, Cmd.batch <| extra_cmds ++ [post_toggle_field field])
+
 
 post_toggle_field : Field -> Cmd msg
 post_toggle_field field =

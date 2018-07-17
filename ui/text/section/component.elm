@@ -3,7 +3,7 @@ module Text.Section.Component exposing (TextSectionComponent, TextSectionField, 
   , set_answer, set_answer_text, set_question, switch_editable, add_new_question, toggle_question_menu, update_body
   , update_question_field, set_answer_correct, set_answer_feedback, text_field_id, editable, toTextSection
   , fromTextSection, post_toggle_commands, reinitialize_ck_editor, update_errors, delete_selected_question_fields
-  , set_index)
+  , set_index, delete_answer)
 
 import Array exposing (Array)
 import Field
@@ -147,6 +147,13 @@ set_answer_feedback text_section answer_field feedback =
     Just question_field ->
       set_question text_section (Question.Field.set_answer_feedback question_field answer_field feedback)
     _ -> text_section
+
+delete_answer : TextSectionComponent -> Answer.Field.AnswerField -> TextSectionComponent
+delete_answer (TextSectionComponent text attr fields question_fields) answer_field =
+  let
+    question_field = Answer.Field.question_index
+  in
+    TextSectionComponent text attr fields question_fields
 
 set_field_value : TextSectionComponent -> FieldName -> String -> TextSectionComponent
 set_field_value (TextSectionComponent text attr fields question_fields) field_name value =

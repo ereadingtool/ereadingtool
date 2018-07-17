@@ -13,12 +13,12 @@ import Array exposing (Array)
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
 
 type alias QuestionFieldParams msg = {
-    text_component: TextSectionComponent
+    text_section_component: TextSectionComponent
   , question: Question.Model.Question
   , msg: (Text.Update.Msg -> msg) }
 
 toggle_editable : (msg -> Attribute msg) -> (QuestionFieldParams msg) -> QuestionField -> Attribute msg
-toggle_editable event params field = event <| params.msg (ToggleEditable params.text_component (Question field))
+toggle_editable event params field = event <| params.msg (ToggleEditable params.text_section_component (Question field))
 
 edit_question : (QuestionFieldParams msg) -> QuestionField -> Html msg
 edit_question params field =
@@ -27,7 +27,7 @@ edit_question params field =
       attribute "rows" "2"
     , attribute "cols" "100"
     , attribute "id" (Question.Field.id field)
-    , (onInput (params.msg << UpdateQuestionFieldValue params.text_component field))
+    , (onInput (params.msg << UpdateQuestionFieldValue params.text_section_component field))
     , toggle_editable onBlur params field
     ] [Html.text params.question.body] ]
 
@@ -48,7 +48,7 @@ view_question params question_field =
 
 view_delete_menu_item : (QuestionFieldParams msg) -> QuestionField -> Html msg
 view_delete_menu_item params field =
-    Html.span [onClick (params.msg ((DeleteQuestion params.text_component field)))] [ Html.text "Delete" ]
+    Html.span [onClick (params.msg ((DeleteQuestion params.text_section_component field)))] [ Html.text "Delete" ]
 
 view_question_type_menu_item : (QuestionFieldParams msg) -> QuestionField -> Html msg
 view_question_type_menu_item params field =
@@ -59,7 +59,7 @@ view_question_type_menu_item params field =
           Html.span [
             onClick
               (params.msg
-                (UpdateQuestionField params.text_component (Question.Field.set_question_type field Question.Field.MainIdea)))
+                (UpdateQuestionField params.text_section_component (Question.Field.set_question_type field Question.Field.MainIdea)))
           ] [ Html.text "Main Idea" ])
       , Html.text " | "
       , (if params.question.question_type == "detail" then
@@ -68,7 +68,7 @@ view_question_type_menu_item params field =
           Html.span [
             onClick
               (params.msg
-                (UpdateQuestionField params.text_component (Question.Field.set_question_type field Question.Field.Detail)))
+                (UpdateQuestionField params.text_section_component (Question.Field.set_question_type field Question.Field.Detail)))
           ] [ Html.text "Detail" ])
     ]
 
@@ -84,7 +84,7 @@ view_question_menu params field =
         Html.div [] [
           Html.img [
               attribute "src" "/static/img/action_arrow.svg"
-            , (onClick (params.msg (ToggleQuestionMenu params.text_component field)))
+            , (onClick (params.msg (ToggleQuestionMenu params.text_section_component field)))
           ] []
         ], Html.div [
           classList [("question_menu_overlay", True), ("hidden", not (Question.Field.menu_visible field))]
@@ -92,17 +92,20 @@ view_question_menu params field =
     ]
 
 view_editable_question : (Msg -> msg) -> TextSectionComponent -> QuestionField -> Html msg
-view_editable_question msg text_component field = let
-    params = {text_component=text_component, question=Question.Field.question field, msg=msg}
+view_editable_question msg text_section_component field = let
+    params = {text_section_component=text_section_component, question=Question.Field.question field, msg=msg}
   in
-    div [classList [("question_parts", True)]] [
-      div [] [ Html.input [attribute "type" "checkbox", onCheck <| (SelectQuestion text_component field) >> msg] [] ]
+    div [ classList [("question_parts", True)] ] [
+      div [] [
+        Html.input [attribute "type" "checkbox", onCheck <| (SelectQuestion text_section_component field) >> msg] []
+      ]
     , div [classList [("question", True)]] <| [
          (case (Question.Field.editable field) of
             True -> edit_question params field
             _ -> view_question params field)
       ] ++ (Array.toList <| Array.map (Answer.View.view_editable_answer params) (Question.Field.answers field))
-    , (view_question_menu params field)]
+    , (view_question_menu params field)
+    ]
 
 view_add_question : (Msg -> msg) -> TextSectionComponent -> Html msg
 view_add_question msg text_component =
@@ -126,7 +129,7 @@ view_delete_selected msg text_component =
     Html.img [
           attribute "src" "/static/img/delete_question.svg"
         , attribute "height" "20px"
-        , attribute "width" "20px"] [], Html.text "Delete Selected"
+        , attribute "width" "20px"] [], Html.text "Delete Selected Question"
   ]
 
 view_questions : (Msg -> msg) -> TextSectionComponent -> Array QuestionField -> Html msg

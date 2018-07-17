@@ -210,21 +210,21 @@ view_text_attributes params =
 
 view_submit : Html Msg
 view_submit =
-  Html.div [classList [("submit_section", True)]] [
-    Html.div [attribute "class" "submit", onClick (TextComponentMsg Text.Update.AddText)] [
+  div [classList [("submit_section", True)]] [
+    div [attribute "class" "submit", onClick (TextComponentMsg Text.Update.AddText)] [
         Html.img [
-          attribute "src" "/static/img/add_text.svg"
+          attribute "src" "/static/img/add_text_section.svg"
         , attribute "height" "20px"
-        , attribute "width" "20px"] [], Html.text "Add Text"
+        , attribute "width" "20px"] [], Html.text "Add Text Section"
     ]
-  , Html.div [attribute "class" "submit", onClick DeleteText] [
+  , div [attribute "class" "submit", onClick DeleteText] [
          Html.text "Delete Text", Html.img [
           attribute "src" "/static/img/delete_text.svg"
         , attribute "height" "18px"
         , attribute "width" "18px"] []
     ]
-  , Html.div [] []
-  , Html.div [attribute "class" "submit", onClick SubmitText] [
+  , div [] []
+  , div [attribute "class" "submit", onClick SubmitText] [
         Html.img [
           attribute "src" "/static/img/save_disk.svg"
         , attribute "height" "20px"

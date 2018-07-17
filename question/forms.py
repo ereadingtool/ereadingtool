@@ -6,8 +6,16 @@ from question.models import Question, Answer
 class QuestionForm(ModelForm):
     class Meta:
         model = Question
-        fields = ('text', 'body', 'type',)
-        exclude = ('text',)
+        fields = ('body', 'type',)
+        exclude = ('text_section',)
+
+    def clean(self):
+        if len(list(filter(lambda ans: ans['correct'], self.data['answers']))) > 1 or \
+                not any(map(lambda ans: ans['correct'], self.data['answers'])):
+            self.errors.setdefault('answers', [])
+            self.errors['answers'].append('exactly one correct answer is required')
+
+        super(QuestionForm, self).clean()
 
 
 class AnswerForm(ModelForm):

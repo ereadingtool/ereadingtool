@@ -12355,14 +12355,14 @@ var _user$project$Answer_View$edit_answer_feedback = F2(
 										params.msg(
 											A2(
 												_user$project$Text_Update$ToggleEditable,
-												params.text_component,
+												params.text_section_component,
 												_user$project$Text_Update$Answer(answer_field)))),
 									_1: {
 										ctor: '::',
 										_0: _elm_lang$html$Html_Events$onInput(
 											function (_p0) {
 												return params.msg(
-													A3(_user$project$Text_Update$UpdateAnswerFeedbackValue, params.text_component, answer_field, _p0));
+													A3(_user$project$Text_Update$UpdateAnswerFeedbackValue, params.text_section_component, answer_field, _p0));
 											}),
 										_1: {
 											ctor: '::',
@@ -12464,7 +12464,7 @@ var _user$project$Answer_View$edit_answer = F2(
 									_0: _elm_lang$html$Html_Events$onInput(
 										function (_p1) {
 											return params.msg(
-												A3(_user$project$Text_Update$UpdateAnswerFieldValue, params.text_component, answer_field, _p1));
+												A3(_user$project$Text_Update$UpdateAnswerFieldValue, params.text_section_component, answer_field, _p1));
 										}),
 									_1: {
 										ctor: '::',
@@ -12487,8 +12487,23 @@ var _user$project$Answer_View$edit_answer = F2(
 					{ctor: '[]'}),
 				_1: {
 					ctor: '::',
-					_0: A2(_user$project$Answer_View$edit_answer_feedback, params, answer_field),
-					_1: {ctor: '[]'}
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'answer_note'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Note: Toggle the radio button to choose this answer as the correct answer.'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(_user$project$Answer_View$edit_answer_feedback, params, answer_field),
+						_1: {ctor: '[]'}
+					}
 				}
 			});
 	});
@@ -12532,7 +12547,7 @@ var _user$project$Answer_View$view_answer = F2(
 					params.msg(
 						A2(
 							_user$project$Text_Update$ToggleEditable,
-							params.text_component,
+							params.text_section_component,
 							_user$project$Text_Update$Answer(answer_field)))),
 				_1: {
 					ctor: '::',
@@ -12584,7 +12599,7 @@ var _user$project$Answer_View$view_editable_answer = F2(
 									_0: _elm_lang$html$Html_Events$onCheck(
 										function (_p2) {
 											return params.msg(
-												A3(_user$project$Text_Update$UpdateAnswerFieldCorrect, params.text_component, answer_field, _p2));
+												A3(_user$project$Text_Update$UpdateAnswerFieldCorrect, params.text_section_component, answer_field, _p2));
 										}),
 									_1: {ctor: '[]'}
 								}
@@ -12606,13 +12621,28 @@ var _user$project$Answer_View$view_editable_answer = F2(
 							return A2(_user$project$Answer_View$view_answer, params, answer_field);
 						}
 					}(),
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$span,
+							{
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'answer_delete'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('X'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
 				}
 			});
 	});
 var _user$project$Answer_View$AnswerFieldParams = F3(
 	function (a, b, c) {
-		return {text_component: a, question: b, msg: c};
+		return {text_section_component: a, question: b, msg: c};
 	});
 
 var _user$project$Date_Utils$am_pm_fmt = function (date) {
@@ -13759,7 +13789,7 @@ var _user$project$Question_View$view_delete_selected = F2(
 					{ctor: '[]'}),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html$text('Delete Selected'),
+					_0: _elm_lang$html$Html$text('Delete Selected Question'),
 					_1: {ctor: '[]'}
 				}
 			});
@@ -13855,7 +13885,7 @@ var _user$project$Question_View$view_question_type_menu_item = F2(
 							params.msg(
 								A2(
 									_user$project$Text_Update$UpdateQuestionField,
-									params.text_component,
+									params.text_section_component,
 									A2(_user$project$Question_Field$set_question_type, field, _user$project$Question_Field$MainIdea)))),
 						_1: {ctor: '[]'}
 					},
@@ -13884,7 +13914,7 @@ var _user$project$Question_View$view_question_type_menu_item = F2(
 									params.msg(
 										A2(
 											_user$project$Text_Update$UpdateQuestionField,
-											params.text_component,
+											params.text_section_component,
 											A2(_user$project$Question_Field$set_question_type, field, _user$project$Question_Field$Detail)))),
 								_1: {ctor: '[]'}
 							},
@@ -13906,7 +13936,7 @@ var _user$project$Question_View$view_delete_menu_item = F2(
 				ctor: '::',
 				_0: _elm_lang$html$Html_Events$onClick(
 					params.msg(
-						A2(_user$project$Text_Update$DeleteQuestion, params.text_component, field))),
+						A2(_user$project$Text_Update$DeleteQuestion, params.text_section_component, field))),
 				_1: {ctor: '[]'}
 			},
 			{
@@ -13973,7 +14003,7 @@ var _user$project$Question_View$view_question_menu = F2(
 									ctor: '::',
 									_0: _elm_lang$html$Html_Events$onClick(
 										params.msg(
-											A2(_user$project$Text_Update$ToggleQuestionMenu, params.text_component, field))),
+											A2(_user$project$Text_Update$ToggleQuestionMenu, params.text_section_component, field))),
 									_1: {ctor: '[]'}
 								}
 							},
@@ -14013,7 +14043,7 @@ var _user$project$Question_View$toggle_editable = F3(
 			params.msg(
 				A2(
 					_user$project$Text_Update$ToggleEditable,
-					params.text_component,
+					params.text_section_component,
 					_user$project$Text_Update$Question(field))));
 	});
 var _user$project$Question_View$edit_question = F2(
@@ -14051,7 +14081,7 @@ var _user$project$Question_View$edit_question = F2(
 									_0: _elm_lang$html$Html_Events$onInput(
 										function (_p0) {
 											return params.msg(
-												A3(_user$project$Text_Update$UpdateQuestionFieldValue, params.text_component, field, _p0));
+												A3(_user$project$Text_Update$UpdateQuestionFieldValue, params.text_section_component, field, _p0));
 										}),
 									_1: {
 										ctor: '::',
@@ -14115,9 +14145,9 @@ var _user$project$Question_View$view_question = F2(
 			});
 	});
 var _user$project$Question_View$view_editable_question = F3(
-	function (msg, text_component, field) {
+	function (msg, text_section_component, field) {
 		var params = {
-			text_component: text_component,
+			text_section_component: text_section_component,
 			question: _user$project$Question_Field$question(field),
 			msg: msg
 		};
@@ -14150,7 +14180,7 @@ var _user$project$Question_View$view_editable_question = F3(
 									_0: _elm_lang$html$Html_Events$onCheck(
 										function (_p1) {
 											return msg(
-												A3(_user$project$Text_Update$SelectQuestion, text_component, field, _p1));
+												A3(_user$project$Text_Update$SelectQuestion, text_section_component, field, _p1));
 										}),
 									_1: {ctor: '[]'}
 								}
@@ -14221,7 +14251,7 @@ var _user$project$Question_View$view_questions = F3(
 	});
 var _user$project$Question_View$QuestionFieldParams = F3(
 	function (a, b, c) {
-		return {text_component: a, question: b, msg: c};
+		return {text_section_component: a, question: b, msg: c};
 	});
 
 var _user$project$Text_Section_View$toggle_editable = F2(
@@ -14489,7 +14519,7 @@ var _user$project$Text_View$view_submit = A2(
 					_elm_lang$html$Html$img,
 					{
 						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/add_text.svg'),
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/add_text_section.svg'),
 						_1: {
 							ctor: '::',
 							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '20px'),
@@ -14503,7 +14533,7 @@ var _user$project$Text_View$view_submit = A2(
 					{ctor: '[]'}),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html$text('Add Text'),
+					_0: _elm_lang$html$Html$text('Add Text Section'),
 					_1: {ctor: '[]'}
 				}
 			}),

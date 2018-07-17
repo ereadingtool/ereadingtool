@@ -223,6 +223,30 @@ class TextTest(TestCase):
 
         self.assertEquals(resp.status_code, 500, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
+    def test_post_text_correct_answers(self):
+        test_data = self.get_test_data()
+
+        for answer in test_data['text_sections'][0]['questions'][0]['answers']:
+            answer['correct'] = False
+
+        resp = self.client.post('/api/text/', json.dumps(test_data), content_type='application/json')
+
+        self.assertEquals(resp.status_code, 400, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        resp_content = json.loads(resp.content.decode('utf8'))
+
+        self.assertIn('errors', resp_content)
+        self.assertIn('textsection_0_question_0_answers', resp_content['errors'])
+        self.assertEquals('exactly one correct answer is required',
+                          resp_content['errors']['textsection_0_question_0_answers'])
+
+        # set one correct answer
+        test_data['text_sections'][0]['questions'][0]['answers'][0]['correct'] = True
+
+        resp = self.client.post('/api/text/', json.dumps(test_data), content_type='application/json')
+
+        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
     def test_post_text_max_char_limits(self):
         test_data = self.get_test_data()
         test_text_section_body_size = 4096
@@ -343,7 +367,7 @@ class TextTest(TestCase):
                            'order': 1,
                            'feedback': 'Answer 2 Feedback.'},
                           {'text': 'Click to write choice 3',
-                           'correct': False,
+                           'correct': True,
                            'order': 2,
                            'feedback': 'Answer 3 Feedback.'},
                           {'text': 'Click to write choice 4',
@@ -371,7 +395,7 @@ class TextTest(TestCase):
                            'order': 2,
                            'feedback': 'Answer 3 Feedback.'},
                           {'text': 'Click to write choice 4',
-                           'correct': False,
+                           'correct': True,
                            'order': 3, 'feedback': 'Answer 4 Feedback.'}
                       ],
                       'question_type': 'main_idea'}]

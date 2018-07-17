@@ -14,7 +14,7 @@ import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onM
 import Config exposing (answer_feedback_limit)
 
 type alias AnswerFieldParams msg = {
-    text_component: TextSectionComponent
+    text_section_component: TextSectionComponent
   , question: Question.Model.Question
   , msg: (Text.Update.Msg -> msg) }
 
@@ -25,7 +25,7 @@ view_answer_feedback params answer_field =
     answer = Answer.Field.answer answer_field
   in
     if not (String.isEmpty answer.feedback) then
-      [ Html.div [classList [("answer_feedback", True), ("grey_bg", True)] ] [ Html.text answer.feedback ] ]
+      [ div [classList [("answer_feedback", True), ("grey_bg", True)] ] [ Html.text answer.feedback ] ]
     else
       []
 
@@ -34,8 +34,8 @@ view_answer params answer_field =
   let
     answer = Answer.Field.answer answer_field
   in
-    Html.span [
-       onClick (params.msg (ToggleEditable params.text_component (Answer answer_field)))
+   span [
+       onClick (params.msg (ToggleEditable params.text_section_component (Answer answer_field)))
      , attribute "class" "editable"
    ] <| [ Html.text answer.text ] ++ (view_answer_feedback params answer_field)
 
@@ -45,13 +45,13 @@ edit_answer_feedback params answer_field =
     feedback_field = Answer.Field.feedback_field answer_field
     answer = Answer.Field.answer answer_field
   in
-    Html.div [] [
+    div [] [
         Html.textarea [
             attribute "id" feedback_field.id
           , attribute "rows" "5"
           , attribute "cols" "75"
-          , onBlur (params.msg (ToggleEditable params.text_component (Answer answer_field)))
-          , onInput (UpdateAnswerFeedbackValue params.text_component answer_field >> params.msg)
+          , onBlur (params.msg (ToggleEditable params.text_section_component (Answer answer_field)))
+          , onInput (UpdateAnswerFeedbackValue params.text_section_component answer_field >> params.msg)
           , attribute "placeholder" "Give some feedback."
           , classList [ ("answer_feedback", True), ("input_error", feedback_field.error) ]
         ] [Html.text answer.feedback]
@@ -72,14 +72,17 @@ edit_answer params answer_field =
   let
     answer = Answer.Field.answer answer_field
   in
-    Html.span [] [
+    span [] [
       Html.input [
           attribute "type" "text"
         , attribute "value" answer.text
         , attribute "id" (Answer.Field.id answer_field)
-        , onInput (UpdateAnswerFieldValue params.text_component answer_field >> params.msg)
+        , onInput (UpdateAnswerFieldValue params.text_section_component answer_field >> params.msg)
         , classList [ ("input_error", Answer.Field.error answer_field) ]
       ] []
+    , div [attribute "class" "answer_note"] [
+        Html.text "Note: Toggle the radio button to choose this answer as the correct answer."
+      ]
     , (edit_answer_feedback params answer_field)
     ]
 
@@ -88,14 +91,19 @@ view_editable_answer params answer_field =
   let
     answer = Answer.Field.answer answer_field
   in
-    div [
-      classList [("answer_item", True)] ] [
-        Html.input ([
-           attribute "type" "radio"
-         , attribute "name" (Answer.Field.name answer_field)
-         , onCheck (UpdateAnswerFieldCorrect params.text_component answer_field >> params.msg)
-        ] ++ (if answer.correct then [attribute "checked" "checked"] else [])) []
+    div [classList [ ("answer_item", True) ]] [
+      Html.input ([
+        attribute "type" "radio"
+      , attribute "name" (Answer.Field.name answer_field)
+      , onCheck (UpdateAnswerFieldCorrect params.text_section_component answer_field >> params.msg)
+      ] ++ (if answer.correct then [attribute "checked" "checked"] else [])) []
     , (case (Answer.Field.editable answer_field) of
          True -> edit_answer params answer_field
          False -> view_answer params answer_field)
+    , span [
+        attribute "class" "answer_delete"
+      , attribute onClick (params.msg (DeleteAnswer params.text_section_component answer_field))
+      ] [
+        Html.text "X"
+      ]
     ]

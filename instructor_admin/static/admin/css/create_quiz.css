@@ -471,8 +471,13 @@ body {
 }
 
 .answer_item {
-    color: #a4a4a4;
     grid-column: 2;
+    display: grid;
+    grid-template-columns: 22px auto 20px;
+    color: #a4a4a4;
+}
+
+.answer_delete {
 }
 
 .answer_feedback {
@@ -495,7 +500,7 @@ body {
     cursor: pointer;
     margin-top: 20px;
 
-    grid-template-columns: repeat(2, 140px);
+    grid-template-columns: 300px;
 }
 
 .delete {
@@ -553,4 +558,9 @@ body {
     font-size: 13px;
 
     margin-top: 25px;
+}
+
+.answer_note {
+    font-style: italic;
+    font-size: 14px;
 }
