@@ -92,8 +92,10 @@ view_question_menu params field =
     ]
 
 view_editable_question : (Msg -> msg) -> TextSectionComponent -> QuestionField -> Html msg
-view_editable_question msg text_section_component field = let
+view_editable_question msg text_section_component field =
+  let
     params = {text_section_component=text_section_component, question=Question.Field.question field, msg=msg}
+    num_of_answers = Array.length (Question.Field.answers field)
   in
     div [ classList [("question_parts", True)] ] [
       div [] [
@@ -103,7 +105,10 @@ view_editable_question msg text_section_component field = let
          (case (Question.Field.editable field) of
             True -> edit_question params field
             _ -> view_question params field)
-      ] ++ (Array.toList <| Array.map (Answer.View.view_editable_answer params) (Question.Field.answers field))
+      ] ++ (
+           Array.toList
+        <| Array.map (Answer.View.view_editable_answer params num_of_answers) (Question.Field.answers field)
+      )
     , (view_question_menu params field)
     ]
 
@@ -111,7 +116,7 @@ view_add_question : (Msg -> msg) -> TextSectionComponent -> Html msg
 view_add_question msg text_component =
   div [classList [("add_question", True)], (onClick (msg (AddQuestion text_component))) ] [
     Html.img [
-          attribute "src" "/static/img/add_question.svg"
+          attribute "src" "/static/img/add.svg"
         , attribute "height" "20px"
         , attribute "width" "20px"] [], Html.text "Add Question"
   ]

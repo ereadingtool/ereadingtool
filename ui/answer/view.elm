@@ -4,6 +4,8 @@ import Html exposing (..)
 import Html.Attributes exposing (classList, attribute)
 
 import Question.Model
+
+import Answer.Model
 import Answer.Field exposing (AnswerField)
 
 import Text.Update exposing (..)
@@ -36,8 +38,13 @@ view_answer params answer_field =
   in
    span [
        onClick (params.msg (ToggleEditable params.text_section_component (Answer answer_field)))
-     , attribute "class" "editable"
-   ] <| [ Html.text answer.text ] ++ (view_answer_feedback params answer_field)
+   ] <| [
+     Html.text (case answer.text of
+       "" ->
+         Answer.Model.default_answer_text answer
+       _ ->
+         answer.text)
+   ] ++ (view_answer_feedback params answer_field)
 
 edit_answer_feedback : (AnswerFieldParams msg) -> AnswerField -> Html msg
 edit_answer_feedback params answer_field =
@@ -86,12 +93,13 @@ edit_answer params answer_field =
     , (edit_answer_feedback params answer_field)
     ]
 
-view_editable_answer : (AnswerFieldParams msg) -> AnswerField -> Html msg
-view_editable_answer params answer_field =
+view_editable_answer : (AnswerFieldParams msg) -> Int -> AnswerField -> Html msg
+view_editable_answer params num_of_answers answer_field =
   let
     answer = Answer.Field.answer answer_field
+    editing = Answer.Field.editable answer_field
   in
-    div [classList [ ("answer_item", True) ]] [
+    div [classList [ ("answer_item", True), ("editable", not editing) ]] <| [
       Html.input ([
         attribute "type" "radio"
       , attribute "name" (Answer.Field.name answer_field)
@@ -100,10 +108,28 @@ view_editable_answer params answer_field =
     , (case (Answer.Field.editable answer_field) of
          True -> edit_answer params answer_field
          False -> view_answer params answer_field)
-    , span [
-        attribute "class" "answer_delete"
-      , attribute onClick (params.msg (DeleteAnswer params.text_section_component answer_field))
-      ] [
-        Html.text "X"
-      ]
-    ]
+    ] ++
+      (case num_of_answers of
+        3 ->
+          [ span [
+              attribute "class" "answer_add"
+            , onClick (params.msg (AddAnswer params.text_section_component answer_field))
+            ] [
+              Html.img [
+                attribute "src" "/static/img/add.svg"
+              , attribute "height" "18px"
+              , attribute "width" "18px"] []
+            ]
+          ]
+        4 ->
+          [ span [
+              attribute "class" "answer_delete"
+            , onClick (params.msg (DeleteAnswer params.text_section_component answer_field))
+            ] [
+              Html.img [
+                attribute "src" "/static/img/delete.svg"
+              , attribute "height" "18px"
+              , attribute "width" "18px"] []
+            ]
+          ]
+        _ -> [])

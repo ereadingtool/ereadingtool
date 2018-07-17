@@ -10099,25 +10099,7 @@ var _elm_lang$navigation$Navigation$onEffects = F4(
 _elm_lang$core$Native_Platform.effectManagers['Navigation'] = {pkg: 'elm-lang/navigation', init: _elm_lang$navigation$Navigation$init, onEffects: _elm_lang$navigation$Navigation$onEffects, onSelfMsg: _elm_lang$navigation$Navigation$onSelfMsg, tag: 'fx', cmdMap: _elm_lang$navigation$Navigation$cmdMap, subMap: _elm_lang$navigation$Navigation$subMap};
 
 var _user$project$Answer_Model$generate_answer = function (i) {
-	return {
-		id: _elm_lang$core$Maybe$Nothing,
-		question_id: _elm_lang$core$Maybe$Nothing,
-		text: A2(
-			_elm_lang$core$String$join,
-			' ',
-			{
-				ctor: '::',
-				_0: 'Click to write choice',
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$core$Basics$toString(i + 1),
-					_1: {ctor: '[]'}
-				}
-			}),
-		correct: false,
-		order: i,
-		feedback: ''
-	};
+	return {id: _elm_lang$core$Maybe$Nothing, question_id: _elm_lang$core$Maybe$Nothing, text: '', correct: false, order: i, feedback: ''};
 };
 var _user$project$Answer_Model$generate_answers = function (n) {
 	return _elm_lang$core$Array$fromList(
@@ -10125,6 +10107,20 @@ var _user$project$Answer_Model$generate_answers = function (n) {
 			_elm_lang$core$List$map,
 			_user$project$Answer_Model$generate_answer,
 			A2(_elm_lang$core$List$range, 0, n - 1)));
+};
+var _user$project$Answer_Model$default_answer_text = function (answer) {
+	return A2(
+		_elm_lang$core$String$join,
+		' ',
+		{
+			ctor: '::',
+			_0: 'Click to write choice',
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$core$Basics$toString(answer.order + 1),
+				_1: {ctor: '[]'}
+			}
+		});
 };
 var _user$project$Answer_Model$Answer = F6(
 	function (a, b, c, d, e, f) {
@@ -10276,6 +10272,59 @@ var _user$project$Answer_Field$update_question_index = F2(
 				{question_index: i}),
 			_p7._2);
 	});
+var _user$project$Answer_Field$update_answer_index = F2(
+	function (_p8, i) {
+		var _p9 = _p8;
+		return A3(
+			_user$project$Answer_Field$AnswerField,
+			_elm_lang$core$Native_Utils.update(
+				_p9._0,
+				{order: i}),
+			_elm_lang$core$Native_Utils.update(
+				_p9._1,
+				{index: i}),
+			_p9._2);
+	});
+var _user$project$Answer_Field$update_answer_indexes = function (answer_fields) {
+	return A2(
+		_elm_lang$core$Array$indexedMap,
+		F2(
+			function (i, ans) {
+				return A2(_user$project$Answer_Field$update_answer_index, ans, i);
+			}),
+		answer_fields);
+};
+var _user$project$Answer_Field$add_answer = F3(
+	function (answer_fields, answer_field, new_answer_field) {
+		var begin = A3(
+			_elm_lang$core$Array$slice,
+			0,
+			_user$project$Answer_Field$index(answer_field) + 1,
+			answer_fields);
+		var last_elem_index = _elm_lang$core$Array$length(answer_fields);
+		var end = A3(
+			_elm_lang$core$Array$slice,
+			_user$project$Answer_Field$index(new_answer_field),
+			last_elem_index,
+			answer_fields);
+		return _user$project$Answer_Field$update_answer_indexes(
+			A2(
+				_elm_lang$core$Array$append,
+				A2(_elm_lang$core$Array$push, new_answer_field, begin),
+				end));
+	});
+var _user$project$Answer_Field$delete_answer = F2(
+	function (answer_fields, answer_field) {
+		return _user$project$Answer_Field$update_answer_indexes(
+			A2(
+				_elm_lang$core$Array$filter,
+				function (ans) {
+					return !_elm_lang$core$Native_Utils.eq(
+						_user$project$Answer_Field$index(ans),
+						_user$project$Answer_Field$index(answer_field));
+				},
+				answer_fields));
+	});
 var _user$project$Answer_Field$generate_answer_field = F4(
 	function (i, j, k, answer) {
 		var answer_name = A2(
@@ -10348,73 +10397,73 @@ var _user$project$Answer_Field$generate_answer_field = F4(
 						}
 					})));
 	});
-var _user$project$Answer_Field$switch_editable = function (_p8) {
-	var _p9 = _p8;
-	var _p10 = _p9._1;
+var _user$project$Answer_Field$switch_editable = function (_p10) {
+	var _p11 = _p10;
+	var _p12 = _p11._1;
 	return A3(
 		_user$project$Answer_Field$AnswerField,
-		_p9._0,
+		_p11._0,
 		_elm_lang$core$Native_Utils.update(
-			_p10,
+			_p12,
 			{
-				editable: _p10.editable ? false : true
+				editable: _p12.editable ? false : true
 			}),
-		_p9._2);
+		_p11._2);
 };
 var _user$project$Answer_Field$set_answer_text = F2(
-	function (_p11, text) {
-		var _p12 = _p11;
-		return A3(
-			_user$project$Answer_Field$AnswerField,
-			_elm_lang$core$Native_Utils.update(
-				_p12._0,
-				{text: text}),
-			_p12._1,
-			_p12._2);
-	});
-var _user$project$Answer_Field$set_answer_correct = F2(
-	function (_p13, correct) {
+	function (_p13, text) {
 		var _p14 = _p13;
 		return A3(
 			_user$project$Answer_Field$AnswerField,
 			_elm_lang$core$Native_Utils.update(
 				_p14._0,
-				{correct: correct}),
+				{text: text}),
 			_p14._1,
 			_p14._2);
 	});
-var _user$project$Answer_Field$set_answer_feedback = F2(
-	function (_p15, new_feedback) {
+var _user$project$Answer_Field$set_answer_correct = F2(
+	function (_p15, correct) {
 		var _p16 = _p15;
 		return A3(
 			_user$project$Answer_Field$AnswerField,
 			_elm_lang$core$Native_Utils.update(
 				_p16._0,
-				{feedback: new_feedback}),
+				{correct: correct}),
 			_p16._1,
 			_p16._2);
 	});
-var _user$project$Answer_Field$update_error = F2(
-	function (_p17, error_string) {
+var _user$project$Answer_Field$set_answer_feedback = F2(
+	function (_p17, new_feedback) {
 		var _p18 = _p17;
 		return A3(
 			_user$project$Answer_Field$AnswerField,
-			_p18._0,
 			_elm_lang$core$Native_Utils.update(
-				_p18._1,
-				{error: true, error_string: error_string}),
+				_p18._0,
+				{feedback: new_feedback}),
+			_p18._1,
 			_p18._2);
 	});
-var _user$project$Answer_Field$update_feedback_error = F2(
+var _user$project$Answer_Field$update_error = F2(
 	function (_p19, error_string) {
 		var _p20 = _p19;
+		return A3(
+			_user$project$Answer_Field$AnswerField,
+			_p20._0,
+			_elm_lang$core$Native_Utils.update(
+				_p20._1,
+				{error: true, error_string: error_string}),
+			_p20._2);
+	});
+var _user$project$Answer_Field$update_feedback_error = F2(
+	function (_p21, error_string) {
+		var _p22 = _p21;
 		return _user$project$Answer_Field$switch_editable(
 			A3(
 				_user$project$Answer_Field$AnswerField,
-				_p20._0,
-				_p20._1,
+				_p22._0,
+				_p22._1,
 				_elm_lang$core$Native_Utils.update(
-					_p20._2,
+					_p22._2,
 					{error: true, error_string: error_string})));
 	});
 
@@ -10819,6 +10868,28 @@ var _user$project$Question_Field$set_selected = F2(
 				_p42._1,
 				{selected: selected}),
 			_p42._2);
+	});
+var _user$project$Question_Field$set_answers = F2(
+	function (_p43, new_answer_fields) {
+		var _p44 = _p43;
+		return A3(_user$project$Question_Field$QuestionField, _p44._0, _p44._1, new_answer_fields);
+	});
+var _user$project$Question_Field$add_answer_field = F3(
+	function (question_field, answer_field, new_answer_field) {
+		var new_answer_fields = A3(
+			_user$project$Answer_Field$add_answer,
+			_user$project$Question_Field$answers(question_field),
+			answer_field,
+			new_answer_field);
+		return A2(_user$project$Question_Field$set_answers, question_field, new_answer_fields);
+	});
+var _user$project$Question_Field$delete_answer_field = F2(
+	function (question_field, answer_field) {
+		var new_answer_fields = A2(
+			_user$project$Answer_Field$delete_answer,
+			_user$project$Question_Field$answers(question_field),
+			answer_field);
+		return A2(_user$project$Question_Field$set_answers, question_field, new_answer_fields);
 	});
 
 var _user$project$Text_Section_Model$emptyTextSection = {order: 0, question_count: 0, questions: _user$project$Question_Model$initial_questions, body: ''};
@@ -11542,34 +11613,71 @@ var _user$project$Text_Section_Component$update_question_field = F2(
 			_p43._2,
 			A2(_user$project$Question_Field$update_question_field, question_field, _p43._3));
 	});
+var _user$project$Text_Section_Component$add_answer = F2(
+	function (text_section_component, answer_field) {
+		var question_index = _user$project$Answer_Field$question_index(answer_field);
+		var question_field = A2(
+			_elm_lang$core$Array$get,
+			question_index,
+			_user$project$Text_Section_Component$question_fields(text_section_component));
+		var text_section_index = _user$project$Text_Section_Component$index(text_section_component);
+		var _p44 = question_field;
+		if (_p44.ctor === 'Just') {
+			var new_answer = _user$project$Answer_Model$generate_answer(
+				_user$project$Answer_Field$index(answer_field) + 1);
+			var new_answer_field = A4(_user$project$Answer_Field$generate_answer_field, text_section_index, question_index, new_answer.order, new_answer);
+			return A2(
+				_user$project$Text_Section_Component$update_question_field,
+				text_section_component,
+				A3(_user$project$Question_Field$add_answer_field, _p44._0, answer_field, new_answer_field));
+		} else {
+			return text_section_component;
+		}
+	});
+var _user$project$Text_Section_Component$delete_answer = F2(
+	function (text_section_component, answer_field) {
+		var question_field = A2(
+			_elm_lang$core$Array$get,
+			_user$project$Answer_Field$question_index(answer_field),
+			_user$project$Text_Section_Component$question_fields(text_section_component));
+		var _p45 = question_field;
+		if (_p45.ctor === 'Just') {
+			return A2(
+				_user$project$Text_Section_Component$update_question_field,
+				text_section_component,
+				A2(_user$project$Question_Field$delete_answer_field, _p45._0, answer_field));
+		} else {
+			return text_section_component;
+		}
+	});
 var _user$project$Text_Section_Component$delete_question_field = F2(
-	function (_p44, question_field) {
-		var _p45 = _p44;
+	function (_p46, question_field) {
+		var _p47 = _p46;
 		return A4(
 			_user$project$Text_Section_Component$TextSectionComponent,
-			_p45._0,
-			_p45._1,
-			_p45._2,
-			A2(_user$project$Question_Field$delete_question_field, question_field, _p45._3));
+			_p47._0,
+			_p47._1,
+			_p47._2,
+			A2(_user$project$Question_Field$delete_question_field, question_field, _p47._3));
 	});
-var _user$project$Text_Section_Component$delete_selected_question_fields = function (_p46) {
-	var _p47 = _p46;
-	return A4(
-		_user$project$Text_Section_Component$TextSectionComponent,
-		_p47._0,
-		_p47._1,
-		_p47._2,
-		_user$project$Question_Field$delete_selected(_p47._3));
-};
-var _user$project$Text_Section_Component$add_new_question = function (_p48) {
+var _user$project$Text_Section_Component$delete_selected_question_fields = function (_p48) {
 	var _p49 = _p48;
-	var _p50 = _p49._1;
 	return A4(
 		_user$project$Text_Section_Component$TextSectionComponent,
 		_p49._0,
-		_p50,
+		_p49._1,
 		_p49._2,
-		A2(_user$project$Question_Field$add_new_question, _p50.index, _p49._3));
+		_user$project$Question_Field$delete_selected(_p49._3));
+};
+var _user$project$Text_Section_Component$add_new_question = function (_p50) {
+	var _p51 = _p50;
+	var _p52 = _p51._1;
+	return A4(
+		_user$project$Text_Section_Component$TextSectionComponent,
+		_p51._0,
+		_p52,
+		_p51._2,
+		A2(_user$project$Question_Field$add_new_question, _p52.index, _p51._3));
 };
 
 var _user$project$Text_Section_Component_Group$text_section_component = F2(
@@ -12199,6 +12307,28 @@ var _user$project$Text_Update$update = F2(
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
+			case 'AddAnswer':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							text_component: update(
+								A2(_user$project$Text_Section_Component$add_answer, _p6._0, _p6._1))
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'DeleteAnswer':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							text_component: update(
+								A2(_user$project$Text_Section_Component$delete_answer, _p6._0, _p6._1))
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 			default:
 				var _p10 = _p6._0;
 				var _p9 = _p6._1;
@@ -12265,6 +12395,14 @@ var _user$project$Text_Update$Text = function (a) {
 var _user$project$Text_Update$ToggleEditable = F2(
 	function (a, b) {
 		return {ctor: 'ToggleEditable', _0: a, _1: b};
+	});
+var _user$project$Text_Update$DeleteAnswer = F2(
+	function (a, b) {
+		return {ctor: 'DeleteAnswer', _0: a, _1: b};
+	});
+var _user$project$Text_Update$AddAnswer = F2(
+	function (a, b) {
+		return {ctor: 'AddAnswer', _0: a, _1: b};
 	});
 var _user$project$Text_Update$UpdateAnswerFieldCorrect = F3(
 	function (a, b, c) {
@@ -12549,23 +12687,28 @@ var _user$project$Answer_View$view_answer = F2(
 							_user$project$Text_Update$ToggleEditable,
 							params.text_section_component,
 							_user$project$Text_Update$Answer(answer_field)))),
-				_1: {
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'editable'),
-					_1: {ctor: '[]'}
-				}
+				_1: {ctor: '[]'}
 			},
 			A2(
 				_elm_lang$core$Basics_ops['++'],
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text(answer.text),
+					_0: _elm_lang$html$Html$text(
+						function () {
+							var _p2 = answer.text;
+							if (_p2 === '') {
+								return _user$project$Answer_Model$default_answer_text(answer);
+							} else {
+								return answer.text;
+							}
+						}()),
 					_1: {ctor: '[]'}
 				},
 				A2(_user$project$Answer_View$view_answer_feedback, params, answer_field)));
 	});
-var _user$project$Answer_View$view_editable_answer = F2(
-	function (params, answer_field) {
+var _user$project$Answer_View$view_editable_answer = F3(
+	function (params, num_of_answers, answer_field) {
+		var editing = _user$project$Answer_Field$editable(answer_field);
 		var answer = _user$project$Answer_Field$answer(answer_field);
 		return A2(
 			_elm_lang$html$Html$div,
@@ -12575,70 +12718,144 @@ var _user$project$Answer_View$view_editable_answer = F2(
 					{
 						ctor: '::',
 						_0: {ctor: '_Tuple2', _0: 'answer_item', _1: true},
-						_1: {ctor: '[]'}
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'editable', _1: !editing},
+							_1: {ctor: '[]'}
+						}
 					}),
 				_1: {ctor: '[]'}
 			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$input,
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						{
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'radio'),
-							_1: {
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$input,
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							{
 								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html_Attributes$attribute,
-									'name',
-									_user$project$Answer_Field$name(answer_field)),
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'radio'),
 								_1: {
 									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onCheck(
-										function (_p2) {
-											return params.msg(
-												A3(_user$project$Text_Update$UpdateAnswerFieldCorrect, params.text_section_component, answer_field, _p2));
-										}),
-									_1: {ctor: '[]'}
+									_0: A2(
+										_elm_lang$html$Html_Attributes$attribute,
+										'name',
+										_user$project$Answer_Field$name(answer_field)),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onCheck(
+											function (_p3) {
+												return params.msg(
+													A3(_user$project$Text_Update$UpdateAnswerFieldCorrect, params.text_section_component, answer_field, _p3));
+											}),
+										_1: {ctor: '[]'}
+									}
 								}
-							}
-						},
-						answer.correct ? {
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'checked', 'checked'),
-							_1: {ctor: '[]'}
-						} : {ctor: '[]'}),
-					{ctor: '[]'}),
-				_1: {
-					ctor: '::',
-					_0: function () {
-						var _p3 = _user$project$Answer_Field$editable(answer_field);
-						if (_p3 === true) {
-							return A2(_user$project$Answer_View$edit_answer, params, answer_field);
-						} else {
-							return A2(_user$project$Answer_View$view_answer, params, answer_field);
-						}
-					}(),
+							},
+							answer.correct ? {
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'checked', 'checked'),
+								_1: {ctor: '[]'}
+							} : {ctor: '[]'}),
+						{ctor: '[]'}),
 					_1: {
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$span,
-							{
-								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'answer_delete'),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text('X'),
-								_1: {ctor: '[]'}
-							}),
+						_0: function () {
+							var _p4 = _user$project$Answer_Field$editable(answer_field);
+							if (_p4 === true) {
+								return A2(_user$project$Answer_View$edit_answer, params, answer_field);
+							} else {
+								return A2(_user$project$Answer_View$view_answer, params, answer_field);
+							}
+						}(),
 						_1: {ctor: '[]'}
 					}
-				}
-			});
+				},
+				function () {
+					var _p5 = num_of_answers;
+					switch (_p5) {
+						case 3:
+							return {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$span,
+									{
+										ctor: '::',
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'answer_add'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onClick(
+												params.msg(
+													A2(_user$project$Text_Update$AddAnswer, params.text_section_component, answer_field))),
+											_1: {ctor: '[]'}
+										}
+									},
+									{
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$img,
+											{
+												ctor: '::',
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/add.svg'),
+												_1: {
+													ctor: '::',
+													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '18px'),
+													_1: {
+														ctor: '::',
+														_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '18px'),
+														_1: {ctor: '[]'}
+													}
+												}
+											},
+											{ctor: '[]'}),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							};
+						case 4:
+							return {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$span,
+									{
+										ctor: '::',
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'answer_delete'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onClick(
+												params.msg(
+													A2(_user$project$Text_Update$DeleteAnswer, params.text_section_component, answer_field))),
+											_1: {ctor: '[]'}
+										}
+									},
+									{
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$img,
+											{
+												ctor: '::',
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/delete.svg'),
+												_1: {
+													ctor: '::',
+													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '18px'),
+													_1: {
+														ctor: '::',
+														_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '18px'),
+														_1: {ctor: '[]'}
+													}
+												}
+											},
+											{ctor: '[]'}),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							};
+						default:
+							return {ctor: '[]'};
+					}
+				}()));
 	});
 var _user$project$Answer_View$AnswerFieldParams = F3(
 	function (a, b, c) {
@@ -13820,7 +14037,7 @@ var _user$project$Question_View$view_add_question = F2(
 					_elm_lang$html$Html$img,
 					{
 						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/add_question.svg'),
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/add.svg'),
 						_1: {
 							ctor: '::',
 							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '20px'),
@@ -14146,6 +14363,8 @@ var _user$project$Question_View$view_question = F2(
 	});
 var _user$project$Question_View$view_editable_question = F3(
 	function (msg, text_section_component, field) {
+		var num_of_answers = _elm_lang$core$Array$length(
+			_user$project$Question_Field$answers(field));
 		var params = {
 			text_section_component: text_section_component,
 			question: _user$project$Question_Field$question(field),
@@ -14219,7 +14438,7 @@ var _user$project$Question_View$view_editable_question = F3(
 							_elm_lang$core$Array$toList(
 								A2(
 									_elm_lang$core$Array$map,
-									_user$project$Answer_View$view_editable_answer(params),
+									A2(_user$project$Answer_View$view_editable_answer, params, num_of_answers),
 									_user$project$Question_Field$answers(field))))),
 					_1: {
 						ctor: '::',
@@ -14450,8 +14669,27 @@ var _user$project$Text_Section_View$view_text_section_component = F3(
 									},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text('Delete Text Section'),
-										_1: {ctor: '[]'}
+										_0: A2(
+											_elm_lang$html$Html$img,
+											{
+												ctor: '::',
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/delete.svg'),
+												_1: {
+													ctor: '::',
+													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '18px'),
+													_1: {
+														ctor: '::',
+														_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '18px'),
+														_1: {ctor: '[]'}
+													}
+												}
+											},
+											{ctor: '[]'}),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html$text(' Delete Text Section'),
+											_1: {ctor: '[]'}
+										}
 									}),
 								_1: {ctor: '[]'}
 							}
@@ -14559,7 +14797,7 @@ var _user$project$Text_View$view_submit = A2(
 							_elm_lang$html$Html$img,
 							{
 								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/delete_text.svg'),
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/delete.svg'),
 								_1: {
 									ctor: '::',
 									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '18px'),

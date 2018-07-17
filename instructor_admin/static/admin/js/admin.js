@@ -9392,25 +9392,7 @@ var _elm_lang$http$Http$StringPart = F2(
 var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
 
 var _user$project$Answer_Model$generate_answer = function (i) {
-	return {
-		id: _elm_lang$core$Maybe$Nothing,
-		question_id: _elm_lang$core$Maybe$Nothing,
-		text: A2(
-			_elm_lang$core$String$join,
-			' ',
-			{
-				ctor: '::',
-				_0: 'Click to write choice',
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$core$Basics$toString(i + 1),
-					_1: {ctor: '[]'}
-				}
-			}),
-		correct: false,
-		order: i,
-		feedback: ''
-	};
+	return {id: _elm_lang$core$Maybe$Nothing, question_id: _elm_lang$core$Maybe$Nothing, text: '', correct: false, order: i, feedback: ''};
 };
 var _user$project$Answer_Model$generate_answers = function (n) {
 	return _elm_lang$core$Array$fromList(
@@ -9418,6 +9400,20 @@ var _user$project$Answer_Model$generate_answers = function (n) {
 			_elm_lang$core$List$map,
 			_user$project$Answer_Model$generate_answer,
 			A2(_elm_lang$core$List$range, 0, n - 1)));
+};
+var _user$project$Answer_Model$default_answer_text = function (answer) {
+	return A2(
+		_elm_lang$core$String$join,
+		' ',
+		{
+			ctor: '::',
+			_0: 'Click to write choice',
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$core$Basics$toString(answer.order + 1),
+				_1: {ctor: '[]'}
+			}
+		});
 };
 var _user$project$Answer_Model$Answer = F6(
 	function (a, b, c, d, e, f) {

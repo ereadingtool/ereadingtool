@@ -1,4 +1,4 @@
-module Answer.Model exposing (Answer, generate_answer, generate_answers)
+module Answer.Model exposing (Answer, generate_answer, generate_answers, default_answer_text)
 
 import Array exposing (Array)
 
@@ -10,11 +10,15 @@ type alias Answer = {
   , order: Int
   , feedback: String }
 
+default_answer_text : Answer -> String
+default_answer_text answer =
+  String.join " " ["Click to write choice", toString (answer.order + 1)]
+
 generate_answer : Int -> Answer
 generate_answer i = {
     id=Nothing
   , question_id=Nothing
-  , text=String.join " " ["Click to write choice", toString (i+1)]
+  , text=""
   , correct=False
   , order=i
   , feedback="" }

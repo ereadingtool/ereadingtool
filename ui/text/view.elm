@@ -219,7 +219,7 @@ view_submit =
     ]
   , div [attribute "class" "submit", onClick DeleteText] [
          Html.text "Delete Text", Html.img [
-          attribute "src" "/static/img/delete_text.svg"
+          attribute "src" "/static/img/delete.svg"
         , attribute "height" "18px"
         , attribute "width" "18px"] []
     ]

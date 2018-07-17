@@ -67,18 +67,26 @@ view_text_section_component msg text_difficulties text_section_component =
       , difficulties=text_difficulties
       , field=field }
   in [
-  div [attribute "class" "text"] <| [
-    -- text attributes
-    div [ classList [("text_properties", True)] ] [
-        div [ classList [("body",True)] ] [
-            div [] [ Html.text ("Text Section " ++ (toString (text_section.order+1))) ]
-          , view_editable (params body_field) view_body edit_body
+    div [attribute "class" "text"] <| [
+      -- text attributes
+      div [ classList [("text_properties", True)] ] [
+          div [ classList [("body",True)] ] [
+              div [] [ Html.text ("Text Section " ++ (toString (text_section.order+1))) ]
+            , view_editable (params body_field) view_body edit_body
+          ]
+      ]
+    ] ++ [
+        Question.View.view_questions msg text_section_component
+          (Text.Section.Component.question_fields text_section_component)
+      , Question.View.view_question_buttons msg text_section_component
+      , div [class "cursor", onClick (msg <| DeleteTextSection text_section_component)] [
+          Html.img [
+                attribute "src" "/static/img/delete.svg"
+              , attribute "height" "18px"
+              , attribute "width" "18px"] [], Html.text " Delete Text Section"
         ]
     ]
-  ] ++ [
-      Question.View.view_questions msg text_section_component (Text.Section.Component.question_fields text_section_component)
-    , Question.View.view_question_buttons msg text_section_component
-    , div [class "cursor", onClick (msg <| DeleteTextSection text_section_component)] [ Html.text "Delete Text Section" ] ] ]
+  ]
 
 view_text_section_components : (Msg -> msg) -> TextSectionComponentGroup -> List TextDifficulty -> Html msg
 view_text_section_components msg text_components text_difficulties =

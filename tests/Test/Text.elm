@@ -65,6 +65,10 @@ test_text_section_component_group : TextSectionComponentGroup
 test_text_section_component_group =
   Text.Component.text_section_components test_text_component
 
+test_text_section_component : Text.Section.Component.TextSectionComponent
+test_text_section_component =
+  Text.Section.Component.emptyTextSectionComponent 0
+
 test_tags : Dict String String
 test_tags =
   Dict.fromList [
@@ -92,11 +96,22 @@ test_text_view_params text_component = {
   , mode=CreateMode
   , text_difficulties=test_text_difficulties }
 
+{- TODO(andrew): simple answer delete/add test
+test_delete_add_answers : Text.Section.Component.TextSectionComponent
+test_delete_add_answers text_section =
+  case Question.Field.get_question_field (Text.Section.Component.question_fields text_section) 0 of
+    Just question_field ->
+      case Answer.Field.get_answer_field (Question.Field.answers question_field) 0 of
+        Just answer_field ->
+          let
+            new_text_component = Text.Section.Component.delete_answer text_section answer_field
+          in-}
+
 test_answer_field_mutual_exclusion : Expectation
 test_answer_field_mutual_exclusion =
   case Text.Section.Component.Group.text_section_component test_text_section_component_group 0 of
-    Just component ->
-      case Question.Field.get_question_field (Text.Section.Component.question_fields component) 0 of
+    Just text_section ->
+      case Question.Field.get_question_field (Text.Section.Component.question_fields text_section) 0 of
         Just question_field ->
           case Answer.Field.get_answer_field (Question.Field.answers question_field) 0 of
             Just answer_field ->
@@ -145,4 +160,5 @@ suite =
           ]
         ]
       , describe "errors" (test_text_errors (Text.Component.update_text_errors test_text_component example_text_errors))
+      , describe "test add/delete answer" (test_delete_add_answers test_text_section_component)
     ]

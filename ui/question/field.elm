@@ -2,7 +2,8 @@ module Question.Field exposing (QuestionField, QuestionType(..), generate_questi
   , add_new_question, delete_question, initial_question_fields, attributes, index, switch_editable, set_answer_feedback
   , set_question_type, question, menu_visible, id, error, editable, answers, set_menu_visible, set_answer_correct
   , update_question, set_question_body, set_answer_field, delete_question_field, question_field_for_answer
-  , toQuestions, fromQuestions, update_errors, set_selected, delete_selected, get_question_field)
+  , toQuestions, fromQuestions, update_errors, set_selected, delete_selected, get_question_field
+  , set_answers, add_answer_field, delete_answer_field)
 
 import Question.Model exposing (Question)
 
@@ -207,6 +208,20 @@ attributes (QuestionField question attr answer_fields) = attr
 delete_question_field : QuestionField -> Array QuestionField -> Array QuestionField
 delete_question_field question_field question_fields = (index >> delete_question) question_field question_fields
 
+add_answer_field : QuestionField -> AnswerField -> AnswerField -> QuestionField
+add_answer_field question_field answer_field new_answer_field =
+  let
+    new_answer_fields = Answer.Field.add_answer (answers question_field) answer_field new_answer_field
+  in
+    set_answers question_field new_answer_fields
+
+delete_answer_field : QuestionField -> AnswerField -> QuestionField
+delete_answer_field question_field answer_field =
+  let
+    new_answer_fields = Answer.Field.delete_answer (answers question_field) answer_field
+  in
+    set_answers question_field new_answer_fields
+
 index : QuestionField -> Int
 index question_field = let attrs = (attributes question_field) in attrs.index
 
@@ -218,3 +233,8 @@ editable question_field = let attrs = (attributes question_field) in attrs.edita
 
 answers : QuestionField -> Array AnswerField
 answers (QuestionField _ _ answer_fields) = answer_fields
+
+set_answers : QuestionField -> Array AnswerField -> QuestionField
+set_answers (QuestionField question attr answer_fields) new_answer_fields =
+  QuestionField question attr new_answer_fields
+

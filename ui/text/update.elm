@@ -34,6 +34,7 @@ type Msg =
   | UpdateAnswerFieldValue TextSectionComponent Answer.Field.AnswerField String
   | UpdateAnswerFeedbackValue TextSectionComponent Answer.Field.AnswerField String
   | UpdateAnswerFieldCorrect TextSectionComponent Answer.Field.AnswerField Bool
+  | AddAnswer TextSectionComponent Answer.Field.AnswerField
   | DeleteAnswer TextSectionComponent Answer.Field.AnswerField
 
   -- UI effects-related messages
@@ -108,23 +109,28 @@ update msg model =
 
     -- answer msgs
     UpdateAnswerField text_component answer_field ->
-      ({ model | text_component = update (Text.Section.Component.set_answer text_component answer_field)  }, Cmd.none)
+      ({ model | text_component = update (Text.Section.Component.set_answer text_component answer_field) }, Cmd.none)
 
     UpdateAnswerFieldValue text_component answer_field text ->
-      ({ model | text_component = update (Text.Section.Component.set_answer_text text_component answer_field text)  }, Cmd.none)
+      ({ model | text_component = update (Text.Section.Component.set_answer_text text_component answer_field text) }
+      , Cmd.none)
 
     UpdateAnswerFeedbackValue text_component answer_field feedback ->
       ({ model | text_component = update
-         (Text.Section.Component.set_answer_feedback text_component answer_field feedback)  }, Cmd.none)
+         (Text.Section.Component.set_answer_feedback text_component answer_field feedback) }, Cmd.none)
 
     UpdateAnswerFieldCorrect text_component answer_field correct ->
       ({ model | text_component = update
         (Text.Section.Component.set_answer_correct text_component answer_field)
       }, Cmd.none)
 
+    AddAnswer text_section_component answer_field ->
+      ({ model | text_component = update
+        (Text.Section.Component.add_answer text_section_component answer_field) }, Cmd.none)
+
     DeleteAnswer text_section_component answer_field ->
       ({ model | text_component = update
-           (Text.Section.Component.delete_answer text_section_component answer_field)  }, Cmd.none)
+        (Text.Section.Component.delete_answer text_section_component answer_field) }, Cmd.none)
 
     -- ui msgs
     ToggleEditable text_component field ->

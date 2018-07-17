@@ -1,9 +1,7 @@
 module Text.Section.Model exposing (TextSection, emptyTextSection)
 
 import Question.Model
-import Field
 
-import Date exposing (Date)
 import Array exposing (Array)
 
 type alias TextSection = {

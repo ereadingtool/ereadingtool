@@ -478,6 +478,19 @@ body {
 }
 
 .answer_delete {
+    visibility: hidden;
+}
+
+.answer_item:hover > .answer_delete {
+    visibility: visible;
+}
+
+.answer_add {
+    visibility: hidden;
+}
+
+.answer_item:hover > .answer_add {
+    visibility: visible;
 }
 
 .answer_feedback {

@@ -1,7 +1,7 @@
 module Answer.Field exposing (AnswerField, AnswerFeedbackField, generate_answer_field, update_question_index
   , index, question_index, switch_editable, editable, answer, attributes, error, id, name, feedback_field
   , set_answer_text, set_answer_correct, set_answer_feedback, toAnswers, get_answer_field, update_feedback_error
-  , update_error)
+  , update_error, add_answer, delete_answer)
 
 import Field
 import Array exposing (Array)
@@ -25,8 +25,17 @@ type alias AnswerFieldAttributes = {
 
 type AnswerField = AnswerField Answer (Field.FieldAttributes AnswerFieldAttributes) AnswerFeedbackField
 
+update_answer_indexes : Array AnswerField -> Array AnswerField
+update_answer_indexes answer_fields =
+  Array.indexedMap (\i ans -> update_answer_index ans i) answer_fields
+
 update_question_index : AnswerField -> Int -> AnswerField
-update_question_index (AnswerField answer attr feedback) i = AnswerField answer { attr | question_index = i} feedback
+update_question_index (AnswerField answer attr feedback) i =
+  AnswerField answer { attr | question_index = i} feedback
+
+update_answer_index : AnswerField -> Int -> AnswerField
+update_answer_index (AnswerField answer attr feedback) i =
+  AnswerField { answer | order = i } { attr | index = i } feedback
 
 generate_answer_feedback_field : String -> AnswerFeedbackField
 generate_answer_feedback_field id = {
@@ -99,6 +108,21 @@ question_index answer_field = let attrs = (attributes answer_field) in attrs.que
 get_answer_field : Array AnswerField -> Int -> Maybe AnswerField
 get_answer_field answer_fields index =
   Array.get index answer_fields
+
+add_answer : Array AnswerField -> AnswerField -> AnswerField -> Array AnswerField
+add_answer answer_fields answer_field new_answer_field =
+  let
+    last_elem_index = Array.length answer_fields
+    begin = Array.slice 0 ((index answer_field) + 1) answer_fields
+    end = Array.slice (index new_answer_field) last_elem_index answer_fields
+  in
+       update_answer_indexes
+    <| Array.append (Array.push new_answer_field begin) end
+
+delete_answer : Array AnswerField -> AnswerField -> Array AnswerField
+delete_answer answer_fields answer_field =
+     update_answer_indexes
+  <| Array.filter (\ans -> (index ans) /= (index answer_field)) answer_fields
 
 update_error : AnswerField -> String -> AnswerField
 update_error (AnswerField answer attr feedback) error_string =

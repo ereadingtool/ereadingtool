@@ -3,7 +3,7 @@ module Text.Section.Component exposing (TextSectionComponent, TextSectionField, 
   , set_answer, set_answer_text, set_question, switch_editable, add_new_question, toggle_question_menu, update_body
   , update_question_field, set_answer_correct, set_answer_feedback, text_field_id, editable, toTextSection
   , fromTextSection, post_toggle_commands, reinitialize_ck_editor, update_errors, delete_selected_question_fields
-  , set_index, delete_answer)
+  , set_index, add_answer, delete_answer)
 
 import Array exposing (Array)
 import Field
@@ -11,6 +11,7 @@ import Field
 import Text.Section.Model exposing (TextSection)
 
 import Question.Field exposing (QuestionField, generate_question_field)
+import Answer.Model
 import Answer.Field
 
 import Ports exposing (ckEditor, ckEditorSetHtml, CKEditorID, CKEditorText)
@@ -148,12 +149,37 @@ set_answer_feedback text_section answer_field feedback =
       set_question text_section (Question.Field.set_answer_feedback question_field answer_field feedback)
     _ -> text_section
 
-delete_answer : TextSectionComponent -> Answer.Field.AnswerField -> TextSectionComponent
-delete_answer (TextSectionComponent text attr fields question_fields) answer_field =
+-- adds a new answer field after the given answer field
+add_answer : TextSectionComponent -> Answer.Field.AnswerField -> TextSectionComponent
+add_answer text_section_component answer_field =
   let
-    question_field = Answer.Field.question_index
+    text_section_index = index text_section_component
+    question_index = Answer.Field.question_index answer_field
+    question_field = Array.get question_index (question_fields text_section_component)
   in
-    TextSectionComponent text attr fields question_fields
+    case question_field of
+      Just q_field ->
+        let
+          new_answer =
+            Answer.Model.generate_answer ((Answer.Field.index answer_field) + 1)
+          new_answer_field =
+            Answer.Field.generate_answer_field text_section_index question_index new_answer.order new_answer
+        in
+          update_question_field text_section_component
+            (Question.Field.add_answer_field q_field answer_field new_answer_field)
+      Nothing ->
+        text_section_component
+
+delete_answer : TextSectionComponent -> Answer.Field.AnswerField -> TextSectionComponent
+delete_answer text_section_component answer_field =
+  let
+    question_field = Array.get (Answer.Field.question_index answer_field) (question_fields text_section_component)
+  in
+    case question_field of
+      Just field ->
+        update_question_field text_section_component (Question.Field.delete_answer_field field answer_field)
+      Nothing ->
+        text_section_component
 
 set_field_value : TextSectionComponent -> FieldName -> String -> TextSectionComponent
 set_field_value (TextSectionComponent text attr fields question_fields) field_name value =

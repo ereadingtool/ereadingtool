@@ -5,7 +5,6 @@ import Answer.Model exposing (Answer)
 import Array exposing (Array)
 import Json.Decode as Decode
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
-import Json.Decode.Extra exposing (date)
 
 answerDecoder : Decode.Decoder Answer
 answerDecoder =
