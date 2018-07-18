@@ -54,7 +54,7 @@ reinitialize_ck_editor text_section_component =
 emptyTextSectionComponent : Int -> TextSectionComponent
 emptyTextSectionComponent i =
   TextSectionComponent
-    Text.Section.Model.emptyTextSection
+    (Text.Section.Model.emptyTextSection i)
     { index=i }
     (generate_text_section_fields i)
     (Question.Field.initial_question_fields i)
@@ -118,7 +118,7 @@ index text_section = let attrs = (attributes text_section) in attrs.index
 
 set_index : TextSectionComponent -> Int -> TextSectionComponent
 set_index (TextSectionComponent text attr fields question_fields) index =
-  TextSectionComponent text { attr | index = index } fields question_fields
+  TextSectionComponent { text | order = index } { attr | index = index } fields question_fields
 
 set_question : TextSectionComponent -> QuestionField -> TextSectionComponent
 set_question (TextSectionComponent text attr fields question_fields) question_field =

@@ -9481,7 +9481,15 @@ var _user$project$Question_Model$Question = F8(
 		return {id: a, text_id: b, created_dt: c, modified_dt: d, body: e, order: f, answers: g, question_type: h};
 	});
 
-var _user$project$Text_Section_Model$emptyTextSection = {order: 0, question_count: 0, questions: _user$project$Question_Model$initial_questions, body: ''};
+var _user$project$Text_Section_Model$emptyTextSection = function (i) {
+	var initial_questions = _user$project$Question_Model$initial_questions;
+	return {
+		order: i,
+		question_count: _elm_lang$core$Array$length(initial_questions),
+		questions: initial_questions,
+		body: ''
+	};
+};
 var _user$project$Text_Section_Model$TextSection = F4(
 	function (a, b, c, d) {
 		return {order: a, body: b, question_count: c, questions: d};
@@ -9514,7 +9522,7 @@ var _user$project$Text_Model$new_text = {
 	sections: _elm_lang$core$Array$fromList(
 		{
 			ctor: '::',
-			_0: _user$project$Text_Section_Model$emptyTextSection,
+			_0: _user$project$Text_Section_Model$emptyTextSection(0),
 			_1: {ctor: '[]'}
 		}),
 	write_locker: _elm_lang$core$Maybe$Nothing

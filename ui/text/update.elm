@@ -16,7 +16,7 @@ type Field = Text Text.Section.Component.TextSectionField | Question QuestionFie
 type Msg =
   -- text msgs
     UpdateTextValue TextSectionComponent String String
-  | AddText
+  | AddTextSection
   | DeleteTextSection TextSectionComponent
   | UpdateTextBody (CKEditorID, CKEditorText)
 
@@ -52,7 +52,7 @@ update msg model =
       >> Text.Component.set_text_section_components model.text_component
   in case msg of
     -- text msgs
-    AddText ->
+    AddTextSection ->
       ({ model | text_component =
         Text.Component.set_text_section_components model.text_component
         (Text.Section.Component.Group.add_new_text_section text_section_group) }

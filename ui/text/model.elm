@@ -48,7 +48,7 @@ new_text = {
   , last_modified_by=Nothing
   , created_dt=Nothing
   , modified_dt=Nothing
-  , sections=Array.fromList [Text.Section.Model.emptyTextSection]
+  , sections=Array.fromList [Text.Section.Model.emptyTextSection 0]
   , write_locker=Nothing }
 
 set_sections : Text -> Array Text.Section.Model.TextSection -> Text

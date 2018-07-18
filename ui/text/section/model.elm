@@ -11,9 +11,12 @@ type alias TextSection = {
   , questions : Array Question.Model.Question
   }
 
-emptyTextSection : TextSection
-emptyTextSection = {
-    order = 0
-  , question_count = 0
-  , questions = Question.Model.initial_questions
-  , body = "" }
+emptyTextSection : Int -> TextSection
+emptyTextSection i =
+  let
+    initial_questions = Question.Model.initial_questions
+  in
+    { order = i
+    , question_count = Array.length initial_questions
+    , questions = initial_questions
+    , body = "" }

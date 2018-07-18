@@ -10892,7 +10892,15 @@ var _user$project$Question_Field$delete_answer_field = F2(
 		return A2(_user$project$Question_Field$set_answers, question_field, new_answer_fields);
 	});
 
-var _user$project$Text_Section_Model$emptyTextSection = {order: 0, question_count: 0, questions: _user$project$Question_Model$initial_questions, body: ''};
+var _user$project$Text_Section_Model$emptyTextSection = function (i) {
+	var initial_questions = _user$project$Question_Model$initial_questions;
+	return {
+		order: i,
+		question_count: _elm_lang$core$Array$length(initial_questions),
+		questions: initial_questions,
+		body: ''
+	};
+};
 var _user$project$Text_Section_Model$TextSection = F4(
 	function (a, b, c, d) {
 		return {order: a, body: b, question_count: c, questions: d};
@@ -10925,7 +10933,7 @@ var _user$project$Text_Model$new_text = {
 	sections: _elm_lang$core$Array$fromList(
 		{
 			ctor: '::',
-			_0: _user$project$Text_Section_Model$emptyTextSection,
+			_0: _user$project$Text_Section_Model$emptyTextSection(0),
 			_1: {ctor: '[]'}
 		}),
 	write_locker: _elm_lang$core$Maybe$Nothing
@@ -11426,7 +11434,7 @@ var _user$project$Text_Section_Component$fromTextSection = F2(
 var _user$project$Text_Section_Component$emptyTextSectionComponent = function (i) {
 	return A4(
 		_user$project$Text_Section_Component$TextSectionComponent,
-		_user$project$Text_Section_Model$emptyTextSection,
+		_user$project$Text_Section_Model$emptyTextSection(i),
 		{index: i},
 		_user$project$Text_Section_Component$generate_text_section_fields(i),
 		_user$project$Question_Field$initial_question_fields(i));
@@ -11448,7 +11456,9 @@ var _user$project$Text_Section_Component$set_index = F2(
 		var _p15 = _p14;
 		return A4(
 			_user$project$Text_Section_Component$TextSectionComponent,
-			_p15._0,
+			_elm_lang$core$Native_Utils.update(
+				_p15._0,
+				{order: index}),
 			_elm_lang$core$Native_Utils.update(
 				_p15._1,
 				{index: index}),
@@ -12132,7 +12142,7 @@ var _user$project$Text_Update$update = F2(
 		};
 		var _p6 = msg;
 		switch (_p6.ctor) {
-			case 'AddText':
+			case 'AddTextSection':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -12452,7 +12462,7 @@ var _user$project$Text_Update$UpdateTextBody = function (a) {
 var _user$project$Text_Update$DeleteTextSection = function (a) {
 	return {ctor: 'DeleteTextSection', _0: a};
 };
-var _user$project$Text_Update$AddText = {ctor: 'AddText'};
+var _user$project$Text_Update$AddTextSection = {ctor: 'AddTextSection'};
 var _user$project$Text_Update$UpdateTextValue = F3(
 	function (a, b, c) {
 		return {ctor: 'UpdateTextValue', _0: a, _1: b, _2: c};
@@ -14747,7 +14757,7 @@ var _user$project$Text_View$view_submit = A2(
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html_Events$onClick(
-						_user$project$Text_Create$TextComponentMsg(_user$project$Text_Update$AddText)),
+						_user$project$Text_Create$TextComponentMsg(_user$project$Text_Update$AddTextSection)),
 					_1: {ctor: '[]'}
 				}
 			},

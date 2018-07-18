@@ -41,7 +41,8 @@ update_error (field_id, field_error) text_section_components =
 
 update_errors : TextSectionComponentGroup -> (Dict String String) -> TextSectionComponentGroup
 update_errors ((TextSectionComponentGroup text_components) as text_component_group) errors =
-   TextSectionComponentGroup (Array.foldr update_error (toArray text_component_group) (Array.fromList <| Dict.toList errors))
+   TextSectionComponentGroup
+     (Array.foldr update_error (toArray text_component_group) (Array.fromList <| Dict.toList errors))
 
 update_components : TextSectionComponentGroup -> TextSectionComponent -> TextSectionComponentGroup
 update_components (TextSectionComponentGroup text_components) text_component =
@@ -52,7 +53,8 @@ add_new_text_section (TextSectionComponentGroup text_components) =
   let
     arr_len = Array.length text_components
   in
-    TextSectionComponentGroup (Array.push (Text.Section.Component.emptyTextSectionComponent arr_len) text_components)
+    TextSectionComponentGroup
+      (Array.push (Text.Section.Component.emptyTextSectionComponent arr_len) text_components)
 
 delete_text_section : TextSectionComponentGroup -> TextSectionComponent -> TextSectionComponentGroup
 delete_text_section (TextSectionComponentGroup text_components) text_section_component =

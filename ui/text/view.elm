@@ -211,7 +211,7 @@ view_text_attributes params =
 view_submit : Html Msg
 view_submit =
   div [classList [("submit_section", True)]] [
-    div [attribute "class" "submit", onClick (TextComponentMsg Text.Update.AddText)] [
+    div [attribute "class" "submit", onClick (TextComponentMsg Text.Update.AddTextSection)] [
         Html.img [
           attribute "src" "/static/img/add_text_section.svg"
         , attribute "height" "20px"
