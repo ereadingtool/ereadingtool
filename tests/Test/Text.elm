@@ -1,6 +1,8 @@
 module Test.Text exposing (..)
 
 import Expect exposing (Expectation)
+import Array
+
 import Fuzz exposing (Fuzzer, int, list, string)
 
 import Html
@@ -96,17 +98,6 @@ test_text_view_params text_component = {
   , mode=CreateMode
   , text_difficulties=test_text_difficulties }
 
-{- TODO(andrew): simple answer delete/add test
-test_delete_add_answers : Text.Section.Component.TextSectionComponent
-test_delete_add_answers text_section =
-  case Question.Field.get_question_field (Text.Section.Component.question_fields text_section) 0 of
-    Just question_field ->
-      case Answer.Field.get_answer_field (Question.Field.answers question_field) 0 of
-        Just answer_field ->
-          let
-            new_text_component = Text.Section.Component.delete_answer text_section answer_field
-          in-}
-
 test_answer_field_mutual_exclusion : Expectation
 test_answer_field_mutual_exclusion =
   case Text.Section.Component.Group.text_section_component test_text_section_component_group 0 of
@@ -149,6 +140,70 @@ test_text_error html (element_id, error_msg) =
     ]
  |> Query.count (Expect.equal 1)
 
+gen_text_component_group_with_sections : Int -> TextSectionComponentGroup
+gen_text_component_group_with_sections i =
+  Array.foldr
+    (\i group -> add_text_section group)
+    test_text_section_component_group
+    (Array.repeat i 0)
+
+test_text_section_add : Expectation
+test_text_section_add =
+  let
+    new_group = gen_text_component_group_with_sections 5
+  in
+    Expect.equal 6 (Array.length <| Text.Section.Component.Group.toArray new_group)
+
+add_text_section : TextSectionComponentGroup -> TextSectionComponentGroup
+add_text_section group =
+  Text.Section.Component.Group.add_new_text_section group
+
+delete_text_section : TextSectionComponentGroup -> Text.Section.Component.TextSectionComponent -> TextSectionComponentGroup
+delete_text_section group section =
+  Text.Section.Component.Group.delete_text_section group section
+
+test_text_section_update_body : Expectation
+test_text_section_update_body =
+  let
+    group =
+      Text.Section.Component.Group.update_body_for_id test_text_section_component_group "textsection_0_body" "foobar"
+  in
+    case Text.Section.Component.Group.text_section_component group 0 of
+      Just section ->
+        let
+          text_section = Text.Section.Component.text_section section
+        in
+          Expect.equal "foobar" text_section.body
+      _ ->
+        Expect.pass
+
+test_text_section_add_then_delete : Expectation
+test_text_section_add_then_delete =
+  let
+    num_of_new_sections = 5
+    -- simulate an update from the frontend editor
+    ckeditor_id = "textsection_5_body"
+    updated_text_section_body = "foobar"
+
+    group =
+      Text.Section.Component.Group.update_body_for_id
+        (gen_text_component_group_with_sections num_of_new_sections) ckeditor_id updated_text_section_body
+
+    text_sections = Text.Section.Component.Group.toArray group
+  in
+    -- delete one, and verify the section with updated_text_section_body is still around
+    case Array.get 2 text_sections of
+      Just text_section ->
+        let
+          new_group = delete_text_section group text_section
+          new_group_sections = Text.Section.Component.Group.toArray new_group
+        in
+          Expect.equal 1
+            (Array.length (Array.filter (\section ->
+               (Text.Section.Component.toTextSection section).body == updated_text_section_body
+            ) new_group_sections))
+      _ -> Expect.pass
+
 
 suite : Test
 suite =
@@ -160,5 +215,11 @@ suite =
           ]
         ]
       , describe "errors" (test_text_errors (Text.Component.update_text_errors test_text_component example_text_errors))
-      , describe "test add/delete answer" (test_delete_add_answers test_text_section_component)
+      , describe "text section update body" [
+          test "update body for id" <| \() -> test_text_section_update_body
+      ]
+      , describe "text section add/delete" [
+            test "add text sections" <| \() -> test_text_section_add
+          , test "add then delete text sections" <| \() -> test_text_section_add_then_delete
+        ]
     ]

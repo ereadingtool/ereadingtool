@@ -36,7 +36,7 @@ view_editable params view edit =
 view_body : (TextField msg) -> Html msg
 view_body params =
   div [
-    attribute "id" (Text.Section.Component.text_field_id params.field)
+    attribute "id" params.field.id
   , toggle_editable onClick params
   , attribute "class" "text_property"
   ] [ div [attribute "class" "editable"] [ Html.text params.text_section.body ]]
@@ -45,7 +45,7 @@ edit_body : (TextField msg) -> Html msg
 edit_body params =
   div [] [
     Html.textarea [
-        attribute "id" (Text.Section.Component.text_field_id params.field)
+        attribute "id" params.field.id
       , classList [ ("input_error", params.field.error) ]
       , onInput (UpdateTextValue params.text_section_component "body" >> params.msg) ] [
         Html.text params.text_section.body

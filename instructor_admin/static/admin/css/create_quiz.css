@@ -523,7 +523,8 @@ body {
 
 .submit_section {
     display: grid;
-    grid-template-columns: 120px 120px auto 120px;
+    grid-template-columns: 160px 160px auto 120px;
+    grid-column-gap: 10px;
     grid-column: 2;
     margin-top: 10px;
 

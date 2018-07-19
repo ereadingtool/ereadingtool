@@ -3,7 +3,7 @@ module Text.Section.Component exposing (TextSectionComponent, TextSectionField, 
   , set_answer, set_answer_text, set_question, switch_editable, add_new_question, toggle_question_menu, update_body
   , update_question_field, set_answer_correct, set_answer_feedback, text_field_id, editable, toTextSection
   , fromTextSection, post_toggle_commands, reinitialize_ck_editor, update_errors, delete_selected_question_fields
-  , set_index, add_answer, delete_answer)
+  , set_index, add_answer, delete_answer, body_id)
 
 import Array exposing (Array)
 import Field
@@ -27,9 +27,14 @@ type TextSectionComponent = TextSectionComponent
 
 type alias FieldName = String
 
+
+generate_text_section_field_id : Int -> String -> String
+generate_text_section_field_id i attr =
+  String.join "_" ["textsection", toString i, attr]
+
 generate_text_section_field_params : Int -> String -> TextSectionField
 generate_text_section_field_params i attr = {
-    id=String.join "_" ["textsection", toString i, attr]
+    id=generate_text_section_field_id i attr
   , editable=False
   , error_string=""
   , error=False
@@ -100,6 +105,13 @@ post_toggle_commands text_field =
       "body" -> [ckEditor text_field.id]
       _ -> [Cmd.none]
 
+body_id : TextSectionComponent -> String
+body_id text_section_component =
+  let
+    body_field = body text_section_component
+  in
+    body_field.id
+
 body : TextSectionComponent -> TextSectionField
 body (TextSectionComponent text attr fields question_fields) = fields.body
 
@@ -118,7 +130,12 @@ index text_section = let attrs = (attributes text_section) in attrs.index
 
 set_index : TextSectionComponent -> Int -> TextSectionComponent
 set_index (TextSectionComponent text attr fields question_fields) index =
-  TextSectionComponent { text | order = index } { attr | index = index } fields question_fields
+  let
+    body_field = fields.body
+    new_body_field = { body_field | id = generate_text_section_field_id index "body" }
+  in
+    TextSectionComponent
+      { text | order = index } { attr | index = index } { fields | body = new_body_field } question_fields
 
 set_question : TextSectionComponent -> QuestionField -> TextSectionComponent
 set_question (TextSectionComponent text attr fields question_fields) question_field =

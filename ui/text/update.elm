@@ -53,16 +53,19 @@ update msg model =
   in case msg of
     -- text msgs
     AddTextSection ->
-      ({ model | text_component =
-        Text.Component.set_text_section_components model.text_component
-        (Text.Section.Component.Group.add_new_text_section text_section_group) }
-      , Cmd.none)
+      let
+        new_group = Text.Section.Component.Group.add_new_text_section text_section_group
+      in
+        ({ model | text_component = Text.Component.set_text_section_components model.text_component new_group }
+        , Cmd.none)
 
     DeleteTextSection text_section_component ->
-      ({ model | text_component =
-        Text.Component.set_text_section_components model.text_component
-        (Text.Section.Component.Group.delete_text_section text_section_group text_section_component) }
-      , Cmd.none)
+      let
+        text_section_body_id = Text.Section.Component.body_id text_section_component
+        new_group = Text.Section.Component.Group.delete_text_section text_section_group text_section_component
+      in
+        ({ model | text_component = Text.Component.set_text_section_components model.text_component new_group }
+        , Text.Section.Component.Group.reinitialize_ck_editors new_group)
 
     UpdateTextValue text_component field_name input ->
         ({ model | text_component = update
@@ -77,11 +80,13 @@ update msg model =
       ({ model | text_component = update (Text.Section.Component.add_new_question text_component) }, Cmd.none)
 
     UpdateQuestionField text_component question_field ->
-      ({ model | text_component = update (Text.Section.Component.update_question_field text_component question_field) }, Cmd.none)
+      ({ model | text_component = update (Text.Section.Component.update_question_field text_component question_field) }
+      , Cmd.none)
 
     UpdateQuestionFieldValue text_component question_field value ->
       ({ model | text_component = update
-        (Text.Section.Component.update_question_field text_component (Question.Field.set_question_body question_field value))
+        (Text.Section.Component.update_question_field text_component
+          (Question.Field.set_question_body question_field value))
       }, Cmd.none)
 
     DeleteQuestion text_component question_field ->

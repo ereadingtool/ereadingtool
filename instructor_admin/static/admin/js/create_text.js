@@ -11334,6 +11334,10 @@ var _user$project$Text_Section_Component$body = function (_p9) {
 	var _p10 = _p9;
 	return _p10._2.body;
 };
+var _user$project$Text_Section_Component$body_id = function (text_section_component) {
+	var body_field = _user$project$Text_Section_Component$body(text_section_component);
+	return body_field.id;
+};
 var _user$project$Text_Section_Component$post_toggle_commands = function (text_field) {
 	var _p11 = text_field.name;
 	if (_p11 === 'body') {
@@ -11381,25 +11385,29 @@ var _user$project$Text_Section_Component$reinitialize_ck_editor = function (text
 			}
 		});
 };
+var _user$project$Text_Section_Component$generate_text_section_field_id = F2(
+	function (i, attr) {
+		return A2(
+			_elm_lang$core$String$join,
+			'_',
+			{
+				ctor: '::',
+				_0: 'textsection',
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$core$Basics$toString(i),
+					_1: {
+						ctor: '::',
+						_0: attr,
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+	});
 var _user$project$Text_Section_Component$generate_text_section_field_params = F2(
 	function (i, attr) {
 		return {
-			id: A2(
-				_elm_lang$core$String$join,
-				'_',
-				{
-					ctor: '::',
-					_0: 'textsection',
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$core$Basics$toString(i),
-						_1: {
-							ctor: '::',
-							_0: attr,
-							_1: {ctor: '[]'}
-						}
-					}
-				}),
+			id: A2(_user$project$Text_Section_Component$generate_text_section_field_id, i, attr),
 			editable: false,
 			error_string: '',
 			error: false,
@@ -11454,6 +11462,13 @@ var _user$project$Text_Section_Component$update_body = F2(
 var _user$project$Text_Section_Component$set_index = F2(
 	function (_p14, index) {
 		var _p15 = _p14;
+		var _p16 = _p15._2;
+		var body_field = _p16.body;
+		var new_body_field = _elm_lang$core$Native_Utils.update(
+			body_field,
+			{
+				id: A2(_user$project$Text_Section_Component$generate_text_section_field_id, index, 'body')
+			});
 		return A4(
 			_user$project$Text_Section_Component$TextSectionComponent,
 			_elm_lang$core$Native_Utils.update(
@@ -11462,37 +11477,24 @@ var _user$project$Text_Section_Component$set_index = F2(
 			_elm_lang$core$Native_Utils.update(
 				_p15._1,
 				{index: index}),
-			_p15._2,
+			_elm_lang$core$Native_Utils.update(
+				_p16,
+				{body: new_body_field}),
 			_p15._3);
 	});
 var _user$project$Text_Section_Component$set_question = F2(
-	function (_p16, question_field) {
-		var _p17 = _p16;
+	function (_p17, question_field) {
+		var _p18 = _p17;
 		var question_index = _user$project$Question_Field$index(question_field);
 		return A4(
 			_user$project$Text_Section_Component$TextSectionComponent,
-			_p17._0,
-			_p17._1,
-			_p17._2,
-			A3(_elm_lang$core$Array$set, question_index, question_field, _p17._3));
+			_p18._0,
+			_p18._1,
+			_p18._2,
+			A3(_elm_lang$core$Array$set, question_index, question_field, _p18._3));
 	});
 var _user$project$Text_Section_Component$set_answer_correct = F2(
 	function (text_section, answer_field) {
-		var _p18 = A2(
-			_user$project$Question_Field$question_field_for_answer,
-			_user$project$Text_Section_Component$question_fields(text_section),
-			answer_field);
-		if (_p18.ctor === 'Just') {
-			return A2(
-				_user$project$Text_Section_Component$set_question,
-				text_section,
-				A2(_user$project$Question_Field$set_answer_correct, _p18._0, answer_field));
-		} else {
-			return text_section;
-		}
-	});
-var _user$project$Text_Section_Component$set_answer_feedback = F3(
-	function (text_section, answer_field, feedback) {
 		var _p19 = A2(
 			_user$project$Question_Field$question_field_for_answer,
 			_user$project$Text_Section_Component$question_fields(text_section),
@@ -11501,7 +11503,22 @@ var _user$project$Text_Section_Component$set_answer_feedback = F3(
 			return A2(
 				_user$project$Text_Section_Component$set_question,
 				text_section,
-				A3(_user$project$Question_Field$set_answer_feedback, _p19._0, answer_field, feedback));
+				A2(_user$project$Question_Field$set_answer_correct, _p19._0, answer_field));
+		} else {
+			return text_section;
+		}
+	});
+var _user$project$Text_Section_Component$set_answer_feedback = F3(
+	function (text_section, answer_field, feedback) {
+		var _p20 = A2(
+			_user$project$Question_Field$question_field_for_answer,
+			_user$project$Text_Section_Component$question_fields(text_section),
+			answer_field);
+		if (_p20.ctor === 'Just') {
+			return A2(
+				_user$project$Text_Section_Component$set_question,
+				text_section,
+				A3(_user$project$Question_Field$set_answer_feedback, _p20._0, answer_field, feedback));
 		} else {
 			return text_section;
 		}
@@ -11515,14 +11532,14 @@ var _user$project$Text_Section_Component$toggle_question_menu = F2(
 			A2(_user$project$Question_Field$set_menu_visible, question_field, visible));
 	});
 var _user$project$Text_Section_Component$set_answer = F2(
-	function (_p20, answer_field) {
-		var _p21 = _p20;
+	function (_p21, answer_field) {
+		var _p22 = _p21;
 		return A4(
 			_user$project$Text_Section_Component$TextSectionComponent,
-			_p21._0,
-			_p21._1,
-			_p21._2,
-			A2(_user$project$Question_Field$set_answer_field, _p21._3, answer_field));
+			_p22._0,
+			_p22._1,
+			_p22._2,
+			A2(_user$project$Question_Field$set_answer_field, _p22._3, answer_field));
 	});
 var _user$project$Text_Section_Component$set_answer_text = F3(
 	function (text_section, answer_field, answer_text) {
@@ -11532,96 +11549,96 @@ var _user$project$Text_Section_Component$set_answer_text = F3(
 			A2(_user$project$Answer_Field$set_answer_text, answer_field, answer_text));
 	});
 var _user$project$Text_Section_Component$set_field_value = F3(
-	function (_p22, field_name, value) {
-		var _p23 = _p22;
-		var _p28 = _p23._0;
-		var _p27 = _p23._3;
-		var _p26 = _p23._2;
-		var _p25 = _p23._1;
-		var _p24 = field_name;
-		if (_p24 === 'body') {
+	function (_p23, field_name, value) {
+		var _p24 = _p23;
+		var _p29 = _p24._0;
+		var _p28 = _p24._3;
+		var _p27 = _p24._2;
+		var _p26 = _p24._1;
+		var _p25 = field_name;
+		if (_p25 === 'body') {
 			return A4(
 				_user$project$Text_Section_Component$TextSectionComponent,
 				_elm_lang$core$Native_Utils.update(
-					_p28,
+					_p29,
 					{body: value}),
-				_p25,
 				_p26,
-				_p27);
+				_p27,
+				_p28);
 		} else {
-			return A4(_user$project$Text_Section_Component$TextSectionComponent, _p28, _p25, _p26, _p27);
+			return A4(_user$project$Text_Section_Component$TextSectionComponent, _p29, _p26, _p27, _p28);
 		}
 	});
 var _user$project$Text_Section_Component$set_field = F2(
-	function (_p29, new_text_field) {
-		var _p30 = _p29;
-		var _p31 = new_text_field.name;
-		if (_p31 === 'body') {
+	function (_p30, new_text_field) {
+		var _p31 = _p30;
+		var _p32 = new_text_field.name;
+		if (_p32 === 'body') {
 			return A4(
 				_user$project$Text_Section_Component$TextSectionComponent,
-				_p30._0,
-				_p30._1,
+				_p31._0,
+				_p31._1,
 				_elm_lang$core$Native_Utils.update(
-					_p30._2,
+					_p31._2,
 					{body: new_text_field}),
-				_p30._3);
+				_p31._3);
 		} else {
-			return _p30;
+			return _p31;
 		}
 	});
 var _user$project$Text_Section_Component$update_errors = F2(
-	function (_p33, _p32) {
-		var _p34 = _p33;
-		var _p41 = _p34;
-		var _p35 = _p32;
-		var _p40 = _p35._0;
-		var _p39 = _p35._1;
-		var error_key = A2(_elm_lang$core$String$split, '_', _p40);
+	function (_p34, _p33) {
+		var _p35 = _p34;
+		var _p42 = _p35;
+		var _p36 = _p33;
+		var _p41 = _p36._0;
+		var _p40 = _p36._1;
+		var error_key = A2(_elm_lang$core$String$split, '_', _p41);
 		var first_key = _elm_lang$core$List$head(error_key);
-		var _p36 = first_key;
-		if (_p36.ctor === 'Just') {
-			var _p38 = _p36._0;
+		var _p37 = first_key;
+		if (_p37.ctor === 'Just') {
+			var _p39 = _p37._0;
 			if (A2(
 				_elm_lang$core$List$member,
-				_p38,
+				_p39,
 				{
 					ctor: '::',
 					_0: 'body',
 					_1: {ctor: '[]'}
 				})) {
-				var _p37 = A2(_user$project$Text_Section_Component$get_field, _p41, _p38);
-				if (_p37.ctor === 'Just') {
+				var _p38 = A2(_user$project$Text_Section_Component$get_field, _p42, _p39);
+				if (_p38.ctor === 'Just') {
 					return A2(
 						_user$project$Text_Section_Component$set_field,
-						_p41,
-						A2(_user$project$Text_Section_Component$update_field_error, _p37._0, _p39));
+						_p42,
+						A2(_user$project$Text_Section_Component$update_field_error, _p38._0, _p40));
 				} else {
-					return _p41;
+					return _p42;
 				}
 			} else {
 				return A4(
 					_user$project$Text_Section_Component$TextSectionComponent,
-					_p34._0,
-					_p34._1,
-					_p34._2,
+					_p35._0,
+					_p35._1,
+					_p35._2,
 					A2(
 						_user$project$Question_Field$update_errors,
-						_p34._3,
-						{ctor: '_Tuple2', _0: _p40, _1: _p39}));
+						_p35._3,
+						{ctor: '_Tuple2', _0: _p41, _1: _p40}));
 			}
 		} else {
-			return _p41;
+			return _p42;
 		}
 	});
 var _user$project$Text_Section_Component$update_question_field = F2(
-	function (_p42, question_field) {
-		var _p43 = _p42;
+	function (_p43, question_field) {
+		var _p44 = _p43;
 		return A4(
 			_user$project$Text_Section_Component$TextSectionComponent,
-			_p43._0,
-			_p43._1,
-			_p43._2,
-			A2(_user$project$Question_Field$update_question_field, question_field, _p43._3));
+			_p44._0,
+			_p44._1,
+			_p44._2,
+			A2(_user$project$Question_Field$update_question_field, question_field, _p44._3));
 	});
 var _user$project$Text_Section_Component$add_answer = F2(
 	function (text_section_component, answer_field) {
@@ -11631,15 +11648,15 @@ var _user$project$Text_Section_Component$add_answer = F2(
 			question_index,
 			_user$project$Text_Section_Component$question_fields(text_section_component));
 		var text_section_index = _user$project$Text_Section_Component$index(text_section_component);
-		var _p44 = question_field;
-		if (_p44.ctor === 'Just') {
+		var _p45 = question_field;
+		if (_p45.ctor === 'Just') {
 			var new_answer = _user$project$Answer_Model$generate_answer(
 				_user$project$Answer_Field$index(answer_field) + 1);
 			var new_answer_field = A4(_user$project$Answer_Field$generate_answer_field, text_section_index, question_index, new_answer.order, new_answer);
 			return A2(
 				_user$project$Text_Section_Component$update_question_field,
 				text_section_component,
-				A3(_user$project$Question_Field$add_answer_field, _p44._0, answer_field, new_answer_field));
+				A3(_user$project$Question_Field$add_answer_field, _p45._0, answer_field, new_answer_field));
 		} else {
 			return text_section_component;
 		}
@@ -11650,44 +11667,44 @@ var _user$project$Text_Section_Component$delete_answer = F2(
 			_elm_lang$core$Array$get,
 			_user$project$Answer_Field$question_index(answer_field),
 			_user$project$Text_Section_Component$question_fields(text_section_component));
-		var _p45 = question_field;
-		if (_p45.ctor === 'Just') {
+		var _p46 = question_field;
+		if (_p46.ctor === 'Just') {
 			return A2(
 				_user$project$Text_Section_Component$update_question_field,
 				text_section_component,
-				A2(_user$project$Question_Field$delete_answer_field, _p45._0, answer_field));
+				A2(_user$project$Question_Field$delete_answer_field, _p46._0, answer_field));
 		} else {
 			return text_section_component;
 		}
 	});
 var _user$project$Text_Section_Component$delete_question_field = F2(
-	function (_p46, question_field) {
-		var _p47 = _p46;
+	function (_p47, question_field) {
+		var _p48 = _p47;
 		return A4(
 			_user$project$Text_Section_Component$TextSectionComponent,
-			_p47._0,
-			_p47._1,
-			_p47._2,
-			A2(_user$project$Question_Field$delete_question_field, question_field, _p47._3));
+			_p48._0,
+			_p48._1,
+			_p48._2,
+			A2(_user$project$Question_Field$delete_question_field, question_field, _p48._3));
 	});
-var _user$project$Text_Section_Component$delete_selected_question_fields = function (_p48) {
-	var _p49 = _p48;
+var _user$project$Text_Section_Component$delete_selected_question_fields = function (_p49) {
+	var _p50 = _p49;
 	return A4(
 		_user$project$Text_Section_Component$TextSectionComponent,
-		_p49._0,
-		_p49._1,
-		_p49._2,
-		_user$project$Question_Field$delete_selected(_p49._3));
+		_p50._0,
+		_p50._1,
+		_p50._2,
+		_user$project$Question_Field$delete_selected(_p50._3));
 };
-var _user$project$Text_Section_Component$add_new_question = function (_p50) {
-	var _p51 = _p50;
-	var _p52 = _p51._1;
+var _user$project$Text_Section_Component$add_new_question = function (_p51) {
+	var _p52 = _p51;
+	var _p53 = _p52._1;
 	return A4(
 		_user$project$Text_Section_Component$TextSectionComponent,
-		_p51._0,
-		_p52,
-		_p51._2,
-		A2(_user$project$Question_Field$add_new_question, _p52.index, _p51._3));
+		_p52._0,
+		_p53,
+		_p52._2,
+		A2(_user$project$Question_Field$add_new_question, _p53.index, _p52._3));
 };
 
 var _user$project$Text_Section_Component_Group$text_section_component = F2(
@@ -11775,7 +11792,7 @@ var _user$project$Text_Section_Component_Group$update_components = F2(
 var _user$project$Text_Section_Component_Group$update_body_for_id = F3(
 	function (text_sections, ckeditor_id, ckeditor_text) {
 		var _p14 = A2(_elm_lang$core$String$split, '_', ckeditor_id);
-		if ((((((_p14.ctor === '::') && (_p14._0 === 'text')) && (_p14._1.ctor === '::')) && (_p14._1._1.ctor === '::')) && (_p14._1._1._0 === 'body')) && (_p14._1._1._1.ctor === '[]')) {
+		if ((((((_p14.ctor === '::') && (_p14._0 === 'textsection')) && (_p14._1.ctor === '::')) && (_p14._1._1.ctor === '::')) && (_p14._1._1._0 === 'body')) && (_p14._1._1._1.ctor === '[]')) {
 			var _p15 = _elm_lang$core$String$toInt(_p14._1._0);
 			if (_p15.ctor === 'Ok') {
 				var _p16 = A2(_user$project$Text_Section_Component_Group$text_section_component, text_sections, _p15._0);
@@ -11798,20 +11815,16 @@ var _user$project$Text_Section_Component_Group$add_new_text_section = function (
 	var _p18 = _p17;
 	var _p19 = _p18._0;
 	var arr_len = _elm_lang$core$Array$length(_p19);
-	return _user$project$Text_Section_Component_Group$TextSectionComponentGroup(
-		A2(
-			_elm_lang$core$Array$push,
-			_user$project$Text_Section_Component$emptyTextSectionComponent(arr_len),
-			_p19));
+	var new_component = _user$project$Text_Section_Component$emptyTextSectionComponent(arr_len);
+	var new_sections = A2(_elm_lang$core$Array$push, new_component, _p19);
+	return _user$project$Text_Section_Component_Group$TextSectionComponentGroup(new_sections);
 };
 var _user$project$Text_Section_Component_Group$delete_text_section = F2(
 	function (_p20, text_section_component) {
 		var _p21 = _p20;
-		var _p22 = _p21._0;
-		var arr_len = _elm_lang$core$Array$length(_p22);
 		var index = _user$project$Text_Section_Component$index;
 		var component_index = index(text_section_component);
-		var new_text_components = A2(
+		var new_sections = A2(
 			_elm_lang$core$Array$indexedMap,
 			F2(
 				function (i, text_component) {
@@ -11824,8 +11837,8 @@ var _user$project$Text_Section_Component_Group$delete_text_section = F2(
 						index(text_component),
 						component_index);
 				},
-				_p22));
-		return _user$project$Text_Section_Component_Group$TextSectionComponentGroup(new_text_components);
+				_p21._0));
+		return _user$project$Text_Section_Component_Group$TextSectionComponentGroup(new_sections);
 	});
 var _user$project$Text_Section_Component_Group$fromTextSections = function (text_sections) {
 	return _user$project$Text_Section_Component_Group$TextSectionComponentGroup(
@@ -12143,30 +12156,28 @@ var _user$project$Text_Update$update = F2(
 		var _p6 = msg;
 		switch (_p6.ctor) {
 			case 'AddTextSection':
+				var new_group = _user$project$Text_Section_Component_Group$add_new_text_section(text_section_group);
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							text_component: A2(
-								_user$project$Text_Component$set_text_section_components,
-								model.text_component,
-								_user$project$Text_Section_Component_Group$add_new_text_section(text_section_group))
+							text_component: A2(_user$project$Text_Component$set_text_section_components, model.text_component, new_group)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'DeleteTextSection':
+				var _p7 = _p6._0;
+				var new_group = A2(_user$project$Text_Section_Component_Group$delete_text_section, text_section_group, _p7);
+				var text_section_body_id = _user$project$Text_Section_Component$body_id(_p7);
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							text_component: A2(
-								_user$project$Text_Component$set_text_section_components,
-								model.text_component,
-								A2(_user$project$Text_Section_Component_Group$delete_text_section, text_section_group, _p6._0))
+							text_component: A2(_user$project$Text_Component$set_text_section_components, model.text_component, new_group)
 						}),
-					_1: _elm_lang$core$Platform_Cmd$none
+					_1: _user$project$Text_Section_Component_Group$reinitialize_ck_editors(new_group)
 				};
 			case 'UpdateTextValue':
 				return {
@@ -12340,32 +12351,32 @@ var _user$project$Text_Update$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			default:
-				var _p10 = _p6._0;
-				var _p9 = _p6._1;
+				var _p11 = _p6._0;
+				var _p10 = _p6._1;
 				var new_text_component = function () {
-					var _p7 = _p9;
-					switch (_p7.ctor) {
+					var _p8 = _p10;
+					switch (_p8.ctor) {
 						case 'Text':
 							return A2(
 								_user$project$Text_Section_Component$set_field,
-								_p10,
-								_user$project$Text_Section_Component$switch_editable(_p7._0));
+								_p11,
+								_user$project$Text_Section_Component$switch_editable(_p8._0));
 						case 'Question':
 							return A2(
 								_user$project$Text_Section_Component$set_question,
-								_p10,
-								_user$project$Question_Field$switch_editable(_p7._0));
+								_p11,
+								_user$project$Question_Field$switch_editable(_p8._0));
 						default:
 							return A2(
 								_user$project$Text_Section_Component$set_answer,
-								_p10,
-								_user$project$Answer_Field$switch_editable(_p7._0));
+								_p11,
+								_user$project$Answer_Field$switch_editable(_p8._0));
 					}
 				}();
 				var extra_cmds = function () {
-					var _p8 = _p9;
-					if (_p8.ctor === 'Text') {
-						return _user$project$Text_Section_Component$post_toggle_commands(_p8._0);
+					var _p9 = _p10;
+					if (_p9.ctor === 'Text') {
+						return _user$project$Text_Section_Component$post_toggle_commands(_p9._0);
 					} else {
 						return {
 							ctor: '::',
@@ -12387,7 +12398,7 @@ var _user$project$Text_Update$update = F2(
 							extra_cmds,
 							{
 								ctor: '::',
-								_0: _user$project$Text_Update$post_toggle_field(_p9),
+								_0: _user$project$Text_Update$post_toggle_field(_p10),
 								_1: {ctor: '[]'}
 							}))
 				};
@@ -14502,10 +14513,7 @@ var _user$project$Text_Section_View$edit_body = function (params) {
 				_elm_lang$html$Html$textarea,
 				{
 					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html_Attributes$attribute,
-						'id',
-						_user$project$Text_Section_Component$text_field_id(params.field)),
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', params.field.id),
 					_1: {
 						ctor: '::',
 						_0: _elm_lang$html$Html_Attributes$classList(
@@ -14538,10 +14546,7 @@ var _user$project$Text_Section_View$view_body = function (params) {
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html_Attributes$attribute,
-				'id',
-				_user$project$Text_Section_Component$text_field_id(params.field)),
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', params.field.id),
 			_1: {
 				ctor: '::',
 				_0: A2(_user$project$Text_Section_View$toggle_editable, _elm_lang$html$Html_Events$onClick, params),

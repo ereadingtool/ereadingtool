@@ -9180,25 +9180,7 @@ var _elm_lang$http$Http$StringPart = F2(
 var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
 
 var _user$project$Answer_Model$generate_answer = function (i) {
-	return {
-		id: _elm_lang$core$Maybe$Nothing,
-		question_id: _elm_lang$core$Maybe$Nothing,
-		text: A2(
-			_elm_lang$core$String$join,
-			' ',
-			{
-				ctor: '::',
-				_0: 'Click to write choice',
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$core$Basics$toString(i + 1),
-					_1: {ctor: '[]'}
-				}
-			}),
-		correct: false,
-		order: i,
-		feedback: ''
-	};
+	return {id: _elm_lang$core$Maybe$Nothing, question_id: _elm_lang$core$Maybe$Nothing, text: '', correct: false, order: i, feedback: ''};
 };
 var _user$project$Answer_Model$generate_answers = function (n) {
 	return _elm_lang$core$Array$fromList(
@@ -9206,6 +9188,20 @@ var _user$project$Answer_Model$generate_answers = function (n) {
 			_elm_lang$core$List$map,
 			_user$project$Answer_Model$generate_answer,
 			A2(_elm_lang$core$List$range, 0, n - 1)));
+};
+var _user$project$Answer_Model$default_answer_text = function (answer) {
+	return A2(
+		_elm_lang$core$String$join,
+		' ',
+		{
+			ctor: '::',
+			_0: 'Click to write choice',
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$core$Basics$toString(answer.order + 1),
+				_1: {ctor: '[]'}
+			}
+		});
 };
 var _user$project$Answer_Model$Answer = F6(
 	function (a, b, c, d, e, f) {
@@ -9220,8 +9216,6 @@ var _user$project$Config$instructor_login_api_endpoint = '/api/instructor/login/
 var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signup/';
 var _user$project$Config$question_api_endpoint = '/api/question/';
 var _user$project$Config$text_api_endpoint = '/api/text/';
-
-var _user$project$Field$fieldIDDecoder = _elm_lang$core$Json_Decode$int;
 
 var _user$project$Question_Model$new_question = function (i) {
 	return {
@@ -9246,7 +9240,15 @@ var _user$project$Question_Model$Question = F8(
 		return {id: a, text_id: b, created_dt: c, modified_dt: d, body: e, order: f, answers: g, question_type: h};
 	});
 
-var _user$project$Text_Section_Model$emptyTextSection = {order: 0, question_count: 0, questions: _user$project$Question_Model$initial_questions, body: ''};
+var _user$project$Text_Section_Model$emptyTextSection = function (i) {
+	var initial_questions = _user$project$Question_Model$initial_questions;
+	return {
+		order: i,
+		question_count: _elm_lang$core$Array$length(initial_questions),
+		questions: initial_questions,
+		body: ''
+	};
+};
 var _user$project$Text_Section_Model$TextSection = F4(
 	function (a, b, c, d) {
 		return {order: a, body: b, question_count: c, questions: d};
@@ -9279,7 +9281,7 @@ var _user$project$Text_Model$new_text = {
 	sections: _elm_lang$core$Array$fromList(
 		{
 			ctor: '::',
-			_0: _user$project$Text_Section_Model$emptyTextSection,
+			_0: _user$project$Text_Section_Model$emptyTextSection(0),
 			_1: {ctor: '[]'}
 		}),
 	write_locker: _elm_lang$core$Maybe$Nothing
@@ -9706,7 +9708,7 @@ var _user$project$Views$view_filter = A2(
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('Create A Text.'),
+							_0: _elm_lang$html$Html$text('Create A Text'),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}

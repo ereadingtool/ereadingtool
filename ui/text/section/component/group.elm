@@ -1,6 +1,6 @@
 module Text.Section.Component.Group exposing (TextSectionComponentGroup, update_components, add_new_text_section
-  , update_errors,new_group, toArray, update_body_for_id, toTextSections, fromTextSections, reinitialize_ck_editors, delete_text_section
-  , text_section_component)
+  , update_errors,new_group, toArray, update_body_for_id, toTextSections, fromTextSections, reinitialize_ck_editors
+  , delete_text_section, text_section_component)
 
 import Array exposing (Array)
 import Dict exposing (Dict)
@@ -52,21 +52,21 @@ add_new_text_section : TextSectionComponentGroup -> TextSectionComponentGroup
 add_new_text_section (TextSectionComponentGroup text_components) =
   let
     arr_len = Array.length text_components
+    new_component = (Text.Section.Component.emptyTextSectionComponent arr_len)
+    new_sections = Array.push new_component text_components
   in
-    TextSectionComponentGroup
-      (Array.push (Text.Section.Component.emptyTextSectionComponent arr_len) text_components)
+    TextSectionComponentGroup new_sections
 
 delete_text_section : TextSectionComponentGroup -> TextSectionComponent -> TextSectionComponentGroup
 delete_text_section (TextSectionComponentGroup text_components) text_section_component =
   let
     index = Text.Section.Component.index
-    arr_len = Array.length text_components
     component_index = index text_section_component
-    new_text_components =
+    new_sections =
         Array.indexedMap (\i text_component -> Text.Section.Component.set_index text_component i)
      <| Array.filter (\text_component -> index text_component /= component_index) text_components
   in
-    TextSectionComponentGroup new_text_components
+    TextSectionComponentGroup new_sections
 
 toArray : TextSectionComponentGroup -> Array TextSectionComponent
 toArray (TextSectionComponentGroup text_components) = text_components
@@ -91,7 +91,7 @@ reinitialize_ck_editors text_component_group =
 update_body_for_id : TextSectionComponentGroup -> CKEditorID -> CKEditorText -> TextSectionComponentGroup
 update_body_for_id text_sections ckeditor_id ckeditor_text =
   case String.split "_" ckeditor_id of
-    ["text", i, "body"] ->
+    ["textsection", i, "body"] ->
       case String.toInt i of
         Ok i ->
           case text_section_component text_sections i of
