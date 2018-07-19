@@ -50,7 +50,7 @@ textListItemDecoder =
     |> required "tags" (Decode.nullable (Decode.list (Decode.string)))
     |> required "created_dt" date
     |> required "modified_dt" date
-    |> required "text_count" Decode.int
+    |> required "text_section_count" Decode.int
     |> required "write_locker" (Decode.nullable (Decode.string))
 
 

@@ -32,7 +32,7 @@ type alias TextListItem = {
   , tags: Maybe (List String)
   , created_dt: Date
   , modified_dt: Date
-  , text_count: Int
+  , text_section_count: Int
   , write_locker: Maybe String }
 
 new_text : Text

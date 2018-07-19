@@ -182,17 +182,21 @@ a {
     grid-column: 2 / 2;
 }
 
-.quiz_item {
+.text_item {
     display: grid;
     grid-column: 2;
 
     align-items: center;
     justify-items: center;
 
-    grid-template-columns: 2% 36% repeat(auto-fill, 20%) 2%;
+    grid-template-columns: 2% 20% repeat(auto-fill, 13%) 2%;
 
     background: #FFFFFF;
     border: solid 0.5px lightgrey;
+}
+
+.tag {
+    font-size: 15px;
 }
 
 .msgs {

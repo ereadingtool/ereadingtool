@@ -52,7 +52,7 @@ update msg model =
     Update (Ok texts) ->
       ({ model | texts = texts }, Cmd.none)
     -- handle user-friendly msgs
-    Update (Err _) ->
+    Update (Err err) -> let _ = Debug.log "error" err in
       (model, Cmd.none)
 
 
@@ -82,7 +82,7 @@ view_text text_list_item =
        ]
      ]
    , div [classList [("item_property", True)]] [
-        Html.text <| toString text_list_item.text_count
+        Html.text <| toString text_list_item.text_section_count
         , span [classList [("sub_description", True)]] [
              Html.text "Texts"
            ]
@@ -92,7 +92,36 @@ view_text text_list_item =
         , span [classList [("sub_description", True)]] [
              Html.text "Languages"
            ]
-     ]   , div [classList [("action_menu", True)]] [ Html.text "" ]
+     ]
+   , div [classList [("item_property", True)]] [
+        Html.text text_list_item.author
+        , span [classList [("sub_description", True)]] [
+             Html.text "Author"
+           ]
+     ]
+   , view_tags text_list_item
+   , div [classList [("item_property", True)]] [
+        Html.text text_list_item.created_by
+        , span [classList [("sub_description", True)]] [
+             Html.text "Created By"
+           ]
+     ]
+ ]
+
+view_tags : TextListItem -> Html Msg
+view_tags text_list_item =
+  div [classList [("item_property", True)]] [
+     span [attribute "class" "tag"] [
+       Html.text
+         (case text_list_item.tags of
+           Just tags ->
+             String.join ", " tags
+           Nothing ->
+             "")
+     ]
+   , span [classList [("sub_description", True)]] [
+         Html.text "Tags"
+     ]
  ]
 
 view_texts : Model -> Html Msg

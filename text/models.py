@@ -124,12 +124,14 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
         return {
             'id': self.pk,
             'title': self.title,
+            'author': self.author,
             'modified_dt': self.modified_dt.isoformat(),
             'created_dt': self.created_dt.isoformat(),
             'created_by': str(self.created_by),
             'last_modified_by': str(self.last_modified_by) if self.last_modified_by else None,
             'tags': [tag.name for tag in self.tags.all()],
             'text_section_count': self.sections.count(),
+            'difficulty': self.difficulty.name,
             'write_locker': str(self.write_locker) if self.write_locker else None
         }
 
