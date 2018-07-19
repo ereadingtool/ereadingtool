@@ -103,7 +103,8 @@ view_text text_list_item =
    , div [classList [("item_property", True)]] [
         Html.text text_list_item.created_by
         , span [classList [("sub_description", True)]] [
-             Html.text "Created By"
+             Html.text ("Created By (" ++  (month_day_year_fmt text_list_item.created_dt) ++ ")")
+
            ]
      ]
  ]
