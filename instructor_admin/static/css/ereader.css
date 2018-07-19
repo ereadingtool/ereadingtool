@@ -189,7 +189,7 @@ a {
     align-items: center;
     justify-items: center;
 
-    grid-template-columns: 2% 20% repeat(auto-fill, 13%) 2%;
+    grid-template-columns: 2% 20% repeat(auto-fill, 13%) 21% 2%;
 
     background: #FFFFFF;
     border: solid 0.5px lightgrey;
