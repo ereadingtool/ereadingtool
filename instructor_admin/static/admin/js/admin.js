@@ -10406,30 +10406,28 @@ var _user$project$Main$month_day_year_fmt = function (date) {
 				return A2(_elm_lang$core$Basics_ops['++'], x, y);
 			}),
 		'',
-		A2(
-			_elm_lang$core$List$map,
-			function (s) {
-				return A2(_elm_lang$core$Basics_ops['++'], s, '  ');
-			},
-			{
-				ctor: '::',
-				_0: _elm_lang$core$Basics$toString(
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$core$Basics_ops['++'],
+				_elm_lang$core$Basics$toString(
 					_elm_lang$core$Date$month(date)),
+				' '),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$core$Basics_ops['++'],
+					_elm_lang$core$Basics$toString(
+						_elm_lang$core$Date$day(date)),
+					A2(_elm_lang$core$Basics_ops['++'], ',', ' ')),
 				_1: {
 					ctor: '::',
-					_0: A2(
-						_elm_lang$core$Basics_ops['++'],
-						_elm_lang$core$Basics$toString(
-							_elm_lang$core$Date$day(date)),
-						','),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$core$Basics$toString(
-							_elm_lang$core$Date$year(date)),
-						_1: {ctor: '[]'}
-					}
+					_0: _elm_lang$core$Basics$toString(
+						_elm_lang$core$Date$year(date)),
+					_1: {ctor: '[]'}
 				}
-			}));
+			}
+		});
 };
 var _user$project$Main$view_text = function (text_list_item) {
 	return A2(

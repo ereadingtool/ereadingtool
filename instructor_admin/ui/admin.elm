@@ -67,8 +67,8 @@ main =
 
 
 month_day_year_fmt : Date -> String
-month_day_year_fmt date = List.foldr (++) "" <| List.map (\s -> s ++ "  ")
-    [toString <| Date.month date, (toString <| Date.day date) ++ ",", toString <| Date.year date]
+month_day_year_fmt date = List.foldr (++) ""
+    [(toString <| Date.month date) ++ " ", (toString <| Date.day date) ++ "," ++ " ", toString <| Date.year date]
 
 
 view_text : TextListItem -> Html Msg
@@ -103,7 +103,7 @@ view_text text_list_item =
    , div [classList [("item_property", True)]] [
         Html.text text_list_item.created_by
         , span [classList [("sub_description", True)]] [
-             Html.text ("Created By (" ++  (month_day_year_fmt text_list_item.created_dt) ++ ")")
+             Html.text ("Created By (" ++ month_day_year_fmt text_list_item.created_dt ++ ")")
 
            ]
      ]
