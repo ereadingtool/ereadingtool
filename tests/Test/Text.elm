@@ -57,6 +57,7 @@ example_text_errors =
     , ("textsection_0_question_0_answer_2_feedback","This field is required.")
     , ("textsection_0_question_0_answer_3_feedback","This field is required.")
     , ("textsection_0_question_0_body","This field is required.")
+    , ("textsection_0_question_0_answers","You must choose a correct answer for this question.")
   ]
 
 test_text_component : Text.Component.TextComponent

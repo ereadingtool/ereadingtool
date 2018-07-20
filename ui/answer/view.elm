@@ -88,7 +88,8 @@ edit_answer params answer_field =
         , classList [ ("input_error", Answer.Field.error answer_field) ]
       ] []
     , div [attribute "class" "answer_note"] [
-        Html.text "Note: Toggle the radio button to choose this answer as the correct answer."
+        Html.text ("Note: A correct answer is required.  To select a correct answer, " ++
+        "toggle the radio button to choose this answer as the correct answer.")
       ]
     , (edit_answer_feedback params answer_field)
     ]
@@ -98,6 +99,8 @@ view_editable_answer params num_of_answers answer_field =
   let
     answer = Answer.Field.answer answer_field
     editing = Answer.Field.editable answer_field
+    title_text_add = "Add new answer after this answer"
+    title_text_delete = "Delete this answer"
   in
     div [classList [ ("answer_item", True), ("editable", not editing) ]] <| [
       Html.input ([
@@ -116,7 +119,9 @@ view_editable_answer params num_of_answers answer_field =
             , onClick (params.msg (AddAnswer params.text_section_component answer_field))
             ] [
               Html.img [
-                attribute "src" "/static/img/add.svg"
+                attribute "title" title_text_add
+              , attribute "alt" title_text_add
+              , attribute "src" "/static/img/add.svg"
               , attribute "height" "18px"
               , attribute "width" "18px"] []
             ]
@@ -127,7 +132,9 @@ view_editable_answer params num_of_answers answer_field =
             , onClick (params.msg (DeleteAnswer params.text_section_component answer_field))
             ] [
               Html.img [
-                attribute "src" "/static/img/delete.svg"
+                attribute "title" title_text_delete
+              , attribute "alt" title_text_delete
+              , attribute "src" "/static/img/delete.svg"
               , attribute "height" "18px"
               , attribute "width" "18px"] []
             ]

@@ -10221,14 +10221,18 @@ var _user$project$Views$menu_items = _user$project$Views$MenuItems(
 	_elm_lang$core$Array$fromList(
 		{
 			ctor: '::',
-			_0: A3(_user$project$Views$MenuItem, '/admin/texts/', 'Texts', false),
+			_0: A3(_user$project$Views$MenuItem, '/text/search', 'Search', false),
 			_1: {
 				ctor: '::',
-				_0: A3(_user$project$Views$MenuItem, '/login/student/', 'Student Login', false),
+				_0: A3(_user$project$Views$MenuItem, '/admin/texts/', 'Texts', false),
 				_1: {
 					ctor: '::',
-					_0: A3(_user$project$Views$MenuItem, '/login/instructor/', 'Instructor Login', false),
-					_1: {ctor: '[]'}
+					_0: A3(_user$project$Views$MenuItem, '/login/student/', 'Student Login', false),
+					_1: {
+						ctor: '::',
+						_0: A3(_user$project$Views$MenuItem, '/login/instructor/', 'Instructor Login', false),
+						_1: {ctor: '[]'}
+					}
 				}
 			}
 		}));

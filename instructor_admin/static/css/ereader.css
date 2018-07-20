@@ -48,9 +48,9 @@ a {
     display: grid;
 
     grid-area: 1 / 4;
-    grid-template-columns: 20% 20% 20% 20% 20%;
+    grid-template-columns: 10% 15% 15% 15% 15% 15% 15%;
 
-    grid-column-gap: 90px;
+    grid-column-gap: 70px;
 
     align-items: center;
     justify-items: center;

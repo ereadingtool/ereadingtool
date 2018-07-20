@@ -75,6 +75,7 @@ update_errors : TextSectionComponent -> (String, String) -> TextSectionComponent
 update_errors ((TextSectionComponent text attr fields question_fields) as text_section) (field_id, field_error) =
   {- error keys could be
        body
+    || (question_i_answers)
     || (question_i_answer_j)
     || (question_i_answer_j_feedback) -}
   let

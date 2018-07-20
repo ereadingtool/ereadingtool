@@ -56,7 +56,7 @@ add_new_question text_index fields =
 
 update_error : QuestionField -> String -> QuestionField
 update_error (QuestionField question attr answers) error_string =
-  QuestionField question { attr | editable = True, error = True, error_string = error_string } answers
+  QuestionField question { attr | error = True, error_string = error_string } answers
 
 update_errors : Array QuestionField -> (String, String) -> Array QuestionField
 update_errors question_fields (field_id, field_error) =
@@ -83,17 +83,15 @@ update_errors question_fields (field_id, field_error) =
                     question_fields -- question field does not exist
               _ -> question_fields -- not a valid answer index
           _ -> question_fields -- not a valid question index
-      "question" :: question_index :: "body" :: [] ->
+      "question" :: question_index :: field :: [] ->
         case String.toInt question_index of
-           Ok i ->
-             case get_question_field question_fields i of
-               Just question_field ->
-                 update_question_field (update_error question_field field_error) question_fields
-               _ -> question_fields -- question field not present
-           _ -> question_fields -- not a valid question index
-      _ -> -- no matching error key
-
-        question_fields
+          Ok i ->
+            case get_question_field question_fields i of
+              Just question_field ->
+                update_question_field (update_error question_field field_error) question_fields
+              _ -> question_fields -- question field not present
+          _ -> question_fields -- not a valid question index
+      _ -> question_fields -- not a valid error key
 
 get_question_field : Array QuestionField -> Int -> Maybe QuestionField
 get_question_field question_fields index =

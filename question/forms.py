@@ -13,7 +13,7 @@ class QuestionForm(ModelForm):
         if len(list(filter(lambda ans: ans['correct'], self.data['answers']))) > 1 or \
                 not any(map(lambda ans: ans['correct'], self.data['answers'])):
             self.errors.setdefault('answers', [])
-            self.errors['answers'].append('exactly one correct answer is required')
+            self.errors['answers'].append('You must choose a correct answer for this question.')
 
         super(QuestionForm, self).clean()
 

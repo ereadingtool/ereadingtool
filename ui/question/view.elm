@@ -33,18 +33,27 @@ edit_question params field =
 
 view_question : (QuestionFieldParams msg) -> QuestionField -> Html msg
 view_question params question_field =
-  div [
-      attribute "id" (Question.Field.id question_field)
-    , classList [
-          ("question_item", True)
-        , ("input_error", Question.Field.error question_field)
-        , ("editable", True) ]
-    , toggle_editable onClick params question_field
-  ] [
-       Html.text (if String.isEmpty params.question.body then
-         "Click to write the question text." else
-         params.question.body)
-  ]
+  let
+    question_field_attrs = Question.Field.attributes question_field
+  in
+    div [
+        attribute "id" question_field_attrs.id
+      , classList [
+            ("question_item", True)
+          , ("input_error", question_field_attrs.error)
+          , ("editable", True) ]
+      , toggle_editable onClick params question_field
+    ] <| [
+         Html.text (if String.isEmpty params.question.body then
+           "Click to write the question text." else
+           params.question.body)
+    ] ++ (if question_field_attrs.error
+      then
+        [div [] [
+          Html.text question_field_attrs.error_string
+        ]]
+      else
+        [])
 
 view_delete_menu_item : (QuestionFieldParams msg) -> QuestionField -> Html msg
 view_delete_menu_item params field =

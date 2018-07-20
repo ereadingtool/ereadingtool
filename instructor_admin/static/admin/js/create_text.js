@@ -10640,7 +10640,7 @@ var _user$project$Question_Field$update_error = F2(
 			_p9._0,
 			_elm_lang$core$Native_Utils.update(
 				_p9._1,
-				{editable: true, error: true, error_string: error_string}),
+				{error: true, error_string: error_string}),
 			_p9._2);
 	});
 var _user$project$Question_Field$set_answer_field = F2(
@@ -10705,23 +10705,19 @@ var _user$project$Question_Field$update_errors = F2(
 						break _v7_2;
 					}
 				} else {
-					if (_p13._1._1._0 === 'body') {
-						var _p19 = _elm_lang$core$String$toInt(_p13._1._0);
-						if (_p19.ctor === 'Ok') {
-							var _p20 = A2(_user$project$Question_Field$get_question_field, question_fields, _p19._0);
-							if (_p20.ctor === 'Just') {
-								return A2(
-									_user$project$Question_Field$update_question_field,
-									A2(_user$project$Question_Field$update_error, _p20._0, _p21),
-									question_fields);
-							} else {
-								return question_fields;
-							}
+					var _p19 = _elm_lang$core$String$toInt(_p13._1._0);
+					if (_p19.ctor === 'Ok') {
+						var _p20 = A2(_user$project$Question_Field$get_question_field, question_fields, _p19._0);
+						if (_p20.ctor === 'Just') {
+							return A2(
+								_user$project$Question_Field$update_question_field,
+								A2(_user$project$Question_Field$update_error, _p20._0, _p21),
+								question_fields);
 						} else {
 							return question_fields;
 						}
 					} else {
-						break _v7_2;
+						return question_fields;
 					}
 				}
 			} else {
@@ -12655,7 +12651,8 @@ var _user$project$Answer_View$edit_answer = F2(
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('Note: Toggle the radio button to choose this answer as the correct answer.'),
+							_0: _elm_lang$html$Html$text(
+								A2(_elm_lang$core$Basics_ops['++'], 'Note: A correct answer is required.  To select a correct answer, ', 'toggle the radio button to choose this answer as the correct answer.')),
 							_1: {ctor: '[]'}
 						}),
 					_1: {
@@ -12729,6 +12726,8 @@ var _user$project$Answer_View$view_answer = F2(
 	});
 var _user$project$Answer_View$view_editable_answer = F3(
 	function (params, num_of_answers, answer_field) {
+		var title_text_delete = 'Delete this answer';
+		var title_text_add = 'Add new answer after this answer';
 		var editing = _user$project$Answer_Field$editable(answer_field);
 		var answer = _user$project$Answer_Field$answer(answer_field);
 		return A2(
@@ -12819,14 +12818,22 @@ var _user$project$Answer_View$view_editable_answer = F3(
 											_elm_lang$html$Html$img,
 											{
 												ctor: '::',
-												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/add.svg'),
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'title', title_text_add),
 												_1: {
 													ctor: '::',
-													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '18px'),
+													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'alt', title_text_add),
 													_1: {
 														ctor: '::',
-														_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '18px'),
-														_1: {ctor: '[]'}
+														_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/add.svg'),
+														_1: {
+															ctor: '::',
+															_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '18px'),
+															_1: {
+																ctor: '::',
+																_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '18px'),
+																_1: {ctor: '[]'}
+															}
+														}
 													}
 												}
 											},
@@ -12857,14 +12864,22 @@ var _user$project$Answer_View$view_editable_answer = F3(
 											_elm_lang$html$Html$img,
 											{
 												ctor: '::',
-												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/delete.svg'),
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'title', title_text_delete),
 												_1: {
 													ctor: '::',
-													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '18px'),
+													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'alt', title_text_delete),
 													_1: {
 														ctor: '::',
-														_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '18px'),
-														_1: {ctor: '[]'}
+														_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/delete.svg'),
+														_1: {
+															ctor: '::',
+															_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '18px'),
+															_1: {
+																ctor: '::',
+																_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '18px'),
+																_1: {ctor: '[]'}
+															}
+														}
 													}
 												}
 											},
@@ -13606,14 +13621,18 @@ var _user$project$Views$menu_items = _user$project$Views$MenuItems(
 	_elm_lang$core$Array$fromList(
 		{
 			ctor: '::',
-			_0: A3(_user$project$Views$MenuItem, '/admin/texts/', 'Texts', false),
+			_0: A3(_user$project$Views$MenuItem, '/text/search', 'Search', false),
 			_1: {
 				ctor: '::',
-				_0: A3(_user$project$Views$MenuItem, '/login/student/', 'Student Login', false),
+				_0: A3(_user$project$Views$MenuItem, '/admin/texts/', 'Texts', false),
 				_1: {
 					ctor: '::',
-					_0: A3(_user$project$Views$MenuItem, '/login/instructor/', 'Instructor Login', false),
-					_1: {ctor: '[]'}
+					_0: A3(_user$project$Views$MenuItem, '/login/student/', 'Student Login', false),
+					_1: {
+						ctor: '::',
+						_0: A3(_user$project$Views$MenuItem, '/login/instructor/', 'Instructor Login', false),
+						_1: {ctor: '[]'}
+					}
 				}
 			}
 		}));
@@ -14340,14 +14359,12 @@ var _user$project$Question_View$edit_question = F2(
 	});
 var _user$project$Question_View$view_question = F2(
 	function (params, question_field) {
+		var question_field_attrs = _user$project$Question_Field$attributes(question_field);
 		return A2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html_Attributes$attribute,
-					'id',
-					_user$project$Question_Field$id(question_field)),
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', question_field_attrs.id),
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html_Attributes$classList(
@@ -14356,11 +14373,7 @@ var _user$project$Question_View$view_question = F2(
 							_0: {ctor: '_Tuple2', _0: 'question_item', _1: true},
 							_1: {
 								ctor: '::',
-								_0: {
-									ctor: '_Tuple2',
-									_0: 'input_error',
-									_1: _user$project$Question_Field$error(question_field)
-								},
+								_0: {ctor: '_Tuple2', _0: 'input_error', _1: question_field_attrs.error},
 								_1: {
 									ctor: '::',
 									_0: {ctor: '_Tuple2', _0: 'editable', _1: true},
@@ -14375,12 +14388,26 @@ var _user$project$Question_View$view_question = F2(
 					}
 				}
 			},
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html$text(
-					_elm_lang$core$String$isEmpty(params.question.body) ? 'Click to write the question text.' : params.question.body),
-				_1: {ctor: '[]'}
-			});
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(
+						_elm_lang$core$String$isEmpty(params.question.body) ? 'Click to write the question text.' : params.question.body),
+					_1: {ctor: '[]'}
+				},
+				question_field_attrs.error ? {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(question_field_attrs.error_string),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				} : {ctor: '[]'}));
 	});
 var _user$project$Question_View$view_editable_question = F3(
 	function (msg, text_section_component, field) {
@@ -14719,7 +14746,7 @@ var _user$project$Text_Section_View$view_text_section_components = F3(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'texts'),
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'text_sections'),
 				_1: {ctor: '[]'}
 			},
 			A3(

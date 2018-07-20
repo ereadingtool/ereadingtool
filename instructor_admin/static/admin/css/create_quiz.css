@@ -273,7 +273,7 @@ body {
     margin-right: 2px;
 }
 
-.texts {
+.text_sections {
     grid-column: 2;
     display: grid;
 }

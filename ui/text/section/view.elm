@@ -90,7 +90,7 @@ view_text_section_component msg text_difficulties text_section_component =
 
 view_text_section_components : (Msg -> msg) -> TextSectionComponentGroup -> List TextDifficulty -> Html msg
 view_text_section_components msg text_components text_difficulties =
-    Html.div [attribute "class" "texts"]
+    Html.div [attribute "class" "text_sections"]
     <| List.foldr (++) []
     <| Array.toList
     <| Array.map (view_text_section_component msg text_difficulties) (Text.Section.Component.Group.toArray text_components)

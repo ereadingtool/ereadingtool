@@ -18,7 +18,8 @@ type MenuItems = MenuItems (Array MenuItem)
 
 menu_items : MenuItems
 menu_items = MenuItems <| Array.fromList [
-    MenuItem "/admin/texts/" "Texts" False
+    MenuItem "/text/search" "Search" False
+  , MenuItem "/admin/texts/" "Texts" False
   , MenuItem "/login/student/" "Student Login" False
   , MenuItem "/login/instructor/" "Instructor Login" False
   ]

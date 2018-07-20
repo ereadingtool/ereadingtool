@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    <title>Find a text to begin studying</title>
+{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static "css/ereader.css" %}"/>
+    <link rel="stylesheet" href="{% static "text/css/text_search.css" %}"/>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static "text/js/text_search.js" %}"></script>
+{% endblock %}
+
+{% block body %}
+    <script src="{% url "text-search-load-elm" %}"></script>
+{% endblock %}
+

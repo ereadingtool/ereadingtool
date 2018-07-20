@@ -1,4 +1,4 @@
-.quiz {
+.text {
     display: grid;
 
     grid-auto-rows: minmax(200px, auto);
@@ -49,7 +49,7 @@
 }
 
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
-    .quiz {
+    .text {
         font-size: 60px;
     }
 
