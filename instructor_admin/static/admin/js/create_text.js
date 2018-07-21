@@ -10382,7 +10382,27 @@ var _user$project$Answer_Field$generate_answer_field = F4(
 		return A3(
 			_user$project$Answer_Field$AnswerField,
 			answer,
-			{id: answer_id, name: answer_name, editable: false, error: false, error_string: '', question_index: j, index: k},
+			{
+				id: answer_id,
+				input_id: A2(
+					_elm_lang$core$String$join,
+					'_',
+					{
+						ctor: '::',
+						_0: answer_id,
+						_1: {
+							ctor: '::',
+							_0: 'input',
+							_1: {ctor: '[]'}
+						}
+					}),
+				name: answer_name,
+				editable: false,
+				error: false,
+				error_string: '',
+				question_index: j,
+				index: k
+			},
 			_user$project$Answer_Field$generate_answer_feedback_field(
 				A2(
 					_elm_lang$core$String$join,
@@ -10571,28 +10591,41 @@ var _user$project$Question_Field$QuestionField = F3(
 	});
 var _user$project$Question_Field$generate_question_field = F3(
 	function (text_index, question_index, question) {
+		var question_field_id = A2(
+			_elm_lang$core$String$join,
+			'_',
+			{
+				ctor: '::',
+				_0: 'textsection',
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$core$Basics$toString(text_index),
+					_1: {
+						ctor: '::',
+						_0: 'question',
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$core$Basics$toString(question_index),
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			});
 		return A3(
 			_user$project$Question_Field$QuestionField,
 			question,
 			{
-				id: A2(
+				id: question_field_id,
+				input_id: A2(
 					_elm_lang$core$String$join,
 					'_',
 					{
 						ctor: '::',
-						_0: 'textsection',
+						_0: question_field_id,
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$core$Basics$toString(text_index),
-							_1: {
-								ctor: '::',
-								_0: 'question',
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$core$Basics$toString(question_index),
-									_1: {ctor: '[]'}
-								}
-							}
+							_0: 'input',
+							_1: {ctor: '[]'}
 						}
 					}),
 				editable: false,
@@ -10840,7 +10873,9 @@ var _user$project$Question_Field$set_question_body = F2(
 			_elm_lang$core$Native_Utils.update(
 				_p38._0,
 				{body: value}),
-			_p38._1,
+			_elm_lang$core$Native_Utils.update(
+				_p38._1,
+				{error: false}),
 			_p38._2);
 	});
 var _user$project$Question_Field$set_menu_visible = F2(
@@ -11033,16 +11068,16 @@ var _user$project$Ports$confirmation = _elm_lang$core$Native_Platform.incomingPo
 
 var _user$project$Text_Field$post_toggle_source = function (_p0) {
 	var _p1 = _p0;
-	return _user$project$Ports$selectAllInputText(_p1._0.id);
+	return _user$project$Ports$selectAllInputText(_p1._0.input_id);
 };
 var _user$project$Text_Field$post_toggle_author = function (_p2) {
 	var _p3 = _p2;
 	var _p4 = _p3._0;
-	return _p4.editable ? _user$project$Ports$selectAllInputText(_p4.id) : _elm_lang$core$Platform_Cmd$none;
+	return _p4.editable ? _user$project$Ports$selectAllInputText(_p4.input_id) : _elm_lang$core$Platform_Cmd$none;
 };
 var _user$project$Text_Field$post_toggle_title = function (_p5) {
 	var _p6 = _p5;
-	return _user$project$Ports$selectAllInputText(_p6._0.id);
+	return _user$project$Ports$selectAllInputText(_p6._0.input_id);
 };
 var _user$project$Text_Field$post_toggle_intro = function (_p7) {
 	var _p8 = _p7;
@@ -11123,25 +11158,41 @@ var _user$project$Text_Field$difficulty = function (_p40) {
 	var _p41 = _p40;
 	return _p41._5;
 };
-var _user$project$Text_Field$source = function (_p42) {
+var _user$project$Text_Field$text_source_attrs = function (_p42) {
 	var _p43 = _p42;
-	return _p43._4;
+	return _p43._0;
 };
-var _user$project$Text_Field$author = function (_p44) {
+var _user$project$Text_Field$source = function (_p44) {
 	var _p45 = _p44;
-	return _p45._3;
+	return _p45._4;
 };
-var _user$project$Text_Field$tags = function (_p46) {
+var _user$project$Text_Field$text_author_attrs = function (_p46) {
 	var _p47 = _p46;
-	return _p47._2;
+	return _p47._0;
 };
-var _user$project$Text_Field$intro = function (_p48) {
+var _user$project$Text_Field$author = function (_p48) {
 	var _p49 = _p48;
-	return _p49._1;
+	return _p49._3;
 };
-var _user$project$Text_Field$title = function (_p50) {
+var _user$project$Text_Field$tags = function (_p50) {
 	var _p51 = _p50;
-	return _p51._0;
+	return _p51._2;
+};
+var _user$project$Text_Field$text_intro_attrs = function (_p52) {
+	var _p53 = _p52;
+	return _p53._0;
+};
+var _user$project$Text_Field$intro = function (_p54) {
+	var _p55 = _p54;
+	return _p55._1;
+};
+var _user$project$Text_Field$text_title_attrs = function (_p56) {
+	var _p57 = _p56;
+	return _p57._0;
+};
+var _user$project$Text_Field$title = function (_p58) {
+	var _p59 = _p58;
+	return _p59._0;
 };
 var _user$project$Text_Field$TextTitle = function (a) {
 	return {ctor: 'TextTitle', _0: a};
@@ -11166,125 +11217,125 @@ var _user$project$Text_Field$TextFields = F6(
 		return {ctor: 'TextFields', _0: a, _1: b, _2: c, _3: d, _4: e, _5: f};
 	});
 var _user$project$Text_Field$set_intro = F2(
-	function (_p52, field_attrs) {
-		var _p53 = _p52;
+	function (_p60, field_attrs) {
+		var _p61 = _p60;
 		return A6(
 			_user$project$Text_Field$TextFields,
-			_p53._0,
+			_p61._0,
 			_user$project$Text_Field$TextIntro(field_attrs),
-			_p53._2,
-			_p53._3,
-			_p53._4,
-			_p53._5);
+			_p61._2,
+			_p61._3,
+			_p61._4,
+			_p61._5);
 	});
 var _user$project$Text_Field$set_title = F2(
-	function (_p54, field_attrs) {
-		var _p55 = _p54;
+	function (_p62, field_attrs) {
+		var _p63 = _p62;
 		return A6(
 			_user$project$Text_Field$TextFields,
 			_user$project$Text_Field$TextTitle(field_attrs),
-			_p55._1,
-			_p55._2,
-			_p55._3,
-			_p55._4,
-			_p55._5);
+			_p63._1,
+			_p63._2,
+			_p63._3,
+			_p63._4,
+			_p63._5);
 	});
 var _user$project$Text_Field$set_author = F2(
-	function (_p56, field_attrs) {
-		var _p57 = _p56;
+	function (_p64, field_attrs) {
+		var _p65 = _p64;
 		return A6(
 			_user$project$Text_Field$TextFields,
-			_p57._0,
-			_p57._1,
-			_p57._2,
+			_p65._0,
+			_p65._1,
+			_p65._2,
 			_user$project$Text_Field$TextAuthor(field_attrs),
-			_p57._4,
-			_p57._5);
+			_p65._4,
+			_p65._5);
 	});
 var _user$project$Text_Field$set_source = F2(
-	function (_p58, field_attrs) {
-		var _p59 = _p58;
+	function (_p66, field_attrs) {
+		var _p67 = _p66;
 		return A6(
 			_user$project$Text_Field$TextFields,
-			_p59._0,
-			_p59._1,
-			_p59._2,
-			_p59._3,
+			_p67._0,
+			_p67._1,
+			_p67._2,
+			_p67._3,
 			_user$project$Text_Field$TextSource(field_attrs),
-			_p59._5);
+			_p67._5);
 	});
 var _user$project$Text_Field$update_error = F2(
-	function (_p61, _p60) {
-		var _p62 = _p61;
-		var _p67 = _p62._1;
-		var _p63 = _p60;
-		var _p66 = _p63;
-		var error_key = A2(_elm_lang$core$String$split, '_', _p62._0);
-		var _p64 = error_key;
-		if ((((_p64.ctor === '::') && (_p64._0 === 'text')) && (_p64._1.ctor === '::')) && (_p64._1._1.ctor === '[]')) {
-			var _p65 = _p64._1._0;
-			switch (_p65) {
+	function (_p69, _p68) {
+		var _p70 = _p69;
+		var _p75 = _p70._1;
+		var _p71 = _p68;
+		var _p74 = _p71;
+		var error_key = A2(_elm_lang$core$String$split, '_', _p70._0);
+		var _p72 = error_key;
+		if ((((_p72.ctor === '::') && (_p72._0 === 'text')) && (_p72._1.ctor === '::')) && (_p72._1._1.ctor === '[]')) {
+			var _p73 = _p72._1._0;
+			switch (_p73) {
 				case 'introduction':
 					return A2(
 						_user$project$Text_Field$set_intro,
-						_p66,
+						_p74,
 						_elm_lang$core$Native_Utils.update(
-							_p63._1._0,
-							{error_string: _p67, editable: true, error: true}));
+							_p71._1._0,
+							{error_string: _p75, error: true}));
 				case 'title':
 					return A2(
 						_user$project$Text_Field$set_title,
-						_p66,
+						_p74,
 						_elm_lang$core$Native_Utils.update(
-							_p63._0._0,
-							{error_string: _p67, editable: true, error: true}));
+							_p71._0._0,
+							{error_string: _p75, error: true}));
 				case 'author':
 					return A2(
 						_user$project$Text_Field$set_author,
-						_p66,
+						_p74,
 						_elm_lang$core$Native_Utils.update(
-							_p63._3._0,
-							{error_string: _p67, editable: true, error: true}));
+							_p71._3._0,
+							{error_string: _p75, error: true}));
 				case 'source':
 					return A2(
 						_user$project$Text_Field$set_source,
-						_p66,
+						_p74,
 						_elm_lang$core$Native_Utils.update(
-							_p63._4._0,
-							{error_string: _p67, editable: true, error: true}));
+							_p71._4._0,
+							{error_string: _p75, error: true}));
 				default:
-					return _p66;
+					return _p74;
 			}
 		} else {
-			return _p66;
+			return _p74;
 		}
 	});
 var _user$project$Text_Field$set_difficulty = F2(
-	function (_p68, field_attrs) {
-		var _p69 = _p68;
+	function (_p76, field_attrs) {
+		var _p77 = _p76;
 		return A6(
 			_user$project$Text_Field$TextFields,
-			_p69._0,
-			_p69._1,
-			_p69._2,
-			_p69._3,
-			_p69._4,
+			_p77._0,
+			_p77._1,
+			_p77._2,
+			_p77._3,
+			_p77._4,
 			_user$project$Text_Field$TextDifficulty(field_attrs));
 	});
 var _user$project$Text_Field$init_text_fields = A6(
 	_user$project$Text_Field$TextFields,
 	_user$project$Text_Field$TextTitle(
-		{id: 'text_title', editable: false, error_string: '', error: false, name: 'title', index: 0}),
+		{id: 'text_title', input_id: 'text_title_input', editable: false, error_string: '', error: false, name: 'title', index: 0}),
 	_user$project$Text_Field$TextIntro(
-		{id: 'text_introduction', editable: false, error_string: '', error: false, name: 'introduction', index: 2}),
+		{id: 'text_introduction', input_id: 'text_introduction_input', editable: false, error_string: '', error: false, name: 'introduction', index: 2}),
 	_user$project$Text_Field$TextTags(
-		{id: 'text_tags', editable: false, error_string: '', error: false, name: 'tags', index: 1}),
+		{id: 'text_tags', input_id: 'text_tags_input', editable: false, error_string: '', error: false, name: 'tags', index: 1}),
 	_user$project$Text_Field$TextAuthor(
-		{id: 'text_author', editable: false, error_string: '', error: false, name: 'author', index: 3}),
+		{id: 'text_author', input_id: 'text_author_input', editable: false, error_string: '', error: false, name: 'author', index: 3}),
 	_user$project$Text_Field$TextSource(
-		{id: 'text_source', editable: false, error_string: '', error: false, name: 'source', index: 4}),
+		{id: 'text_source', input_id: 'text_source_input', editable: false, error_string: '', error: false, name: 'source', index: 4}),
 	_user$project$Text_Field$TextDifficulty(
-		{id: 'text_difficulty', editable: false, error_string: '', error: false, name: 'difficulty', index: 5}));
+		{id: 'text_difficulty', input_id: 'text_difficulty_input', editable: false, error_string: '', error: false, name: 'difficulty', index: 5}));
 
 var _user$project$Text_Section_Component$question_fields = function (_p0) {
 	var _p1 = _p0;
@@ -11304,7 +11355,7 @@ var _user$project$Text_Section_Component$update_field_error = F2(
 	function (text_field, error_string) {
 		return _elm_lang$core$Native_Utils.update(
 			text_field,
-			{editable: true, error: true, error_string: error_string});
+			{error: true, error_string: error_string});
 	});
 var _user$project$Text_Section_Component$attributes = function (_p5) {
 	var _p6 = _p5;
@@ -11404,6 +11455,18 @@ var _user$project$Text_Section_Component$generate_text_section_field_params = F2
 	function (i, attr) {
 		return {
 			id: A2(_user$project$Text_Section_Component$generate_text_section_field_id, i, attr),
+			input_id: A2(
+				_elm_lang$core$String$join,
+				'_',
+				{
+					ctor: '::',
+					_0: A2(_user$project$Text_Section_Component$generate_text_section_field_id, i, attr),
+					_1: {
+						ctor: '::',
+						_0: 'input',
+						_1: {ctor: '[]'}
+					}
+				}),
 			editable: false,
 			error_string: '',
 			error: false,
@@ -11952,7 +12015,7 @@ var _user$project$Text_Component$set_intro_editable = F2(
 			_p22,
 			_elm_lang$core$Native_Utils.update(
 				intro_field_attrs,
-				{editable: editable}));
+				{error: false, editable: editable}));
 		return A4(_user$project$Text_Component$TextComponent, _p20._0, new_text_fields, _p20._2, _p20._3);
 	});
 var _user$project$Text_Component$set_title_editable = F2(
@@ -11966,7 +12029,7 @@ var _user$project$Text_Component$set_title_editable = F2(
 			_p26,
 			_elm_lang$core$Native_Utils.update(
 				title_field_attrs,
-				{editable: editable}));
+				{error: false, editable: editable}));
 		return A4(_user$project$Text_Component$TextComponent, _p24._0, new_text_fields, _p24._2, _p24._3);
 	});
 var _user$project$Text_Component$set_author_editable = F2(
@@ -11980,7 +12043,7 @@ var _user$project$Text_Component$set_author_editable = F2(
 			_p30,
 			_elm_lang$core$Native_Utils.update(
 				text_author_attrs,
-				{editable: editable}));
+				{error: false, editable: editable}));
 		return A4(_user$project$Text_Component$TextComponent, _p28._0, new_text_fields, _p28._2, _p28._3);
 	});
 var _user$project$Text_Component$set_source_editable = F2(
@@ -11994,7 +12057,7 @@ var _user$project$Text_Component$set_source_editable = F2(
 			_p34,
 			_elm_lang$core$Native_Utils.update(
 				text_source_attrs,
-				{editable: editable}));
+				{error: false, editable: editable}));
 		return A4(_user$project$Text_Component$TextComponent, _p32._0, new_text_fields, _p32._2, _p32._3);
 	});
 var _user$project$Text_Component$set_text_section_components = F2(
@@ -14373,12 +14436,8 @@ var _user$project$Question_View$view_question = F2(
 							_0: {ctor: '_Tuple2', _0: 'question_item', _1: true},
 							_1: {
 								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'input_error', _1: question_field_attrs.error},
-								_1: {
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'editable', _1: true},
-									_1: {ctor: '[]'}
-								}
+								_0: {ctor: '_Tuple2', _0: 'editable', _1: true},
+								_1: {ctor: '[]'}
 							}
 						}),
 					_1: {
@@ -14418,6 +14477,7 @@ var _user$project$Question_View$view_editable_question = F3(
 			question: _user$project$Question_Field$question(field),
 			msg: msg
 		};
+		var question_field_attrs = _user$project$Question_Field$attributes(field);
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -14426,7 +14486,11 @@ var _user$project$Question_View$view_editable_question = F3(
 					{
 						ctor: '::',
 						_0: {ctor: '_Tuple2', _0: 'question_parts', _1: true},
-						_1: {ctor: '[]'}
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'input_error', _1: question_field_attrs.error},
+							_1: {ctor: '[]'}
+						}
 					}),
 				_1: {ctor: '[]'}
 			},
@@ -14543,21 +14607,12 @@ var _user$project$Text_Section_View$edit_body = function (params) {
 					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', params.field.id),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$classList(
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'input_error', _1: params.field.error},
-								_1: {ctor: '[]'}
+						_0: _elm_lang$html$Html_Events$onInput(
+							function (_p0) {
+								return params.msg(
+									A3(_user$project$Text_Update$UpdateTextValue, params.text_section_component, 'body', _p0));
 							}),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onInput(
-								function (_p0) {
-									return params.msg(
-										A3(_user$project$Text_Update$UpdateTextValue, params.text_section_component, 'body', _p0));
-								}),
-							_1: {ctor: '[]'}
-						}
+						_1: {ctor: '[]'}
 					}
 				},
 				{
@@ -14579,27 +14634,54 @@ var _user$project$Text_Section_View$view_body = function (params) {
 				_0: A2(_user$project$Text_Section_View$toggle_editable, _elm_lang$html$Html_Events$onClick, params),
 				_1: {
 					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'text_property'),
-					_1: {ctor: '[]'}
+					_0: _elm_lang$html$Html_Attributes$classList(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'input_error', _1: params.field.error},
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'text_property'),
+						_1: {ctor: '[]'}
+					}
 				}
 			}
 		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'editable'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(params.text_section.body),
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		});
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'editable'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(params.text_section.body),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			},
+			params.field.error ? {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('error'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(params.field.error_string),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			} : {ctor: '[]'}));
 };
 var _user$project$Text_Section_View$view_editable = F3(
 	function (params, view, edit) {
@@ -14904,6 +14986,7 @@ var _user$project$Text_View$view_submit = A2(
 	});
 var _user$project$Text_View$edit_source = F2(
 	function (params, text_source) {
+		var text_source_attrs = _user$project$Text_Field$text_source_attrs(text_source);
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -14932,10 +15015,7 @@ var _user$project$Text_View$edit_source = F2(
 						_elm_lang$html$Html$input,
 						{
 							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html_Attributes$attribute,
-								'id',
-								_user$project$Text_Field$source_id(text_source)),
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', text_source_attrs.input_id),
 							_1: {
 								ctor: '::',
 								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
@@ -14944,29 +15024,16 @@ var _user$project$Text_View$edit_source = F2(
 									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', params.text.source),
 									_1: {
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$classList(
-											{
-												ctor: '::',
-												_0: {
-													ctor: '_Tuple2',
-													_0: 'input_error',
-													_1: _user$project$Text_Field$source_error(text_source)
-												},
-												_1: {ctor: '[]'}
-											}),
+										_0: _elm_lang$html$Html_Events$onInput(
+											_user$project$Text_Create$UpdateTextAttributes('source')),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onInput(
-												_user$project$Text_Create$UpdateTextAttributes('source')),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onBlur(
-													A2(
-														_user$project$Text_Create$ToggleEditable,
-														_user$project$Text_Create$Source(text_source),
-														false)),
-												_1: {ctor: '[]'}
-											}
+											_0: _elm_lang$html$Html_Events$onBlur(
+												A2(
+													_user$project$Text_Create$ToggleEditable,
+													_user$project$Text_Create$Source(text_source),
+													false)),
+											_1: {ctor: '[]'}
 										}
 									}
 								}
@@ -14979,7 +15046,8 @@ var _user$project$Text_View$edit_source = F2(
 	});
 var _user$project$Text_View$view_source = F3(
 	function (params, edit_view, text_source) {
-		var _p0 = _user$project$Text_Field$source_editable(text_source);
+		var text_source_attrs = _user$project$Text_Field$text_source_attrs(text_source);
+		var _p0 = text_source_attrs.editable;
 		if (_p0 === false) {
 			return A2(
 				_elm_lang$html$Html$div,
@@ -14996,45 +15064,64 @@ var _user$project$Text_View$view_source = F3(
 							{
 								ctor: '::',
 								_0: {ctor: '_Tuple2', _0: 'text_property', _1: true},
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'input_error', _1: text_source_attrs.error},
+									_1: {ctor: '[]'}
+								}
 							}),
 						_1: {ctor: '[]'}
 					}
 				},
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html_Attributes$attribute,
-								'id',
-								_user$project$Text_Field$source_id(text_source)),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('Text Source'),
-							_1: {ctor: '[]'}
-						}),
-					_1: {
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					{
 						ctor: '::',
 						_0: A2(
 							_elm_lang$html$Html$div,
 							{
 								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'editable'),
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', text_source_attrs.id),
 								_1: {ctor: '[]'}
 							},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(params.text.source),
+								_0: _elm_lang$html$Html$text('Text Source'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'editable'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(params.text.source),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
+					},
+					text_source_attrs.error ? {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('error'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(text_source_attrs.error_string),
 								_1: {ctor: '[]'}
 							}),
 						_1: {ctor: '[]'}
-					}
-				});
+					} : {ctor: '[]'}));
 		} else {
 			return A2(edit_view, params, text_source);
 		}
@@ -15107,6 +15194,7 @@ var _user$project$Text_View$edit_difficulty = F2(
 	});
 var _user$project$Text_View$edit_author = F2(
 	function (params, text_author) {
+		var text_author_attrs = _user$project$Text_Field$text_author_attrs(text_author);
 		return A2(
 			_elm_lang$html$Html$input,
 			{
@@ -15117,20 +15205,13 @@ var _user$project$Text_View$edit_author = F2(
 					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', params.text.author),
 					_1: {
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html_Attributes$attribute,
-							'id',
-							_user$project$Text_Field$author_id(text_author)),
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', text_author_attrs.input_id),
 						_1: {
 							ctor: '::',
 							_0: _elm_lang$html$Html_Attributes$classList(
 								{
 									ctor: '::',
-									_0: {
-										ctor: '_Tuple2',
-										_0: 'input_error',
-										_1: _user$project$Text_Field$author_error(text_author)
-									},
+									_0: {ctor: '_Tuple2', _0: 'input_error', _1: text_author_attrs.error},
 									_1: {ctor: '[]'}
 								}),
 							_1: {
@@ -15153,12 +15234,13 @@ var _user$project$Text_View$edit_author = F2(
 			},
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html$text('stuff'),
+				_0: _elm_lang$html$Html$text(params.text.author),
 				_1: {ctor: '[]'}
 			});
 	});
 var _user$project$Text_View$view_author = F3(
 	function (params, edit_author, text_author) {
+		var text_author_attrs = _user$project$Text_Field$text_author_attrs(text_author);
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -15170,69 +15252,84 @@ var _user$project$Text_View$view_author = F3(
 					_1: {ctor: '[]'}
 				}
 			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{ctor: '[]'},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('Text Author'),
-						_1: {ctor: '[]'}
-					}),
-				_1: {
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				{
 					ctor: '::',
-					_0: function () {
-						var _p4 = _user$project$Text_Field$author_editable(text_author);
-						if (_p4 === false) {
-							return A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html_Attributes$attribute,
-										'id',
-										_user$project$Text_Field$author_id(text_author)),
-									_1: {
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Text Author'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: function () {
+							var _p4 = text_author_attrs.editable;
+							if (_p4 === false) {
+								return A2(
+									_elm_lang$html$Html$div,
+									{
 										ctor: '::',
-										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'editable'),
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', text_author_attrs.id),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onClick(
-												A2(
-													_user$project$Text_Create$ToggleEditable,
-													_user$project$Text_Create$Author(text_author),
-													true)),
-											_1: {ctor: '[]'}
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'editable'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Events$onClick(
+													A2(
+														_user$project$Text_Create$ToggleEditable,
+														_user$project$Text_Create$Author(text_author),
+														true)),
+												_1: {ctor: '[]'}
+											}
 										}
-									}
-								},
-								{
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$div,
-										{ctor: '[]'},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text(params.text.author),
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								});
-						} else {
-							return A2(
-								_elm_lang$html$Html$div,
-								{ctor: '[]'},
-								{
-									ctor: '::',
-									_0: A2(edit_author, params, text_author),
-									_1: {ctor: '[]'}
-								});
-						}
-					}(),
+									},
+									{
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$div,
+											{ctor: '[]'},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text(params.text.author),
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									});
+							} else {
+								return A2(
+									_elm_lang$html$Html$div,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: A2(edit_author, params, text_author),
+										_1: {ctor: '[]'}
+									});
+							}
+						}(),
+						_1: {ctor: '[]'}
+					}
+				},
+				text_author_attrs.error ? {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('error'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(text_author_attrs.error_string),
+							_1: {ctor: '[]'}
+						}),
 					_1: {ctor: '[]'}
-				}
-			});
+				} : {ctor: '[]'}));
 	});
 var _user$project$Text_View$view_edit_text_lock = function (params) {
 	var write_locked = params.write_locked;
@@ -15368,21 +15465,8 @@ var _user$project$Text_View$view_edit_text_tags = F2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_tags_view'),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$classList(
-						{
-							ctor: '::',
-							_0: {
-								ctor: '_Tuple2',
-								_0: 'input_error',
-								_1: _user$project$Text_Field$tag_error(text_tags)
-							},
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				}
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_tags'),
+				_1: {ctor: '[]'}
 			},
 			{
 				ctor: '::',
@@ -15475,6 +15559,7 @@ var _user$project$Text_View$view_edit_text_tags = F2(
 	});
 var _user$project$Text_View$edit_text_introduction = F2(
 	function (params, text_intro) {
+		var text_intro_attrs = _user$project$Text_Field$text_intro_attrs(text_intro);
 		return A2(
 			_elm_lang$html$Html$div,
 			{ctor: '[]'},
@@ -15484,10 +15569,7 @@ var _user$project$Text_View$edit_text_introduction = F2(
 					_elm_lang$html$Html$textarea,
 					{
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html_Attributes$attribute,
-							'id',
-							_user$project$Text_Field$intro_id(text_intro)),
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', text_intro_attrs.id),
 						_1: {
 							ctor: '::',
 							_0: _elm_lang$html$Html_Attributes$classList(
@@ -15496,11 +15578,7 @@ var _user$project$Text_View$edit_text_introduction = F2(
 									_0: {ctor: '_Tuple2', _0: 'text_introduction', _1: true},
 									_1: {
 										ctor: '::',
-										_0: {
-											ctor: '_Tuple2',
-											_0: 'input_error',
-											_1: _user$project$Text_Field$intro_error(text_intro)
-										},
+										_0: {ctor: '_Tuple2', _0: 'input_error', _1: text_intro_attrs.error},
 										_1: {ctor: '[]'}
 									}
 								}),
@@ -15522,11 +15600,12 @@ var _user$project$Text_View$edit_text_introduction = F2(
 	});
 var _user$project$Text_View$view_text_introduction = F3(
 	function (params, edit_view, text_intro) {
+		var text_intro_attrs = _user$project$Text_Field$text_intro_attrs(text_intro);
 		return A2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_intro_view'),
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_intro'),
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html_Events$onClick(
@@ -15534,64 +15613,86 @@ var _user$project$Text_View$view_text_introduction = F3(
 							_user$project$Text_Create$ToggleEditable,
 							_user$project$Text_Create$Intro(text_intro),
 							true)),
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$classList(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'input_error', _1: text_intro_attrs.error},
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
 				}
 			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{ctor: '[]'},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('Text Introduction'),
-						_1: {ctor: '[]'}
-					}),
-				_1: {
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				{
 					ctor: '::',
-					_0: function () {
-						var _p7 = _user$project$Text_Field$intro_editable(text_intro);
-						if (_p7 === true) {
-							return A2(edit_view, params, text_intro);
-						} else {
-							return A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html_Attributes$attribute,
-										'id',
-										_user$project$Text_Field$intro_id(text_intro)),
-									_1: {
-										ctor: '::',
-										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'editable'),
-										_1: {ctor: '[]'}
-									}
-								},
-								A2(
-									_elm_lang$core$Basics_ops['++'],
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Text Introduction'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: function () {
+							var _p7 = text_intro_attrs.editable;
+							if (_p7 === true) {
+								return A2(edit_view, params, text_intro);
+							} else {
+								return A2(
+									_elm_lang$html$Html$div,
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text(params.text.introduction),
-										_1: {ctor: '[]'}
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', text_intro_attrs.input_id),
+										_1: {
+											ctor: '::',
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'editable'),
+											_1: {ctor: '[]'}
+										}
 									},
-									_user$project$Text_Field$intro_error(text_intro) ? {ctor: '[]'} : {ctor: '[]'}));
-						}
-					}(),
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text(params.text.introduction),
+											_1: {ctor: '[]'}
+										},
+										text_intro_attrs.error ? {ctor: '[]'} : {ctor: '[]'}));
+							}
+						}(),
+						_1: {ctor: '[]'}
+					}
+				},
+				text_intro_attrs.error ? {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('error'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(text_intro_attrs.error_string),
+							_1: {ctor: '[]'}
+						}),
 					_1: {ctor: '[]'}
-				}
-			});
+				} : {ctor: '[]'}));
 	});
 var _user$project$Text_View$edit_text_title = F2(
 	function (params, text_title) {
+		var text_title_attrs = _user$project$Text_Field$text_title_attrs(text_title);
 		return A2(
 			_elm_lang$html$Html$input,
 			{
 				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html_Attributes$attribute,
-					'id',
-					_user$project$Text_Field$title_id(text_title)),
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', text_title_attrs.input_id),
 				_1: {
 					ctor: '::',
 					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
@@ -15600,29 +15701,16 @@ var _user$project$Text_View$edit_text_title = F2(
 						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', params.text.title),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$classList(
-								{
-									ctor: '::',
-									_0: {
-										ctor: '_Tuple2',
-										_0: 'input_error',
-										_1: _user$project$Text_Field$title_error(text_title)
-									},
-									_1: {ctor: '[]'}
-								}),
+							_0: _elm_lang$html$Html_Events$onInput(
+								_user$project$Text_Create$UpdateTextAttributes('title')),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onInput(
-									_user$project$Text_Create$UpdateTextAttributes('title')),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onBlur(
-										A2(
-											_user$project$Text_Create$ToggleEditable,
-											_user$project$Text_Create$Title(text_title),
-											false)),
-									_1: {ctor: '[]'}
-								}
+								_0: _elm_lang$html$Html_Events$onBlur(
+									A2(
+										_user$project$Text_Create$ToggleEditable,
+										_user$project$Text_Create$Title(text_title),
+										false)),
+								_1: {ctor: '[]'}
 							}
 						}
 					}
@@ -15632,6 +15720,7 @@ var _user$project$Text_View$edit_text_title = F2(
 	});
 var _user$project$Text_View$view_text_title = F3(
 	function (params, edit_view, text_title) {
+		var text_title_attrs = _user$project$Text_Field$text_title_attrs(text_title);
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -15643,51 +15732,78 @@ var _user$project$Text_View$view_text_title = F3(
 						true)),
 				_1: {
 					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_title_view'),
-					_1: {ctor: '[]'}
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', text_title_attrs.id),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$classList(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'input_error', _1: text_title_attrs.error},
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
 				}
 			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{ctor: '[]'},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('Text Title'),
-						_1: {ctor: '[]'}
-					}),
-				_1: {
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				{
 					ctor: '::',
-					_0: function () {
-						var _p8 = _user$project$Text_Field$title_editable(text_title);
-						if (_p8 === false) {
-							return A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'editable'),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text(params.text.title),
-									_1: {ctor: '[]'}
-								});
-						} else {
-							return A2(
-								_elm_lang$html$Html$div,
-								{ctor: '[]'},
-								{
-									ctor: '::',
-									_0: A2(edit_view, params, text_title),
-									_1: {ctor: '[]'}
-								});
-						}
-					}(),
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Text Title'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: function () {
+							var _p8 = text_title_attrs.editable;
+							if (_p8 === false) {
+								return A2(
+									_elm_lang$html$Html$div,
+									{
+										ctor: '::',
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'editable'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text(params.text.title),
+										_1: {ctor: '[]'}
+									});
+							} else {
+								return A2(
+									_elm_lang$html$Html$div,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: A2(edit_view, params, text_title),
+										_1: {ctor: '[]'}
+									});
+							}
+						}(),
+						_1: {ctor: '[]'}
+					}
+				},
+				text_title_attrs.error ? {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('error'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(text_title_attrs.error_string),
+							_1: {ctor: '[]'}
+						}),
 					_1: {ctor: '[]'}
-				}
-			});
+				} : {ctor: '[]'}));
 	});
 var _user$project$Text_View$view_text_date = function (params) {
 	return A2(

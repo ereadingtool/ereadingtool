@@ -38,15 +38,18 @@ view_body params =
   div [
     attribute "id" params.field.id
   , toggle_editable onClick params
+  , classList [ ("input_error", params.field.error) ]
   , attribute "class" "text_property"
-  ] [ div [attribute "class" "editable"] [ Html.text params.text_section.body ]]
+  ] <| [ div [attribute "class" "editable"] [ Html.text params.text_section.body ]] ++
+    (if params.field.error then
+      [ div [class "error"] [ Html.text params.field.error_string ]]
+    else [])
 
 edit_body : (TextField msg) -> Html msg
 edit_body params =
   div [] [
     Html.textarea [
         attribute "id" params.field.id
-      , classList [ ("input_error", params.field.error) ]
       , onInput (UpdateTextValue params.text_section_component "body" >> params.msg) ] [
         Html.text params.text_section.body
     ]

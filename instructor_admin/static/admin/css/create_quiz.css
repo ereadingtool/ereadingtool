@@ -133,7 +133,7 @@ body {
     grid-template-columns: 100%;
 }
 
-#text_intro_view {
+#text_intro {
     display: grid;
 
     grid-column: 1;
@@ -144,6 +144,10 @@ body {
 
     border-bottom: solid 2px white;
     margin-bottom: 15px;
+}
+
+#text_intro div:nth-child(2) {
+    background: white;
 }
 
 #text_author_view {
@@ -157,9 +161,6 @@ body {
     color: #000e2d;
 }
 
-#text_intro_view div:nth-child(2) {
-    background: white;
-}
 
 .text_introduction {
     padding: 15px;
@@ -278,7 +279,7 @@ body {
     display: grid;
 }
 
-#text_title_view {
+#text_title {
     display: grid;
     grid-column: 1;
 
@@ -556,6 +557,9 @@ body {
 
 .error {
     background-color: #ffeeee;
+    font-size: 15px;
+    font-style: italic;
+    font-weight: 300;
 }
 
 .chars_remaining {

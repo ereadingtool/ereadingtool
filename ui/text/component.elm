@@ -40,7 +40,7 @@ set_intro_editable : TextComponent -> Bool -> TextComponent
 set_intro_editable (TextComponent text text_fields text_tags component_group) editable =
   let
     (Text.Field.TextIntro intro_field_attrs) = Text.Field.intro text_fields
-    new_text_fields = Text.Field.set_intro text_fields { intro_field_attrs | editable = editable }
+    new_text_fields = Text.Field.set_intro text_fields { intro_field_attrs | error = False, editable = editable }
   in
     TextComponent text new_text_fields text_tags component_group
 
@@ -48,7 +48,7 @@ set_title_editable : TextComponent -> Bool -> TextComponent
 set_title_editable (TextComponent text text_fields text_tags component_group) editable =
   let
     (Text.Field.TextTitle title_field_attrs) = Text.Field.title text_fields
-    new_text_fields = Text.Field.set_title text_fields { title_field_attrs | editable = editable }
+    new_text_fields = Text.Field.set_title text_fields { title_field_attrs | error = False, editable = editable }
   in
     TextComponent text new_text_fields text_tags component_group
 
@@ -56,7 +56,7 @@ set_author_editable : TextComponent -> Bool -> TextComponent
 set_author_editable (TextComponent text text_fields text_tags component_group) editable =
   let
     (Text.Field.TextAuthor text_author_attrs) = Text.Field.author text_fields
-    new_text_fields = Text.Field.set_author text_fields { text_author_attrs | editable = editable }
+    new_text_fields = Text.Field.set_author text_fields { text_author_attrs | error = False, editable = editable }
   in
     TextComponent text new_text_fields text_tags component_group
 
@@ -64,7 +64,7 @@ set_source_editable : TextComponent -> Bool -> TextComponent
 set_source_editable (TextComponent text text_fields text_tags component_group) editable =
   let
     (Text.Field.TextSource text_source_attrs) = Text.Field.source text_fields
-    new_text_fields = Text.Field.set_source text_fields { text_source_attrs | editable = editable }
+    new_text_fields = Text.Field.set_source text_fields { text_source_attrs | error = False, editable = editable }
   in
     TextComponent text new_text_fields text_tags component_group
 

@@ -35,6 +35,7 @@ generate_text_section_field_id i attr =
 generate_text_section_field_params : Int -> String -> TextSectionField
 generate_text_section_field_params i attr = {
     id=generate_text_section_field_id i attr
+  , input_id=String.join "_" [generate_text_section_field_id i attr, "input"]
   , editable=False
   , error_string=""
   , error=False
@@ -207,7 +208,7 @@ set_field_value (TextSectionComponent text attr fields question_fields) field_na
 
 update_field_error : TextSectionField -> String -> TextSectionField
 update_field_error text_field error_string =
-  { text_field | editable=True, error = True, error_string = error_string }
+  { text_field | error = True, error_string = error_string }
 
 get_field : TextSectionComponent -> FieldName -> Maybe TextSectionField
 get_field (TextSectionComponent text attr fields question_fields) field_name =

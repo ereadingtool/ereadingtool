@@ -52,6 +52,7 @@ generate_answer_field i j k answer =
   in
     AnswerField answer {
       id = answer_id
+    , input_id = String.join "_" [answer_id, "input"]
     , name = answer_name
     , editable = False
     , error = False

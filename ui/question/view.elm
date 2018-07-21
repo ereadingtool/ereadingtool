@@ -40,7 +40,6 @@ view_question params question_field =
         attribute "id" question_field_attrs.id
       , classList [
             ("question_item", True)
-          , ("input_error", question_field_attrs.error)
           , ("editable", True) ]
       , toggle_editable onClick params question_field
     ] <| [
@@ -103,10 +102,11 @@ view_question_menu params field =
 view_editable_question : (Msg -> msg) -> TextSectionComponent -> QuestionField -> Html msg
 view_editable_question msg text_section_component field =
   let
+    question_field_attrs = Question.Field.attributes field
     params = {text_section_component=text_section_component, question=Question.Field.question field, msg=msg}
     num_of_answers = Array.length (Question.Field.answers field)
   in
-    div [ classList [("question_parts", True)] ] [
+    div [ classList [("question_parts", True), ("input_error", question_field_attrs.error)] ] [
       div [] [
         Html.input [attribute "type" "checkbox", onCheck <| (SelectQuestion text_section_component field) >> msg] []
       ]

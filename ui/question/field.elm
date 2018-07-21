@@ -36,15 +36,19 @@ fromQuestions text_index questions =
 
 generate_question_field : Int -> Int -> Question -> QuestionField
 generate_question_field text_index question_index question =
-  QuestionField question {
-      id = (String.join "_" ["textsection", toString text_index, "question", toString question_index])
-    , editable = False
-    , menu_visible = False
-    , selected = False
-    , error_string = ""
-    , error = False
-    , index = question_index }
-  (Array.indexedMap (Answer.Field.generate_answer_field text_index question_index) question.answers)
+  let
+    question_field_id = String.join "_" ["textsection", toString text_index, "question", toString question_index]
+  in
+    QuestionField question {
+        id = question_field_id
+      , input_id = String.join "_" [question_field_id, "input"]
+      , editable = False
+      , menu_visible = False
+      , selected = False
+      , error_string = ""
+      , error = False
+      , index = question_index }
+      (Array.indexedMap (Answer.Field.generate_answer_field text_index question_index) question.answers)
 
 add_new_question : Int -> Array QuestionField -> Array QuestionField
 add_new_question text_index fields =
@@ -181,7 +185,7 @@ menu_visible question_field = let attrs = (attributes question_field) in attrs.m
 
 set_question_body : QuestionField -> String -> QuestionField
 set_question_body (QuestionField question attr answer_fields) value =
-  QuestionField { question | body = value } attr answer_fields
+  QuestionField { question | body = value } { attr | error = False } answer_fields
 
 set_menu_visible : QuestionField -> Bool -> QuestionField
 set_menu_visible (QuestionField question attr answer_fields) visible =

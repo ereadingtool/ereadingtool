@@ -1,7 +1,7 @@
 module Text.View exposing (..)
 
 import Html exposing (..)
-import Html.Attributes exposing (classList, attribute)
+import Html.Attributes exposing (classList, attribute, class)
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck)
 
 import Dict exposing (Dict)
@@ -20,69 +20,88 @@ import Text.Update
 
 view_text_date : TextViewParams -> Html Msg
 view_text_date params =
-  Html.div [attribute "class" "text_dates"] <|
-        (case params.text.modified_dt of
-           Just modified_dt ->
-             case params.text.last_modified_by of
-               Just last_modified_by ->
-                 [ span [] [ Html.text
-                   ("Last Modified by " ++ last_modified_by ++ " on " ++ Date.Utils.month_day_year_fmt modified_dt) ]]
-               _ -> []
-           _ -> []) ++
+  div [attribute "class" "text_dates"] <|
+    (case params.text.modified_dt of
+      Just modified_dt ->
+        case params.text.last_modified_by of
+          Just last_modified_by ->
+            [ span [] [ Html.text
+              ("Last Modified by " ++ last_modified_by ++ " on " ++ Date.Utils.month_day_year_fmt modified_dt) ]]
+          _ -> []
+      _ -> []) ++
         (case params.text.created_dt of
-           Just created_dt ->
-             case params.text.created_by of
-               Just created_by ->
-                 [ span [] [ Html.text
-                   ("Created by " ++ created_by ++ " on " ++ Date.Utils.month_day_year_fmt created_dt) ] ]
-               _ -> []
-           _ -> [])
+          Just created_dt ->
+            case params.text.created_by of
+              Just created_by ->
+                [ span [] [ Html.text
+                  ("Created by " ++ created_by ++ " on " ++ Date.Utils.month_day_year_fmt created_dt) ] ]
+              _ -> []
+          _ -> [])
 
 view_text_title : TextViewParams -> (TextViewParams -> TextTitle -> Html Msg) -> TextTitle -> Html Msg
 view_text_title params edit_view text_title =
-  div [ onClick (ToggleEditable (Title text_title) True)
-      , attribute "id" "text_title_view"
-      ] <| [
-      div [] [ Html.text "Text Title" ]
-    , (case (Text.Field.title_editable text_title) of
-      False ->
-        div [attribute "class" "editable"] <|
-          [ Html.text params.text.title ]
-      True -> div [] [ edit_view params text_title ])
-  ]
+  let
+    text_title_attrs = Text.Field.text_title_attrs text_title
+  in
+    div [ onClick (ToggleEditable (Title text_title) True)
+        , attribute "id" text_title_attrs.id
+        , classList [("input_error", text_title_attrs.error)]
+        ] <| [
+          div [] [ Html.text "Text Title" ]
+        , (case text_title_attrs.editable of
+          False ->
+            div [attribute "class" "editable"] <|
+              [ Html.text params.text.title ]
+          True -> div [] [ edit_view params text_title ])
+    ] ++
+      (if text_title_attrs.error then
+        [ div [class "error"] [ Html.text text_title_attrs.error_string ]]
+       else [])
 
 edit_text_title : TextViewParams -> TextTitle -> Html Msg
 edit_text_title params text_title =
-  Html.input [
-      attribute "id" (Text.Field.title_id text_title)
-    , attribute "type" "text"
-    , attribute "value" params.text.title
-    , classList [("input_error", Text.Field.title_error text_title)]
-    , onInput (UpdateTextAttributes "title")
-    , (onBlur (ToggleEditable (Title text_title) False)) ] [ ]
+  let
+    text_title_attrs = Text.Field.text_title_attrs text_title
+  in
+    Html.input [
+        attribute "id" text_title_attrs.input_id
+      , attribute "type" "text"
+      , attribute "value" params.text.title
+      , onInput (UpdateTextAttributes "title")
+      , (onBlur (ToggleEditable (Title text_title) False)) ] [ ]
 
 view_text_introduction : TextViewParams -> (TextViewParams -> TextIntro -> Html Msg) -> TextIntro -> Html Msg
 view_text_introduction params edit_view text_intro =
-  div [
-        attribute "id" "text_intro_view"
-      , onClick (ToggleEditable (Intro text_intro) True) ] [
-    div [] [ Html.text "Text Introduction" ]
-  , (case (Text.Field.intro_editable text_intro) of
-      True ->
-        edit_view params text_intro
-      False ->
-        div [attribute "id" (Text.Field.intro_id text_intro), attribute "class" "editable"] <|
-          [ Html.text params.text.introduction ] ++ (if (Text.Field.intro_error text_intro) then [] else []))
-  ]
+  let
+    text_intro_attrs = Text.Field.text_intro_attrs text_intro
+  in
+    div [
+          attribute "id" "text_intro"
+        , onClick (ToggleEditable (Intro text_intro) True)
+        , classList [("input_error", text_intro_attrs.error)]] <| [
+      div [] [ Html.text "Text Introduction" ]
+    , (case text_intro_attrs.editable of
+        True ->
+          edit_view params text_intro
+        False ->
+          div [attribute "id" text_intro_attrs.input_id, attribute "class" "editable"] <|
+            [ Html.text params.text.introduction ] ++ (if text_intro_attrs.error then [] else []))
+    ] ++
+      (if text_intro_attrs.error then
+        [ div [class "error"] [ Html.text text_intro_attrs.error_string ]]
+       else [])
 
 edit_text_introduction : TextViewParams -> TextIntro -> Html Msg
 edit_text_introduction params text_intro =
-  div [] [
-    textarea [
-      attribute "id" (Text.Field.intro_id text_intro)
-    , classList [("text_introduction", True), ("input_error", Text.Field.intro_error text_intro)]
-    , onInput (UpdateTextAttributes "introduction") ] [ Html.text params.text.introduction ]
-  ]
+  let
+    text_intro_attrs = Text.Field.text_intro_attrs text_intro
+  in
+    div [] [
+      textarea [
+        attribute "id" text_intro_attrs.id
+      , classList [("text_introduction", True), ("input_error", text_intro_attrs.error)]
+      , onInput (UpdateTextAttributes "introduction") ] [ Html.text params.text.introduction ]
+    ]
 
 view_edit_text_tags : TextViewParams -> TextTags -> Html Msg
 view_edit_text_tags params text_tags =
@@ -96,7 +115,7 @@ view_edit_text_tags params text_tags =
         , attribute "class" "tag_delete_btn"
         , onClick (DeleteTag tag) ] [], Html.text tag ]
   in
-    div [attribute "id" "text_tags_view", classList [("input_error", Text.Field.tag_error text_tags)] ] [
+    div [attribute "id" "text_tags"] [
           datalist [attribute "id" "tag_list", attribute "type" "text"] <|
             List.map (\tag -> option [attribute "value" tag] [ Html.text tag ]) (Dict.keys params.tags)
         , div [] [Html.text "Text Tags"]
@@ -132,29 +151,38 @@ view_text_lock params =
 
 view_author : TextViewParams -> (TextViewParams -> TextAuthor -> Html Msg) -> TextAuthor -> Html Msg
 view_author params edit_author text_author =
-  div [attribute "id" "text_author_view", attribute "class" "text_property"] [
+  let
+    text_author_attrs = Text.Field.text_author_attrs text_author
+  in
+    div [attribute "id" "text_author_view", attribute "class" "text_property"] <| [
       div [] [ Html.text "Text Author" ]
-    , (case (Text.Field.author_editable text_author) of
+    , (case text_author_attrs.editable of
        False ->
           div [
-            attribute "id" (Text.Field.author_id text_author)
+            attribute "id" text_author_attrs.id
           , attribute "class" "editable"
           , onClick (ToggleEditable (Author text_author) True)
           ] [
             div [] [ Html.text params.text.author ]
           ]
        True -> div [] [ edit_author params text_author ])
-  ]
+    ] ++
+      (if text_author_attrs.error then
+        [ div [class "error"] [ Html.text text_author_attrs.error_string ]]
+       else [])
 
 edit_author : TextViewParams -> TextAuthor -> Html Msg
 edit_author params text_author =
-  Html.input [
-    attribute "type" "text"
-  , attribute "value" params.text.author
-  , attribute "id" (Text.Field.author_id text_author)
-  , classList [("input_error", Text.Field.author_error text_author)]
-  , onInput (UpdateTextAttributes "author")
-  , onBlur (ToggleEditable (Author text_author) False) ] [ Html.text "stuff" ]
+  let
+    text_author_attrs = Text.Field.text_author_attrs text_author
+  in
+    Html.input [
+      attribute "type" "text"
+    , attribute "value" params.text.author
+    , attribute "id" text_author_attrs.input_id
+    , classList [("input_error", text_author_attrs.error)]
+    , onInput (UpdateTextAttributes "author")
+    , onBlur (ToggleEditable (Author text_author) False) ] [ Html.text params.text.author ]
 
 edit_difficulty : TextViewParams -> TextDifficulty -> Html Msg
 edit_difficulty params text_difficulty =
@@ -170,30 +198,38 @@ edit_difficulty params text_difficulty =
 
 view_source : TextViewParams -> (TextViewParams -> TextSource -> Html Msg) -> TextSource -> Html Msg
 view_source params edit_view text_source =
-  case (Text.Field.source_editable text_source) of
-    False ->
-       div [
-        onClick (ToggleEditable (Source text_source) True)
-      , classList [("text_property", True)] ] [
-        div [attribute "id" (Text.Field.source_id text_source)] [ Html.text "Text Source" ]
-      , div [attribute "class" "editable"] [ Html.text params.text.source ]
-     ]
-    True -> edit_view params text_source
+  let
+    text_source_attrs = Text.Field.text_source_attrs text_source
+  in
+    case text_source_attrs.editable of
+      False ->
+         div [
+          onClick (ToggleEditable (Source text_source) True)
+        , classList [("text_property", True), ("input_error", text_source_attrs.error)] ] <| [
+          div [attribute "id" text_source_attrs.id] [ Html.text "Text Source" ]
+        , div [attribute "class" "editable"] [ Html.text params.text.source ]
+       ] ++
+         (if text_source_attrs.error then
+          [ div [class "error"] [ Html.text text_source_attrs.error_string ]]
+          else [])
+      True -> edit_view params text_source
 
 edit_source : TextViewParams -> TextSource -> Html Msg
 edit_source params text_source =
-  div [
-    classList [("text_property", True)]
-  ] [
-    div [] [ Html.text "Text Source" ]
-  , Html.input [
-        attribute "id" (Text.Field.source_id text_source)
-      , attribute "type" "text"
-      , attribute "value" params.text.source
-      , classList [("input_error", Text.Field.source_error text_source)]
-      , onInput (UpdateTextAttributes "source")
-      , (onBlur (ToggleEditable (Source text_source) False)) ] [ ]
-  ]
+  let
+    text_source_attrs = Text.Field.text_source_attrs text_source
+  in
+    div [
+      classList [("text_property", True)]
+    ] [
+      div [] [ Html.text "Text Source" ]
+    , Html.input [
+          attribute "id" (text_source_attrs.input_id)
+        , attribute "type" "text"
+        , attribute "value" params.text.source
+        , onInput (UpdateTextAttributes "source")
+        , (onBlur (ToggleEditable (Source text_source) False)) ] [ ]
+    ]
 
 view_text_attributes : TextViewParams -> Html Msg
 view_text_attributes params =
