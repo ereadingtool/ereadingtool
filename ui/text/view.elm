@@ -76,7 +76,7 @@ view_text_introduction params edit_view text_intro =
     text_intro_attrs = Text.Field.text_intro_attrs text_intro
   in
     div [
-          attribute "id" "text_intro"
+          attribute "id" text_intro_attrs.id
         , onClick (ToggleEditable (Intro text_intro) True)
         , classList [("input_error", text_intro_attrs.error)]] <| [
       div [] [ Html.text "Text Introduction" ]
@@ -98,7 +98,7 @@ edit_text_introduction params text_intro =
   in
     div [] [
       textarea [
-        attribute "id" text_intro_attrs.id
+        attribute "id" text_intro_attrs.input_id
       , classList [("text_introduction", True), ("input_error", text_intro_attrs.error)]
       , onInput (UpdateTextAttributes "introduction") ] [ Html.text params.text.introduction ]
     ]

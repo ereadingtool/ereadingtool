@@ -72,8 +72,15 @@ update msg model =
           (Text.Section.Component.set_field_value text_component field_name input)  }, Cmd.none)
 
     UpdateTextBody (ckeditor_id, ckeditor_text) ->
-        ({ model | text_component = Text.Component.set_text_section_components model.text_component
-           (Text.Section.Component.Group.update_body_for_id text_section_group ckeditor_id ckeditor_text) }, Cmd.none)
+      case String.split "_" ckeditor_id of
+        ["textsection", i, "body"] ->
+          case String.toInt i of
+            Ok i ->
+              ({ model | text_component = Text.Component.set_text_section_components model.text_component
+                (Text.Section.Component.Group.update_body_for_section_index text_section_group i ckeditor_text) }
+                , Cmd.none)
+            _ -> (model, Cmd.none) -- not a valid index
+        _ -> (model, Cmd.none) -- not interested in this update
 
     -- question msgs
     AddQuestion text_component ->

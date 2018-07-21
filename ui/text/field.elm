@@ -99,54 +99,9 @@ set_difficulty : TextFields -> TextFieldAttributes -> TextFields
 set_difficulty (TextFields text_title text_intro text_tags text_author text_source text_difficulty) field_attrs =
   TextFields text_title text_intro text_tags text_author text_source (TextDifficulty field_attrs)
 
-intro_error : TextIntro -> Bool
-intro_error (TextIntro attrs) = attrs.error
-
-intro_error_string : TextIntro -> String
-intro_error_string (TextIntro attrs) = attrs.error_string
-
-intro_editable : TextIntro -> Bool
-intro_editable (TextIntro attrs) = attrs.editable
-
-intro_id : TextIntro -> String
-intro_id (TextIntro attrs) = attrs.id
-
-title_editable : TextTitle -> Bool
-title_editable (TextTitle attrs) = attrs.editable
-
-title_id : TextTitle -> String
-title_id (TextTitle attrs) = attrs.id
-
-title_error : TextTitle -> Bool
-title_error (TextTitle attrs) = attrs.error
-
-title_error_string : TextTitle -> String
-title_error_string (TextTitle attrs) = attrs.error_string
-
-tag_error : TextTags -> Bool
-tag_error (TextTags attrs) = attrs.error
-
-author_id : TextAuthor -> String
-author_id (TextAuthor attrs) = attrs.id
-
-author_error : TextAuthor -> Bool
-author_error (TextAuthor attrs) = attrs.error
-
-author_editable : TextAuthor -> Bool
-author_editable (TextAuthor attrs) = attrs.editable
-
-source_id : TextSource -> String
-source_id (TextSource attrs) = attrs.id
-
-source_error : TextSource -> Bool
-source_error (TextSource attrs) = attrs.error
-
-source_editable : TextSource -> Bool
-source_editable (TextSource attrs) = attrs.editable
-
 post_toggle_intro : TextIntro -> Cmd msg
 post_toggle_intro (TextIntro attrs) =
-  Cmd.batch [ckEditor attrs.id, addClassToCKEditor (attrs.id, "text_introduction")]
+  Cmd.batch [ckEditor attrs.input_id, addClassToCKEditor (attrs.input_id, "text_introduction")]
 
 post_toggle_title : TextTitle -> Cmd msg
 post_toggle_title (TextTitle attrs) =

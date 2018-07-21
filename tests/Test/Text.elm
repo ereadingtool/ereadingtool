@@ -167,7 +167,7 @@ test_text_section_update_body : Expectation
 test_text_section_update_body =
   let
     group =
-      Text.Section.Component.Group.update_body_for_id test_text_section_component_group "textsection_0_body" "foobar"
+      Text.Section.Component.Group.update_body_for_section_index test_text_section_component_group "textsection_0_body" "foobar"
   in
     case Text.Section.Component.Group.text_section_component group 0 of
       Just section ->
@@ -187,7 +187,7 @@ test_text_section_add_then_delete =
     updated_text_section_body = "foobar"
 
     group =
-      Text.Section.Component.Group.update_body_for_id
+      Text.Section.Component.Group.update_body_for_section_index
         (gen_text_component_group_with_sections num_of_new_sections) ckeditor_id updated_text_section_body
 
     text_sections = Text.Section.Component.Group.toArray group

@@ -10053,7 +10053,7 @@ var _user$project$Text_Model$TextListItem = function (a) {
 								return function (i) {
 									return function (j) {
 										return function (k) {
-											return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, text_count: j, write_locker: k};
+											return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, text_section_count: j, write_locker: k};
 										};
 									};
 								};
@@ -10536,14 +10536,18 @@ var _user$project$Views$menu_items = _user$project$Views$MenuItems(
 	_elm_lang$core$Array$fromList(
 		{
 			ctor: '::',
-			_0: A3(_user$project$Views$MenuItem, '/admin/texts/', 'Texts', false),
+			_0: A3(_user$project$Views$MenuItem, '/text/search', 'Search', false),
 			_1: {
 				ctor: '::',
-				_0: A3(_user$project$Views$MenuItem, '/login/student/', 'Student Login', false),
+				_0: A3(_user$project$Views$MenuItem, '/admin/texts/', 'Texts', false),
 				_1: {
 					ctor: '::',
-					_0: A3(_user$project$Views$MenuItem, '/login/instructor/', 'Instructor Login', false),
-					_1: {ctor: '[]'}
+					_0: A3(_user$project$Views$MenuItem, '/login/student/', 'Student Login', false),
+					_1: {
+						ctor: '::',
+						_0: A3(_user$project$Views$MenuItem, '/login/instructor/', 'Instructor Login', false),
+						_1: {ctor: '[]'}
+					}
 				}
 			}
 		}));

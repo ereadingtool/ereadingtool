@@ -1,5 +1,5 @@
 module Text.Section.Component.Group exposing (TextSectionComponentGroup, update_components, add_new_text_section
-  , update_errors,new_group, toArray, update_body_for_id, toTextSections, fromTextSections, reinitialize_ck_editors
+  , update_errors,new_group, toArray, update_body_for_section_index, toTextSections, fromTextSections, reinitialize_ck_editors
   , delete_text_section, text_section_component)
 
 import Array exposing (Array)
@@ -88,15 +88,9 @@ reinitialize_ck_editors text_component_group =
   in
     Cmd.batch <| Array.toList <| Array.map Text.Section.Component.reinitialize_ck_editor text_components
 
-update_body_for_id : TextSectionComponentGroup -> CKEditorID -> CKEditorText -> TextSectionComponentGroup
-update_body_for_id text_sections ckeditor_id ckeditor_text =
-  case String.split "_" ckeditor_id of
-    ["textsection", i, "body"] ->
-      case String.toInt i of
-        Ok i ->
-          case text_section_component text_sections i of
-             Just text_component ->
-               update_components text_sections (Text.Section.Component.update_body text_component ckeditor_text)
-             _ -> text_sections -- text section not found
-        _ -> text_sections -- not a valid index
-    _ -> text_sections -- not a valid key
+update_body_for_section_index : TextSectionComponentGroup -> Int -> CKEditorText -> TextSectionComponentGroup
+update_body_for_section_index text_sections index ckeditor_text =
+  case text_section_component text_sections index of
+    Just text_component ->
+      update_components text_sections (Text.Section.Component.update_body text_component ckeditor_text)
+    _ -> text_sections -- text section not found

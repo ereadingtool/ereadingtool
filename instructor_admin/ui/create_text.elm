@@ -9,6 +9,7 @@ import Flags
 
 import Text.Model
 import Text.Component exposing (TextComponent)
+import Text.Field
 import Text.Encode
 
 import Views
@@ -52,7 +53,7 @@ init flags = ({
       , text_difficulties=[]
       , tags=Dict.fromList []
       , write_locked=False
-  }, Cmd.batch [ retrieveTextDifficultyOptions, (textJSONtoComponent flags.text), tagsToDict flags.tags ])
+  }, Cmd.batch [ retrieveTextDifficultyOptions, textJSONtoComponent flags.text, tagsToDict flags.tags ])
 
 textDifficultyDecoder : Decode.Decoder (List TextDifficulty)
 textDifficultyDecoder = Decode.keyValuePairs Decode.string
@@ -263,11 +264,16 @@ update msg model = case msg of
       , Cmd.none)
 
     UpdateTextIntro (ck_id, ck_text) ->
-      case ck_id of
-       "text_introduction" ->
-         ({ model | text_component =
-           Text.Component.set_text_attribute model.text_component "introduction" ck_text }, Cmd.none)
-       _ -> (model, Cmd.none)
+      let
+        text_intro_attrs =
+          Text.Field.text_intro_attrs (Text.Field.intro (Text.Component.text_fields model.text_component))
+        text_intro_attrs_id = text_intro_attrs.id
+      in
+        if (ck_id == text_intro_attrs_id) then
+          ({ model | text_component =
+            Text.Component.set_text_attribute model.text_component "introduction" ck_text }, Cmd.none)
+        else
+          (model, Cmd.none)
 
     AddTagInput input_id input ->
       case Dict.member input model.tags of

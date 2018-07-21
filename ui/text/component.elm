@@ -95,7 +95,7 @@ reinitialize_ck_editors : TextComponent -> Cmd msg
 reinitialize_ck_editors ((TextComponent text fields text_tags components) as text_component) =
   let
     text_component_group = text_section_components text_component
-    intro_field_id = Text.Field.intro_id (Text.Field.intro fields)
+    intro_field_id = (Text.Field.text_intro_attrs (Text.Field.intro fields)).id
   in
     Cmd.batch [
       Cmd.batch [ckEditor intro_field_id, ckEditorSetHtml (intro_field_id, text.introduction)]

@@ -133,7 +133,7 @@ body {
     grid-template-columns: 100%;
 }
 
-#text_intro {
+#text_introduction {
     display: grid;
 
     grid-column: 1;
@@ -146,7 +146,7 @@ body {
     margin-bottom: 15px;
 }
 
-#text_intro div:nth-child(2) {
+#text_introduction div:nth-child(2) {
     background: white;
 }
 
