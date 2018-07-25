@@ -127,7 +127,7 @@ view_tags tag_search =
 view_difficulties : DifficultySearch -> List (Html Msg)
 view_difficulties difficulty_search =
   let
-    difficulties = Text.Search.Difficulty.optionsToDict difficulty_search
+    difficulties = Text.Search.Difficulty.options difficulty_search
     view_difficulty (value, difficulty_search_option) =
       let
         selected = Text.Search.Option.selected difficulty_search_option
@@ -140,20 +140,20 @@ view_difficulties difficulty_search =
           ]
         ]
   in
-    List.map view_difficulty <| Dict.toList difficulties
+    List.map view_difficulty <| List.map (\option -> (Text.Search.Option.value option, option)) difficulties
 
 view_search_filters : Model -> Html Msg
 view_search_filters model =
   div [attribute "id" "text_search_filters"] [
     div [attribute "id" "text_search_filters_label"] [ Html.text "Filters" ]
   , div [class "search_filter"] [
+      div [class "search_filter_title"] [ Html.text "Difficulty" ]
+    , div [] (view_difficulties (Text.Search.difficulty_search model.text_search))
+    ]
+  , div [class "search_filter"] [
       div [class "search_filter_title"] [ Html.text "Tags" ]
-      , div [] [view_tags (Text.Search.tag_search model.text_search)]
-      ]
-    , div [class "search_filter"] [
-        div [class "search_filter_title"] [ Html.text "Difficulty" ]
-      , div [] (view_difficulties (Text.Search.difficulty_search model.text_search))
-      ]
+    , div [] [view_tags (Text.Search.tag_search model.text_search)]
+    ]
   ]
 
 view_search_results : List Text.Model.TextListItem  -> Html Msg

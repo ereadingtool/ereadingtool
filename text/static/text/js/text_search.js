@@ -21251,60 +21251,72 @@ var _user$project$Text_Search_Option$selected = function (_p2) {
 	var _p3 = _p2;
 	return _p3._2;
 };
-var _user$project$Text_Search_Option$optionsToDict = function (_p4) {
+var _user$project$Text_Search_Option$value = function (_p4) {
 	var _p5 = _p4;
 	return _p5._0;
+};
+var _user$project$Text_Search_Option$optionsToDict = function (_p6) {
+	var _p7 = _p6;
+	return _elm_lang$core$Dict$fromList(
+		A2(
+			_elm_lang$core$List$map,
+			function (option) {
+				return {
+					ctor: '_Tuple2',
+					_0: _user$project$Text_Search_Option$value(option),
+					_1: option
+				};
+			},
+			_p7._0));
+};
+var _user$project$Text_Search_Option$options = function (_p8) {
+	var _p9 = _p8;
+	return _p9._0;
 };
 var _user$project$Text_Search_Option$SearchOption = F3(
 	function (a, b, c) {
 		return {ctor: 'SearchOption', _0: a, _1: b, _2: c};
 	});
 var _user$project$Text_Search_Option$new_option = F2(
-	function (_p6, selected) {
-		var _p7 = _p6;
-		return A3(_user$project$Text_Search_Option$SearchOption, _p7._0, _p7._1, selected);
+	function (_p10, selected) {
+		var _p11 = _p10;
+		return A3(_user$project$Text_Search_Option$SearchOption, _p11._0, _p11._1, selected);
 	});
 var _user$project$Text_Search_Option$set_selected = F2(
-	function (_p8, new_selected) {
-		var _p9 = _p8;
-		return A3(_user$project$Text_Search_Option$SearchOption, _p9._0, _p9._1, new_selected);
+	function (_p12, new_selected) {
+		var _p13 = _p12;
+		return A3(_user$project$Text_Search_Option$SearchOption, _p13._0, _p13._1, new_selected);
 	});
 var _user$project$Text_Search_Option$SearchOptions = function (a) {
 	return {ctor: 'SearchOptions', _0: a};
 };
 var _user$project$Text_Search_Option$new_options = function (options) {
 	return _user$project$Text_Search_Option$SearchOptions(
-		_elm_lang$core$Dict$fromList(
-			A2(
-				_elm_lang$core$List$map,
-				function (_p10) {
-					var _p11 = _p10;
-					var _p12 = _p11._0;
-					return {
-						ctor: '_Tuple2',
-						_0: _p12,
-						_1: A2(
-							_user$project$Text_Search_Option$new_option,
-							{ctor: '_Tuple2', _0: _p12, _1: _p11._1},
-							false)
-					};
-				},
-				options)));
+		A2(
+			_elm_lang$core$List$map,
+			function (_p14) {
+				var _p15 = _p14;
+				return A2(
+					_user$project$Text_Search_Option$new_option,
+					{ctor: '_Tuple2', _0: _p15._0, _1: _p15._1},
+					false);
+			},
+			options));
 };
 var _user$project$Text_Search_Option$add_option = F2(
-	function (_p14, _p13) {
-		var _p15 = _p14;
-		var _p16 = _p13;
-		var _p17 = _p16._0;
+	function (_p17, _p16) {
+		var _p18 = _p17;
+		var _p19 = _p16;
 		return _user$project$Text_Search_Option$SearchOptions(
-			A3(
-				_elm_lang$core$Dict$insert,
-				_p17,
-				A3(_user$project$Text_Search_Option$SearchOption, _p17, _p16._1, false),
-				_p15._0));
+			{
+				ctor: '::',
+				_0: A3(_user$project$Text_Search_Option$SearchOption, _p19._0, _p19._1, false),
+				_1: _p18._0
+			});
 	});
 var _user$project$Text_Search_Option$dictToOptions = function (options) {
-	return _user$project$Text_Search_Option$SearchOptions(options);
+	return _user$project$Text_Search_Option$SearchOptions(
+		_elm_lang$core$Dict$values(options));
 };
 
 var _user$project$Text_Search_Tag$input_id = function (_p0) {
@@ -21349,6 +21361,10 @@ var _user$project$Text_Search_Tag$select_tag = F3(
 var _user$project$Text_Search_Difficulty$optionsToDict = function (_p0) {
 	var _p1 = _p0;
 	return _user$project$Text_Search_Option$optionsToDict(_p1._1);
+};
+var _user$project$Text_Search_Difficulty$options = function (_p2) {
+	var _p3 = _p2;
+	return _user$project$Text_Search_Option$options(_p3._1);
 };
 var _user$project$Text_Search_Difficulty$DifficultySearch = F3(
 	function (a, b, c) {
@@ -22116,11 +22132,20 @@ var _user$project$Main$view_difficulties = function (difficulty_search) {
 				}
 			});
 	};
-	var difficulties = _user$project$Text_Search_Difficulty$optionsToDict(difficulty_search);
+	var difficulties = _user$project$Text_Search_Difficulty$options(difficulty_search);
 	return A2(
 		_elm_lang$core$List$map,
 		view_difficulty,
-		_elm_lang$core$Dict$toList(difficulties));
+		A2(
+			_elm_lang$core$List$map,
+			function (option) {
+				return {
+					ctor: '_Tuple2',
+					_0: _user$project$Text_Search_Option$value(option),
+					_1: option
+				};
+			},
+			difficulties));
 };
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
@@ -22310,7 +22335,7 @@ var _user$project$Main$view_search_filters = function (model) {
 							},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text('Tags'),
+								_0: _elm_lang$html$Html$text('Difficulty'),
 								_1: {ctor: '[]'}
 							}),
 						_1: {
@@ -22318,12 +22343,8 @@ var _user$project$Main$view_search_filters = function (model) {
 							_0: A2(
 								_elm_lang$html$Html$div,
 								{ctor: '[]'},
-								{
-									ctor: '::',
-									_0: _user$project$Main$view_tags(
-										_user$project$Text_Search$tag_search(model.text_search)),
-									_1: {ctor: '[]'}
-								}),
+								_user$project$Main$view_difficulties(
+									_user$project$Text_Search$difficulty_search(model.text_search))),
 							_1: {ctor: '[]'}
 						}
 					}),
@@ -22347,7 +22368,7 @@ var _user$project$Main$view_search_filters = function (model) {
 								},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text('Difficulty'),
+									_0: _elm_lang$html$Html$text('Tags'),
 									_1: {ctor: '[]'}
 								}),
 							_1: {
@@ -22355,8 +22376,12 @@ var _user$project$Main$view_search_filters = function (model) {
 								_0: A2(
 									_elm_lang$html$Html$div,
 									{ctor: '[]'},
-									_user$project$Main$view_difficulties(
-										_user$project$Text_Search$difficulty_search(model.text_search))),
+									{
+										ctor: '::',
+										_0: _user$project$Main$view_tags(
+											_user$project$Text_Search$tag_search(model.text_search)),
+										_1: {ctor: '[]'}
+									}),
 								_1: {ctor: '[]'}
 							}
 						}),
