@@ -9835,6 +9835,7 @@ var _user$project$Text_Decode$decodeRespErrors = function (str) {
 			_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string)),
 		str);
 };
+var _user$project$Text_Decode$textDifficultyDecoder = _elm_lang$core$Json_Decode$keyValuePairs(_elm_lang$core$Json_Decode$string);
 var _user$project$Text_Decode$textListItemDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'write_locker',
@@ -10566,7 +10567,7 @@ var _user$project$Main$view_text = function (text_list_item) {
 									},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text('Texts'),
+										_0: _elm_lang$html$Html$text('Text Sections'),
 										_1: {ctor: '[]'}
 									}),
 								_1: {ctor: '[]'}

@@ -1,8 +1,8 @@
 module Text.Decode exposing (textDecoder, textCreateRespDecoder, decodeRespErrors, TextsRespError, TextDeleteResp
   , textUpdateRespDecoder, TextCreateResp, TextUpdateResp, textListDecoder, textLockRespDecoder
-  , TextLockResp, textDeleteRespDecoder)
+  , TextLockResp, textDeleteRespDecoder, textDifficultyDecoder)
 
-import Text.Model exposing (Text, TextListItem)
+import Text.Model exposing (Text, TextDifficulty, TextListItem)
 import Text.Section.Decode
 
 import Array exposing (Array)
@@ -81,6 +81,9 @@ textLockRespDecoder : Decode.Decoder (TextLockResp)
 textLockRespDecoder =
   decode TextLockResp
     |> required "locked" Decode.bool
+
+textDifficultyDecoder : Decode.Decoder (List TextDifficulty)
+textDifficultyDecoder = Decode.keyValuePairs Decode.string
 
 decodeRespErrors : String -> Result String TextsRespError
 decodeRespErrors str = Decode.decodeString (Decode.field "errors" (Decode.dict Decode.string)) str

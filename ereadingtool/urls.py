@@ -29,7 +29,6 @@ urlpatterns = [
     path('', include('user.urls.student')),
 
     path('', include('text.urls')),
-    path('api/text/', include('text.urls')),
     path('api/question/', include('question.urls')),
 
     path('admin/', include('instructor_admin.urls')),

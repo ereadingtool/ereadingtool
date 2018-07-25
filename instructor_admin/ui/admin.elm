@@ -84,7 +84,7 @@ view_text text_list_item =
    , div [classList [("item_property", True)]] [
         Html.text <| toString text_list_item.text_section_count
         , span [classList [("sub_description", True)]] [
-             Html.text "Texts"
+             Html.text "Text Sections"
            ]
      ]
    , div [classList [("item_property", True)]] [
@@ -141,6 +141,6 @@ view : Model -> Html Msg
 view model = div [] [
     Views.view_header model.profile Nothing
   , Views.view_filter
-  , (view_texts model)
-  , (view_footer model)
+  , view_texts model
+  , view_footer model
   ]

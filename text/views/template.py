@@ -1,3 +1,5 @@
+import json
+
 from typing import Dict
 
 from django.http import Http404
@@ -6,7 +8,7 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 
 from mixins.view import ElmLoadJsView
-from text.models import Text
+from text.models import Text, TextDifficulty
 from user.views.mixin import ProfileView
 
 
@@ -20,6 +22,18 @@ class TextSearchView(ProfileView, TemplateView):
 class TextSearchLoadElm(ElmLoadJsView):
     def get_context_data(self, **kwargs) -> Dict:
         context = super(TextSearchLoadElm, self).get_context_data(**kwargs)
+
+        context['elm']['text_difficulties'] = {
+            'quote': False,
+            'safe': True,
+            'value': [[d.slug, d.name] for d in TextDifficulty.objects.all()]
+        }
+
+        context['elm']['text_tags'] = {
+            'quote': False,
+            'safe': True,
+            'value': json.dumps([tag.name for tag in Text.tag_choices()])
+        }
 
         return context
 

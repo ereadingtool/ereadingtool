@@ -251,29 +251,6 @@ body {
     color: #000e2d;
 }
 
-
-.text_tag {
-    display: inline-block;
-
-    padding: 2px;
-
-    font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 18px;
-    font-weight: 200;
-
-    background: white;
-
-    margin-right: 5px;
-
-    border: solid 1px lightgrey;
-    border-radius: 5px;
-}
-
-.text_tag > img {
-    margin-left: 2px;
-    margin-right: 2px;
-}
-
 .text_sections {
     grid-column: 2;
     display: grid;
@@ -538,10 +515,6 @@ body {
 }
 
 /* TODO(andrew): cleanup */
-.cursor {
-    cursor: pointer;
-}
-
 .submit {
     cursor: pointer;
 }

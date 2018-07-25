@@ -53,10 +53,12 @@ init flags = ({
       , text_difficulties=[]
       , tags=Dict.fromList []
       , write_locked=False
-  }, Cmd.batch [ retrieveTextDifficultyOptions, textJSONtoComponent flags.text, tagsToDict flags.tags ])
-
-textDifficultyDecoder : Decode.Decoder (List TextDifficulty)
-textDifficultyDecoder = Decode.keyValuePairs Decode.string
+  }
+  , Cmd.batch [
+      retrieveTextDifficultyOptions
+    , textJSONtoComponent flags.text
+    , tagsToDict flags.tags
+    ])
 
 tagsToDict : List String -> Cmd Msg
 tagsToDict tag_list =
@@ -65,16 +67,18 @@ tagsToDict tag_list =
 textJSONtoComponent : Maybe Json.Encode.Value -> Cmd Msg
 textJSONtoComponent text =
   case text of
-      Just json -> Task.attempt TextJSONDecode
-        (case (Decode.decodeValue Text.Decode.textDecoder json) of
-           Ok text -> Task.succeed (Text.Component.init text)
-           Err err -> Task.fail err)
-      _ -> Cmd.none
+    Just json -> Task.attempt TextJSONDecode
+      (case (Decode.decodeValue Text.Decode.textDecoder json) of
+        Ok text -> Task.succeed (Text.Component.init text)
+        Err err -> Task.fail err)
+    _ -> Cmd.none
 
 retrieveTextDifficultyOptions : Cmd Msg
 retrieveTextDifficultyOptions =
-  let request = Http.get (String.join "?" [text_api_endpoint, "difficulties=list"]) textDifficultyDecoder
-  in Http.send UpdateTextDifficultyOptions request
+  let
+    request = Http.get (String.join "?" [text_api_endpoint, "difficulties=list"]) Text.Decode.textDifficultyDecoder
+  in
+    Http.send UpdateTextDifficultyOptions request
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = case msg of

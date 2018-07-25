@@ -1,5 +1,8 @@
 {% extends "load_elm_base.html" %}
 {% block port_functions %}
+
+    {{ block.super }}
+
     function selectAllText(elem_id) {
         var input = document.getElementById(elem_id);
 
@@ -21,13 +24,6 @@
         // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
         window.requestAnimationFrame(function (timestamp) {
             selectAllText(elem_id);
-        });
-    });
-
-    app.ports.clearInputText.subscribe(function (elem_id) {
-        // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
-        window.requestAnimationFrame(function (timestamp) {
-            clearInputText(elem_id);
         });
     });
 

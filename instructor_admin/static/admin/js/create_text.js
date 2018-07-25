@@ -13766,6 +13766,7 @@ var _user$project$Text_Decode$decodeRespErrors = function (str) {
 			_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string)),
 		str);
 };
+var _user$project$Text_Decode$textDifficultyDecoder = _elm_lang$core$Json_Decode$keyValuePairs(_elm_lang$core$Json_Decode$string);
 var _user$project$Text_Decode$textListItemDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'write_locker',
@@ -14789,6 +14790,137 @@ var _user$project$Text_Section_View$TextField = F5(
 		return {text_section_component: a, msg: b, text_section: c, difficulties: d, field: e};
 	});
 
+var _user$project$Text_Tags_View$view_tag = F2(
+	function (delete_msg, tag) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('text_tag'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$img,
+					{
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/cancel.svg'),
+						_1: {
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '13px'),
+							_1: {
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '13px'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('cursor'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onClick(
+											delete_msg(tag)),
+										_1: {ctor: '[]'}
+									}
+								}
+							}
+						}
+					},
+					{ctor: '[]'}),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(tag),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$Text_Tags_View$view_tags = F4(
+	function (id, tag_list, tags, _p0) {
+		var _p1 = _p0;
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_tags'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$datalist,
+					{
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'tag_list'),
+						_1: {
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
+							_1: {ctor: '[]'}
+						}
+					},
+					A2(
+						_elm_lang$core$List$map,
+						function (tag) {
+							return A2(
+								_elm_lang$html$Html$option,
+								{
+									ctor: '::',
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', tag),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(tag),
+									_1: {ctor: '[]'}
+								});
+						},
+						tag_list)),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('text_tags'),
+							_1: {ctor: '[]'}
+						},
+						A2(
+							_elm_lang$core$List$map,
+							_user$project$Text_Tags_View$view_tag(_p1._1),
+							_elm_lang$core$Dict$keys(tags))),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$input,
+									{
+										ctor: '::',
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', id),
+										_1: {
+											ctor: '::',
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'add tags..'),
+											_1: {
+												ctor: '::',
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'list', 'tag_list'),
+												_1: {
+													ctor: '::',
+													_0: _p1._0,
+													_1: {ctor: '[]'}
+												}
+											}
+										}
+									},
+									{ctor: '[]'}),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+	});
+
 var _user$project$Text_View$view_submit = A2(
 	_elm_lang$html$Html$div,
 	{
@@ -15358,143 +15490,18 @@ var _user$project$Text_View$view_text_lock = function (params) {
 };
 var _user$project$Text_View$view_edit_text_tags = F2(
 	function (params, text_tags) {
-		var view_tag = function (tag) {
-			return A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'text_tag'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$img,
-						{
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/cancel.svg'),
-							_1: {
-								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '13px'),
-								_1: {
-									ctor: '::',
-									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '13px'),
-									_1: {
-										ctor: '::',
-										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'tag_delete_btn'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onClick(
-												_user$project$Text_Create$DeleteTag(tag)),
-											_1: {ctor: '[]'}
-										}
-									}
-								}
-							}
-						},
-						{ctor: '[]'}),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html$text(tag),
-						_1: {ctor: '[]'}
-					}
-				});
-		};
+		var tag_list = _elm_lang$core$Dict$keys(params.tags);
 		var tags = _user$project$Text_Component$tags(params.text_component);
-		return A2(
-			_elm_lang$html$Html$div,
+		return A4(
+			_user$project$Text_Tags_View$view_tags,
+			'add_tag',
+			tag_list,
+			tags,
 			{
-				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_tags'),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$datalist,
-					{
-						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'tag_list'),
-						_1: {
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
-							_1: {ctor: '[]'}
-						}
-					},
-					A2(
-						_elm_lang$core$List$map,
-						function (tag) {
-							return A2(
-								_elm_lang$html$Html$option,
-								{
-									ctor: '::',
-									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', tag),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text(tag),
-									_1: {ctor: '[]'}
-								});
-						},
-						_elm_lang$core$Dict$keys(params.tags))),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('Text Tags'),
-							_1: {ctor: '[]'}
-						}),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{
-								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'text_tags'),
-								_1: {ctor: '[]'}
-							},
-							A2(
-								_elm_lang$core$List$map,
-								view_tag,
-								_elm_lang$core$Dict$keys(tags))),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{ctor: '[]'},
-								{
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$input,
-										{
-											ctor: '::',
-											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'add_tag'),
-											_1: {
-												ctor: '::',
-												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'add tags..'),
-												_1: {
-													ctor: '::',
-													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'list', 'tag_list'),
-													_1: {
-														ctor: '::',
-														_0: _elm_lang$html$Html_Events$onInput(
-															_user$project$Text_Create$AddTagInput('add_tag')),
-														_1: {ctor: '[]'}
-													}
-												}
-											}
-										},
-										{ctor: '[]'}),
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}
-					}
-				}
+				ctor: '_Tuple2',
+				_0: _elm_lang$html$Html_Events$onInput(
+					_user$project$Text_Create$AddTagInput('add_tag')),
+				_1: _user$project$Text_Create$DeleteTag
 			});
 	});
 var _user$project$Text_View$edit_text_introduction = F2(
@@ -15875,9 +15882,36 @@ var _user$project$Text_View$view_text_attributes = function (params) {
 									_1: {
 										ctor: '::',
 										_0: A2(
-											_user$project$Text_View$view_edit_text_tags,
-											params,
-											_user$project$Text_Field$tags(params.text_fields)),
+											_elm_lang$html$Html$div,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$classList(
+													{
+														ctor: '::',
+														_0: {ctor: '_Tuple2', _0: 'text_property', _1: true},
+														_1: {ctor: '[]'}
+													}),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: A2(
+													_elm_lang$html$Html$div,
+													{ctor: '[]'},
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html$text('Text Tags'),
+														_1: {ctor: '[]'}
+													}),
+												_1: {
+													ctor: '::',
+													_0: A2(
+														_user$project$Text_View$view_edit_text_tags,
+														params,
+														_user$project$Text_Field$tags(params.text_fields)),
+													_1: {ctor: '[]'}
+												}
+											}),
 										_1: {ctor: '[]'}
 									}
 								}
@@ -16719,6 +16753,24 @@ var _user$project$Main$update = F2(
 				}
 		}
 	});
+var _user$project$Main$retrieveTextDifficultyOptions = function () {
+	var request = A2(
+		_elm_lang$http$Http$get,
+		A2(
+			_elm_lang$core$String$join,
+			'?',
+			{
+				ctor: '::',
+				_0: _user$project$Config$text_api_endpoint,
+				_1: {
+					ctor: '::',
+					_0: 'difficulties=list',
+					_1: {ctor: '[]'}
+				}
+			}),
+		_user$project$Text_Decode$textDifficultyDecoder);
+	return A2(_elm_lang$http$Http$send, _user$project$Text_Create$UpdateTextDifficultyOptions, request);
+}();
 var _user$project$Main$textJSONtoComponent = function (text) {
 	var _p48 = text;
 	if (_p48.ctor === 'Just') {
@@ -16751,25 +16803,6 @@ var _user$project$Main$tagsToDict = function (tag_list) {
 					},
 					tag_list))));
 };
-var _user$project$Main$textDifficultyDecoder = _elm_lang$core$Json_Decode$keyValuePairs(_elm_lang$core$Json_Decode$string);
-var _user$project$Main$retrieveTextDifficultyOptions = function () {
-	var request = A2(
-		_elm_lang$http$Http$get,
-		A2(
-			_elm_lang$core$String$join,
-			'?',
-			{
-				ctor: '::',
-				_0: _user$project$Config$text_api_endpoint,
-				_1: {
-					ctor: '::',
-					_0: 'difficulties=list',
-					_1: {ctor: '[]'}
-				}
-			}),
-		_user$project$Main$textDifficultyDecoder);
-	return A2(_elm_lang$http$Http$send, _user$project$Text_Create$UpdateTextDifficultyOptions, request);
-}();
 var _user$project$Main$init = function (flags) {
 	return {
 		ctor: '_Tuple2',

@@ -1,5 +1,5 @@
-import Html exposing (Html, div)
-import Html.Attributes exposing (classList, attribute)
+import Html exposing (Html, div, span, datalist, option)
+import Html.Attributes exposing (classList, class, attribute)
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
 
 import HtmlParser
@@ -9,7 +9,21 @@ import Http exposing (..)
 
 import Array exposing (Array)
 
-import Text.Model as Texts exposing (Text)
+import Text.Model exposing (Text)
+import Text.Decode
+
+import Text.Search exposing (TextSearch)
+import Text.Search.Option
+
+import Text.Search.Tag exposing (TagSearch)
+import Text.Search.Difficulty exposing (DifficultySearch)
+
+import Text.Tags.View
+
+import Ports exposing (clearInputText)
+
+import Dict exposing (Dict)
+import Task
 
 import Views
 import Profile
@@ -18,31 +32,77 @@ import Instructor.Profile
 import Config exposing (..)
 import Flags exposing (CSRFToken)
 
--- UPDATE
-type Msg = None
+import Field
 
-type alias Flags = Flags.Flags {}
+-- UPDATE
+type Msg =
+   SelectTag String
+ | DeselectTag String
+ | TextSearch (Result Http.Error (List Text.Model.TextListItem))
+
+type alias Flags = Flags.Flags { text_difficulties: List Text.Model.TextDifficulty, text_tags: List String }
 
 type alias Model = {
-    results : Array Text
+    results : List Text.Model.TextListItem
   , profile : Profile.Profile
+  , text_search : TextSearch
   , flags : Flags }
 
 init : Flags -> (Model, Cmd Msg)
-init flags = ({
-    results=Array.fromList []
-  , profile=Profile.init_profile flags
-  , flags=flags}, Cmd.none)
+init flags =
+  let
+    tag_search =
+      Text.Search.Tag.new "text_tag_search"
+        (Text.Search.Option.new_options (List.map (\tag -> (tag, tag)) flags.text_tags))
+    difficulty_search =
+      Text.Search.Difficulty.new "text_difficulty_search" (Text.Search.Option.new_options flags.text_difficulties)
+  in
+    ({
+      results=[]
+    , profile=Profile.init_profile flags
+    , text_search=Text.Search.new text_api_endpoint tag_search difficulty_search
+    , flags=flags
+    }
+    , Cmd.none)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
+update_results : TextSearch -> Cmd Msg
+update_results text_search =
+  let
+    filter_params = Debug.log "filter_params" Text.Search.filter_params text_search
+    request = Http.get (String.join "?" ([text_api_endpoint] ++ filter_params)) Text.Decode.textListDecoder
+  in
+    Http.send TextSearch request
+
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    None ->
-      (model, Cmd.none)
+    SelectTag tag_name ->
+      let
+        tag_search = Text.Search.tag_search model.text_search
+        tag_search_input_id = Text.Search.Tag.input_id tag_search
+      in
+        ({ model | text_search =
+          Text.Search.set_tag_search model.text_search (Text.Search.Tag.select_tag tag_search tag_name True) }
+        , Cmd.batch [ clearInputText tag_search_input_id, update_results model.text_search ] )
+
+    DeselectTag tag_name ->
+      let
+        tag_search = Text.Search.tag_search model.text_search
+      in
+        ({ model | text_search =
+          Text.Search.set_tag_search model.text_search (Text.Search.Tag.select_tag tag_search tag_name False) }
+          , update_results model.text_search )
+
+    TextSearch result ->
+      case result of
+        Ok texts ->
+          ({ model | results = texts }, Cmd.none)
+        Err err -> let _ = Debug.log "error retrieving results" err in
+          (model, Cmd.none)
 
 main : Program Flags Model Msg
 main =
@@ -53,8 +113,77 @@ main =
     , update = update
     }
 
+view_tags : TagSearch -> Html Msg
+view_tags tag_search =
+  let
+    tags = Text.Search.Tag.optionsToDict tag_search
+    tag_search_id = Text.Search.Tag.input_id tag_search
+    tag_list = Dict.keys tags
+    selected_tags = Dict.filter (\k v -> Text.Search.Option.selected v) tags
+  in
+    Text.Tags.View.view_tags tag_search_id
+      tag_list (Dict.map (\k v -> Text.Search.Option.label v) selected_tags) (onInput SelectTag, DeselectTag)
+
+view_difficulties : DifficultySearch -> List (Html Msg)
+view_difficulties difficulty_search =
+  let
+    difficulties = Text.Search.Difficulty.optionsToDict difficulty_search
+    view_difficulty (value, difficulty_search_option) =
+      let
+        selected = Text.Search.Option.selected difficulty_search_option
+        label = Text.Search.Option.label difficulty_search_option
+      in
+        div [] [
+          Html.text label
+        , Html.input ([attribute "type" "checkbox"] ++ (if selected then [attribute "checked" "true"] else [])) [
+            Html.text value
+          ]
+        ]
+  in
+    List.map view_difficulty <| Dict.toList difficulties
+
+view_search_filters : Model -> Html Msg
+view_search_filters model =
+  div [attribute "id" "text_search_filters"] [
+    div [attribute "id" "text_search_filters_label"] [ Html.text "Filters" ]
+  , div [class "search_filter"] [
+      div [class "search_filter_title"] [ Html.text "Tags" ]
+      , div [] [view_tags (Text.Search.tag_search model.text_search)]
+      ]
+    , div [class "search_filter"] [
+        div [class "search_filter_title"] [ Html.text "Difficulty" ]
+      , div [] (view_difficulties (Text.Search.difficulty_search model.text_search))
+      ]
+  ]
+
+view_search_results : List Text.Model.TextListItem  -> Html Msg
+view_search_results text_list_items =
+  let
+    view_search_result text_item =
+      div [class "search_result"] [
+        div [] [ Html.text text_item.title, div [class "sub_description"] [ Html.text "Title" ] ]
+      , div [] [ Html.text text_item.difficulty, div [class "sub_description"] [ Html.text "Difficulty" ] ]
+      , div [] [ Html.text (toString text_item.text_section_count)
+               , div [class "sub_description"] [ Html.text "Sections" ] ]
+      , div [] [ Html.text "1 / 4 sections complete", div [class "sub_description"] [ Html.text "progress" ] ]
+      ]
+  in
+    div [attribute "id" "text_search_results"] (List.map view_search_result text_list_items)
+
+view_search_footer : Model -> Html Msg
+view_search_footer model = div [attribute "id" "footer_items"] [
+    div [attribute "id" "footer", class "message"] [
+        Html.text <| "Showing " ++ toString (List.length model.results) ++ " entries"
+    ]
+ ]
+
 view_content : Model -> Html Msg
-view_content model = div [] []
+view_content model =
+  div [attribute "id" "text_search"] [
+    view_search_filters model
+  , view_search_results model.results
+  , view_search_footer model
+  ]
 
 -- VIEW
 view : Model -> Html Msg

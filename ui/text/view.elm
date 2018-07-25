@@ -17,6 +17,8 @@ import Text.Create exposing (..)
 import Text.Section.View
 import Text.Update
 
+import Text.Tags.View
+
 
 view_text_date : TextViewParams -> Html Msg
 view_text_date params =
@@ -107,25 +109,9 @@ view_edit_text_tags : TextViewParams -> TextTags -> Html Msg
 view_edit_text_tags params text_tags =
   let
     tags = Text.Component.tags params.text_component
-    view_tag tag = div [attribute "class" "text_tag"] [
-      Html.img [
-          attribute "src" "/static/img/cancel.svg"
-        , attribute "height" "13px"
-        , attribute "width" "13px"
-        , attribute "class" "tag_delete_btn"
-        , onClick (DeleteTag tag) ] [], Html.text tag ]
+    tag_list = Dict.keys params.tags
   in
-    div [attribute "id" "text_tags"] [
-          datalist [attribute "id" "tag_list", attribute "type" "text"] <|
-            List.map (\tag -> option [attribute "value" tag] [ Html.text tag ]) (Dict.keys params.tags)
-        , div [] [Html.text "Text Tags"]
-        , div [attribute "class" "text_tags"] (List.map view_tag (Dict.keys tags))
-        , div [] [ Html.input [
-            attribute "id" "add_tag"
-          , attribute "placeholder" "add tags.."
-          , attribute "list" "tag_list"
-          , onInput (AddTagInput "add_tag")] [] ]
-    ]
+    Text.Tags.View.view_tags "add_tag" tag_list tags (onInput (AddTagInput "add_tag"), DeleteTag)
 
 view_edit_text_lock : TextViewParams -> Html Msg
 view_edit_text_lock params =
@@ -241,7 +227,10 @@ view_text_attributes params =
    , view_source params edit_source (Text.Field.source params.text_fields)
    , view_text_lock params
    , view_text_date params
-   , view_edit_text_tags params (Text.Field.tags params.text_fields)
+   , div [classList [("text_property", True)]] [
+       div [] [ Html.text "Text Tags" ]
+     , view_edit_text_tags params (Text.Field.tags params.text_fields)
+     ]
   ]
 
 view_submit : Html Msg

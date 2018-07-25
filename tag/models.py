@@ -3,8 +3,6 @@ from typing import List, Union
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
-from mixins.model import Timestamped, WriteLockable
-
 
 class Tag(models.Model):
     name = models.CharField(max_length=128, null=False, db_index=True)
@@ -17,6 +15,9 @@ class Tag(models.Model):
                             'Internal Affairs/Foreign Policy', 'Public Policy', 'Other']:
             tag = Tag.objects.create(name=default_tag)
             tag.save()
+
+    def __str__(self):
+        return self.name
 
 
 class Taggable(models.Model):
