@@ -1,4 +1,4 @@
-module Text.Search.Tag exposing (TagSearch, new, optionsToDict, select_tag, input_id)
+module Text.Search.Tag exposing (TagSearch, new, optionsToDict, select_tag, input_id, filter_params)
 
 import Search exposing (..)
 
@@ -14,6 +14,10 @@ type alias Tag = String
 new : ID -> SearchOptions -> TagSearch
 new id options =
   TagSearch id options Search.emptyError
+
+selected_options : TagSearch -> List SearchOption
+selected_options (TagSearch _ options _) =
+  Text.Search.Option.selected_options options
 
 optionsToDict : TagSearch -> Dict String SearchOption
 optionsToDict (TagSearch _ options _) =
@@ -31,3 +35,7 @@ select_tag ((TagSearch id options err) as tag_search) tag selected =
 
 input_id : TagSearch -> String
 input_id (TagSearch id _ _) = id
+
+filter_params : TagSearch -> List String
+filter_params tag_search =
+  List.map (\opt -> String.join "" ["tag", "=", Text.Search.Option.value opt]) (selected_options tag_search)

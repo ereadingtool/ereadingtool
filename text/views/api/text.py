@@ -194,6 +194,8 @@ class TextAPIView(LoginRequiredMixin, View):
             return HttpResponse(json.dumps({'errors': 'something went wrong'}))
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        filter_by = {}
+
         if 'difficulties' in request.GET.keys():
             return HttpResponse(json.dumps({d.slug: d.name for d in TextDifficulty.objects.all()}))
 
@@ -213,7 +215,13 @@ class TextAPIView(LoginRequiredMixin, View):
                     json.dumps(
                         {'errors': {'text': "text with id {0} does not exist".format(kwargs['pk'])}}), status=400)
 
-        texts = [text.to_summary_dict() for text in self.model.objects.all()]
+        if 'difficulty' in request.GET.keys():
+            filter_by['difficulty__slug__in'] = request.GET.getlist('difficulty')
+
+        if 'tag' in request.GET.keys():
+            filter_by['tags__name__in'] = request.GET.getlist('tags')
+
+        texts = [text.to_summary_dict() for text in self.model.objects.filter(**filter_by)]
 
         return HttpResponse(json.dumps(texts))
 

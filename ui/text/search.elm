@@ -1,5 +1,5 @@
 module Text.Search exposing (new, filter_params, tagOptionsToDict, tag_search, set_tag_search, difficulty_search
-  , TextSearch)
+  , set_difficulty_search, TextSearch)
 
 import Dict exposing (Dict)
 import Search exposing (..)
@@ -27,6 +27,10 @@ difficultyOptionsToDict text_search =
 tag_search : TextSearch -> TagSearch
 tag_search (TextSearch _ tag_search _) = tag_search
 
+set_difficulty_search : TextSearch -> DifficultySearch -> TextSearch
+set_difficulty_search (TextSearch id tag_search _) difficulty_search =
+  TextSearch id tag_search difficulty_search
+
 set_tag_search : TextSearch -> TagSearch -> TextSearch
 set_tag_search (TextSearch id _ difficulty_search) tag_search =
   TextSearch id tag_search difficulty_search
@@ -37,11 +41,7 @@ difficulty_search (TextSearch _ _ difficulty_search) = difficulty_search
 filter_params : TextSearch -> List String
 filter_params text_search =
   let
-    selected = \opts -> Dict.filter (\k v -> Text.Search.Option.selected v) opts
-    selected_tag_options = selected (tagOptionsToDict text_search)
-    selected_difficulty_options = selected (difficultyOptionsToDict text_search)
+    difficulty_filter_params = Text.Search.Difficulty.filter_params (difficulty_search text_search)
+    tag_filter_params = Text.Search.Tag.filter_params (tag_search text_search)
   in
-      List.foldr (++) []
-   <| List.map (\(k, v) -> [k, "=", Text.Search.Option.label v])
-   <| Dict.toList
-   <| Dict.union selected_tag_options selected_difficulty_options
+    difficulty_filter_params ++ tag_filter_params

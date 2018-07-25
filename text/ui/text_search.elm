@@ -2,12 +2,7 @@ import Html exposing (Html, div, span, datalist, option)
 import Html.Attributes exposing (classList, class, attribute)
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
 
-import HtmlParser
-import HtmlParser.Util
-
 import Http exposing (..)
-
-import Array exposing (Array)
 
 import Text.Model exposing (Text)
 import Text.Decode
@@ -23,20 +18,17 @@ import Text.Tags.View
 import Ports exposing (clearInputText)
 
 import Dict exposing (Dict)
-import Task
 
 import Views
 import Profile
-import Instructor.Profile
 
 import Config exposing (..)
 import Flags exposing (CSRFToken)
 
-import Field
-
 -- UPDATE
 type Msg =
-   SelectTag String
+   AddDifficulty String Bool
+ | SelectTag String
  | DeselectTag String
  | TextSearch (Result Http.Error (List Text.Model.TextListItem))
 
@@ -72,30 +64,43 @@ subscriptions model =
 update_results : TextSearch -> Cmd Msg
 update_results text_search =
   let
-    filter_params = Debug.log "filter_params" Text.Search.filter_params text_search
-    request = Http.get (String.join "?" ([text_api_endpoint] ++ filter_params)) Text.Decode.textListDecoder
+    filter_params = Text.Search.filter_params text_search
+    query_string = String.join "" [text_api_endpoint, "?"] ++ (String.join "&" filter_params)
+    request = Http.get query_string Text.Decode.textListDecoder
   in
-    Http.send TextSearch request
+    if (List.length filter_params) > 0 then
+      Http.send TextSearch request
+    else
+      Cmd.none
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
+    AddDifficulty difficulty select ->
+      let
+        difficulty_search = Text.Search.difficulty_search model.text_search
+        new_difficulty_search = Text.Search.Difficulty.select_difficulty difficulty_search difficulty select
+        new_text_search = Text.Search.set_difficulty_search model.text_search new_difficulty_search
+      in
+        ({ model | text_search = new_text_search, results = [] }, update_results new_text_search)
+
     SelectTag tag_name ->
       let
         tag_search = Text.Search.tag_search model.text_search
         tag_search_input_id = Text.Search.Tag.input_id tag_search
+        new_tag_search = Text.Search.Tag.select_tag tag_search tag_name True
+        new_text_search = Text.Search.set_tag_search model.text_search new_tag_search
       in
-        ({ model | text_search =
-          Text.Search.set_tag_search model.text_search (Text.Search.Tag.select_tag tag_search tag_name True) }
-        , Cmd.batch [ clearInputText tag_search_input_id, update_results model.text_search ] )
+        ({ model | text_search = new_text_search, results = [] }
+        , Cmd.batch [clearInputText tag_search_input_id, update_results new_text_search])
 
     DeselectTag tag_name ->
       let
         tag_search = Text.Search.tag_search model.text_search
+        new_tag_search = Text.Search.Tag.select_tag tag_search tag_name False
+        new_text_search = Text.Search.set_tag_search model.text_search new_tag_search
       in
-        ({ model | text_search =
-          Text.Search.set_tag_search model.text_search (Text.Search.Tag.select_tag tag_search tag_name False) }
-          , update_results model.text_search )
+        ({ model | text_search = new_text_search, results = [] }, update_results new_text_search)
 
     TextSearch result ->
       case result of
@@ -135,7 +140,9 @@ view_difficulties difficulty_search =
       in
         div [] [
           Html.text label
-        , Html.input ([attribute "type" "checkbox"] ++ (if selected then [attribute "checked" "true"] else [])) [
+        , Html.input
+            ([attribute "type" "checkbox", onCheck (AddDifficulty value)] ++
+              (if selected then [attribute "checked" "true"] else [])) [
             Html.text value
           ]
         ]

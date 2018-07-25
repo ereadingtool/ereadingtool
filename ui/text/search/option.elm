@@ -1,5 +1,5 @@
 module Text.Search.Option exposing (SearchOption, SearchOptions, new_options, new_option, optionsToDict, dictToOptions
-  , selected, set_selected, label, options, value)
+  , selected, set_selected, label, options, value, selected_options, listToOptions)
 
 import Dict exposing (Dict)
 
@@ -7,11 +7,17 @@ import Search exposing (..)
 
 type SearchOption = SearchOption Value Label Selected
 
+{-could use an ordered dictionary for options
+ (http://package.elm-lang.org/packages/wittjosiah/elm-ordered-dict/latest) -}
 type SearchOptions = SearchOptions (List SearchOption)
 
 options : SearchOptions -> List SearchOption
 options (SearchOptions options) =
   options
+
+selected_options : SearchOptions -> List SearchOption
+selected_options search_options =
+  List.filter selected (options search_options)
 
 new_option : (Value, Label) -> Selected -> SearchOption
 new_option (value, label) selected =
@@ -33,6 +39,10 @@ add_option (SearchOptions options) (value, label) =
 optionsToDict : SearchOptions -> Dict String SearchOption
 optionsToDict (SearchOptions options) =
   Dict.fromList (List.map (\option -> (value option, option)) options)
+
+listToOptions : List SearchOption -> SearchOptions
+listToOptions options =
+  SearchOptions options
 
 dictToOptions : Dict String SearchOption -> SearchOptions
 dictToOptions options =
