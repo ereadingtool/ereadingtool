@@ -219,7 +219,7 @@ class TextAPIView(LoginRequiredMixin, View):
             filter_by['difficulty__slug__in'] = request.GET.getlist('difficulty')
 
         if 'tag' in request.GET.keys():
-            filter_by['tags__name__in'] = request.GET.getlist('tags')
+            filter_by['tags__name__in'] = request.GET.getlist('tag')
 
         texts = [text.to_summary_dict() for text in self.model.objects.filter(**filter_by)]
 

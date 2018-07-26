@@ -113,3 +113,24 @@
     color: #737373;
 }
 
+@media only screen and (max-width:480px) {
+    .header {
+        display: flex;
+    }
+
+    #text_tag_search {
+        width: 250px;
+    }
+
+    .menu {
+        display: flex;
+        flex-wrap: wrap;
+
+        align-items: center;
+        justify-items: center;
+    }
+
+    .filter {
+        display: none;
+    }
+}

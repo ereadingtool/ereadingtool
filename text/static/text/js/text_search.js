@@ -10889,6 +10889,14 @@ var _user$project$Main$view_search_footer = function (model) {
 };
 var _user$project$Main$view_search_results = function (text_list_items) {
 	var view_search_result = function (text_item) {
+		var tags = function () {
+			var _p0 = text_item.tags;
+			if (_p0.ctor === 'Just') {
+				return A2(_elm_lang$core$String$join, ', ', _p0._0);
+			} else {
+				return '';
+			}
+		}();
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -10953,8 +10961,7 @@ var _user$project$Main$view_search_results = function (text_list_items) {
 							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(
-									_elm_lang$core$Basics$toString(text_item.text_section_count)),
+								_0: _elm_lang$html$Html$text(tags),
 								_1: {
 									ctor: '::',
 									_0: A2(
@@ -10966,7 +10973,7 @@ var _user$project$Main$view_search_results = function (text_list_items) {
 										},
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html$text('Sections'),
+											_0: _elm_lang$html$Html$text('Tags'),
 											_1: {ctor: '[]'}
 										}),
 									_1: {ctor: '[]'}
@@ -10979,7 +10986,8 @@ var _user$project$Main$view_search_results = function (text_list_items) {
 								{ctor: '[]'},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text('1 / 4 sections complete'),
+									_0: _elm_lang$html$Html$text(
+										_elm_lang$core$Basics$toString(text_item.text_section_count)),
 									_1: {
 										ctor: '::',
 										_0: A2(
@@ -10991,13 +10999,39 @@ var _user$project$Main$view_search_results = function (text_list_items) {
 											},
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html$text('progress'),
+												_0: _elm_lang$html$Html$text('Sections'),
 												_1: {ctor: '[]'}
 											}),
 										_1: {ctor: '[]'}
 									}
 								}),
-							_1: {ctor: '[]'}
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('1 / 4 sections complete'),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$div,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class('sub_description'),
+													_1: {ctor: '[]'}
+												},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text('progress'),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}
+									}),
+								_1: {ctor: '[]'}
+							}
 						}
 					}
 				}
@@ -11072,11 +11106,11 @@ var _user$project$Main$update_results = function (text_search) {
 };
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p0 = msg;
-		switch (_p0.ctor) {
+		var _p1 = msg;
+		switch (_p1.ctor) {
 			case 'AddDifficulty':
 				var difficulty_search = _user$project$Text_Search$difficulty_search(model.text_search);
-				var new_difficulty_search = A3(_user$project$Text_Search_Difficulty$select_difficulty, difficulty_search, _p0._0, _p0._1);
+				var new_difficulty_search = A3(_user$project$Text_Search_Difficulty$select_difficulty, difficulty_search, _p1._0, _p1._1);
 				var new_text_search = A2(_user$project$Text_Search$set_difficulty_search, model.text_search, new_difficulty_search);
 				return {
 					ctor: '_Tuple2',
@@ -11091,7 +11125,7 @@ var _user$project$Main$update = F2(
 			case 'SelectTag':
 				var tag_search = _user$project$Text_Search$tag_search(model.text_search);
 				var tag_search_input_id = _user$project$Text_Search_Tag$input_id(tag_search);
-				var new_tag_search = A3(_user$project$Text_Search_Tag$select_tag, tag_search, _p0._0, true);
+				var new_tag_search = A3(_user$project$Text_Search_Tag$select_tag, tag_search, _p1._0, true);
 				var new_text_search = A2(_user$project$Text_Search$set_tag_search, model.text_search, new_tag_search);
 				return {
 					ctor: '_Tuple2',
@@ -11114,7 +11148,7 @@ var _user$project$Main$update = F2(
 				};
 			case 'DeselectTag':
 				var tag_search = _user$project$Text_Search$tag_search(model.text_search);
-				var new_tag_search = A3(_user$project$Text_Search_Tag$select_tag, tag_search, _p0._0, false);
+				var new_tag_search = A3(_user$project$Text_Search_Tag$select_tag, tag_search, _p1._0, false);
 				var new_text_search = A2(_user$project$Text_Search$set_tag_search, model.text_search, new_tag_search);
 				return {
 					ctor: '_Tuple2',
@@ -11127,17 +11161,17 @@ var _user$project$Main$update = F2(
 					_1: _user$project$Main$update_results(new_text_search)
 				};
 			default:
-				var _p1 = _p0._0;
-				if (_p1.ctor === 'Ok') {
+				var _p2 = _p1._0;
+				if (_p2.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{results: _p1._0}),
+							{results: _p2._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p2 = A2(_elm_lang$core$Debug$log, 'error retrieving results', _p1._0);
+					var _p3 = A2(_elm_lang$core$Debug$log, 'error retrieving results', _p2._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 		}
@@ -11181,12 +11215,12 @@ var _user$project$Main$AddDifficulty = F2(
 		return {ctor: 'AddDifficulty', _0: a, _1: b};
 	});
 var _user$project$Main$view_difficulties = function (difficulty_search) {
-	var view_difficulty = function (_p3) {
-		var _p4 = _p3;
-		var _p6 = _p4._0;
-		var _p5 = _p4._1;
-		var label = _user$project$Text_Search_Option$label(_p5);
-		var selected = _user$project$Text_Search_Option$selected(_p5);
+	var view_difficulty = function (_p4) {
+		var _p5 = _p4;
+		var _p7 = _p5._0;
+		var _p6 = _p5._1;
+		var label = _user$project$Text_Search_Option$label(_p6);
+		var selected = _user$project$Text_Search_Option$selected(_p6);
 		return A2(
 			_elm_lang$html$Html$div,
 			{ctor: '[]'},
@@ -11205,7 +11239,7 @@ var _user$project$Main$view_difficulties = function (difficulty_search) {
 								_1: {
 									ctor: '::',
 									_0: _elm_lang$html$Html_Events$onCheck(
-										_user$project$Main$AddDifficulty(_p6)),
+										_user$project$Main$AddDifficulty(_p7)),
 									_1: {ctor: '[]'}
 								}
 							},
@@ -11216,7 +11250,7 @@ var _user$project$Main$view_difficulties = function (difficulty_search) {
 							} : {ctor: '[]'}),
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text(_p6),
+							_0: _elm_lang$html$Html$text(_p7),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}

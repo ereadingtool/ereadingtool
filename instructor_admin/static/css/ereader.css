@@ -27,8 +27,8 @@ a {
 }
 
 .header {
-    grid-gap: 0;
     display: grid;
+    grid-gap: 0;
     grid-template-rows: 73px;
 
     grid-template-columns: 15% 5% 5% 75%;
@@ -122,49 +122,6 @@ a {
 
     grid-template-columns: 4% auto 4%;
     grid-auto-rows: 110px;
-}
-
-@media screen and (min-width:300px) and (max-width: 568px) {
-    .text_items {
-        margin-top: 2%;
-        display: grid;
-        grid-row-gap: 35px;
-        row-gap: 35px;
-
-        grid-template-columns: 4% auto 4%;
-        grid-auto-rows: 110px;
-    }
-
-    .item_property {
-        display: grid;
-
-        align-items: center;
-        justify-items: center;
-
-        font-size: 9px;
-    }
-
-    .sub_description {
-        color: #a4a4a4;
-        font-size: 9px;
-
-        display: block;
-
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-}
-
-.media {
-  display: flex;
-  flex-wrap: wrap;
-  margin-bottom: 2em;
-}
-
-.media > * {
-  flex: 1 1 250px;
-  margin: 10px;
 }
 
 .footer_items {

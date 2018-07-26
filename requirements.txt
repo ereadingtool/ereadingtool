@@ -4,3 +4,4 @@ ipython
 rjsmin
 django-csp
 hypothesis[django]
+jsonschema

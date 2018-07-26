@@ -167,13 +167,20 @@ view_search_results : List Text.Model.TextListItem  -> Html Msg
 view_search_results text_list_items =
   let
     view_search_result text_item =
-      div [class "search_result"] [
-        div [] [ Html.text text_item.title, div [class "sub_description"] [ Html.text "Title" ] ]
-      , div [] [ Html.text text_item.difficulty, div [class "sub_description"] [ Html.text "Difficulty" ] ]
-      , div [] [ Html.text (toString text_item.text_section_count)
-               , div [class "sub_description"] [ Html.text "Sections" ] ]
-      , div [] [ Html.text "1 / 4 sections complete", div [class "sub_description"] [ Html.text "progress" ] ]
-      ]
+      let
+        tags =
+          (case text_item.tags of
+            Just tags -> String.join ", " tags
+            Nothing -> "")
+      in
+        div [class "search_result"] [
+          div [] [ Html.text text_item.title, div [class "sub_description"] [ Html.text "Title" ] ]
+        , div [] [ Html.text text_item.difficulty, div [class "sub_description"] [ Html.text "Difficulty" ] ]
+        , div [] [ Html.text tags, div [class "sub_description"] [ Html.text "Tags" ] ]
+        , div [] [ Html.text (toString text_item.text_section_count)
+                 , div [class "sub_description"] [ Html.text "Sections" ] ]
+        , div [] [ Html.text "1 / 4 sections complete", div [class "sub_description"] [ Html.text "progress" ] ]
+        ]
   in
     div [attribute "id" "text_search_results"] (List.map view_search_result text_list_items)
 
