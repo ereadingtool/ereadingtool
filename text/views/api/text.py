@@ -21,13 +21,15 @@ from text.models import TextDifficulty, Text, TextSection
 
 class TextAPIView(LoginRequiredMixin, View):
     login_url = reverse_lazy('instructor-login')
+    allowed_methods = ['get', 'put', 'post', 'delete']
 
     model = Text
 
-    allowed_methods = ['get', 'put', 'post', 'delete']
+    difficulties = {difficulty: 1 for difficulty in TextDifficulty.difficulty_keys()}
+    tags = {tag.name: 1 for tag in Text.tag_choices()}
 
     @classmethod
-    def form_validation_errors(cls, errors: Dict, parent_key: str, form: ModelForm) -> Dict:
+    def form_validation_errors(cls, errors: Dict, parent_key: AnyStr, form: ModelForm) -> Dict:
         for k in form.errors.keys():
             errors['_'.join([parent_key, k])] = '. '.join([err for err in form.errors[k]])
 
@@ -196,6 +198,17 @@ class TextAPIView(LoginRequiredMixin, View):
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         filter_by = {}
 
+        difficulties = request.GET.getlist('difficulty')
+        tags = request.GET.getlist('tag')
+
+        valid_difficulties = all(list(map(lambda difficulty: difficulty in self.difficulties, difficulties)))
+        valid_tags = all(list(map(lambda tag: tag in self.tags, tags)))
+
+        if not (valid_difficulties or valid_tags):
+            return HttpResponseServerError(
+                json.dumps(
+                    {'errors': {'text': "something went wrong"}}), status=400)
+
         if 'difficulties' in request.GET.keys():
             return HttpResponse(json.dumps({d.slug: d.name for d in TextDifficulty.objects.all()}))
 
@@ -216,10 +229,10 @@ class TextAPIView(LoginRequiredMixin, View):
                         {'errors': {'text': "text with id {0} does not exist".format(kwargs['pk'])}}), status=400)
 
         if 'difficulty' in request.GET.keys():
-            filter_by['difficulty__slug__in'] = request.GET.getlist('difficulty')
+            filter_by['difficulty__slug__in'] = difficulties
 
         if 'tag' in request.GET.keys():
-            filter_by['tags__name__in'] = request.GET.getlist('tag')
+            filter_by['tags__name_in'] = tags
 
         texts = [text.to_summary_dict() for text in self.model.objects.filter(**filter_by)]
 

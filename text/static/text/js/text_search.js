@@ -11217,44 +11217,34 @@ var _user$project$Main$AddDifficulty = F2(
 var _user$project$Main$view_difficulties = function (difficulty_search) {
 	var view_difficulty = function (_p4) {
 		var _p5 = _p4;
-		var _p7 = _p5._0;
 		var _p6 = _p5._1;
 		var label = _user$project$Text_Search_Option$label(_p6);
 		var selected = _user$project$Text_Search_Option$selected(_p6);
 		return A2(
 			_elm_lang$html$Html$div,
-			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'difficulty_option', _1: true},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'difficulty_option_selected', _1: selected},
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(
+						A2(_user$project$Main$AddDifficulty, _p5._0, !selected)),
+					_1: {ctor: '[]'}
+				}
+			},
 			{
 				ctor: '::',
 				_0: _elm_lang$html$Html$text(label),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$input,
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							{
-								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'checkbox'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onCheck(
-										_user$project$Main$AddDifficulty(_p7)),
-									_1: {ctor: '[]'}
-								}
-							},
-							selected ? {
-								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'checked', 'true'),
-								_1: {ctor: '[]'}
-							} : {ctor: '[]'}),
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(_p7),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				}
+				_1: {ctor: '[]'}
 			});
 	};
 	var difficulties = _user$project$Text_Search_Difficulty$options(difficulty_search);

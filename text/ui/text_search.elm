@@ -138,13 +138,9 @@ view_difficulties difficulty_search =
         selected = Text.Search.Option.selected difficulty_search_option
         label = Text.Search.Option.label difficulty_search_option
       in
-        div [] [
+        div [classList [("difficulty_option", True), ("difficulty_option_selected", selected)]
+            , onClick (AddDifficulty value (not selected))] [
           Html.text label
-        , Html.input
-            ([attribute "type" "checkbox", onCheck (AddDifficulty value)] ++
-              (if selected then [attribute "checked" "true"] else [])) [
-            Html.text value
-          ]
         ]
   in
     List.map view_difficulty <| List.map (\option -> (Text.Search.Option.value option, option)) difficulties
