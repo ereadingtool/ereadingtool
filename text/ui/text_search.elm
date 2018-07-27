@@ -181,11 +181,12 @@ view_search_results text_list_items =
     div [attribute "id" "text_search_results"] (List.map view_search_result text_list_items)
 
 view_search_footer : Model -> Html Msg
-view_search_footer model = div [attribute "id" "footer_items"] [
+view_search_footer model =
+  div [attribute "id" "footer_items"] [
     div [attribute "id" "footer", class "message"] [
         Html.text <| "Showing " ++ toString (List.length model.results) ++ " entries"
     ]
- ]
+  ]
 
 view_content : Model -> Html Msg
 view_content model =

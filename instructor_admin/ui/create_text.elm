@@ -271,7 +271,7 @@ update msg model = case msg of
       let
         text_intro_attrs =
           Text.Field.text_intro_attrs (Text.Field.intro (Text.Component.text_fields model.text_component))
-        text_intro_attrs_id = text_intro_attrs.id
+        text_intro_attrs_id = text_intro_attrs.input_id
       in
         if (ck_id == text_intro_attrs_id) then
           ({ model | text_component =

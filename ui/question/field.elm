@@ -131,7 +131,6 @@ set_answer_correct (QuestionField question attr answers) answer_field =
     QuestionField question attr
       (Array.map (\a -> (if (index a) == answer_index then (correct a True) else (correct a False))) answers)
 
-
 question_field_for_answer : Array QuestionField -> AnswerField -> Maybe QuestionField
 question_field_for_answer question_fields answer_field =
   let
