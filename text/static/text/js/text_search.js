@@ -10851,6 +10851,8 @@ var _user$project$Views$view_header = F2(
 	});
 
 var _user$project$Main$view_search_footer = function (model) {
+	var results_length = _elm_lang$core$List$length(model.results);
+	var entries = _elm_lang$core$Native_Utils.eq(results_length, 1) ? 'entry' : 'entries';
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -10875,13 +10877,21 @@ var _user$project$Main$view_search_footer = function (model) {
 					ctor: '::',
 					_0: _elm_lang$html$Html$text(
 						A2(
-							_elm_lang$core$Basics_ops['++'],
-							'Showing ',
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								_elm_lang$core$Basics$toString(
-									_elm_lang$core$List$length(model.results)),
-								' entries'))),
+							_elm_lang$core$String$join,
+							' ',
+							{
+								ctor: '::',
+								_0: 'Showing',
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$core$Basics$toString(results_length),
+									_1: {
+										ctor: '::',
+										_0: entries,
+										_1: {ctor: '[]'}
+									}
+								}
+							})),
 					_1: {ctor: '[]'}
 				}),
 			_1: {ctor: '[]'}
@@ -10908,10 +10918,25 @@ var _user$project$Main$view_search_results = function (text_list_items) {
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$div,
-					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(text_item.title),
+						_0: _elm_lang$html$Html_Attributes$class('result_item'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('result_item_title'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(text_item.title),
+								_1: {ctor: '[]'}
+							}),
 						_1: {
 							ctor: '::',
 							_0: A2(
@@ -10933,10 +10958,25 @@ var _user$project$Main$view_search_results = function (text_list_items) {
 					ctor: '::',
 					_0: A2(
 						_elm_lang$html$Html$div,
-						{ctor: '[]'},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text(text_item.difficulty),
+							_0: _elm_lang$html$Html_Attributes$class('result_item'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('result_item_title'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(text_item.difficulty),
+									_1: {ctor: '[]'}
+								}),
 							_1: {
 								ctor: '::',
 								_0: A2(
@@ -10958,10 +10998,26 @@ var _user$project$Main$view_search_results = function (text_list_items) {
 						ctor: '::',
 						_0: A2(
 							_elm_lang$html$Html$div,
-							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(tags),
+								_0: _elm_lang$html$Html_Attributes$class('result_item'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('result_item_title'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text(
+											_elm_lang$core$Basics$toString(text_item.text_section_count)),
+										_1: {ctor: '[]'}
+									}),
 								_1: {
 									ctor: '::',
 									_0: A2(
@@ -10973,7 +11029,7 @@ var _user$project$Main$view_search_results = function (text_list_items) {
 										},
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html$text('Tags'),
+											_0: _elm_lang$html$Html$text('Sections'),
 											_1: {ctor: '[]'}
 										}),
 									_1: {ctor: '[]'}
@@ -10983,11 +11039,25 @@ var _user$project$Main$view_search_results = function (text_list_items) {
 							ctor: '::',
 							_0: A2(
 								_elm_lang$html$Html$div,
-								{ctor: '[]'},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text(
-										_elm_lang$core$Basics$toString(text_item.text_section_count)),
+									_0: _elm_lang$html$Html_Attributes$class('result_item'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$div,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('result_item_title'),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text('1 / 4 sections complete'),
+											_1: {ctor: '[]'}
+										}),
 									_1: {
 										ctor: '::',
 										_0: A2(
@@ -10999,7 +11069,7 @@ var _user$project$Main$view_search_results = function (text_list_items) {
 											},
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html$text('Sections'),
+												_0: _elm_lang$html$Html$text('Progress'),
 												_1: {ctor: '[]'}
 											}),
 										_1: {ctor: '[]'}
@@ -11009,10 +11079,25 @@ var _user$project$Main$view_search_results = function (text_list_items) {
 								ctor: '::',
 								_0: A2(
 									_elm_lang$html$Html$div,
-									{ctor: '[]'},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text('1 / 4 sections complete'),
+										_0: _elm_lang$html$Html_Attributes$class('result_item'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$div,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('result_item_title'),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text(tags),
+												_1: {ctor: '[]'}
+											}),
 										_1: {
 											ctor: '::',
 											_0: A2(
@@ -11024,7 +11109,7 @@ var _user$project$Main$view_search_results = function (text_list_items) {
 												},
 												{
 													ctor: '::',
-													_0: _elm_lang$html$Html$text('progress'),
+													_0: _elm_lang$html$Html$text('Tags'),
 													_1: {ctor: '[]'}
 												}),
 											_1: {ctor: '[]'}

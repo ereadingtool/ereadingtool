@@ -170,23 +170,41 @@ view_search_results text_list_items =
             Nothing -> "")
       in
         div [class "search_result"] [
-          div [] [ Html.text text_item.title, div [class "sub_description"] [ Html.text "Title" ] ]
-        , div [] [ Html.text text_item.difficulty, div [class "sub_description"] [ Html.text "Difficulty" ] ]
-        , div [] [ Html.text tags, div [class "sub_description"] [ Html.text "Tags" ] ]
-        , div [] [ Html.text (toString text_item.text_section_count)
-                 , div [class "sub_description"] [ Html.text "Sections" ] ]
-        , div [] [ Html.text "1 / 4 sections complete", div [class "sub_description"] [ Html.text "progress" ] ]
+          div [class "result_item"] [
+            div [class "result_item_title"] [ Html.text text_item.title ]
+          , div [class "sub_description"] [ Html.text "Title" ]
+          ]
+        , div [class "result_item"] [
+            div [class "result_item_title"] [ Html.text text_item.difficulty ]
+          , div [class "sub_description"] [ Html.text "Difficulty" ]
+          ]
+        , div [class "result_item"] [
+            div [class "result_item_title"] [ Html.text (toString text_item.text_section_count) ]
+          , div [class "sub_description"] [ Html.text "Sections" ]
+          ]
+        , div [class "result_item"] [
+            div [class "result_item_title"] [ Html.text "1 / 4 sections complete" ]
+          , div [class "sub_description"] [ Html.text "Progress" ]
+          ]
+        , div [class "result_item"] [
+            div [class "result_item_title"] [ Html.text tags ]
+          , div [class "sub_description"] [ Html.text "Tags" ]
+          ]
         ]
   in
     div [attribute "id" "text_search_results"] (List.map view_search_result text_list_items)
 
 view_search_footer : Model -> Html Msg
 view_search_footer model =
-  div [attribute "id" "footer_items"] [
-    div [attribute "id" "footer", class "message"] [
-        Html.text <| "Showing " ++ toString (List.length model.results) ++ " entries"
+  let
+    results_length = List.length model.results
+    entries = if results_length == 1 then "entry" else "entries"
+  in
+    div [attribute "id" "footer_items"] [
+      div [attribute "id" "footer", class "message"] [
+          Html.text <| String.join " " ["Showing", toString results_length, entries]
+      ]
     ]
-  ]
 
 view_content : Model -> Html Msg
 view_content model =
