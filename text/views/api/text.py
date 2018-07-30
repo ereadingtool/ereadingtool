@@ -232,7 +232,7 @@ class TextAPIView(LoginRequiredMixin, View):
             filter_by['difficulty__slug__in'] = difficulties
 
         if 'tag' in request.GET.keys():
-            filter_by['tags__name_in'] = tags
+            filter_by['tags__name__in'] = tags
 
         texts = [text.to_summary_dict() for text in self.model.objects.filter(**filter_by)]
 

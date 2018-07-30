@@ -70,15 +70,13 @@
 .sub_description {
     display: block;
 
-    align-items: center;
-    justify-items: center;
+    text-align: center;
 
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     color: #a4a4a4;
-    font-size: 14px;
-    font-weight: 300;
+    font-size: 17px;
 }
 
 #text_search_btn {
@@ -131,10 +129,32 @@
     filter: brightness(85%);
 }
 
+.text_tag {
+    cursor: pointer;
+    margin: 5px 5px 5px 5px;
+}
+
+.text_tag_selected {
+    background-color: #f6f6f6;
+    filter: brightness(85%);
+}
+
 .difficulty_option:hover {
     background-color: #f6f6f6;
     filter: brightness(85%);
 }
+
+
+.result_item_title {
+    text-align: center;
+}
+
+.result_item {
+    display: grid;
+
+    grid-template-rows: auto auto;
+}
+
 
 @media only screen and (max-width:480px) {
     .header {
@@ -179,34 +199,18 @@
         row-gap: 20px;
     }
 
-    .result_item {
-        display: grid;
-
-        grid-template-rows: auto auto;
-    }
-
     .search_result {
         grid-column: 1;
         display: flex;
         flex-direction: column;
 
+        font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 20px;
+
+        padding: 15px 15px 15px 15px;
+
         background: white;
 
         border: solid 0.5px lightgrey;
-    }
-
-    .result_item_title {
-        text-align: center;
-    }
-
-    .sub_description {
-        text-align: center;
-
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        color: #a4a4a4;
-        font-size: 14px;
-        font-weight: 300;
     }
 }

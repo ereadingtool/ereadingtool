@@ -1,4 +1,4 @@
-import Html exposing (Html, div, span, datalist, option)
+import Html exposing (Html, div, span, option)
 import Html.Attributes exposing (classList, class, attribute)
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
 
@@ -13,8 +13,6 @@ import Text.Search.Option
 import Text.Search.Tag exposing (TagSearch)
 import Text.Search.Difficulty exposing (DifficultySearch)
 
-import Text.Tags.View
-
 import Ports exposing (clearInputText)
 
 import Dict exposing (Dict)
@@ -28,8 +26,7 @@ import Flags exposing (CSRFToken)
 -- UPDATE
 type Msg =
    AddDifficulty String Bool
- | SelectTag String
- | DeselectTag String
+ | SelectTag String Bool
  | TextSearch (Result Http.Error (List Text.Model.TextListItem))
 
 type alias Flags = Flags.Flags { text_difficulties: List Text.Model.TextDifficulty, text_tags: List String }
@@ -84,23 +81,15 @@ update msg model =
       in
         ({ model | text_search = new_text_search, results = [] }, update_results new_text_search)
 
-    SelectTag tag_name ->
+    SelectTag tag_name selected ->
       let
         tag_search = Text.Search.tag_search model.text_search
         tag_search_input_id = Text.Search.Tag.input_id tag_search
-        new_tag_search = Text.Search.Tag.select_tag tag_search tag_name True
+        new_tag_search = Text.Search.Tag.select_tag tag_search tag_name selected
         new_text_search = Text.Search.set_tag_search model.text_search new_tag_search
       in
         ({ model | text_search = new_text_search, results = [] }
         , Cmd.batch [clearInputText tag_search_input_id, update_results new_text_search])
-
-    DeselectTag tag_name ->
-      let
-        tag_search = Text.Search.tag_search model.text_search
-        new_tag_search = Text.Search.Tag.select_tag tag_search tag_name False
-        new_text_search = Text.Search.set_tag_search model.text_search new_tag_search
-      in
-        ({ model | text_search = new_text_search, results = [] }, update_results new_text_search)
 
     TextSearch result ->
       case result of
@@ -123,11 +112,21 @@ view_tags tag_search =
   let
     tags = Text.Search.Tag.optionsToDict tag_search
     tag_search_id = Text.Search.Tag.input_id tag_search
-    tag_list = Dict.keys tags
-    selected_tags = Dict.filter (\k v -> Text.Search.Option.selected v) tags
+    view_tag tag_search_option =
+      let
+        selected = Text.Search.Option.selected tag_search_option
+        tag_value = Text.Search.Option.value tag_search_option
+        tag_label = Text.Search.Option.label tag_search_option
+      in
+        div [ onClick (SelectTag tag_value (not selected))
+            , classList [("text_tag", True)
+            , ("text_tag_selected", selected)] ] [
+          Html.text tag_label
+        ]
   in
-    Text.Tags.View.view_tags tag_search_id
-      tag_list (Dict.map (\k v -> Text.Search.Option.label v) selected_tags) (onInput SelectTag, DeselectTag)
+    div [attribute "id" "text_tags"] [
+      div [class "text_tags"] (List.map view_tag (Dict.values tags))
+    ]
 
 view_difficulties : DifficultySearch -> List (Html Msg)
 view_difficulties difficulty_search =
@@ -179,12 +178,12 @@ view_search_results text_list_items =
           , div [class "sub_description"] [ Html.text "Difficulty" ]
           ]
         , div [class "result_item"] [
-            div [class "result_item_title"] [ Html.text (toString text_item.text_section_count) ]
-          , div [class "sub_description"] [ Html.text "Sections" ]
+            div [class "result_item_title"] [ Html.text text_item.author ]
+          , div [class "sub_description"] [ Html.text "Author" ]
           ]
         , div [class "result_item"] [
-            div [class "result_item_title"] [ Html.text "1 / 4 sections complete" ]
-          , div [class "sub_description"] [ Html.text "Progress" ]
+            div [class "result_item_title"] [ Html.text "1 / 4" ]
+          , div [class "sub_description"] [ Html.text "Sections Complete" ]
           ]
         , div [class "result_item"] [
             div [class "result_item_title"] [ Html.text tags ]

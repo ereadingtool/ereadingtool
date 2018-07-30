@@ -10364,137 +10364,6 @@ var _user$project$Text_Search$set_tag_search = F2(
 		return A3(_user$project$Text_Search$TextSearch, _p7._0, tag_search, _p7._2);
 	});
 
-var _user$project$Text_Tags_View$view_tag = F2(
-	function (delete_msg, tag) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('text_tag'),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$img,
-					{
-						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/cancel.svg'),
-						_1: {
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '13px'),
-							_1: {
-								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '13px'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('cursor'),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Events$onClick(
-											delete_msg(tag)),
-										_1: {ctor: '[]'}
-									}
-								}
-							}
-						}
-					},
-					{ctor: '[]'}),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(tag),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _user$project$Text_Tags_View$view_tags = F4(
-	function (id, tag_list, tags, _p0) {
-		var _p1 = _p0;
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_tags'),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$datalist,
-					{
-						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'tag_list'),
-						_1: {
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
-							_1: {ctor: '[]'}
-						}
-					},
-					A2(
-						_elm_lang$core$List$map,
-						function (tag) {
-							return A2(
-								_elm_lang$html$Html$option,
-								{
-									ctor: '::',
-									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', tag),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text(tag),
-									_1: {ctor: '[]'}
-								});
-						},
-						tag_list)),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('text_tags'),
-							_1: {ctor: '[]'}
-						},
-						A2(
-							_elm_lang$core$List$map,
-							_user$project$Text_Tags_View$view_tag(_p1._1),
-							_elm_lang$core$Dict$keys(tags))),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{ctor: '[]'},
-							{
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$input,
-									{
-										ctor: '::',
-										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', id),
-										_1: {
-											ctor: '::',
-											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'add tags..'),
-											_1: {
-												ctor: '::',
-												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'list', 'tag_list'),
-												_1: {
-													ctor: '::',
-													_0: _p1._0,
-													_1: {ctor: '[]'}
-												}
-											}
-										}
-									},
-									{ctor: '[]'}),
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					}
-				}
-			});
-	});
-
 var _user$project$Ports$selectAllInputText = _elm_lang$core$Native_Platform.outgoingPort(
 	'selectAllInputText',
 	function (v) {
@@ -11014,8 +10883,7 @@ var _user$project$Main$view_search_results = function (text_list_items) {
 									},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text(
-											_elm_lang$core$Basics$toString(text_item.text_section_count)),
+										_0: _elm_lang$html$Html$text(text_item.author),
 										_1: {ctor: '[]'}
 									}),
 								_1: {
@@ -11029,7 +10897,7 @@ var _user$project$Main$view_search_results = function (text_list_items) {
 										},
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html$text('Sections'),
+											_0: _elm_lang$html$Html$text('Author'),
 											_1: {ctor: '[]'}
 										}),
 									_1: {ctor: '[]'}
@@ -11055,7 +10923,7 @@ var _user$project$Main$view_search_results = function (text_list_items) {
 										},
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html$text('1 / 4 sections complete'),
+											_0: _elm_lang$html$Html$text('1 / 4'),
 											_1: {ctor: '[]'}
 										}),
 									_1: {
@@ -11069,7 +10937,7 @@ var _user$project$Main$view_search_results = function (text_list_items) {
 											},
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html$text('Progress'),
+												_0: _elm_lang$html$Html$text('Sections Complete'),
 												_1: {ctor: '[]'}
 											}),
 										_1: {ctor: '[]'}
@@ -11210,7 +11078,7 @@ var _user$project$Main$update = F2(
 			case 'SelectTag':
 				var tag_search = _user$project$Text_Search$tag_search(model.text_search);
 				var tag_search_input_id = _user$project$Text_Search_Tag$input_id(tag_search);
-				var new_tag_search = A3(_user$project$Text_Search_Tag$select_tag, tag_search, _p1._0, true);
+				var new_tag_search = A3(_user$project$Text_Search_Tag$select_tag, tag_search, _p1._0, _p1._1);
 				var new_text_search = A2(_user$project$Text_Search$set_tag_search, model.text_search, new_tag_search);
 				return {
 					ctor: '_Tuple2',
@@ -11231,20 +11099,6 @@ var _user$project$Main$update = F2(
 							}
 						})
 				};
-			case 'DeselectTag':
-				var tag_search = _user$project$Text_Search$tag_search(model.text_search);
-				var new_tag_search = A3(_user$project$Text_Search_Tag$select_tag, tag_search, _p1._0, false);
-				var new_text_search = A2(_user$project$Text_Search$set_tag_search, model.text_search, new_tag_search);
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							text_search: new_text_search,
-							results: {ctor: '[]'}
-						}),
-					_1: _user$project$Main$update_results(new_text_search)
-				};
 			default:
 				var _p2 = _p1._0;
 				if (_p2.ctor === 'Ok') {
@@ -11261,38 +11115,65 @@ var _user$project$Main$update = F2(
 				}
 		}
 	});
-var _user$project$Main$DeselectTag = function (a) {
-	return {ctor: 'DeselectTag', _0: a};
-};
-var _user$project$Main$SelectTag = function (a) {
-	return {ctor: 'SelectTag', _0: a};
-};
+var _user$project$Main$SelectTag = F2(
+	function (a, b) {
+		return {ctor: 'SelectTag', _0: a, _1: b};
+	});
 var _user$project$Main$view_tags = function (tag_search) {
+	var view_tag = function (tag_search_option) {
+		var tag_label = _user$project$Text_Search_Option$label(tag_search_option);
+		var tag_value = _user$project$Text_Search_Option$value(tag_search_option);
+		var selected = _user$project$Text_Search_Option$selected(tag_search_option);
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Events$onClick(
+					A2(_user$project$Main$SelectTag, tag_label, !selected)),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$classList(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'text_tag', _1: true},
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'text_tag_selected', _1: selected},
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(tag_label),
+				_1: {ctor: '[]'}
+			});
+	};
 	var tag_search_id = _user$project$Text_Search_Tag$input_id(tag_search);
 	var tags = _user$project$Text_Search_Tag$optionsToDict(tag_search);
-	var tag_list = _elm_lang$core$Dict$keys(tags);
-	var selected_tags = A2(
-		_elm_lang$core$Dict$filter,
-		F2(
-			function (k, v) {
-				return _user$project$Text_Search_Option$selected(v);
-			}),
-		tags);
-	return A4(
-		_user$project$Text_Tags_View$view_tags,
-		tag_search_id,
-		tag_list,
-		A2(
-			_elm_lang$core$Dict$map,
-			F2(
-				function (k, v) {
-					return _user$project$Text_Search_Option$label(v);
-				}),
-			selected_tags),
+	return A2(
+		_elm_lang$html$Html$div,
 		{
-			ctor: '_Tuple2',
-			_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$SelectTag),
-			_1: _user$project$Main$DeselectTag
+			ctor: '::',
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_tags'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('text_tags'),
+					_1: {ctor: '[]'}
+				},
+				A2(
+					_elm_lang$core$List$map,
+					view_tag,
+					_elm_lang$core$Dict$values(tags))),
+			_1: {ctor: '[]'}
 		});
 };
 var _user$project$Main$AddDifficulty = F2(
