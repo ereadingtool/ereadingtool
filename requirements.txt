@@ -5,3 +5,4 @@ rjsmin
 django-csp
 hypothesis[django]
 jsonschema
+channels

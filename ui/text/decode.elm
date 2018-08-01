@@ -51,6 +51,7 @@ textListItemDecoder =
     |> required "created_dt" date
     |> required "modified_dt" date
     |> required "text_section_count" Decode.int
+    |> required "uri" Decode.string
     |> required "write_locker" (Decode.nullable (Decode.string))
 
 

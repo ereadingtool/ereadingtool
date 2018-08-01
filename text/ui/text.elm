@@ -20,10 +20,11 @@ import Answer.Model exposing (Answer)
 
 import Views
 import Profile
-import Instructor.Profile
 
 import Config exposing (..)
 import Flags exposing (CSRFToken)
+
+import WebSocket
 
 
 type alias Index = Int
@@ -41,13 +42,7 @@ type Msg =
   | UpdateQuestions Section (Result Http.Error (Array Question))
   | Select Section TextQuestion TextAnswer Bool
 
-type alias Flags = {
-    csrftoken : CSRFToken
-  , profile_id : Profile.ProfileID
-  , profile_type : Profile.ProfileType
-  , instructor_profile : Maybe Instructor.Profile.InstructorProfileParams
-  , student_profile : Maybe Profile.StudentProfileParams
-  , text_id : Int }
+type alias Flags = Flags.Flags { text_id : Int }
 
 type alias Model = {
     text : Text
@@ -67,15 +62,31 @@ type Section = Section TextSection (TextItemAttributes {}) (Array TextQuestion)
 
 
 init : Flags -> (Model, Cmd Msg)
-init flags = ({
-    text=Texts.new_text
-  , sections=Array.fromList []
-  , profile=Profile.init_profile flags
-  , flags=flags}, updateText flags.text_id)
+init flags =
+  let
+    profile = Profile.init_profile flags
+  in
+    ({ text=Texts.new_text
+     , sections=Array.fromList []
+     , profile=profile
+     , flags=flags }
+    , Cmd.batch [start profile, updateText flags.text_id])
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
+
+start : Profile.Profile -> Cmd Msg
+start profile =
+  case profile of
+    Profile.Student profile ->
+      let
+        student_username = Profile.studentUserName profile
+        _ = Debug.log "username" student_username
+      in
+        WebSocket.send "ws://0.0.0.0:8000/text_reader/" ("{\"test\":\"" ++ student_username ++ "\"}")
+    _ ->
+      Cmd.none
 
 updateText : Int -> Cmd Msg
 updateText text_id =
@@ -165,13 +176,13 @@ main =
     }
 
 view_answer : Section -> TextQuestion -> TextAnswer -> Html Msg
-view_answer text_text text_question ((TextAnswer answer answer_attrs answer_selected) as text_answer) =
+view_answer text_section text_question ((TextAnswer answer answer_attrs answer_selected) as text_answer) =
   div [ classList [("answer", True)] ] [
    Html.input [
      attribute "id" answer_attrs.id
    , attribute "name" answer_attrs.name
    , attribute "type" "radio"
-   , onCheck (Select text_text text_question text_answer)
+   , onCheck (Select text_section text_question text_answer)
    , attribute "value" (toString answer.order)] []
  , Html.text answer.text
  , (if answer_selected then
@@ -185,29 +196,30 @@ view_question text_text ((TextQuestion question attrs answers) as text_question)
   ]
 
 view_questions : Section -> Html Msg
-view_questions ((Section text text_attr questions) as text_text) =
-  div [ classList[("questions", True)] ] (Array.toList <| Array.map (view_question text_text) questions)
+view_questions ((Section text text_attr questions) as text_section) =
+  div [ classList[("questions", True)] ] (Array.toList <| Array.map (view_question text_section) questions)
 
-view_text : Section -> Html Msg
-view_text ((Section text attrs questions) as text_text) =
-  div [ classList[("text", True)] ] <| [
+view_text_section : Section -> Html Msg
+view_text_section ((Section text attrs questions) as text_section) =
+  div [ classList[("text_section", True)] ] <| [
       div [classList [("text_body", True)]] (HtmlParser.Util.toVirtualDom <| HtmlParser.parse text.body)
-    , (view_questions text_text)
+    , (view_questions text_section)
   ]
 
-view_text_introduction : Model -> Html Msg
-view_text_introduction model =
-  div [attribute "id" "text_intro"] (HtmlParser.Util.toVirtualDom <| HtmlParser.parse model.text.introduction)
+view_text_introduction : Text -> Html Msg
+view_text_introduction text =
+  div [attribute "id" "text_intro"] (HtmlParser.Util.toVirtualDom <| HtmlParser.parse text.introduction)
 
 view_content : Model -> Html Msg
-view_content model = div [ classList [("text", True)] ] (Array.toList <| Array.map view_text model.sections)
+view_content model = div [ classList [("text", True)] ] <| [
+    view_text_introduction model.text
+  ] ++ (Array.toList <| Array.map view_text_section model.sections)
 
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
     (Views.view_header model.profile Nothing)
   , (Views.view_filter)
-  , (view_text_introduction model)
   , (view_content model)
   , (Views.view_footer)
   ]

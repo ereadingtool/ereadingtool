@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 
 # third-party apps
 INSTALLED_APPS += [
+    'channels',
 ]
 
 # project apps
@@ -55,6 +56,9 @@ INSTALLED_APPS += [
 ]
 
 AUTH_USER_MODEL = 'user.ReaderUser'
+
+ASGI_APPLICATION = 'ereadingtool.routing.application'
+CHANNEL_LAYERS = {}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

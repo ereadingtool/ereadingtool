@@ -1,7 +1,7 @@
 module Profile exposing (StudentProfile, studentProfile, studentDifficultyPreference, emptyStudentProfile,
   studentDifficulties, studentProfileDecoder, studentUserName, view_student_profile_header, retrieve_student_profile
   , view_profile_header, init_profile, ProfileID, ProfileType
-  , StudentProfileParams, Profile, emptyProfile, fromStudentProfile
+  , StudentProfileParams, Profile(..), emptyProfile, fromStudentProfile
   , fromInstructorProfile)
 
 import Text.Model as Text

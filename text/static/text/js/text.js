@@ -6989,11 +6989,17 @@ var _elm_lang$core$Json_Decode$Decoder = {ctor: 'Decoder'};
 
 var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode = _elm_lang$core$Json_Decode$succeed;
 var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$resolve = _elm_lang$core$Json_Decode$andThen(_elm_lang$core$Basics$identity);
-var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom = _elm_lang$core$Json_Decode$map2(
-	F2(
-		function (x, y) {
-			return y(x);
-		}));
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom = F2(
+	function (decoder, wrapped) {
+		return A3(
+			_elm_lang$core$Json_Decode$map2,
+			F2(
+				function (x, y) {
+					return x(y);
+				}),
+			wrapped,
+			decoder);
+	});
 var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$hardcoded = function (_p0) {
 	return _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom(
 		_elm_lang$core$Json_Decode$succeed(_p0));
@@ -7025,7 +7031,15 @@ var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optionalDecoder = F3(
 					return _elm_lang$core$Json_Decode$fail(_p2._0);
 				}
 			} else {
-				return _elm_lang$core$Json_Decode$succeed(fallback);
+				var _p3 = A2(
+					_elm_lang$core$Json_Decode$decodeValue,
+					_elm_lang$core$Json_Decode$keyValuePairs(_elm_lang$core$Json_Decode$value),
+					input);
+				if (_p3.ctor === 'Ok') {
+					return _elm_lang$core$Json_Decode$succeed(fallback);
+				} else {
+					return _elm_lang$core$Json_Decode$fail(_p3._0);
+				}
 			}
 		};
 		return A2(_elm_lang$core$Json_Decode$andThen, handleResult, _elm_lang$core$Json_Decode$value);
@@ -10375,6 +10389,10 @@ var _elm_community$json_extra$Json_Decode_Extra$andMap = _elm_lang$core$Json_Dec
 var _elm_community$json_extra$Json_Decode_Extra_ops = _elm_community$json_extra$Json_Decode_Extra_ops || {};
 _elm_community$json_extra$Json_Decode_Extra_ops['|:'] = _elm_lang$core$Basics$flip(_elm_community$json_extra$Json_Decode_Extra$andMap);
 
+var _elm_lang$core$Process$kill = _elm_lang$core$Native_Scheduler.kill;
+var _elm_lang$core$Process$sleep = _elm_lang$core$Native_Scheduler.sleep;
+var _elm_lang$core$Process$spawn = _elm_lang$core$Native_Scheduler.spawn;
+
 var _elm_lang$http$Native_Http = function() {
 
 
@@ -11076,6 +11094,541 @@ var _elm_lang$svg$Svg_Attributes$additive = _elm_lang$virtual_dom$VirtualDom$att
 var _elm_lang$svg$Svg_Attributes$accumulate = _elm_lang$virtual_dom$VirtualDom$attribute('accumulate');
 var _elm_lang$svg$Svg_Attributes$accelerate = _elm_lang$virtual_dom$VirtualDom$attribute('accelerate');
 var _elm_lang$svg$Svg_Attributes$accentHeight = _elm_lang$virtual_dom$VirtualDom$attribute('accent-height');
+
+var _elm_lang$websocket$Native_WebSocket = function() {
+
+function open(url, settings)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		try
+		{
+			var socket = new WebSocket(url);
+			socket.elm_web_socket = true;
+		}
+		catch(err)
+		{
+			return callback(_elm_lang$core$Native_Scheduler.fail({
+				ctor: err.name === 'SecurityError' ? 'BadSecurity' : 'BadArgs',
+				_0: err.message
+			}));
+		}
+
+		socket.addEventListener("open", function(event) {
+			callback(_elm_lang$core$Native_Scheduler.succeed(socket));
+		});
+
+		socket.addEventListener("message", function(event) {
+			_elm_lang$core$Native_Scheduler.rawSpawn(A2(settings.onMessage, socket, event.data));
+		});
+
+		socket.addEventListener("close", function(event) {
+			_elm_lang$core$Native_Scheduler.rawSpawn(settings.onClose({
+				code: event.code,
+				reason: event.reason,
+				wasClean: event.wasClean
+			}));
+		});
+
+		return function()
+		{
+			if (socket && socket.close)
+			{
+				socket.close();
+			}
+		};
+	});
+}
+
+function send(socket, string)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		var result =
+			socket.readyState === WebSocket.OPEN
+				? _elm_lang$core$Maybe$Nothing
+				: _elm_lang$core$Maybe$Just({ ctor: 'NotOpen' });
+
+		try
+		{
+			socket.send(string);
+		}
+		catch(err)
+		{
+			result = _elm_lang$core$Maybe$Just({ ctor: 'BadString' });
+		}
+
+		callback(_elm_lang$core$Native_Scheduler.succeed(result));
+	});
+}
+
+function close(code, reason, socket)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback) {
+		try
+		{
+			socket.close(code, reason);
+		}
+		catch(err)
+		{
+			return callback(_elm_lang$core$Native_Scheduler.fail(_elm_lang$core$Maybe$Just({
+				ctor: err.name === 'SyntaxError' ? 'BadReason' : 'BadCode'
+			})));
+		}
+		callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Maybe$Nothing));
+	});
+}
+
+function bytesQueued(socket)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback) {
+		callback(_elm_lang$core$Native_Scheduler.succeed(socket.bufferedAmount));
+	});
+}
+
+return {
+	open: F2(open),
+	send: F2(send),
+	close: F3(close),
+	bytesQueued: bytesQueued
+};
+
+}();
+
+var _elm_lang$websocket$WebSocket_LowLevel$bytesQueued = _elm_lang$websocket$Native_WebSocket.bytesQueued;
+var _elm_lang$websocket$WebSocket_LowLevel$send = _elm_lang$websocket$Native_WebSocket.send;
+var _elm_lang$websocket$WebSocket_LowLevel$closeWith = _elm_lang$websocket$Native_WebSocket.close;
+var _elm_lang$websocket$WebSocket_LowLevel$close = function (socket) {
+	return A2(
+		_elm_lang$core$Task$map,
+		_elm_lang$core$Basics$always(
+			{ctor: '_Tuple0'}),
+		A3(_elm_lang$websocket$WebSocket_LowLevel$closeWith, 1000, '', socket));
+};
+var _elm_lang$websocket$WebSocket_LowLevel$open = _elm_lang$websocket$Native_WebSocket.open;
+var _elm_lang$websocket$WebSocket_LowLevel$Settings = F2(
+	function (a, b) {
+		return {onMessage: a, onClose: b};
+	});
+var _elm_lang$websocket$WebSocket_LowLevel$WebSocket = {ctor: 'WebSocket'};
+var _elm_lang$websocket$WebSocket_LowLevel$BadArgs = {ctor: 'BadArgs'};
+var _elm_lang$websocket$WebSocket_LowLevel$BadSecurity = {ctor: 'BadSecurity'};
+var _elm_lang$websocket$WebSocket_LowLevel$BadReason = {ctor: 'BadReason'};
+var _elm_lang$websocket$WebSocket_LowLevel$BadCode = {ctor: 'BadCode'};
+var _elm_lang$websocket$WebSocket_LowLevel$BadString = {ctor: 'BadString'};
+var _elm_lang$websocket$WebSocket_LowLevel$NotOpen = {ctor: 'NotOpen'};
+
+var _elm_lang$websocket$WebSocket$closeConnection = function (connection) {
+	var _p0 = connection;
+	if (_p0.ctor === 'Opening') {
+		return _elm_lang$core$Process$kill(_p0._1);
+	} else {
+		return _elm_lang$websocket$WebSocket_LowLevel$close(_p0._0);
+	}
+};
+var _elm_lang$websocket$WebSocket$after = function (backoff) {
+	return (_elm_lang$core$Native_Utils.cmp(backoff, 1) < 0) ? _elm_lang$core$Task$succeed(
+		{ctor: '_Tuple0'}) : _elm_lang$core$Process$sleep(
+		_elm_lang$core$Basics$toFloat(
+			10 * Math.pow(2, backoff)));
+};
+var _elm_lang$websocket$WebSocket$removeQueue = F2(
+	function (name, state) {
+		return _elm_lang$core$Native_Utils.update(
+			state,
+			{
+				queues: A2(_elm_lang$core$Dict$remove, name, state.queues)
+			});
+	});
+var _elm_lang$websocket$WebSocket$updateSocket = F3(
+	function (name, connection, state) {
+		return _elm_lang$core$Native_Utils.update(
+			state,
+			{
+				sockets: A3(_elm_lang$core$Dict$insert, name, connection, state.sockets)
+			});
+	});
+var _elm_lang$websocket$WebSocket$add = F2(
+	function (value, maybeList) {
+		var _p1 = maybeList;
+		if (_p1.ctor === 'Nothing') {
+			return _elm_lang$core$Maybe$Just(
+				{
+					ctor: '::',
+					_0: value,
+					_1: {ctor: '[]'}
+				});
+		} else {
+			return _elm_lang$core$Maybe$Just(
+				{ctor: '::', _0: value, _1: _p1._0});
+		}
+	});
+var _elm_lang$websocket$WebSocket$buildSubDict = F2(
+	function (subs, dict) {
+		buildSubDict:
+		while (true) {
+			var _p2 = subs;
+			if (_p2.ctor === '[]') {
+				return dict;
+			} else {
+				if (_p2._0.ctor === 'Listen') {
+					var _v3 = _p2._1,
+						_v4 = A3(
+						_elm_lang$core$Dict$update,
+						_p2._0._0,
+						_elm_lang$websocket$WebSocket$add(_p2._0._1),
+						dict);
+					subs = _v3;
+					dict = _v4;
+					continue buildSubDict;
+				} else {
+					var _v5 = _p2._1,
+						_v6 = A3(
+						_elm_lang$core$Dict$update,
+						_p2._0._0,
+						function (_p3) {
+							return _elm_lang$core$Maybe$Just(
+								A2(
+									_elm_lang$core$Maybe$withDefault,
+									{ctor: '[]'},
+									_p3));
+						},
+						dict);
+					subs = _v5;
+					dict = _v6;
+					continue buildSubDict;
+				}
+			}
+		}
+	});
+var _elm_lang$websocket$WebSocket_ops = _elm_lang$websocket$WebSocket_ops || {};
+_elm_lang$websocket$WebSocket_ops['&>'] = F2(
+	function (t1, t2) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (_p4) {
+				return t2;
+			},
+			t1);
+	});
+var _elm_lang$websocket$WebSocket$sendMessagesHelp = F3(
+	function (cmds, socketsDict, queuesDict) {
+		sendMessagesHelp:
+		while (true) {
+			var _p5 = cmds;
+			if (_p5.ctor === '[]') {
+				return _elm_lang$core$Task$succeed(queuesDict);
+			} else {
+				var _p9 = _p5._1;
+				var _p8 = _p5._0._0;
+				var _p7 = _p5._0._1;
+				var _p6 = A2(_elm_lang$core$Dict$get, _p8, socketsDict);
+				if ((_p6.ctor === 'Just') && (_p6._0.ctor === 'Connected')) {
+					return A2(
+						_elm_lang$websocket$WebSocket_ops['&>'],
+						A2(_elm_lang$websocket$WebSocket_LowLevel$send, _p6._0._0, _p7),
+						A3(_elm_lang$websocket$WebSocket$sendMessagesHelp, _p9, socketsDict, queuesDict));
+				} else {
+					var _v9 = _p9,
+						_v10 = socketsDict,
+						_v11 = A3(
+						_elm_lang$core$Dict$update,
+						_p8,
+						_elm_lang$websocket$WebSocket$add(_p7),
+						queuesDict);
+					cmds = _v9;
+					socketsDict = _v10;
+					queuesDict = _v11;
+					continue sendMessagesHelp;
+				}
+			}
+		}
+	});
+var _elm_lang$websocket$WebSocket$subscription = _elm_lang$core$Native_Platform.leaf('WebSocket');
+var _elm_lang$websocket$WebSocket$command = _elm_lang$core$Native_Platform.leaf('WebSocket');
+var _elm_lang$websocket$WebSocket$State = F3(
+	function (a, b, c) {
+		return {sockets: a, queues: b, subs: c};
+	});
+var _elm_lang$websocket$WebSocket$init = _elm_lang$core$Task$succeed(
+	A3(_elm_lang$websocket$WebSocket$State, _elm_lang$core$Dict$empty, _elm_lang$core$Dict$empty, _elm_lang$core$Dict$empty));
+var _elm_lang$websocket$WebSocket$Send = F2(
+	function (a, b) {
+		return {ctor: 'Send', _0: a, _1: b};
+	});
+var _elm_lang$websocket$WebSocket$send = F2(
+	function (url, message) {
+		return _elm_lang$websocket$WebSocket$command(
+			A2(_elm_lang$websocket$WebSocket$Send, url, message));
+	});
+var _elm_lang$websocket$WebSocket$cmdMap = F2(
+	function (_p11, _p10) {
+		var _p12 = _p10;
+		return A2(_elm_lang$websocket$WebSocket$Send, _p12._0, _p12._1);
+	});
+var _elm_lang$websocket$WebSocket$KeepAlive = function (a) {
+	return {ctor: 'KeepAlive', _0: a};
+};
+var _elm_lang$websocket$WebSocket$keepAlive = function (url) {
+	return _elm_lang$websocket$WebSocket$subscription(
+		_elm_lang$websocket$WebSocket$KeepAlive(url));
+};
+var _elm_lang$websocket$WebSocket$Listen = F2(
+	function (a, b) {
+		return {ctor: 'Listen', _0: a, _1: b};
+	});
+var _elm_lang$websocket$WebSocket$listen = F2(
+	function (url, tagger) {
+		return _elm_lang$websocket$WebSocket$subscription(
+			A2(_elm_lang$websocket$WebSocket$Listen, url, tagger));
+	});
+var _elm_lang$websocket$WebSocket$subMap = F2(
+	function (func, sub) {
+		var _p13 = sub;
+		if (_p13.ctor === 'Listen') {
+			return A2(
+				_elm_lang$websocket$WebSocket$Listen,
+				_p13._0,
+				function (_p14) {
+					return func(
+						_p13._1(_p14));
+				});
+		} else {
+			return _elm_lang$websocket$WebSocket$KeepAlive(_p13._0);
+		}
+	});
+var _elm_lang$websocket$WebSocket$Connected = function (a) {
+	return {ctor: 'Connected', _0: a};
+};
+var _elm_lang$websocket$WebSocket$Opening = F2(
+	function (a, b) {
+		return {ctor: 'Opening', _0: a, _1: b};
+	});
+var _elm_lang$websocket$WebSocket$BadOpen = function (a) {
+	return {ctor: 'BadOpen', _0: a};
+};
+var _elm_lang$websocket$WebSocket$GoodOpen = F2(
+	function (a, b) {
+		return {ctor: 'GoodOpen', _0: a, _1: b};
+	});
+var _elm_lang$websocket$WebSocket$Die = function (a) {
+	return {ctor: 'Die', _0: a};
+};
+var _elm_lang$websocket$WebSocket$Receive = F2(
+	function (a, b) {
+		return {ctor: 'Receive', _0: a, _1: b};
+	});
+var _elm_lang$websocket$WebSocket$open = F2(
+	function (name, router) {
+		return A2(
+			_elm_lang$websocket$WebSocket_LowLevel$open,
+			name,
+			{
+				onMessage: F2(
+					function (_p15, msg) {
+						return A2(
+							_elm_lang$core$Platform$sendToSelf,
+							router,
+							A2(_elm_lang$websocket$WebSocket$Receive, name, msg));
+					}),
+				onClose: function (details) {
+					return A2(
+						_elm_lang$core$Platform$sendToSelf,
+						router,
+						_elm_lang$websocket$WebSocket$Die(name));
+				}
+			});
+	});
+var _elm_lang$websocket$WebSocket$attemptOpen = F3(
+	function (router, backoff, name) {
+		var badOpen = function (_p16) {
+			return A2(
+				_elm_lang$core$Platform$sendToSelf,
+				router,
+				_elm_lang$websocket$WebSocket$BadOpen(name));
+		};
+		var goodOpen = function (ws) {
+			return A2(
+				_elm_lang$core$Platform$sendToSelf,
+				router,
+				A2(_elm_lang$websocket$WebSocket$GoodOpen, name, ws));
+		};
+		var actuallyAttemptOpen = A2(
+			_elm_lang$core$Task$onError,
+			badOpen,
+			A2(
+				_elm_lang$core$Task$andThen,
+				goodOpen,
+				A2(_elm_lang$websocket$WebSocket$open, name, router)));
+		return _elm_lang$core$Process$spawn(
+			A2(
+				_elm_lang$websocket$WebSocket_ops['&>'],
+				_elm_lang$websocket$WebSocket$after(backoff),
+				actuallyAttemptOpen));
+	});
+var _elm_lang$websocket$WebSocket$onEffects = F4(
+	function (router, cmds, subs, state) {
+		var newSubs = A2(_elm_lang$websocket$WebSocket$buildSubDict, subs, _elm_lang$core$Dict$empty);
+		var cleanup = function (newQueues) {
+			var rightStep = F3(
+				function (name, connection, getNewSockets) {
+					return A2(
+						_elm_lang$websocket$WebSocket_ops['&>'],
+						_elm_lang$websocket$WebSocket$closeConnection(connection),
+						getNewSockets);
+				});
+			var bothStep = F4(
+				function (name, _p17, connection, getNewSockets) {
+					return A2(
+						_elm_lang$core$Task$map,
+						A2(_elm_lang$core$Dict$insert, name, connection),
+						getNewSockets);
+				});
+			var leftStep = F3(
+				function (name, _p18, getNewSockets) {
+					return A2(
+						_elm_lang$core$Task$andThen,
+						function (newSockets) {
+							return A2(
+								_elm_lang$core$Task$andThen,
+								function (pid) {
+									return _elm_lang$core$Task$succeed(
+										A3(
+											_elm_lang$core$Dict$insert,
+											name,
+											A2(_elm_lang$websocket$WebSocket$Opening, 0, pid),
+											newSockets));
+								},
+								A3(_elm_lang$websocket$WebSocket$attemptOpen, router, 0, name));
+						},
+						getNewSockets);
+				});
+			var newEntries = A2(
+				_elm_lang$core$Dict$union,
+				newQueues,
+				A2(
+					_elm_lang$core$Dict$map,
+					F2(
+						function (k, v) {
+							return {ctor: '[]'};
+						}),
+					newSubs));
+			var collectNewSockets = A6(
+				_elm_lang$core$Dict$merge,
+				leftStep,
+				bothStep,
+				rightStep,
+				newEntries,
+				state.sockets,
+				_elm_lang$core$Task$succeed(_elm_lang$core$Dict$empty));
+			return A2(
+				_elm_lang$core$Task$andThen,
+				function (newSockets) {
+					return _elm_lang$core$Task$succeed(
+						A3(_elm_lang$websocket$WebSocket$State, newSockets, newQueues, newSubs));
+				},
+				collectNewSockets);
+		};
+		var sendMessagesGetNewQueues = A3(_elm_lang$websocket$WebSocket$sendMessagesHelp, cmds, state.sockets, state.queues);
+		return A2(_elm_lang$core$Task$andThen, cleanup, sendMessagesGetNewQueues);
+	});
+var _elm_lang$websocket$WebSocket$onSelfMsg = F3(
+	function (router, selfMsg, state) {
+		var _p19 = selfMsg;
+		switch (_p19.ctor) {
+			case 'Receive':
+				var sends = A2(
+					_elm_lang$core$List$map,
+					function (tagger) {
+						return A2(
+							_elm_lang$core$Platform$sendToApp,
+							router,
+							tagger(_p19._1));
+					},
+					A2(
+						_elm_lang$core$Maybe$withDefault,
+						{ctor: '[]'},
+						A2(_elm_lang$core$Dict$get, _p19._0, state.subs)));
+				return A2(
+					_elm_lang$websocket$WebSocket_ops['&>'],
+					_elm_lang$core$Task$sequence(sends),
+					_elm_lang$core$Task$succeed(state));
+			case 'Die':
+				var _p21 = _p19._0;
+				var _p20 = A2(_elm_lang$core$Dict$get, _p21, state.sockets);
+				if (_p20.ctor === 'Nothing') {
+					return _elm_lang$core$Task$succeed(state);
+				} else {
+					return A2(
+						_elm_lang$core$Task$andThen,
+						function (pid) {
+							return _elm_lang$core$Task$succeed(
+								A3(
+									_elm_lang$websocket$WebSocket$updateSocket,
+									_p21,
+									A2(_elm_lang$websocket$WebSocket$Opening, 0, pid),
+									state));
+						},
+						A3(_elm_lang$websocket$WebSocket$attemptOpen, router, 0, _p21));
+				}
+			case 'GoodOpen':
+				var _p24 = _p19._1;
+				var _p23 = _p19._0;
+				var _p22 = A2(_elm_lang$core$Dict$get, _p23, state.queues);
+				if (_p22.ctor === 'Nothing') {
+					return _elm_lang$core$Task$succeed(
+						A3(
+							_elm_lang$websocket$WebSocket$updateSocket,
+							_p23,
+							_elm_lang$websocket$WebSocket$Connected(_p24),
+							state));
+				} else {
+					return A3(
+						_elm_lang$core$List$foldl,
+						F2(
+							function (msg, task) {
+								return A2(
+									_elm_lang$websocket$WebSocket_ops['&>'],
+									A2(_elm_lang$websocket$WebSocket_LowLevel$send, _p24, msg),
+									task);
+							}),
+						_elm_lang$core$Task$succeed(
+							A2(
+								_elm_lang$websocket$WebSocket$removeQueue,
+								_p23,
+								A3(
+									_elm_lang$websocket$WebSocket$updateSocket,
+									_p23,
+									_elm_lang$websocket$WebSocket$Connected(_p24),
+									state))),
+						_p22._0);
+				}
+			default:
+				var _p27 = _p19._0;
+				var _p25 = A2(_elm_lang$core$Dict$get, _p27, state.sockets);
+				if (_p25.ctor === 'Nothing') {
+					return _elm_lang$core$Task$succeed(state);
+				} else {
+					if (_p25._0.ctor === 'Opening') {
+						var _p26 = _p25._0._0;
+						return A2(
+							_elm_lang$core$Task$andThen,
+							function (pid) {
+								return _elm_lang$core$Task$succeed(
+									A3(
+										_elm_lang$websocket$WebSocket$updateSocket,
+										_p27,
+										A2(_elm_lang$websocket$WebSocket$Opening, _p26 + 1, pid),
+										state));
+							},
+							A3(_elm_lang$websocket$WebSocket$attemptOpen, router, _p26 + 1, _p27));
+					} else {
+						return _elm_lang$core$Task$succeed(state);
+					}
+				}
+		}
+	});
+_elm_lang$core$Native_Platform.effectManagers['WebSocket'] = {pkg: 'elm-lang/websocket', init: _elm_lang$websocket$WebSocket$init, onEffects: _elm_lang$websocket$WebSocket$onEffects, onSelfMsg: _elm_lang$websocket$WebSocket$onSelfMsg, tag: 'fx', cmdMap: _elm_lang$websocket$WebSocket$cmdMap, subMap: _elm_lang$websocket$WebSocket$subMap};
 
 var _jinjor$elm_html_parser$Escape$dict = _elm_lang$core$Dict$fromList(
 	A2(
@@ -20813,7 +21366,9 @@ var _user$project$Text_Model$TextListItem = function (a) {
 								return function (i) {
 									return function (j) {
 										return function (k) {
-											return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, text_section_count: j, write_locker: k};
+											return function (l) {
+												return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, text_section_count: j, uri: k, write_locker: l};
+											};
 										};
 									};
 								};
@@ -21090,46 +21645,50 @@ var _user$project$Text_Decode$textListItemDecoder = A3(
 	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'text_section_count',
-		_elm_lang$core$Json_Decode$int,
+		'uri',
+		_elm_lang$core$Json_Decode$string,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'modified_dt',
-			_elm_community$json_extra$Json_Decode_Extra$date,
+			'text_section_count',
+			_elm_lang$core$Json_Decode$int,
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'created_dt',
+				'modified_dt',
 				_elm_community$json_extra$Json_Decode_Extra$date,
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'tags',
-					_elm_lang$core$Json_Decode$nullable(
-						_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
+					'created_dt',
+					_elm_community$json_extra$Json_Decode_Extra$date,
 					A3(
 						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'last_modified_by',
-						_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+						'tags',
+						_elm_lang$core$Json_Decode$nullable(
+							_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
 						A3(
 							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'created_by',
-							_elm_lang$core$Json_Decode$string,
+							'last_modified_by',
+							_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 							A3(
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'difficulty',
+								'created_by',
 								_elm_lang$core$Json_Decode$string,
 								A3(
 									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-									'author',
+									'difficulty',
 									_elm_lang$core$Json_Decode$string,
 									A3(
 										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-										'title',
+										'author',
 										_elm_lang$core$Json_Decode$string,
 										A3(
 											_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-											'id',
-											_elm_lang$core$Json_Decode$int,
-											_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextListItem))))))))))));
+											'title',
+											_elm_lang$core$Json_Decode$string,
+											A3(
+												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+												'id',
+												_elm_lang$core$Json_Decode$int,
+												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextListItem)))))))))))));
 var _user$project$Text_Decode$textListDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textListItemDecoder);
 var _user$project$Text_Decode$textDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -21546,7 +22105,7 @@ var _user$project$Views$view_header = F2(
 			});
 	});
 
-var _user$project$Main$view_text_introduction = function (model) {
+var _user$project$Main$view_text_introduction = function (text) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -21555,7 +22114,7 @@ var _user$project$Main$view_text_introduction = function (model) {
 			_1: {ctor: '[]'}
 		},
 		_jinjor$elm_html_parser$HtmlParser_Util$toVirtualDom(
-			_jinjor$elm_html_parser$HtmlParser$parse(model.text.introduction)));
+			_jinjor$elm_html_parser$HtmlParser$parse(text.introduction)));
 };
 var _user$project$Main$set_text_section = F2(
 	function (text_texts, _p0) {
@@ -21567,13 +22126,25 @@ var _user$project$Main$text_section = F2(
 		var _p3 = _p2;
 		return A2(_elm_lang$core$Array$get, _p3._1.text_section_index, text_sections);
 	});
+var _user$project$Main$start = function (profile) {
+	var _p4 = profile;
+	if (_p4.ctor === 'Student') {
+		var student_username = _user$project$Profile$studentUserName(_p4._0);
+		var _p5 = A2(_elm_lang$core$Debug$log, 'username', student_username);
+		return A2(
+			_elm_lang$websocket$WebSocket$send,
+			'ws://0.0.0.0:8000/text_reader/',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'{\"test\":\"',
+				A2(_elm_lang$core$Basics_ops['++'], student_username, '\"}')));
+	} else {
+		return _elm_lang$core$Platform_Cmd$none;
+	}
+};
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
-var _user$project$Main$Flags = F6(
-	function (a, b, c, d, e, f) {
-		return {csrftoken: a, profile_id: b, profile_type: c, instructor_profile: d, student_profile: e, text_id: f};
-	});
 var _user$project$Main$Model = F4(
 	function (a, b, c, d) {
 		return {text: a, profile: b, sections: c, flags: d};
@@ -21583,10 +22154,10 @@ var _user$project$Main$Select = F4(
 		return {ctor: 'Select', _0: a, _1: b, _2: c, _3: d};
 	});
 var _user$project$Main$view_answer = F3(
-	function (text_text, text_question, _p4) {
-		var _p5 = _p4;
-		var _p7 = _p5._1;
-		var _p6 = _p5._0;
+	function (text_section, text_question, _p6) {
+		var _p7 = _p6;
+		var _p9 = _p7._1;
+		var _p8 = _p7._0;
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -21605,23 +22176,23 @@ var _user$project$Main$view_answer = F3(
 					_elm_lang$html$Html$input,
 					{
 						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', _p7.id),
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', _p9.id),
 						_1: {
 							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'name', _p7.name),
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'name', _p9.name),
 							_1: {
 								ctor: '::',
 								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'radio'),
 								_1: {
 									ctor: '::',
 									_0: _elm_lang$html$Html_Events$onCheck(
-										A3(_user$project$Main$Select, text_text, text_question, _p5)),
+										A3(_user$project$Main$Select, text_section, text_question, _p7)),
 									_1: {
 										ctor: '::',
 										_0: A2(
 											_elm_lang$html$Html_Attributes$attribute,
 											'value',
-											_elm_lang$core$Basics$toString(_p6.order)),
+											_elm_lang$core$Basics$toString(_p8.order)),
 										_1: {ctor: '[]'}
 									}
 								}
@@ -21631,10 +22202,10 @@ var _user$project$Main$view_answer = F3(
 					{ctor: '[]'}),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html$text(_p6.text),
+					_0: _elm_lang$html$Html$text(_p8.text),
 					_1: {
 						ctor: '::',
-						_0: _p5._2 ? A2(
+						_0: _p7._2 ? A2(
 							_elm_lang$html$Html$div,
 							{ctor: '[]'},
 							{
@@ -21644,7 +22215,7 @@ var _user$project$Main$view_answer = F3(
 									{ctor: '[]'},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text(_p6.feedback),
+										_0: _elm_lang$html$Html$text(_p8.feedback),
 										_1: {ctor: '[]'}
 									}),
 								_1: {ctor: '[]'}
@@ -21655,8 +22226,8 @@ var _user$project$Main$view_answer = F3(
 			});
 	});
 var _user$project$Main$view_question = F2(
-	function (text_text, _p8) {
-		var _p9 = _p8;
+	function (text_text, _p10) {
+		var _p11 = _p10;
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -21669,13 +22240,13 @@ var _user$project$Main$view_question = F2(
 					}),
 				_1: {
 					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', _p9._1.id),
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', _p11._1.id),
 					_1: {ctor: '[]'}
 				}
 			},
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html$text(_p9._0.body),
+				_0: _elm_lang$html$Html$text(_p11._0.body),
 				_1: {
 					ctor: '::',
 					_0: A2(
@@ -21688,14 +22259,14 @@ var _user$project$Main$view_question = F2(
 						_elm_lang$core$Array$toList(
 							A2(
 								_elm_lang$core$Array$map,
-								A2(_user$project$Main$view_answer, text_text, _p9),
-								_p9._2))),
+								A2(_user$project$Main$view_answer, text_text, _p11),
+								_p11._2))),
 					_1: {ctor: '[]'}
 				}
 			});
 	});
-var _user$project$Main$view_questions = function (_p10) {
-	var _p11 = _p10;
+var _user$project$Main$view_questions = function (_p12) {
+	var _p13 = _p12;
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -21711,11 +22282,11 @@ var _user$project$Main$view_questions = function (_p10) {
 		_elm_lang$core$Array$toList(
 			A2(
 				_elm_lang$core$Array$map,
-				_user$project$Main$view_question(_p11),
-				_p11._2)));
+				_user$project$Main$view_question(_p13),
+				_p13._2)));
 };
-var _user$project$Main$view_text = function (_p12) {
-	var _p13 = _p12;
+var _user$project$Main$view_text_section = function (_p14) {
+	var _p15 = _p14;
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -21723,7 +22294,7 @@ var _user$project$Main$view_text = function (_p12) {
 			_0: _elm_lang$html$Html_Attributes$classList(
 				{
 					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'text', _1: true},
+					_0: {ctor: '_Tuple2', _0: 'text_section', _1: true},
 					_1: {ctor: '[]'}
 				}),
 			_1: {ctor: '[]'}
@@ -21743,10 +22314,10 @@ var _user$project$Main$view_text = function (_p12) {
 					_1: {ctor: '[]'}
 				},
 				_jinjor$elm_html_parser$HtmlParser_Util$toVirtualDom(
-					_jinjor$elm_html_parser$HtmlParser$parse(_p13._0.body))),
+					_jinjor$elm_html_parser$HtmlParser$parse(_p15._0.body))),
 			_1: {
 				ctor: '::',
-				_0: _user$project$Main$view_questions(_p13),
+				_0: _user$project$Main$view_questions(_p15),
 				_1: {ctor: '[]'}
 			}
 		});
@@ -21764,8 +22335,15 @@ var _user$project$Main$view_content = function (model) {
 				}),
 			_1: {ctor: '[]'}
 		},
-		_elm_lang$core$Array$toList(
-			A2(_elm_lang$core$Array$map, _user$project$Main$view_text, model.sections)));
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			{
+				ctor: '::',
+				_0: _user$project$Main$view_text_introduction(model.text),
+				_1: {ctor: '[]'}
+			},
+			_elm_lang$core$Array$toList(
+				A2(_elm_lang$core$Array$map, _user$project$Main$view_text_section, model.sections))));
 };
 var _user$project$Main$view = function (model) {
 	return A2(
@@ -21779,15 +22357,11 @@ var _user$project$Main$view = function (model) {
 				_0: _user$project$Views$view_filter,
 				_1: {
 					ctor: '::',
-					_0: _user$project$Main$view_text_introduction(model),
+					_0: _user$project$Main$view_content(model),
 					_1: {
 						ctor: '::',
-						_0: _user$project$Main$view_content(model),
-						_1: {
-							ctor: '::',
-							_0: _user$project$Views$view_footer,
-							_1: {ctor: '[]'}
-						}
+						_0: _user$project$Views$view_footer,
+						_1: {ctor: '[]'}
 					}
 				}
 			}
@@ -21827,16 +22401,26 @@ var _user$project$Main$updateText = function (text_id) {
 		});
 };
 var _user$project$Main$init = function (flags) {
+	var profile = _user$project$Profile$init_profile(flags);
 	return {
 		ctor: '_Tuple2',
 		_0: {
 			text: _user$project$Text_Model$new_text,
 			sections: _elm_lang$core$Array$fromList(
 				{ctor: '[]'}),
-			profile: _user$project$Profile$init_profile(flags),
+			profile: profile,
 			flags: flags
 		},
-		_1: _user$project$Main$updateText(flags.text_id)
+		_1: _elm_lang$core$Platform_Cmd$batch(
+			{
+				ctor: '::',
+				_0: _user$project$Main$start(profile),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Main$updateText(flags.text_id),
+					_1: {ctor: '[]'}
+				}
+			})
 	};
 };
 var _user$project$Main$TextAnswer = F3(
@@ -21887,9 +22471,9 @@ var _user$project$Main$gen_text_answer = F3(
 			false);
 	});
 var _user$project$Main$set_answer_selected = F2(
-	function (_p14, selected) {
-		var _p15 = _p14;
-		return A3(_user$project$Main$TextAnswer, _p15._0, _p15._1, selected);
+	function (_p16, selected) {
+		var _p17 = _p16;
+		return A3(_user$project$Main$TextAnswer, _p17._0, _p17._1, selected);
 	});
 var _user$project$Main$TextQuestion = F3(
 	function (a, b, c) {
@@ -21911,14 +22495,14 @@ var _user$project$Main$gen_text_question = F3(
 				question.answers));
 	});
 var _user$project$Main$set_answer = F2(
-	function (_p17, _p16) {
-		var _p18 = _p17;
-		var _p19 = _p16;
+	function (_p19, _p18) {
+		var _p20 = _p19;
+		var _p21 = _p18;
 		return A3(
 			_user$project$Main$TextQuestion,
-			_p18._0,
-			_p18._1,
-			A3(_elm_lang$core$Array$set, _p19._1.index, _p19, _p18._2));
+			_p20._0,
+			_p20._1,
+			A3(_elm_lang$core$Array$set, _p21._1.index, _p21, _p20._2));
 	});
 var _user$project$Main$Section = F3(
 	function (a, b, c) {
@@ -21936,50 +22520,50 @@ var _user$project$Main$gen_text_sections = F2(
 				text_section.questions));
 	});
 var _user$project$Main$set_questions = F2(
-	function (_p20, new_questions) {
-		var _p21 = _p20;
-		return A3(_user$project$Main$Section, _p21._0, _p21._1, new_questions);
+	function (_p22, new_questions) {
+		var _p23 = _p22;
+		return A3(_user$project$Main$Section, _p23._0, _p23._1, new_questions);
 	});
 var _user$project$Main$set_question = F2(
-	function (_p23, _p22) {
-		var _p24 = _p23;
-		var _p25 = _p22;
+	function (_p25, _p24) {
+		var _p26 = _p25;
+		var _p27 = _p24;
 		return A3(
 			_user$project$Main$Section,
-			_p24._0,
-			_p24._1,
-			A3(_elm_lang$core$Array$set, _p25._1.index, _p25, _p24._2));
+			_p26._0,
+			_p26._1,
+			A3(_elm_lang$core$Array$set, _p27._1.index, _p27, _p26._2));
 	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p26 = msg;
-		switch (_p26.ctor) {
+		var _p28 = msg;
+		switch (_p28.ctor) {
 			case 'UpdateText':
-				if (_p26._0.ctor === 'Ok') {
-					var _p27 = _p26._0._0;
-					var text_sections = A2(_elm_lang$core$Array$indexedMap, _user$project$Main$gen_text_sections, _p27.sections);
+				if (_p28._0.ctor === 'Ok') {
+					var _p29 = _p28._0._0;
+					var text_sections = A2(_elm_lang$core$Array$indexedMap, _user$project$Main$gen_text_sections, _p29.sections);
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{text: _p27, sections: text_sections}),
+							{text: _p29, sections: text_sections}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p28 = A2(_elm_lang$core$Debug$log, 'text error', _p26._0._0);
+					var _p30 = A2(_elm_lang$core$Debug$log, 'text error', _p28._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'UpdateQuestions':
-				if (_p26._1.ctor === 'Err') {
-					var _p29 = A2(_elm_lang$core$Debug$log, 'questions error', _p26._1._0);
+				if (_p28._1.ctor === 'Err') {
+					var _p31 = A2(_elm_lang$core$Debug$log, 'questions error', _p28._1._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			default:
-				var new_text_answer = A2(_user$project$Main$set_answer_selected, _p26._2, _p26._3);
-				var new_text_question = A2(_user$project$Main$set_answer, _p26._1, new_text_answer);
-				var new_text_section = A2(_user$project$Main$set_question, _p26._0, new_text_question);
+				var new_text_answer = A2(_user$project$Main$set_answer_selected, _p28._2, _p28._3);
+				var new_text_question = A2(_user$project$Main$set_answer, _p28._1, new_text_answer);
+				var new_text_section = A2(_user$project$Main$set_question, _p28._0, new_text_question);
 				var new_sections = A2(_user$project$Main$set_text_section, model.sections, new_text_section);
 				return {
 					ctor: '_Tuple2',
@@ -21994,163 +22578,163 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 	{init: _user$project$Main$init, view: _user$project$Main$view, subscriptions: _user$project$Main$subscriptions, update: _user$project$Main$update})(
 	A2(
 		_elm_lang$core$Json_Decode$andThen,
-		function (csrftoken) {
+		function (text_id) {
 			return A2(
 				_elm_lang$core$Json_Decode$andThen,
-				function (instructor_profile) {
+				function (csrftoken) {
 					return A2(
 						_elm_lang$core$Json_Decode$andThen,
-						function (profile_id) {
+						function (instructor_profile) {
 							return A2(
 								_elm_lang$core$Json_Decode$andThen,
-								function (profile_type) {
+								function (profile_id) {
 									return A2(
 										_elm_lang$core$Json_Decode$andThen,
-										function (student_profile) {
+										function (profile_type) {
 											return A2(
 												_elm_lang$core$Json_Decode$andThen,
-												function (text_id) {
+												function (student_profile) {
 													return _elm_lang$core$Json_Decode$succeed(
-														{csrftoken: csrftoken, instructor_profile: instructor_profile, profile_id: profile_id, profile_type: profile_type, student_profile: student_profile, text_id: text_id});
+														{text_id: text_id, csrftoken: csrftoken, instructor_profile: instructor_profile, profile_id: profile_id, profile_type: profile_type, student_profile: student_profile});
 												},
-												A2(_elm_lang$core$Json_Decode$field, 'text_id', _elm_lang$core$Json_Decode$int));
-										},
-										A2(
-											_elm_lang$core$Json_Decode$field,
-											'student_profile',
-											_elm_lang$core$Json_Decode$oneOf(
-												{
-													ctor: '::',
-													_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-													_1: {
-														ctor: '::',
-														_0: A2(
-															_elm_lang$core$Json_Decode$map,
-															_elm_lang$core$Maybe$Just,
-															A2(
-																_elm_lang$core$Json_Decode$andThen,
-																function (difficulties) {
-																	return A2(
+												A2(
+													_elm_lang$core$Json_Decode$field,
+													'student_profile',
+													_elm_lang$core$Json_Decode$oneOf(
+														{
+															ctor: '::',
+															_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+															_1: {
+																ctor: '::',
+																_0: A2(
+																	_elm_lang$core$Json_Decode$map,
+																	_elm_lang$core$Maybe$Just,
+																	A2(
 																		_elm_lang$core$Json_Decode$andThen,
-																		function (difficulty_preference) {
+																		function (difficulties) {
 																			return A2(
 																				_elm_lang$core$Json_Decode$andThen,
-																				function (id) {
+																				function (difficulty_preference) {
 																					return A2(
 																						_elm_lang$core$Json_Decode$andThen,
-																						function (username) {
-																							return _elm_lang$core$Json_Decode$succeed(
-																								{difficulties: difficulties, difficulty_preference: difficulty_preference, id: id, username: username});
+																						function (id) {
+																							return A2(
+																								_elm_lang$core$Json_Decode$andThen,
+																								function (username) {
+																									return _elm_lang$core$Json_Decode$succeed(
+																										{difficulties: difficulties, difficulty_preference: difficulty_preference, id: id, username: username});
+																								},
+																								A2(_elm_lang$core$Json_Decode$field, 'username', _elm_lang$core$Json_Decode$string));
 																						},
-																						A2(_elm_lang$core$Json_Decode$field, 'username', _elm_lang$core$Json_Decode$string));
+																						A2(
+																							_elm_lang$core$Json_Decode$field,
+																							'id',
+																							_elm_lang$core$Json_Decode$oneOf(
+																								{
+																									ctor: '::',
+																									_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																									_1: {
+																										ctor: '::',
+																										_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$int),
+																										_1: {ctor: '[]'}
+																									}
+																								})));
 																				},
 																				A2(
 																					_elm_lang$core$Json_Decode$field,
-																					'id',
+																					'difficulty_preference',
 																					_elm_lang$core$Json_Decode$oneOf(
 																						{
 																							ctor: '::',
 																							_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
 																							_1: {
 																								ctor: '::',
-																								_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$int),
+																								_0: A2(
+																									_elm_lang$core$Json_Decode$map,
+																									_elm_lang$core$Maybe$Just,
+																									A2(
+																										_elm_lang$core$Json_Decode$andThen,
+																										function (x0) {
+																											return A2(
+																												_elm_lang$core$Json_Decode$andThen,
+																												function (x1) {
+																													return _elm_lang$core$Json_Decode$succeed(
+																														{ctor: '_Tuple2', _0: x0, _1: x1});
+																												},
+																												A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
+																										},
+																										A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string))),
 																								_1: {ctor: '[]'}
 																							}
 																						})));
 																		},
 																		A2(
 																			_elm_lang$core$Json_Decode$field,
-																			'difficulty_preference',
-																			_elm_lang$core$Json_Decode$oneOf(
-																				{
-																					ctor: '::',
-																					_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-																					_1: {
-																						ctor: '::',
-																						_0: A2(
-																							_elm_lang$core$Json_Decode$map,
-																							_elm_lang$core$Maybe$Just,
-																							A2(
-																								_elm_lang$core$Json_Decode$andThen,
-																								function (x0) {
-																									return A2(
-																										_elm_lang$core$Json_Decode$andThen,
-																										function (x1) {
-																											return _elm_lang$core$Json_Decode$succeed(
-																												{ctor: '_Tuple2', _0: x0, _1: x1});
-																										},
-																										A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
-																								},
-																								A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string))),
-																						_1: {ctor: '[]'}
-																					}
-																				})));
-																},
-																A2(
-																	_elm_lang$core$Json_Decode$field,
-																	'difficulties',
-																	_elm_lang$core$Json_Decode$list(
-																		A2(
-																			_elm_lang$core$Json_Decode$andThen,
-																			function (x0) {
-																				return A2(
+																			'difficulties',
+																			_elm_lang$core$Json_Decode$list(
+																				A2(
 																					_elm_lang$core$Json_Decode$andThen,
-																					function (x1) {
-																						return _elm_lang$core$Json_Decode$succeed(
-																							{ctor: '_Tuple2', _0: x0, _1: x1});
+																					function (x0) {
+																						return A2(
+																							_elm_lang$core$Json_Decode$andThen,
+																							function (x1) {
+																								return _elm_lang$core$Json_Decode$succeed(
+																									{ctor: '_Tuple2', _0: x0, _1: x1});
+																							},
+																							A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
 																					},
-																					A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
-																			},
-																			A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string)))))),
-														_1: {ctor: '[]'}
-													}
-												})));
-								},
-								A2(_elm_lang$core$Json_Decode$field, 'profile_type', _elm_lang$core$Json_Decode$string));
-						},
-						A2(_elm_lang$core$Json_Decode$field, 'profile_id', _elm_lang$core$Json_Decode$int));
-				},
-				A2(
-					_elm_lang$core$Json_Decode$field,
-					'instructor_profile',
-					_elm_lang$core$Json_Decode$oneOf(
-						{
-							ctor: '::',
-							_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-							_1: {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$core$Json_Decode$map,
-									_elm_lang$core$Maybe$Just,
-									A2(
-										_elm_lang$core$Json_Decode$andThen,
-										function (id) {
-											return A2(
-												_elm_lang$core$Json_Decode$andThen,
-												function (username) {
-													return _elm_lang$core$Json_Decode$succeed(
-														{id: id, username: username});
-												},
-												A2(_elm_lang$core$Json_Decode$field, 'username', _elm_lang$core$Json_Decode$string));
+																					A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string)))))),
+																_1: {ctor: '[]'}
+															}
+														})));
 										},
-										A2(
-											_elm_lang$core$Json_Decode$field,
-											'id',
-											_elm_lang$core$Json_Decode$oneOf(
-												{
-													ctor: '::',
-													_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-													_1: {
-														ctor: '::',
-														_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$int),
-														_1: {ctor: '[]'}
-													}
-												})))),
-								_1: {ctor: '[]'}
-							}
-						})));
+										A2(_elm_lang$core$Json_Decode$field, 'profile_type', _elm_lang$core$Json_Decode$string));
+								},
+								A2(_elm_lang$core$Json_Decode$field, 'profile_id', _elm_lang$core$Json_Decode$int));
+						},
+						A2(
+							_elm_lang$core$Json_Decode$field,
+							'instructor_profile',
+							_elm_lang$core$Json_Decode$oneOf(
+								{
+									ctor: '::',
+									_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_elm_lang$core$Json_Decode$map,
+											_elm_lang$core$Maybe$Just,
+											A2(
+												_elm_lang$core$Json_Decode$andThen,
+												function (id) {
+													return A2(
+														_elm_lang$core$Json_Decode$andThen,
+														function (username) {
+															return _elm_lang$core$Json_Decode$succeed(
+																{id: id, username: username});
+														},
+														A2(_elm_lang$core$Json_Decode$field, 'username', _elm_lang$core$Json_Decode$string));
+												},
+												A2(
+													_elm_lang$core$Json_Decode$field,
+													'id',
+													_elm_lang$core$Json_Decode$oneOf(
+														{
+															ctor: '::',
+															_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+															_1: {
+																ctor: '::',
+																_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$int),
+																_1: {ctor: '[]'}
+															}
+														})))),
+										_1: {ctor: '[]'}
+									}
+								})));
+				},
+				A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string));
 		},
-		A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string)));
+		A2(_elm_lang$core$Json_Decode$field, 'text_id', _elm_lang$core$Json_Decode$int)));
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};

@@ -170,7 +170,7 @@ view_search_results text_list_items =
       in
         div [class "search_result"] [
           div [class "result_item"] [
-            div [class "result_item_title"] [ Html.text text_item.title ]
+            div [class "result_item_title"] [ Html.a [attribute "href" text_item.uri] [ Html.text text_item.title ] ]
           , div [class "sub_description"] [ Html.text "Title" ]
           ]
         , div [class "result_item"] [

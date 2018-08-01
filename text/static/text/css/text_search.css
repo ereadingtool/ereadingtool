@@ -58,13 +58,13 @@
     align-items: center;
     justify-items: center;
 
-    grid-template-columns: 25% 25% 25% 25%;
+    grid-template-columns: 20% 20% 20% 20% 20%;
 
     background: white;
 
     border: solid 0.5px lightgrey;
 
-    grid-auto-rows: 75px;
+    grid-auto-rows: 150px;
 }
 
 .sub_description {

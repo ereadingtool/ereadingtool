@@ -5,6 +5,8 @@ from django.db import models
 from mixins.model import Timestamped, WriteLockable, WriteLocked
 from tag.models import Taggable
 
+from django.urls import reverse
+
 
 class TextDifficulty(models.Model):
     class Meta:
@@ -131,6 +133,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
             'last_modified_by': str(self.last_modified_by) if self.last_modified_by else None,
             'tags': [tag.name for tag in self.tags.all()],
             'text_section_count': self.sections.count(),
+            'uri': reverse('text', kwargs={'pk': self.pk}),
             'difficulty': self.difficulty.name,
             'write_locker': str(self.write_locker) if self.write_locker else None
         }

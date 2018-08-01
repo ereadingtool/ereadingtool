@@ -5759,11 +5759,17 @@ var _elm_lang$core$Json_Decode$Decoder = {ctor: 'Decoder'};
 
 var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode = _elm_lang$core$Json_Decode$succeed;
 var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$resolve = _elm_lang$core$Json_Decode$andThen(_elm_lang$core$Basics$identity);
-var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom = _elm_lang$core$Json_Decode$map2(
-	F2(
-		function (x, y) {
-			return y(x);
-		}));
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom = F2(
+	function (decoder, wrapped) {
+		return A3(
+			_elm_lang$core$Json_Decode$map2,
+			F2(
+				function (x, y) {
+					return x(y);
+				}),
+			wrapped,
+			decoder);
+	});
 var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$hardcoded = function (_p0) {
 	return _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom(
 		_elm_lang$core$Json_Decode$succeed(_p0));
@@ -5795,7 +5801,15 @@ var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optionalDecoder = F3(
 					return _elm_lang$core$Json_Decode$fail(_p2._0);
 				}
 			} else {
-				return _elm_lang$core$Json_Decode$succeed(fallback);
+				var _p3 = A2(
+					_elm_lang$core$Json_Decode$decodeValue,
+					_elm_lang$core$Json_Decode$keyValuePairs(_elm_lang$core$Json_Decode$value),
+					input);
+				if (_p3.ctor === 'Ok') {
+					return _elm_lang$core$Json_Decode$succeed(fallback);
+				} else {
+					return _elm_lang$core$Json_Decode$fail(_p3._0);
+				}
 			}
 		};
 		return A2(_elm_lang$core$Json_Decode$andThen, handleResult, _elm_lang$core$Json_Decode$value);
@@ -9680,7 +9694,9 @@ var _user$project$Text_Model$TextListItem = function (a) {
 								return function (i) {
 									return function (j) {
 										return function (k) {
-											return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, text_section_count: j, write_locker: k};
+											return function (l) {
+												return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, text_section_count: j, uri: k, write_locker: l};
+											};
 										};
 									};
 								};
@@ -9957,46 +9973,50 @@ var _user$project$Text_Decode$textListItemDecoder = A3(
 	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'text_section_count',
-		_elm_lang$core$Json_Decode$int,
+		'uri',
+		_elm_lang$core$Json_Decode$string,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'modified_dt',
-			_elm_community$json_extra$Json_Decode_Extra$date,
+			'text_section_count',
+			_elm_lang$core$Json_Decode$int,
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'created_dt',
+				'modified_dt',
 				_elm_community$json_extra$Json_Decode_Extra$date,
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'tags',
-					_elm_lang$core$Json_Decode$nullable(
-						_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
+					'created_dt',
+					_elm_community$json_extra$Json_Decode_Extra$date,
 					A3(
 						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'last_modified_by',
-						_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+						'tags',
+						_elm_lang$core$Json_Decode$nullable(
+							_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
 						A3(
 							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'created_by',
-							_elm_lang$core$Json_Decode$string,
+							'last_modified_by',
+							_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 							A3(
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'difficulty',
+								'created_by',
 								_elm_lang$core$Json_Decode$string,
 								A3(
 									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-									'author',
+									'difficulty',
 									_elm_lang$core$Json_Decode$string,
 									A3(
 										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-										'title',
+										'author',
 										_elm_lang$core$Json_Decode$string,
 										A3(
 											_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-											'id',
-											_elm_lang$core$Json_Decode$int,
-											_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextListItem))))))))))));
+											'title',
+											_elm_lang$core$Json_Decode$string,
+											A3(
+												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+												'id',
+												_elm_lang$core$Json_Decode$int,
+												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextListItem)))))))))))));
 var _user$project$Text_Decode$textListDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textListItemDecoder);
 var _user$project$Text_Decode$textDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -10803,7 +10823,18 @@ var _user$project$Main$view_search_results = function (text_list_items) {
 							},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(text_item.title),
+								_0: A2(
+									_elm_lang$html$Html$a,
+									{
+										ctor: '::',
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', text_item.uri),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text(text_item.title),
+										_1: {ctor: '[]'}
+									}),
 								_1: {ctor: '[]'}
 							}),
 						_1: {
@@ -11129,7 +11160,7 @@ var _user$project$Main$view_tags = function (tag_search) {
 			{
 				ctor: '::',
 				_0: _elm_lang$html$Html_Events$onClick(
-					A2(_user$project$Main$SelectTag, tag_label, !selected)),
+					A2(_user$project$Main$SelectTag, tag_value, !selected)),
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html_Attributes$classList(

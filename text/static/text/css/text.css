@@ -15,6 +15,15 @@
     grid-template-columns: 10% auto 10%;
 }
 
+.text_section {
+    grid-column: 2;
+}
+
+#text_intro {
+    grid-column: 2;
+    display: grid;
+}
+
 .text_body {
     align-items: center;
     justify-items: center;
