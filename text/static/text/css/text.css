@@ -1,102 +1,103 @@
 .text {
     display: grid;
-
-    grid-auto-rows: minmax(200px, auto);
-
-    margin-top: 50px;
-    margin-bottom: 0;
-    grid-template-columns: 4% auto 4%;
-}
-
-.text {
-    display: grid;
     grid-column: 2;
+
+    font-family: "Lora,Palatino,Times,Times New Roman,serif";
+    font-size: 16px;
+    line-height: 1.6;
+    letter-spacing: 0;
 
     grid-template-columns: 10% auto 10%;
 }
 
 .text_section {
     grid-column: 2;
+    padding-top: 25px;
+    margin-bottom: 15px;
+
+    font-family: "Lora,Palatino,Times,Times New Roman,serif";
+    font-size: 16px;
+    line-height: 1.6;
+    letter-spacing: 0;
+}
+
+.begin_btn {
+    grid-column: 2;
+    display: inline-block;
+
+    cursor: pointer;
+
+    margin-top: 15px;
+
+    background: white;
+    text-align: center;
+
+    padding: 2px;
+    border: solid 1px lightgrey;
+    border-radius: 5px;
+}
+
+#text_score {
+    grid-column: 2;
 }
 
 #text_intro {
     grid-column: 2;
     display: grid;
+
+    align-items: center;
+    justify-items: center;
 }
 
 .text_body {
+    grid-column: 2;
+
     align-items: center;
     justify-items: center;
 
-    grid-column: 2;
+    padding-top: 25px;
+    padding-bottom: 25px;
 }
-
 
 .questions {
     display: grid;
-    padding-top: 85px;
-
-    grid-column: 2;
-    grid-template-columns: 10% auto 10%;
-    grid-row-gap: 10%;
-    row-gap: 10%;
+    padding-top: 15px;
 
     border-top: rgb(238, 238, 238) solid 1px;
+
+    grid-column: 2;
+    grid-template-columns: auto;
+    grid-row-gap: 10%;
+    row-gap: 10%;
 }
 
-
 .question {
-    margin: 5px 5px 5px 5px;
-    grid-column: 2;
+    display: grid;
+    grid-template-columns: auto;
 }
 
 .answers {
-    margin-top: 20px;
 }
+
 .answer {
-    margin: 10px 10px 10px 10px;
+    margin: 5px 5px 5px 5px;
 }
 
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
-    .text {
-        font-size: 60px;
+    .header {
+        display: flex;
+    }
+
+    .menu {
+        display: flex;
+        flex-wrap: wrap;
+
+        align-items: center;
+        justify-items: center;
     }
 
     .filter {
-        visibility: hidden;
+        display: none;
     }
 
-    .header {
-        background: #FFFFFF;
-
-        font: "Lucida Console";
-        font-size: 60px;
-
-        border: solid 0.5px lightgrey;
-    }
-
-    .question {
-    }
-
-    input[type="radio"] {
-        -ms-transform: scale(3); /* IE 9 */
-        -webkit-transform: scale(3); /* Chrome, Safari, Opera */
-        transform: scale(3);
-        margin-right: 10%;
-    }
-    .answer {
-    }
-
-    .questions {
-        align-content: left;
-        border-top: rgb(238, 238, 238) solid 5px;
-    }
-
-    .text {
-        display: inline-block;
-    }
-
-    .text_body {
-        grid-column: 2;
-    }
 }

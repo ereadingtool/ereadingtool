@@ -22121,16 +22121,87 @@ var _user$project$Main$set_text_section = F2(
 		var _p1 = _p0;
 		return A3(_elm_lang$core$Array$set, _p1._1.index, _p1, text_texts);
 	});
+var _user$project$Main$answer = function (_p2) {
+	var _p3 = _p2;
+	return _p3._0;
+};
+var _user$project$Main$selected = function (_p4) {
+	var _p5 = _p4;
+	return _p5._2;
+};
+var _user$project$Main$correct = function (text_answer) {
+	return _user$project$Main$answer(text_answer).correct;
+};
+var _user$project$Main$answered_correctly = function (_p6) {
+	var _p7 = _p6;
+	return _p7._2;
+};
+var _user$project$Main$answers = function (_p8) {
+	var _p9 = _p8;
+	return _p9._3;
+};
+var _user$project$Main$answered = function (text_question) {
+	return A2(
+		_elm_lang$core$List$any,
+		function (selected) {
+			return selected;
+		},
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (answer) {
+					return _user$project$Main$selected(answer);
+				},
+				_user$project$Main$answers(text_question))));
+};
+var _user$project$Main$questions = function (_p10) {
+	var _p11 = _p10;
+	return _p11._2;
+};
+var _user$project$Main$complete = function (section) {
+	return A2(
+		_elm_lang$core$List$all,
+		function (answered) {
+			return answered;
+		},
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (question) {
+					return _user$project$Main$answered(question);
+				},
+				_user$project$Main$questions(section))));
+};
+var _user$project$Main$max_score = function (section) {
+	return _elm_lang$core$List$sum(
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (question) {
+					return 1;
+				},
+				_user$project$Main$questions(section))));
+};
+var _user$project$Main$score = function (section) {
+	return _elm_lang$core$List$sum(
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (question) {
+					return _user$project$Main$answered_correctly(question) ? 1 : 0;
+				},
+				_user$project$Main$questions(section))));
+};
 var _user$project$Main$text_section = F2(
-	function (text_sections, _p2) {
-		var _p3 = _p2;
-		return A2(_elm_lang$core$Array$get, _p3._1.text_section_index, text_sections);
+	function (text_sections, _p12) {
+		var _p13 = _p12;
+		return A2(_elm_lang$core$Array$get, _p13._1.text_section_index, text_sections);
 	});
 var _user$project$Main$start = function (profile) {
-	var _p4 = profile;
-	if (_p4.ctor === 'Student') {
-		var student_username = _user$project$Profile$studentUserName(_p4._0);
-		var _p5 = A2(_elm_lang$core$Debug$log, 'username', student_username);
+	var _p14 = profile;
+	if (_p14.ctor === 'Student') {
+		var student_username = _user$project$Profile$studentUserName(_p14._0);
+		var _p15 = A2(_elm_lang$core$Debug$log, 'username', student_username);
 		return A2(
 			_elm_lang$websocket$WebSocket$send,
 			'ws://0.0.0.0:8000/text_reader/',
@@ -22145,284 +22216,10 @@ var _user$project$Main$start = function (profile) {
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
-var _user$project$Main$Model = F4(
-	function (a, b, c, d) {
-		return {text: a, profile: b, sections: c, flags: d};
+var _user$project$Main$Model = F5(
+	function (a, b, c, d, e) {
+		return {text: a, profile: b, progress: c, sections: d, flags: e};
 	});
-var _user$project$Main$Select = F4(
-	function (a, b, c, d) {
-		return {ctor: 'Select', _0: a, _1: b, _2: c, _3: d};
-	});
-var _user$project$Main$view_answer = F3(
-	function (text_section, text_question, _p6) {
-		var _p7 = _p6;
-		var _p9 = _p7._1;
-		var _p8 = _p7._0;
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$classList(
-					{
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'answer', _1: true},
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$input,
-					{
-						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', _p9.id),
-						_1: {
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'name', _p9.name),
-							_1: {
-								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'radio'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onCheck(
-										A3(_user$project$Main$Select, text_section, text_question, _p7)),
-									_1: {
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html_Attributes$attribute,
-											'value',
-											_elm_lang$core$Basics$toString(_p8.order)),
-										_1: {ctor: '[]'}
-									}
-								}
-							}
-						}
-					},
-					{ctor: '[]'}),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(_p8.text),
-					_1: {
-						ctor: '::',
-						_0: _p7._2 ? A2(
-							_elm_lang$html$Html$div,
-							{ctor: '[]'},
-							{
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$em,
-									{ctor: '[]'},
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text(_p8.feedback),
-										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							}) : _elm_lang$html$Html$text(''),
-						_1: {ctor: '[]'}
-					}
-				}
-			});
-	});
-var _user$project$Main$view_question = F2(
-	function (text_text, _p10) {
-		var _p11 = _p10;
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$classList(
-					{
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'question', _1: true},
-						_1: {ctor: '[]'}
-					}),
-				_1: {
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', _p11._1.id),
-					_1: {ctor: '[]'}
-				}
-			},
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html$text(_p11._0.body),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'answers'),
-							_1: {ctor: '[]'}
-						},
-						_elm_lang$core$Array$toList(
-							A2(
-								_elm_lang$core$Array$map,
-								A2(_user$project$Main$view_answer, text_text, _p11),
-								_p11._2))),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _user$project$Main$view_questions = function (_p12) {
-	var _p13 = _p12;
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$classList(
-				{
-					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'questions', _1: true},
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		},
-		_elm_lang$core$Array$toList(
-			A2(
-				_elm_lang$core$Array$map,
-				_user$project$Main$view_question(_p13),
-				_p13._2)));
-};
-var _user$project$Main$view_text_section = function (_p14) {
-	var _p15 = _p14;
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$classList(
-				{
-					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'text_section', _1: true},
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$classList(
-						{
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'text_body', _1: true},
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				},
-				_jinjor$elm_html_parser$HtmlParser_Util$toVirtualDom(
-					_jinjor$elm_html_parser$HtmlParser$parse(_p15._0.body))),
-			_1: {
-				ctor: '::',
-				_0: _user$project$Main$view_questions(_p15),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-var _user$project$Main$view_content = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$classList(
-				{
-					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'text', _1: true},
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		},
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			{
-				ctor: '::',
-				_0: _user$project$Main$view_text_introduction(model.text),
-				_1: {ctor: '[]'}
-			},
-			_elm_lang$core$Array$toList(
-				A2(_elm_lang$core$Array$map, _user$project$Main$view_text_section, model.sections))));
-};
-var _user$project$Main$view = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: A2(_user$project$Views$view_header, model.profile, _elm_lang$core$Maybe$Nothing),
-			_1: {
-				ctor: '::',
-				_0: _user$project$Views$view_filter,
-				_1: {
-					ctor: '::',
-					_0: _user$project$Main$view_content(model),
-					_1: {
-						ctor: '::',
-						_0: _user$project$Views$view_footer,
-						_1: {ctor: '[]'}
-					}
-				}
-			}
-		});
-};
-var _user$project$Main$UpdateQuestions = F2(
-	function (a, b) {
-		return {ctor: 'UpdateQuestions', _0: a, _1: b};
-	});
-var _user$project$Main$UpdateText = function (a) {
-	return {ctor: 'UpdateText', _0: a};
-};
-var _user$project$Main$updateText = function (text_id) {
-	var text_req = A2(
-		_elm_lang$http$Http$get,
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			A2(
-				_elm_lang$core$String$join,
-				'',
-				{
-					ctor: '::',
-					_0: _user$project$Config$text_api_endpoint,
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$core$Basics$toString(text_id),
-						_1: {ctor: '[]'}
-					}
-				}),
-			'/'),
-		_user$project$Text_Decode$textDecoder);
-	return _elm_lang$core$Platform_Cmd$batch(
-		{
-			ctor: '::',
-			_0: A2(_elm_lang$http$Http$send, _user$project$Main$UpdateText, text_req),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Main$init = function (flags) {
-	var profile = _user$project$Profile$init_profile(flags);
-	return {
-		ctor: '_Tuple2',
-		_0: {
-			text: _user$project$Text_Model$new_text,
-			sections: _elm_lang$core$Array$fromList(
-				{ctor: '[]'}),
-			profile: profile,
-			flags: flags
-		},
-		_1: _elm_lang$core$Platform_Cmd$batch(
-			{
-				ctor: '::',
-				_0: _user$project$Main$start(profile),
-				_1: {
-					ctor: '::',
-					_0: _user$project$Main$updateText(flags.text_id),
-					_1: {ctor: '[]'}
-				}
-			})
-	};
-};
 var _user$project$Main$TextAnswer = F3(
 	function (a, b, c) {
 		return {ctor: 'TextAnswer', _0: a, _1: b, _2: c};
@@ -22475,13 +22272,13 @@ var _user$project$Main$set_answer_selected = F2(
 		var _p17 = _p16;
 		return A3(_user$project$Main$TextAnswer, _p17._0, _p17._1, selected);
 	});
-var _user$project$Main$TextQuestion = F3(
-	function (a, b, c) {
-		return {ctor: 'TextQuestion', _0: a, _1: b, _2: c};
+var _user$project$Main$TextQuestion = F4(
+	function (a, b, c, d) {
+		return {ctor: 'TextQuestion', _0: a, _1: b, _2: c, _3: d};
 	});
 var _user$project$Main$gen_text_question = F3(
 	function (text_section_index, index, question) {
-		return A3(
+		return A4(
 			_user$project$Main$TextQuestion,
 			question,
 			{
@@ -22489,6 +22286,7 @@ var _user$project$Main$gen_text_question = F3(
 				text_section_index: text_section_index,
 				id: _elm_lang$core$Basics$toString(question.order)
 			},
+			false,
 			A2(
 				_elm_lang$core$Array$indexedMap,
 				_user$project$Main$gen_text_answer(index),
@@ -22498,11 +22296,14 @@ var _user$project$Main$set_answer = F2(
 	function (_p19, _p18) {
 		var _p20 = _p19;
 		var _p21 = _p18;
-		return A3(
+		var _p22 = _p21;
+		var answered_correctly = _user$project$Main$correct(_p22) && _user$project$Main$selected(_p22);
+		return A4(
 			_user$project$Main$TextQuestion,
 			_p20._0,
 			_p20._1,
-			A3(_elm_lang$core$Array$set, _p21._1.index, _p21, _p20._2));
+			answered_correctly,
+			A3(_elm_lang$core$Array$set, _p21._1.index, _p22, _p20._3));
 	});
 var _user$project$Main$Section = F3(
 	function (a, b, c) {
@@ -22520,50 +22321,48 @@ var _user$project$Main$gen_text_sections = F2(
 				text_section.questions));
 	});
 var _user$project$Main$set_questions = F2(
-	function (_p22, new_questions) {
-		var _p23 = _p22;
-		return A3(_user$project$Main$Section, _p23._0, _p23._1, new_questions);
+	function (_p23, new_questions) {
+		var _p24 = _p23;
+		return A3(_user$project$Main$Section, _p24._0, _p24._1, new_questions);
 	});
 var _user$project$Main$set_question = F2(
-	function (_p25, _p24) {
-		var _p26 = _p25;
-		var _p27 = _p24;
+	function (_p26, _p25) {
+		var _p27 = _p26;
+		var _p28 = _p25;
 		return A3(
 			_user$project$Main$Section,
-			_p26._0,
-			_p26._1,
-			A3(_elm_lang$core$Array$set, _p27._1.index, _p27, _p26._2));
+			_p27._0,
+			_p27._1,
+			A3(_elm_lang$core$Array$set, _p28._1.index, _p28, _p27._2));
 	});
+var _user$project$Main$Complete = {ctor: 'Complete'};
+var _user$project$Main$ViewSection = function (a) {
+	return {ctor: 'ViewSection', _0: a};
+};
+var _user$project$Main$ViewIntro = {ctor: 'ViewIntro'};
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p28 = msg;
-		switch (_p28.ctor) {
+		var _p29 = msg;
+		switch (_p29.ctor) {
 			case 'UpdateText':
-				if (_p28._0.ctor === 'Ok') {
-					var _p29 = _p28._0._0;
-					var text_sections = A2(_elm_lang$core$Array$indexedMap, _user$project$Main$gen_text_sections, _p29.sections);
+				if (_p29._0.ctor === 'Ok') {
+					var _p30 = _p29._0._0;
+					var text_sections = A2(_elm_lang$core$Array$indexedMap, _user$project$Main$gen_text_sections, _p30.sections);
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{text: _p29, sections: text_sections}),
+							{text: _p30, sections: text_sections}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p30 = A2(_elm_lang$core$Debug$log, 'text error', _p28._0._0);
+					var _p31 = A2(_elm_lang$core$Debug$log, 'text error', _p29._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
-			case 'UpdateQuestions':
-				if (_p28._1.ctor === 'Err') {
-					var _p31 = A2(_elm_lang$core$Debug$log, 'questions error', _p28._1._0);
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			default:
-				var new_text_answer = A2(_user$project$Main$set_answer_selected, _p28._2, _p28._3);
-				var new_text_question = A2(_user$project$Main$set_answer, _p28._1, new_text_answer);
-				var new_text_section = A2(_user$project$Main$set_question, _p28._0, new_text_question);
+			case 'Select':
+				var new_text_answer = A2(_user$project$Main$set_answer_selected, _p29._2, _p29._3);
+				var new_text_question = A2(_user$project$Main$set_answer, _p29._1, new_text_answer);
+				var new_text_section = A2(_user$project$Main$set_question, _p29._0, new_text_question);
 				var new_sections = A2(_user$project$Main$set_text_section, model.sections, new_text_section);
 				return {
 					ctor: '_Tuple2',
@@ -22572,8 +22371,570 @@ var _user$project$Main$update = F2(
 						{sections: new_sections}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
+			case 'NextSection':
+				var _p32 = model.progress;
+				switch (_p32.ctor) {
+					case 'ViewIntro':
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{
+									progress: _user$project$Main$ViewSection(0)
+								}),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
+					case 'ViewSection':
+						var _p34 = _p32._0;
+						var _p33 = A2(_elm_lang$core$Array$get, _p34 + 1, model.sections);
+						if (_p33.ctor === 'Just') {
+							return {
+								ctor: '_Tuple2',
+								_0: _elm_lang$core$Native_Utils.update(
+									model,
+									{
+										progress: _user$project$Main$ViewSection(_p34 + 1)
+									}),
+								_1: _elm_lang$core$Platform_Cmd$none
+							};
+						} else {
+							return {
+								ctor: '_Tuple2',
+								_0: _elm_lang$core$Native_Utils.update(
+									model,
+									{progress: _user$project$Main$Complete}),
+								_1: _elm_lang$core$Platform_Cmd$none
+							};
+						}
+					default:
+						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			default:
+				var _p35 = model.progress;
+				switch (_p35.ctor) {
+					case 'ViewIntro':
+						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					case 'ViewSection':
+						var prev_section_index = _p35._0 - 1;
+						var _p36 = A2(_elm_lang$core$Array$get, prev_section_index, model.sections);
+						if (_p36.ctor === 'Just') {
+							return {
+								ctor: '_Tuple2',
+								_0: _elm_lang$core$Native_Utils.update(
+									model,
+									{
+										progress: _user$project$Main$ViewSection(prev_section_index)
+									}),
+								_1: _elm_lang$core$Platform_Cmd$none
+							};
+						} else {
+							return {
+								ctor: '_Tuple2',
+								_0: _elm_lang$core$Native_Utils.update(
+									model,
+									{progress: _user$project$Main$ViewIntro}),
+								_1: _elm_lang$core$Platform_Cmd$none
+							};
+						}
+					default:
+						var last_section_index = _elm_lang$core$Array$length(model.sections) - 1;
+						var _p37 = A2(_elm_lang$core$Array$get, last_section_index, model.sections);
+						if (_p37.ctor === 'Just') {
+							return {
+								ctor: '_Tuple2',
+								_0: _elm_lang$core$Native_Utils.update(
+									model,
+									{
+										progress: _user$project$Main$ViewSection(last_section_index)
+									}),
+								_1: _elm_lang$core$Platform_Cmd$none
+							};
+						} else {
+							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+						}
+				}
 		}
 	});
+var _user$project$Main$NextSection = {ctor: 'NextSection'};
+var _user$project$Main$view_next_btn = A2(
+	_elm_lang$html$Html$div,
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$NextSection),
+		_1: {
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('begin_btn'),
+			_1: {ctor: '[]'}
+		}
+	},
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html$text('Next'),
+		_1: {ctor: '[]'}
+	});
+var _user$project$Main$PrevSection = {ctor: 'PrevSection'};
+var _user$project$Main$view_prev_btn = A2(
+	_elm_lang$html$Html$div,
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$PrevSection),
+		_1: {
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('begin_btn'),
+			_1: {ctor: '[]'}
+		}
+	},
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html$text('Previous'),
+		_1: {ctor: '[]'}
+	});
+var _user$project$Main$view_text_complete = function (model) {
+	var possible_section_scores = _elm_lang$core$List$sum(
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (section) {
+					return _user$project$Main$max_score(section);
+				},
+				model.sections)));
+	var section_scores = _elm_lang$core$List$sum(
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (section) {
+					return _user$project$Main$score(section);
+				},
+				model.sections)));
+	var complete_sections = _elm_lang$core$List$sum(
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (section) {
+					return _user$project$Main$complete(section) ? 1 : 0;
+				},
+				model.sections)));
+	var num_of_sections = _elm_lang$core$Array$length(model.sections);
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$classList(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'text', _1: true},
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_score'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Sections complete: ',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$Basics$toString(complete_sections),
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									'/',
+									_elm_lang$core$Basics$toString(num_of_sections))))),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										'Score: ',
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											_elm_lang$core$Basics$toString(section_scores),
+											A2(
+												_elm_lang$core$Basics_ops['++'],
+												' out of ',
+												_elm_lang$core$Basics$toString(possible_section_scores))))),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}),
+			_1: {
+				ctor: '::',
+				_0: _user$project$Main$view_prev_btn,
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Main$Select = F4(
+	function (a, b, c, d) {
+		return {ctor: 'Select', _0: a, _1: b, _2: c, _3: d};
+	});
+var _user$project$Main$view_answer = F3(
+	function (text_section, text_question, _p38) {
+		var _p39 = _p38;
+		var _p42 = _p39._2;
+		var _p41 = _p39._1;
+		var _p40 = _p39._0;
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'answer', _1: true},
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$input,
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						{
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', _p41.id),
+							_1: {
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'name', _p41.name),
+								_1: {
+									ctor: '::',
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'radio'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onCheck(
+											A3(_user$project$Main$Select, text_section, text_question, _p39)),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html_Attributes$attribute,
+												'value',
+												_elm_lang$core$Basics$toString(_p40.order)),
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}
+						},
+						_p42 ? {
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'checked', 'true'),
+							_1: {ctor: '[]'}
+						} : {ctor: '[]'}),
+					{ctor: '[]'}),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(_p40.text),
+					_1: {
+						ctor: '::',
+						_0: _p42 ? A2(
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$em,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text(_p40.feedback),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}) : _elm_lang$html$Html$text(''),
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+	});
+var _user$project$Main$view_question = F2(
+	function (text_section, _p43) {
+		var _p44 = _p43;
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'question', _1: true},
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', _p44._1.id),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(_p44._0.body),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'answers'),
+							_1: {ctor: '[]'}
+						},
+						_elm_lang$core$Array$toList(
+							A2(
+								_elm_lang$core$Array$map,
+								A2(_user$project$Main$view_answer, text_section, _p44),
+								_p44._3))),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$Main$view_questions = function (_p45) {
+	var _p46 = _p45;
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$classList(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'questions', _1: true},
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		},
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				_user$project$Main$view_question(_p46),
+				_p46._2)));
+};
+var _user$project$Main$view_text_section = F2(
+	function (i, _p47) {
+		var _p48 = _p47;
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'text_section', _1: true},
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								'Section ',
+								_elm_lang$core$Basics$toString(i + 1))),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$classList(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'text_body', _1: true},
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						},
+						_jinjor$elm_html_parser$HtmlParser_Util$toVirtualDom(
+							_jinjor$elm_html_parser$HtmlParser$parse(_p48._0.body))),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Main$view_questions(_p48),
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+	});
+var _user$project$Main$view_content = function (model) {
+	var _p49 = model.progress;
+	switch (_p49.ctor) {
+		case 'ViewIntro':
+			return A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$classList(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'text', _1: true},
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _user$project$Main$view_text_introduction(model.text),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$NextSection),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('begin_btn'),
+									_1: {ctor: '[]'}
+								}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('Start'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				});
+		case 'ViewSection':
+			var _p51 = _p49._0;
+			var _p50 = A2(_elm_lang$core$Array$get, _p51, model.sections);
+			if (_p50.ctor === 'Just') {
+				return A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$classList(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'text', _1: true},
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(_user$project$Main$view_text_section, _p51, _p50._0),
+						_1: {
+							ctor: '::',
+							_0: _user$project$Main$view_prev_btn,
+							_1: {
+								ctor: '::',
+								_0: _user$project$Main$view_next_btn,
+								_1: {ctor: '[]'}
+							}
+						}
+					});
+			} else {
+				return A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$classList(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'text', _1: true},
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					},
+					{ctor: '[]'});
+			}
+		default:
+			return _user$project$Main$view_text_complete(model);
+	}
+};
+var _user$project$Main$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(_user$project$Views$view_header, model.profile, _elm_lang$core$Maybe$Nothing),
+			_1: {
+				ctor: '::',
+				_0: _user$project$Views$view_filter,
+				_1: {
+					ctor: '::',
+					_0: _user$project$Main$view_content(model),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Views$view_footer,
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		});
+};
+var _user$project$Main$UpdateText = function (a) {
+	return {ctor: 'UpdateText', _0: a};
+};
+var _user$project$Main$updateText = function (text_id) {
+	var text_req = A2(
+		_elm_lang$http$Http$get,
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			A2(
+				_elm_lang$core$String$join,
+				'',
+				{
+					ctor: '::',
+					_0: _user$project$Config$text_api_endpoint,
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$core$Basics$toString(text_id),
+						_1: {ctor: '[]'}
+					}
+				}),
+			'/'),
+		_user$project$Text_Decode$textDecoder);
+	return _elm_lang$core$Platform_Cmd$batch(
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$http$Http$send, _user$project$Main$UpdateText, text_req),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Main$init = function (flags) {
+	var profile = _user$project$Profile$init_profile(flags);
+	return {
+		ctor: '_Tuple2',
+		_0: {
+			text: _user$project$Text_Model$new_text,
+			sections: _elm_lang$core$Array$fromList(
+				{ctor: '[]'}),
+			profile: profile,
+			progress: _user$project$Main$ViewIntro,
+			flags: flags
+		},
+		_1: _elm_lang$core$Platform_Cmd$batch(
+			{
+				ctor: '::',
+				_0: _user$project$Main$updateText(flags.text_id),
+				_1: {ctor: '[]'}
+			})
+	};
+};
 var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 	{init: _user$project$Main$init, view: _user$project$Main$view, subscriptions: _user$project$Main$subscriptions, update: _user$project$Main$update})(
 	A2(
