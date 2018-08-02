@@ -5896,11 +5896,17 @@ var _elm_lang$core$Json_Decode$Decoder = {ctor: 'Decoder'};
 
 var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode = _elm_lang$core$Json_Decode$succeed;
 var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$resolve = _elm_lang$core$Json_Decode$andThen(_elm_lang$core$Basics$identity);
-var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom = _elm_lang$core$Json_Decode$map2(
-	F2(
-		function (x, y) {
-			return y(x);
-		}));
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom = F2(
+	function (decoder, wrapped) {
+		return A3(
+			_elm_lang$core$Json_Decode$map2,
+			F2(
+				function (x, y) {
+					return x(y);
+				}),
+			wrapped,
+			decoder);
+	});
 var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$hardcoded = function (_p0) {
 	return _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom(
 		_elm_lang$core$Json_Decode$succeed(_p0));
@@ -5932,7 +5938,15 @@ var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optionalDecoder = F3(
 					return _elm_lang$core$Json_Decode$fail(_p2._0);
 				}
 			} else {
-				return _elm_lang$core$Json_Decode$succeed(fallback);
+				var _p3 = A2(
+					_elm_lang$core$Json_Decode$decodeValue,
+					_elm_lang$core$Json_Decode$keyValuePairs(_elm_lang$core$Json_Decode$value),
+					input);
+				if (_p3.ctor === 'Ok') {
+					return _elm_lang$core$Json_Decode$succeed(fallback);
+				} else {
+					return _elm_lang$core$Json_Decode$fail(_p3._0);
+				}
 			}
 		};
 		return A2(_elm_lang$core$Json_Decode$andThen, handleResult, _elm_lang$core$Json_Decode$value);
@@ -10053,7 +10067,9 @@ var _user$project$Text_Model$TextListItem = function (a) {
 								return function (i) {
 									return function (j) {
 										return function (k) {
-											return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, text_section_count: j, write_locker: k};
+											return function (l) {
+												return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, text_section_count: j, uri: k, write_locker: l};
+											};
 										};
 									};
 								};
@@ -10739,12 +10755,20 @@ var _user$project$Login$menu_index = function (login) {
 		return _p1._1;
 	}
 };
-var _user$project$Login$signup_uri = function (login) {
+var _user$project$Login$label = function (login) {
 	var _p2 = login;
 	if (_p2.ctor === 'StudentLogin') {
-		return _p2._0;
+		return 'Student Login';
 	} else {
-		return _p2._0;
+		return 'Instructor Login';
+	}
+};
+var _user$project$Login$signup_uri = function (login) {
+	var _p3 = login;
+	if (_p3.ctor === 'StudentLogin') {
+		return _p3._0;
+	} else {
+		return _p3._0;
 	}
 };
 var _user$project$Login$LoginResp = F2(
@@ -10802,15 +10826,15 @@ var _user$project$Login$view_password_input = function (model) {
 			_1: {ctor: '[]'}
 		} : {ctor: '[]'});
 	var password_err_msg = function () {
-		var _p3 = A2(_elm_lang$core$Dict$get, 'password', model.errors);
-		if (_p3.ctor === 'Just') {
+		var _p4 = A2(_elm_lang$core$Dict$get, 'password', model.errors);
+		if (_p4.ctor === 'Just') {
 			return _user$project$Login$login_label(
 				A2(
 					_elm_lang$html$Html$em,
 					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(_p3._0),
+						_0: _elm_lang$html$Html$text(_p4._0),
 						_1: {ctor: '[]'}
 					}));
 		} else {
@@ -10854,15 +10878,15 @@ var _user$project$Login$UpdateEmail = function (a) {
 };
 var _user$project$Login$view_email_input = function (model) {
 	var err_msg = function () {
-		var _p4 = A2(_elm_lang$core$Dict$get, 'email', model.errors);
-		if (_p4.ctor === 'Just') {
+		var _p5 = A2(_elm_lang$core$Dict$get, 'email', model.errors);
+		if (_p5.ctor === 'Just') {
 			return _user$project$Login$login_label(
 				A2(
 					_elm_lang$html$Html$em,
 					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(_p4._0),
+						_0: _elm_lang$html$Html$text(_p5._0),
 						_1: {ctor: '[]'}
 					}));
 		} else {
@@ -10930,8 +10954,8 @@ var _user$project$Login$post_login = F3(
 	});
 var _user$project$Login$update = F3(
 	function (endpoint, msg, model) {
-		var _p5 = msg;
-		switch (_p5.ctor) {
+		var _p6 = msg;
+		switch (_p6.ctor) {
 			case 'UpdatePassword':
 				var login_params = model.login_params;
 				return {
@@ -10941,12 +10965,12 @@ var _user$project$Login$update = F3(
 						{
 							login_params: _elm_lang$core$Native_Utils.update(
 								login_params,
-								{password: _p5._0})
+								{password: _p6._0})
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'UpdateEmail':
-				var _p6 = _p5._0;
+				var _p7 = _p6._0;
 				var login_params = model.login_params;
 				return {
 					ctor: '_Tuple2',
@@ -10955,8 +10979,8 @@ var _user$project$Login$update = F3(
 						{
 							login_params: _elm_lang$core$Native_Utils.update(
 								login_params,
-								{username: _p6}),
-							errors: (_user$project$Util$is_valid_email(_p6) || _elm_lang$core$Native_Utils.eq(_p6, '')) ? A2(_elm_lang$core$Dict$remove, 'email', model.errors) : A3(_elm_lang$core$Dict$insert, 'email', 'This e-mail is invalid', model.errors)
+								{username: _p7}),
+							errors: (_user$project$Util$is_valid_email(_p7) || _elm_lang$core$Native_Utils.eq(_p7, '')) ? A2(_elm_lang$core$Dict$remove, 'email', model.errors) : A3(_elm_lang$core$Dict$insert, 'email', 'This e-mail is invalid', model.errors)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -10972,26 +10996,26 @@ var _user$project$Login$update = F3(
 					_1: A3(_user$project$Login$post_login, endpoint, model.flags.csrftoken, model.login_params)
 				};
 			default:
-				if (_p5._0.ctor === 'Ok') {
+				if (_p6._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: model,
-						_1: _elm_lang$navigation$Navigation$load(_p5._0._0.redirect)
+						_1: _elm_lang$navigation$Navigation$load(_p6._0._0.redirect)
 					};
 				} else {
-					var _p7 = _p5._0._0;
-					switch (_p7.ctor) {
+					var _p8 = _p6._0._0;
+					switch (_p8.ctor) {
 						case 'BadStatus':
-							var _p8 = A2(
+							var _p9 = A2(
 								_elm_lang$core$Json_Decode$decodeString,
 								_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
-								_p7._0.body);
-							if (_p8.ctor === 'Ok') {
+								_p8._0.body);
+							if (_p9.ctor === 'Ok') {
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
 										model,
-										{errors: _p8._0}),
+										{errors: _p9._0}),
 									_1: _elm_lang$core$Platform_Cmd$none
 								};
 							} else {
@@ -11055,7 +11079,7 @@ var _user$project$Login$view_submit = function (model) {
 	};
 };
 var _user$project$Login$view_content = F2(
-	function (signup_uri, model) {
+	function (login, model) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -11074,28 +11098,45 @@ var _user$project$Login$view_content = F2(
 					_elm_lang$html$Html$div,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$classList(
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'login_box', _1: true},
-								_1: {ctor: '[]'}
-							}),
+						_0: _elm_lang$html$Html_Attributes$class('login_type'),
 						_1: {ctor: '[]'}
 					},
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						_user$project$Login$view_email_input(model),
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(
+							_user$project$Login$label(login)),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$classList(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'login_box', _1: true},
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						},
 						A2(
 							_elm_lang$core$Basics_ops['++'],
-							_user$project$Login$view_password_input(model),
+							_user$project$Login$view_email_input(model),
 							A2(
 								_elm_lang$core$Basics_ops['++'],
-								_user$project$Login$view_signup(signup_uri),
+								_user$project$Login$view_password_input(model),
 								A2(
 									_elm_lang$core$Basics_ops['++'],
-									_user$project$Login$view_submit(model),
-									_user$project$Login$view_errors(model)))))),
-				_1: {ctor: '[]'}
+									_user$project$Login$view_signup(
+										_user$project$Login$signup_uri(login)),
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										_user$project$Login$view_submit(model),
+										_user$project$Login$view_errors(model)))))),
+					_1: {ctor: '[]'}
+				}
 			});
 	});
 var _user$project$Login$view = F2(
@@ -11115,10 +11156,7 @@ var _user$project$Login$view = F2(
 					_0: _user$project$Views$view_filter,
 					_1: {
 						ctor: '::',
-						_0: A2(
-							_user$project$Login$view_content,
-							_user$project$Login$signup_uri(login),
-							model),
+						_0: A2(_user$project$Login$view_content, login, model),
 						_1: {
 							ctor: '::',
 							_0: _user$project$Views$view_footer,
@@ -11149,7 +11187,7 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 	{
 		init: _user$project$Login$init,
 		view: _user$project$Login$view(
-			A2(_user$project$Login$student_login, '/signup/student', 1)),
+			A2(_user$project$Login$student_login, '/signup/student', 2)),
 		subscriptions: _user$project$Login$subscriptions,
 		update: _user$project$Login$update(_user$project$Config$student_login_api_endpoint)
 	})(

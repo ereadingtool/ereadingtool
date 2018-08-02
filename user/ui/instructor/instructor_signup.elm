@@ -75,26 +75,45 @@ init flags = ({
   , errors = Dict.fromList [] }, Cmd.none)
 
 update : Msg -> Model -> (Model, Cmd Msg)
-update msg model = case msg of
-  ToggleShowPassword -> (SignUp.toggle_show_password model, Cmd.none)
-  UpdatePassword password -> (SignUp.update_password model password, Cmd.none)
-  UpdateConfirmPassword confirm_password -> (SignUp.update_confirm_password model confirm_password, Cmd.none)
-  UpdateEmail addr -> (SignUp.update_email model addr, Cmd.none)
+update msg model =
+  case msg of
+    ToggleShowPassword ->
+      (SignUp.toggle_show_password model, Cmd.none)
 
-  Submit -> (SignUp.submit model, post_signup model.flags.csrftoken model.signup_params)
-  Submitted (Ok resp) -> (model, Navigation.load resp.redirect)
-  Submitted (Err err) -> case err of
-      Http.BadStatus resp -> case (Decode.decodeString (Decode.dict Decode.string) resp.body) of
-        Ok errors -> ({ model | errors = errors }, Cmd.none)
-        _ -> (model, Cmd.none)
-      Http.BadPayload err resp -> (model, Cmd.none)
-      _ -> (model, Cmd.none)
+    UpdatePassword password ->
+      (SignUp.update_password model password, Cmd.none)
+
+    UpdateConfirmPassword confirm_password ->
+      (SignUp.update_confirm_password model confirm_password, Cmd.none)
+
+    UpdateEmail addr ->
+      (SignUp.update_email model addr, Cmd.none)
+
+    Submit ->
+      (SignUp.submit model, post_signup model.flags.csrftoken model.signup_params)
+
+    Submitted (Ok resp) ->
+      (model, Navigation.load resp.redirect)
+
+    Submitted (Err err) ->
+      case err of
+        Http.BadStatus resp ->
+          case (Decode.decodeString (Decode.dict Decode.string) resp.body) of
+            Ok errors ->
+              ({ model | errors = errors }, Cmd.none)
+            _ ->
+              (model, Cmd.none)
+        Http.BadPayload err resp ->
+          (model, Cmd.none)
+        _ ->
+          (model, Cmd.none)
 
 main : Program Flags.UnAuthedFlags Model Msg
 main =
   Html.programWithFlags
     { init = init
-    , view = (SignUp.view UpdateEmail (ToggleShowPassword, UpdatePassword, UpdateConfirmPassword) Submit)
+    , view =
+        (SignUp.view "Instructor Signup" UpdateEmail (ToggleShowPassword, UpdatePassword, UpdateConfirmPassword) Submit)
     , subscriptions = subscriptions
     , update = update
     }

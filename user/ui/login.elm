@@ -1,7 +1,7 @@
 module Login exposing (init, view, subscriptions, update, Model, Msg, student_login, instructor_login)
 
 import Html exposing (Html, div)
-import Html.Attributes exposing (classList, attribute)
+import Html.Attributes exposing (class, classList, attribute)
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
 
 import Http exposing (..)
@@ -46,14 +46,22 @@ type alias Model = {
   , errors : Dict String String }
 
 signup_uri : Login -> URI
-signup_uri login = case login of
-  StudentLogin uri _ -> uri
-  InstructorLogin uri _ -> uri
+signup_uri login =
+  case login of
+    StudentLogin uri _ -> uri
+    InstructorLogin uri _ -> uri
+
+label : Login -> String
+label login =
+  case login of
+    StudentLogin _ _ -> "Student Login"
+    InstructorLogin _ _ -> "Instructor Login"
 
 menu_index : Login -> Int
-menu_index login = case login of
-  StudentLogin _ menu_index -> menu_index
-  InstructorLogin _ menu_index -> menu_index
+menu_index login =
+  case login of
+    StudentLogin _ menu_index -> menu_index
+    InstructorLogin _ menu_index -> menu_index
 
 student_login : URI -> Int -> Login
 student_login signup_uri menu_index =
@@ -98,28 +106,41 @@ post_login endpoint csrftoken login_params =
     Http.send Submitted req
 
 update : String -> Msg -> Model -> (Model, Cmd Msg)
-update endpoint msg model = case msg of
-  UpdatePassword password -> let login_params = model.login_params in
+update endpoint msg model =
+  case msg of
+    UpdatePassword password ->
+      let
+        login_params = model.login_params
+      in
         ({ model | login_params = { login_params | password = password } }, Cmd.none)
-  UpdateEmail addr -> let login_params = model.login_params in
-    ({ model | login_params = { login_params | username = addr }
-             , errors = (if (is_valid_email addr) || (addr == "") then
-                 Dict.remove "email" model.errors
-               else
-                 Dict.insert "email" "This e-mail is invalid" model.errors) }
-             , Cmd.none)
 
-  Submit -> ({ model | errors = Dict.fromList [] }, post_login endpoint model.flags.csrftoken model.login_params)
+    UpdateEmail addr ->
+      let
+        login_params = model.login_params
+      in
+        ({ model | login_params = { login_params | username = addr }
+         , errors =
+             (if (is_valid_email addr) || (addr == "") then
+               Dict.remove "email" model.errors
+              else
+               Dict.insert "email" "This e-mail is invalid" model.errors)
+         }, Cmd.none)
 
-  Submitted (Ok resp) -> (model, Navigation.load resp.redirect)
+    Submit ->
+      ({ model | errors = Dict.fromList [] }
+       , post_login endpoint model.flags.csrftoken model.login_params)
 
-  Submitted (Err err) -> case err of
-      Http.BadStatus resp -> case (Decode.decodeString (Decode.dict Decode.string) resp.body) of
-        Ok errors -> ({ model | errors = errors }, Cmd.none)
+    Submitted (Ok resp) ->
+      (model, Navigation.load resp.redirect)
+
+    Submitted (Err err) ->
+      case err of
+        Http.BadStatus resp ->
+          case (Decode.decodeString (Decode.dict Decode.string) resp.body) of
+            Ok errors -> ({ model | errors = errors }, Cmd.none)
+            _ -> (model, Cmd.none)
+        Http.BadPayload err resp -> (model, Cmd.none)
         _ -> (model, Cmd.none)
-      Http.BadPayload err resp -> (model, Cmd.none)
-      _ -> (model, Cmd.none)
-
 
 login_label : Html Msg -> Html Msg
 login_label html = Html.div [attribute "class" "login_label"] [ html ]
@@ -157,11 +178,12 @@ view_password_input model = let
   ]
 
 view_errors : Model -> List (Html Msg)
-view_errors model = case Dict.get "all" model.errors of
-  Just all_err ->
-    [ login_label (Html.span [attribute "class" "errors"] [ Html.em [] [Html.text <| all_err ]]) ]
-  _ ->
-    [ Html.span [attribute "class" "errors"] [] ]
+view_errors model =
+  case Dict.get "all" model.errors of
+    Just all_err ->
+      [ login_label (Html.span [attribute "class" "errors"] [ Html.em [] [Html.text <| all_err ]]) ]
+    _ ->
+      [ Html.span [attribute "class" "errors"] [] ]
 
 view_submit : Model -> List (Html Msg)
 view_submit model = [
@@ -177,13 +199,15 @@ view_signup signup_uri = [
   , Html.a [attribute "href" signup_uri] [ Html.span [attribute "class" "cursor"] [Html.text "Sign Up"]]
   ]]
 
-view_content : SignUpURI -> Model -> Html Msg
-view_content signup_uri model = Html.div [ classList [("login", True)] ] [
-    Html.div [classList [("login_box", True)] ] <|
-        (view_email_input model) ++
-        (view_password_input model) ++ (view_signup signup_uri) ++
-        (view_submit model) ++
-        (view_errors model)
+view_content : Login -> Model -> Html Msg
+view_content login model =
+  div [ classList [("login", True)] ] [
+    div [class "login_type"] [ Html.text (label login) ]
+  , div [classList [("login_box", True)] ] <|
+      (view_email_input model) ++
+      (view_password_input model) ++ (view_signup (signup_uri login)) ++
+      (view_submit model) ++
+      (view_errors model)
   ]
 
 -- VIEW
@@ -192,6 +216,6 @@ view login model =
   div [] [
     (Views.view_header Profile.emptyProfile (Just <| menu_index login))
   , (Views.view_filter)
-  , (view_content (signup_uri login) model)
+  , (view_content login model)
   , (Views.view_footer)
   ]

@@ -5896,11 +5896,17 @@ var _elm_lang$core$Json_Decode$Decoder = {ctor: 'Decoder'};
 
 var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode = _elm_lang$core$Json_Decode$succeed;
 var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$resolve = _elm_lang$core$Json_Decode$andThen(_elm_lang$core$Basics$identity);
-var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom = _elm_lang$core$Json_Decode$map2(
-	F2(
-		function (x, y) {
-			return y(x);
-		}));
+var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom = F2(
+	function (decoder, wrapped) {
+		return A3(
+			_elm_lang$core$Json_Decode$map2,
+			F2(
+				function (x, y) {
+					return x(y);
+				}),
+			wrapped,
+			decoder);
+	});
 var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$hardcoded = function (_p0) {
 	return _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom(
 		_elm_lang$core$Json_Decode$succeed(_p0));
@@ -5932,7 +5938,15 @@ var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$optionalDecoder = F3(
 					return _elm_lang$core$Json_Decode$fail(_p2._0);
 				}
 			} else {
-				return _elm_lang$core$Json_Decode$succeed(fallback);
+				var _p3 = A2(
+					_elm_lang$core$Json_Decode$decodeValue,
+					_elm_lang$core$Json_Decode$keyValuePairs(_elm_lang$core$Json_Decode$value),
+					input);
+				if (_p3.ctor === 'Ok') {
+					return _elm_lang$core$Json_Decode$succeed(fallback);
+				} else {
+					return _elm_lang$core$Json_Decode$fail(_p3._0);
+				}
 			}
 		};
 		return A2(_elm_lang$core$Json_Decode$andThen, handleResult, _elm_lang$core$Json_Decode$value);
@@ -10053,7 +10067,9 @@ var _user$project$Text_Model$TextListItem = function (a) {
 								return function (i) {
 									return function (j) {
 										return function (k) {
-											return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, text_section_count: j, write_locker: k};
+											return function (l) {
+												return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, text_section_count: j, uri: k, write_locker: l};
+											};
 										};
 									};
 								};
@@ -10931,8 +10947,8 @@ var _user$project$SignUp$view_content = F4(
 				_1: {ctor: '[]'}
 			});
 	});
-var _user$project$SignUp$view = F4(
-	function (email_msg, password_msgs, submit_msg, model) {
+var _user$project$SignUp$view = F5(
+	function (signup_label, email_msg, password_msgs, submit_msg, model) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{ctor: '[]'},
@@ -10944,11 +10960,22 @@ var _user$project$SignUp$view = F4(
 					_0: _user$project$Views$view_filter,
 					_1: {
 						ctor: '::',
-						_0: A4(_user$project$SignUp$view_content, email_msg, password_msgs, submit_msg, model),
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(signup_label),
+								_1: {ctor: '[]'}
+							}),
 						_1: {
 							ctor: '::',
-							_0: _user$project$Views$view_footer,
-							_1: {ctor: '[]'}
+							_0: A4(_user$project$SignUp$view_content, email_msg, password_msgs, submit_msg, model),
+							_1: {
+								ctor: '::',
+								_0: _user$project$Views$view_footer,
+								_1: {ctor: '[]'}
+							}
 						}
 					}
 				}
@@ -11120,8 +11147,9 @@ var _user$project$Main$ToggleShowPassword = {ctor: 'ToggleShowPassword'};
 var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 	{
 		init: _user$project$Main$init,
-		view: A3(
+		view: A4(
 			_user$project$SignUp$view,
+			'Instructor Signup',
 			_user$project$Main$UpdateEmail,
 			{ctor: '_Tuple3', _0: _user$project$Main$ToggleShowPassword, _1: _user$project$Main$UpdatePassword, _2: _user$project$Main$UpdateConfirmPassword},
 			_user$project$Main$Submit),

@@ -88,25 +88,43 @@ init flags = ({
   , errors = Dict.fromList [] }, Cmd.none)
 
 update : Msg -> Model -> (Model, Cmd Msg)
-update msg model = case msg of
-  ToggleShowPassword -> (SignUp.toggle_show_password model, Cmd.none)
-  UpdatePassword password -> (SignUp.update_password model password, Cmd.none)
-  UpdateConfirmPassword confirm_password -> (SignUp.update_confirm_password model confirm_password, Cmd.none)
-  UpdateEmail addr -> (SignUp.update_email model addr, Cmd.none)
+update msg model =
+  case msg of
+    ToggleShowPassword ->
+      (SignUp.toggle_show_password model, Cmd.none)
 
-  UpdateDifficulty difficulty -> let
-      signup_params = model.signup_params
-    in
-      ({ model | signup_params = { signup_params | difficulty = difficulty } }, Cmd.none)
+    UpdatePassword password ->
+      (SignUp.update_password model password, Cmd.none)
 
-  Submit -> (SignUp.submit model, post_signup model.flags.csrftoken model.signup_params)
-  Submitted (Ok resp) -> (model, Navigation.load resp.redirect)
-  Submitted (Err err) -> case err of
-      Http.BadStatus resp -> case (Decode.decodeString (Decode.dict Decode.string) resp.body) of
-        Ok errors -> ({ model | errors = errors }, Cmd.none)
-        _ -> (model, Cmd.none)
-      Http.BadPayload err resp -> (model, Cmd.none)
-      _ -> (model, Cmd.none)
+    UpdateConfirmPassword confirm_password ->
+      (SignUp.update_confirm_password model confirm_password, Cmd.none)
+
+    UpdateEmail addr ->
+      (SignUp.update_email model addr, Cmd.none)
+
+    UpdateDifficulty difficulty ->
+      let
+        signup_params = model.signup_params
+      in
+        ({ model | signup_params = { signup_params | difficulty = difficulty } }, Cmd.none)
+
+    Submit ->
+      (SignUp.submit model, post_signup model.flags.csrftoken model.signup_params)
+
+    Submitted (Ok resp) ->
+      (model, Navigation.load resp.redirect)
+
+    Submitted (Err err) ->
+      case err of
+        Http.BadStatus resp ->
+          case (Decode.decodeString (Decode.dict Decode.string) resp.body) of
+            Ok errors ->
+              ({ model | errors = errors }, Cmd.none)
+            _ ->
+              (model, Cmd.none)
+        Http.BadPayload err resp -> (model, Cmd.none)
+        _ ->
+          (model, Cmd.none)
 
 view_difficulty_choices : Model -> List (Html Msg)
 view_difficulty_choices model = [
@@ -121,12 +139,14 @@ view_difficulty_choices model = [
     ]
 
 view_content : Model -> Html Msg
-view_content model = Html.div [ classList [("signup", True)] ] [
-    Html.div [classList [("signup_box", True)] ] <|
-        (SignUp.view_email_input UpdateEmail model) ++
-        (SignUp.view_password_input (ToggleShowPassword, UpdatePassword, UpdateConfirmPassword) model) ++
-        (view_difficulty_choices model) ++
-        (SignUp.view_submit Submit model)
+view_content model =
+  div [ classList [("signup", True)] ] [
+    div [] [Html.text "Student Signup"]
+  , div [classList [("signup_box", True)] ] <|
+      (SignUp.view_email_input UpdateEmail model) ++
+      (SignUp.view_password_input (ToggleShowPassword, UpdatePassword, UpdateConfirmPassword) model) ++
+      (view_difficulty_choices model) ++
+      (SignUp.view_submit Submit model)
   ]
 
 view : Model -> Html Msg

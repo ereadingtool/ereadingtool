@@ -9,11 +9,15 @@
 }
 
 .login_box, .signup_box {
+    grid-column: 4;
     display: grid;
 
-    grid-column: 4;
     grid-template-columns: auto;
     grid-auto-rows: 50px;
+}
+
+.login_type {
+    grid-column: 4;
 }
 
 .login_label, .signup_label {
@@ -48,4 +52,28 @@ select {
     display: grid;
     align-content: center;
     justify-content: center;
+}
+
+
+@media only screen and (max-width:480px) {
+    .header {
+        display: flex;
+    }
+
+    .login, .signup, .login_box, .signup_box {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .filter {
+        display: none;
+    }
+
+    .menu {
+        display: flex;
+        flex-wrap: wrap;
+
+        align-items: center;
+        justify-items: center;
+    }
 }

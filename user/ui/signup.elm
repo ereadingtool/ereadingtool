@@ -124,15 +124,17 @@ view_content email_msg password_msgs submit_msg model = Html.div [ classList [("
   ]
 
 -- VIEW
-view
-    : (String -> msg)
+view :
+       String
+    -> (String -> msg)
     -> ( msg, String -> msg, String -> msg )
     -> msg
     -> { a | show_passwords : Bool, errors : Dict String String }
     -> Html msg
-view email_msg password_msgs submit_msg model = div [] [
+view signup_label email_msg password_msgs submit_msg model = div [] [
     (Views.view_header Profile.emptyProfile Nothing)
   , (Views.view_filter)
+  , div [] [ Html.text signup_label ]
   , (view_content email_msg password_msgs submit_msg model)
   , (Views.view_footer)
   ]
