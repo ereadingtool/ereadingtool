@@ -123,6 +123,29 @@ class TextTest(TestCase):
 
         self.assertEquals(science_tech_tag.texts.count(), 2)
 
+    def test_put_new_section(self):
+        test_data = self.get_test_data()
+
+        resp = self.client.post('/api/text/', json.dumps(test_data), content_type='application/json')
+
+        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        self.assertEquals(Text.objects.count(), 1)
+
+        resp_content = json.loads(resp.content.decode('utf8'))
+
+        text_id = resp_content['id']
+
+        test_data['text_sections'].append(self.gen_text_section_params(2))
+
+        resp = self.client.put(f'/api/text/{text_id}/', json.dumps(test_data), content_type='application/json')
+
+        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        text = Text.objects.get(pk=text_id)
+
+        self.assertEquals(3, text.sections.count())
+
     def test_put_text(self):
         test_data = self.get_test_data()
 
@@ -344,6 +367,32 @@ class TextTest(TestCase):
 
         self.assertTrue('deleted' in resp_content)
 
+    def gen_text_section_params(self, order: int) -> Dict:
+        return {
+            'order': order,
+            'body': f'<p style="text-align:center">section {order}</p>\n',
+            'questions': [
+             {'body': 'Question 1?',
+              'order': 0,
+              'answers': [
+                  {'text': 'Click to write choice 1',
+                   'correct': False,
+                   'order': 0,
+                   'feedback': 'Answer 1 Feedback.'},
+                  {'text': 'Click to write choice 2',
+                   'correct': False,
+                   'order': 1,
+                   'feedback': 'Answer 2 Feedback.'},
+                  {'text': 'Click to write choice 3',
+                   'correct': False,
+                   'order': 2,
+                   'feedback': 'Answer 3 Feedback.'},
+                  {'text': 'Click to write choice 4',
+                   'correct': True,
+                   'order': 3, 'feedback': 'Answer 4 Feedback.'}
+                  ], 'question_type': 'main_idea'}]
+         }
+
     def get_test_data(self) -> Dict:
         return {
             'title': 'text title',
@@ -351,52 +400,5 @@ class TextTest(TestCase):
             'tags': ['Sports', 'Science/Technology', 'Other'],
             'author': 'author',
             'source': 'source',
-            'text_sections': [
-                {'order': 0,
-                 'body': '<p style="text-align:center">section one</p>\n',
-                 'questions': [
-                     {'body': 'Question 1?',
-                      'order': 0,
-                      'answers': [
-                          {'text': 'Click to write choice 1',
-                           'correct': False,
-                           'order': 0,
-                           'feedback': 'Answer 1 Feedback.'},
-                          {'text': 'Click to write choice 2',
-                           'correct': False,
-                           'order': 1,
-                           'feedback': 'Answer 2 Feedback.'},
-                          {'text': 'Click to write choice 3',
-                           'correct': True,
-                           'order': 2,
-                           'feedback': 'Answer 3 Feedback.'},
-                          {'text': 'Click to write choice 4',
-                           'correct': False,
-                           'order': 3,
-                           'feedback': 'Answer 4 Feedback.'}],
-                      'question_type': 'main_idea'}
-                 ]},
-                {'order': 1,
-                 'body': '<p style="text-align:center">section two</p>\n',
-                 'questions': [
-                     {'body': 'Question 2?',
-                      'order': 0,
-                      'answers': [
-                          {'text': 'Click to write choice 1',
-                           'correct': False,
-                           'order': 0,
-                           'feedback': 'Answer 1 Feedback.'},
-                          {'text': 'Click to write choice 2',
-                           'correct': False,
-                           'order': 1,
-                           'feedback': 'Answer 2 Feedback.'},
-                          {'text': 'Click to write choice 3',
-                           'correct': False,
-                           'order': 2,
-                           'feedback': 'Answer 3 Feedback.'},
-                          {'text': 'Click to write choice 4',
-                           'correct': True,
-                           'order': 3, 'feedback': 'Answer 4 Feedback.'}
-                      ],
-                      'question_type': 'main_idea'}]
-                 }]}
+            'text_sections': [self.gen_text_section_params(0), self.gen_text_section_params(1)]
+        }

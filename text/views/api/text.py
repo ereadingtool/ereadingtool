@@ -41,11 +41,18 @@ class TextAPIView(LoginRequiredMixin, View):
         new_text_params = {}
 
         for i, text_section_param in enumerate(text_section_params):
+            try:
+                text_section_instance = text_sections[i]
+            except IndexError:
+                text_section_instance = None
+            except TypeError:
+                text_section_instance = None
+
             new_text_params, errors = TextAPIView.validate_text_section_param(
                text_section_param=text_section_param,
                order=i,
                errors=errors,
-               text_section_instance=text_sections[i] if text_sections else None,
+               text_section_instance=text_section_instance,
                output_params=new_text_params)
 
         return new_text_params, errors

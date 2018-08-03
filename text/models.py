@@ -83,7 +83,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
             for i, question in enumerate(section_params['questions']):
                 question_obj = question['form'].save(commit=False)
 
-                question_obj.text = text
+                question_obj.text_section = text_section
                 question_obj.order = i
                 question_obj.save()
 
