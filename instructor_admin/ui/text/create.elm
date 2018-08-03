@@ -62,6 +62,7 @@ type Msg =
   | DeleteText
   | ConfirmTextDelete Bool
   | TextDelete (Result Http.Error Text.Decode.TextDeleteResp)
+  | InitIntroEditor
 
 type alias Model = {
     flags : Flags

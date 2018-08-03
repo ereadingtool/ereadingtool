@@ -71,7 +71,9 @@ textJSONtoComponent text =
       (case (Decode.decodeValue Text.Decode.textDecoder json) of
         Ok text -> Task.succeed (Text.Component.init text)
         Err err -> Task.fail err)
-    _ -> Cmd.none
+    Nothing ->
+      -- CreateMode, initialize the introduction editor
+      Task.attempt (\_-> InitIntroEditor) (Task.succeed Nothing)
 
 retrieveTextDifficultyOptions : Cmd Msg
 retrieveTextDifficultyOptions =
@@ -99,9 +101,8 @@ update msg model = case msg of
 
     TextJSONDecode result ->
       case result of
-        Ok text_comp ->
+        Ok text_component ->
           let
-            text_component = (Text.Component.set_intro_editable text_comp True)
             text = Text.Component.text text_component
           in
             case text.write_locker of
@@ -132,6 +133,13 @@ update msg model = case msg of
           ({ model |
               error_msg = (Just <| "Something went wrong loading the text from the server.")
             , success_msg = (Just <| "Editing a new text") }, Cmd.none)
+
+    InitIntroEditor ->
+      let
+        text_intro_field = Text.Field.intro (Text.Component.text_fields model.text_component)
+        intro_field_id = (Text.Field.text_intro_attrs text_intro_field).input_id
+      in
+        (model, Ports.ckEditor intro_field_id)
 
     TextTagsDecode result ->
       case result of
@@ -196,9 +204,6 @@ update msg model = case msg of
             Title text_title ->
               ( Text.Component.set_title_editable model.text_component editable
               , Text.Component.post_toggle_title)
-            Intro text_intro ->
-              ( Text.Component.set_intro_editable model.text_component editable
-              , Text.Component.post_toggle_intro)
             Author text_author ->
               ( Text.Component.set_author_editable model.text_component editable
               , Text.Component.post_toggle_author)

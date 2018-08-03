@@ -79,15 +79,9 @@ view_text_introduction params edit_view text_intro =
   in
     div [
           attribute "id" text_intro_attrs.id
-        , onClick (ToggleEditable (Intro text_intro) True)
         , classList [("input_error", text_intro_attrs.error)]] <| [
       div [] [ Html.text "Text Introduction" ]
-    , (case text_intro_attrs.editable of
-        True ->
-          edit_view params text_intro
-        False ->
-          div [attribute "id" text_intro_attrs.input_id, attribute "class" "editable"] <|
-            [ Html.text params.text.introduction ] ++ (if text_intro_attrs.error then [] else []))
+    , edit_view params text_intro
     ] ++
       (if text_intro_attrs.error then
         [ div [class "error"] [ Html.text text_intro_attrs.error_string ]]

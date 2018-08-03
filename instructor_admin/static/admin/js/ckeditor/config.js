@@ -23,8 +23,8 @@ CKEDITOR.editorConfig = function(config) {
         {name: "about", groups: ["about"]}];
 
     config.removeButtons = "Flash,HorizontalRule,Smiley,PageBreak,Iframe," +
-        "Anchor,Save,NewPage,Preview,Print,Templates,Cut,Copy,Paste,PasteText," +
-        "PasteFromWord,Find,Replace,SelectAll,Scayt,Form,Checkbox,Radio,TextField," +
-        "Textarea,Select,Button,ImageButton,HiddenField,Strike,CopyFormatting,Blockquote," +
-        "CreateDiv,Styles,Format,Maximize,ShowBlocks,About";
+            "Anchor,Save,NewPage,Preview,Print,Templates,Cut,Copy,Paste,PasteText," +
+            "PasteFromWord,Find,Replace,SelectAll,Scayt,Form,Checkbox,Radio,TextField," +
+            "Textarea,Select,Button,ImageButton,HiddenField,Strike,CopyFormatting,Blockquote," +
+            "CreateDiv,Styles,Format,Maximize,ShowBlocks,About";
 };

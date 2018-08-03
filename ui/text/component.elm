@@ -10,7 +10,7 @@ import Text.Section.Component.Group exposing (TextSectionComponentGroup)
 
 import Array
 import Dict exposing (Dict)
-import Ports exposing (ckEditor, ckEditorSetHtml, CKEditorID, CKEditorText, addClassToCKEditor, selectAllInputText)
+import Ports
 
 type alias TextAttributeName = String
 
@@ -92,13 +92,14 @@ emptyTextComponent =
   TextComponent Text.new_text init_text_fields (Dict.fromList []) (Text.Section.Component.Group.new_group)
 
 reinitialize_ck_editors : TextComponent -> Cmd msg
-reinitialize_ck_editors ((TextComponent text fields text_tags components) as text_component) =
+reinitialize_ck_editors text_component =
   let
     text_component_group = text_section_components text_component
-    intro_field_id = (Text.Field.text_intro_attrs (Text.Field.intro fields)).id
+    text_intro_field = Text.Field.intro (text_fields text_component)
+    intro_field_id = (Text.Field.text_intro_attrs text_intro_field).input_id
   in
     Cmd.batch [
-      Cmd.batch [ckEditor intro_field_id, ckEditorSetHtml (intro_field_id, text.introduction)]
+      Cmd.batch [Ports.ckEditor intro_field_id]
     , Text.Section.Component.Group.reinitialize_ck_editors text_component_group ]
 
 update_text_errors : TextComponent -> Dict String String -> TextComponent
