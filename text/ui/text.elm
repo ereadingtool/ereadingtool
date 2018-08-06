@@ -12,11 +12,8 @@ import Array exposing (Array)
 import Text.Section.Model exposing (TextSection, emptyTextSection)
 import Text.Model exposing (Text)
 
-import Question.Model exposing (Question)
-
 import Text.Model as Texts exposing (Text)
 import Text.Decode
-import Answer.Model exposing (Answer)
 
 import Views
 import Profile
@@ -26,18 +23,10 @@ import Flags exposing (CSRFToken)
 
 import WebSocket
 
+import TextReader exposing (TextItemAttributes)
+import TextReader.Question exposing (TextQuestion)
+import TextReader.Answer exposing (TextAnswer)
 
-type alias Selected = Bool
-type alias AnsweredCorrectly = Bool
-type alias FeedbackViewable = Bool
-
-type alias TextItemAttributes a = { a | index : Int }
-
-type alias TextAnswerAttributes = TextItemAttributes { question_index : Int, name: String, id: String }
-type alias TextQuestionAttributes = TextItemAttributes { id:String, text_section_index: Int }
-
-type TextAnswer = TextAnswer Answer TextAnswerAttributes Selected FeedbackViewable
-type TextQuestion = TextQuestion Question TextQuestionAttributes AnsweredCorrectly (Array TextAnswer)
 
 type Section = Section TextSection (TextItemAttributes {}) (Array TextQuestion)
 
@@ -96,63 +85,33 @@ updateText text_id =
   in
     Cmd.batch [Http.send UpdateText text_req]
 
-gen_text_answer : Int -> Int -> Int -> Answer -> TextAnswer
-gen_text_answer text_section_index question_index answer_index answer =
-  let
-    answer_id = String.join "_"
-      ["section", toString text_section_index, "question", (toString question_index), "answer"]
-  in
-    TextAnswer answer {
-      -- question_field_index = question.order
-      id = answer_id
-    , name = answer_id
-    , question_index = question_index
-    , index = answer_index } False False
-
-gen_text_question : Int -> Int -> Question -> TextQuestion
-gen_text_question text_section_index index question =
-  let
-    question_id = String.join "_" ["section", toString text_section_index, "question", toString index]
-  in
-    TextQuestion question
-      {index=index, text_section_index=text_section_index, id=question_id}
-      False (Array.indexedMap (gen_text_answer text_section_index index) question.answers)
-
 text_section : Array Section -> TextQuestion -> Maybe Section
-text_section text_sections (TextQuestion question question_attr _ answers) =
-  Array.get question_attr.text_section_index text_sections
+text_section text_sections text_question =
+  let
+    text_section_index = TextReader.Question.text_section_index text_question
+  in
+    Array.get text_section_index text_sections
 
 gen_text_sections : Int -> TextSection -> Section
 gen_text_sections index text_section =
-  Section text_section {index=index} (Array.indexedMap (gen_text_question index) text_section.questions)
+  Section
+    text_section {index=index} (Array.indexedMap (TextReader.Question.gen_text_question index) text_section.questions)
 
 clear_question_answers : Section -> Section
 clear_question_answers section =
   let
-    new_questions = Array.map (\question -> deselect_all_answers question) (questions section)
+    new_questions = Array.map (\question -> TextReader.Question.deselect_all_answers question) (questions section)
   in
     set_questions section new_questions
 
 questions : Section -> Array TextQuestion
 questions (Section section attrs questions) = questions
 
-answers : TextQuestion -> Array TextAnswer
-answers (TextQuestion _ _ _ answers) = answers
-
-answered_correctly : TextQuestion -> Bool
-answered_correctly (TextQuestion _ _ answered_correctly _) = answered_correctly
-
-answered : TextQuestion -> Bool
-answered text_question =
-     List.any (\selected -> selected)
-  <| Array.toList
-  <| Array.map (\answer -> selected answer) (answers text_question)
-
 complete : Section -> Bool
 complete section =
      List.all (\answered -> answered)
   <| Array.toList
-  <| Array.map (\question -> answered question) (questions section)
+  <| Array.map (\question -> TextReader.Question.answered question) (questions section)
 
 max_score : Section -> Int
 max_score section =
@@ -164,53 +123,18 @@ score : Section -> Int
 score section =
      List.sum
   <| Array.toList
-  <| Array.map (\question -> if (answered_correctly question) then 1 else 0) (questions section)
+  <| Array.map (\question -> if (TextReader.Question.answered_correctly question) then 1 else 0) (questions section)
 
 set_questions : Section -> Array TextQuestion -> Section
 set_questions (Section text attrs _) new_questions =
   Section text attrs new_questions
 
-set_answer_selected : TextAnswer -> Bool -> TextAnswer
-set_answer_selected (TextAnswer answer attr _ feedback_viewable) selected =
-  TextAnswer answer attr selected feedback_viewable
-
-set_answer_feedback_viewable : TextAnswer -> Bool -> TextAnswer
-set_answer_feedback_viewable (TextAnswer answer attr selected _) feedback_viewable =
-  TextAnswer answer attr selected feedback_viewable
-
-correct : TextAnswer -> Bool
-correct text_answer = (answer text_answer).correct
-
-selected : TextAnswer -> Bool
-selected (TextAnswer _ _ selected _) = selected
-
-answer : TextAnswer -> Answer
-answer (TextAnswer answer _ _ _) = answer
-
-deselect_all_answers : TextQuestion -> TextQuestion
-deselect_all_answers text_question =
-  let
-    new_answers =
-         Array.map (\ans -> set_answer_feedback_viewable ans False)
-      <| Array.map (\ans -> set_answer_selected ans False) (answers text_question)
-  in
-    set_answers text_question new_answers
-
-set_answers : TextQuestion -> Array TextAnswer -> TextQuestion
-set_answers (TextQuestion question question_attr ans_correctly _) new_answers =
-  TextQuestion question question_attr ans_correctly new_answers
-
-set_answer : TextQuestion -> TextAnswer -> TextQuestion
-set_answer (TextQuestion question question_attr _ answers)
-           ((TextAnswer _ answer_attr _ feedback_viewable) as new_text_answer) =
-  let
-    answered_correctly = (correct new_text_answer) && (selected new_text_answer)
-  in
-    TextQuestion question question_attr answered_correctly (Array.set answer_attr.index new_text_answer answers)
-
 set_question : Section -> TextQuestion -> Section
-set_question (Section text text_attr questions) ((TextQuestion question question_attr _ answers) as new_text_question) =
-  Section text text_attr (Array.set question_attr.index new_text_question questions)
+set_question (Section text text_attr questions) new_text_question =
+  let
+    question_index = TextReader.Question.index new_text_question
+  in
+    Section text text_attr (Array.set question_index new_text_question questions)
 
 set_text_section : Array Section -> Section -> Array Section
 set_text_section text_sections ((Section _ attrs _) as text_section) =
@@ -231,8 +155,8 @@ update msg model =
 
     Select text_section text_question text_answer selected ->
       let
-        new_text_answer = set_answer_selected text_answer selected
-        new_text_question = set_answer text_question new_text_answer
+        new_text_answer = TextReader.Answer.set_answer_selected text_answer selected
+        new_text_question = TextReader.Question.set_answer text_question new_text_answer
         new_text_section = set_question text_section new_text_question
         new_sections = set_text_section model.sections new_text_section
       in
@@ -240,8 +164,8 @@ update msg model =
 
     ViewFeedback text_section text_question text_answer view_feedback ->
       let
-        new_text_answer = set_answer_feedback_viewable text_answer view_feedback
-        new_text_question = set_answer text_question new_text_answer
+        new_text_answer = TextReader.Answer.set_answer_feedback_viewable text_answer view_feedback
+        new_text_question = TextReader.Question.set_answer text_question new_text_answer
         new_text_section = set_question text_section new_text_question
         new_sections = set_text_section model.sections new_text_section
       in
@@ -299,14 +223,20 @@ main =
     }
 
 view_answer : Section -> TextQuestion -> TextAnswer -> Html Msg
-view_answer text_section text_question ((TextAnswer answer answer_attrs answer_selected view_feedback) as text_answer) =
+view_answer text_section text_question text_answer =
   let
-    question_answered = answered text_question
+    question_answered = TextReader.Question.answered text_question
+
     on_click = if question_answered then
         onClick (ViewFeedback text_section text_question text_answer True)
       else
         onClick (Select text_section text_question text_answer True)
-    is_correct = correct text_answer
+
+    is_correct = TextReader.Answer.correct text_answer
+
+    answer = TextReader.Answer.answer text_answer
+    answer_selected = TextReader.Answer.selected text_answer
+    view_feedback = TextReader.Answer.feedback_viewable text_answer
   in
     div [ classList <| [
             ("answer", True)
@@ -326,12 +256,17 @@ view_answer text_section text_question ((TextAnswer answer answer_attrs answer_s
     ]
 
 view_question : Section -> TextQuestion -> Html Msg
-view_question text_section ((TextQuestion question attrs answered_correctly answers) as text_question) =
-  div [class "question", attribute "id" attrs.id] [
-    div [class "question_body"] [ Html.text question.body ]
-  , div [class "answers"]
-      (Array.toList <| Array.map (view_answer text_section text_question) answers)
-  ]
+view_question text_section text_question =
+  let
+    text_question_id = TextReader.Question.id text_question
+    question = TextReader.Question.question text_question
+    answers = TextReader.Question.answers text_question
+  in
+    div [class "question", attribute "id" text_question_id] [
+      div [class "question_body"] [ Html.text question.body ]
+    , div [class "answers"]
+        (Array.toList <| Array.map (view_answer text_section text_question) answers)
+    ]
 
 view_questions : Section -> Html Msg
 view_questions ((Section text text_attr questions) as text_section) =

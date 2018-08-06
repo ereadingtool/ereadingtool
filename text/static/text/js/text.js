@@ -22105,126 +22105,34 @@ var _user$project$Views$view_header = F2(
 			});
 	});
 
-var _user$project$Main$view_text_introduction = function (text) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_intro'),
-			_1: {ctor: '[]'}
-		},
-		_jinjor$elm_html_parser$HtmlParser_Util$toVirtualDom(
-			_jinjor$elm_html_parser$HtmlParser$parse(text.introduction)));
+
+var _user$project$TextReader_Answer$answer = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0;
 };
-var _user$project$Main$set_text_section = F2(
-	function (text_sections, _p0) {
-		var _p1 = _p0;
-		return A3(_elm_lang$core$Array$set, _p1._1.index, _p1, text_sections);
-	});
-var _user$project$Main$answer = function (_p2) {
+var _user$project$TextReader_Answer$selected = function (_p2) {
 	var _p3 = _p2;
-	return _p3._0;
+	return _p3._2;
 };
-var _user$project$Main$selected = function (_p4) {
+var _user$project$TextReader_Answer$attr = function (_p4) {
 	var _p5 = _p4;
-	return _p5._2;
+	return _p5._1;
 };
-var _user$project$Main$correct = function (text_answer) {
-	return _user$project$Main$answer(text_answer).correct;
-};
-var _user$project$Main$answered_correctly = function (_p6) {
+var _user$project$TextReader_Answer$feedback_viewable = function (_p6) {
 	var _p7 = _p6;
-	return _p7._2;
+	return _p7._3;
 };
-var _user$project$Main$answers = function (_p8) {
-	var _p9 = _p8;
-	return _p9._3;
+var _user$project$TextReader_Answer$correct = function (text_answer) {
+	return _user$project$TextReader_Answer$answer(text_answer).correct;
 };
-var _user$project$Main$answered = function (text_question) {
-	return A2(
-		_elm_lang$core$List$any,
-		function (selected) {
-			return selected;
-		},
-		_elm_lang$core$Array$toList(
-			A2(
-				_elm_lang$core$Array$map,
-				function (answer) {
-					return _user$project$Main$selected(answer);
-				},
-				_user$project$Main$answers(text_question))));
+var _user$project$TextReader_Answer$index = function (text_answer) {
+	return _user$project$TextReader_Answer$attr(text_answer).index;
 };
-var _user$project$Main$questions = function (_p10) {
-	var _p11 = _p10;
-	return _p11._2;
-};
-var _user$project$Main$complete = function (section) {
-	return A2(
-		_elm_lang$core$List$all,
-		function (answered) {
-			return answered;
-		},
-		_elm_lang$core$Array$toList(
-			A2(
-				_elm_lang$core$Array$map,
-				function (question) {
-					return _user$project$Main$answered(question);
-				},
-				_user$project$Main$questions(section))));
-};
-var _user$project$Main$max_score = function (section) {
-	return _elm_lang$core$List$sum(
-		_elm_lang$core$Array$toList(
-			A2(
-				_elm_lang$core$Array$map,
-				function (question) {
-					return 1;
-				},
-				_user$project$Main$questions(section))));
-};
-var _user$project$Main$score = function (section) {
-	return _elm_lang$core$List$sum(
-		_elm_lang$core$Array$toList(
-			A2(
-				_elm_lang$core$Array$map,
-				function (question) {
-					return _user$project$Main$answered_correctly(question) ? 1 : 0;
-				},
-				_user$project$Main$questions(section))));
-};
-var _user$project$Main$text_section = F2(
-	function (text_sections, _p12) {
-		var _p13 = _p12;
-		return A2(_elm_lang$core$Array$get, _p13._1.text_section_index, text_sections);
-	});
-var _user$project$Main$start = function (profile) {
-	var _p14 = profile;
-	if (_p14.ctor === 'Student') {
-		var student_username = _user$project$Profile$studentUserName(_p14._0);
-		var _p15 = A2(_elm_lang$core$Debug$log, 'username', student_username);
-		return A2(
-			_elm_lang$websocket$WebSocket$send,
-			'ws://0.0.0.0:8000/text_reader/',
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				'{\"test\":\"',
-				A2(_elm_lang$core$Basics_ops['++'], student_username, '\"}')));
-	} else {
-		return _elm_lang$core$Platform_Cmd$none;
-	}
-};
-var _user$project$Main$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$none;
-};
-var _user$project$Main$Model = F5(
-	function (a, b, c, d, e) {
-		return {text: a, profile: b, progress: c, sections: d, flags: e};
-	});
-var _user$project$Main$TextAnswer = F4(
+var _user$project$TextReader_Answer$TextAnswer = F4(
 	function (a, b, c, d) {
 		return {ctor: 'TextAnswer', _0: a, _1: b, _2: c, _3: d};
 	});
-var _user$project$Main$gen_text_answer = F4(
+var _user$project$TextReader_Answer$gen_text_answer = F4(
 	function (text_section_index, question_index, answer_index, answer) {
 		var answer_id = A2(
 			_elm_lang$core$String$join,
@@ -22251,27 +22159,68 @@ var _user$project$Main$gen_text_answer = F4(
 				}
 			});
 		return A4(
-			_user$project$Main$TextAnswer,
+			_user$project$TextReader_Answer$TextAnswer,
 			answer,
 			{id: answer_id, name: answer_id, question_index: question_index, index: answer_index},
 			false,
 			false);
 	});
-var _user$project$Main$set_answer_selected = F2(
-	function (_p16, selected) {
-		var _p17 = _p16;
-		return A4(_user$project$Main$TextAnswer, _p17._0, _p17._1, selected, _p17._3);
+var _user$project$TextReader_Answer$set_answer_selected = F2(
+	function (_p8, selected) {
+		var _p9 = _p8;
+		return A4(_user$project$TextReader_Answer$TextAnswer, _p9._0, _p9._1, selected, _p9._3);
 	});
-var _user$project$Main$set_answer_feedback_viewable = F2(
-	function (_p18, feedback_viewable) {
-		var _p19 = _p18;
-		return A4(_user$project$Main$TextAnswer, _p19._0, _p19._1, _p19._2, feedback_viewable);
+var _user$project$TextReader_Answer$set_answer_feedback_viewable = F2(
+	function (_p10, feedback_viewable) {
+		var _p11 = _p10;
+		return A4(_user$project$TextReader_Answer$TextAnswer, _p11._0, _p11._1, _p11._2, feedback_viewable);
 	});
-var _user$project$Main$TextQuestion = F4(
+
+var _user$project$TextReader_Question$answered_correctly = function (_p0) {
+	var _p1 = _p0;
+	return _p1._2;
+};
+var _user$project$TextReader_Question$answers = function (_p2) {
+	var _p3 = _p2;
+	return _p3._3;
+};
+var _user$project$TextReader_Question$question = function (_p4) {
+	var _p5 = _p4;
+	return _p5._0;
+};
+var _user$project$TextReader_Question$attr = function (_p6) {
+	var _p7 = _p6;
+	return _p7._1;
+};
+var _user$project$TextReader_Question$answered = function (text_question) {
+	return A2(
+		_elm_lang$core$List$any,
+		function (selected) {
+			return selected;
+		},
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (answer) {
+					return _user$project$TextReader_Answer$selected(answer);
+				},
+				_user$project$TextReader_Question$answers(text_question))));
+};
+var _user$project$TextReader_Question$id = function (text_question) {
+	return _elm_lang$core$Basics$toString(
+		_user$project$TextReader_Question$attr(text_question).id);
+};
+var _user$project$TextReader_Question$index = function (text_question) {
+	return _user$project$TextReader_Question$attr(text_question).index;
+};
+var _user$project$TextReader_Question$text_section_index = function (text_question) {
+	return _user$project$TextReader_Question$attr(text_question).text_section_index;
+};
+var _user$project$TextReader_Question$TextQuestion = F4(
 	function (a, b, c, d) {
 		return {ctor: 'TextQuestion', _0: a, _1: b, _2: c, _3: d};
 	});
-var _user$project$Main$gen_text_question = F3(
+var _user$project$TextReader_Question$gen_text_question = F3(
 	function (text_section_index, index, question) {
 		var question_id = A2(
 			_elm_lang$core$String$join,
@@ -22294,46 +22243,128 @@ var _user$project$Main$gen_text_question = F3(
 				}
 			});
 		return A4(
-			_user$project$Main$TextQuestion,
+			_user$project$TextReader_Question$TextQuestion,
 			question,
 			{index: index, text_section_index: text_section_index, id: question_id},
 			false,
 			A2(
 				_elm_lang$core$Array$indexedMap,
-				A2(_user$project$Main$gen_text_answer, text_section_index, index),
+				A2(_user$project$TextReader_Answer$gen_text_answer, text_section_index, index),
 				question.answers));
 	});
-var _user$project$Main$set_answers = F2(
-	function (_p20, new_answers) {
-		var _p21 = _p20;
-		return A4(_user$project$Main$TextQuestion, _p21._0, _p21._1, _p21._2, new_answers);
+var _user$project$TextReader_Question$set_answers = F2(
+	function (_p8, new_answers) {
+		var _p9 = _p8;
+		return A4(_user$project$TextReader_Question$TextQuestion, _p9._0, _p9._1, _p9._2, new_answers);
 	});
-var _user$project$Main$deselect_all_answers = function (text_question) {
+var _user$project$TextReader_Question$deselect_all_answers = function (text_question) {
 	var new_answers = A2(
 		_elm_lang$core$Array$map,
 		function (ans) {
-			return A2(_user$project$Main$set_answer_feedback_viewable, ans, false);
+			return A2(_user$project$TextReader_Answer$set_answer_feedback_viewable, ans, false);
 		},
 		A2(
 			_elm_lang$core$Array$map,
 			function (ans) {
-				return A2(_user$project$Main$set_answer_selected, ans, false);
+				return A2(_user$project$TextReader_Answer$set_answer_selected, ans, false);
 			},
-			_user$project$Main$answers(text_question)));
-	return A2(_user$project$Main$set_answers, text_question, new_answers);
+			_user$project$TextReader_Question$answers(text_question)));
+	return A2(_user$project$TextReader_Question$set_answers, text_question, new_answers);
 };
-var _user$project$Main$set_answer = F2(
-	function (_p23, _p22) {
-		var _p24 = _p23;
-		var _p25 = _p22;
-		var _p26 = _p25;
-		var answered_correctly = _user$project$Main$correct(_p26) && _user$project$Main$selected(_p26);
+var _user$project$TextReader_Question$set_answer = F2(
+	function (_p10, new_text_answer) {
+		var _p11 = _p10;
+		var answered_correctly = _user$project$TextReader_Answer$correct(new_text_answer) && _user$project$TextReader_Answer$selected(new_text_answer);
+		var answer_index = _user$project$TextReader_Answer$index(new_text_answer);
 		return A4(
-			_user$project$Main$TextQuestion,
-			_p24._0,
-			_p24._1,
+			_user$project$TextReader_Question$TextQuestion,
+			_p11._0,
+			_p11._1,
 			answered_correctly,
-			A3(_elm_lang$core$Array$set, _p25._1.index, _p26, _p24._3));
+			A3(_elm_lang$core$Array$set, answer_index, new_text_answer, _p11._3));
+	});
+
+var _user$project$Main$view_text_introduction = function (text) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_intro'),
+			_1: {ctor: '[]'}
+		},
+		_jinjor$elm_html_parser$HtmlParser_Util$toVirtualDom(
+			_jinjor$elm_html_parser$HtmlParser$parse(text.introduction)));
+};
+var _user$project$Main$set_text_section = F2(
+	function (text_sections, _p0) {
+		var _p1 = _p0;
+		return A3(_elm_lang$core$Array$set, _p1._1.index, _p1, text_sections);
+	});
+var _user$project$Main$questions = function (_p2) {
+	var _p3 = _p2;
+	return _p3._2;
+};
+var _user$project$Main$complete = function (section) {
+	return A2(
+		_elm_lang$core$List$all,
+		function (answered) {
+			return answered;
+		},
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (question) {
+					return _user$project$TextReader_Question$answered(question);
+				},
+				_user$project$Main$questions(section))));
+};
+var _user$project$Main$max_score = function (section) {
+	return _elm_lang$core$List$sum(
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (question) {
+					return 1;
+				},
+				_user$project$Main$questions(section))));
+};
+var _user$project$Main$score = function (section) {
+	return _elm_lang$core$List$sum(
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (question) {
+					return _user$project$TextReader_Question$answered_correctly(question) ? 1 : 0;
+				},
+				_user$project$Main$questions(section))));
+};
+var _user$project$Main$text_section = F2(
+	function (text_sections, text_question) {
+		var text_section_index = _user$project$TextReader_Question$text_section_index(text_question);
+		return A2(_elm_lang$core$Array$get, text_section_index, text_sections);
+	});
+var _user$project$Main$start = function (profile) {
+	var _p4 = profile;
+	if (_p4.ctor === 'Student') {
+		var student_username = _user$project$Profile$studentUserName(_p4._0);
+		var _p5 = A2(_elm_lang$core$Debug$log, 'username', student_username);
+		return A2(
+			_elm_lang$websocket$WebSocket$send,
+			'ws://0.0.0.0:8000/text_reader/',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'{\"test\":\"',
+				A2(_elm_lang$core$Basics_ops['++'], student_username, '\"}')));
+	} else {
+		return _elm_lang$core$Platform_Cmd$none;
+	}
+};
+var _user$project$Main$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$none;
+};
+var _user$project$Main$Model = F5(
+	function (a, b, c, d, e) {
+		return {text: a, profile: b, progress: c, sections: d, flags: e};
 	});
 var _user$project$Main$Section = F3(
 	function (a, b, c) {
@@ -22347,32 +22378,32 @@ var _user$project$Main$gen_text_sections = F2(
 			{index: index},
 			A2(
 				_elm_lang$core$Array$indexedMap,
-				_user$project$Main$gen_text_question(index),
+				_user$project$TextReader_Question$gen_text_question(index),
 				text_section.questions));
 	});
 var _user$project$Main$set_questions = F2(
-	function (_p27, new_questions) {
-		var _p28 = _p27;
-		return A3(_user$project$Main$Section, _p28._0, _p28._1, new_questions);
+	function (_p6, new_questions) {
+		var _p7 = _p6;
+		return A3(_user$project$Main$Section, _p7._0, _p7._1, new_questions);
 	});
 var _user$project$Main$clear_question_answers = function (section) {
 	var new_questions = A2(
 		_elm_lang$core$Array$map,
 		function (question) {
-			return _user$project$Main$deselect_all_answers(question);
+			return _user$project$TextReader_Question$deselect_all_answers(question);
 		},
 		_user$project$Main$questions(section));
 	return A2(_user$project$Main$set_questions, section, new_questions);
 };
 var _user$project$Main$set_question = F2(
-	function (_p30, _p29) {
-		var _p31 = _p30;
-		var _p32 = _p29;
+	function (_p8, new_text_question) {
+		var _p9 = _p8;
+		var question_index = _user$project$TextReader_Question$index(new_text_question);
 		return A3(
 			_user$project$Main$Section,
-			_p31._0,
-			_p31._1,
-			A3(_elm_lang$core$Array$set, _p32._1.index, _p32, _p31._2));
+			_p9._0,
+			_p9._1,
+			A3(_elm_lang$core$Array$set, question_index, new_text_question, _p9._2));
 	});
 var _user$project$Main$Complete = {ctor: 'Complete'};
 var _user$project$Main$ViewSection = function (a) {
@@ -22381,27 +22412,27 @@ var _user$project$Main$ViewSection = function (a) {
 var _user$project$Main$ViewIntro = {ctor: 'ViewIntro'};
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p33 = msg;
-		switch (_p33.ctor) {
+		var _p10 = msg;
+		switch (_p10.ctor) {
 			case 'UpdateText':
-				if (_p33._0.ctor === 'Ok') {
-					var _p34 = _p33._0._0;
-					var text_sections = A2(_elm_lang$core$Array$indexedMap, _user$project$Main$gen_text_sections, _p34.sections);
+				if (_p10._0.ctor === 'Ok') {
+					var _p11 = _p10._0._0;
+					var text_sections = A2(_elm_lang$core$Array$indexedMap, _user$project$Main$gen_text_sections, _p11.sections);
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{text: _p34, sections: text_sections}),
+							{text: _p11, sections: text_sections}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p35 = A2(_elm_lang$core$Debug$log, 'text error', _p33._0._0);
+					var _p12 = A2(_elm_lang$core$Debug$log, 'text error', _p10._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'Select':
-				var new_text_answer = A2(_user$project$Main$set_answer_selected, _p33._2, _p33._3);
-				var new_text_question = A2(_user$project$Main$set_answer, _p33._1, new_text_answer);
-				var new_text_section = A2(_user$project$Main$set_question, _p33._0, new_text_question);
+				var new_text_answer = A2(_user$project$TextReader_Answer$set_answer_selected, _p10._2, _p10._3);
+				var new_text_question = A2(_user$project$TextReader_Question$set_answer, _p10._1, new_text_answer);
+				var new_text_section = A2(_user$project$Main$set_question, _p10._0, new_text_question);
 				var new_sections = A2(_user$project$Main$set_text_section, model.sections, new_text_section);
 				return {
 					ctor: '_Tuple2',
@@ -22411,9 +22442,9 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'ViewFeedback':
-				var new_text_answer = A2(_user$project$Main$set_answer_feedback_viewable, _p33._2, _p33._3);
-				var new_text_question = A2(_user$project$Main$set_answer, _p33._1, new_text_answer);
-				var new_text_section = A2(_user$project$Main$set_question, _p33._0, new_text_question);
+				var new_text_answer = A2(_user$project$TextReader_Answer$set_answer_feedback_viewable, _p10._2, _p10._3);
+				var new_text_question = A2(_user$project$TextReader_Question$set_answer, _p10._1, new_text_answer);
+				var new_text_section = A2(_user$project$Main$set_question, _p10._0, new_text_question);
 				var new_sections = A2(_user$project$Main$set_text_section, model.sections, new_text_section);
 				return {
 					ctor: '_Tuple2',
@@ -22437,8 +22468,8 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'NextSection':
-				var _p36 = model.progress;
-				switch (_p36.ctor) {
+				var _p13 = model.progress;
+				switch (_p13.ctor) {
 					case 'ViewIntro':
 						return {
 							ctor: '_Tuple2',
@@ -22450,15 +22481,15 @@ var _user$project$Main$update = F2(
 							_1: _elm_lang$core$Platform_Cmd$none
 						};
 					case 'ViewSection':
-						var _p38 = _p36._0;
-						var _p37 = A2(_elm_lang$core$Array$get, _p38 + 1, model.sections);
-						if (_p37.ctor === 'Just') {
+						var _p15 = _p13._0;
+						var _p14 = A2(_elm_lang$core$Array$get, _p15 + 1, model.sections);
+						if (_p14.ctor === 'Just') {
 							return {
 								ctor: '_Tuple2',
 								_0: _elm_lang$core$Native_Utils.update(
 									model,
 									{
-										progress: _user$project$Main$ViewSection(_p38 + 1)
+										progress: _user$project$Main$ViewSection(_p15 + 1)
 									}),
 								_1: _elm_lang$core$Platform_Cmd$none
 							};
@@ -22475,14 +22506,14 @@ var _user$project$Main$update = F2(
 						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			default:
-				var _p39 = model.progress;
-				switch (_p39.ctor) {
+				var _p16 = model.progress;
+				switch (_p16.ctor) {
 					case 'ViewIntro':
 						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 					case 'ViewSection':
-						var prev_section_index = _p39._0 - 1;
-						var _p40 = A2(_elm_lang$core$Array$get, prev_section_index, model.sections);
-						if (_p40.ctor === 'Just') {
+						var prev_section_index = _p16._0 - 1;
+						var _p17 = A2(_elm_lang$core$Array$get, prev_section_index, model.sections);
+						if (_p17.ctor === 'Just') {
 							return {
 								ctor: '_Tuple2',
 								_0: _elm_lang$core$Native_Utils.update(
@@ -22503,8 +22534,8 @@ var _user$project$Main$update = F2(
 						}
 					default:
 						var last_section_index = _elm_lang$core$Array$length(model.sections) - 1;
-						var _p41 = A2(_elm_lang$core$Array$get, last_section_index, model.sections);
-						if (_p41.ctor === 'Just') {
+						var _p18 = A2(_elm_lang$core$Array$get, last_section_index, model.sections);
+						if (_p18.ctor === 'Just') {
 							return {
 								ctor: '_Tuple2',
 								_0: _elm_lang$core$Native_Utils.update(
@@ -22679,17 +22710,15 @@ var _user$project$Main$Select = F4(
 		return {ctor: 'Select', _0: a, _1: b, _2: c, _3: d};
 	});
 var _user$project$Main$view_answer = F3(
-	function (text_section, text_question, _p42) {
-		var _p43 = _p42;
-		var _p47 = _p43._3;
-		var _p46 = _p43;
-		var _p45 = _p43._2;
-		var _p44 = _p43._0;
-		var is_correct = _user$project$Main$correct(_p46);
-		var question_answered = _user$project$Main$answered(text_question);
+	function (text_section, text_question, text_answer) {
+		var view_feedback = _user$project$TextReader_Answer$feedback_viewable(text_answer);
+		var answer_selected = _user$project$TextReader_Answer$selected(text_answer);
+		var answer = _user$project$TextReader_Answer$answer(text_answer);
+		var is_correct = _user$project$TextReader_Answer$correct(text_answer);
+		var question_answered = _user$project$TextReader_Question$answered(text_question);
 		var on_click = question_answered ? _elm_lang$html$Html_Events$onClick(
-			A4(_user$project$Main$ViewFeedback, text_section, text_question, _p46, true)) : _elm_lang$html$Html_Events$onClick(
-			A4(_user$project$Main$Select, text_section, text_question, _p46, true));
+			A4(_user$project$Main$ViewFeedback, text_section, text_question, text_answer, true)) : _elm_lang$html$Html_Events$onClick(
+			A4(_user$project$Main$Select, text_section, text_question, text_answer, true));
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -22702,11 +22731,11 @@ var _user$project$Main$view_answer = F3(
 							_0: {ctor: '_Tuple2', _0: 'answer', _1: true},
 							_1: {
 								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'answer_selected', _1: _p45},
+								_0: {ctor: '_Tuple2', _0: 'answer_selected', _1: answer_selected},
 								_1: {ctor: '[]'}
 							}
 						},
-						(_p45 || _p47) ? (is_correct ? {
+						(answer_selected || view_feedback) ? (is_correct ? {
 							ctor: '::',
 							_0: {ctor: '_Tuple2', _0: 'correct', _1: is_correct},
 							_1: {ctor: '[]'}
@@ -22733,7 +22762,7 @@ var _user$project$Main$view_answer = F3(
 								_0: {ctor: '_Tuple2', _0: 'answer_text', _1: true},
 								_1: {
 									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'bolder', _1: _p45},
+									_0: {ctor: '_Tuple2', _0: 'bolder', _1: answer_selected},
 									_1: {ctor: '[]'}
 								}
 							}),
@@ -22741,12 +22770,12 @@ var _user$project$Main$view_answer = F3(
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(_p44.text),
+						_0: _elm_lang$html$Html$text(answer.text),
 						_1: {ctor: '[]'}
 					}),
 				_1: {
 					ctor: '::',
-					_0: (_p45 || _p47) ? A2(
+					_0: (answer_selected || view_feedback) ? A2(
 						_elm_lang$html$Html$div,
 						{
 							ctor: '::',
@@ -22760,7 +22789,7 @@ var _user$project$Main$view_answer = F3(
 								{ctor: '[]'},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text(_p44.feedback),
+									_0: _elm_lang$html$Html$text(answer.feedback),
 									_1: {ctor: '[]'}
 								}),
 							_1: {ctor: '[]'}
@@ -22770,8 +22799,10 @@ var _user$project$Main$view_answer = F3(
 			});
 	});
 var _user$project$Main$view_question = F2(
-	function (text_section, _p48) {
-		var _p49 = _p48;
+	function (text_section, text_question) {
+		var answers = _user$project$TextReader_Question$answers(text_question);
+		var question = _user$project$TextReader_Question$question(text_question);
+		var text_question_id = _user$project$TextReader_Question$id(text_question);
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -22779,7 +22810,7 @@ var _user$project$Main$view_question = F2(
 				_0: _elm_lang$html$Html_Attributes$class('question'),
 				_1: {
 					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', _p49._1.id),
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', text_question_id),
 					_1: {ctor: '[]'}
 				}
 			},
@@ -22794,7 +22825,7 @@ var _user$project$Main$view_question = F2(
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(_p49._0.body),
+						_0: _elm_lang$html$Html$text(question.body),
 						_1: {ctor: '[]'}
 					}),
 				_1: {
@@ -22809,14 +22840,14 @@ var _user$project$Main$view_question = F2(
 						_elm_lang$core$Array$toList(
 							A2(
 								_elm_lang$core$Array$map,
-								A2(_user$project$Main$view_answer, text_section, _p49),
-								_p49._3))),
+								A2(_user$project$Main$view_answer, text_section, text_question),
+								answers))),
 					_1: {ctor: '[]'}
 				}
 			});
 	});
-var _user$project$Main$view_questions = function (_p50) {
-	var _p51 = _p50;
+var _user$project$Main$view_questions = function (_p19) {
+	var _p20 = _p19;
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -22827,12 +22858,12 @@ var _user$project$Main$view_questions = function (_p50) {
 		_elm_lang$core$Array$toList(
 			A2(
 				_elm_lang$core$Array$map,
-				_user$project$Main$view_question(_p51),
-				_p51._2)));
+				_user$project$Main$view_question(_p20),
+				_p20._2)));
 };
 var _user$project$Main$view_text_section = F2(
-	function (i, _p52) {
-		var _p53 = _p52;
+	function (i, _p21) {
+		var _p22 = _p21;
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -22868,18 +22899,18 @@ var _user$project$Main$view_text_section = F2(
 							_1: {ctor: '[]'}
 						},
 						_jinjor$elm_html_parser$HtmlParser_Util$toVirtualDom(
-							_jinjor$elm_html_parser$HtmlParser$parse(_p53._0.body))),
+							_jinjor$elm_html_parser$HtmlParser$parse(_p22._0.body))),
 					_1: {
 						ctor: '::',
-						_0: _user$project$Main$view_questions(_p53),
+						_0: _user$project$Main$view_questions(_p22),
 						_1: {ctor: '[]'}
 					}
 				}
 			});
 	});
 var _user$project$Main$view_content = function (model) {
-	var _p54 = model.progress;
-	switch (_p54.ctor) {
+	var _p23 = model.progress;
+	switch (_p23.ctor) {
 		case 'ViewIntro':
 			return A2(
 				_elm_lang$html$Html$div,
@@ -22924,9 +22955,9 @@ var _user$project$Main$view_content = function (model) {
 					}
 				});
 		case 'ViewSection':
-			var _p56 = _p54._0;
-			var _p55 = A2(_elm_lang$core$Array$get, _p56, model.sections);
-			if (_p55.ctor === 'Just') {
+			var _p25 = _p23._0;
+			var _p24 = A2(_elm_lang$core$Array$get, _p25, model.sections);
+			if (_p24.ctor === 'Just') {
 				return A2(
 					_elm_lang$html$Html$div,
 					{
@@ -22941,7 +22972,7 @@ var _user$project$Main$view_content = function (model) {
 					},
 					{
 						ctor: '::',
-						_0: A2(_user$project$Main$view_text_section, _p56, _p55._0),
+						_0: A2(_user$project$Main$view_text_section, _p25, _p24._0),
 						_1: {
 							ctor: '::',
 							_0: A2(

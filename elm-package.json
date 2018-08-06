@@ -6,6 +6,7 @@
     "source-directories": [
         "instructor_admin/ui/",
         "user/ui/",
+        "text/ui/",
         "ui/"
     ],
     "exposed-modules": [],
