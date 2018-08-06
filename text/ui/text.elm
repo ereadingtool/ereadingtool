@@ -1,5 +1,5 @@
 import Html exposing (Html, div)
-import Html.Attributes exposing (class, classList, attribute)
+import Html.Attributes exposing (class, classList, attribute, property)
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
 
 import HtmlParser
@@ -29,13 +29,14 @@ import WebSocket
 
 type alias Selected = Bool
 type alias AnsweredCorrectly = Bool
+type alias FeedbackViewable = Bool
 
 type alias TextItemAttributes a = { a | index : Int }
 
 type alias TextAnswerAttributes = TextItemAttributes { question_index : Int, name: String, id: String }
 type alias TextQuestionAttributes = TextItemAttributes { id:String, text_section_index: Int }
 
-type TextAnswer = TextAnswer Answer TextAnswerAttributes Selected
+type TextAnswer = TextAnswer Answer TextAnswerAttributes Selected FeedbackViewable
 type TextQuestion = TextQuestion Question TextQuestionAttributes AnsweredCorrectly (Array TextAnswer)
 
 type Section = Section TextSection (TextItemAttributes {}) (Array TextQuestion)
@@ -46,8 +47,10 @@ type Progress = ViewIntro | ViewSection Int | Complete
 type Msg =
     UpdateText (Result Http.Error Text)
   | Select Section TextQuestion TextAnswer Bool
+  | ViewFeedback Section TextQuestion TextAnswer Bool
   | PrevSection
   | NextSection
+  | StartOver
 
 type alias Flags = Flags.Flags { text_id : Int }
 
@@ -93,20 +96,27 @@ updateText text_id =
   in
     Cmd.batch [Http.send UpdateText text_req]
 
-gen_text_answer : Int -> Int -> Answer -> TextAnswer
-gen_text_answer question_index answer_index answer =
-  TextAnswer answer {
-    -- question_field_index = question.order
-    id = String.join "_" [ "question", (toString question_index), "answer", (toString answer.order) ]
-  , name = String.join "_" [ "question", (toString question_index) ]
-  , question_index = question_index
-  , index = answer_index } False
+gen_text_answer : Int -> Int -> Int -> Answer -> TextAnswer
+gen_text_answer text_section_index question_index answer_index answer =
+  let
+    answer_id = String.join "_"
+      ["section", toString text_section_index, "question", (toString question_index), "answer"]
+  in
+    TextAnswer answer {
+      -- question_field_index = question.order
+      id = answer_id
+    , name = answer_id
+    , question_index = question_index
+    , index = answer_index } False False
 
 gen_text_question : Int -> Int -> Question -> TextQuestion
 gen_text_question text_section_index index question =
-  TextQuestion question
-    {index=index, text_section_index=text_section_index, id=(toString question.order)}
-  False (Array.indexedMap (gen_text_answer index) question.answers)
+  let
+    question_id = String.join "_" ["section", toString text_section_index, "question", toString index]
+  in
+    TextQuestion question
+      {index=index, text_section_index=text_section_index, id=question_id}
+      False (Array.indexedMap (gen_text_answer text_section_index index) question.answers)
 
 text_section : Array Section -> TextQuestion -> Maybe Section
 text_section text_sections (TextQuestion question question_attr _ answers) =
@@ -115,6 +125,13 @@ text_section text_sections (TextQuestion question question_attr _ answers) =
 gen_text_sections : Int -> TextSection -> Section
 gen_text_sections index text_section =
   Section text_section {index=index} (Array.indexedMap (gen_text_question index) text_section.questions)
+
+clear_question_answers : Section -> Section
+clear_question_answers section =
+  let
+    new_questions = Array.map (\question -> deselect_all_answers question) (questions section)
+  in
+    set_questions section new_questions
 
 questions : Section -> Array TextQuestion
 questions (Section section attrs questions) = questions
@@ -154,20 +171,38 @@ set_questions (Section text attrs _) new_questions =
   Section text attrs new_questions
 
 set_answer_selected : TextAnswer -> Bool -> TextAnswer
-set_answer_selected (TextAnswer answer attr _) selected =
-  TextAnswer answer attr selected
+set_answer_selected (TextAnswer answer attr _ feedback_viewable) selected =
+  TextAnswer answer attr selected feedback_viewable
+
+set_answer_feedback_viewable : TextAnswer -> Bool -> TextAnswer
+set_answer_feedback_viewable (TextAnswer answer attr selected _) feedback_viewable =
+  TextAnswer answer attr selected feedback_viewable
 
 correct : TextAnswer -> Bool
 correct text_answer = (answer text_answer).correct
 
 selected : TextAnswer -> Bool
-selected (TextAnswer _ _ selected) = selected
+selected (TextAnswer _ _ selected _) = selected
 
 answer : TextAnswer -> Answer
-answer (TextAnswer answer attr selected) = answer
+answer (TextAnswer answer _ _ _) = answer
+
+deselect_all_answers : TextQuestion -> TextQuestion
+deselect_all_answers text_question =
+  let
+    new_answers =
+         Array.map (\ans -> set_answer_feedback_viewable ans False)
+      <| Array.map (\ans -> set_answer_selected ans False) (answers text_question)
+  in
+    set_answers text_question new_answers
+
+set_answers : TextQuestion -> Array TextAnswer -> TextQuestion
+set_answers (TextQuestion question question_attr ans_correctly _) new_answers =
+  TextQuestion question question_attr ans_correctly new_answers
 
 set_answer : TextQuestion -> TextAnswer -> TextQuestion
-set_answer (TextQuestion question question_attr _ answers) ((TextAnswer _ answer_attr _) as new_text_answer) =
+set_answer (TextQuestion question question_attr _ answers)
+           ((TextAnswer _ answer_attr _ feedback_viewable) as new_text_answer) =
   let
     answered_correctly = (correct new_text_answer) && (selected new_text_answer)
   in
@@ -178,8 +213,8 @@ set_question (Section text text_attr questions) ((TextQuestion question question
   Section text text_attr (Array.set question_attr.index new_text_question questions)
 
 set_text_section : Array Section -> Section -> Array Section
-set_text_section text_texts ((Section _ attrs _) as text_text) =
-  Array.set attrs.index text_text text_texts
+set_text_section text_sections ((Section _ attrs _) as text_section) =
+  Array.set attrs.index text_section text_sections
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -203,6 +238,21 @@ update msg model =
       in
         ({ model | sections = new_sections }, Cmd.none)
 
+    ViewFeedback text_section text_question text_answer view_feedback ->
+      let
+        new_text_answer = set_answer_feedback_viewable text_answer view_feedback
+        new_text_question = set_answer text_question new_text_answer
+        new_text_section = set_question text_section new_text_question
+        new_sections = set_text_section model.sections new_text_section
+      in
+        ({ model | sections = new_sections }, Cmd.none)
+
+    StartOver ->
+      let
+        new_sections = Array.map (\section -> clear_question_answers section) model.sections
+      in
+        ({ model | sections = new_sections, progress = ViewIntro}, Cmd.none)
+
     NextSection ->
       case model.progress of
         ViewIntro ->
@@ -218,26 +268,26 @@ update msg model =
 
     PrevSection ->
       case model.progress of
-          ViewIntro ->
-            (model, Cmd.none)
-          ViewSection i ->
-            let
-              prev_section_index = i-1
-            in
-              case Array.get prev_section_index model.sections of
-                Just prev_section ->
-                  ({ model | progress = ViewSection prev_section_index }, Cmd.none)
-                Nothing ->
-                  ({ model | progress = ViewIntro }, Cmd.none)
-          Complete ->
-            let
-              last_section_index = (Array.length model.sections) - 1
-            in
-              case Array.get last_section_index model.sections of
-                Just section ->
-                  ({ model | progress = ViewSection last_section_index }, Cmd.none)
-                Nothing ->
-                  (model, Cmd.none)
+        ViewIntro ->
+          (model, Cmd.none)
+        ViewSection i ->
+          let
+            prev_section_index = i-1
+          in
+            case Array.get prev_section_index model.sections of
+              Just prev_section ->
+                ({ model | progress = ViewSection prev_section_index }, Cmd.none)
+              Nothing ->
+                ({ model | progress = ViewIntro }, Cmd.none)
+        Complete ->
+          let
+            last_section_index = (Array.length model.sections) - 1
+          in
+            case Array.get last_section_index model.sections of
+              Just section ->
+                ({ model | progress = ViewSection last_section_index }, Cmd.none)
+              Nothing ->
+                (model, Cmd.none)
 
 main : Program Flags Model Msg
 main =
@@ -249,36 +299,49 @@ main =
     }
 
 view_answer : Section -> TextQuestion -> TextAnswer -> Html Msg
-view_answer text_section text_question ((TextAnswer answer answer_attrs answer_selected) as text_answer) =
-  div [ classList [("answer", True)] ] [
-   Html.input ([
-     attribute "id" answer_attrs.id
-   , attribute "name" answer_attrs.name
-   , attribute "type" "radio"
-   , onCheck (Select text_section text_question text_answer)
-   , attribute "value" (toString answer.order)
-   ] ++ (if answer_selected then [attribute "checked" "true"] else [])) []
- , Html.text answer.text
- , (if answer_selected then
-     div [] [ Html.em [] [ Html.text answer.feedback ] ] else Html.text "")]
+view_answer text_section text_question ((TextAnswer answer answer_attrs answer_selected view_feedback) as text_answer) =
+  let
+    question_answered = answered text_question
+    on_click = if question_answered then
+        onClick (ViewFeedback text_section text_question text_answer True)
+      else
+        onClick (Select text_section text_question text_answer True)
+    is_correct = correct text_answer
+  in
+    div [ classList <| [
+            ("answer", True)
+          , ("answer_selected", answer_selected)
+          ] ++ (if (answer_selected || view_feedback) then
+                  if is_correct then
+                    [("correct", is_correct)]
+                  else
+                    [("incorrect", not is_correct)]
+                else
+                  []
+               )
+        , on_click] [
+      div [classList [("answer_text", True), ("bolder", answer_selected)]] [ Html.text answer.text ]
+    , (if (answer_selected || view_feedback) then
+        div [class "answer_feedback"] [ Html.em [] [ Html.text answer.feedback ] ] else Html.text "")
+    ]
 
 view_question : Section -> TextQuestion -> Html Msg
 view_question text_section ((TextQuestion question attrs answered_correctly answers) as text_question) =
-  div [ classList [("question", True)], attribute "id" attrs.id] [
-        Html.text question.body
-      , div [attribute "class" "answers"]
-          (Array.toList <| Array.map (view_answer text_section text_question) answers)
+  div [class "question", attribute "id" attrs.id] [
+    div [class "question_body"] [ Html.text question.body ]
+  , div [class "answers"]
+      (Array.toList <| Array.map (view_answer text_section text_question) answers)
   ]
 
 view_questions : Section -> Html Msg
 view_questions ((Section text text_attr questions) as text_section) =
-  div [ classList[("questions", True)] ] (Array.toList <| Array.map (view_question text_section) questions)
+  div [class "questions"] (Array.toList <| Array.map (view_question text_section) questions)
 
 view_text_section : Int -> Section -> Html Msg
 view_text_section i ((Section text attrs questions) as text_section) =
-  div [ classList[("text_section", True)] ] <| [
-      div [] [ Html.text ("Section " ++ (toString (i+1))) ]
-    , div [classList [("text_body", True)]] (HtmlParser.Util.toVirtualDom <| HtmlParser.parse text.body)
+  div [class "text_section"] <| [
+      div [class "section_title"] [ Html.text ("Section " ++ (toString (i+1))) ]
+    , div [class "text_body"] (HtmlParser.Util.toVirtualDom <| HtmlParser.parse text.body)
     , (view_questions text_section)
   ]
 
@@ -315,7 +378,7 @@ view_text_complete model =
       <| Array.toList
       <| Array.map (\section -> max_score section) model.sections
   in
-    div [ classList [("text", True)] ] [
+    div [class "text"] [
       div [attribute "id" "text_score"] [
         Html.text
           ("Sections complete: " ++ (toString complete_sections) ++ "/" ++ (toString num_of_sections))
@@ -323,27 +386,29 @@ view_text_complete model =
           Html.text ("Score: " ++ (toString section_scores) ++ " out of " ++ (toString possible_section_scores))
         ]
       ]
-    , view_prev_btn
+    , div [class "nav"] [
+        view_prev_btn
+      , div [attribute "id" "goback", onClick StartOver] [ Html.text "Start Over" ]
+      ]
     ]
 
 view_content : Model -> Html Msg
 view_content model =
   case model.progress of
     ViewIntro ->
-      div [ classList [("text", True)] ] <| [
+      div [class "text"] <| [
         view_text_introduction model.text
-      , div [onClick NextSection, class "begin_btn"] [ Html.text "Start" ]
+      , div [onClick NextSection, class "nav"] [ div [class "start_btn"] [ Html.text "Start" ] ]
       ]
     ViewSection i ->
       case Array.get i model.sections of
         Just section ->
           div [ classList [("text", True)] ] [
             view_text_section i section
-          , view_prev_btn
-          , view_next_btn
+          , div [class "nav"] [view_prev_btn, view_next_btn]
           ]
         Nothing ->
-          div [ classList [("text", True)] ] []
+          div [class "text"] []
     Complete ->
       view_text_complete model
 
