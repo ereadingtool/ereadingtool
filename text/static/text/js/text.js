@@ -22284,6 +22284,13 @@ var _user$project$TextReader_Question$set_answer = F2(
 			A3(_elm_lang$core$Array$set, answer_index, new_text_answer, _p11._3));
 	});
 
+var _user$project$TextReader_Dictionary$dictionary = _elm_lang$core$Dict$fromList(
+	{
+		ctor: '::',
+		_0: {ctor: '_Tuple2', _0: 'test', _1: '\n     A procedure for critical evaluation; a means of determining the presence, quality, or truth of something; a\n     trial: a test of one\'s eyesight; subjecting a hypothesis to a test; a test of an athlete\'s endurance.\n     '},
+		_1: {ctor: '[]'}
+	});
+
 var _user$project$Main$view_text_introduction = function (text) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -22420,6 +22427,8 @@ var _user$project$Main$update = F2(
 			});
 		var _p10 = msg;
 		switch (_p10.ctor) {
+			case 'Gloss':
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'UpdateText':
 				if (_p10._0.ctor === 'Ok') {
 					var _p11 = _p10._0._0;
@@ -22555,6 +22564,51 @@ var _user$project$Main$update = F2(
 				}
 		}
 	});
+var _user$project$Main$Gloss = function (a) {
+	return {ctor: 'Gloss', _0: a};
+};
+var _user$project$Main$tagWordAndToVDOM = function (node) {
+	var _p19 = node;
+	switch (_p19.ctor) {
+		case 'Text':
+			var _p20 = _p19._0;
+			return A2(_elm_lang$core$Dict$member, _p20, _user$project$TextReader_Dictionary$dictionary) ? A3(
+				_elm_lang$html$Html$node,
+				'span',
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('defined_word'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(
+							_user$project$Main$Gloss(_p20)),
+						_1: {ctor: '[]'}
+					}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$virtual_dom$VirtualDom$text(_p20),
+					_1: {ctor: '[]'}
+				}) : _elm_lang$virtual_dom$VirtualDom$text(_p20);
+		case 'Element':
+			return A3(
+				_elm_lang$html$Html$node,
+				_p19._0,
+				A2(
+					_elm_lang$core$List$map,
+					function (_p21) {
+						var _p22 = _p21;
+						return A2(_elm_lang$html$Html_Attributes$attribute, _p22._0, _p22._1);
+					},
+					_p19._1),
+				_user$project$Main$tagWordsAndToVDOM(_p19._2));
+		default:
+			return _elm_lang$virtual_dom$VirtualDom$text('');
+	}
+};
+var _user$project$Main$tagWordsAndToVDOM = function (text) {
+	return A2(_elm_lang$core$List$map, _user$project$Main$tagWordAndToVDOM, text);
+};
 var _user$project$Main$StartOver = {ctor: 'StartOver'};
 var _user$project$Main$NextSection = {ctor: 'NextSection'};
 var _user$project$Main$view_next_btn = A2(
@@ -22850,8 +22904,8 @@ var _user$project$Main$view_question = F2(
 				}
 			});
 	});
-var _user$project$Main$view_questions = function (_p19) {
-	var _p20 = _p19;
+var _user$project$Main$view_questions = function (_p23) {
+	var _p24 = _p23;
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -22862,12 +22916,14 @@ var _user$project$Main$view_questions = function (_p19) {
 		_elm_lang$core$Array$toList(
 			A2(
 				_elm_lang$core$Array$map,
-				_user$project$Main$view_question(_p20),
-				_p20._2)));
+				_user$project$Main$view_question(_p24),
+				_p24._2)));
 };
 var _user$project$Main$view_text_section = F2(
-	function (i, _p21) {
-		var _p22 = _p21;
+	function (i, _p25) {
+		var _p26 = _p25;
+		var text_body_vdom = _user$project$Main$tagWordsAndToVDOM(
+			_jinjor$elm_html_parser$HtmlParser$parse(_p26._0.body));
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -22902,19 +22958,18 @@ var _user$project$Main$view_text_section = F2(
 							_0: _elm_lang$html$Html_Attributes$class('text_body'),
 							_1: {ctor: '[]'}
 						},
-						_jinjor$elm_html_parser$HtmlParser_Util$toVirtualDom(
-							_jinjor$elm_html_parser$HtmlParser$parse(_p22._0.body))),
+						text_body_vdom),
 					_1: {
 						ctor: '::',
-						_0: _user$project$Main$view_questions(_p22),
+						_0: _user$project$Main$view_questions(_p26),
 						_1: {ctor: '[]'}
 					}
 				}
 			});
 	});
 var _user$project$Main$view_content = function (model) {
-	var _p23 = model.progress;
-	switch (_p23.ctor) {
+	var _p27 = model.progress;
+	switch (_p27.ctor) {
 		case 'ViewIntro':
 			return A2(
 				_elm_lang$html$Html$div,
@@ -22959,7 +23014,7 @@ var _user$project$Main$view_content = function (model) {
 					}
 				});
 		case 'ViewSection':
-			var _p25 = _p23._0;
+			var _p29 = _p27._0;
 			return A2(
 				_elm_lang$html$Html$div,
 				{
@@ -22968,11 +23023,11 @@ var _user$project$Main$view_content = function (model) {
 					_1: {ctor: '[]'}
 				},
 				function () {
-					var _p24 = A2(_elm_lang$core$Array$get, _p25, model.sections);
-					if (_p24.ctor === 'Just') {
+					var _p28 = A2(_elm_lang$core$Array$get, _p29, model.sections);
+					if (_p28.ctor === 'Just') {
 						return {
 							ctor: '::',
-							_0: A2(_user$project$Main$view_text_section, _p25, _p24._0),
+							_0: A2(_user$project$Main$view_text_section, _p29, _p28._0),
 							_1: {
 								ctor: '::',
 								_0: A2(

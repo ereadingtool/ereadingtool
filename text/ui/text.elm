@@ -22,6 +22,8 @@ import Profile
 import Config exposing (..)
 import Flags exposing (CSRFToken)
 
+import VirtualDom
+
 import WebSocket
 
 import TextReader exposing (TextItemAttributes)
@@ -35,6 +37,8 @@ type Section = Section TextSection (TextItemAttributes {}) (Array TextQuestion)
 
 type Progress = ViewIntro | ViewSection Int | Complete
 
+type alias Word = String
+
 -- UPDATE
 type Msg =
     UpdateText (Result Http.Error Text)
@@ -43,6 +47,7 @@ type Msg =
   | PrevSection
   | NextSection
   | StartOver
+  | Gloss Word
 
 type alias Flags = Flags.Flags { text_id : Int }
 
@@ -143,17 +148,24 @@ set_text_section : Array Section -> Section -> Array Section
 set_text_section text_sections ((Section _ attrs _) as text_section) =
   Array.set attrs.index text_section text_sections
 
-tag_defined_words : List HtmlParser.Node -> List HtmlParser.Node
-tag_defined_words text =
-  List.map (\elem ->
-    case elem of
-      HtmlParser.Text str ->
-        if (Dict.member str dictionary) then
-          HtmlParser.Element "span" [("defined_word", True)] [HtmlParser.Text str]
-        else
-          HtmlParser.Text str
-      HtmlParser.Element str attrs nodes ->
-        HtmlParser.Element str attrs nodes) text
+tagWordAndToVDOM : HtmlParser.Node -> Html Msg
+tagWordAndToVDOM node =
+  case node of
+    HtmlParser.Text str ->
+      if (Dict.member str dictionary) then
+        Html.node "span" [class "defined_word", onClick (Gloss str)] [VirtualDom.text str]
+      else
+        VirtualDom.text str
+
+    HtmlParser.Element name attrs nodes ->
+      Html.node name (List.map (\(name, value) -> attribute name value) attrs) (tagWordsAndToVDOM nodes)
+
+    (HtmlParser.Comment str) as comment ->
+        VirtualDom.text ""
+
+tagWordsAndToVDOM : List HtmlParser.Node -> List (Html Msg)
+tagWordsAndToVDOM text =
+  List.map tagWordAndToVDOM text
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -166,6 +178,9 @@ update msg model =
         set_text_section model.sections new_text_section
   in
     case msg of
+      Gloss word ->
+        (model, Cmd.none)
+
       UpdateText (Ok text) ->
         let
           text_sections = Array.indexedMap gen_text_sections text.sections
@@ -292,8 +307,7 @@ view_questions ((Section text text_attr questions) as text_section) =
 view_text_section : Int -> Section -> Html Msg
 view_text_section i ((Section text attrs questions) as text_section) =
   let
-    text_body = tag_defined_words (HtmlParser.parse text.body)
-    text_body_vdom = HtmlParser.Util.toVirtualDom text_body
+    text_body_vdom = tagWordsAndToVDOM (HtmlParser.parse text.body)
   in
     div [class "text_section"] <| [
         div [class "section_title"] [ Html.text ("Section " ++ (toString (i+1))) ]

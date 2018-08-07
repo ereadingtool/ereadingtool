@@ -52,6 +52,8 @@ class TextView(ProfileView, TemplateView):
 
 
 class TextLoadElm(ElmLoadJsView):
+    template_name = "load_elm.html"
+
     def get_context_data(self, **kwargs) -> Dict:
         context = super(TextLoadElm, self).get_context_data(**kwargs)
 
