@@ -131,7 +131,8 @@ score : Section -> Int
 score section =
      List.sum
   <| Array.toList
-  <| Array.map (\question -> if (TextReader.Question.answered_correctly question) then 1 else 0) (questions section)
+  <| Array.map (\question ->
+       if (Maybe.withDefault False (TextReader.Question.answered_correctly question)) then 1 else 0) (questions section)
 
 set_questions : Section -> Array TextQuestion -> Section
 set_questions (Section text attrs _) new_questions =
@@ -170,9 +171,8 @@ tagWordsAndToVDOM text =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   let
-    update_answer text_section text_question text_answer =
+    update_question text_section new_text_question =
       let
-        new_text_question = TextReader.Question.set_answer text_question text_answer
         new_text_section = set_question text_section new_text_question
       in
         set_text_section model.sections new_text_section
@@ -194,14 +194,16 @@ update msg model =
       Select text_section text_question text_answer selected ->
         let
           new_text_answer = TextReader.Answer.set_answer_selected text_answer selected
+          new_text_question = TextReader.Question.set_as_submitted_answer text_question new_text_answer
         in
-          ({ model | sections = (update_answer text_section text_question new_text_answer) }, Cmd.none)
+          ({ model | sections = (update_question text_section new_text_question) }, Cmd.none)
 
       ViewFeedback text_section text_question text_answer view_feedback ->
         let
           new_text_answer = TextReader.Answer.set_answer_feedback_viewable text_answer view_feedback
+          new_text_question = TextReader.Question.set_answer text_question new_text_answer
         in
-          ({ model | sections = (update_answer text_section text_question new_text_answer) }, Cmd.none)
+          ({ model | sections = (update_question text_section new_text_question) }, Cmd.none)
 
       StartOver ->
         let

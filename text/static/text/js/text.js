@@ -22193,18 +22193,12 @@ var _user$project$TextReader_Question$attr = function (_p6) {
 	return _p7._1;
 };
 var _user$project$TextReader_Question$answered = function (text_question) {
-	return A2(
-		_elm_lang$core$List$any,
-		function (selected) {
-			return selected;
-		},
-		_elm_lang$core$Array$toList(
-			A2(
-				_elm_lang$core$Array$map,
-				function (answer) {
-					return _user$project$TextReader_Answer$selected(answer);
-				},
-				_user$project$TextReader_Question$answers(text_question))));
+	var _p8 = _user$project$TextReader_Question$answered_correctly(text_question);
+	if (_p8.ctor === 'Just') {
+		return true;
+	} else {
+		return false;
+	}
 };
 var _user$project$TextReader_Question$id = function (text_question) {
 	return _elm_lang$core$Basics$toString(
@@ -22246,16 +22240,21 @@ var _user$project$TextReader_Question$gen_text_question = F3(
 			_user$project$TextReader_Question$TextQuestion,
 			question,
 			{index: index, text_section_index: text_section_index, id: question_id},
-			false,
+			_elm_lang$core$Maybe$Nothing,
 			A2(
 				_elm_lang$core$Array$indexedMap,
 				A2(_user$project$TextReader_Answer$gen_text_answer, text_section_index, index),
 				question.answers));
 	});
+var _user$project$TextReader_Question$set_answered_correctly = F2(
+	function (_p9, answered_correctly) {
+		var _p10 = _p9;
+		return A4(_user$project$TextReader_Question$TextQuestion, _p10._0, _p10._1, answered_correctly, _p10._3);
+	});
 var _user$project$TextReader_Question$set_answers = F2(
-	function (_p8, new_answers) {
-		var _p9 = _p8;
-		return A4(_user$project$TextReader_Question$TextQuestion, _p9._0, _p9._1, _p9._2, new_answers);
+	function (_p11, new_answers) {
+		var _p12 = _p11;
+		return A4(_user$project$TextReader_Question$TextQuestion, _p12._0, _p12._1, _p12._2, new_answers);
 	});
 var _user$project$TextReader_Question$deselect_all_answers = function (text_question) {
 	var new_answers = A2(
@@ -22272,16 +22271,29 @@ var _user$project$TextReader_Question$deselect_all_answers = function (text_ques
 	return A2(_user$project$TextReader_Question$set_answers, text_question, new_answers);
 };
 var _user$project$TextReader_Question$set_answer = F2(
-	function (_p10, new_text_answer) {
-		var _p11 = _p10;
-		var answered_correctly = _user$project$TextReader_Answer$correct(new_text_answer) && _user$project$TextReader_Answer$selected(new_text_answer);
+	function (_p13, new_text_answer) {
+		var _p14 = _p13;
 		var answer_index = _user$project$TextReader_Answer$index(new_text_answer);
 		return A4(
 			_user$project$TextReader_Question$TextQuestion,
-			_p11._0,
-			_p11._1,
-			answered_correctly,
-			A3(_elm_lang$core$Array$set, answer_index, new_text_answer, _p11._3));
+			_p14._0,
+			_p14._1,
+			_p14._2,
+			A3(_elm_lang$core$Array$set, answer_index, new_text_answer, _p14._3));
+	});
+var _user$project$TextReader_Question$set_as_submitted_answer = F2(
+	function (text_question, text_answer) {
+		var _p15 = _user$project$TextReader_Question$answered_correctly(text_question);
+		if (_p15.ctor === 'Just') {
+			return text_question;
+		} else {
+			var ans_correctly = _elm_lang$core$Maybe$Just(
+				_user$project$TextReader_Answer$correct(text_answer) && _user$project$TextReader_Answer$selected(text_answer));
+			return A2(
+				_user$project$TextReader_Question$set_answer,
+				A2(_user$project$TextReader_Question$set_answered_correctly, text_question, ans_correctly),
+				text_answer);
+		}
 	});
 
 var _user$project$TextReader_Dictionary$dictionary = _elm_lang$core$Dict$fromList(
@@ -22341,7 +22353,10 @@ var _user$project$Main$score = function (section) {
 			A2(
 				_elm_lang$core$Array$map,
 				function (question) {
-					return _user$project$TextReader_Question$answered_correctly(question) ? 1 : 0;
+					return A2(
+						_elm_lang$core$Maybe$withDefault,
+						false,
+						_user$project$TextReader_Question$answered_correctly(question)) ? 1 : 0;
 				},
 				_user$project$Main$questions(section))));
 };
@@ -22419,9 +22434,8 @@ var _user$project$Main$ViewSection = function (a) {
 var _user$project$Main$ViewIntro = {ctor: 'ViewIntro'};
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var update_answer = F3(
-			function (text_section, text_question, text_answer) {
-				var new_text_question = A2(_user$project$TextReader_Question$set_answer, text_question, text_answer);
+		var update_question = F2(
+			function (text_section, new_text_question) {
 				var new_text_section = A2(_user$project$Main$set_question, text_section, new_text_question);
 				return A2(_user$project$Main$set_text_section, model.sections, new_text_section);
 			});
@@ -22446,23 +22460,25 @@ var _user$project$Main$update = F2(
 				}
 			case 'Select':
 				var new_text_answer = A2(_user$project$TextReader_Answer$set_answer_selected, _p10._2, _p10._3);
+				var new_text_question = A2(_user$project$TextReader_Question$set_as_submitted_answer, _p10._1, new_text_answer);
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							sections: A3(update_answer, _p10._0, _p10._1, new_text_answer)
+							sections: A2(update_question, _p10._0, new_text_question)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'ViewFeedback':
 				var new_text_answer = A2(_user$project$TextReader_Answer$set_answer_feedback_viewable, _p10._2, _p10._3);
+				var new_text_question = A2(_user$project$TextReader_Question$set_answer, _p10._1, new_text_answer);
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							sections: A3(update_answer, _p10._0, _p10._1, new_text_answer)
+							sections: A2(update_question, _p10._0, new_text_question)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
