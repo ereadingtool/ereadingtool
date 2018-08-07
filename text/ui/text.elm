@@ -8,6 +8,7 @@ import HtmlParser.Util
 import Http exposing (..)
 
 import Array exposing (Array)
+import Dict exposing (Dict)
 
 import Text.Section.Model exposing (TextSection, emptyTextSection)
 import Text.Model exposing (Text)
@@ -26,6 +27,8 @@ import WebSocket
 import TextReader exposing (TextItemAttributes)
 import TextReader.Question exposing (TextQuestion)
 import TextReader.Answer exposing (TextAnswer)
+
+import TextReader.Dictionary exposing (dictionary)
 
 
 type Section = Section TextSection (TextItemAttributes {}) (Array TextQuestion)
@@ -140,78 +143,92 @@ set_text_section : Array Section -> Section -> Array Section
 set_text_section text_sections ((Section _ attrs _) as text_section) =
   Array.set attrs.index text_section text_sections
 
+tag_defined_words : List HtmlParser.Node -> List HtmlParser.Node
+tag_defined_words text =
+  List.map (\elem ->
+    case elem of
+      HtmlParser.Text str ->
+        if (Dict.member str dictionary) then
+          HtmlParser.Element "span" [("defined_word", True)] [HtmlParser.Text str]
+        else
+          HtmlParser.Text str
+      HtmlParser.Element str attrs nodes ->
+        HtmlParser.Element str attrs nodes) text
+
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-  case msg of
-    UpdateText (Ok text) ->
+  let
+    update_answer text_section text_question text_answer =
       let
-        text_sections = Array.indexedMap gen_text_sections text.sections
-      in
-        ({ model | text = text, sections = text_sections }, Cmd.none)
-
-    UpdateText (Err err) ->
-      case (Debug.log "text error" err) of
-        _ -> (model, Cmd.none)
-
-    Select text_section text_question text_answer selected ->
-      let
-        new_text_answer = TextReader.Answer.set_answer_selected text_answer selected
-        new_text_question = TextReader.Question.set_answer text_question new_text_answer
+        new_text_question = TextReader.Question.set_answer text_question text_answer
         new_text_section = set_question text_section new_text_question
-        new_sections = set_text_section model.sections new_text_section
       in
-        ({ model | sections = new_sections }, Cmd.none)
+        set_text_section model.sections new_text_section
+  in
+    case msg of
+      UpdateText (Ok text) ->
+        let
+          text_sections = Array.indexedMap gen_text_sections text.sections
+        in
+          ({ model | text = text, sections = text_sections }, Cmd.none)
 
-    ViewFeedback text_section text_question text_answer view_feedback ->
-      let
-        new_text_answer = TextReader.Answer.set_answer_feedback_viewable text_answer view_feedback
-        new_text_question = TextReader.Question.set_answer text_question new_text_answer
-        new_text_section = set_question text_section new_text_question
-        new_sections = set_text_section model.sections new_text_section
-      in
-        ({ model | sections = new_sections }, Cmd.none)
+      UpdateText (Err err) ->
+        case (Debug.log "text error" err) of
+          _ -> (model, Cmd.none)
 
-    StartOver ->
-      let
-        new_sections = Array.map (\section -> clear_question_answers section) model.sections
-      in
-        ({ model | sections = new_sections, progress = ViewIntro}, Cmd.none)
+      Select text_section text_question text_answer selected ->
+        let
+          new_text_answer = TextReader.Answer.set_answer_selected text_answer selected
+        in
+          ({ model | sections = (update_answer text_section text_question new_text_answer) }, Cmd.none)
 
-    NextSection ->
-      case model.progress of
-        ViewIntro ->
-          ({ model | progress = ViewSection 0 }, Cmd.none)
-        ViewSection i ->
-          case Array.get (i+1) model.sections of
-            Just next_section ->
-              ({ model | progress = ViewSection (i+1) }, Cmd.none)
-            Nothing ->
-              ({ model | progress = Complete }, Cmd.none)
-        Complete ->
-          (model, Cmd.none)
+      ViewFeedback text_section text_question text_answer view_feedback ->
+        let
+          new_text_answer = TextReader.Answer.set_answer_feedback_viewable text_answer view_feedback
+        in
+          ({ model | sections = (update_answer text_section text_question new_text_answer) }, Cmd.none)
 
-    PrevSection ->
-      case model.progress of
-        ViewIntro ->
-          (model, Cmd.none)
-        ViewSection i ->
-          let
-            prev_section_index = i-1
-          in
-            case Array.get prev_section_index model.sections of
-              Just prev_section ->
-                ({ model | progress = ViewSection prev_section_index }, Cmd.none)
+      StartOver ->
+        let
+          new_sections = Array.map (\section -> clear_question_answers section) model.sections
+        in
+          ({ model | sections = new_sections, progress = ViewIntro}, Cmd.none)
+
+      NextSection ->
+        case model.progress of
+          ViewIntro ->
+            ({ model | progress = ViewSection 0 }, Cmd.none)
+          ViewSection i ->
+            case Array.get (i+1) model.sections of
+              Just next_section ->
+                ({ model | progress = ViewSection (i+1) }, Cmd.none)
               Nothing ->
-                ({ model | progress = ViewIntro }, Cmd.none)
-        Complete ->
-          let
-            last_section_index = (Array.length model.sections) - 1
-          in
-            case Array.get last_section_index model.sections of
-              Just section ->
-                ({ model | progress = ViewSection last_section_index }, Cmd.none)
-              Nothing ->
-                (model, Cmd.none)
+                ({ model | progress = Complete }, Cmd.none)
+          Complete ->
+            (model, Cmd.none)
+
+      PrevSection ->
+        case model.progress of
+          ViewIntro ->
+            (model, Cmd.none)
+          ViewSection i ->
+            let
+              prev_section_index = i-1
+            in
+              case Array.get prev_section_index model.sections of
+                Just prev_section ->
+                  ({ model | progress = ViewSection prev_section_index }, Cmd.none)
+                Nothing ->
+                  ({ model | progress = ViewIntro }, Cmd.none)
+          Complete ->
+            let
+              last_section_index = (Array.length model.sections) - 1
+            in
+              case Array.get last_section_index model.sections of
+                Just section ->
+                  ({ model | progress = ViewSection last_section_index }, Cmd.none)
+                Nothing ->
+                  (model, Cmd.none)
 
 main : Program Flags Model Msg
 main =
@@ -227,15 +244,15 @@ view_answer text_section text_question text_answer =
   let
     question_answered = TextReader.Question.answered text_question
 
-    on_click = if question_answered then
+    on_click =
+      if question_answered then
         onClick (ViewFeedback text_section text_question text_answer True)
       else
         onClick (Select text_section text_question text_answer True)
 
-    is_correct = TextReader.Answer.correct text_answer
-
     answer = TextReader.Answer.answer text_answer
     answer_selected = TextReader.Answer.selected text_answer
+    is_correct = TextReader.Answer.correct text_answer
     view_feedback = TextReader.Answer.feedback_viewable text_answer
   in
     div [ classList <| [
@@ -274,11 +291,15 @@ view_questions ((Section text text_attr questions) as text_section) =
 
 view_text_section : Int -> Section -> Html Msg
 view_text_section i ((Section text attrs questions) as text_section) =
-  div [class "text_section"] <| [
-      div [class "section_title"] [ Html.text ("Section " ++ (toString (i+1))) ]
-    , div [class "text_body"] (HtmlParser.Util.toVirtualDom <| HtmlParser.parse text.body)
-    , (view_questions text_section)
-  ]
+  let
+    text_body = tag_defined_words (HtmlParser.parse text.body)
+    text_body_vdom = HtmlParser.Util.toVirtualDom text_body
+  in
+    div [class "text_section"] <| [
+        div [class "section_title"] [ Html.text ("Section " ++ (toString (i+1))) ]
+      , div [class "text_body"] text_body_vdom
+      , (view_questions text_section)
+    ]
 
 view_text_introduction : Text -> Html Msg
 view_text_introduction text =
@@ -335,15 +356,16 @@ view_content model =
         view_text_introduction model.text
       , div [onClick NextSection, class "nav"] [ div [class "start_btn"] [ Html.text "Start" ] ]
       ]
+
     ViewSection i ->
-      case Array.get i model.sections of
-        Just section ->
-          div [ classList [("text", True)] ] [
-            view_text_section i section
-          , div [class "nav"] [view_prev_btn, view_next_btn]
-          ]
-        Nothing ->
-          div [class "text"] []
+      div [class "text"]
+        (case Array.get i model.sections of
+          Just section ->
+            [ view_text_section i section
+            , div [class "nav"] [view_prev_btn, view_next_btn] ]
+          Nothing ->
+            [])
+
     Complete ->
       view_text_complete model
 

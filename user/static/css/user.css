@@ -1,7 +1,7 @@
 .login, .signup {
     display: grid;
 
-    grid-auto-rows: minmax(250px, auto);
+    grid-auto-rows: minmax(65px, auto);
 
     margin-top: 50px;
     margin-bottom: 0;
@@ -63,6 +63,10 @@ select {
     .login, .signup, .login_box, .signup_box {
         display: flex;
         flex-direction: column;
+    }
+
+    .login_box > input {
+        height: 45px;
     }
 
     .filter {

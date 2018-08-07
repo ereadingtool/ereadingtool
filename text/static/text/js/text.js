@@ -22412,6 +22412,12 @@ var _user$project$Main$ViewSection = function (a) {
 var _user$project$Main$ViewIntro = {ctor: 'ViewIntro'};
 var _user$project$Main$update = F2(
 	function (msg, model) {
+		var update_answer = F3(
+			function (text_section, text_question, text_answer) {
+				var new_text_question = A2(_user$project$TextReader_Question$set_answer, text_question, text_answer);
+				var new_text_section = A2(_user$project$Main$set_question, text_section, new_text_question);
+				return A2(_user$project$Main$set_text_section, model.sections, new_text_section);
+			});
 		var _p10 = msg;
 		switch (_p10.ctor) {
 			case 'UpdateText':
@@ -22431,26 +22437,24 @@ var _user$project$Main$update = F2(
 				}
 			case 'Select':
 				var new_text_answer = A2(_user$project$TextReader_Answer$set_answer_selected, _p10._2, _p10._3);
-				var new_text_question = A2(_user$project$TextReader_Question$set_answer, _p10._1, new_text_answer);
-				var new_text_section = A2(_user$project$Main$set_question, _p10._0, new_text_question);
-				var new_sections = A2(_user$project$Main$set_text_section, model.sections, new_text_section);
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{sections: new_sections}),
+						{
+							sections: A3(update_answer, _p10._0, _p10._1, new_text_answer)
+						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'ViewFeedback':
 				var new_text_answer = A2(_user$project$TextReader_Answer$set_answer_feedback_viewable, _p10._2, _p10._3);
-				var new_text_question = A2(_user$project$TextReader_Question$set_answer, _p10._1, new_text_answer);
-				var new_text_section = A2(_user$project$Main$set_question, _p10._0, new_text_question);
-				var new_sections = A2(_user$project$Main$set_text_section, model.sections, new_text_section);
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{sections: new_sections}),
+						{
+							sections: A3(update_answer, _p10._0, _p10._1, new_text_answer)
+						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'StartOver':
@@ -22712,9 +22716,9 @@ var _user$project$Main$Select = F4(
 var _user$project$Main$view_answer = F3(
 	function (text_section, text_question, text_answer) {
 		var view_feedback = _user$project$TextReader_Answer$feedback_viewable(text_answer);
+		var is_correct = _user$project$TextReader_Answer$correct(text_answer);
 		var answer_selected = _user$project$TextReader_Answer$selected(text_answer);
 		var answer = _user$project$TextReader_Answer$answer(text_answer);
-		var is_correct = _user$project$TextReader_Answer$correct(text_answer);
 		var question_answered = _user$project$TextReader_Question$answered(text_question);
 		var on_click = question_answered ? _elm_lang$html$Html_Events$onClick(
 			A4(_user$project$Main$ViewFeedback, text_section, text_question, text_answer, true)) : _elm_lang$html$Html_Events$onClick(
@@ -22956,54 +22960,44 @@ var _user$project$Main$view_content = function (model) {
 				});
 		case 'ViewSection':
 			var _p25 = _p23._0;
-			var _p24 = A2(_elm_lang$core$Array$get, _p25, model.sections);
-			if (_p24.ctor === 'Just') {
-				return A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$classList(
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'text', _1: true},
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: A2(_user$project$Main$view_text_section, _p25, _p24._0),
-						_1: {
+			return A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('text'),
+					_1: {ctor: '[]'}
+				},
+				function () {
+					var _p24 = A2(_elm_lang$core$Array$get, _p25, model.sections);
+					if (_p24.ctor === 'Just') {
+						return {
 							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('nav'),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: _user$project$Main$view_prev_btn,
-									_1: {
+							_0: A2(_user$project$Main$view_text_section, _p25, _p24._0),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{
 										ctor: '::',
-										_0: _user$project$Main$view_next_btn,
+										_0: _elm_lang$html$Html_Attributes$class('nav'),
 										_1: {ctor: '[]'}
-									}
-								}),
-							_1: {ctor: '[]'}
-						}
-					});
-			} else {
-				return A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('text'),
-						_1: {ctor: '[]'}
-					},
-					{ctor: '[]'});
-			}
+									},
+									{
+										ctor: '::',
+										_0: _user$project$Main$view_prev_btn,
+										_1: {
+											ctor: '::',
+											_0: _user$project$Main$view_next_btn,
+											_1: {ctor: '[]'}
+										}
+									}),
+								_1: {ctor: '[]'}
+							}
+						};
+					} else {
+						return {ctor: '[]'};
+					}
+				}());
 		default:
 			return _user$project$Main$view_text_complete(model);
 	}
