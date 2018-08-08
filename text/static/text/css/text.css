@@ -138,6 +138,29 @@
     font-weight: bolder;
 }
 
+.gloss_menu {
+    position: relative;
+}
+
+.gloss_overlay {
+    display: grid;
+    position: absolute;
+
+    z-index: 2;
+    right: 0;
+
+    background: #FFFFFF;
+
+    font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+
+    padding: 5px;
+
+    border: solid 0.5px lightgrey;
+    border-radius: 2px;
+    box-shadow: 0 1px 16px rgba(0,0,0,.1);
+}
+
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
     .header {
         display: flex;

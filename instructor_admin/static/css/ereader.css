@@ -201,3 +201,7 @@ a {
 .cursor {
     cursor: pointer;
 }
+
+.hidden {
+    visibility: hidden;
+}

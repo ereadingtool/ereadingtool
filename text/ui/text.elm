@@ -1,6 +1,6 @@
-import Html exposing (Html, div)
+import Html exposing (Html, div, span)
 import Html.Attributes exposing (class, classList, attribute, property)
-import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
+import Html.Events exposing (onClick, onDoubleClick, onBlur)
 
 import HtmlParser
 import HtmlParser.Util
@@ -48,6 +48,7 @@ type Msg =
   | NextSection
   | StartOver
   | Gloss Word
+  | UnGloss Word
 
 type alias Flags = Flags.Flags { text_id : Int }
 
@@ -56,6 +57,7 @@ type alias Model = {
   , profile : Profile.Profile
   , progress: Progress
   , sections : Array Section
+  , gloss : Dict String Bool
   , flags : Flags }
 
 init : Flags -> (Model, Cmd Msg)
@@ -65,6 +67,7 @@ init flags =
   in
     ({ text=Texts.new_text
      , sections=Array.fromList []
+     , gloss=Dict.empty
      , profile=profile
      , progress=ViewIntro
      , flags=flags }
@@ -149,24 +152,26 @@ set_text_section : Array Section -> Section -> Array Section
 set_text_section text_sections ((Section _ attrs _) as text_section) =
   Array.set attrs.index text_section text_sections
 
-tagWordAndToVDOM : HtmlParser.Node -> Html Msg
-tagWordAndToVDOM node =
+tagWordAndToVDOM : Dict String Bool -> HtmlParser.Node -> Html Msg
+tagWordAndToVDOM gloss node =
   case node of
     HtmlParser.Text str ->
       if (Dict.member str dictionary) then
-        Html.node "span" [class "defined_word", onClick (Gloss str)] [VirtualDom.text str]
+        Html.node "span" [class "defined_word", onDoubleClick (Gloss str)] [
+          VirtualDom.text str, view_gloss gloss str
+        ]
       else
         VirtualDom.text str
 
     HtmlParser.Element name attrs nodes ->
-      Html.node name (List.map (\(name, value) -> attribute name value) attrs) (tagWordsAndToVDOM nodes)
+      Html.node name (List.map (\(name, value) -> attribute name value) attrs) (tagWordsAndToVDOM gloss nodes)
 
     (HtmlParser.Comment str) as comment ->
         VirtualDom.text ""
 
-tagWordsAndToVDOM : List HtmlParser.Node -> List (Html Msg)
-tagWordsAndToVDOM text =
-  List.map tagWordAndToVDOM text
+tagWordsAndToVDOM : Dict String Bool -> List HtmlParser.Node -> List (Html Msg)
+tagWordsAndToVDOM gloss text =
+  List.map (tagWordAndToVDOM gloss) text
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -179,7 +184,10 @@ update msg model =
   in
     case msg of
       Gloss word ->
-        (model, Cmd.none)
+        ({ model | gloss = Dict.insert word True model.gloss }, Cmd.none)
+
+      UnGloss word ->
+        ({ model | gloss = Dict.remove word model.gloss }, Cmd.none)
 
       UpdateText (Ok text) ->
         let
@@ -306,15 +314,30 @@ view_questions : Section -> Html Msg
 view_questions ((Section text text_attr questions) as text_section) =
   div [class "questions"] (Array.toList <| Array.map (view_question text_section) questions)
 
-view_text_section : Int -> Section -> Html Msg
-view_text_section i ((Section text attrs questions) as text_section) =
+view_gloss : Dict String Bool -> String -> Html Msg
+view_gloss gloss word =
   let
-    text_body_vdom = tagWordsAndToVDOM (HtmlParser.parse text.body)
+    word_def = (flip Dict.get) dictionary >> Maybe.withDefault ""
+  in
+    div []
+      (List.map
+        (\word ->
+          div [ classList [("gloss_overlay", True), ("gloss_menu", True)
+              , ("hidden", not (Dict.member word gloss))]
+              , onClick (UnGloss word)] [
+            Html.text (word ++ " : " ++ word_def word)
+          ]
+        ) (Dict.keys gloss))
+
+view_text_section : Dict String Bool -> Int -> Section -> Html Msg
+view_text_section gloss i ((Section text attrs questions) as text_section) =
+  let
+    text_body_vdom = tagWordsAndToVDOM gloss (HtmlParser.parse text.body)
   in
     div [class "text_section"] <| [
         div [class "section_title"] [ Html.text ("Section " ++ (toString (i+1))) ]
       , div [class "text_body"] text_body_vdom
-      , (view_questions text_section)
+      , view_questions text_section
     ]
 
 view_text_introduction : Text -> Html Msg
@@ -377,7 +400,7 @@ view_content model =
       div [class "text"]
         (case Array.get i model.sections of
           Just section ->
-            [ view_text_section i section
+            [ view_text_section model.gloss i section
             , div [class "nav"] [view_prev_btn, view_next_btn] ]
           Nothing ->
             [])

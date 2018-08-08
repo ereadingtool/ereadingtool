@@ -242,7 +242,8 @@ add_new_question (TextSectionComponent text attr fields question_fields) =
   TextSectionComponent text attr fields (Question.Field.add_new_question attr.index question_fields)
 
 toggle_question_menu : TextSectionComponent -> QuestionField -> TextSectionComponent
-toggle_question_menu text_section question_field =  let
+toggle_question_menu text_section question_field =
+  let
     visible = if (Question.Field.menu_visible question_field) then False else True
   in
     set_question text_section (Question.Field.set_menu_visible question_field visible)

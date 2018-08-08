@@ -22201,8 +22201,7 @@ var _user$project$TextReader_Question$answered = function (text_question) {
 	}
 };
 var _user$project$TextReader_Question$id = function (text_question) {
-	return _elm_lang$core$Basics$toString(
-		_user$project$TextReader_Question$attr(text_question).id);
+	return _user$project$TextReader_Question$attr(text_question).id;
 };
 var _user$project$TextReader_Question$index = function (text_question) {
 	return _user$project$TextReader_Question$attr(text_question).index;
@@ -22384,9 +22383,9 @@ var _user$project$Main$start = function (profile) {
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
-var _user$project$Main$Model = F5(
-	function (a, b, c, d, e) {
-		return {text: a, profile: b, progress: c, sections: d, flags: e};
+var _user$project$Main$Model = F6(
+	function (a, b, c, d, e, f) {
+		return {text: a, profile: b, progress: c, sections: d, gloss: e, flags: f};
 	});
 var _user$project$Main$Section = F3(
 	function (a, b, c) {
@@ -22442,7 +22441,25 @@ var _user$project$Main$update = F2(
 		var _p10 = msg;
 		switch (_p10.ctor) {
 			case 'Gloss':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							gloss: A3(_elm_lang$core$Dict$insert, _p10._0, true, model.gloss)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'UnGloss':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							gloss: A2(_elm_lang$core$Dict$remove, _p10._0, model.gloss)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 			case 'UpdateText':
 				if (_p10._0.ctor === 'Ok') {
 					var _p11 = _p10._0._0;
@@ -22580,51 +22597,121 @@ var _user$project$Main$update = F2(
 				}
 		}
 	});
+var _user$project$Main$UnGloss = function (a) {
+	return {ctor: 'UnGloss', _0: a};
+};
+var _user$project$Main$view_gloss = F2(
+	function (gloss, word) {
+		var word_def = function (_p19) {
+			return A2(
+				_elm_lang$core$Maybe$withDefault,
+				'',
+				A3(_elm_lang$core$Basics$flip, _elm_lang$core$Dict$get, _user$project$TextReader_Dictionary$dictionary, _p19));
+		};
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			A2(
+				_elm_lang$core$List$map,
+				function (word) {
+					return A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$classList(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'gloss_overlay', _1: true},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'gloss_menu', _1: true},
+										_1: {
+											ctor: '::',
+											_0: {
+												ctor: '_Tuple2',
+												_0: 'hidden',
+												_1: !A2(_elm_lang$core$Dict$member, word, gloss)
+											},
+											_1: {ctor: '[]'}
+										}
+									}
+								}),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(
+									_user$project$Main$UnGloss(word)),
+								_1: {ctor: '[]'}
+							}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									word,
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										' : ',
+										word_def(word)))),
+							_1: {ctor: '[]'}
+						});
+				},
+				_elm_lang$core$Dict$keys(gloss)));
+	});
 var _user$project$Main$Gloss = function (a) {
 	return {ctor: 'Gloss', _0: a};
 };
-var _user$project$Main$tagWordAndToVDOM = function (node) {
-	var _p19 = node;
-	switch (_p19.ctor) {
-		case 'Text':
-			var _p20 = _p19._0;
-			return A2(_elm_lang$core$Dict$member, _p20, _user$project$TextReader_Dictionary$dictionary) ? A3(
-				_elm_lang$html$Html$node,
-				'span',
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('defined_word'),
-					_1: {
+var _user$project$Main$tagWordAndToVDOM = F2(
+	function (gloss, node) {
+		var _p20 = node;
+		switch (_p20.ctor) {
+			case 'Text':
+				var _p21 = _p20._0;
+				return A2(_elm_lang$core$Dict$member, _p21, _user$project$TextReader_Dictionary$dictionary) ? A3(
+					_elm_lang$html$Html$node,
+					'span',
+					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onClick(
-							_user$project$Main$Gloss(_p20)),
-						_1: {ctor: '[]'}
-					}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$virtual_dom$VirtualDom$text(_p20),
-					_1: {ctor: '[]'}
-				}) : _elm_lang$virtual_dom$VirtualDom$text(_p20);
-		case 'Element':
-			return A3(
-				_elm_lang$html$Html$node,
-				_p19._0,
-				A2(
-					_elm_lang$core$List$map,
-					function (_p21) {
-						var _p22 = _p21;
-						return A2(_elm_lang$html$Html_Attributes$attribute, _p22._0, _p22._1);
+						_0: _elm_lang$html$Html_Attributes$class('defined_word'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onDoubleClick(
+								_user$project$Main$Gloss(_p21)),
+							_1: {ctor: '[]'}
+						}
 					},
-					_p19._1),
-				_user$project$Main$tagWordsAndToVDOM(_p19._2));
-		default:
-			return _elm_lang$virtual_dom$VirtualDom$text('');
-	}
-};
-var _user$project$Main$tagWordsAndToVDOM = function (text) {
-	return A2(_elm_lang$core$List$map, _user$project$Main$tagWordAndToVDOM, text);
-};
+					{
+						ctor: '::',
+						_0: _elm_lang$virtual_dom$VirtualDom$text(_p21),
+						_1: {
+							ctor: '::',
+							_0: A2(_user$project$Main$view_gloss, gloss, _p21),
+							_1: {ctor: '[]'}
+						}
+					}) : _elm_lang$virtual_dom$VirtualDom$text(_p21);
+			case 'Element':
+				return A3(
+					_elm_lang$html$Html$node,
+					_p20._0,
+					A2(
+						_elm_lang$core$List$map,
+						function (_p22) {
+							var _p23 = _p22;
+							return A2(_elm_lang$html$Html_Attributes$attribute, _p23._0, _p23._1);
+						},
+						_p20._1),
+					A2(_user$project$Main$tagWordsAndToVDOM, gloss, _p20._2));
+			default:
+				return _elm_lang$virtual_dom$VirtualDom$text('');
+		}
+	});
+var _user$project$Main$tagWordsAndToVDOM = F2(
+	function (gloss, text) {
+		return A2(
+			_elm_lang$core$List$map,
+			_user$project$Main$tagWordAndToVDOM(gloss),
+			text);
+	});
 var _user$project$Main$StartOver = {ctor: 'StartOver'};
 var _user$project$Main$NextSection = {ctor: 'NextSection'};
 var _user$project$Main$view_next_btn = A2(
@@ -22920,8 +23007,8 @@ var _user$project$Main$view_question = F2(
 				}
 			});
 	});
-var _user$project$Main$view_questions = function (_p23) {
-	var _p24 = _p23;
+var _user$project$Main$view_questions = function (_p24) {
+	var _p25 = _p24;
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -22932,14 +23019,16 @@ var _user$project$Main$view_questions = function (_p23) {
 		_elm_lang$core$Array$toList(
 			A2(
 				_elm_lang$core$Array$map,
-				_user$project$Main$view_question(_p24),
-				_p24._2)));
+				_user$project$Main$view_question(_p25),
+				_p25._2)));
 };
-var _user$project$Main$view_text_section = F2(
-	function (i, _p25) {
-		var _p26 = _p25;
-		var text_body_vdom = _user$project$Main$tagWordsAndToVDOM(
-			_jinjor$elm_html_parser$HtmlParser$parse(_p26._0.body));
+var _user$project$Main$view_text_section = F3(
+	function (gloss, i, _p26) {
+		var _p27 = _p26;
+		var text_body_vdom = A2(
+			_user$project$Main$tagWordsAndToVDOM,
+			gloss,
+			_jinjor$elm_html_parser$HtmlParser$parse(_p27._0.body));
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -22977,15 +23066,15 @@ var _user$project$Main$view_text_section = F2(
 						text_body_vdom),
 					_1: {
 						ctor: '::',
-						_0: _user$project$Main$view_questions(_p26),
+						_0: _user$project$Main$view_questions(_p27),
 						_1: {ctor: '[]'}
 					}
 				}
 			});
 	});
 var _user$project$Main$view_content = function (model) {
-	var _p27 = model.progress;
-	switch (_p27.ctor) {
+	var _p28 = model.progress;
+	switch (_p28.ctor) {
 		case 'ViewIntro':
 			return A2(
 				_elm_lang$html$Html$div,
@@ -23030,7 +23119,7 @@ var _user$project$Main$view_content = function (model) {
 					}
 				});
 		case 'ViewSection':
-			var _p29 = _p27._0;
+			var _p30 = _p28._0;
 			return A2(
 				_elm_lang$html$Html$div,
 				{
@@ -23039,11 +23128,11 @@ var _user$project$Main$view_content = function (model) {
 					_1: {ctor: '[]'}
 				},
 				function () {
-					var _p28 = A2(_elm_lang$core$Array$get, _p29, model.sections);
-					if (_p28.ctor === 'Just') {
+					var _p29 = A2(_elm_lang$core$Array$get, _p30, model.sections);
+					if (_p29.ctor === 'Just') {
 						return {
 							ctor: '::',
-							_0: A2(_user$project$Main$view_text_section, _p29, _p28._0),
+							_0: A3(_user$project$Main$view_text_section, model.gloss, _p30, _p29._0),
 							_1: {
 								ctor: '::',
 								_0: A2(
@@ -23132,6 +23221,7 @@ var _user$project$Main$init = function (flags) {
 			text: _user$project$Text_Model$new_text,
 			sections: _elm_lang$core$Array$fromList(
 				{ctor: '[]'}),
+			gloss: _elm_lang$core$Dict$empty,
 			profile: profile,
 			progress: _user$project$Main$ViewIntro,
 			flags: flags

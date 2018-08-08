@@ -81,7 +81,8 @@ view_question_type_menu_item params field =
     ]
 
 view_menu_items : (QuestionFieldParams msg) -> QuestionField -> List (Html msg)
-view_menu_items params field = List.map (\html -> div [attribute "class" "question_menu_item"] [html]) [
+view_menu_items params field =
+  List.map (\html -> div [attribute "class" "question_menu_item"] [html]) [
       (view_delete_menu_item params field)
     , (view_question_type_menu_item params field)
   ]

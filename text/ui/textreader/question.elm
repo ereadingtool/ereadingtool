@@ -30,7 +30,7 @@ index text_question =
 
 id : TextQuestion -> String
 id text_question =
-  toString <| (attr text_question).id
+  (attr text_question).id
 
 answered : TextQuestion -> Bool
 answered text_question =

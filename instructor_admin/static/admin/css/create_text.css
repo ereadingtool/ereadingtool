@@ -418,10 +418,6 @@ body {
     cursor: pointer;
 }
 
-.hidden {
-    visibility: hidden;
-}
-
 .question_menu_overlay {
     display: grid;
     position: absolute;
