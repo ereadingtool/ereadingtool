@@ -152,16 +152,20 @@ set_text_section : Array Section -> Section -> Array Section
 set_text_section text_sections ((Section _ attrs _) as text_section) =
   Array.set attrs.index text_section text_sections
 
+tagWord : Dict String Bool -> String -> Html Msg
+tagWord gloss word =
+  if (Dict.member word dictionary) then
+    Html.node "span" [class "defined_word", onDoubleClick (Gloss word)] [
+      VirtualDom.text word, view_gloss gloss word
+    ]
+  else
+    VirtualDom.text word
+
 tagWordAndToVDOM : Dict String Bool -> HtmlParser.Node -> Html Msg
 tagWordAndToVDOM gloss node =
   case node of
     HtmlParser.Text str ->
-      if (Dict.member str dictionary) then
-        Html.node "span" [class "defined_word", onDoubleClick (Gloss str)] [
-          VirtualDom.text str, view_gloss gloss str
-        ]
-      else
-        VirtualDom.text str
+      tagWord gloss str
 
     HtmlParser.Element name attrs nodes ->
       Html.node name (List.map (\(name, value) -> attribute name value) attrs) (tagWordsAndToVDOM gloss nodes)

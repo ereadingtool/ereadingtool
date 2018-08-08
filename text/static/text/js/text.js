@@ -22661,43 +22661,46 @@ var _user$project$Main$view_gloss = F2(
 var _user$project$Main$Gloss = function (a) {
 	return {ctor: 'Gloss', _0: a};
 };
+var _user$project$Main$tagWord = F2(
+	function (gloss, word) {
+		return A2(_elm_lang$core$Dict$member, word, _user$project$TextReader_Dictionary$dictionary) ? A3(
+			_elm_lang$html$Html$node,
+			'span',
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('defined_word'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onDoubleClick(
+						_user$project$Main$Gloss(word)),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$virtual_dom$VirtualDom$text(word),
+				_1: {
+					ctor: '::',
+					_0: A2(_user$project$Main$view_gloss, gloss, word),
+					_1: {ctor: '[]'}
+				}
+			}) : _elm_lang$virtual_dom$VirtualDom$text(word);
+	});
 var _user$project$Main$tagWordAndToVDOM = F2(
 	function (gloss, node) {
 		var _p20 = node;
 		switch (_p20.ctor) {
 			case 'Text':
-				var _p21 = _p20._0;
-				return A2(_elm_lang$core$Dict$member, _p21, _user$project$TextReader_Dictionary$dictionary) ? A3(
-					_elm_lang$html$Html$node,
-					'span',
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('defined_word'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onDoubleClick(
-								_user$project$Main$Gloss(_p21)),
-							_1: {ctor: '[]'}
-						}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$virtual_dom$VirtualDom$text(_p21),
-						_1: {
-							ctor: '::',
-							_0: A2(_user$project$Main$view_gloss, gloss, _p21),
-							_1: {ctor: '[]'}
-						}
-					}) : _elm_lang$virtual_dom$VirtualDom$text(_p21);
+				return A2(_user$project$Main$tagWord, gloss, _p20._0);
 			case 'Element':
 				return A3(
 					_elm_lang$html$Html$node,
 					_p20._0,
 					A2(
 						_elm_lang$core$List$map,
-						function (_p22) {
-							var _p23 = _p22;
-							return A2(_elm_lang$html$Html_Attributes$attribute, _p23._0, _p23._1);
+						function (_p21) {
+							var _p22 = _p21;
+							return A2(_elm_lang$html$Html_Attributes$attribute, _p22._0, _p22._1);
 						},
 						_p20._1),
 					A2(_user$project$Main$tagWordsAndToVDOM, gloss, _p20._2));
@@ -23007,8 +23010,8 @@ var _user$project$Main$view_question = F2(
 				}
 			});
 	});
-var _user$project$Main$view_questions = function (_p24) {
-	var _p25 = _p24;
+var _user$project$Main$view_questions = function (_p23) {
+	var _p24 = _p23;
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -23019,16 +23022,16 @@ var _user$project$Main$view_questions = function (_p24) {
 		_elm_lang$core$Array$toList(
 			A2(
 				_elm_lang$core$Array$map,
-				_user$project$Main$view_question(_p25),
-				_p25._2)));
+				_user$project$Main$view_question(_p24),
+				_p24._2)));
 };
 var _user$project$Main$view_text_section = F3(
-	function (gloss, i, _p26) {
-		var _p27 = _p26;
+	function (gloss, i, _p25) {
+		var _p26 = _p25;
 		var text_body_vdom = A2(
 			_user$project$Main$tagWordsAndToVDOM,
 			gloss,
-			_jinjor$elm_html_parser$HtmlParser$parse(_p27._0.body));
+			_jinjor$elm_html_parser$HtmlParser$parse(_p26._0.body));
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -23066,15 +23069,15 @@ var _user$project$Main$view_text_section = F3(
 						text_body_vdom),
 					_1: {
 						ctor: '::',
-						_0: _user$project$Main$view_questions(_p27),
+						_0: _user$project$Main$view_questions(_p26),
 						_1: {ctor: '[]'}
 					}
 				}
 			});
 	});
 var _user$project$Main$view_content = function (model) {
-	var _p28 = model.progress;
-	switch (_p28.ctor) {
+	var _p27 = model.progress;
+	switch (_p27.ctor) {
 		case 'ViewIntro':
 			return A2(
 				_elm_lang$html$Html$div,
@@ -23119,7 +23122,7 @@ var _user$project$Main$view_content = function (model) {
 					}
 				});
 		case 'ViewSection':
-			var _p30 = _p28._0;
+			var _p29 = _p27._0;
 			return A2(
 				_elm_lang$html$Html$div,
 				{
@@ -23128,11 +23131,11 @@ var _user$project$Main$view_content = function (model) {
 					_1: {ctor: '[]'}
 				},
 				function () {
-					var _p29 = A2(_elm_lang$core$Array$get, _p30, model.sections);
-					if (_p29.ctor === 'Just') {
+					var _p28 = A2(_elm_lang$core$Array$get, _p29, model.sections);
+					if (_p28.ctor === 'Just') {
 						return {
 							ctor: '::',
-							_0: A3(_user$project$Main$view_text_section, model.gloss, _p30, _p29._0),
+							_0: A3(_user$project$Main$view_text_section, model.gloss, _p29, _p28._0),
 							_1: {
 								ctor: '::',
 								_0: A2(

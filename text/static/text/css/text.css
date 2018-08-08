@@ -147,7 +147,8 @@
     position: absolute;
 
     z-index: 2;
-    right: 0;
+    left: 140px;
+    max-width: 200px;
 
     background: #FFFFFF;
 
