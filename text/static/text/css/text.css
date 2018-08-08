@@ -34,11 +34,11 @@
 
     margin: 15px;
 
-    background: white;
+    background: #f9f9f9;
     text-align: center;
 
     padding: 2px;
-    border: solid 1px lightgrey;
+    border: solid 1px white;
     border-radius: 5px;
 }
 
@@ -116,7 +116,7 @@
 }
 
 .answer {
-    background: #D4D4D4;
+    background: #f9f9f9;
     margin-bottom: 15px;
     padding: 10px;
 

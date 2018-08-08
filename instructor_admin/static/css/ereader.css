@@ -1,5 +1,5 @@
 body {
-    background: #f9f9f9;
+    background: #FFFFFF;
     margin-top: 0;
     margin-right: 0;
     margin-left: 0;
@@ -33,7 +33,7 @@ a {
 
     grid-template-columns: 15% 5% 5% 75%;
 
-    background: #FFFFFF;
+    background: #f9f9f9;
 
     font: "Lucida Console";
     font-size: 18px;
@@ -148,7 +148,7 @@ a {
 
     grid-template-columns: 2% 20% repeat(auto-fill, 13%) 21% 2%;
 
-    background: #FFFFFF;
+    background: #f9f9f9;
     border: solid 0.5px lightgrey;
 }
 
