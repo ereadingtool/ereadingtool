@@ -1,5 +1,5 @@
 module Text.Decode exposing (textDecoder, textCreateRespDecoder, decodeRespErrors, TextsRespError, TextDeleteResp
-  , textUpdateRespDecoder, TextCreateResp, TextUpdateResp, textListDecoder, textLockRespDecoder
+  , textUpdateRespDecoder, TextCreateResp, TextUpdateResp, TextProgressUpdateResp, textListDecoder, textLockRespDecoder
   , TextLockResp, textDeleteRespDecoder, textDifficultyDecoder)
 
 import Text.Model exposing (Text, TextDifficulty, TextListItem)
@@ -18,6 +18,7 @@ type alias TextCreateResp = { id: Int, redirect: String }
 type alias TextUpdateResp = { id: Int, updated: Bool }
 type alias TextDeleteResp = { id: Int, redirect: String, deleted: Bool }
 type alias TextLockResp = { locked: Bool }
+type alias TextProgressUpdateResp = { updated: Bool }
 
 type alias TextsRespError = Dict String String
 
@@ -88,3 +89,8 @@ textDifficultyDecoder = Decode.keyValuePairs Decode.string
 
 decodeRespErrors : String -> Result String TextsRespError
 decodeRespErrors str = Decode.decodeString (Decode.field "errors" (Decode.dict Decode.string)) str
+
+textProgressDecoder : Decode.Decoder (TextProgressUpdateResp)
+textProgressDecoder =
+    decode TextProgressUpdateResp
+    |> required "updated" Decode.bool

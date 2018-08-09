@@ -25,9 +25,6 @@ class TextAPIView(LoginRequiredMixin, View):
 
     model = Text
 
-    difficulties = {difficulty: 1 for difficulty in TextDifficulty.difficulty_keys()}
-    tags = {tag.name: 1 for tag in Text.tag_choices()}
-
     @classmethod
     def form_validation_errors(cls, errors: Dict, parent_key: AnyStr, form: ModelForm) -> Dict:
         for k in form.errors.keys():
@@ -205,11 +202,14 @@ class TextAPIView(LoginRequiredMixin, View):
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         filter_by = {}
 
+        all_difficulties = {difficulty: 1 for difficulty in TextDifficulty.difficulty_keys()}
+        all_tags = {tag.name: 1 for tag in Text.tag_choices()}
+
         difficulties = request.GET.getlist('difficulty')
         tags = request.GET.getlist('tag')
 
-        valid_difficulties = all(list(map(lambda difficulty: difficulty in self.difficulties, difficulties)))
-        valid_tags = all(list(map(lambda tag: tag in self.tags, tags)))
+        valid_difficulties = all(list(map(lambda difficulty: difficulty in self.difficulties, all_difficulties)))
+        valid_tags = all(list(map(lambda tag: tag in self.tags, all_tags)))
 
         if not (valid_difficulties or valid_tags):
             return HttpResponseServerError(

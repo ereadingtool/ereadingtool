@@ -23025,8 +23025,8 @@ var _user$project$Main$view_questions = function (_p23) {
 				_user$project$Main$view_question(_p24),
 				_p24._2)));
 };
-var _user$project$Main$view_text_section = F3(
-	function (gloss, i, _p25) {
+var _user$project$Main$view_text_section = F4(
+	function (gloss, i, _p25, total_sections) {
 		var _p26 = _p25;
 		var text_body_vdom = A2(
 			_user$project$Main$tagWordsAndToVDOM,
@@ -23054,7 +23054,13 @@ var _user$project$Main$view_text_section = F3(
 							A2(
 								_elm_lang$core$Basics_ops['++'],
 								'Section ',
-								_elm_lang$core$Basics$toString(i + 1))),
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									_elm_lang$core$Basics$toString(i + 1),
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										'/',
+										_elm_lang$core$Basics$toString(total_sections))))),
 						_1: {ctor: '[]'}
 					}),
 				_1: {
@@ -23076,6 +23082,7 @@ var _user$project$Main$view_text_section = F3(
 			});
 	});
 var _user$project$Main$view_content = function (model) {
+	var total_sections = _elm_lang$core$Array$length(model.sections);
 	var _p27 = model.progress;
 	switch (_p27.ctor) {
 		case 'ViewIntro':
@@ -23135,7 +23142,7 @@ var _user$project$Main$view_content = function (model) {
 					if (_p28.ctor === 'Just') {
 						return {
 							ctor: '::',
-							_0: A3(_user$project$Main$view_text_section, model.gloss, _p29, _p28._0),
+							_0: A4(_user$project$Main$view_text_section, model.gloss, _p29, _p28._0, total_sections),
 							_1: {
 								ctor: '::',
 								_0: A2(

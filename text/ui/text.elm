@@ -42,6 +42,7 @@ type alias Word = String
 -- UPDATE
 type Msg =
     UpdateText (Result Http.Error Text)
+  | UpdateTextProgress (Result Http.Error Text.Decode.TextProgressUpdateResp)
   | Select Section TextQuestion TextAnswer Bool
   | ViewFeedback Section TextQuestion TextAnswer Bool
   | PrevSection
@@ -94,7 +95,21 @@ updateText text_id =
   let
     text_req = Http.get (String.join "" [text_api_endpoint, (toString text_id)] ++ "/") Text.Decode.textDecoder
   in
-    Cmd.batch [Http.send UpdateText text_req]
+    Http.send UpdateText text_req
+
+update_completed_section : Int -> Int -> Array Section -> Cmd Msg
+update_completed_section section_id section_index sections =
+  case (Array.get section_index sections) of
+    Just section ->
+      let
+        text_req =
+          Http.post
+            (String.join "" [text_section_api_endpoint, (toString section_id) ++ "/", "progress/"])
+            Text.Decode.textUpdateRespDecoder
+      in
+        Http.send UpdateTextProgress text_req
+    Nothing ->
+      Cmd.none
 
 text_section : Array Section -> TextQuestion -> Maybe Section
 text_section text_sections text_question =
@@ -123,6 +138,12 @@ complete section =
      List.all (\answered -> answered)
   <| Array.toList
   <| Array.map (\question -> TextReader.Question.answered question) (questions section)
+
+completed_sections : Array Section -> Int
+completed_sections sections =
+     List.sum
+  <| Array.toList
+  <| Array.map (\section -> if (complete section) then 1 else 0) sections
 
 max_score : Section -> Int
 max_score section =
@@ -227,12 +248,18 @@ update msg model =
         case model.progress of
           ViewIntro ->
             ({ model | progress = ViewSection 0 }, Cmd.none)
+
           ViewSection i ->
-            case Array.get (i+1) model.sections of
-              Just next_section ->
-                ({ model | progress = ViewSection (i+1) }, Cmd.none)
-              Nothing ->
-                ({ model | progress = Complete }, Cmd.none)
+            let
+              new_progress =
+                (case Array.get (i+1) model.sections of
+                  Just next_section ->
+                    ViewSection (i+1)
+                  Nothing ->
+                    Complete)
+            in
+              ({ model | progress = new_progress }, update_completed_section i model.sections)
+
           Complete ->
             (model, Cmd.none)
 
@@ -240,6 +267,7 @@ update msg model =
         case model.progress of
           ViewIntro ->
             (model, Cmd.none)
+
           ViewSection i ->
             let
               prev_section_index = i-1
@@ -249,6 +277,7 @@ update msg model =
                   ({ model | progress = ViewSection prev_section_index }, Cmd.none)
                 Nothing ->
                   ({ model | progress = ViewIntro }, Cmd.none)
+
           Complete ->
             let
               last_section_index = (Array.length model.sections) - 1
@@ -333,13 +362,13 @@ view_gloss gloss word =
           ]
         ) (Dict.keys gloss))
 
-view_text_section : Dict String Bool -> Int -> Section -> Html Msg
-view_text_section gloss i ((Section text attrs questions) as text_section) =
+view_text_section : Dict String Bool -> Int -> Section -> Int -> Html Msg
+view_text_section gloss i ((Section text attrs questions) as text_section) total_sections =
   let
     text_body_vdom = tagWordsAndToVDOM gloss (HtmlParser.parse text.body)
   in
     div [class "text_section"] <| [
-        div [class "section_title"] [ Html.text ("Section " ++ (toString (i+1))) ]
+        div [class "section_title"] [ Html.text ("Section " ++ (toString (i+1)) ++ "/" ++ (toString total_sections)) ]
       , div [class "text_body"] text_body_vdom
       , view_questions text_section
     ]
@@ -364,10 +393,7 @@ view_text_complete : Model -> Html Msg
 view_text_complete model =
   let
     num_of_sections = Array.length model.sections
-    complete_sections =
-         List.sum
-      <| Array.toList
-      <| Array.map (\section -> if (complete section) then 1 else 0) model.sections
+    complete_sections = completed_sections model.sections
     section_scores =
          List.sum
       <| Array.toList
@@ -393,24 +419,27 @@ view_text_complete model =
 
 view_content : Model -> Html Msg
 view_content model =
-  case model.progress of
-    ViewIntro ->
-      div [class "text"] <| [
-        view_text_introduction model.text
-      , div [onClick NextSection, class "nav"] [ div [class "start_btn"] [ Html.text "Start" ] ]
-      ]
+  let
+    total_sections = Array.length model.sections
+  in
+    case model.progress of
+      ViewIntro ->
+        div [class "text"] <| [
+          view_text_introduction model.text
+        , div [onClick NextSection, class "nav"] [ div [class "start_btn"] [ Html.text "Start" ] ]
+        ]
 
-    ViewSection i ->
-      div [class "text"]
-        (case Array.get i model.sections of
-          Just section ->
-            [ view_text_section model.gloss i section
-            , div [class "nav"] [view_prev_btn, view_next_btn] ]
-          Nothing ->
-            [])
+      ViewSection i ->
+        div [class "text"]
+          (case Array.get i model.sections of
+            Just section ->
+              [ view_text_section model.gloss i section total_sections
+              , div [class "nav"] [view_prev_btn, view_next_btn] ]
+            Nothing ->
+              [])
 
-    Complete ->
-      view_text_complete model
+      Complete ->
+        view_text_complete model
 
 -- VIEW
 view : Model -> Html Msg
