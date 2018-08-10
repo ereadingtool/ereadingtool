@@ -6,3 +6,4 @@ django-csp
 hypothesis[django]
 jsonschema
 channels
+python-statemachine
