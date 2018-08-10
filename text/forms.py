@@ -28,6 +28,11 @@ class TextForm(ModelForm):
 
         self.fields['difficulty'].required = False
 
+    def clean_tags(self):
+        if not list(self.cleaned_data['tags']):
+            # need at least one tag
+            raise ValidationError('Texts requires at least one tag.')
+
     class Meta:
         model = Text
         fields = ('introduction', 'tags', 'source', 'difficulty', 'title', 'author',)

@@ -3,6 +3,8 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
 
 from text.models import Text, TextSection
+from text_reading.models import TextReading
+
 from user.student.models import Student
 from question.models import Question, Answer
 
@@ -36,7 +38,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
         super(TextReaderConsumer, self).__init__(*args, **kwargs)
 
     async def start(self, text: Text, student: Student):
-        pass
+        TextReading.start(student=student, text=text)
 
     async def answer(self, question: Question, answer: Answer):
         pass

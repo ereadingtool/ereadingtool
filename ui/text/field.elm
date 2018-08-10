@@ -40,6 +40,8 @@ update_error (field_id, field_error)
             set_author text_fields { author_attrs | error_string = field_error, error = True }
           "source" ->
             set_source text_fields { source_attrs | error_string = field_error, error = True }
+          "tags" ->
+            set_tags text_fields { tags_attrs | error_string = field_error, error = True }
           _ -> text_fields -- not a valid field name
       _ -> text_fields -- no text errors
 
@@ -60,6 +62,9 @@ text_intro_attrs (TextIntro attrs) = attrs
 tags : TextFields -> TextTags
 tags (TextFields _ _ text_tags _ _ _) =
   text_tags
+
+text_tags_attrs : TextTags -> TextFieldAttributes
+text_tags_attrs (TextTags attrs) = attrs
 
 author : TextFields -> TextAuthor
 author (TextFields _ _ _ text_author _ _) =
@@ -98,6 +103,10 @@ set_source (TextFields text_title text_intro text_tags text_author text_source t
 set_difficulty : TextFields -> TextFieldAttributes -> TextFields
 set_difficulty (TextFields text_title text_intro text_tags text_author text_source text_difficulty) field_attrs =
   TextFields text_title text_intro text_tags text_author text_source (TextDifficulty field_attrs)
+
+set_tags : TextFields -> TextFieldAttributes -> TextFields
+set_tags (TextFields text_title text_intro text_tags text_author text_source text_difficulty) field_attrs =
+  TextFields text_title text_intro (TextTags field_attrs) text_author text_source text_difficulty
 
 post_toggle_intro : TextIntro -> Cmd msg
 post_toggle_intro (TextIntro attrs) =

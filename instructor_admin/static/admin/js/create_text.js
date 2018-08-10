@@ -11070,11 +11070,6 @@ var _user$project$Ports$ckEditorSetHtml = _elm_lang$core$Native_Platform.outgoin
 	function (v) {
 		return [v._0, v._1];
 	});
-var _user$project$Ports$ckEditorAndSetHtml = _elm_lang$core$Native_Platform.outgoingPort(
-	'ckEditorAndSetHtml',
-	function (v) {
-		return [v._0, v._1];
-	});
 var _user$project$Ports$addClassToCKEditor = _elm_lang$core$Native_Platform.outgoingPort(
 	'addClassToCKEditor',
 	function (v) {
@@ -11135,25 +11130,29 @@ var _user$project$Text_Field$author = function (_p18) {
 	var _p19 = _p18;
 	return _p19._3;
 };
-var _user$project$Text_Field$tags = function (_p20) {
+var _user$project$Text_Field$text_tags_attrs = function (_p20) {
 	var _p21 = _p20;
-	return _p21._2;
+	return _p21._0;
 };
-var _user$project$Text_Field$text_intro_attrs = function (_p22) {
+var _user$project$Text_Field$tags = function (_p22) {
 	var _p23 = _p22;
-	return _p23._0;
+	return _p23._2;
 };
-var _user$project$Text_Field$intro = function (_p24) {
+var _user$project$Text_Field$text_intro_attrs = function (_p24) {
 	var _p25 = _p24;
-	return _p25._1;
+	return _p25._0;
 };
-var _user$project$Text_Field$text_title_attrs = function (_p26) {
+var _user$project$Text_Field$intro = function (_p26) {
 	var _p27 = _p26;
-	return _p27._0;
+	return _p27._1;
 };
-var _user$project$Text_Field$title = function (_p28) {
+var _user$project$Text_Field$text_title_attrs = function (_p28) {
 	var _p29 = _p28;
 	return _p29._0;
+};
+var _user$project$Text_Field$title = function (_p30) {
+	var _p31 = _p30;
+	return _p31._0;
 };
 var _user$project$Text_Field$TextTitle = function (a) {
 	return {ctor: 'TextTitle', _0: a};
@@ -11178,42 +11177,30 @@ var _user$project$Text_Field$TextFields = F6(
 		return {ctor: 'TextFields', _0: a, _1: b, _2: c, _3: d, _4: e, _5: f};
 	});
 var _user$project$Text_Field$set_intro = F2(
-	function (_p30, field_attrs) {
-		var _p31 = _p30;
-		return A6(
-			_user$project$Text_Field$TextFields,
-			_p31._0,
-			_user$project$Text_Field$TextIntro(field_attrs),
-			_p31._2,
-			_p31._3,
-			_p31._4,
-			_p31._5);
-	});
-var _user$project$Text_Field$set_title = F2(
 	function (_p32, field_attrs) {
 		var _p33 = _p32;
 		return A6(
 			_user$project$Text_Field$TextFields,
-			_user$project$Text_Field$TextTitle(field_attrs),
-			_p33._1,
+			_p33._0,
+			_user$project$Text_Field$TextIntro(field_attrs),
 			_p33._2,
 			_p33._3,
 			_p33._4,
 			_p33._5);
 	});
-var _user$project$Text_Field$set_author = F2(
+var _user$project$Text_Field$set_title = F2(
 	function (_p34, field_attrs) {
 		var _p35 = _p34;
 		return A6(
 			_user$project$Text_Field$TextFields,
-			_p35._0,
+			_user$project$Text_Field$TextTitle(field_attrs),
 			_p35._1,
 			_p35._2,
-			_user$project$Text_Field$TextAuthor(field_attrs),
+			_p35._3,
 			_p35._4,
 			_p35._5);
 	});
-var _user$project$Text_Field$set_source = F2(
+var _user$project$Text_Field$set_author = F2(
 	function (_p36, field_attrs) {
 		var _p37 = _p36;
 		return A6(
@@ -11221,67 +11208,98 @@ var _user$project$Text_Field$set_source = F2(
 			_p37._0,
 			_p37._1,
 			_p37._2,
-			_p37._3,
-			_user$project$Text_Field$TextSource(field_attrs),
+			_user$project$Text_Field$TextAuthor(field_attrs),
+			_p37._4,
 			_p37._5);
 	});
+var _user$project$Text_Field$set_source = F2(
+	function (_p38, field_attrs) {
+		var _p39 = _p38;
+		return A6(
+			_user$project$Text_Field$TextFields,
+			_p39._0,
+			_p39._1,
+			_p39._2,
+			_p39._3,
+			_user$project$Text_Field$TextSource(field_attrs),
+			_p39._5);
+	});
+var _user$project$Text_Field$set_difficulty = F2(
+	function (_p40, field_attrs) {
+		var _p41 = _p40;
+		return A6(
+			_user$project$Text_Field$TextFields,
+			_p41._0,
+			_p41._1,
+			_p41._2,
+			_p41._3,
+			_p41._4,
+			_user$project$Text_Field$TextDifficulty(field_attrs));
+	});
+var _user$project$Text_Field$set_tags = F2(
+	function (_p42, field_attrs) {
+		var _p43 = _p42;
+		return A6(
+			_user$project$Text_Field$TextFields,
+			_p43._0,
+			_p43._1,
+			_user$project$Text_Field$TextTags(field_attrs),
+			_p43._3,
+			_p43._4,
+			_p43._5);
+	});
 var _user$project$Text_Field$update_error = F2(
-	function (_p39, _p38) {
-		var _p40 = _p39;
-		var _p45 = _p40._1;
-		var _p41 = _p38;
-		var _p44 = _p41;
-		var error_key = A2(_elm_lang$core$String$split, '_', _p40._0);
-		var _p42 = error_key;
-		if ((((_p42.ctor === '::') && (_p42._0 === 'text')) && (_p42._1.ctor === '::')) && (_p42._1._1.ctor === '[]')) {
-			var _p43 = _p42._1._0;
-			switch (_p43) {
+	function (_p45, _p44) {
+		var _p46 = _p45;
+		var _p51 = _p46._1;
+		var _p47 = _p44;
+		var _p50 = _p47;
+		var error_key = A2(_elm_lang$core$String$split, '_', _p46._0);
+		var _p48 = error_key;
+		if ((((_p48.ctor === '::') && (_p48._0 === 'text')) && (_p48._1.ctor === '::')) && (_p48._1._1.ctor === '[]')) {
+			var _p49 = _p48._1._0;
+			switch (_p49) {
 				case 'introduction':
 					return A2(
 						_user$project$Text_Field$set_intro,
-						_p44,
+						_p50,
 						_elm_lang$core$Native_Utils.update(
-							_p41._1._0,
-							{error_string: _p45, error: true}));
+							_p47._1._0,
+							{error_string: _p51, error: true}));
 				case 'title':
 					return A2(
 						_user$project$Text_Field$set_title,
-						_p44,
+						_p50,
 						_elm_lang$core$Native_Utils.update(
-							_p41._0._0,
-							{error_string: _p45, error: true}));
+							_p47._0._0,
+							{error_string: _p51, error: true}));
 				case 'author':
 					return A2(
 						_user$project$Text_Field$set_author,
-						_p44,
+						_p50,
 						_elm_lang$core$Native_Utils.update(
-							_p41._3._0,
-							{error_string: _p45, error: true}));
+							_p47._3._0,
+							{error_string: _p51, error: true}));
 				case 'source':
 					return A2(
 						_user$project$Text_Field$set_source,
-						_p44,
+						_p50,
 						_elm_lang$core$Native_Utils.update(
-							_p41._4._0,
-							{error_string: _p45, error: true}));
+							_p47._4._0,
+							{error_string: _p51, error: true}));
+				case 'tags':
+					return A2(
+						_user$project$Text_Field$set_tags,
+						_p50,
+						_elm_lang$core$Native_Utils.update(
+							_p47._2._0,
+							{error_string: _p51, error: true}));
 				default:
-					return _p44;
+					return _p50;
 			}
 		} else {
-			return _p44;
+			return _p50;
 		}
-	});
-var _user$project$Text_Field$set_difficulty = F2(
-	function (_p46, field_attrs) {
-		var _p47 = _p46;
-		return A6(
-			_user$project$Text_Field$TextFields,
-			_p47._0,
-			_p47._1,
-			_p47._2,
-			_p47._3,
-			_p47._4,
-			_user$project$Text_Field$TextDifficulty(field_attrs));
 	});
 var _user$project$Text_Field$init_text_fields = A6(
 	_user$project$Text_Field$TextFields,
@@ -12100,22 +12118,29 @@ var _user$project$Text_Component$update_text_errors = F2(
 var _user$project$Text_Component$add_tag = F2(
 	function (_p45, tag) {
 		var _p46 = _p45;
+		var _p47 = _p46._1;
+		var text_tag_field = _user$project$Text_Field$tags(_p47);
+		var text_tag_field_attrs = _user$project$Text_Field$text_tags_attrs(text_tag_field);
+		var new_text_tag_field_attrs = _elm_lang$core$Native_Utils.update(
+			text_tag_field_attrs,
+			{error: false, error_string: ''});
+		var new_text_component_fields = A2(_user$project$Text_Field$set_tags, _p47, new_text_tag_field_attrs);
 		return A4(
 			_user$project$Text_Component$TextComponent,
 			_p46._0,
-			_p46._1,
+			new_text_component_fields,
 			A3(_elm_lang$core$Dict$insert, tag, tag, _p46._2),
 			_p46._3);
 	});
 var _user$project$Text_Component$remove_tag = F2(
-	function (_p47, tag) {
-		var _p48 = _p47;
+	function (_p48, tag) {
+		var _p49 = _p48;
 		return A4(
 			_user$project$Text_Component$TextComponent,
-			_p48._0,
-			_p48._1,
-			A2(_elm_lang$core$Dict$remove, tag, _p48._2),
-			_p48._3);
+			_p49._0,
+			_p49._1,
+			A2(_elm_lang$core$Dict$remove, tag, _p49._2),
+			_p49._3);
 	});
 
 var _user$project$Text_Update$post_toggle_field = function (field) {
@@ -12501,6 +12526,7 @@ var _user$project$Config$student_signup_api_endpoint = '/api/student/signup/';
 var _user$project$Config$instructor_login_api_endpoint = '/api/instructor/login/';
 var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signup/';
 var _user$project$Config$question_api_endpoint = '/api/question/';
+var _user$project$Config$text_section_api_endpoint = '/api/section/';
 var _user$project$Config$text_api_endpoint = '/api/text/';
 
 var _user$project$Answer_View$edit_answer_feedback = F2(
@@ -13939,6 +13965,14 @@ var _user$project$Text_Decode$textLockRespDecoder = A3(
 	'locked',
 	_elm_lang$core$Json_Decode$bool,
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextLockResp));
+var _user$project$Text_Decode$TextProgressUpdateResp = function (a) {
+	return {updated: a};
+};
+var _user$project$Text_Decode$textProgressDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'updated',
+	_elm_lang$core$Json_Decode$bool,
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextProgressUpdateResp));
 
 var _user$project$Text_Create$Flags = F4(
 	function (a, b, c, d) {
@@ -14854,15 +14888,24 @@ var _user$project$Text_Tags_View$view_tag = F2(
 				}
 			});
 	});
-var _user$project$Text_Tags_View$view_tags = F4(
-	function (id, tag_list, tags, _p0) {
+var _user$project$Text_Tags_View$view_tags = F5(
+	function (id, tag_list, tags, _p0, text_tag_attrs) {
 		var _p1 = _p0;
 		return A2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
 				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_tags'),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$classList(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'input_error', _1: text_tag_attrs.error},
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
 			},
 			{
 				ctor: '::',
@@ -14936,7 +14979,27 @@ var _user$project$Text_Tags_View$view_tags = F4(
 									{ctor: '[]'}),
 								_1: {ctor: '[]'}
 							}),
-						_1: {ctor: '[]'}
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$span,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$classList(
+										{
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'error', _1: text_tag_attrs.error},
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(text_tag_attrs.error_string),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
 					}
 				}
 			});
@@ -15511,9 +15574,10 @@ var _user$project$Text_View$view_text_lock = function (params) {
 };
 var _user$project$Text_View$view_edit_text_tags = F2(
 	function (params, text_tags) {
+		var tag_attrs = _user$project$Text_Field$text_tags_attrs(text_tags);
 		var tag_list = _elm_lang$core$Dict$keys(params.tags);
 		var tags = _user$project$Text_Component$tags(params.text_component);
-		return A4(
+		return A5(
 			_user$project$Text_Tags_View$view_tags,
 			'add_tag',
 			tag_list,
@@ -15523,7 +15587,8 @@ var _user$project$Text_View$view_edit_text_tags = F2(
 				_0: _elm_lang$html$Html_Events$onInput(
 					_user$project$Text_Create$AddTagInput('add_tag')),
 				_1: _user$project$Text_Create$DeleteTag
-			});
+			},
+			tag_attrs);
 	});
 var _user$project$Text_View$edit_text_introduction = F2(
 	function (params, text_intro) {
@@ -16778,14 +16843,15 @@ var _user$project$Main$textJSONtoComponent = function (text) {
 				}
 			}());
 	} else {
-		return A2(
-			_elm_lang$core$Task$attempt,
-			function (_p51) {
-				return _user$project$Text_Create$InitIntroEditor;
-			},
-			_elm_lang$core$Task$succeed(_elm_lang$core$Maybe$Nothing));
+		return _elm_lang$core$Platform_Cmd$none;
 	}
 };
+var _user$project$Main$initializeIntroEditor = A2(
+	_elm_lang$core$Task$attempt,
+	function (_p51) {
+		return _user$project$Text_Create$InitIntroEditor;
+	},
+	_elm_lang$core$Task$succeed(_elm_lang$core$Maybe$Nothing));
 var _user$project$Main$tagsToDict = function (tag_list) {
 	return A2(
 		_elm_lang$core$Task$attempt,
@@ -16823,8 +16889,12 @@ var _user$project$Main$init = function (flags) {
 					_0: _user$project$Main$textJSONtoComponent(flags.text),
 					_1: {
 						ctor: '::',
-						_0: _user$project$Main$tagsToDict(flags.tags),
-						_1: {ctor: '[]'}
+						_0: _user$project$Main$initializeIntroEditor,
+						_1: {
+							ctor: '::',
+							_0: _user$project$Main$tagsToDict(flags.tags),
+							_1: {ctor: '[]'}
+						}
 					}
 				}
 			})

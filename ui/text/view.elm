@@ -104,8 +104,9 @@ view_edit_text_tags params text_tags =
   let
     tags = Text.Component.tags params.text_component
     tag_list = Dict.keys params.tags
+    tag_attrs = Text.Field.text_tags_attrs text_tags
   in
-    Text.Tags.View.view_tags "add_tag" tag_list tags (onInput (AddTagInput "add_tag"), DeleteTag)
+    Text.Tags.View.view_tags "add_tag" tag_list tags (onInput (AddTagInput "add_tag"), DeleteTag) tag_attrs
 
 view_edit_text_lock : TextViewParams -> Html Msg
 view_edit_text_lock params =

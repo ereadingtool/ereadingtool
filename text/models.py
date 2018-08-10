@@ -60,9 +60,16 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
                 'source': {'type': 'string'},
                 'difficulty': {'type': 'string', 'enum': [''] + TextDifficulty.difficulty_keys()},
                 'author': {'type': 'string'},
-                'text_sections': {'type': 'array', 'items': TextSection.to_json_schema()}
+                'text_sections': {'type': 'array', 'items': TextSection.to_json_schema()},
+                'tags': {
+                    'type': 'array',
+                    'items': {
+                        'type': 'string',
+                        'enum': [tag.name for tag in cls.tag_choices()]
+                    }
+                }
             },
-            'required': ['introduction', 'title', 'source', 'author', 'text_sections']
+            'required': ['introduction', 'title', 'source', 'author', 'text_sections', 'tags']
         }
 
         return schema

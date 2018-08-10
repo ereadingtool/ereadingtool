@@ -2,12 +2,12 @@ module Text.Tags.View exposing (view_tags)
 
 import Dict exposing (Dict)
 
-import Html exposing (..)
+import Html exposing (div, span, datalist, Attribute, Html, option)
 
-import Html exposing (div)
 import Html.Events exposing (onClick)
+import Html.Attributes exposing (attribute, class, classList)
 
-import Html.Attributes exposing (attribute, class)
+import Text.Field
 
 type alias ID = String
 type alias Tag = String
@@ -23,9 +23,10 @@ view_tag delete_msg tag =
     , onClick (delete_msg tag)
     ] [], Html.text tag ]
 
-view_tags : ID -> List Tag -> Dict Tag Tag -> (Attribute msg, String -> msg) -> Html msg
-view_tags id tag_list tags (add_msg, delete_msg) =
-  div [attribute "id" "text_tags"] [
+view_tags :
+  ID -> List Tag -> Dict Tag Tag -> (Attribute msg, String -> msg) -> Text.Field.TextFieldAttributes -> Html msg
+view_tags id tag_list tags (add_msg, delete_msg) text_tag_attrs =
+  div [attribute "id" "text_tags", classList [("input_error", text_tag_attrs.error)]] [
     datalist [attribute "id" "tag_list", attribute "type" "text"] <|
       List.map (\tag -> option [attribute "value" tag] [ Html.text tag ]) tag_list
         , div [class "text_tags"] (List.map (view_tag delete_msg) (Dict.keys tags))
@@ -37,4 +38,5 @@ view_tags id tag_list tags (add_msg, delete_msg) =
             , add_msg
             ] []
           ]
+  , span [classList [("error", text_tag_attrs.error)]] [ Html.text text_tag_attrs.error_string ]
   ]

@@ -52,7 +52,23 @@ class TextReading(models.Model):
     def __init__(self, *args, **kwargs):
         super(TextReading, self).__init__(*args, **kwargs)
 
+        """
+        Deserialize the state from the db.
+        """
         self.state_machine = TextReadingStateMachine()
+
+        if self.state == 'intro':
+            self.state_machine.current_state = TextReadingStateMachine.intro
+
+        elif self.state == 'in_progress':
+            in_progress_value = TextReadingInProgress(section=self.current_section, reading=self.currently_reading)
+
+            self.state_machine.current_state = TextReadingStateMachine.in_progress
+            self.state_machine.current_state.value = in_progress_value
+
+        elif self.state == 'complete':
+            self.state_machine.current_state = TextReadingStateMachine.complete
+
 
     def reading(self):
         self.state_machine.reading()

@@ -230,22 +230,12 @@ body {
     grid-template-columns: 15% auto 15%;
 }
 
-#text_tags_view {
-    display: grid;
+#text_tags {
 
-    grid-column: 1;
-
-    grid-template-columns: 100%;
-    grid-template-rows: 25px minmax(30px, auto) 30px;
-
-    grid-row-gap: 5px;
-
-    padding-left: 5px;
-    padding-bottom: 5px;
 }
 
 
-#text_tags_view > div {
+#text_tags > div {
     font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 18px;
     color: #000e2d;

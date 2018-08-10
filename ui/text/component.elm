@@ -127,7 +127,13 @@ tags (TextComponent _ _ text_tags _) =
 
 add_tag : TextComponent -> String -> TextComponent
 add_tag ((TextComponent text fields text_tags components) as text_component) tag =
-  TextComponent text fields (Dict.insert tag tag text_tags) components
+  let
+    text_tag_field = Text.Field.tags fields
+    text_tag_field_attrs = Text.Field.text_tags_attrs text_tag_field
+    new_text_tag_field_attrs = { text_tag_field_attrs | error = False, error_string = "" }
+    new_text_component_fields = Text.Field.set_tags fields new_text_tag_field_attrs
+  in
+    TextComponent text new_text_component_fields (Dict.insert tag tag text_tags) components
 
 remove_tag : TextComponent -> String -> TextComponent
 remove_tag ((TextComponent text fields text_tags components) as text_component) tag =
