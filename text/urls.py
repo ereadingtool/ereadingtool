@@ -18,5 +18,4 @@ urlpatterns = [
     path('text/<int:pk>/load_elm.js', TextLoadElm.as_view(), name='text-load-elm'),
     path('text/<int:pk>/', TextView.as_view(), name='text'),
 
-    path('api/section/<int:pk>/progress/', TextTagAPIView.as_view(), name='text-tag-api'),
 ]

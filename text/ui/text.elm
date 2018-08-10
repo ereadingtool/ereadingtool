@@ -1,6 +1,6 @@
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (class, classList, attribute, property)
-import Html.Events exposing (onClick, onDoubleClick, onBlur)
+import Html.Events exposing (onClick, onDoubleClick)
 
 import HtmlParser
 import HtmlParser.Util
@@ -42,7 +42,6 @@ type alias Word = String
 -- UPDATE
 type Msg =
     UpdateText (Result Http.Error Text)
-  | UpdateTextProgress (Result Http.Error Text.Decode.TextProgressUpdateResp)
   | Select Section TextQuestion TextAnswer Bool
   | ViewFeedback Section TextQuestion TextAnswer Bool
   | PrevSection
@@ -99,17 +98,7 @@ updateText text_id =
 
 update_completed_section : Int -> Int -> Array Section -> Cmd Msg
 update_completed_section section_id section_index sections =
-  case (Array.get section_index sections) of
-    Just section ->
-      let
-        text_req =
-          Http.post
-            (String.join "" [text_section_api_endpoint, (toString section_id) ++ "/", "progress/"])
-            Text.Decode.textUpdateRespDecoder
-      in
-        Http.send UpdateTextProgress text_req
-    Nothing ->
-      Cmd.none
+  Cmd.none
 
 text_section : Array Section -> TextQuestion -> Maybe Section
 text_section text_sections text_question =
@@ -258,7 +247,7 @@ update msg model =
                   Nothing ->
                     Complete)
             in
-              ({ model | progress = new_progress }, update_completed_section i model.sections)
+              ({ model | progress = new_progress }, Cmd.none)
 
           Complete ->
             (model, Cmd.none)

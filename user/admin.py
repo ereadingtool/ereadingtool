@@ -1,5 +1,6 @@
 from django.contrib import admin
-from user.models import Instructor, Student
+from user.models import Instructor
+from user.student.models import Student
 
 
 class InstructorAdmin(admin.ModelAdmin):

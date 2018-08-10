@@ -208,8 +208,8 @@ class TextAPIView(LoginRequiredMixin, View):
         difficulties = request.GET.getlist('difficulty')
         tags = request.GET.getlist('tag')
 
-        valid_difficulties = all(list(map(lambda difficulty: difficulty in self.difficulties, all_difficulties)))
-        valid_tags = all(list(map(lambda tag: tag in self.tags, all_tags)))
+        valid_difficulties = all(list(map(lambda difficulty: difficulty in all_difficulties, difficulties)))
+        valid_tags = all(list(map(lambda tag: tag in all_tags, tags)))
 
         if not (valid_difficulties or valid_tags):
             return HttpResponseServerError(

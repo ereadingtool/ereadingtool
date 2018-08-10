@@ -21255,6 +21255,7 @@ var _user$project$Config$student_signup_api_endpoint = '/api/student/signup/';
 var _user$project$Config$instructor_login_api_endpoint = '/api/instructor/login/';
 var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signup/';
 var _user$project$Config$question_api_endpoint = '/api/question/';
+var _user$project$Config$text_section_api_endpoint = '/api/section/';
 var _user$project$Config$text_api_endpoint = '/api/text/';
 
 var _user$project$Field$fieldIDDecoder = _elm_lang$core$Json_Decode$int;
@@ -21795,6 +21796,14 @@ var _user$project$Text_Decode$textLockRespDecoder = A3(
 	'locked',
 	_elm_lang$core$Json_Decode$bool,
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextLockResp));
+var _user$project$Text_Decode$TextProgressUpdateResp = function (a) {
+	return {updated: a};
+};
+var _user$project$Text_Decode$textProgressDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'updated',
+	_elm_lang$core$Json_Decode$bool,
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextProgressUpdateResp));
 
 var _user$project$Views$view_preview = A2(
 	_elm_lang$html$Html$div,
@@ -22336,6 +22345,16 @@ var _user$project$Main$complete = function (section) {
 				},
 				_user$project$Main$questions(section))));
 };
+var _user$project$Main$completed_sections = function (sections) {
+	return _elm_lang$core$List$sum(
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (section) {
+					return _user$project$Main$complete(section) ? 1 : 0;
+				},
+				sections)));
+};
 var _user$project$Main$max_score = function (section) {
 	return _elm_lang$core$List$sum(
 		_elm_lang$core$Array$toList(
@@ -22363,6 +22382,10 @@ var _user$project$Main$text_section = F2(
 	function (text_sections, text_question) {
 		var text_section_index = _user$project$TextReader_Question$text_section_index(text_question);
 		return A2(_elm_lang$core$Array$get, text_section_index, text_sections);
+	});
+var _user$project$Main$update_completed_section = F3(
+	function (section_id, section_index, sections) {
+		return _elm_lang$core$Platform_Cmd$none;
 	});
 var _user$project$Main$start = function (profile) {
 	var _p4 = profile;
@@ -22528,26 +22551,21 @@ var _user$project$Main$update = F2(
 						};
 					case 'ViewSection':
 						var _p15 = _p13._0;
-						var _p14 = A2(_elm_lang$core$Array$get, _p15 + 1, model.sections);
-						if (_p14.ctor === 'Just') {
-							return {
-								ctor: '_Tuple2',
-								_0: _elm_lang$core$Native_Utils.update(
-									model,
-									{
-										progress: _user$project$Main$ViewSection(_p15 + 1)
-									}),
-								_1: _elm_lang$core$Platform_Cmd$none
-							};
-						} else {
-							return {
-								ctor: '_Tuple2',
-								_0: _elm_lang$core$Native_Utils.update(
-									model,
-									{progress: _user$project$Main$Complete}),
-								_1: _elm_lang$core$Platform_Cmd$none
-							};
-						}
+						var new_progress = function () {
+							var _p14 = A2(_elm_lang$core$Array$get, _p15 + 1, model.sections);
+							if (_p14.ctor === 'Just') {
+								return _user$project$Main$ViewSection(_p15 + 1);
+							} else {
+								return _user$project$Main$Complete;
+							}
+						}();
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{progress: new_progress}),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
 					default:
 						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
@@ -22767,14 +22785,7 @@ var _user$project$Main$view_text_complete = function (model) {
 					return _user$project$Main$score(section);
 				},
 				model.sections)));
-	var complete_sections = _elm_lang$core$List$sum(
-		_elm_lang$core$Array$toList(
-			A2(
-				_elm_lang$core$Array$map,
-				function (section) {
-					return _user$project$Main$complete(section) ? 1 : 0;
-				},
-				model.sections)));
+	var complete_sections = _user$project$Main$completed_sections(model.sections);
 	var num_of_sections = _elm_lang$core$Array$length(model.sections);
 	return A2(
 		_elm_lang$html$Html$div,
@@ -23216,12 +23227,7 @@ var _user$project$Main$updateText = function (text_id) {
 				}),
 			'/'),
 		_user$project$Text_Decode$textDecoder);
-	return _elm_lang$core$Platform_Cmd$batch(
-		{
-			ctor: '::',
-			_0: A2(_elm_lang$http$Http$send, _user$project$Main$UpdateText, text_req),
-			_1: {ctor: '[]'}
-		});
+	return A2(_elm_lang$http$Http$send, _user$project$Main$UpdateText, text_req);
 };
 var _user$project$Main$init = function (flags) {
 	var profile = _user$project$Profile$init_profile(flags);

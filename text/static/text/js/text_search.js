@@ -9583,6 +9583,7 @@ var _user$project$Config$student_signup_api_endpoint = '/api/student/signup/';
 var _user$project$Config$instructor_login_api_endpoint = '/api/instructor/login/';
 var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signup/';
 var _user$project$Config$question_api_endpoint = '/api/question/';
+var _user$project$Config$text_section_api_endpoint = '/api/section/';
 var _user$project$Config$text_api_endpoint = '/api/text/';
 
 var _user$project$Field$fieldIDDecoder = _elm_lang$core$Json_Decode$int;
@@ -10123,6 +10124,14 @@ var _user$project$Text_Decode$textLockRespDecoder = A3(
 	'locked',
 	_elm_lang$core$Json_Decode$bool,
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextLockResp));
+var _user$project$Text_Decode$TextProgressUpdateResp = function (a) {
+	return {updated: a};
+};
+var _user$project$Text_Decode$textProgressDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'updated',
+	_elm_lang$core$Json_Decode$bool,
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextProgressUpdateResp));
 
 var _user$project$Search$Error = F2(
 	function (a, b) {

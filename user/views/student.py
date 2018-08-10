@@ -10,7 +10,7 @@ from django.views.generic import TemplateView
 
 from text.models import TextDifficulty
 from user.forms import StudentSignUpForm, StudentLoginForm, StudentForm
-from user.models import Student
+from user.student.models import Student
 from user.views.api import APIView
 from user.views.mixin import ProfileView
 from django.contrib.auth.mixins import LoginRequiredMixin
