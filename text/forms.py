@@ -13,7 +13,10 @@ class TagField(CharField):
             raise ValidationError(
                 _('not a list of tag name strings'))
 
-        if value:
+        if not value:
+            # need at least one tag
+            raise ValidationError('Texts requires at least one tag.')
+        else:
             for tag_name in value:
                 tag, created = Tag.objects.get_or_create(name=tag_name)
 
@@ -27,11 +30,6 @@ class TextForm(ModelForm):
         super(TextForm, self).__init__(*args, **kwargs)
 
         self.fields['difficulty'].required = False
-
-    def clean_tags(self):
-        if not list(self.cleaned_data['tags']):
-            # need at least one tag
-            raise ValidationError('Texts requires at least one tag.')
 
     class Meta:
         model = Text

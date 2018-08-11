@@ -69,6 +69,8 @@ class TextReading(models.Model):
         elif self.state == 'complete':
             self.state_machine.current_state = TextReadingStateMachine.complete
 
+    def next(self):
+        self.state_machine.next()
 
     def reading(self):
         self.state_machine.reading()

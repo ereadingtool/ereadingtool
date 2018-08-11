@@ -86,6 +86,7 @@ class TextTest(TestCase):
     def setUp(self):
         super(TextTest, self).setUp()
 
+        Tag.setup_default()
         TextDifficulty.setup_default()
 
         self.instructor = self.new_instructor_client(Client())
