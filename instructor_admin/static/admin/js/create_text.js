@@ -16843,12 +16843,17 @@ var _user$project$Main$textJSONtoComponent = function (text) {
 				}
 			}());
 	} else {
-		return _elm_lang$core$Platform_Cmd$none;
+		return A2(
+			_elm_lang$core$Task$attempt,
+			function (_p51) {
+				return _user$project$Text_Create$InitIntroEditor;
+			},
+			_elm_lang$core$Task$succeed(_elm_lang$core$Maybe$Nothing));
 	}
 };
 var _user$project$Main$initializeIntroEditor = A2(
 	_elm_lang$core$Task$attempt,
-	function (_p51) {
+	function (_p52) {
 		return _user$project$Text_Create$InitIntroEditor;
 	},
 	_elm_lang$core$Task$succeed(_elm_lang$core$Maybe$Nothing));
@@ -16889,12 +16894,8 @@ var _user$project$Main$init = function (flags) {
 					_0: _user$project$Main$textJSONtoComponent(flags.text),
 					_1: {
 						ctor: '::',
-						_0: _user$project$Main$initializeIntroEditor,
-						_1: {
-							ctor: '::',
-							_0: _user$project$Main$tagsToDict(flags.tags),
-							_1: {ctor: '[]'}
-						}
+						_0: _user$project$Main$tagsToDict(flags.tags),
+						_1: {ctor: '[]'}
 					}
 				}
 			})

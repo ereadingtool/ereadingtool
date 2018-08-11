@@ -57,18 +57,12 @@ init flags = ({
   , Cmd.batch [
       retrieveTextDifficultyOptions
     , textJSONtoComponent flags.text
-    , initializeIntroEditor
     , tagsToDict flags.tags
     ])
 
 tagsToDict : List String -> Cmd Msg
 tagsToDict tag_list =
   Task.attempt TextTagsDecode (Task.succeed <| Dict.fromList (List.map (\tag -> (tag, tag)) tag_list))
-
-initializeIntroEditor : Cmd Msg
-initializeIntroEditor =
-  -- CreateMode, initialize the introduction editor
-  Task.attempt (\_-> InitIntroEditor) (Task.succeed Nothing)
 
 textJSONtoComponent : Maybe Json.Encode.Value -> Cmd Msg
 textJSONtoComponent text =
@@ -78,7 +72,8 @@ textJSONtoComponent text =
         Ok text -> Task.succeed (Text.Component.init text)
         Err err -> Task.fail err)
     Nothing ->
-      Cmd.none
+      -- CreateMode, initialize the introduction editor
+      Task.attempt (\_-> InitIntroEditor) (Task.succeed Nothing)
 
 retrieveTextDifficultyOptions : Cmd Msg
 retrieveTextDifficultyOptions =
