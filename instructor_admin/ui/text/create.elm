@@ -41,6 +41,7 @@ type TextField =
   | Author TextAuthor
   | Source TextSource
   | Difficulty Text.Field.TextDifficulty
+  | Conclusion Text.Field.TextConclusion
 
 type Msg =
     UpdateTextDifficultyOptions (Result Http.Error (List Text.Model.TextDifficulty))
@@ -50,7 +51,7 @@ type Msg =
   | TextComponentMsg Text.Update.Msg
   | ToggleEditable TextField Bool
   | UpdateTextAttributes String String
-  | UpdateTextIntro (String, String)
+  | UpdateTextCkEditors (String, String)
   | TextJSONDecode (Result String TextComponent)
   | TextTagsDecode (Result String (Dict String String))
   | ClearMessages Time.Time
@@ -62,7 +63,7 @@ type Msg =
   | DeleteText
   | ConfirmTextDelete Bool
   | TextDelete (Result Http.Error Text.Decode.TextDeleteResp)
-  | InitIntroEditor
+  | InitTextFieldEditors
 
 type alias Model = {
     flags : Flags

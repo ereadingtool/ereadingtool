@@ -33,7 +33,7 @@ class TextForm(ModelForm):
 
     class Meta:
         model = Text
-        fields = ('introduction', 'tags', 'source', 'difficulty', 'title', 'author',)
+        fields = ('introduction', 'conclusion', 'tags', 'source', 'difficulty', 'title', 'author',)
 
 
 class TextSectionForm(ModelForm):

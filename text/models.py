@@ -45,6 +45,8 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
     difficulty = models.ForeignKey(TextDifficulty, null=True, related_name='texts', on_delete=models.SET_NULL)
     author = models.CharField(max_length=255, blank=True)
 
+    conclusion = models.CharField(max_length=512, null=False, blank=False)
+
     created_by = models.ForeignKey('user.Instructor', null=True, on_delete=models.SET_NULL,
                                    related_name='created_texts')
     last_modified_by = models.ForeignKey('user.Instructor', null=True, on_delete=models.SET_NULL,
@@ -67,9 +69,10 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
                         'type': 'string',
                         'enum': [tag.name for tag in cls.tag_choices()]
                     }
-                }
+                },
+                'conclusion': {'type': 'string'},
             },
-            'required': ['introduction', 'title', 'source', 'author', 'text_sections', 'tags']
+            'required': ['introduction', 'title', 'source', 'author', 'text_sections', 'tags', 'conclusion']
         }
 
         return schema
@@ -150,6 +153,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
             'id': self.pk,
             'title': self.title,
             'introduction': self.introduction,
+            'conclusion': self.conclusion,
             'author': self.author,
             'source': self.source,
             'difficulty': self.difficulty.slug,

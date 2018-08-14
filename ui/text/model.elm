@@ -14,6 +14,7 @@ type alias Text = {
   , author: String
   , source: String
   , difficulty: String
+  , conclusion: String
   , created_by: Maybe String
   , last_modified_by: Maybe String
   , tags: Maybe (List String)
@@ -44,6 +45,7 @@ new_text = {
   , source=""
   , difficulty=""
   , introduction=""
+  , conclusion=""
   , tags=Nothing
   , created_by=Nothing
   , last_modified_by=Nothing

@@ -72,8 +72,8 @@ textJSONtoComponent text =
         Ok text -> Task.succeed (Text.Component.init text)
         Err err -> Task.fail err)
     Nothing ->
-      -- CreateMode, initialize the introduction editor
-      Task.attempt (\_-> InitIntroEditor) (Task.succeed Nothing)
+      -- CreateMode, initialize the text field editors
+      Task.attempt (\_-> InitTextFieldEditors) (Task.succeed Nothing)
 
 retrieveTextDifficultyOptions : Cmd Msg
 retrieveTextDifficultyOptions =
@@ -134,12 +134,8 @@ update msg model = case msg of
               error_msg = (Just <| "Something went wrong loading the text from the server.")
             , success_msg = (Just <| "Editing a new text") }, Cmd.none)
 
-    InitIntroEditor ->
-      let
-        text_intro_field = Text.Field.intro (Text.Component.text_fields model.text_component)
-        intro_field_id = (Text.Field.text_intro_attrs text_intro_field).input_id
-      in
-        (model, Ports.ckEditor intro_field_id)
+    InitTextFieldEditors ->
+      (model, Text.Component.initialize_text_field_ck_editors model.text_component)
 
     TextTagsDecode result ->
       case result of
@@ -272,15 +268,22 @@ update msg model = case msg of
       ({ model | text_component = Text.Component.set_text_attribute model.text_component attr_name attr_value }
       , Cmd.none)
 
-    UpdateTextIntro (ck_id, ck_text) ->
+    UpdateTextCkEditors (ck_id, ck_text) ->
       let
-        text_intro_attrs =
-          Text.Field.text_intro_attrs (Text.Field.intro (Text.Component.text_fields model.text_component))
-        text_intro_attrs_id = text_intro_attrs.input_id
+        text_intro_input_id =
+          (Text.Field.text_intro_attrs
+            (Text.Field.intro (Text.Component.text_fields model.text_component))).input_id
+
+        text_conclusion_input_id =
+          (Text.Field.text_conclusion_attrs
+            (Text.Field.conclusion (Text.Component.text_fields model.text_component))).input_id
       in
-        if (ck_id == text_intro_attrs_id) then
-          ({ model | text_component =
-            Text.Component.set_text_attribute model.text_component "introduction" ck_text }, Cmd.none)
+        if ck_id == text_intro_input_id then
+          ({ model | text_component = Text.Component.set_text_attribute model.text_component "introduction" ck_text }
+          , Cmd.none)
+        else if ck_id == text_conclusion_input_id then
+          ({ model | text_component = Text.Component.set_text_attribute model.text_component "conclusion" ck_text }
+          , Cmd.none)
         else
           (model, Cmd.none)
 
@@ -402,8 +405,8 @@ subscriptions model =
     , (case model.success_msg of
         Just msg -> Time.every (Time.second * 3) ClearMessages
         _ -> Sub.none)
-      -- text introduction updates
-    , ckEditorUpdate UpdateTextIntro
+      -- text ckeditor updates
+    , ckEditorUpdate UpdateTextCkEditors
       -- handle text delete confirmation
     , confirmation ConfirmTextDelete
   ]

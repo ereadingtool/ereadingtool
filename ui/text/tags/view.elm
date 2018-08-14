@@ -38,5 +38,5 @@ view_tags id tag_list tags (add_msg, delete_msg) text_tag_attrs =
             , add_msg
             ] []
           ]
-  , span [classList [("error", text_tag_attrs.error)]] [ Html.text text_tag_attrs.error_string ]
+  , div [classList [("error", text_tag_attrs.error)]] [ Html.text text_tag_attrs.error_string ]
   ]

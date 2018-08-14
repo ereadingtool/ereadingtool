@@ -1,7 +1,7 @@
 module Text.Component exposing (TextComponent, emptyTextComponent, text_section_components, set_text_section_components
   , text, set_text_attribute, init, update_text_errors, reinitialize_ck_editors, set_title_editable, post_toggle_title
-  , post_toggle_author, post_toggle_intro, post_toggle_source, set_intro_editable, text_fields, add_tag, remove_tag
-  , tags, set_author_editable, set_source_editable)
+  , post_toggle_author, post_toggle_source, set_intro_editable, text_fields, add_tag, remove_tag
+  , tags, set_author_editable, set_source_editable, initialize_text_field_ck_editors)
 
 import Text.Model as Text exposing (Text)
 import Text.Field exposing (TextFields, init_text_fields, TextIntro, TextTitle, TextTags)
@@ -44,6 +44,15 @@ set_intro_editable (TextComponent text text_fields text_tags component_group) ed
   in
     TextComponent text new_text_fields text_tags component_group
 
+set_conclusion_editable : TextComponent -> Bool -> TextComponent
+set_conclusion_editable (TextComponent text text_fields text_tags component_group) editable =
+  let
+    (Text.Field.TextConclusion conclusion_field_attrs) = Text.Field.conclusion text_fields
+    new_text_fields =
+      Text.Field.set_conclusion text_fields { conclusion_field_attrs | error = False, editable = editable }
+  in
+    TextComponent text new_text_fields text_tags component_group
+
 set_title_editable : TextComponent -> Bool -> TextComponent
 set_title_editable (TextComponent text text_fields text_tags component_group) editable =
   let
@@ -80,26 +89,43 @@ set_text_section_components (TextComponent text fields text_tags _) new_componen
 set_text_attribute : TextComponent -> TextAttributeName -> String -> TextComponent
 set_text_attribute ((TextComponent text fields text_tags components) as text_component) attr_name value =
   case attr_name of
-    "title" -> TextComponent { text | title = value } fields text_tags components
-    "introduction" -> TextComponent { text | introduction = value } fields text_tags components
-    "author" -> TextComponent { text | author = value } fields text_tags components
-    "source" -> TextComponent { text | source = value } fields text_tags components
-    "difficulty" -> TextComponent { text | difficulty = value } fields text_tags components
-    _ -> text_component
+    "title" ->
+      TextComponent { text | title = value } fields text_tags components
+    "introduction" ->
+      TextComponent { text | introduction = value } fields text_tags components
+    "author" ->
+      TextComponent { text | author = value } fields text_tags components
+    "source" ->
+      TextComponent { text | source = value } fields text_tags components
+    "difficulty" ->
+      TextComponent { text | difficulty = value } fields text_tags components
+    "conclusion" ->
+      TextComponent { text | conclusion = value } fields text_tags components
+    _ ->
+      text_component
 
 emptyTextComponent : TextComponent
 emptyTextComponent =
   TextComponent Text.new_text init_text_fields (Dict.fromList []) (Text.Section.Component.Group.new_group)
 
+initialize_text_field_ck_editors : TextComponent -> Cmd msg
+initialize_text_field_ck_editors text_component =
+  let
+    text_intro_field = Text.Field.intro (text_fields text_component)
+    text_conclusion_field = Text.Field.conclusion (text_fields text_component)
+
+    intro_field_id = (Text.Field.text_intro_attrs text_intro_field).input_id
+    conclusion_field_id = (Text.Field.text_conclusion_attrs text_conclusion_field).input_id
+  in
+    Cmd.batch [Ports.ckEditor intro_field_id, Ports.ckEditor conclusion_field_id]
+
 reinitialize_ck_editors : TextComponent -> Cmd msg
 reinitialize_ck_editors text_component =
   let
     text_component_group = text_section_components text_component
-    text_intro_field = Text.Field.intro (text_fields text_component)
-    intro_field_id = (Text.Field.text_intro_attrs text_intro_field).input_id
   in
     Cmd.batch [
-      Cmd.batch [Ports.ckEditor intro_field_id]
+      initialize_text_field_ck_editors text_component
     , Text.Section.Component.Group.reinitialize_ck_editors text_component_group ]
 
 update_text_errors : TextComponent -> Dict String String -> TextComponent
@@ -142,10 +168,6 @@ remove_tag ((TextComponent text fields text_tags components) as text_component) 
 post_toggle_title : TextComponent -> Cmd msg
 post_toggle_title ((TextComponent text fields text_tags components) as text_component) =
   Text.Field.post_toggle_title (Text.Field.title fields)
-
-post_toggle_intro : TextComponent -> Cmd msg
-post_toggle_intro ((TextComponent text fields text_tags components) as text_component) =
-  Text.Field.post_toggle_intro (Text.Field.intro fields)
 
 post_toggle_author : TextComponent -> Cmd msg
 post_toggle_author ((TextComponent text fields text_tags components) as text_component) =

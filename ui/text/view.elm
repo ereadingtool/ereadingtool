@@ -7,7 +7,7 @@ import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck)
 import Dict exposing (Dict)
 
 import Text.Component exposing (TextComponent)
-import Text.Field exposing (TextIntro, TextTitle, TextTags, TextAuthor, TextSource, TextDifficulty)
+import Text.Field exposing (TextIntro, TextTitle, TextTags, TextAuthor, TextSource, TextDifficulty, TextConclusion)
 
 import Date.Utils
 
@@ -72,13 +72,28 @@ edit_text_title params text_title =
       , onInput (UpdateTextAttributes "title")
       , (onBlur (ToggleEditable (Title text_title) False)) ] [ ]
 
+view_text_conclusion : TextViewParams -> TextConclusion -> Html Msg
+view_text_conclusion params text_conclusion =
+  let
+    text_conclusion_attrs = Text.Field.text_conclusion_attrs text_conclusion
+  in
+    div [ attribute "id" text_conclusion_attrs.id
+        , classList [("input_error", text_conclusion_attrs.error)]] [
+      div [] [ Html.text "Text Conclusion" ]
+    , div [] [
+        textarea [
+          attribute "id" text_conclusion_attrs.input_id
+        , classList [("text_conclusion", True), ("input_error", text_conclusion_attrs.error)]
+        , onInput (UpdateTextAttributes "conclusion") ] [ Html.text params.text.conclusion ]
+      ]
+    ]
+
 view_text_introduction : TextViewParams -> (TextViewParams -> TextIntro -> Html Msg) -> TextIntro -> Html Msg
 view_text_introduction params edit_view text_intro =
   let
     text_intro_attrs = Text.Field.text_intro_attrs text_intro
   in
-    div [
-          attribute "id" text_intro_attrs.id
+    div [ attribute "id" text_intro_attrs.id
         , classList [("input_error", text_intro_attrs.error)]] <| [
       div [] [ Html.text "Text Introduction" ]
     , edit_view params text_intro
@@ -222,6 +237,7 @@ view_text_attributes params =
    , view_source params edit_source (Text.Field.source params.text_fields)
    , view_text_lock params
    , view_text_date params
+   , view_text_conclusion params (Text.Field.conclusion params.text_fields)
    , div [classList [("text_property", True)]] [
        div [] [ Html.text "Text Tags" ]
      , view_edit_text_tags params (Text.Field.tags params.text_fields)

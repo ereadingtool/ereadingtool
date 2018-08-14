@@ -150,6 +150,23 @@ body {
     background: white;
 }
 
+#text_conclusion {
+    display: grid;
+
+    grid-column: 1;
+
+    grid-template-columns: 100%;
+    grid-template-rows: 25px minmax(130px, auto);
+    grid-row-gap: 10px;
+
+    border-bottom: solid 2px white;
+    margin-bottom: 15px;
+}
+
+#text_conclusion div:nth-child(2) {
+    background: white;
+}
+
 #text_author_view {
     display: grid;
     grid-column: 1;
@@ -229,11 +246,6 @@ body {
 
     grid-template-columns: 15% auto 15%;
 }
-
-#text_tags {
-
-}
-
 
 #text_tags > div {
     font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;

@@ -18,4 +18,5 @@ textEncoder text =
         (case text.tags of
           Just tags -> List.map (\tag -> Encode.string tag) tags
           _ -> []))
+    , ("conclusion", Encode.string text.conclusion)
   ]

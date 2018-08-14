@@ -10970,6 +10970,7 @@ var _user$project$Text_Model$new_text = {
 	source: '',
 	difficulty: '',
 	introduction: '',
+	conclusion: '',
 	tags: _elm_lang$core$Maybe$Nothing,
 	created_by: _elm_lang$core$Maybe$Nothing,
 	last_modified_by: _elm_lang$core$Maybe$Nothing,
@@ -10996,7 +10997,9 @@ var _user$project$Text_Model$Text = function (a) {
 										return function (k) {
 											return function (l) {
 												return function (m) {
-													return {id: a, title: b, introduction: c, author: d, source: e, difficulty: f, created_by: g, last_modified_by: h, tags: i, created_dt: j, modified_dt: k, sections: l, write_locker: m};
+													return function (n) {
+														return {id: a, title: b, introduction: c, author: d, source: e, difficulty: f, conclusion: g, created_by: h, last_modified_by: i, tags: j, created_dt: k, modified_dt: l, sections: m, write_locker: n};
+													};
 												};
 											};
 										};
@@ -11095,7 +11098,7 @@ var _user$project$Text_Field$post_toggle_title = function (_p5) {
 	var _p6 = _p5;
 	return _user$project$Ports$selectAllInputText(_p6._0.input_id);
 };
-var _user$project$Text_Field$post_toggle_intro = function (_p7) {
+var _user$project$Text_Field$post_toggle_conclusion = function (_p7) {
 	var _p8 = _p7;
 	var _p9 = _p8._0;
 	return _elm_lang$core$Platform_Cmd$batch(
@@ -11105,54 +11108,77 @@ var _user$project$Text_Field$post_toggle_intro = function (_p7) {
 			_1: {
 				ctor: '::',
 				_0: _user$project$Ports$addClassToCKEditor(
-					{ctor: '_Tuple2', _0: _p9.input_id, _1: 'text_introduction'}),
+					{ctor: '_Tuple2', _0: _p9.input_id, _1: 'text_conclusion'}),
 				_1: {ctor: '[]'}
 			}
 		});
 };
-var _user$project$Text_Field$difficulty = function (_p10) {
+var _user$project$Text_Field$post_toggle_intro = function (_p10) {
 	var _p11 = _p10;
-	return _p11._5;
+	var _p12 = _p11._0;
+	return _elm_lang$core$Platform_Cmd$batch(
+		{
+			ctor: '::',
+			_0: _user$project$Ports$ckEditor(_p12.input_id),
+			_1: {
+				ctor: '::',
+				_0: _user$project$Ports$addClassToCKEditor(
+					{ctor: '_Tuple2', _0: _p12.input_id, _1: 'text_introduction'}),
+				_1: {ctor: '[]'}
+			}
+		});
 };
-var _user$project$Text_Field$text_source_attrs = function (_p12) {
-	var _p13 = _p12;
-	return _p13._0;
+var _user$project$Text_Field$text_conclusion_attrs = function (_p13) {
+	var _p14 = _p13;
+	return _p14._0;
 };
-var _user$project$Text_Field$source = function (_p14) {
-	var _p15 = _p14;
-	return _p15._4;
+var _user$project$Text_Field$conclusion = function (_p15) {
+	var _p16 = _p15;
+	return _p16._6;
 };
-var _user$project$Text_Field$text_author_attrs = function (_p16) {
-	var _p17 = _p16;
-	return _p17._0;
+var _user$project$Text_Field$difficulty = function (_p17) {
+	var _p18 = _p17;
+	return _p18._5;
 };
-var _user$project$Text_Field$author = function (_p18) {
-	var _p19 = _p18;
-	return _p19._3;
+var _user$project$Text_Field$text_source_attrs = function (_p19) {
+	var _p20 = _p19;
+	return _p20._0;
 };
-var _user$project$Text_Field$text_tags_attrs = function (_p20) {
-	var _p21 = _p20;
-	return _p21._0;
+var _user$project$Text_Field$source = function (_p21) {
+	var _p22 = _p21;
+	return _p22._4;
 };
-var _user$project$Text_Field$tags = function (_p22) {
-	var _p23 = _p22;
-	return _p23._2;
+var _user$project$Text_Field$text_author_attrs = function (_p23) {
+	var _p24 = _p23;
+	return _p24._0;
 };
-var _user$project$Text_Field$text_intro_attrs = function (_p24) {
-	var _p25 = _p24;
-	return _p25._0;
+var _user$project$Text_Field$author = function (_p25) {
+	var _p26 = _p25;
+	return _p26._3;
 };
-var _user$project$Text_Field$intro = function (_p26) {
-	var _p27 = _p26;
-	return _p27._1;
+var _user$project$Text_Field$text_tags_attrs = function (_p27) {
+	var _p28 = _p27;
+	return _p28._0;
 };
-var _user$project$Text_Field$text_title_attrs = function (_p28) {
-	var _p29 = _p28;
-	return _p29._0;
+var _user$project$Text_Field$tags = function (_p29) {
+	var _p30 = _p29;
+	return _p30._2;
 };
-var _user$project$Text_Field$title = function (_p30) {
-	var _p31 = _p30;
-	return _p31._0;
+var _user$project$Text_Field$text_intro_attrs = function (_p31) {
+	var _p32 = _p31;
+	return _p32._0;
+};
+var _user$project$Text_Field$intro = function (_p33) {
+	var _p34 = _p33;
+	return _p34._1;
+};
+var _user$project$Text_Field$text_title_attrs = function (_p35) {
+	var _p36 = _p35;
+	return _p36._0;
+};
+var _user$project$Text_Field$title = function (_p37) {
+	var _p38 = _p37;
+	return _p38._0;
 };
 var _user$project$Text_Field$TextTitle = function (a) {
 	return {ctor: 'TextTitle', _0: a};
@@ -11172,136 +11198,165 @@ var _user$project$Text_Field$TextSource = function (a) {
 var _user$project$Text_Field$TextDifficulty = function (a) {
 	return {ctor: 'TextDifficulty', _0: a};
 };
-var _user$project$Text_Field$TextFields = F6(
-	function (a, b, c, d, e, f) {
-		return {ctor: 'TextFields', _0: a, _1: b, _2: c, _3: d, _4: e, _5: f};
-	});
-var _user$project$Text_Field$set_intro = F2(
-	function (_p32, field_attrs) {
-		var _p33 = _p32;
-		return A6(
-			_user$project$Text_Field$TextFields,
-			_p33._0,
-			_user$project$Text_Field$TextIntro(field_attrs),
-			_p33._2,
-			_p33._3,
-			_p33._4,
-			_p33._5);
+var _user$project$Text_Field$TextConclusion = function (a) {
+	return {ctor: 'TextConclusion', _0: a};
+};
+var _user$project$Text_Field$TextFields = F7(
+	function (a, b, c, d, e, f, g) {
+		return {ctor: 'TextFields', _0: a, _1: b, _2: c, _3: d, _4: e, _5: f, _6: g};
 	});
 var _user$project$Text_Field$set_title = F2(
-	function (_p34, field_attrs) {
-		var _p35 = _p34;
-		return A6(
+	function (_p39, field_attrs) {
+		var _p40 = _p39;
+		return A7(
 			_user$project$Text_Field$TextFields,
 			_user$project$Text_Field$TextTitle(field_attrs),
-			_p35._1,
-			_p35._2,
-			_p35._3,
-			_p35._4,
-			_p35._5);
+			_p40._1,
+			_p40._2,
+			_p40._3,
+			_p40._4,
+			_p40._5,
+			_p40._6);
 	});
-var _user$project$Text_Field$set_author = F2(
-	function (_p36, field_attrs) {
-		var _p37 = _p36;
-		return A6(
+var _user$project$Text_Field$set_intro = F2(
+	function (_p41, field_attrs) {
+		var _p42 = _p41;
+		return A7(
 			_user$project$Text_Field$TextFields,
-			_p37._0,
-			_p37._1,
-			_p37._2,
-			_user$project$Text_Field$TextAuthor(field_attrs),
-			_p37._4,
-			_p37._5);
-	});
-var _user$project$Text_Field$set_source = F2(
-	function (_p38, field_attrs) {
-		var _p39 = _p38;
-		return A6(
-			_user$project$Text_Field$TextFields,
-			_p39._0,
-			_p39._1,
-			_p39._2,
-			_p39._3,
-			_user$project$Text_Field$TextSource(field_attrs),
-			_p39._5);
-	});
-var _user$project$Text_Field$set_difficulty = F2(
-	function (_p40, field_attrs) {
-		var _p41 = _p40;
-		return A6(
-			_user$project$Text_Field$TextFields,
-			_p41._0,
-			_p41._1,
-			_p41._2,
-			_p41._3,
-			_p41._4,
-			_user$project$Text_Field$TextDifficulty(field_attrs));
+			_p42._0,
+			_user$project$Text_Field$TextIntro(field_attrs),
+			_p42._2,
+			_p42._3,
+			_p42._4,
+			_p42._5,
+			_p42._6);
 	});
 var _user$project$Text_Field$set_tags = F2(
-	function (_p42, field_attrs) {
-		var _p43 = _p42;
-		return A6(
+	function (_p43, field_attrs) {
+		var _p44 = _p43;
+		return A7(
 			_user$project$Text_Field$TextFields,
-			_p43._0,
-			_p43._1,
+			_p44._0,
+			_p44._1,
 			_user$project$Text_Field$TextTags(field_attrs),
-			_p43._3,
-			_p43._4,
-			_p43._5);
+			_p44._3,
+			_p44._4,
+			_p44._5,
+			_p44._6);
+	});
+var _user$project$Text_Field$set_author = F2(
+	function (_p45, field_attrs) {
+		var _p46 = _p45;
+		return A7(
+			_user$project$Text_Field$TextFields,
+			_p46._0,
+			_p46._1,
+			_p46._2,
+			_user$project$Text_Field$TextAuthor(field_attrs),
+			_p46._4,
+			_p46._5,
+			_p46._6);
+	});
+var _user$project$Text_Field$set_source = F2(
+	function (_p47, field_attrs) {
+		var _p48 = _p47;
+		return A7(
+			_user$project$Text_Field$TextFields,
+			_p48._0,
+			_p48._1,
+			_p48._2,
+			_p48._3,
+			_user$project$Text_Field$TextSource(field_attrs),
+			_p48._5,
+			_p48._6);
+	});
+var _user$project$Text_Field$set_difficulty = F2(
+	function (_p49, field_attrs) {
+		var _p50 = _p49;
+		return A7(
+			_user$project$Text_Field$TextFields,
+			_p50._0,
+			_p50._1,
+			_p50._2,
+			_p50._3,
+			_p50._4,
+			_user$project$Text_Field$TextDifficulty(field_attrs),
+			_p50._6);
+	});
+var _user$project$Text_Field$set_conclusion = F2(
+	function (_p51, field_attrs) {
+		var _p52 = _p51;
+		return A7(
+			_user$project$Text_Field$TextFields,
+			_p52._0,
+			_p52._1,
+			_p52._2,
+			_p52._3,
+			_p52._4,
+			_p52._5,
+			_user$project$Text_Field$TextConclusion(field_attrs));
 	});
 var _user$project$Text_Field$update_error = F2(
-	function (_p45, _p44) {
-		var _p46 = _p45;
-		var _p51 = _p46._1;
-		var _p47 = _p44;
-		var _p50 = _p47;
-		var error_key = A2(_elm_lang$core$String$split, '_', _p46._0);
-		var _p48 = error_key;
-		if ((((_p48.ctor === '::') && (_p48._0 === 'text')) && (_p48._1.ctor === '::')) && (_p48._1._1.ctor === '[]')) {
-			var _p49 = _p48._1._0;
-			switch (_p49) {
+	function (_p54, _p53) {
+		var _p55 = _p54;
+		var _p60 = _p55._1;
+		var _p56 = _p53;
+		var _p59 = _p56;
+		var error_key = A2(_elm_lang$core$String$split, '_', _p55._0);
+		var _p57 = error_key;
+		if ((((_p57.ctor === '::') && (_p57._0 === 'text')) && (_p57._1.ctor === '::')) && (_p57._1._1.ctor === '[]')) {
+			var _p58 = _p57._1._0;
+			switch (_p58) {
 				case 'introduction':
 					return A2(
 						_user$project$Text_Field$set_intro,
-						_p50,
+						_p59,
 						_elm_lang$core$Native_Utils.update(
-							_p47._1._0,
-							{error_string: _p51, error: true}));
+							_p56._1._0,
+							{error_string: _p60, error: true}));
+				case 'conclusion':
+					return A2(
+						_user$project$Text_Field$set_conclusion,
+						_p59,
+						_elm_lang$core$Native_Utils.update(
+							_p56._6._0,
+							{error_string: _p60, error: true}));
 				case 'title':
 					return A2(
 						_user$project$Text_Field$set_title,
-						_p50,
+						_p59,
 						_elm_lang$core$Native_Utils.update(
-							_p47._0._0,
-							{error_string: _p51, error: true}));
+							_p56._0._0,
+							{error_string: _p60, error: true}));
 				case 'author':
 					return A2(
 						_user$project$Text_Field$set_author,
-						_p50,
+						_p59,
 						_elm_lang$core$Native_Utils.update(
-							_p47._3._0,
-							{error_string: _p51, error: true}));
+							_p56._3._0,
+							{error_string: _p60, error: true}));
 				case 'source':
 					return A2(
 						_user$project$Text_Field$set_source,
-						_p50,
+						_p59,
 						_elm_lang$core$Native_Utils.update(
-							_p47._4._0,
-							{error_string: _p51, error: true}));
+							_p56._4._0,
+							{error_string: _p60, error: true}));
 				case 'tags':
 					return A2(
 						_user$project$Text_Field$set_tags,
-						_p50,
+						_p59,
 						_elm_lang$core$Native_Utils.update(
-							_p47._2._0,
-							{error_string: _p51, error: true}));
+							_p56._2._0,
+							{error_string: _p60, error: true}));
 				default:
-					return _p50;
+					return _p59;
 			}
 		} else {
-			return _p50;
+			return _p59;
 		}
 	});
-var _user$project$Text_Field$init_text_fields = A6(
+var _user$project$Text_Field$init_text_fields = A7(
 	_user$project$Text_Field$TextFields,
 	_user$project$Text_Field$TextTitle(
 		{id: 'text_title', input_id: 'text_title_input', editable: false, error_string: '', error: false, name: 'title', index: 0}),
@@ -11314,7 +11369,9 @@ var _user$project$Text_Field$init_text_fields = A6(
 	_user$project$Text_Field$TextSource(
 		{id: 'text_source', input_id: 'text_source_input', editable: false, error_string: '', error: false, name: 'source', index: 4}),
 	_user$project$Text_Field$TextDifficulty(
-		{id: 'text_difficulty', input_id: 'text_difficulty_input', editable: false, error_string: '', error: false, name: 'difficulty', index: 5}));
+		{id: 'text_difficulty', input_id: 'text_difficulty_input', editable: false, error_string: '', error: false, name: 'difficulty', index: 5}),
+	_user$project$Text_Field$TextConclusion(
+		{id: 'text_conclusion', input_id: 'text_conclusion_input', editable: false, error_string: '', error: false, name: 'conclusion', index: 6}));
 
 var _user$project$Text_Section_Component$question_fields = function (_p0) {
 	var _p1 = _p0;
@@ -11883,61 +11940,66 @@ var _user$project$Text_Component$post_toggle_author = function (_p2) {
 	return _user$project$Text_Field$post_toggle_author(
 		_user$project$Text_Field$author(_p3._1));
 };
-var _user$project$Text_Component$post_toggle_intro = function (_p4) {
+var _user$project$Text_Component$post_toggle_title = function (_p4) {
 	var _p5 = _p4;
-	return _user$project$Text_Field$post_toggle_intro(
-		_user$project$Text_Field$intro(_p5._1));
-};
-var _user$project$Text_Component$post_toggle_title = function (_p6) {
-	var _p7 = _p6;
 	return _user$project$Text_Field$post_toggle_title(
-		_user$project$Text_Field$title(_p7._1));
+		_user$project$Text_Field$title(_p5._1));
 };
-var _user$project$Text_Component$tags = function (_p8) {
-	var _p9 = _p8;
-	return _p9._2;
+var _user$project$Text_Component$tags = function (_p6) {
+	var _p7 = _p6;
+	return _p7._2;
 };
 var _user$project$Text_Component$tags_to_dict = function (tags) {
-	var _p10 = tags;
-	if (_p10.ctor === 'Just') {
+	var _p8 = tags;
+	if (_p8.ctor === 'Just') {
 		return _elm_lang$core$Dict$fromList(
 			A2(
 				_elm_lang$core$List$map,
 				function (tag) {
 					return {ctor: '_Tuple2', _0: tag, _1: tag};
 				},
-				_p10._0));
+				_p8._0));
 	} else {
 		return _elm_lang$core$Dict$fromList(
 			{ctor: '[]'});
 	}
 };
-var _user$project$Text_Component$text_section_components = function (_p11) {
-	var _p12 = _p11;
-	return _p12._3;
+var _user$project$Text_Component$text_section_components = function (_p9) {
+	var _p10 = _p9;
+	return _p10._3;
 };
 var _user$project$Text_Component$set_text_fields = F2(
 	function (text_component, text_fields) {
 		return text_component;
 	});
-var _user$project$Text_Component$text_fields = function (_p13) {
-	var _p14 = _p13;
-	return _p14._1;
+var _user$project$Text_Component$text_fields = function (_p11) {
+	var _p12 = _p11;
+	return _p12._1;
 };
-var _user$project$Text_Component$reinitialize_ck_editors = function (text_component) {
+var _user$project$Text_Component$initialize_text_field_ck_editors = function (text_component) {
+	var text_conclusion_field = _user$project$Text_Field$conclusion(
+		_user$project$Text_Component$text_fields(text_component));
+	var conclusion_field_id = _user$project$Text_Field$text_conclusion_attrs(text_conclusion_field).input_id;
 	var text_intro_field = _user$project$Text_Field$intro(
 		_user$project$Text_Component$text_fields(text_component));
 	var intro_field_id = _user$project$Text_Field$text_intro_attrs(text_intro_field).input_id;
+	return _elm_lang$core$Platform_Cmd$batch(
+		{
+			ctor: '::',
+			_0: _user$project$Ports$ckEditor(intro_field_id),
+			_1: {
+				ctor: '::',
+				_0: _user$project$Ports$ckEditor(conclusion_field_id),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Text_Component$reinitialize_ck_editors = function (text_component) {
 	var text_component_group = _user$project$Text_Component$text_section_components(text_component);
 	return _elm_lang$core$Platform_Cmd$batch(
 		{
 			ctor: '::',
-			_0: _elm_lang$core$Platform_Cmd$batch(
-				{
-					ctor: '::',
-					_0: _user$project$Ports$ckEditor(intro_field_id),
-					_1: {ctor: '[]'}
-				}),
+			_0: _user$project$Text_Component$initialize_text_field_ck_editors(text_component),
 			_1: {
 				ctor: '::',
 				_0: _user$project$Text_Section_Component_Group$reinitialize_ck_editors(text_component_group),
@@ -11945,16 +12007,16 @@ var _user$project$Text_Component$reinitialize_ck_editors = function (text_compon
 			}
 		});
 };
-var _user$project$Text_Component$text = function (_p15) {
-	var _p16 = _p15;
+var _user$project$Text_Component$text = function (_p13) {
+	var _p14 = _p13;
 	return A2(
 		_user$project$Text_Model$set_tags,
 		A2(
 			_user$project$Text_Model$set_sections,
-			_p16._0,
-			_user$project$Text_Section_Component_Group$toTextSections(_p16._3)),
+			_p14._0,
+			_user$project$Text_Section_Component_Group$toTextSections(_p14._3)),
 		_elm_lang$core$Maybe$Just(
-			_elm_lang$core$Dict$keys(_p16._2)));
+			_elm_lang$core$Dict$keys(_p14._2)));
 };
 var _user$project$Text_Component$TextComponent = F4(
 	function (a, b, c, d) {
@@ -11969,122 +12031,145 @@ var _user$project$Text_Component$init = function (text) {
 		_user$project$Text_Section_Component_Group$fromTextSections(text.sections));
 };
 var _user$project$Text_Component$set_intro_editable = F2(
-	function (_p17, editable) {
-		var _p18 = _p17;
-		var _p20 = _p18._1;
-		var _p19 = _user$project$Text_Field$intro(_p20);
-		var intro_field_attrs = _p19._0;
+	function (_p15, editable) {
+		var _p16 = _p15;
+		var _p18 = _p16._1;
+		var _p17 = _user$project$Text_Field$intro(_p18);
+		var intro_field_attrs = _p17._0;
 		var new_text_fields = A2(
 			_user$project$Text_Field$set_intro,
-			_p20,
+			_p18,
 			_elm_lang$core$Native_Utils.update(
 				intro_field_attrs,
 				{error: false, editable: editable}));
-		return A4(_user$project$Text_Component$TextComponent, _p18._0, new_text_fields, _p18._2, _p18._3);
+		return A4(_user$project$Text_Component$TextComponent, _p16._0, new_text_fields, _p16._2, _p16._3);
+	});
+var _user$project$Text_Component$set_conclusion_editable = F2(
+	function (_p19, editable) {
+		var _p20 = _p19;
+		var _p22 = _p20._1;
+		var _p21 = _user$project$Text_Field$conclusion(_p22);
+		var conclusion_field_attrs = _p21._0;
+		var new_text_fields = A2(
+			_user$project$Text_Field$set_conclusion,
+			_p22,
+			_elm_lang$core$Native_Utils.update(
+				conclusion_field_attrs,
+				{error: false, editable: editable}));
+		return A4(_user$project$Text_Component$TextComponent, _p20._0, new_text_fields, _p20._2, _p20._3);
 	});
 var _user$project$Text_Component$set_title_editable = F2(
-	function (_p21, editable) {
-		var _p22 = _p21;
-		var _p24 = _p22._1;
-		var _p23 = _user$project$Text_Field$title(_p24);
-		var title_field_attrs = _p23._0;
+	function (_p23, editable) {
+		var _p24 = _p23;
+		var _p26 = _p24._1;
+		var _p25 = _user$project$Text_Field$title(_p26);
+		var title_field_attrs = _p25._0;
 		var new_text_fields = A2(
 			_user$project$Text_Field$set_title,
-			_p24,
+			_p26,
 			_elm_lang$core$Native_Utils.update(
 				title_field_attrs,
 				{error: false, editable: editable}));
-		return A4(_user$project$Text_Component$TextComponent, _p22._0, new_text_fields, _p22._2, _p22._3);
+		return A4(_user$project$Text_Component$TextComponent, _p24._0, new_text_fields, _p24._2, _p24._3);
 	});
 var _user$project$Text_Component$set_author_editable = F2(
-	function (_p25, editable) {
-		var _p26 = _p25;
-		var _p28 = _p26._1;
-		var _p27 = _user$project$Text_Field$author(_p28);
-		var text_author_attrs = _p27._0;
+	function (_p27, editable) {
+		var _p28 = _p27;
+		var _p30 = _p28._1;
+		var _p29 = _user$project$Text_Field$author(_p30);
+		var text_author_attrs = _p29._0;
 		var new_text_fields = A2(
 			_user$project$Text_Field$set_author,
-			_p28,
+			_p30,
 			_elm_lang$core$Native_Utils.update(
 				text_author_attrs,
 				{error: false, editable: editable}));
-		return A4(_user$project$Text_Component$TextComponent, _p26._0, new_text_fields, _p26._2, _p26._3);
+		return A4(_user$project$Text_Component$TextComponent, _p28._0, new_text_fields, _p28._2, _p28._3);
 	});
 var _user$project$Text_Component$set_source_editable = F2(
-	function (_p29, editable) {
-		var _p30 = _p29;
-		var _p32 = _p30._1;
-		var _p31 = _user$project$Text_Field$source(_p32);
-		var text_source_attrs = _p31._0;
+	function (_p31, editable) {
+		var _p32 = _p31;
+		var _p34 = _p32._1;
+		var _p33 = _user$project$Text_Field$source(_p34);
+		var text_source_attrs = _p33._0;
 		var new_text_fields = A2(
 			_user$project$Text_Field$set_source,
-			_p32,
+			_p34,
 			_elm_lang$core$Native_Utils.update(
 				text_source_attrs,
 				{error: false, editable: editable}));
-		return A4(_user$project$Text_Component$TextComponent, _p30._0, new_text_fields, _p30._2, _p30._3);
+		return A4(_user$project$Text_Component$TextComponent, _p32._0, new_text_fields, _p32._2, _p32._3);
 	});
 var _user$project$Text_Component$set_text_section_components = F2(
-	function (_p33, new_components) {
-		var _p34 = _p33;
-		return A4(_user$project$Text_Component$TextComponent, _p34._0, _p34._1, _p34._2, new_components);
+	function (_p35, new_components) {
+		var _p36 = _p35;
+		return A4(_user$project$Text_Component$TextComponent, _p36._0, _p36._1, _p36._2, new_components);
 	});
 var _user$project$Text_Component$set_text_attribute = F3(
-	function (_p35, attr_name, value) {
-		var _p36 = _p35;
-		var _p41 = _p36._2;
-		var _p40 = _p36._0;
-		var _p39 = _p36._1;
-		var _p38 = _p36._3;
-		var _p37 = attr_name;
-		switch (_p37) {
+	function (_p37, attr_name, value) {
+		var _p38 = _p37;
+		var _p43 = _p38._2;
+		var _p42 = _p38._0;
+		var _p41 = _p38._1;
+		var _p40 = _p38._3;
+		var _p39 = attr_name;
+		switch (_p39) {
 			case 'title':
 				return A4(
 					_user$project$Text_Component$TextComponent,
 					_elm_lang$core$Native_Utils.update(
-						_p40,
+						_p42,
 						{title: value}),
-					_p39,
 					_p41,
-					_p38);
+					_p43,
+					_p40);
 			case 'introduction':
 				return A4(
 					_user$project$Text_Component$TextComponent,
 					_elm_lang$core$Native_Utils.update(
-						_p40,
+						_p42,
 						{introduction: value}),
-					_p39,
 					_p41,
-					_p38);
+					_p43,
+					_p40);
 			case 'author':
 				return A4(
 					_user$project$Text_Component$TextComponent,
 					_elm_lang$core$Native_Utils.update(
-						_p40,
+						_p42,
 						{author: value}),
-					_p39,
 					_p41,
-					_p38);
+					_p43,
+					_p40);
 			case 'source':
 				return A4(
 					_user$project$Text_Component$TextComponent,
 					_elm_lang$core$Native_Utils.update(
-						_p40,
+						_p42,
 						{source: value}),
-					_p39,
 					_p41,
-					_p38);
+					_p43,
+					_p40);
 			case 'difficulty':
 				return A4(
 					_user$project$Text_Component$TextComponent,
 					_elm_lang$core$Native_Utils.update(
-						_p40,
+						_p42,
 						{difficulty: value}),
-					_p39,
 					_p41,
-					_p38);
+					_p43,
+					_p40);
+			case 'conclusion':
+				return A4(
+					_user$project$Text_Component$TextComponent,
+					_elm_lang$core$Native_Utils.update(
+						_p42,
+						{conclusion: value}),
+					_p41,
+					_p43,
+					_p40);
 			default:
-				return _p36;
+				return _p38;
 		}
 	});
 var _user$project$Text_Component$emptyTextComponent = A4(
@@ -12095,52 +12180,52 @@ var _user$project$Text_Component$emptyTextComponent = A4(
 		{ctor: '[]'}),
 	_user$project$Text_Section_Component_Group$new_group);
 var _user$project$Text_Component$update_text_errors = F2(
-	function (_p42, errors) {
-		var _p43 = _p42;
+	function (_p44, errors) {
+		var _p45 = _p44;
 		var new_text_component = A4(
 			_user$project$Text_Component$TextComponent,
-			_p43._0,
+			_p45._0,
 			A3(
 				_elm_lang$core$Array$foldr,
 				_user$project$Text_Field$update_error,
-				_p43._1,
+				_p45._1,
 				_elm_lang$core$Array$fromList(
 					_elm_lang$core$Dict$toList(errors))),
-			_p43._2,
-			_p43._3);
+			_p45._2,
+			_p45._3);
 		var text_sections = A2(
 			_user$project$Text_Section_Component_Group$update_errors,
 			_user$project$Text_Component$text_section_components(new_text_component),
 			errors);
-		var _p44 = A2(_elm_lang$core$Debug$log, 'text errors', errors);
+		var _p46 = A2(_elm_lang$core$Debug$log, 'text errors', errors);
 		return A2(_user$project$Text_Component$set_text_section_components, new_text_component, text_sections);
 	});
 var _user$project$Text_Component$add_tag = F2(
-	function (_p45, tag) {
-		var _p46 = _p45;
-		var _p47 = _p46._1;
-		var text_tag_field = _user$project$Text_Field$tags(_p47);
+	function (_p47, tag) {
+		var _p48 = _p47;
+		var _p49 = _p48._1;
+		var text_tag_field = _user$project$Text_Field$tags(_p49);
 		var text_tag_field_attrs = _user$project$Text_Field$text_tags_attrs(text_tag_field);
 		var new_text_tag_field_attrs = _elm_lang$core$Native_Utils.update(
 			text_tag_field_attrs,
 			{error: false, error_string: ''});
-		var new_text_component_fields = A2(_user$project$Text_Field$set_tags, _p47, new_text_tag_field_attrs);
+		var new_text_component_fields = A2(_user$project$Text_Field$set_tags, _p49, new_text_tag_field_attrs);
 		return A4(
 			_user$project$Text_Component$TextComponent,
-			_p46._0,
+			_p48._0,
 			new_text_component_fields,
-			A3(_elm_lang$core$Dict$insert, tag, tag, _p46._2),
-			_p46._3);
+			A3(_elm_lang$core$Dict$insert, tag, tag, _p48._2),
+			_p48._3);
 	});
 var _user$project$Text_Component$remove_tag = F2(
-	function (_p48, tag) {
-		var _p49 = _p48;
+	function (_p50, tag) {
+		var _p51 = _p50;
 		return A4(
 			_user$project$Text_Component$TextComponent,
-			_p49._0,
-			_p49._1,
-			A2(_elm_lang$core$Dict$remove, tag, _p49._2),
-			_p49._3);
+			_p51._0,
+			_p51._1,
+			A2(_elm_lang$core$Dict$remove, tag, _p51._2),
+			_p51._3);
 	});
 
 var _user$project$Text_Update$post_toggle_field = function (field) {
@@ -13423,7 +13508,15 @@ var _user$project$Text_Encode$textEncoder = function (text) {
 												}
 											}())
 									},
-									_1: {ctor: '[]'}
+									_1: {
+										ctor: '::',
+										_0: {
+											ctor: '_Tuple2',
+											_0: 'conclusion',
+											_1: _elm_lang$core$Json_Encode$string(text.conclusion)
+										},
+										_1: {ctor: '[]'}
+									}
 								}
 							}
 						}
@@ -13891,29 +13984,33 @@ var _user$project$Text_Decode$textDecoder = A3(
 							_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 							A3(
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'difficulty',
+								'conclusion',
 								_elm_lang$core$Json_Decode$string,
 								A3(
 									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-									'source',
+									'difficulty',
 									_elm_lang$core$Json_Decode$string,
 									A3(
 										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-										'author',
+										'source',
 										_elm_lang$core$Json_Decode$string,
 										A3(
 											_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-											'introduction',
+											'author',
 											_elm_lang$core$Json_Decode$string,
 											A3(
 												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-												'title',
+												'introduction',
 												_elm_lang$core$Json_Decode$string,
 												A3(
 													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-													'id',
-													_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$Text))))))))))))));
+													'title',
+													_elm_lang$core$Json_Decode$string,
+													A3(
+														_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+														'id',
+														_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+														_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$Text)))))))))))))));
 var _user$project$Text_Decode$TextCreateResp = F2(
 	function (a, b) {
 		return {id: a, redirect: b};
@@ -13991,6 +14088,9 @@ var _user$project$Text_Create$ReadOnlyMode = function (a) {
 };
 var _user$project$Text_Create$CreateMode = {ctor: 'CreateMode'};
 var _user$project$Text_Create$EditMode = {ctor: 'EditMode'};
+var _user$project$Text_Create$Conclusion = function (a) {
+	return {ctor: 'Conclusion', _0: a};
+};
 var _user$project$Text_Create$Difficulty = function (a) {
 	return {ctor: 'Difficulty', _0: a};
 };
@@ -14009,7 +14109,7 @@ var _user$project$Text_Create$Intro = function (a) {
 var _user$project$Text_Create$Title = function (a) {
 	return {ctor: 'Title', _0: a};
 };
-var _user$project$Text_Create$InitIntroEditor = {ctor: 'InitIntroEditor'};
+var _user$project$Text_Create$InitTextFieldEditors = {ctor: 'InitTextFieldEditors'};
 var _user$project$Text_Create$TextDelete = function (a) {
 	return {ctor: 'TextDelete', _0: a};
 };
@@ -14040,8 +14140,8 @@ var _user$project$Text_Create$TextTagsDecode = function (a) {
 var _user$project$Text_Create$TextJSONDecode = function (a) {
 	return {ctor: 'TextJSONDecode', _0: a};
 };
-var _user$project$Text_Create$UpdateTextIntro = function (a) {
-	return {ctor: 'UpdateTextIntro', _0: a};
+var _user$project$Text_Create$UpdateTextCkEditors = function (a) {
+	return {ctor: 'UpdateTextCkEditors', _0: a};
 };
 var _user$project$Text_Create$UpdateTextAttributes = F2(
 	function (a, b) {
@@ -14982,7 +15082,7 @@ var _user$project$Text_Tags_View$view_tags = F5(
 						_1: {
 							ctor: '::',
 							_0: A2(
-								_elm_lang$html$Html$span,
+								_elm_lang$html$Html$div,
 								{
 									ctor: '::',
 									_0: _elm_lang$html$Html_Attributes$classList(
@@ -15685,6 +15785,78 @@ var _user$project$Text_View$view_text_introduction = F3(
 					_1: {ctor: '[]'}
 				} : {ctor: '[]'}));
 	});
+var _user$project$Text_View$view_text_conclusion = F2(
+	function (params, text_conclusion) {
+		var text_conclusion_attrs = _user$project$Text_Field$text_conclusion_attrs(text_conclusion);
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', text_conclusion_attrs.id),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$classList(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'input_error', _1: text_conclusion_attrs.error},
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Text Conclusion'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$textarea,
+								{
+									ctor: '::',
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', text_conclusion_attrs.input_id),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$classList(
+											{
+												ctor: '::',
+												_0: {ctor: '_Tuple2', _0: 'text_conclusion', _1: true},
+												_1: {
+													ctor: '::',
+													_0: {ctor: '_Tuple2', _0: 'input_error', _1: text_conclusion_attrs.error},
+													_1: {ctor: '[]'}
+												}
+											}),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onInput(
+												_user$project$Text_Create$UpdateTextAttributes('conclusion')),
+											_1: {ctor: '[]'}
+										}
+									}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(params.text.conclusion),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
 var _user$project$Text_View$edit_text_title = F2(
 	function (params, text_title) {
 		var text_title_attrs = _user$project$Text_Field$text_title_attrs(text_title);
@@ -15935,37 +16107,44 @@ var _user$project$Text_View$view_text_attributes = function (params) {
 									_1: {
 										ctor: '::',
 										_0: A2(
-											_elm_lang$html$Html$div,
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$classList(
-													{
-														ctor: '::',
-														_0: {ctor: '_Tuple2', _0: 'text_property', _1: true},
-														_1: {ctor: '[]'}
-													}),
-												_1: {ctor: '[]'}
-											},
-											{
-												ctor: '::',
-												_0: A2(
-													_elm_lang$html$Html$div,
-													{ctor: '[]'},
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html$text('Text Tags'),
-														_1: {ctor: '[]'}
-													}),
-												_1: {
+											_user$project$Text_View$view_text_conclusion,
+											params,
+											_user$project$Text_Field$conclusion(params.text_fields)),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$div,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$classList(
+														{
+															ctor: '::',
+															_0: {ctor: '_Tuple2', _0: 'text_property', _1: true},
+															_1: {ctor: '[]'}
+														}),
+													_1: {ctor: '[]'}
+												},
+												{
 													ctor: '::',
 													_0: A2(
-														_user$project$Text_View$view_edit_text_tags,
-														params,
-														_user$project$Text_Field$tags(params.text_fields)),
-													_1: {ctor: '[]'}
-												}
-											}),
-										_1: {ctor: '[]'}
+														_elm_lang$html$Html$div,
+														{ctor: '[]'},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text('Text Tags'),
+															_1: {ctor: '[]'}
+														}),
+													_1: {
+														ctor: '::',
+														_0: A2(
+															_user$project$Text_View$view_edit_text_tags,
+															params,
+															_user$project$Text_Field$tags(params.text_fields)),
+														_1: {ctor: '[]'}
+													}
+												}),
+											_1: {ctor: '[]'}
+										}
 									}
 								}
 							}
@@ -16135,7 +16314,7 @@ var _user$project$Main$subscriptions = function (model) {
 				}(),
 				_1: {
 					ctor: '::',
-					_0: _user$project$Ports$ckEditorUpdate(_user$project$Text_Create$UpdateTextIntro),
+					_0: _user$project$Ports$ckEditorUpdate(_user$project$Text_Create$UpdateTextCkEditors),
 					_1: {
 						ctor: '::',
 						_0: _user$project$Ports$confirmation(_user$project$Text_Create$ConfirmTextDelete),
@@ -16416,14 +16595,11 @@ var _user$project$Main$update = F2(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				}
-			case 'InitIntroEditor':
-				var text_intro_field = _user$project$Text_Field$intro(
-					_user$project$Text_Component$text_fields(model.text_component));
-				var intro_field_id = _user$project$Text_Field$text_intro_attrs(text_intro_field).input_id;
+			case 'InitTextFieldEditors':
 				return {
 					ctor: '_Tuple2',
 					_0: model,
-					_1: _user$project$Ports$ckEditor(intro_field_id)
+					_1: _user$project$Text_Component$initialize_text_field_ck_editors(model.text_component)
 				};
 			case 'TextTagsDecode':
 				var _p14 = _p6._0;
@@ -16706,30 +16882,42 @@ var _user$project$Main$update = F2(
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			case 'UpdateTextIntro':
-				var text_intro_attrs = _user$project$Text_Field$text_intro_attrs(
+			case 'UpdateTextCkEditors':
+				var _p38 = _p6._0._1;
+				var _p37 = _p6._0._0;
+				var text_conclusion_input_id = _user$project$Text_Field$text_conclusion_attrs(
+					_user$project$Text_Field$conclusion(
+						_user$project$Text_Component$text_fields(model.text_component))).input_id;
+				var text_intro_input_id = _user$project$Text_Field$text_intro_attrs(
 					_user$project$Text_Field$intro(
-						_user$project$Text_Component$text_fields(model.text_component)));
-				var text_intro_attrs_id = text_intro_attrs.input_id;
-				return _elm_lang$core$Native_Utils.eq(_p6._0._0, text_intro_attrs_id) ? {
+						_user$project$Text_Component$text_fields(model.text_component))).input_id;
+				return _elm_lang$core$Native_Utils.eq(_p37, text_intro_input_id) ? {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							text_component: A3(_user$project$Text_Component$set_text_attribute, model.text_component, 'introduction', _p6._0._1)
+							text_component: A3(_user$project$Text_Component$set_text_attribute, model.text_component, 'introduction', _p38)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
-				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				} : (_elm_lang$core$Native_Utils.eq(_p37, text_conclusion_input_id) ? {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							text_component: A3(_user$project$Text_Component$set_text_attribute, model.text_component, 'conclusion', _p38)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none});
 			case 'AddTagInput':
-				var _p38 = _p6._1;
-				var _p37 = A2(_elm_lang$core$Dict$member, _p38, model.tags);
-				if (_p37 === true) {
+				var _p40 = _p6._1;
+				var _p39 = A2(_elm_lang$core$Dict$member, _p40, model.tags);
+				if (_p39 === true) {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								text_component: A2(_user$project$Text_Component$add_tag, model.text_component, _p38)
+								text_component: A2(_user$project$Text_Component$add_tag, model.text_component, _p40)
 							}),
 						_1: _user$project$Ports$clearInputText(_p6._0)
 					};
@@ -16753,8 +16941,8 @@ var _user$project$Main$update = F2(
 					_1: _user$project$Ports$confirm('Are you sure you want to delete this text?')
 				};
 			case 'ConfirmTextDelete':
-				var _p39 = _p6._0;
-				if (_p39 === true) {
+				var _p41 = _p6._0;
+				if (_p41 === true) {
 					var text = _user$project$Text_Component$text(model.text_component);
 					return {
 						ctor: '_Tuple2',
@@ -16766,26 +16954,26 @@ var _user$project$Main$update = F2(
 				}
 			default:
 				if (_p6._0.ctor === 'Ok') {
-					var _p41 = _p6._0._0;
-					var _p40 = A2(_elm_lang$core$Debug$log, 'text delete', _p41);
+					var _p43 = _p6._0._0;
+					var _p42 = A2(_elm_lang$core$Debug$log, 'text delete', _p43);
 					return {
 						ctor: '_Tuple2',
 						_0: model,
-						_1: _elm_lang$navigation$Navigation$load(_p41.redirect)
+						_1: _elm_lang$navigation$Navigation$load(_p43.redirect)
 					};
 				} else {
-					var _p48 = _p6._0._0;
-					var _p42 = _p48;
-					switch (_p42.ctor) {
+					var _p50 = _p6._0._0;
+					var _p44 = _p50;
+					switch (_p44.ctor) {
 						case 'BadStatus':
-							var _p45 = _p42._0;
-							var _p43 = A2(_elm_lang$core$Debug$log, 'delete text error bad status', _p45);
-							var _p44 = _user$project$Text_Decode$decodeRespErrors(_p45.body);
-							if (_p44.ctor === 'Ok') {
+							var _p47 = _p44._0;
+							var _p45 = A2(_elm_lang$core$Debug$log, 'delete text error bad status', _p47);
+							var _p46 = _user$project$Text_Decode$decodeRespErrors(_p47.body);
+							if (_p46.ctor === 'Ok') {
 								var errors_str = A2(
 									_elm_lang$core$String$join,
 									' and ',
-									_elm_lang$core$Dict$values(_p44._0));
+									_elm_lang$core$Dict$values(_p46._0));
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
@@ -16800,10 +16988,10 @@ var _user$project$Main$update = F2(
 								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 							}
 						case 'BadPayload':
-							var _p46 = A2(_elm_lang$core$Debug$log, 'delete text error bad payload', _p42._1);
+							var _p48 = A2(_elm_lang$core$Debug$log, 'delete text error bad payload', _p44._1);
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 						default:
-							var _p47 = A2(_elm_lang$core$Debug$log, 'delete text error bad payload', _p48);
+							var _p49 = A2(_elm_lang$core$Debug$log, 'delete text error bad payload', _p50);
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 					}
 				}
@@ -16828,35 +17016,29 @@ var _user$project$Main$retrieveTextDifficultyOptions = function () {
 	return A2(_elm_lang$http$Http$send, _user$project$Text_Create$UpdateTextDifficultyOptions, request);
 }();
 var _user$project$Main$textJSONtoComponent = function (text) {
-	var _p49 = text;
-	if (_p49.ctor === 'Just') {
+	var _p51 = text;
+	if (_p51.ctor === 'Just') {
 		return A2(
 			_elm_lang$core$Task$attempt,
 			_user$project$Text_Create$TextJSONDecode,
 			function () {
-				var _p50 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Text_Decode$textDecoder, _p49._0);
-				if (_p50.ctor === 'Ok') {
+				var _p52 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Text_Decode$textDecoder, _p51._0);
+				if (_p52.ctor === 'Ok') {
 					return _elm_lang$core$Task$succeed(
-						_user$project$Text_Component$init(_p50._0));
+						_user$project$Text_Component$init(_p52._0));
 				} else {
-					return _elm_lang$core$Task$fail(_p50._0);
+					return _elm_lang$core$Task$fail(_p52._0);
 				}
 			}());
 	} else {
 		return A2(
 			_elm_lang$core$Task$attempt,
-			function (_p51) {
-				return _user$project$Text_Create$InitIntroEditor;
+			function (_p53) {
+				return _user$project$Text_Create$InitTextFieldEditors;
 			},
 			_elm_lang$core$Task$succeed(_elm_lang$core$Maybe$Nothing));
 	}
 };
-var _user$project$Main$initializeIntroEditor = A2(
-	_elm_lang$core$Task$attempt,
-	function (_p52) {
-		return _user$project$Text_Create$InitIntroEditor;
-	},
-	_elm_lang$core$Task$succeed(_elm_lang$core$Maybe$Nothing));
 var _user$project$Main$tagsToDict = function (tag_list) {
 	return A2(
 		_elm_lang$core$Task$attempt,
