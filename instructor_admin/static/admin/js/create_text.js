@@ -15804,58 +15804,76 @@ var _user$project$Text_View$view_text_conclusion = F2(
 					_1: {ctor: '[]'}
 				}
 			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{ctor: '[]'},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('Text Conclusion'),
-						_1: {ctor: '[]'}
-					}),
-				_1: {
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				{
 					ctor: '::',
 					_0: A2(
 						_elm_lang$html$Html$div,
 						{ctor: '[]'},
 						{
 							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$textarea,
-								{
-									ctor: '::',
-									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', text_conclusion_attrs.input_id),
-									_1: {
+							_0: _elm_lang$html$Html$text('Text Conclusion'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$textarea,
+									{
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$classList(
-											{
-												ctor: '::',
-												_0: {ctor: '_Tuple2', _0: 'text_conclusion', _1: true},
-												_1: {
-													ctor: '::',
-													_0: {ctor: '_Tuple2', _0: 'input_error', _1: text_conclusion_attrs.error},
-													_1: {ctor: '[]'}
-												}
-											}),
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', text_conclusion_attrs.input_id),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onInput(
-												_user$project$Text_Create$UpdateTextAttributes('conclusion')),
-											_1: {ctor: '[]'}
+											_0: _elm_lang$html$Html_Attributes$classList(
+												{
+													ctor: '::',
+													_0: {ctor: '_Tuple2', _0: 'text_conclusion', _1: true},
+													_1: {
+														ctor: '::',
+														_0: {ctor: '_Tuple2', _0: 'input_error', _1: text_conclusion_attrs.error},
+														_1: {ctor: '[]'}
+													}
+												}),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Events$onInput(
+													_user$project$Text_Create$UpdateTextAttributes('conclusion')),
+												_1: {ctor: '[]'}
+											}
 										}
-									}
-								},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text(params.text.conclusion),
-									_1: {ctor: '[]'}
-								}),
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text(params.text.conclusion),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				},
+				text_conclusion_attrs.error ? {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('error'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(text_conclusion_attrs.error_string),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}
-				}
-			});
+				} : {ctor: '[]'}));
 	});
 var _user$project$Text_View$edit_text_title = F2(
 	function (params, text_title) {

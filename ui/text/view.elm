@@ -78,7 +78,7 @@ view_text_conclusion params text_conclusion =
     text_conclusion_attrs = Text.Field.text_conclusion_attrs text_conclusion
   in
     div [ attribute "id" text_conclusion_attrs.id
-        , classList [("input_error", text_conclusion_attrs.error)]] [
+        , classList [("input_error", text_conclusion_attrs.error)]] <| [
       div [] [ Html.text "Text Conclusion" ]
     , div [] [
         textarea [
@@ -86,7 +86,9 @@ view_text_conclusion params text_conclusion =
         , classList [("text_conclusion", True), ("input_error", text_conclusion_attrs.error)]
         , onInput (UpdateTextAttributes "conclusion") ] [ Html.text params.text.conclusion ]
       ]
-    ]
+    ] ++ (if text_conclusion_attrs.error then
+        [ div [class "error"] [ Html.text text_conclusion_attrs.error_string ]]
+       else [])
 
 view_text_introduction : TextViewParams -> (TextViewParams -> TextIntro -> Html Msg) -> TextIntro -> Html Msg
 view_text_introduction params edit_view text_intro =
