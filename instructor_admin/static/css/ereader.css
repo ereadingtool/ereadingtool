@@ -8,14 +8,14 @@ body {
     font-size: 14px;
 }
 
-a {
-    color: #333333;
-    text-decoration: none;
-}
-
 .menu_item > a:hover {
     padding-bottom: 5px;
     border-bottom: solid #f2f2f2 3.5px;
+}
+
+.menu_item > a {
+    color: #333333;
+    text-decoration: none;
 }
 
 .button {
