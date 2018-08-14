@@ -366,6 +366,10 @@ view_text_introduction : Text -> Html Msg
 view_text_introduction text =
   div [attribute "id" "text_intro"] (HtmlParser.Util.toVirtualDom <| HtmlParser.parse text.introduction)
 
+view_text_conclusion : Text -> Html Msg
+view_text_conclusion text =
+  div [attribute "id" "text_conclusion"] (HtmlParser.Util.toVirtualDom <| HtmlParser.parse text.conclusion)
+
 view_prev_btn : Html Msg
 view_prev_btn =
   div [onClick PrevSection, class "begin_btn"] [
@@ -400,6 +404,7 @@ view_text_complete model =
           Html.text ("Score: " ++ (toString section_scores) ++ " out of " ++ (toString possible_section_scores))
         ]
       ]
+    , view_text_conclusion model.text
     , div [class "nav"] [
         view_prev_btn
       , div [attribute "id" "goback", onClick StartOver] [ Html.text "Start Over" ]

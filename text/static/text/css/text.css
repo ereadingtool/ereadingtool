@@ -64,6 +64,14 @@
     justify-items: center;
 }
 
+#text_conclusion {
+    grid-column: 2;
+    display: grid;
+
+    align-items: center;
+    justify-items: center;
+}
+
 .text_body {
     grid-column: 2;
 

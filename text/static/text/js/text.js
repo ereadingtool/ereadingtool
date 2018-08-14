@@ -21316,6 +21316,7 @@ var _user$project$Text_Model$new_text = {
 	source: '',
 	difficulty: '',
 	introduction: '',
+	conclusion: '',
 	tags: _elm_lang$core$Maybe$Nothing,
 	created_by: _elm_lang$core$Maybe$Nothing,
 	last_modified_by: _elm_lang$core$Maybe$Nothing,
@@ -21342,7 +21343,9 @@ var _user$project$Text_Model$Text = function (a) {
 										return function (k) {
 											return function (l) {
 												return function (m) {
-													return {id: a, title: b, introduction: c, author: d, source: e, difficulty: f, created_by: g, last_modified_by: h, tags: i, created_dt: j, modified_dt: k, sections: l, write_locker: m};
+													return function (n) {
+														return {id: a, title: b, introduction: c, author: d, source: e, difficulty: f, conclusion: g, created_by: h, last_modified_by: i, tags: j, created_dt: k, modified_dt: l, sections: m, write_locker: n};
+													};
 												};
 											};
 										};
@@ -21722,29 +21725,33 @@ var _user$project$Text_Decode$textDecoder = A3(
 							_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 							A3(
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'difficulty',
+								'conclusion',
 								_elm_lang$core$Json_Decode$string,
 								A3(
 									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-									'source',
+									'difficulty',
 									_elm_lang$core$Json_Decode$string,
 									A3(
 										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-										'author',
+										'source',
 										_elm_lang$core$Json_Decode$string,
 										A3(
 											_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-											'introduction',
+											'author',
 											_elm_lang$core$Json_Decode$string,
 											A3(
 												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-												'title',
+												'introduction',
 												_elm_lang$core$Json_Decode$string,
 												A3(
 													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-													'id',
-													_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$Text))))))))))))));
+													'title',
+													_elm_lang$core$Json_Decode$string,
+													A3(
+														_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+														'id',
+														_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+														_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$Text)))))))))))))));
 var _user$project$Text_Decode$TextCreateResp = F2(
 	function (a, b) {
 		return {id: a, redirect: b};
@@ -22311,6 +22318,17 @@ var _user$project$TextReader_Dictionary$dictionary = _elm_lang$core$Dict$fromLis
 		_1: {ctor: '[]'}
 	});
 
+var _user$project$Main$view_text_conclusion = function (text) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_conclusion'),
+			_1: {ctor: '[]'}
+		},
+		_jinjor$elm_html_parser$HtmlParser_Util$toVirtualDom(
+			_jinjor$elm_html_parser$HtmlParser$parse(text.conclusion)));
+};
 var _user$project$Main$view_text_introduction = function (text) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -22841,38 +22859,42 @@ var _user$project$Main$view_text_complete = function (model) {
 				}),
 			_1: {
 				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('nav'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: _user$project$Main$view_prev_btn,
-						_1: {
+				_0: _user$project$Main$view_text_conclusion(model.text),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
 							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'goback'),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$StartOver),
-										_1: {ctor: '[]'}
-									}
-								},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text('Start Over'),
-									_1: {ctor: '[]'}
-								}),
+							_0: _elm_lang$html$Html_Attributes$class('nav'),
 							_1: {ctor: '[]'}
-						}
-					}),
-				_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _user$project$Main$view_prev_btn,
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{
+										ctor: '::',
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'goback'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$StartOver),
+											_1: {ctor: '[]'}
+										}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('Start Over'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {ctor: '[]'}
+				}
 			}
 		});
 };
