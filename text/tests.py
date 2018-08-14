@@ -76,12 +76,22 @@ class TextTest(TestCase):
 
         text_reading = TextReading.start(student=student, text=text_obj)
 
-        self.assertEquals(text_reading.state_machine.current_state.name, 'intro')
+        self.assertEquals(text_reading.current_state, text_reading.state_machine.intro)
 
-        text_reading.reading()
+        text_reading.next()
 
-        self.assertEquals(text_reading.state_machine.current_state.name, 'in_progress')
+        self.assertEquals(text_reading.current_state, text_reading.state_machine.in_progress)
         self.assertEquals(text_reading.current_section, text_sections[0])
+
+        text_reading.next()
+
+        self.assertEquals(text_reading.current_state, text_reading.state_machine.in_progress)
+        self.assertEquals(text_reading.current_section, text_sections[1])
+
+        text_reading.next()
+
+        self.assertEquals(text_reading.current_state, text_reading.state_machine.complete)
+        self.assertEquals(text_reading.current_section, None)
 
     def setUp(self):
         super(TextTest, self).setUp()
