@@ -93,11 +93,34 @@ class TextTest(TestCase):
 
         # answer questions
         questions = text_sections[0].questions.all()
-        answer = questions[0].answers.all()[2]
+        answer_one = questions[0].answers.all()[2]
 
-        text_reading.answer(answer)
+        text_reading.answer(answer_one)
 
+        # test cannot move to the next state if not all questions have been answered
         self.assertRaises(TextReadingNotAllQuestionsAnswered, lambda: text_reading.next())
+
+        self.assertEquals(text_reading.current_state, text_reading.state_machine.in_progress)
+        self.assertEquals(text_reading.current_section, text_sections[0])
+
+        # answer the final question for this section
+        answer_two = questions[1].answers.all()[3]
+
+        text_reading.answer(answer_two)
+
+        # now we should be able to move on
+        text_reading.next()
+
+        self.assertEquals(text_reading.current_state, text_reading.state_machine.in_progress)
+        self.assertEquals(text_reading.current_section, text_sections[1])
+
+        # and complete
+        text_reading.next()
+
+        self.assertEquals(text_reading.current_state, text_reading.state_machine.complete)
+        self.assertEquals(text_reading.current_section, None)
+
+        self.assertTrue(text_reading.end_dt)
 
     def setUp(self):
         super(TextTest, self).setUp()

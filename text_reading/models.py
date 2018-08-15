@@ -3,6 +3,7 @@ from typing import TypeVar, Optional
 from statemachine import StateMachine, State
 from django.db import models
 from django.utils.functional import cached_property
+from datetime import datetime as dt
 
 from text.models import Text, TextSection
 from question.models import Question, Answer
@@ -45,9 +46,6 @@ class TextReadingStateMachine(StateMachine):
         elif self.current_state == self.in_progress and not section:
             self.completing()
 
-    def on_exit_complete(self, *args, **kwargs):
-        pass
-
 
 class TextReading(models.Model):
     """
@@ -72,6 +70,13 @@ class TextReading(models.Model):
     def current_state(self):
         return self.state_machine.current_state
 
+    def set_end_dt(self):
+        self.end_dt = dt.now()
+        self.save()
+
+    def on_enter_complete(self, *args, **kwargs):
+        self.set_end_dt()
+
     def began_reading_validator(self, *args, **kwargs):
         pass
 
@@ -91,6 +96,7 @@ class TextReading(models.Model):
 
         self.state_machine.reading.validators = [self.began_reading_validator]
         self.state_machine.next.validators = [self.next_validator]
+        self.state_machine.on_enter_complete = self.on_enter_complete
 
         self.state_machine.current_state = getattr(TextReadingStateMachine, self.state)
 
@@ -100,7 +106,7 @@ class TextReading(models.Model):
 
         if TextSectionReading.objects.filter(text_reading=self,
                                              text_section=self.current_section,
-                                             question=answer.question):
+                                             question=answer.question).count():
             # question already answered
             raise TextReadingQuestionAlreadyAnswered
 
