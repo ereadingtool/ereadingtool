@@ -10,6 +10,22 @@ from user.student.models import Student
 from mixins.model import Timestamped
 
 
+class TextReadingException(Exception):
+    pass
+
+
+class TextReadingQuestionNotInSection(TextReadingException):
+    pass
+
+
+class TextReadingQuestionAlreadyAnswered(TextReadingException):
+    pass
+
+
+class TextReadingNotAllQuestionsAnswered(TextReadingException):
+    pass
+
+
 class TextReadingStateMachine(StateMachine):
     intro = State('intro', initial=True)
     in_progress = State('in_progress')
@@ -60,7 +76,10 @@ class TextReading(models.Model):
         pass
 
     def next_validator(self, *args, **kwargs):
-        pass
+        if TextSectionReading.objects.filter(
+                text_reading=self,
+                text_section=self.current_section).count() < self.current_section.questions.count():
+            raise TextReadingNotAllQuestionsAnswered
 
     def __init__(self, *args, **kwargs):
         """
@@ -74,6 +93,25 @@ class TextReading(models.Model):
         self.state_machine.next.validators = [self.next_validator]
 
         self.state_machine.current_state = getattr(TextReadingStateMachine, self.state)
+
+    def answer(self, answer: Answer) -> TypeVar('TextSectionReading'):
+        if answer.question.text_section != self.current_section:
+            raise TextReadingQuestionNotInSection
+
+        if TextSectionReading.objects.filter(text_reading=self,
+                                             text_section=self.current_section,
+                                             question=answer.question):
+            # question already answered
+            raise TextReadingQuestionAlreadyAnswered
+
+        text_section_reading = TextSectionReading(text_reading=self,
+                                                  text_section=self.current_section,
+                                                  question=answer.question,
+                                                  answer=answer)
+
+        text_section_reading.save()
+
+        return text_section_reading
 
     def next(self, *args, **kwargs):
         next_section = None
@@ -106,3 +144,6 @@ class TextSectionReading(Timestamped, models.Model):
 
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='text_section_readings')
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name='text_section_readings')
+
+    class Meta:
+        unique_together = (('text_reading', 'text_section', 'question'),)

@@ -2,7 +2,7 @@ import json
 
 from django.test import TestCase
 from hypothesis.extra.django.models import models
-from hypothesis.strategies import just, text
+from hypothesis.strategies import just, text, one_of
 
 from typing import Dict, AnyStr
 from django.test.client import Client
@@ -10,7 +10,7 @@ from django.test.client import Client
 from ereadingtool.urls import reverse_lazy
 from tag.models import Tag
 from text.models import TextDifficulty, Text, TextSection
-from text_reading.models import TextReading
+from text_reading.models import TextReading, TextReadingNotAllQuestionsAnswered
 
 from user.models import ReaderUser, Instructor
 from user.student.models import Student
@@ -69,10 +69,18 @@ class TextTest(TestCase):
         return client
 
     def test_text_reading(self):
+        # add an additional question for testing
+        test_data = self.get_test_data()
+
+        test_data['text_sections'][0]['questions'].append(self.gen_text_section_question_params(order=1))
+        num_of_questions = len(test_data['text_sections'][0]['questions'])
+
         student = self.new_student()
-        text_obj = self.create_text()
+        text_obj = self.create_text(diff_data=test_data)
 
         text_sections = text_obj.sections.all()
+
+        self.assertEquals(text_sections[0].questions.count(), num_of_questions)
 
         text_reading = TextReading.start(student=student, text=text_obj)
 
@@ -83,15 +91,13 @@ class TextTest(TestCase):
         self.assertEquals(text_reading.current_state, text_reading.state_machine.in_progress)
         self.assertEquals(text_reading.current_section, text_sections[0])
 
-        text_reading.next()
+        # answer questions
+        questions = text_sections[0].questions.all()
+        answer = questions[0].answers.all()[2]
 
-        self.assertEquals(text_reading.current_state, text_reading.state_machine.in_progress)
-        self.assertEquals(text_reading.current_section, text_sections[1])
+        text_reading.answer(answer)
 
-        text_reading.next()
-
-        self.assertEquals(text_reading.current_state, text_reading.state_machine.complete)
-        self.assertEquals(text_reading.current_section, None)
+        self.assertRaises(TextReadingNotAllQuestionsAnswered, lambda: text_reading.next())
 
     def setUp(self):
         super(TextTest, self).setUp()
@@ -409,14 +415,13 @@ class TextTest(TestCase):
 
         self.assertTrue('deleted' in resp_content)
 
-    def gen_text_section_params(self, order: int) -> Dict:
-        return {
-            'order': order,
-            'body': f'<p style="text-align:center">section {order}</p>\n',
-            'questions': [
-             {'body': 'Question 1?',
-              'order': 0,
-              'answers': [
+    def gen_question_type(self) -> AnyStr:
+        return one_of([just('main_idea'), just('detail')]).example()
+
+    def gen_text_section_question_params(self, order: int) -> Dict:
+        return {'body': f'Question {order+1}?',
+                'order': order,
+                'answers': [
                   {'text': 'Click to write choice 1',
                    'correct': False,
                    'order': 0,
@@ -432,13 +437,20 @@ class TextTest(TestCase):
                   {'text': 'Click to write choice 4',
                    'correct': True,
                    'order': 3, 'feedback': 'Answer 4 Feedback.'}
-                  ], 'question_type': 'main_idea'}]
+                  ], 'question_type': self.gen_question_type()}
+
+    def gen_text_section_params(self, order: int) -> Dict:
+        return {
+            'order': order,
+            'body': f'<p style="text-align:center">section {order}</p>\n',
+            'questions': [self.gen_text_section_question_params(order=0)]
          }
 
     def get_test_data(self) -> Dict:
         return {
             'title': 'text title',
             'introduction': 'an introduction to the text',
+            'conclusion': 'a conclusion to the text',
             'tags': ['Sports', 'Science/Technology', 'Other'],
             'author': 'author',
             'source': 'source',
