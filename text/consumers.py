@@ -111,7 +111,8 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
         self.text_reading = TextReading.start(student=student, text=text)
 
         await self.send_json({
-            'started': True,
+            'command': 'start',
+            'result': True
         })
 
     async def answer(self, student: Student, answer_id: int):
@@ -129,7 +130,8 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
         self.text_reading.next()
 
         await self.send_json({
-            'next': True,
+            'command': 'next',
+            'result': True
         })
 
     async def connect(self):
