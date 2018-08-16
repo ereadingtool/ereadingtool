@@ -383,7 +383,7 @@ class TextTest(TestCase):
 
         self.assertEquals(len(text_section.body), test_text_section_body_size)
 
-    def test_post_text(self):
+    def test_post_text(self) -> Text:
         test_data = self.get_test_data()
 
         resp = self.instructor.post('/api/text/', json.dumps({"malformed": "json"}), content_type='application/json')
@@ -416,6 +416,8 @@ class TextTest(TestCase):
         self.assertEquals(resp_content['title'], test_data['title'])
         self.assertEquals(resp_content['introduction'], test_data['introduction'])
         self.assertEquals(resp_content['tags'], test_data['tags'])
+
+        return text
 
     def test_delete_text(self):
         resp = self.instructor.post('/api/text/', json.dumps(self.get_test_data()), content_type='application/json')

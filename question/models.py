@@ -1,3 +1,4 @@
+from typing import Dict
 from django.db import models
 from mixins.model import Timestamped
 from text.models import TextSection
@@ -19,7 +20,17 @@ class Question(Timestamped, models.Model):
     def __str__(self):
         return self.body[:15]
 
-    def to_dict(self):
+    def to_text_reading_dict(self) -> Dict:
+        return {
+            'created_dt': self.created_dt.isoformat(),
+            'modified_dt': self.modified_dt.isoformat(),
+            'body': self.body,
+            'order': self.order,
+            'answers': [answer.to_text_reading_dict() for answer in self.answers.all()],
+            'question_type': self.type
+        }
+
+    def to_dict(self) -> Dict:
         return {
             'id': self.pk,
             'text_section_id': self.text_section.pk,
@@ -47,7 +58,13 @@ class Answer(models.Model):
     def __str__(self):
         return f'{self.order}'
 
-    def to_dict(self):
+    def to_text_reading_dict(self) -> Dict:
+        answer_dict = self.to_dict()
+        answer_dict.pop('correct')
+
+        return answer_dict
+
+    def to_dict(self) -> Dict:
         return {
             'id': self.pk,
             'question_id': self.question_id,

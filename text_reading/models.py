@@ -120,6 +120,12 @@ class TextReading(models.Model):
         return text_section_reading
 
     def next(self, *args, **kwargs):
+        """
+
+        :param args:
+        :param kwargs:
+        :return:
+        """
         next_section = None
 
         if self.current_section:
@@ -139,6 +145,12 @@ class TextReading(models.Model):
 
     @classmethod
     def start(cls, student: Student, text: Text) -> TypeVar('TextReading'):
+        """
+
+        :param student:
+        :param text:
+        :return: TextReading
+        """
         text_reading = cls.objects.create(student=student, text=text)
 
         return text_reading
