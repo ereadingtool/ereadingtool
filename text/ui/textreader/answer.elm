@@ -1,7 +1,13 @@
 module TextReader.Answer exposing (..)
 
 import TextReader exposing (TextItemAttributes, Selected, FeedbackViewable)
-import Answer.Model exposing (Answer)
+
+type alias Answer = {
+    id: Int
+  , question_id: Int
+  , text: String
+  , order: Int
+  , feedback: String }
 
 type alias TextAnswerAttributes = TextItemAttributes { question_index : Int, name: String, id: String }
 
@@ -27,7 +33,7 @@ index text_answer =
 
 correct : TextAnswer -> Bool
 correct text_answer =
-  (answer text_answer).correct
+  False
 
 feedback_viewable : TextAnswer -> Bool
 feedback_viewable (TextAnswer _ _ _ viewable) = viewable

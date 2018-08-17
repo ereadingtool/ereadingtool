@@ -1,4 +1,4 @@
-from typing import TypeVar, Optional
+from typing import TypeVar, Optional, AnyStr
 
 from statemachine import StateMachine, State
 from django.db import models
@@ -12,6 +12,17 @@ from mixins.model import Timestamped
 
 
 class TextReadingException(Exception):
+    def __init__(self, code: AnyStr, error_msg: AnyStr, *args, **kwargs):
+        super(TextReadingException, self).__init__(*args, **kwargs)
+
+        self.code = code
+        self.error_msg = error_msg
+
+    def __repr__(self):
+        return self.error_msg
+
+
+class TextReadingInvalidState(TextReadingException):
     pass
 
 
@@ -69,6 +80,13 @@ class TextReading(models.Model):
     @property
     def current_state(self):
         return self.state_machine.current_state
+
+    def get_current_section(self):
+        if self.current_state != self.state_machine.in_progress:
+            raise TextReadingInvalidState(code='invalid_state',
+                                          error_msg=f"Can't access current section in state {self.current_state}")
+
+        return self.current_section
 
     def set_end_dt(self):
         self.end_dt = dt.now()

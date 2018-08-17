@@ -22,6 +22,8 @@ class Question(Timestamped, models.Model):
 
     def to_text_reading_dict(self) -> Dict:
         return {
+            'id': self.pk,
+            'text_section_id': self.text_section.pk,
             'created_dt': self.created_dt.isoformat(),
             'modified_dt': self.modified_dt.isoformat(),
             'body': self.body,

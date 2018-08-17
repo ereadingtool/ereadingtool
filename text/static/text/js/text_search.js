@@ -9576,7 +9576,6 @@ var _user$project$Answer_Decode$answerDecoder = A3(
 						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Answer_Model$Answer)))))));
 var _user$project$Answer_Decode$answersDecoder = _elm_lang$core$Json_Decode$array(_user$project$Answer_Decode$answerDecoder);
 
-var _user$project$Config$text_reading_ws_address = 'ws://0.0.0.0:8000/text_reader/';
 var _user$project$Config$answer_feedback_limit = 2048;
 var _user$project$Config$student_api_endpoint = '/api/student/';
 var _user$project$Config$student_login_api_endpoint = '/api/student/login/';

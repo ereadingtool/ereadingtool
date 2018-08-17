@@ -7,6 +7,7 @@
         "instructor_admin/ui/",
         "user/ui/",
         "text/ui/",
+        "text/ui/textreader/",
         "ui/"
     ],
     "exposed-modules": [],

@@ -1,30 +1,13 @@
-import Http exposing (..)
-
 import Html exposing (Html, div)
-import Task
 
 import Array exposing (Array)
 import Dict exposing (Dict)
 
-import Text.Section.Model exposing (TextSection)
-import Text.Model exposing (Text)
-
-import Text.Decode
-
 import Views
 import Profile
 
-import Config
-import Flags exposing (CSRFToken)
-
 import WebSocket
 
-import Json.Encode
-import Json.Decode
-
-import Text.Model as Texts exposing (Text)
-
-import TextReader exposing (TextItemAttributes, WebSocketAddress)
 import TextReader.Question exposing (TextQuestion)
 import TextReader.Answer exposing (TextAnswer)
 
@@ -33,20 +16,18 @@ import TextReader.Model exposing (..)
 import TextReader.Msg exposing (Msg(..))
 import TextReader.Update exposing (..)
 
-
 init : Flags -> (Model, Cmd Msg)
 init flags =
   let
     profile = Profile.init_profile flags
-    new_flags = { flags | text_reader_ws_addr = (String.join "" [Config.text_reading_ws_address, flags.text_id]) }
   in
-    ({ text=Texts.new_text
+    ({ text=TextReader.Model.emptyText
      , sections=Array.fromList []
      , gloss=Dict.empty
      , profile=profile
      , progress=Init
-     , flags=new_flags
-     } , Cmd.batch [start profile new_flags.text_reader_ws_addr])
+     , flags=flags
+     } , Cmd.batch [TextReader.Update.start profile flags.text_reader_ws_addr])
 
 
 subscriptions : Model -> Sub Msg
@@ -64,14 +45,6 @@ update msg model =
         set_text_section model.sections new_text_section
   in
     case msg of
-      Started started ->
-        case started of
-          True ->
-            ({ model | progress=ViewIntro }, Cmd.none)
-
-          False ->
-            (model, Cmd.none)
-
       Gloss word ->
         ({ model | gloss = Dict.insert word True model.gloss }, Cmd.none)
 
@@ -117,6 +90,9 @@ update msg model =
           Complete ->
             (model, Cmd.none)
 
+          _ ->
+            (model, Cmd.none)
+
       PrevSection ->
         case model.progress of
           ViewIntro ->
@@ -141,18 +117,11 @@ update msg model =
                   ({ model | progress = ViewSection last_section_index }, Cmd.none)
                 Nothing ->
                   (model, Cmd.none)
+          _ ->
+            (model, Cmd.none)
 
       WebSocketResp str ->
-        let
-          decoder = Json.Decode.field "command" Json.Decode.string |> Json.Decode.andThen command_decoder
-          result = Json.Decode.decodeString decoder str
-        in
-          case result of
-            Ok cmd_resp ->
-              route_cmd_resp model cmd_resp
-
-            Err err -> let _ = Debug.log "err" err in
-              (model, Cmd.none)
+        TextReader.Update.handle_ws_resp model str
 
 
 main : Program Flags Model Msg

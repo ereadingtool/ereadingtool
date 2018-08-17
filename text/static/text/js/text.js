@@ -21221,33 +21221,6 @@ var _user$project$Answer_Model$Answer = F6(
 		return {id: a, question_id: b, text: c, correct: d, order: e, feedback: f};
 	});
 
-var _user$project$Answer_Decode$answerDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'feedback',
-	_elm_lang$core$Json_Decode$string,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'order',
-		_elm_lang$core$Json_Decode$int,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'correct',
-			_elm_lang$core$Json_Decode$bool,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'text',
-				_elm_lang$core$Json_Decode$string,
-				A3(
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'question_id',
-					_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-					A3(
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'id',
-						_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Answer_Model$Answer)))))));
-var _user$project$Answer_Decode$answersDecoder = _elm_lang$core$Json_Decode$array(_user$project$Answer_Decode$answerDecoder);
-
 var _user$project$Config$answer_feedback_limit = 2048;
 var _user$project$Config$student_api_endpoint = '/api/student/';
 var _user$project$Config$student_login_api_endpoint = '/api/student/login/';
@@ -21257,8 +21230,6 @@ var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signu
 var _user$project$Config$question_api_endpoint = '/api/question/';
 var _user$project$Config$text_section_api_endpoint = '/api/section/';
 var _user$project$Config$text_api_endpoint = '/api/text/';
-
-var _user$project$Field$fieldIDDecoder = _elm_lang$core$Json_Decode$int;
 
 var _user$project$Question_Model$new_question = function (i) {
 	return {
@@ -21575,242 +21546,6 @@ var _user$project$Profile$init_profile = function (flags) {
 var _user$project$Flags$UnAuthedFlags = function (a) {
 	return {csrftoken: a};
 };
-
-var _user$project$Question_Decode$questionDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'question_type',
-	_elm_lang$core$Json_Decode$string,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'answers',
-		_user$project$Answer_Decode$answersDecoder,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'order',
-			_elm_lang$core$Json_Decode$int,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'body',
-				_elm_lang$core$Json_Decode$string,
-				A3(
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'modified_dt',
-					_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
-					A3(
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'created_dt',
-						_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
-						A3(
-							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'text_section_id',
-							_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-							A3(
-								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'id',
-								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Question_Model$Question)))))))));
-var _user$project$Question_Decode$questionsDecoder = _elm_lang$core$Json_Decode$array(_user$project$Question_Decode$questionDecoder);
-
-var _user$project$Text_Section_Decode$textSectionDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'questions',
-	_user$project$Question_Decode$questionsDecoder,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'question_count',
-		_elm_lang$core$Json_Decode$int,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'body',
-			_elm_lang$core$Json_Decode$string,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'order',
-				_elm_lang$core$Json_Decode$int,
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Section_Model$TextSection)))));
-var _user$project$Text_Section_Decode$textSectionsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Section_Decode$textSectionDecoder);
-var _user$project$Text_Section_Decode$TextCreateResp = function (a) {
-	return {id: a};
-};
-
-var _user$project$Text_Decode$decodeRespErrors = function (str) {
-	return A2(
-		_elm_lang$core$Json_Decode$decodeString,
-		A2(
-			_elm_lang$core$Json_Decode$field,
-			'errors',
-			_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string)),
-		str);
-};
-var _user$project$Text_Decode$textDifficultyDecoder = _elm_lang$core$Json_Decode$keyValuePairs(_elm_lang$core$Json_Decode$string);
-var _user$project$Text_Decode$textListItemDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'write_locker',
-	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'uri',
-		_elm_lang$core$Json_Decode$string,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'text_section_count',
-			_elm_lang$core$Json_Decode$int,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'modified_dt',
-				_elm_community$json_extra$Json_Decode_Extra$date,
-				A3(
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'created_dt',
-					_elm_community$json_extra$Json_Decode_Extra$date,
-					A3(
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'tags',
-						_elm_lang$core$Json_Decode$nullable(
-							_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
-						A3(
-							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'last_modified_by',
-							_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
-							A3(
-								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'created_by',
-								_elm_lang$core$Json_Decode$string,
-								A3(
-									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-									'difficulty',
-									_elm_lang$core$Json_Decode$string,
-									A3(
-										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-										'author',
-										_elm_lang$core$Json_Decode$string,
-										A3(
-											_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-											'title',
-											_elm_lang$core$Json_Decode$string,
-											A3(
-												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-												'id',
-												_elm_lang$core$Json_Decode$int,
-												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextListItem)))))))))))));
-var _user$project$Text_Decode$textListDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textListItemDecoder);
-var _user$project$Text_Decode$textDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'write_locker',
-	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'text_sections',
-		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Array$fromList, _user$project$Text_Section_Decode$textSectionsDecoder),
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'modified_dt',
-			_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'created_dt',
-				_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
-				A3(
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'tags',
-					_elm_lang$core$Json_Decode$nullable(
-						_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
-					A3(
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'last_modified_by',
-						_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
-						A3(
-							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'created_by',
-							_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
-							A3(
-								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'conclusion',
-								_elm_lang$core$Json_Decode$string,
-								A3(
-									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-									'difficulty',
-									_elm_lang$core$Json_Decode$string,
-									A3(
-										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-										'source',
-										_elm_lang$core$Json_Decode$string,
-										A3(
-											_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-											'author',
-											_elm_lang$core$Json_Decode$string,
-											A3(
-												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-												'introduction',
-												_elm_lang$core$Json_Decode$string,
-												A3(
-													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-													'title',
-													_elm_lang$core$Json_Decode$string,
-													A3(
-														_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-														'id',
-														_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-														_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$Text)))))))))))))));
-var _user$project$Text_Decode$TextCreateResp = F2(
-	function (a, b) {
-		return {id: a, redirect: b};
-	});
-var _user$project$Text_Decode$textCreateRespDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'redirect',
-	_elm_lang$core$Json_Decode$string,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'id',
-		_elm_lang$core$Json_Decode$int,
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextCreateResp)));
-var _user$project$Text_Decode$TextUpdateResp = F2(
-	function (a, b) {
-		return {id: a, updated: b};
-	});
-var _user$project$Text_Decode$textUpdateRespDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'updated',
-	_elm_lang$core$Json_Decode$bool,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'id',
-		_elm_lang$core$Json_Decode$int,
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextUpdateResp)));
-var _user$project$Text_Decode$TextDeleteResp = F3(
-	function (a, b, c) {
-		return {id: a, redirect: b, deleted: c};
-	});
-var _user$project$Text_Decode$textDeleteRespDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'deleted',
-	_elm_lang$core$Json_Decode$bool,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'redirect',
-		_elm_lang$core$Json_Decode$string,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'id',
-			_elm_lang$core$Json_Decode$int,
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextDeleteResp))));
-var _user$project$Text_Decode$TextLockResp = function (a) {
-	return {locked: a};
-};
-var _user$project$Text_Decode$textLockRespDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'locked',
-	_elm_lang$core$Json_Decode$bool,
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextLockResp));
-var _user$project$Text_Decode$TextProgressUpdateResp = function (a) {
-	return {updated: a};
-};
-var _user$project$Text_Decode$textProgressDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'updated',
-	_elm_lang$core$Json_Decode$bool,
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextProgressUpdateResp));
 
 var _user$project$Views$view_preview = A2(
 	_elm_lang$html$Html$div,
@@ -22139,11 +21874,15 @@ var _user$project$TextReader_Answer$feedback_viewable = function (_p6) {
 	return _p7._3;
 };
 var _user$project$TextReader_Answer$correct = function (text_answer) {
-	return _user$project$TextReader_Answer$answer(text_answer).correct;
+	return false;
 };
 var _user$project$TextReader_Answer$index = function (text_answer) {
 	return _user$project$TextReader_Answer$attr(text_answer).index;
 };
+var _user$project$TextReader_Answer$Answer = F5(
+	function (a, b, c, d, e) {
+		return {id: a, question_id: b, text: c, order: d, feedback: e};
+	});
 var _user$project$TextReader_Answer$TextAnswer = F4(
 	function (a, b, c, d) {
 		return {ctor: 'TextAnswer', _0: a, _1: b, _2: c, _3: d};
@@ -22225,6 +21964,10 @@ var _user$project$TextReader_Question$index = function (text_question) {
 var _user$project$TextReader_Question$text_section_index = function (text_question) {
 	return _user$project$TextReader_Question$attr(text_question).text_section_index;
 };
+var _user$project$TextReader_Question$Question = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {id: a, text_section_id: b, created_dt: c, modified_dt: d, body: e, order: f, answers: g, question_type: h};
+	});
 var _user$project$TextReader_Question$TextQuestion = F4(
 	function (a, b, c, d) {
 		return {ctor: 'TextQuestion', _0: a, _1: b, _2: c, _3: d};
@@ -22311,45 +22054,367 @@ var _user$project$TextReader_Question$set_as_submitted_answer = F2(
 		}
 	});
 
-var _user$project$TextReader_Dictionary$dictionary = _elm_lang$core$Dict$fromList(
-	{
-		ctor: '::',
-		_0: {ctor: '_Tuple2', _0: 'test', _1: '\n     A procedure for critical evaluation; a means of determining the presence, quality, or truth of something; a\n     trial: a test of one\'s eyesight; subjecting a hypothesis to a test; a test of an athlete\'s endurance.\n     '},
-		_1: {ctor: '[]'}
+var _user$project$TextReader_Model$emptyText = {
+	id: 0,
+	title: '',
+	introduction: '',
+	author: '',
+	source: '',
+	difficulty: '',
+	conclusion: '',
+	created_by: _elm_lang$core$Maybe$Nothing,
+	last_modified_by: _elm_lang$core$Maybe$Nothing,
+	tags: _elm_lang$core$Maybe$Nothing,
+	created_dt: _elm_lang$core$Maybe$Nothing,
+	modified_dt: _elm_lang$core$Maybe$Nothing,
+	sections: _elm_lang$core$Array$fromList(
+		{ctor: '[]'})
+};
+var _user$project$TextReader_Model$TextSection = F4(
+	function (a, b, c, d) {
+		return {order: a, body: b, question_count: c, questions: d};
+	});
+var _user$project$TextReader_Model$Text = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return function (k) {
+											return function (l) {
+												return function (m) {
+													return {id: a, title: b, introduction: c, author: d, source: e, difficulty: f, conclusion: g, created_by: h, last_modified_by: i, tags: j, created_dt: k, modified_dt: l, sections: m};
+												};
+											};
+										};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+var _user$project$TextReader_Model$Model = F6(
+	function (a, b, c, d, e, f) {
+		return {text: a, profile: b, progress: c, sections: d, gloss: e, flags: f};
+	});
+var _user$project$TextReader_Model$Section = F3(
+	function (a, b, c) {
+		return {ctor: 'Section', _0: a, _1: b, _2: c};
+	});
+var _user$project$TextReader_Model$Complete = {ctor: 'Complete'};
+var _user$project$TextReader_Model$ViewSection = function (a) {
+	return {ctor: 'ViewSection', _0: a};
+};
+var _user$project$TextReader_Model$ViewIntro = {ctor: 'ViewIntro'};
+var _user$project$TextReader_Model$Init = {ctor: 'Init'};
+var _user$project$TextReader_Model$TextReq = {ctor: 'TextReq'};
+var _user$project$TextReader_Model$CurrentSectionReq = {ctor: 'CurrentSectionReq'};
+var _user$project$TextReader_Model$AnswerReq = function (a) {
+	return {ctor: 'AnswerReq', _0: a};
+};
+var _user$project$TextReader_Model$NextReq = {ctor: 'NextReq'};
+var _user$project$TextReader_Model$StartReq = {ctor: 'StartReq'};
+var _user$project$TextReader_Model$TextResp = function (a) {
+	return {ctor: 'TextResp', _0: a};
+};
+var _user$project$TextReader_Model$CurrentSectionResp = function (a) {
+	return {ctor: 'CurrentSectionResp', _0: a};
+};
+var _user$project$TextReader_Model$AnswerResp = function (a) {
+	return {ctor: 'AnswerResp', _0: a};
+};
+var _user$project$TextReader_Model$NextResp = function (a) {
+	return {ctor: 'NextResp', _0: a};
+};
+var _user$project$TextReader_Model$StartResp = function (a) {
+	return {ctor: 'StartResp', _0: a};
+};
+
+var _user$project$TextReader_Encode$send_command = function (cmd_req) {
+	var _p0 = cmd_req;
+	switch (_p0.ctor) {
+		case 'StartReq':
+			return _elm_lang$core$Json_Encode$object(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'command',
+						_1: _elm_lang$core$Json_Encode$string('start')
+					},
+					_1: {ctor: '[]'}
+				});
+		case 'TextReq':
+			return _elm_lang$core$Json_Encode$object(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'command',
+						_1: _elm_lang$core$Json_Encode$string('text')
+					},
+					_1: {ctor: '[]'}
+				});
+		case 'NextReq':
+			return _elm_lang$core$Json_Encode$object(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'command',
+						_1: _elm_lang$core$Json_Encode$string('next')
+					},
+					_1: {ctor: '[]'}
+				});
+		case 'AnswerReq':
+			return _elm_lang$core$Json_Encode$object(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'command',
+						_1: _elm_lang$core$Json_Encode$string('answer')
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'answer_id',
+							_1: _elm_lang$core$Json_Encode$int(_p0._0)
+						},
+						_1: {ctor: '[]'}
+					}
+				});
+		default:
+			return _elm_lang$core$Json_Encode$object(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'command',
+						_1: _elm_lang$core$Json_Encode$string('current_section')
+					},
+					_1: {ctor: '[]'}
+				});
+	}
+};
+var _user$project$TextReader_Encode$jsonToString = _elm_lang$core$Json_Encode$encode(0);
+
+var _user$project$TextReader_Decode$nextDecoder = A2(
+	_elm_lang$core$Json_Decode$map,
+	_user$project$TextReader_Model$NextResp,
+	A2(_elm_lang$core$Json_Decode$field, 'result', _elm_lang$core$Json_Decode$bool));
+var _user$project$TextReader_Decode$answerDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'feedback',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'order',
+		_elm_lang$core$Json_Decode$int,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'text',
+			_elm_lang$core$Json_Decode$string,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'question_id',
+				_elm_lang$core$Json_Decode$int,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'id',
+					_elm_lang$core$Json_Decode$int,
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$TextReader_Answer$Answer))))));
+var _user$project$TextReader_Decode$answersDecoder = _elm_lang$core$Json_Decode$array(_user$project$TextReader_Decode$answerDecoder);
+var _user$project$TextReader_Decode$questionDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'question_type',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'answers',
+		_user$project$TextReader_Decode$answersDecoder,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'order',
+			_elm_lang$core$Json_Decode$int,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'body',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'modified_dt',
+					_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'created_dt',
+						_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+						A3(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+							'text_section_id',
+							_elm_lang$core$Json_Decode$int,
+							A3(
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+								'id',
+								_elm_lang$core$Json_Decode$int,
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$TextReader_Question$Question)))))))));
+var _user$project$TextReader_Decode$questionsDecoder = _elm_lang$core$Json_Decode$array(_user$project$TextReader_Decode$questionDecoder);
+var _user$project$TextReader_Decode$textSectionDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'questions',
+	_user$project$TextReader_Decode$questionsDecoder,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'question_count',
+		_elm_lang$core$Json_Decode$int,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'body',
+			_elm_lang$core$Json_Decode$string,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'order',
+				_elm_lang$core$Json_Decode$int,
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$TextReader_Model$TextSection)))));
+var _user$project$TextReader_Decode$textSectionsDecoder = _elm_lang$core$Json_Decode$list(_user$project$TextReader_Decode$textSectionDecoder);
+var _user$project$TextReader_Decode$textDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'text_sections',
+	A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Array$fromList, _user$project$TextReader_Decode$textSectionsDecoder),
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'modified_dt',
+		_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'created_dt',
+			_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'tags',
+				_elm_lang$core$Json_Decode$nullable(
+					_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'last_modified_by',
+					_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'created_by',
+						_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+						A3(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+							'conclusion',
+							_elm_lang$core$Json_Decode$string,
+							A3(
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+								'difficulty',
+								_elm_lang$core$Json_Decode$string,
+								A3(
+									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+									'source',
+									_elm_lang$core$Json_Decode$string,
+									A3(
+										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+										'author',
+										_elm_lang$core$Json_Decode$string,
+										A3(
+											_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+											'introduction',
+											_elm_lang$core$Json_Decode$string,
+											A3(
+												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+												'title',
+												_elm_lang$core$Json_Decode$string,
+												A3(
+													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+													'id',
+													_elm_lang$core$Json_Decode$int,
+													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$TextReader_Model$Text))))))))))))));
+var _user$project$TextReader_Decode$startDecoder = A2(
+	_elm_lang$core$Json_Decode$map,
+	_user$project$TextReader_Model$StartResp,
+	A2(_elm_lang$core$Json_Decode$field, 'result', _elm_lang$core$Json_Decode$bool));
+var _user$project$TextReader_Decode$command_decoder = function (cmd_str) {
+	var _p0 = cmd_str;
+	switch (_p0) {
+		case 'start':
+			return _user$project$TextReader_Decode$startDecoder;
+		case 'next':
+			return _user$project$TextReader_Decode$nextDecoder;
+		case 'text':
+			return A2(
+				_elm_lang$core$Json_Decode$map,
+				_user$project$TextReader_Model$TextResp,
+				A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$TextReader_Decode$textDecoder));
+		default:
+			return _elm_lang$core$Json_Decode$fail(
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'Command ',
+					A2(_elm_lang$core$Basics_ops['++'], cmd_str, ' not supported')));
+	}
+};
+var _user$project$TextReader_Decode$ws_resp_decoder = A2(
+	_elm_lang$core$Json_Decode$andThen,
+	_user$project$TextReader_Decode$command_decoder,
+	A2(_elm_lang$core$Json_Decode$field, 'command', _elm_lang$core$Json_Decode$string));
+
+var _user$project$TextReader_Msg$WebSocketResp = function (a) {
+	return {ctor: 'WebSocketResp', _0: a};
+};
+var _user$project$TextReader_Msg$UnGloss = function (a) {
+	return {ctor: 'UnGloss', _0: a};
+};
+var _user$project$TextReader_Msg$Gloss = function (a) {
+	return {ctor: 'Gloss', _0: a};
+};
+var _user$project$TextReader_Msg$StartOver = {ctor: 'StartOver'};
+var _user$project$TextReader_Msg$NextSection = {ctor: 'NextSection'};
+var _user$project$TextReader_Msg$PrevSection = {ctor: 'PrevSection'};
+var _user$project$TextReader_Msg$ViewFeedback = F4(
+	function (a, b, c, d) {
+		return {ctor: 'ViewFeedback', _0: a, _1: b, _2: c, _3: d};
+	});
+var _user$project$TextReader_Msg$Select = F4(
+	function (a, b, c, d) {
+		return {ctor: 'Select', _0: a, _1: b, _2: c, _3: d};
 	});
 
-var _user$project$Main$view_text_conclusion = function (text) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_conclusion'),
-			_1: {ctor: '[]'}
-		},
-		_jinjor$elm_html_parser$HtmlParser_Util$toVirtualDom(
-			_jinjor$elm_html_parser$HtmlParser$parse(text.conclusion)));
-};
-var _user$project$Main$view_text_introduction = function (text) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_intro'),
-			_1: {ctor: '[]'}
-		},
-		_jinjor$elm_html_parser$HtmlParser_Util$toVirtualDom(
-			_jinjor$elm_html_parser$HtmlParser$parse(text.introduction)));
-};
-var _user$project$Main$set_text_section = F2(
+var _user$project$TextReader_Update$set_text_section = F2(
 	function (text_sections, _p0) {
 		var _p1 = _p0;
 		return A3(_elm_lang$core$Array$set, _p1._1.index, _p1, text_sections);
 	});
-var _user$project$Main$questions = function (_p2) {
-	var _p3 = _p2;
-	return _p3._2;
+var _user$project$TextReader_Update$set_question = F2(
+	function (_p2, new_text_question) {
+		var _p3 = _p2;
+		var question_index = _user$project$TextReader_Question$index(new_text_question);
+		return A3(
+			_user$project$TextReader_Model$Section,
+			_p3._0,
+			_p3._1,
+			A3(_elm_lang$core$Array$set, question_index, new_text_question, _p3._2));
+	});
+var _user$project$TextReader_Update$set_questions = F2(
+	function (_p4, new_questions) {
+		var _p5 = _p4;
+		return A3(_user$project$TextReader_Model$Section, _p5._0, _p5._1, new_questions);
+	});
+var _user$project$TextReader_Update$questions = function (_p6) {
+	var _p7 = _p6;
+	return _p7._2;
 };
-var _user$project$Main$complete = function (section) {
+var _user$project$TextReader_Update$complete = function (section) {
 	return A2(
 		_elm_lang$core$List$all,
 		function (answered) {
@@ -22361,19 +22426,19 @@ var _user$project$Main$complete = function (section) {
 				function (question) {
 					return _user$project$TextReader_Question$answered(question);
 				},
-				_user$project$Main$questions(section))));
+				_user$project$TextReader_Update$questions(section))));
 };
-var _user$project$Main$completed_sections = function (sections) {
+var _user$project$TextReader_Update$completed_sections = function (sections) {
 	return _elm_lang$core$List$sum(
 		_elm_lang$core$Array$toList(
 			A2(
 				_elm_lang$core$Array$map,
 				function (section) {
-					return _user$project$Main$complete(section) ? 1 : 0;
+					return _user$project$TextReader_Update$complete(section) ? 1 : 0;
 				},
 				sections)));
 };
-var _user$project$Main$max_score = function (section) {
+var _user$project$TextReader_Update$max_score = function (section) {
 	return _elm_lang$core$List$sum(
 		_elm_lang$core$Array$toList(
 			A2(
@@ -22381,9 +22446,9 @@ var _user$project$Main$max_score = function (section) {
 				function (question) {
 					return 1;
 				},
-				_user$project$Main$questions(section))));
+				_user$project$TextReader_Update$questions(section))));
 };
-var _user$project$Main$score = function (section) {
+var _user$project$TextReader_Update$score = function (section) {
 	return _elm_lang$core$List$sum(
 		_elm_lang$core$Array$toList(
 			A2(
@@ -22394,48 +22459,21 @@ var _user$project$Main$score = function (section) {
 						false,
 						_user$project$TextReader_Question$answered_correctly(question)) ? 1 : 0;
 				},
-				_user$project$Main$questions(section))));
+				_user$project$TextReader_Update$questions(section))));
 };
-var _user$project$Main$text_section = F2(
-	function (text_sections, text_question) {
-		var text_section_index = _user$project$TextReader_Question$text_section_index(text_question);
-		return A2(_elm_lang$core$Array$get, text_section_index, text_sections);
-	});
-var _user$project$Main$update_completed_section = F3(
-	function (section_id, section_index, sections) {
-		return _elm_lang$core$Platform_Cmd$none;
-	});
-var _user$project$Main$start = function (profile) {
-	var _p4 = profile;
-	if (_p4.ctor === 'Student') {
-		var student_username = _user$project$Profile$studentUserName(_p4._0);
-		var _p5 = A2(_elm_lang$core$Debug$log, 'username', student_username);
-		return A2(
-			_elm_lang$websocket$WebSocket$send,
-			'ws://0.0.0.0:8000/text_reader/',
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				'{\"test\":\"',
-				A2(_elm_lang$core$Basics_ops['++'], student_username, '\"}')));
-	} else {
-		return _elm_lang$core$Platform_Cmd$none;
-	}
+var _user$project$TextReader_Update$clear_question_answers = function (section) {
+	var new_questions = A2(
+		_elm_lang$core$Array$map,
+		function (question) {
+			return _user$project$TextReader_Question$deselect_all_answers(question);
+		},
+		_user$project$TextReader_Update$questions(section));
+	return A2(_user$project$TextReader_Update$set_questions, section, new_questions);
 };
-var _user$project$Main$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$none;
-};
-var _user$project$Main$Model = F6(
-	function (a, b, c, d, e, f) {
-		return {text: a, profile: b, progress: c, sections: d, gloss: e, flags: f};
-	});
-var _user$project$Main$Section = F3(
-	function (a, b, c) {
-		return {ctor: 'Section', _0: a, _1: b, _2: c};
-	});
-var _user$project$Main$gen_text_sections = F2(
+var _user$project$TextReader_Update$gen_text_sections = F2(
 	function (index, text_section) {
 		return A3(
-			_user$project$Main$Section,
+			_user$project$TextReader_Model$Section,
 			text_section,
 			{index: index},
 			A2(
@@ -22443,321 +22481,105 @@ var _user$project$Main$gen_text_sections = F2(
 				_user$project$TextReader_Question$gen_text_question(index),
 				text_section.questions));
 	});
-var _user$project$Main$set_questions = F2(
-	function (_p6, new_questions) {
-		var _p7 = _p6;
-		return A3(_user$project$Main$Section, _p7._0, _p7._1, new_questions);
+var _user$project$TextReader_Update$text_section = F2(
+	function (text_sections, text_question) {
+		var text_section_index = _user$project$TextReader_Question$text_section_index(text_question);
+		return A2(_elm_lang$core$Array$get, text_section_index, text_sections);
 	});
-var _user$project$Main$clear_question_answers = function (section) {
-	var new_questions = A2(
-		_elm_lang$core$Array$map,
-		function (question) {
-			return _user$project$TextReader_Question$deselect_all_answers(question);
+var _user$project$TextReader_Update$update_completed_section = F3(
+	function (section_id, section_index, sections) {
+		return _elm_lang$core$Platform_Cmd$none;
+	});
+var _user$project$TextReader_Update$start = F2(
+	function (profile, web_socket_addr) {
+		var _p8 = profile;
+		if (_p8.ctor === 'Student') {
+			return A2(
+				_elm_lang$websocket$WebSocket$send,
+				web_socket_addr,
+				A2(
+					_elm_lang$core$Json_Encode$encode,
+					0,
+					_user$project$TextReader_Encode$send_command(_user$project$TextReader_Model$StartReq)));
+		} else {
+			return _elm_lang$core$Platform_Cmd$none;
+		}
+	});
+var _user$project$TextReader_Update$msgToCmd = function (msg) {
+	return A2(
+		_elm_lang$core$Task$perform,
+		function (_p9) {
+			return msg;
 		},
-		_user$project$Main$questions(section));
-	return A2(_user$project$Main$set_questions, section, new_questions);
+		_elm_lang$core$Task$succeed(_elm_lang$core$Maybe$Nothing));
 };
-var _user$project$Main$set_question = F2(
-	function (_p8, new_text_question) {
-		var _p9 = _p8;
-		var question_index = _user$project$TextReader_Question$index(new_text_question);
-		return A3(
-			_user$project$Main$Section,
-			_p9._0,
-			_p9._1,
-			A3(_elm_lang$core$Array$set, question_index, new_text_question, _p9._2));
-	});
-var _user$project$Main$Complete = {ctor: 'Complete'};
-var _user$project$Main$ViewSection = function (a) {
-	return {ctor: 'ViewSection', _0: a};
-};
-var _user$project$Main$ViewIntro = {ctor: 'ViewIntro'};
-var _user$project$Main$update = F2(
-	function (msg, model) {
-		var update_question = F2(
-			function (text_section, new_text_question) {
-				var new_text_section = A2(_user$project$Main$set_question, text_section, new_text_question);
-				return A2(_user$project$Main$set_text_section, model.sections, new_text_section);
-			});
-		var _p10 = msg;
+var _user$project$TextReader_Update$route_cmd_resp = F2(
+	function (model, cmd_resp) {
+		var _p10 = cmd_resp;
 		switch (_p10.ctor) {
-			case 'Gloss':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							gloss: A3(_elm_lang$core$Dict$insert, _p10._0, true, model.gloss)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'UnGloss':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							gloss: A2(_elm_lang$core$Dict$remove, _p10._0, model.gloss)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'UpdateText':
-				if (_p10._0.ctor === 'Ok') {
-					var _p11 = _p10._0._0;
-					var text_sections = A2(_elm_lang$core$Array$indexedMap, _user$project$Main$gen_text_sections, _p11.sections);
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{text: _p11, sections: text_sections}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
+			case 'StartResp':
+				var text_req = A2(
+					_elm_lang$websocket$WebSocket$send,
+					model.flags.text_reader_ws_addr,
+					_user$project$TextReader_Encode$jsonToString(
+						_user$project$TextReader_Encode$send_command(_user$project$TextReader_Model$TextReq)));
+				var _p11 = _p10._0;
+				if (_p11 === true) {
+					return {ctor: '_Tuple2', _0: model, _1: text_req};
 				} else {
-					var _p12 = A2(_elm_lang$core$Debug$log, 'text error', _p10._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
-			case 'Select':
-				var new_text_answer = A2(_user$project$TextReader_Answer$set_answer_selected, _p10._2, _p10._3);
-				var new_text_question = A2(_user$project$TextReader_Question$set_as_submitted_answer, _p10._1, new_text_answer);
+			case 'TextResp':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{
-							sections: A2(update_question, _p10._0, new_text_question)
-						}),
+						{text: _p10._0, progress: _user$project$TextReader_Model$ViewIntro}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			case 'ViewFeedback':
-				var new_text_answer = A2(_user$project$TextReader_Answer$set_answer_feedback_viewable, _p10._2, _p10._3);
-				var new_text_question = A2(_user$project$TextReader_Question$set_answer, _p10._1, new_text_answer);
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							sections: A2(update_question, _p10._0, new_text_question)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'StartOver':
-				var new_sections = A2(
-					_elm_lang$core$Array$map,
-					function (section) {
-						return _user$project$Main$clear_question_answers(section);
-					},
-					model.sections);
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{sections: new_sections, progress: _user$project$Main$ViewIntro}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'NextSection':
-				var _p13 = model.progress;
-				switch (_p13.ctor) {
-					case 'ViewIntro':
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{
-									progress: _user$project$Main$ViewSection(0)
-								}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					case 'ViewSection':
-						var _p15 = _p13._0;
-						var new_progress = function () {
-							var _p14 = A2(_elm_lang$core$Array$get, _p15 + 1, model.sections);
-							if (_p14.ctor === 'Just') {
-								return _user$project$Main$ViewSection(_p15 + 1);
-							} else {
-								return _user$project$Main$Complete;
-							}
-						}();
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{progress: new_progress}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					default:
-						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			default:
-				var _p16 = model.progress;
-				switch (_p16.ctor) {
-					case 'ViewIntro':
-						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-					case 'ViewSection':
-						var prev_section_index = _p16._0 - 1;
-						var _p17 = A2(_elm_lang$core$Array$get, prev_section_index, model.sections);
-						if (_p17.ctor === 'Just') {
-							return {
-								ctor: '_Tuple2',
-								_0: _elm_lang$core$Native_Utils.update(
-									model,
-									{
-										progress: _user$project$Main$ViewSection(prev_section_index)
-									}),
-								_1: _elm_lang$core$Platform_Cmd$none
-							};
-						} else {
-							return {
-								ctor: '_Tuple2',
-								_0: _elm_lang$core$Native_Utils.update(
-									model,
-									{progress: _user$project$Main$ViewIntro}),
-								_1: _elm_lang$core$Platform_Cmd$none
-							};
-						}
-					default:
-						var last_section_index = _elm_lang$core$Array$length(model.sections) - 1;
-						var _p18 = A2(_elm_lang$core$Array$get, last_section_index, model.sections);
-						if (_p18.ctor === 'Just') {
-							return {
-								ctor: '_Tuple2',
-								_0: _elm_lang$core$Native_Utils.update(
-									model,
-									{
-										progress: _user$project$Main$ViewSection(last_section_index)
-									}),
-								_1: _elm_lang$core$Platform_Cmd$none
-							};
-						} else {
-							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-						}
-				}
-		}
-	});
-var _user$project$Main$UnGloss = function (a) {
-	return {ctor: 'UnGloss', _0: a};
-};
-var _user$project$Main$view_gloss = F2(
-	function (gloss, word) {
-		var word_def = function (_p19) {
-			return A2(
-				_elm_lang$core$Maybe$withDefault,
-				'',
-				A3(_elm_lang$core$Basics$flip, _elm_lang$core$Dict$get, _user$project$TextReader_Dictionary$dictionary, _p19));
-		};
-		return A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
-			A2(
-				_elm_lang$core$List$map,
-				function (word) {
-					return A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$classList(
-								{
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'gloss_overlay', _1: true},
-									_1: {
-										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'gloss_menu', _1: true},
-										_1: {
-											ctor: '::',
-											_0: {
-												ctor: '_Tuple2',
-												_0: 'hidden',
-												_1: !A2(_elm_lang$core$Dict$member, word, gloss)
-											},
-											_1: {ctor: '[]'}
-										}
-									}
-								}),
-							_1: {
+			case 'NextResp':
+				var _p12 = _p10._0;
+				if (_p12 === true) {
+					return {
+						ctor: '_Tuple2',
+						_0: model,
+						_1: _elm_lang$core$Platform_Cmd$batch(
+							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(
-									_user$project$Main$UnGloss(word)),
+								_0: _user$project$TextReader_Update$msgToCmd(_user$project$TextReader_Msg$NextSection),
 								_1: {ctor: '[]'}
-							}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(
-								A2(
-									_elm_lang$core$Basics_ops['++'],
-									word,
-									A2(
-										_elm_lang$core$Basics_ops['++'],
-										' : ',
-										word_def(word)))),
-							_1: {ctor: '[]'}
-						});
-				},
-				_elm_lang$core$Dict$keys(gloss)));
-	});
-var _user$project$Main$Gloss = function (a) {
-	return {ctor: 'Gloss', _0: a};
-};
-var _user$project$Main$tagWord = F2(
-	function (gloss, word) {
-		return A2(_elm_lang$core$Dict$member, word, _user$project$TextReader_Dictionary$dictionary) ? A3(
-			_elm_lang$html$Html$node,
-			'span',
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('defined_word'),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onDoubleClick(
-						_user$project$Main$Gloss(word)),
-					_1: {ctor: '[]'}
+							})
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
-			},
-			{
-				ctor: '::',
-				_0: _elm_lang$virtual_dom$VirtualDom$text(word),
-				_1: {
-					ctor: '::',
-					_0: A2(_user$project$Main$view_gloss, gloss, word),
-					_1: {ctor: '[]'}
-				}
-			}) : _elm_lang$virtual_dom$VirtualDom$text(word);
-	});
-var _user$project$Main$tagWordAndToVDOM = F2(
-	function (gloss, node) {
-		var _p20 = node;
-		switch (_p20.ctor) {
-			case 'Text':
-				return A2(_user$project$Main$tagWord, gloss, _p20._0);
-			case 'Element':
-				return A3(
-					_elm_lang$html$Html$node,
-					_p20._0,
-					A2(
-						_elm_lang$core$List$map,
-						function (_p21) {
-							var _p22 = _p21;
-							return A2(_elm_lang$html$Html_Attributes$attribute, _p22._0, _p22._1);
-						},
-						_p20._1),
-					A2(_user$project$Main$tagWordsAndToVDOM, gloss, _p20._2));
 			default:
-				return _elm_lang$virtual_dom$VirtualDom$text('');
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
 	});
-var _user$project$Main$tagWordsAndToVDOM = F2(
-	function (gloss, text) {
-		return A2(
-			_elm_lang$core$List$map,
-			_user$project$Main$tagWordAndToVDOM(gloss),
-			text);
+var _user$project$TextReader_Update$handle_ws_resp = F2(
+	function (model, str) {
+		var _p13 = A2(_elm_lang$core$Json_Decode$decodeString, _user$project$TextReader_Decode$ws_resp_decoder, str);
+		if (_p13.ctor === 'Ok') {
+			return A2(_user$project$TextReader_Update$route_cmd_resp, model, _p13._0);
+		} else {
+			var _p14 = A2(_elm_lang$core$Debug$log, 'websocket decode error', _p13._0);
+			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+		}
 	});
-var _user$project$Main$StartOver = {ctor: 'StartOver'};
-var _user$project$Main$NextSection = {ctor: 'NextSection'};
-var _user$project$Main$view_next_btn = A2(
+
+var _user$project$TextReader_Dictionary$dictionary = _elm_lang$core$Dict$fromList(
+	{
+		ctor: '::',
+		_0: {ctor: '_Tuple2', _0: 'test', _1: '\n     A procedure for critical evaluation; a means of determining the presence, quality, or truth of something; a\n     trial: a test of one\'s eyesight; subjecting a hypothesis to a test; a test of an athlete\'s endurance.\n     '},
+		_1: {ctor: '[]'}
+	});
+
+var _user$project$TextReader_View$view_next_btn = A2(
 	_elm_lang$html$Html$div,
 	{
 		ctor: '::',
-		_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$NextSection),
+		_0: _elm_lang$html$Html_Events$onClick(_user$project$TextReader_Msg$NextSection),
 		_1: {
 			ctor: '::',
 			_0: _elm_lang$html$Html_Attributes$class('begin_btn'),
@@ -22769,12 +22591,11 @@ var _user$project$Main$view_next_btn = A2(
 		_0: _elm_lang$html$Html$text('Next'),
 		_1: {ctor: '[]'}
 	});
-var _user$project$Main$PrevSection = {ctor: 'PrevSection'};
-var _user$project$Main$view_prev_btn = A2(
+var _user$project$TextReader_View$view_prev_btn = A2(
 	_elm_lang$html$Html$div,
 	{
 		ctor: '::',
-		_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$PrevSection),
+		_0: _elm_lang$html$Html_Events$onClick(_user$project$TextReader_Msg$PrevSection),
 		_1: {
 			ctor: '::',
 			_0: _elm_lang$html$Html_Attributes$class('begin_btn'),
@@ -22786,13 +22607,24 @@ var _user$project$Main$view_prev_btn = A2(
 		_0: _elm_lang$html$Html$text('Previous'),
 		_1: {ctor: '[]'}
 	});
-var _user$project$Main$view_text_complete = function (model) {
+var _user$project$TextReader_View$view_text_conclusion = function (text) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_conclusion'),
+			_1: {ctor: '[]'}
+		},
+		_jinjor$elm_html_parser$HtmlParser_Util$toVirtualDom(
+			_jinjor$elm_html_parser$HtmlParser$parse(text.conclusion)));
+};
+var _user$project$TextReader_View$view_text_complete = function (model) {
 	var possible_section_scores = _elm_lang$core$List$sum(
 		_elm_lang$core$Array$toList(
 			A2(
 				_elm_lang$core$Array$map,
 				function (section) {
-					return _user$project$Main$max_score(section);
+					return _user$project$TextReader_Update$max_score(section);
 				},
 				model.sections)));
 	var section_scores = _elm_lang$core$List$sum(
@@ -22800,10 +22632,10 @@ var _user$project$Main$view_text_complete = function (model) {
 			A2(
 				_elm_lang$core$Array$map,
 				function (section) {
-					return _user$project$Main$score(section);
+					return _user$project$TextReader_Update$score(section);
 				},
 				model.sections)));
-	var complete_sections = _user$project$Main$completed_sections(model.sections);
+	var complete_sections = _user$project$TextReader_Update$completed_sections(model.sections);
 	var num_of_sections = _elm_lang$core$Array$length(model.sections);
 	return A2(
 		_elm_lang$html$Html$div,
@@ -22859,7 +22691,7 @@ var _user$project$Main$view_text_complete = function (model) {
 				}),
 			_1: {
 				ctor: '::',
-				_0: _user$project$Main$view_text_conclusion(model.text),
+				_0: _user$project$TextReader_View$view_text_conclusion(model.text),
 				_1: {
 					ctor: '::',
 					_0: A2(
@@ -22871,7 +22703,7 @@ var _user$project$Main$view_text_complete = function (model) {
 						},
 						{
 							ctor: '::',
-							_0: _user$project$Main$view_prev_btn,
+							_0: _user$project$TextReader_View$view_prev_btn,
 							_1: {
 								ctor: '::',
 								_0: A2(
@@ -22881,7 +22713,7 @@ var _user$project$Main$view_text_complete = function (model) {
 										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'goback'),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$StartOver),
+											_0: _elm_lang$html$Html_Events$onClick(_user$project$TextReader_Msg$StartOver),
 											_1: {ctor: '[]'}
 										}
 									},
@@ -22898,15 +22730,76 @@ var _user$project$Main$view_text_complete = function (model) {
 			}
 		});
 };
-var _user$project$Main$ViewFeedback = F4(
-	function (a, b, c, d) {
-		return {ctor: 'ViewFeedback', _0: a, _1: b, _2: c, _3: d};
+var _user$project$TextReader_View$view_text_introduction = function (text) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_intro'),
+			_1: {ctor: '[]'}
+		},
+		_jinjor$elm_html_parser$HtmlParser_Util$toVirtualDom(
+			_jinjor$elm_html_parser$HtmlParser$parse(text.introduction)));
+};
+var _user$project$TextReader_View$view_gloss = F2(
+	function (gloss, word) {
+		var word_def = function (_p0) {
+			return A2(
+				_elm_lang$core$Maybe$withDefault,
+				'',
+				A3(_elm_lang$core$Basics$flip, _elm_lang$core$Dict$get, _user$project$TextReader_Dictionary$dictionary, _p0));
+		};
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			A2(
+				_elm_lang$core$List$map,
+				function (word) {
+					return A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$classList(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'gloss_overlay', _1: true},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'gloss_menu', _1: true},
+										_1: {
+											ctor: '::',
+											_0: {
+												ctor: '_Tuple2',
+												_0: 'hidden',
+												_1: !A2(_elm_lang$core$Dict$member, word, gloss)
+											},
+											_1: {ctor: '[]'}
+										}
+									}
+								}),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(
+									_user$project$TextReader_Msg$UnGloss(word)),
+								_1: {ctor: '[]'}
+							}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									word,
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										' : ',
+										word_def(word)))),
+							_1: {ctor: '[]'}
+						});
+				},
+				_elm_lang$core$Dict$keys(gloss)));
 	});
-var _user$project$Main$Select = F4(
-	function (a, b, c, d) {
-		return {ctor: 'Select', _0: a, _1: b, _2: c, _3: d};
-	});
-var _user$project$Main$view_answer = F3(
+var _user$project$TextReader_View$view_answer = F3(
 	function (text_section, text_question, text_answer) {
 		var view_feedback = _user$project$TextReader_Answer$feedback_viewable(text_answer);
 		var is_correct = _user$project$TextReader_Answer$correct(text_answer);
@@ -22914,8 +22807,8 @@ var _user$project$Main$view_answer = F3(
 		var answer = _user$project$TextReader_Answer$answer(text_answer);
 		var question_answered = _user$project$TextReader_Question$answered(text_question);
 		var on_click = question_answered ? _elm_lang$html$Html_Events$onClick(
-			A4(_user$project$Main$ViewFeedback, text_section, text_question, text_answer, true)) : _elm_lang$html$Html_Events$onClick(
-			A4(_user$project$Main$Select, text_section, text_question, text_answer, true));
+			A4(_user$project$TextReader_Msg$ViewFeedback, text_section, text_question, text_answer, true)) : _elm_lang$html$Html_Events$onClick(
+			A4(_user$project$TextReader_Msg$Select, text_section, text_question, text_answer, true));
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -22995,7 +22888,7 @@ var _user$project$Main$view_answer = F3(
 				}
 			});
 	});
-var _user$project$Main$view_question = F2(
+var _user$project$TextReader_View$view_question = F2(
 	function (text_section, text_question) {
 		var answers = _user$project$TextReader_Question$answers(text_question);
 		var question = _user$project$TextReader_Question$question(text_question);
@@ -23037,14 +22930,14 @@ var _user$project$Main$view_question = F2(
 						_elm_lang$core$Array$toList(
 							A2(
 								_elm_lang$core$Array$map,
-								A2(_user$project$Main$view_answer, text_section, text_question),
+								A2(_user$project$TextReader_View$view_answer, text_section, text_question),
 								answers))),
 					_1: {ctor: '[]'}
 				}
 			});
 	});
-var _user$project$Main$view_questions = function (_p23) {
-	var _p24 = _p23;
+var _user$project$TextReader_View$view_questions = function (_p1) {
+	var _p2 = _p1;
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -23055,16 +22948,70 @@ var _user$project$Main$view_questions = function (_p23) {
 		_elm_lang$core$Array$toList(
 			A2(
 				_elm_lang$core$Array$map,
-				_user$project$Main$view_question(_p24),
-				_p24._2)));
+				_user$project$TextReader_View$view_question(_p2),
+				_p2._2)));
 };
-var _user$project$Main$view_text_section = F4(
-	function (gloss, i, _p25, total_sections) {
-		var _p26 = _p25;
+var _user$project$TextReader_View$tagWord = F2(
+	function (gloss, word) {
+		return A2(_elm_lang$core$Dict$member, word, _user$project$TextReader_Dictionary$dictionary) ? A3(
+			_elm_lang$html$Html$node,
+			'span',
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('defined_word'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onDoubleClick(
+						_user$project$TextReader_Msg$Gloss(word)),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$virtual_dom$VirtualDom$text(word),
+				_1: {
+					ctor: '::',
+					_0: A2(_user$project$TextReader_View$view_gloss, gloss, word),
+					_1: {ctor: '[]'}
+				}
+			}) : _elm_lang$virtual_dom$VirtualDom$text(word);
+	});
+var _user$project$TextReader_View$tagWordAndToVDOM = F2(
+	function (gloss, node) {
+		var _p3 = node;
+		switch (_p3.ctor) {
+			case 'Text':
+				return A2(_user$project$TextReader_View$tagWord, gloss, _p3._0);
+			case 'Element':
+				return A3(
+					_elm_lang$html$Html$node,
+					_p3._0,
+					A2(
+						_elm_lang$core$List$map,
+						function (_p4) {
+							var _p5 = _p4;
+							return A2(_elm_lang$html$Html_Attributes$attribute, _p5._0, _p5._1);
+						},
+						_p3._1),
+					A2(_user$project$TextReader_View$tagWordsAndToVDOM, gloss, _p3._2));
+			default:
+				return _elm_lang$virtual_dom$VirtualDom$text('');
+		}
+	});
+var _user$project$TextReader_View$tagWordsAndToVDOM = F2(
+	function (gloss, text) {
+		return A2(
+			_elm_lang$core$List$map,
+			_user$project$TextReader_View$tagWordAndToVDOM(gloss),
+			text);
+	});
+var _user$project$TextReader_View$view_text_section = F4(
+	function (gloss, i, _p6, total_sections) {
+		var _p7 = _p6;
 		var text_body_vdom = A2(
-			_user$project$Main$tagWordsAndToVDOM,
+			_user$project$TextReader_View$tagWordsAndToVDOM,
 			gloss,
-			_jinjor$elm_html_parser$HtmlParser$parse(_p26._0.body));
+			_jinjor$elm_html_parser$HtmlParser$parse(_p7._0.body));
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -23108,16 +23055,16 @@ var _user$project$Main$view_text_section = F4(
 						text_body_vdom),
 					_1: {
 						ctor: '::',
-						_0: _user$project$Main$view_questions(_p26),
+						_0: _user$project$TextReader_View$view_questions(_p7),
 						_1: {ctor: '[]'}
 					}
 				}
 			});
 	});
-var _user$project$Main$view_content = function (model) {
+var _user$project$TextReader_View$view_content = function (model) {
 	var total_sections = _elm_lang$core$Array$length(model.sections);
-	var _p27 = model.progress;
-	switch (_p27.ctor) {
+	var _p8 = model.progress;
+	switch (_p8.ctor) {
 		case 'ViewIntro':
 			return A2(
 				_elm_lang$html$Html$div,
@@ -23128,14 +23075,14 @@ var _user$project$Main$view_content = function (model) {
 				},
 				{
 					ctor: '::',
-					_0: _user$project$Main$view_text_introduction(model.text),
+					_0: _user$project$TextReader_View$view_text_introduction(model.text),
 					_1: {
 						ctor: '::',
 						_0: A2(
 							_elm_lang$html$Html$div,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$NextSection),
+								_0: _elm_lang$html$Html_Events$onClick(_user$project$TextReader_Msg$NextSection),
 								_1: {
 									ctor: '::',
 									_0: _elm_lang$html$Html_Attributes$class('nav'),
@@ -23162,7 +23109,7 @@ var _user$project$Main$view_content = function (model) {
 					}
 				});
 		case 'ViewSection':
-			var _p29 = _p27._0;
+			var _p10 = _p8._0;
 			return A2(
 				_elm_lang$html$Html$div,
 				{
@@ -23171,11 +23118,11 @@ var _user$project$Main$view_content = function (model) {
 					_1: {ctor: '[]'}
 				},
 				function () {
-					var _p28 = A2(_elm_lang$core$Array$get, _p29, model.sections);
-					if (_p28.ctor === 'Just') {
+					var _p9 = A2(_elm_lang$core$Array$get, _p10, model.sections);
+					if (_p9.ctor === 'Just') {
 						return {
 							ctor: '::',
-							_0: A4(_user$project$Main$view_text_section, model.gloss, _p29, _p28._0, total_sections),
+							_0: A4(_user$project$TextReader_View$view_text_section, model.gloss, _p10, _p9._0, total_sections),
 							_1: {
 								ctor: '::',
 								_0: A2(
@@ -23187,10 +23134,10 @@ var _user$project$Main$view_content = function (model) {
 									},
 									{
 										ctor: '::',
-										_0: _user$project$Main$view_prev_btn,
+										_0: _user$project$TextReader_View$view_prev_btn,
 										_1: {
 											ctor: '::',
-											_0: _user$project$Main$view_next_btn,
+											_0: _user$project$TextReader_View$view_next_btn,
 											_1: {ctor: '[]'}
 										}
 									}),
@@ -23201,10 +23148,16 @@ var _user$project$Main$view_content = function (model) {
 						return {ctor: '[]'};
 					}
 				}());
+		case 'Complete':
+			return _user$project$TextReader_View$view_text_complete(model);
 		default:
-			return _user$project$Main$view_text_complete(model);
+			return A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{ctor: '[]'});
 	}
 };
+
 var _user$project$Main$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -23217,7 +23170,7 @@ var _user$project$Main$view = function (model) {
 				_0: _user$project$Views$view_filter,
 				_1: {
 					ctor: '::',
-					_0: _user$project$Main$view_content(model),
+					_0: _user$project$TextReader_View$view_content(model),
 					_1: {
 						ctor: '::',
 						_0: _user$project$Views$view_footer,
@@ -23227,47 +23180,178 @@ var _user$project$Main$view = function (model) {
 			}
 		});
 };
-var _user$project$Main$UpdateText = function (a) {
-	return {ctor: 'UpdateText', _0: a};
-};
-var _user$project$Main$updateText = function (text_id) {
-	var text_req = A2(
-		_elm_lang$http$Http$get,
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			A2(
-				_elm_lang$core$String$join,
-				'',
-				{
-					ctor: '::',
-					_0: _user$project$Config$text_api_endpoint,
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$core$Basics$toString(text_id),
-						_1: {ctor: '[]'}
-					}
-				}),
-			'/'),
-		_user$project$Text_Decode$textDecoder);
-	return A2(_elm_lang$http$Http$send, _user$project$Main$UpdateText, text_req);
+var _user$project$Main$update = F2(
+	function (msg, model) {
+		var update_question = F2(
+			function (text_section, new_text_question) {
+				var new_text_section = A2(_user$project$TextReader_Update$set_question, text_section, new_text_question);
+				return A2(_user$project$TextReader_Update$set_text_section, model.sections, new_text_section);
+			});
+		var _p0 = msg;
+		switch (_p0.ctor) {
+			case 'Gloss':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							gloss: A3(_elm_lang$core$Dict$insert, _p0._0, true, model.gloss)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'UnGloss':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							gloss: A2(_elm_lang$core$Dict$remove, _p0._0, model.gloss)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'Select':
+				var new_text_answer = A2(_user$project$TextReader_Answer$set_answer_selected, _p0._2, _p0._3);
+				var new_text_question = A2(_user$project$TextReader_Question$set_as_submitted_answer, _p0._1, new_text_answer);
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							sections: A2(update_question, _p0._0, new_text_question)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'ViewFeedback':
+				var new_text_answer = A2(_user$project$TextReader_Answer$set_answer_feedback_viewable, _p0._2, _p0._3);
+				var new_text_question = A2(_user$project$TextReader_Question$set_answer, _p0._1, new_text_answer);
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							sections: A2(update_question, _p0._0, new_text_question)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'StartOver':
+				var new_sections = A2(
+					_elm_lang$core$Array$map,
+					function (section) {
+						return _user$project$TextReader_Update$clear_question_answers(section);
+					},
+					model.sections);
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{sections: new_sections, progress: _user$project$TextReader_Model$ViewIntro}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'NextSection':
+				var _p1 = model.progress;
+				switch (_p1.ctor) {
+					case 'ViewIntro':
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{
+									progress: _user$project$TextReader_Model$ViewSection(0)
+								}),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
+					case 'ViewSection':
+						var _p3 = _p1._0;
+						var new_progress = function () {
+							var _p2 = A2(_elm_lang$core$Array$get, _p3 + 1, model.sections);
+							if (_p2.ctor === 'Just') {
+								return _user$project$TextReader_Model$ViewSection(_p3 + 1);
+							} else {
+								return _user$project$TextReader_Model$Complete;
+							}
+						}();
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{progress: new_progress}),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
+					case 'Complete':
+						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					default:
+						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'PrevSection':
+				var _p4 = model.progress;
+				switch (_p4.ctor) {
+					case 'ViewIntro':
+						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					case 'ViewSection':
+						var prev_section_index = _p4._0 - 1;
+						var _p5 = A2(_elm_lang$core$Array$get, prev_section_index, model.sections);
+						if (_p5.ctor === 'Just') {
+							return {
+								ctor: '_Tuple2',
+								_0: _elm_lang$core$Native_Utils.update(
+									model,
+									{
+										progress: _user$project$TextReader_Model$ViewSection(prev_section_index)
+									}),
+								_1: _elm_lang$core$Platform_Cmd$none
+							};
+						} else {
+							return {
+								ctor: '_Tuple2',
+								_0: _elm_lang$core$Native_Utils.update(
+									model,
+									{progress: _user$project$TextReader_Model$ViewIntro}),
+								_1: _elm_lang$core$Platform_Cmd$none
+							};
+						}
+					case 'Complete':
+						var last_section_index = _elm_lang$core$Array$length(model.sections) - 1;
+						var _p6 = A2(_elm_lang$core$Array$get, last_section_index, model.sections);
+						if (_p6.ctor === 'Just') {
+							return {
+								ctor: '_Tuple2',
+								_0: _elm_lang$core$Native_Utils.update(
+									model,
+									{
+										progress: _user$project$TextReader_Model$ViewSection(last_section_index)
+									}),
+								_1: _elm_lang$core$Platform_Cmd$none
+							};
+						} else {
+							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+						}
+					default:
+						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			default:
+				return A2(_user$project$TextReader_Update$handle_ws_resp, model, _p0._0);
+		}
+	});
+var _user$project$Main$subscriptions = function (model) {
+	return A2(_elm_lang$websocket$WebSocket$listen, model.flags.text_reader_ws_addr, _user$project$TextReader_Msg$WebSocketResp);
 };
 var _user$project$Main$init = function (flags) {
 	var profile = _user$project$Profile$init_profile(flags);
 	return {
 		ctor: '_Tuple2',
 		_0: {
-			text: _user$project$Text_Model$new_text,
+			text: _user$project$TextReader_Model$emptyText,
 			sections: _elm_lang$core$Array$fromList(
 				{ctor: '[]'}),
 			gloss: _elm_lang$core$Dict$empty,
 			profile: profile,
-			progress: _user$project$Main$ViewIntro,
+			progress: _user$project$TextReader_Model$Init,
 			flags: flags
 		},
 		_1: _elm_lang$core$Platform_Cmd$batch(
 			{
 				ctor: '::',
-				_0: _user$project$Main$updateText(flags.text_id),
+				_0: A2(_user$project$TextReader_Update$start, profile, flags.text_reader_ws_addr),
 				_1: {ctor: '[]'}
 			})
 	};
@@ -23279,158 +23363,163 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 		function (text_id) {
 			return A2(
 				_elm_lang$core$Json_Decode$andThen,
-				function (csrftoken) {
+				function (text_reader_ws_addr) {
 					return A2(
 						_elm_lang$core$Json_Decode$andThen,
-						function (instructor_profile) {
+						function (csrftoken) {
 							return A2(
 								_elm_lang$core$Json_Decode$andThen,
-								function (profile_id) {
+								function (instructor_profile) {
 									return A2(
 										_elm_lang$core$Json_Decode$andThen,
-										function (profile_type) {
+										function (profile_id) {
 											return A2(
 												_elm_lang$core$Json_Decode$andThen,
-												function (student_profile) {
-													return _elm_lang$core$Json_Decode$succeed(
-														{text_id: text_id, csrftoken: csrftoken, instructor_profile: instructor_profile, profile_id: profile_id, profile_type: profile_type, student_profile: student_profile});
-												},
-												A2(
-													_elm_lang$core$Json_Decode$field,
-													'student_profile',
-													_elm_lang$core$Json_Decode$oneOf(
-														{
-															ctor: '::',
-															_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-															_1: {
-																ctor: '::',
-																_0: A2(
-																	_elm_lang$core$Json_Decode$map,
-																	_elm_lang$core$Maybe$Just,
-																	A2(
-																		_elm_lang$core$Json_Decode$andThen,
-																		function (difficulties) {
-																			return A2(
+												function (profile_type) {
+													return A2(
+														_elm_lang$core$Json_Decode$andThen,
+														function (student_profile) {
+															return _elm_lang$core$Json_Decode$succeed(
+																{text_id: text_id, text_reader_ws_addr: text_reader_ws_addr, csrftoken: csrftoken, instructor_profile: instructor_profile, profile_id: profile_id, profile_type: profile_type, student_profile: student_profile});
+														},
+														A2(
+															_elm_lang$core$Json_Decode$field,
+															'student_profile',
+															_elm_lang$core$Json_Decode$oneOf(
+																{
+																	ctor: '::',
+																	_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																	_1: {
+																		ctor: '::',
+																		_0: A2(
+																			_elm_lang$core$Json_Decode$map,
+																			_elm_lang$core$Maybe$Just,
+																			A2(
 																				_elm_lang$core$Json_Decode$andThen,
-																				function (difficulty_preference) {
+																				function (difficulties) {
 																					return A2(
 																						_elm_lang$core$Json_Decode$andThen,
-																						function (id) {
+																						function (difficulty_preference) {
 																							return A2(
 																								_elm_lang$core$Json_Decode$andThen,
-																								function (username) {
-																									return _elm_lang$core$Json_Decode$succeed(
-																										{difficulties: difficulties, difficulty_preference: difficulty_preference, id: id, username: username});
+																								function (id) {
+																									return A2(
+																										_elm_lang$core$Json_Decode$andThen,
+																										function (username) {
+																											return _elm_lang$core$Json_Decode$succeed(
+																												{difficulties: difficulties, difficulty_preference: difficulty_preference, id: id, username: username});
+																										},
+																										A2(_elm_lang$core$Json_Decode$field, 'username', _elm_lang$core$Json_Decode$string));
 																								},
-																								A2(_elm_lang$core$Json_Decode$field, 'username', _elm_lang$core$Json_Decode$string));
+																								A2(
+																									_elm_lang$core$Json_Decode$field,
+																									'id',
+																									_elm_lang$core$Json_Decode$oneOf(
+																										{
+																											ctor: '::',
+																											_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																											_1: {
+																												ctor: '::',
+																												_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$int),
+																												_1: {ctor: '[]'}
+																											}
+																										})));
 																						},
 																						A2(
 																							_elm_lang$core$Json_Decode$field,
-																							'id',
+																							'difficulty_preference',
 																							_elm_lang$core$Json_Decode$oneOf(
 																								{
 																									ctor: '::',
 																									_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
 																									_1: {
 																										ctor: '::',
-																										_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$int),
+																										_0: A2(
+																											_elm_lang$core$Json_Decode$map,
+																											_elm_lang$core$Maybe$Just,
+																											A2(
+																												_elm_lang$core$Json_Decode$andThen,
+																												function (x0) {
+																													return A2(
+																														_elm_lang$core$Json_Decode$andThen,
+																														function (x1) {
+																															return _elm_lang$core$Json_Decode$succeed(
+																																{ctor: '_Tuple2', _0: x0, _1: x1});
+																														},
+																														A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
+																												},
+																												A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string))),
 																										_1: {ctor: '[]'}
 																									}
 																								})));
 																				},
 																				A2(
 																					_elm_lang$core$Json_Decode$field,
-																					'difficulty_preference',
-																					_elm_lang$core$Json_Decode$oneOf(
-																						{
-																							ctor: '::',
-																							_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-																							_1: {
-																								ctor: '::',
-																								_0: A2(
-																									_elm_lang$core$Json_Decode$map,
-																									_elm_lang$core$Maybe$Just,
-																									A2(
-																										_elm_lang$core$Json_Decode$andThen,
-																										function (x0) {
-																											return A2(
-																												_elm_lang$core$Json_Decode$andThen,
-																												function (x1) {
-																													return _elm_lang$core$Json_Decode$succeed(
-																														{ctor: '_Tuple2', _0: x0, _1: x1});
-																												},
-																												A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
-																										},
-																										A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string))),
-																								_1: {ctor: '[]'}
-																							}
-																						})));
-																		},
-																		A2(
-																			_elm_lang$core$Json_Decode$field,
-																			'difficulties',
-																			_elm_lang$core$Json_Decode$list(
-																				A2(
-																					_elm_lang$core$Json_Decode$andThen,
-																					function (x0) {
-																						return A2(
+																					'difficulties',
+																					_elm_lang$core$Json_Decode$list(
+																						A2(
 																							_elm_lang$core$Json_Decode$andThen,
-																							function (x1) {
-																								return _elm_lang$core$Json_Decode$succeed(
-																									{ctor: '_Tuple2', _0: x0, _1: x1});
+																							function (x0) {
+																								return A2(
+																									_elm_lang$core$Json_Decode$andThen,
+																									function (x1) {
+																										return _elm_lang$core$Json_Decode$succeed(
+																											{ctor: '_Tuple2', _0: x0, _1: x1});
+																									},
+																									A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
 																							},
-																							A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
-																					},
-																					A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string)))))),
-																_1: {ctor: '[]'}
-															}
-														})));
-										},
-										A2(_elm_lang$core$Json_Decode$field, 'profile_type', _elm_lang$core$Json_Decode$string));
-								},
-								A2(_elm_lang$core$Json_Decode$field, 'profile_id', _elm_lang$core$Json_Decode$int));
-						},
-						A2(
-							_elm_lang$core$Json_Decode$field,
-							'instructor_profile',
-							_elm_lang$core$Json_Decode$oneOf(
-								{
-									ctor: '::',
-									_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-									_1: {
-										ctor: '::',
-										_0: A2(
-											_elm_lang$core$Json_Decode$map,
-											_elm_lang$core$Maybe$Just,
-											A2(
-												_elm_lang$core$Json_Decode$andThen,
-												function (id) {
-													return A2(
-														_elm_lang$core$Json_Decode$andThen,
-														function (username) {
-															return _elm_lang$core$Json_Decode$succeed(
-																{id: id, username: username});
-														},
-														A2(_elm_lang$core$Json_Decode$field, 'username', _elm_lang$core$Json_Decode$string));
+																							A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string)))))),
+																		_1: {ctor: '[]'}
+																	}
+																})));
 												},
-												A2(
-													_elm_lang$core$Json_Decode$field,
-													'id',
-													_elm_lang$core$Json_Decode$oneOf(
-														{
-															ctor: '::',
-															_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-															_1: {
-																ctor: '::',
-																_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$int),
-																_1: {ctor: '[]'}
-															}
-														})))),
-										_1: {ctor: '[]'}
-									}
-								})));
+												A2(_elm_lang$core$Json_Decode$field, 'profile_type', _elm_lang$core$Json_Decode$string));
+										},
+										A2(_elm_lang$core$Json_Decode$field, 'profile_id', _elm_lang$core$Json_Decode$int));
+								},
+								A2(
+									_elm_lang$core$Json_Decode$field,
+									'instructor_profile',
+									_elm_lang$core$Json_Decode$oneOf(
+										{
+											ctor: '::',
+											_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+											_1: {
+												ctor: '::',
+												_0: A2(
+													_elm_lang$core$Json_Decode$map,
+													_elm_lang$core$Maybe$Just,
+													A2(
+														_elm_lang$core$Json_Decode$andThen,
+														function (id) {
+															return A2(
+																_elm_lang$core$Json_Decode$andThen,
+																function (username) {
+																	return _elm_lang$core$Json_Decode$succeed(
+																		{id: id, username: username});
+																},
+																A2(_elm_lang$core$Json_Decode$field, 'username', _elm_lang$core$Json_Decode$string));
+														},
+														A2(
+															_elm_lang$core$Json_Decode$field,
+															'id',
+															_elm_lang$core$Json_Decode$oneOf(
+																{
+																	ctor: '::',
+																	_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																	_1: {
+																		ctor: '::',
+																		_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$int),
+																		_1: {ctor: '[]'}
+																	}
+																})))),
+												_1: {ctor: '[]'}
+											}
+										})));
+						},
+						A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string));
 				},
-				A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string));
+				A2(_elm_lang$core$Json_Decode$field, 'text_reader_ws_addr', _elm_lang$core$Json_Decode$string));
 		},
 		A2(_elm_lang$core$Json_Decode$field, 'text_id', _elm_lang$core$Json_Decode$int)));
 

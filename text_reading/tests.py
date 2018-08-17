@@ -39,7 +39,9 @@ class TestTextReading(TestCase):
 
         resp = await communicator.receive_json_from()
 
-        self.assertIn('started', resp)
+        self.assertIn('command', resp)
+        self.assertIn('result', resp)
+        self.assertTrue(resp['result'])
 
         # test can't get section information when you haven't started the reading yet
         await communicator.send_json_to(data={'command': 'current_section'})
@@ -55,8 +57,9 @@ class TestTextReading(TestCase):
 
         resp = await communicator.receive_json_from()
 
-        self.assertIn('next', resp)
-        self.assertTrue(resp['next'])
+        self.assertIn('command', resp)
+        self.assertIn('result', resp)
+        self.assertTrue(resp['result'])
 
         # test we're not giving the client the answers
         await communicator.send_json_to(data={'command': 'current_section'})
@@ -66,5 +69,15 @@ class TestTextReading(TestCase):
         self.assertIn('questions', resp)
 
         self.assertNotIn('correct', resp['questions'][0]['answers'][0])
+
+        # test request of the text information
+        await communicator.send_json_to(data={'command': 'text'})
+
+        resp = await communicator.receive_json_from()
+
+        self.assertIn('command', resp)
+        self.assertIn('result', resp)
+
+        self.assertDictEqual(resp['result'], self.text.to_text_reading_dict())
 
         await communicator.disconnect()

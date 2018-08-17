@@ -7,7 +7,6 @@ import Html.Events exposing (onClick, onDoubleClick)
 import Array exposing (Array)
 import Dict exposing (Dict)
 
-
 import TextReader.Model exposing (..)
 
 import TextReader.Question exposing (TextQuestion)
@@ -198,3 +197,6 @@ view_content model =
 
       Complete ->
         view_text_complete model
+
+      _ ->
+        div [] []

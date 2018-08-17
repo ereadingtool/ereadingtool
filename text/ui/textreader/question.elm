@@ -3,9 +3,20 @@ module TextReader.Question exposing (..)
 import Array exposing (Array)
 
 import TextReader exposing (TextItemAttributes, AnsweredCorrectly)
-import TextReader.Answer exposing (TextAnswer)
+import TextReader.Answer exposing (TextAnswer, Answer)
 
-import Question.Model exposing (Question)
+import Date exposing (Date)
+
+
+type alias Question = {
+    id: Int
+  , text_section_id: Int
+  , created_dt: Maybe Date
+  , modified_dt: Maybe Date
+  , body: String
+  , order: Int
+  , answers: Array Answer
+  , question_type: String }
 
 type alias TextQuestionAttributes = TextItemAttributes { id:String, text_section_index: Int }
 

@@ -2,10 +2,11 @@ module TextReader.Update exposing (..)
 
 import Array exposing (Array)
 
-import Text.Section.Model exposing (TextSection)
-
 import TextReader.Model exposing (..)
 import TextReader exposing (TextItemAttributes, WebSocketAddress)
+
+import TextReader.Encode
+import TextReader.Decode
 
 import TextReader.Question exposing (TextQuestion)
 
@@ -18,104 +19,57 @@ import WebSocket
 
 import Profile
 
-import Html exposing (Html)
-import Html.Attributes exposing (class, classList, attribute, property)
-
 import Task
 
+
+handle_ws_resp : Model -> String -> (Model, Cmd Msg)
+handle_ws_resp model str =
+  case Json.Decode.decodeString TextReader.Decode.ws_resp_decoder str of
+    Ok cmd_resp ->
+      route_cmd_resp model cmd_resp
+
+    Err err -> let _ = Debug.log "websocket decode error" err in
+      (model, Cmd.none)
+
+msgToCmd : Msg -> Cmd Msg
+msgToCmd msg =
+  Task.perform (\_ -> msg) (Task.succeed Nothing)
 
 route_cmd_resp : Model -> CmdResp -> (Model, Cmd Msg)
 route_cmd_resp model cmd_resp =
   case cmd_resp of
     StartResp result ->
       let
-        start_task = Task.succeed (Started result)
-        msg = Task.perform (\err -> Started err) (\result -> Started result) start_task
-      in
-        (model, msg)
-
-    NextResp result ->
-      let
-        next_task = Task.succeed (NextSection result)
-        msg = Task.perform (\err -> Started err) (\result -> Started result) next_task
+        text_req =
+          WebSocket.send model.flags.text_reader_ws_addr
+            (TextReader.Encode.jsonToString <| TextReader.Encode.send_command TextReq)
       in
         case result of
           True ->
-            (model, Cmd.none)
+            -- next request the text details
+            (model, text_req)
           False ->
             (model, Cmd.none)
 
-startDecoder : String -> Json.Decode.Decoder CmdResp
-startDecoder str =
-  let
-    decoder = Json.Decode.field "result" Json.Decode.bool
-  in
-    case Json.Decode.decodeString decoder str of
-      Ok result ->
-        StartResp result
+    TextResp text ->
+      ({ model | text = text, progress=ViewIntro }, Cmd.none)
 
-      Err err ->
-        StartResp False
+    NextResp result ->
+      case result of
+        True ->
+          (model, Cmd.batch [ msgToCmd NextSection ])
+        False ->
+          (model, Cmd.none)
 
-
-nextDecoder : String -> Json.Decode.Decoder CmdResp
-nextDecoder str =
-  let
-    decoder = Json.Decode.field "result" Json.Decode.bool
-  in
-    case Json.Decode.decodeString decoder str of
-      Ok result ->
-        NextResp result
-
-      Err err ->
-        NextResp False
-
-
-command_decoder : String -> Json.Decode.Decoder CmdResp
-command_decoder cmd_str =
-  let
-    result_decoder = Json.Decode.field "result" Json.Decode.bool
-  in
-    case cmd_str of
-      "start" ->
-        startDecoder
-      "next" ->
-        nextDecoder
-
-send_command : Command -> Json.Encode.Value
-send_command (Command cmd_req cmd_resp) =
-  case cmd_req of
-    StartReq ->
-      Json.Encode.object [
-        (Json.Encode.string "command", Json.Encode.string "start")
-      ]
-
-    NextReq ->
-      Json.Encode.object [
-        (Json.Encode.string "command", Json.Encode.string  "next")
-      ]
-
-    AnswerReq answer_id ->
-      Json.Encode.object [
-        (Json.Encode.string "command", Json.Encode.string "answer")
-      , (Json.Encode.string "answer_id", Json.Encode.int answer_id)
-      ]
-
-    CurrentSectionReq ->
-      Json.Encode.object [
-        (Json.Encode.string "command", Json.Encode.string "current_section")
-      ]
+    _ ->
+      (model, Cmd.none)
 
 
 start : Profile.Profile -> WebSocketAddress -> Cmd Msg
 start profile web_socket_addr =
   case profile of
     Profile.Student profile ->
-      let
-        student_username = Profile.studentUserName profile
-        _ = Debug.log "username" student_username
-      in
-        WebSocket.send web_socket_addr (send_command (Command StartReq StartResp))
+      WebSocket.send web_socket_addr (Json.Encode.encode 0 (TextReader.Encode.send_command StartReq))
     _ ->
       Cmd.none
 

@@ -12,7 +12,6 @@ type Msg =
   | ViewFeedback Section TextQuestion TextAnswer Bool
   | PrevSection
   | NextSection
-  | Started Bool
   | StartOver
   | Gloss Word
   | UnGloss Word

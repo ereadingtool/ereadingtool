@@ -148,6 +148,23 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
             'write_locker': str(self.write_locker) if self.write_locker else None
         }
 
+    def to_text_reading_dict(self) -> Dict:
+        return {
+            'id': self.pk,
+            'title': self.title,
+            'introduction': self.introduction,
+            'conclusion': self.conclusion,
+            'author': self.author,
+            'source': self.source,
+            'difficulty': self.difficulty.slug,
+            'created_by': str(self.created_by),
+            'last_modified_by': str(self.last_modified_by) if self.last_modified_by else None,
+            'tags': [tag.name for tag in self.tags.all()],
+            'modified_dt': self.modified_dt.isoformat(),
+            'created_dt': self.created_dt.isoformat(),
+            'text_sections': list(map(lambda section: section.to_text_reading_dict(), self.sections.all())),
+        }
+
     def to_dict(self, text_sections: Optional[List]=None) -> Dict:
         return {
             'id': self.pk,
@@ -219,6 +236,7 @@ class TextSection(Timestamped, models.Model):
             'created_dt': self.created_dt.isoformat(),
             'modified_dt': self.modified_dt.isoformat(),
             'question_count': self.questions.count(),
+            'order': self.order,
             'body': self.body,
             'questions': [question.to_text_reading_dict() for question in self.questions.all()]
         }

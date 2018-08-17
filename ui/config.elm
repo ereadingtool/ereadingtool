@@ -26,6 +26,3 @@ student_api_endpoint = "/api/student/"
 
 answer_feedback_limit : Int
 answer_feedback_limit = 2048
-
-text_reading_ws_address : String
-text_reading_ws_address = "ws://0.0.0.0:8000/text_reader/"
