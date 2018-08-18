@@ -11,7 +11,6 @@ import TextReader.Model exposing (..)
 
 import TextReader.Question exposing (TextQuestion)
 import TextReader.Answer exposing (TextAnswer)
-import TextReader.Update exposing (..)
 import TextReader.Msg exposing (Msg(..))
 
 
@@ -85,9 +84,9 @@ view_answer text_section text_question text_answer =
 view_question : Section -> TextQuestion -> Html Msg
 view_question text_section text_question =
   let
-    text_question_id = TextReader.Question.id text_question
     question = TextReader.Question.question text_question
     answers = TextReader.Question.answers text_question
+    text_question_id = String.join "_" ["question", toString question.order]
   in
     div [class "question", attribute "id" text_question_id] [
       div [class "question_body"] [ Html.text question.body ]
@@ -96,7 +95,7 @@ view_question text_section text_question =
     ]
 
 view_questions : Section -> Html Msg
-view_questions ((Section text text_attr questions) as text_section) =
+view_questions ((Section section questions) as text_section) =
   div [class "questions"] (Array.toList <| Array.map (view_question text_section) questions)
 
 view_gloss : Dict String Bool -> String -> Html Msg
@@ -114,13 +113,14 @@ view_gloss gloss word =
           ]
         ) (Dict.keys gloss))
 
-view_text_section : Dict String Bool -> Int -> Section -> Int -> Html Msg
-view_text_section gloss i ((Section text attrs questions) as text_section) total_sections =
+view_text_section : Dict String Bool -> Section -> Int -> Html Msg
+view_text_section gloss ((Section section questions) as text_section) total_sections =
   let
-    text_body_vdom = tagWordsAndToVDOM gloss (HtmlParser.parse text.body)
+    text_body_vdom = tagWordsAndToVDOM gloss (HtmlParser.parse section.body)
+    section_title = ("Section " ++ (toString (section.order +1)) ++ "/" ++ (toString total_sections))
   in
     div [class "text_section"] <| [
-        div [class "section_title"] [ Html.text ("Section " ++ (toString (i+1)) ++ "/" ++ (toString total_sections)) ]
+        div [class "section_title"] [ Html.text section_title ]
       , div [class "text_body"] text_body_vdom
       , view_questions text_section
     ]
@@ -148,16 +148,11 @@ view_next_btn =
 view_text_complete : Model -> Html Msg
 view_text_complete model =
   let
-    num_of_sections = Array.length model.sections
-    complete_sections = completed_sections model.sections
-    section_scores =
-         List.sum
-      <| Array.toList
-      <| Array.map (\section -> score section) model.sections
-    possible_section_scores =
-         List.sum
-      <| Array.toList
-      <| Array.map (\section -> max_score section) model.sections
+    -- TODO(andrew): get these values from backend
+    num_of_sections = 0
+    complete_sections = 0
+    section_scores = 0
+    possible_section_scores = 0
   in
     div [class "text"] [
       div [attribute "id" "text_score"] [
@@ -176,27 +171,22 @@ view_text_complete model =
 
 view_content : Model -> Html Msg
 view_content model =
-  let
-    total_sections = Array.length model.sections
-  in
-    case model.progress of
-      ViewIntro ->
-        div [class "text"] <| [
-          view_text_introduction model.text
-        , div [onClick NextSection, class "nav"] [ div [class "start_btn"] [ Html.text "Start" ] ]
-        ]
+  case model.progress of
+    ViewIntro ->
+      div [class "text"] <| [
+        view_text_introduction model.text
+      , div [onClick NextSection, class "nav"] [ div [class "start_btn"] [ Html.text "Start" ] ]
+      ]
 
-      ViewSection i ->
-        div [class "text"]
-          (case Array.get i model.sections of
-            Just section ->
-              [ view_text_section model.gloss i section total_sections
-              , div [class "nav"] [view_prev_btn, view_next_btn] ]
-            Nothing ->
-              [])
+    ViewSection section ->
+      div [class "text"] [
+        -- TODO(andrew): fill out num of sections
+        view_text_section model.gloss section 1
+      , div [class "nav"] [view_prev_btn, view_next_btn]
+      ]
 
-      Complete ->
-        view_text_complete model
+    Complete ->
+      view_text_complete model
 
-      _ ->
-        div [] []
+    _ ->
+      div [] []

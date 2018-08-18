@@ -19,8 +19,18 @@ import WebSocket
 
 import Profile
 
-import Task
 
+route_cmd_resp : Model -> CmdResp -> (Model, Cmd Msg)
+route_cmd_resp model cmd_resp =
+  case cmd_resp of
+    StartResp text ->
+      ({ model | text = text, progress=ViewIntro }, Cmd.none)
+
+    NextResp text_section ->
+      ({ model | progress=ViewSection (newSection text_section) }, Cmd.none)
+
+    _ ->
+      (model, Cmd.none)
 
 handle_ws_resp : Model -> String -> (Model, Cmd Msg)
 handle_ws_resp model str =
@@ -31,40 +41,6 @@ handle_ws_resp model str =
     Err err -> let _ = Debug.log "websocket decode error" err in
       (model, Cmd.none)
 
-msgToCmd : Msg -> Cmd Msg
-msgToCmd msg =
-  Task.perform (\_ -> msg) (Task.succeed Nothing)
-
-route_cmd_resp : Model -> CmdResp -> (Model, Cmd Msg)
-route_cmd_resp model cmd_resp =
-  case cmd_resp of
-    StartResp result ->
-      let
-        text_req =
-          WebSocket.send model.flags.text_reader_ws_addr
-            (TextReader.Encode.jsonToString <| TextReader.Encode.send_command TextReq)
-      in
-        case result of
-          True ->
-            -- next request the text details
-            (model, text_req)
-          False ->
-            (model, Cmd.none)
-
-    TextResp text ->
-      ({ model | text = text, progress=ViewIntro }, Cmd.none)
-
-    NextResp result ->
-      case result of
-        True ->
-          (model, Cmd.batch [ msgToCmd NextSection ])
-        False ->
-          (model, Cmd.none)
-
-    _ ->
-      (model, Cmd.none)
-
-
 start : Profile.Profile -> WebSocketAddress -> Cmd Msg
 start profile web_socket_addr =
   case profile of
@@ -73,31 +49,8 @@ start profile web_socket_addr =
     _ ->
       Cmd.none
 
-update_completed_section : Int -> Int -> Array Section -> Cmd Msg
-update_completed_section section_id section_index sections =
-  Cmd.none
-
-text_section : Array Section -> TextQuestion -> Maybe Section
-text_section text_sections text_question =
-  let
-    text_section_index = TextReader.Question.text_section_index text_question
-  in
-    Array.get text_section_index text_sections
-
-gen_text_sections : Int -> TextSection -> Section
-gen_text_sections index text_section =
-  Section
-    text_section {index=index} (Array.indexedMap (TextReader.Question.gen_text_question index) text_section.questions)
-
-clear_question_answers : Section -> Section
-clear_question_answers section =
-  let
-    new_questions = Array.map (\question -> TextReader.Question.deselect_all_answers question) (questions section)
-  in
-    set_questions section new_questions
-
 questions : Section -> Array TextQuestion
-questions (Section section attrs questions) = questions
+questions (Section section questions) = questions
 
 complete : Section -> Bool
 complete section =
@@ -123,18 +76,3 @@ score section =
   <| Array.toList
   <| Array.map (\question ->
        if (Maybe.withDefault False (TextReader.Question.answered_correctly question)) then 1 else 0) (questions section)
-
-set_questions : Section -> Array TextQuestion -> Section
-set_questions (Section text attrs _) new_questions =
-  Section text attrs new_questions
-
-set_question : Section -> TextQuestion -> Section
-set_question (Section text text_attr questions) new_text_question =
-  let
-    question_index = TextReader.Question.index new_text_question
-  in
-    Section text text_attr (Array.set question_index new_text_question questions)
-
-set_text_section : Array Section -> Section -> Array Section
-set_text_section text_sections ((Section _ attrs _) as text_section) =
-  Array.set attrs.index text_section text_sections

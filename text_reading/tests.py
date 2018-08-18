@@ -35,6 +35,15 @@ class TestTextReading(TestCase):
 
         self.assertTrue(connected, 'connected')
 
+        # test can't go to next step when you haven't started the reading yet
+        await communicator.send_json_to(data={'command': 'next'})
+
+        resp = await communicator.receive_json_from()
+
+        self.assertIn('error', resp)
+        self.assertIn('code', resp['error'])
+        self.assertEquals('invalid_state', resp['error']['code'])
+
         await communicator.send_json_to(data={'command': 'start'})
 
         resp = await communicator.receive_json_from()
@@ -42,15 +51,6 @@ class TestTextReading(TestCase):
         self.assertIn('command', resp)
         self.assertIn('result', resp)
         self.assertTrue(resp['result'])
-
-        # test can't get section information when you haven't started the reading yet
-        await communicator.send_json_to(data={'command': 'current_section'})
-
-        resp = await communicator.receive_json_from()
-
-        self.assertIn('error', resp)
-        self.assertIn('code', resp['error'])
-        self.assertEquals('invalid_state', resp['error']['code'])
 
         # proceed to the next step
         await communicator.send_json_to(data={'command': 'next'})

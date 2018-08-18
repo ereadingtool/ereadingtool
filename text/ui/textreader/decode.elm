@@ -14,7 +14,7 @@ import Json.Decode.Extra exposing (date)
 
 startDecoder : Json.Decode.Decoder CmdResp
 startDecoder =
-  Json.Decode.map StartResp (Json.Decode.field "result" Json.Decode.bool)
+  Json.Decode.map StartResp (Json.Decode.field "result" textDecoder)
 
 
 answerDecoder : Json.Decode.Decoder Answer
@@ -71,11 +71,10 @@ textDecoder =
     |> required "tags" (Json.Decode.nullable (Json.Decode.list (Json.Decode.string)))
     |> required "created_dt" (Json.Decode.nullable date)
     |> required "modified_dt" (Json.Decode.nullable date)
-    |> required "text_sections" (Json.Decode.map Array.fromList (textSectionsDecoder))
 
 nextDecoder : Json.Decode.Decoder CmdResp
 nextDecoder =
-  Json.Decode.map NextResp (Json.Decode.field "result" Json.Decode.bool)
+  Json.Decode.map NextResp (Json.Decode.field "result" textSectionDecoder)
 
 ws_resp_decoder : Json.Decode.Decoder CmdResp
 ws_resp_decoder =
@@ -88,7 +87,5 @@ command_decoder cmd_str =
       startDecoder
     "next" ->
       nextDecoder
-    "text" ->
-      Json.Decode.map TextResp (Json.Decode.field "result" textDecoder)
     _ ->
       Json.Decode.fail ("Command " ++ cmd_str ++ " not supported")
