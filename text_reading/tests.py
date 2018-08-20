@@ -33,24 +33,16 @@ class TestTextReading(TestCase):
 
         connected, subprotocol = await communicator.connect()
 
+        # start
         self.assertTrue(connected, 'connected')
-
-        # test can't go to next step when you haven't started the reading yet
-        await communicator.send_json_to(data={'command': 'next'})
-
-        resp = await communicator.receive_json_from()
-
-        self.assertIn('error', resp)
-        self.assertIn('code', resp['error'])
-        self.assertEquals('invalid_state', resp['error']['code'])
-
-        await communicator.send_json_to(data={'command': 'start'})
 
         resp = await communicator.receive_json_from()
 
         self.assertIn('command', resp)
         self.assertIn('result', resp)
-        self.assertTrue(resp['result'])
+
+        self.assertEquals(resp['command'], 'start')
+        self.assertEquals(resp['result'], self.text.to_text_reading_dict())
 
         # proceed to the next step
         await communicator.send_json_to(data={'command': 'next'})
@@ -59,25 +51,24 @@ class TestTextReading(TestCase):
 
         self.assertIn('command', resp)
         self.assertIn('result', resp)
-        self.assertTrue(resp['result'])
+
+        self.assertEquals(resp['result'], self.text.sections.all()[0].to_text_reading_dict())
 
         # test we're not giving the client the answers
-        await communicator.send_json_to(data={'command': 'current_section'})
+        self.assertIn('questions', resp['result'])
+
+        self.assertNotIn('correct', resp['result']['questions'][0]['answers'][0])
+
+        # test go to prev section
+        await communicator.send_json_to(data={'command': 'prev'})
 
         resp = await communicator.receive_json_from()
 
-        self.assertIn('questions', resp)
-
-        self.assertNotIn('correct', resp['questions'][0]['answers'][0])
-
-        # test request of the text information
-        await communicator.send_json_to(data={'command': 'text'})
-
-        resp = await communicator.receive_json_from()
-
+        # back to 'start'
         self.assertIn('command', resp)
+        self.assertEquals(resp['command'], 'start')
         self.assertIn('result', resp)
 
-        self.assertDictEqual(resp['result'], self.text.to_text_reading_dict())
+        self.assertEquals(resp['result'], self.text.to_text_reading_dict())
 
         await communicator.disconnect()

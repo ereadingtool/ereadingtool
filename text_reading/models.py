@@ -44,18 +44,30 @@ class TextReadingStateMachine(StateMachine):
     complete = State('complete')
 
     reading = intro.to(in_progress)
+
     next = in_progress.to(in_progress)
+    prev = in_progress.to(in_progress)
+
+    back_to_intro = in_progress.to(intro)
+
     completing = in_progress.to(complete)
 
-    def next_state(self, section: Optional[TextSection]=None, reading=True, *args, **kwargs):
-        if self.current_state == self.intro and section:
+    def next_state(self, next_section: Optional[TextSection]=None, reading=True, *args, **kwargs):
+        if self.is_intro and next_section:
             self.reading()
 
-        elif self.current_state == self.in_progress and section:
+        elif self.is_in_progress and next_section:
             self.next()
 
-        elif self.current_state == self.in_progress and not section:
+        elif self.is_in_progress and not next_section:
             self.completing()
+
+    def prev_state(self, prev_section: Optional[TextSection]=None, reading=True, *args, **kwargs):
+        if self.is_in_progress and prev_section:
+            self.prev()
+
+        elif self.is_in_progress and not prev_section:
+            self.back_to_intro()
 
 
 class TextReading(models.Model):
@@ -137,6 +149,30 @@ class TextReading(models.Model):
 
         return text_section_reading
 
+    def prev(self, *args, **kwargs):
+        """
+
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        prev_section = None
+
+        if self.current_section:
+            try:
+                i = self.current_section.order - 1
+
+                if i > -1:
+                    prev_section = self.sections[i]
+            except IndexError:
+                pass
+
+        self.state_machine.prev_state(prev_section=prev_section, **kwargs)
+
+        self.current_section = prev_section
+
+        self.save()
+
     def next(self, *args, **kwargs):
         """
 
@@ -152,10 +188,10 @@ class TextReading(models.Model):
             except IndexError:
                 pass
 
-        elif self.state_machine.current_state == self.state_machine.intro:
+        elif self.state_machine.is_intro:
             next_section = self.sections[0]
 
-        self.state_machine.next_state(section=next_section, **kwargs)
+        self.state_machine.next_state(next_section=next_section, **kwargs)
 
         self.current_section = next_section
 

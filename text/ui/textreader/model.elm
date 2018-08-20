@@ -22,6 +22,7 @@ type alias Word = String
 type CmdReq =
     StartReq
   | NextReq
+  | PrevReq
   | AnswerReq Int
   | CurrentSectionReq
   | TextReq

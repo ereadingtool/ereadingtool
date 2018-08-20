@@ -60,24 +60,20 @@ update msg model =
           , WebSocket.send model.flags.text_reader_ws_addr
               (TextReader.Encode.jsonToString <| TextReader.Encode.send_command NextReq))
 
-        Complete ->
-          ( model
-          , WebSocket.send model.flags.text_reader_ws_addr
-              (TextReader.Encode.jsonToString <| TextReader.Encode.send_command NextReq))
-
         _ ->
           (model, Cmd.none)
 
     PrevSection ->
       case model.progress of
-        ViewIntro ->
-          (model, Cmd.none)
-
-        ViewSection i ->
-          (model, Cmd.none)
+        ViewSection section ->
+          ( model
+          , WebSocket.send model.flags.text_reader_ws_addr
+              (TextReader.Encode.jsonToString <| TextReader.Encode.send_command PrevReq))
 
         Complete ->
-          (model, Cmd.none)
+          ( model
+          , WebSocket.send model.flags.text_reader_ws_addr
+              (TextReader.Encode.jsonToString <| TextReader.Encode.send_command PrevReq))
 
         _ ->
           (model, Cmd.none)

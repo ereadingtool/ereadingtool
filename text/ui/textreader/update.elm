@@ -29,7 +29,7 @@ route_cmd_resp model cmd_resp =
     NextResp text_section ->
       ({ model | progress=ViewSection (newSection text_section) }, Cmd.none)
 
-    _ ->
+    CompleteResp ->
       (model, Cmd.none)
 
 handle_ws_resp : Model -> String -> (Model, Cmd Msg)

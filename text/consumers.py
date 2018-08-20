@@ -51,16 +51,42 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
 
         self.text_reading.answer(answer)
 
+    async def prev(self, student: Student):
+        if not student.user.is_authenticated:
+            raise Unauthorized
+
+        self.text_reading.prev()
+
+        if self.text_reading.current_state == self.text_reading.state_machine.in_progress:
+            await self.send_json({
+                'command': 'prev',
+                'result': self.text_reading.get_current_section().to_text_reading_dict()
+            })
+
+        elif self.text_reading.current_state == self.text_reading.state_machine.intro:
+            await self.send_json({
+                'command': 'start',
+                'result': self.text.to_text_reading_dict()
+            })
+
     async def next(self, student: Student):
         if not student.user.is_authenticated:
             raise Unauthorized
 
         self.text_reading.next()
 
-        await self.send_json({
-            'command': 'next',
-            'result': self.text_reading.get_current_section().to_text_reading_dict()
-        })
+        if self.text_reading.current_state == self.text_reading.state_machine.in_progress:
+            await self.send_json({
+                'command': 'next',
+                'result': self.text_reading.get_current_section().to_text_reading_dict()
+            })
+
+        elif self.text_reading.current_state == self.text_reading.state_machine.complete:
+            await self.send_json({
+                'command': 'complete',
+                # scores
+                'result': {}
+            })
 
     async def connect(self):
         if self.scope['user'].is_anonymous:
@@ -85,7 +111,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
 
         available_cmds = {
             'next': 1,
-            'text': 1,
+            'prev': 1,
             'answer': 1,
         }
 
@@ -96,6 +122,9 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
 
                 if cmd == 'next':
                     await self.next(student=student)
+
+                if cmd == 'prev':
+                    await self.prev(student=student)
 
                 if cmd == 'answer':
                     await self.answer(answer_id=content.get('answer_id', None), student=student)
