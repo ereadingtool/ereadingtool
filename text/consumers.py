@@ -5,7 +5,8 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
 
 from text.models import Text, TextSection
-from text_reading.models import TextReading, TextReadingException, TextReadingNotAllQuestionsAnswered
+from text_reading.models import (TextReading, TextReadingException, TextReadingNotAllQuestionsAnswered,
+                                 TextReadingQuestionAlreadyAnswered, TextReadingQuestionNotInSection)
 
 from user.student.models import Student
 from question.models import Question, Answer
@@ -49,7 +50,18 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
 
         answer = await get_answer_or_error(answer_id=answer_id, student=student)
 
-        self.text_reading.answer(answer)
+        try:
+            self.text_reading.answer(answer)
+        except (TextReadingQuestionAlreadyAnswered, TextReadingQuestionNotInSection):
+            await self.send_json({
+                'command': 'exception',
+                'result': {'code': 'unknown', 'error_msg': 'Something went wrong.'}
+            })
+        except TextReadingException as e:
+            await self.send_json({
+                'command': 'exception',
+                'result': {'code': e.code, 'error_msg': e.error_msg}
+            })
 
     async def prev(self, student: Student):
         if not student.user.is_authenticated:
