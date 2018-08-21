@@ -4,6 +4,7 @@ import Array exposing (Array)
 import Dict exposing (Dict)
 
 import TextReader.Question exposing (TextQuestion, Question)
+import Answer.Model exposing (Answer)
 
 import TextReader exposing (TextItemAttributes, WebSocketAddress)
 
@@ -19,20 +20,19 @@ type Progress = Init | ViewIntro | ViewSection Section | Complete
 
 type alias Word = String
 
+type alias Exception = { code: String, error_msg: String }
+
 type CmdReq =
-    StartReq
-  | NextReq
+    NextReq
   | PrevReq
   | AnswerReq Int
-  | CurrentSectionReq
-  | TextReq
-  | CompleteReq
 
 type CmdResp =
     StartResp Text
   | NextResp TextSection
   | CompleteResp TextScores
-  | AnswerResp Bool
+  | AnswerResp Answer
+  | ExceptionResp Exception
 
 -- TODO (andrew): interesting stats go here
 type alias TextScores = {
@@ -93,4 +93,5 @@ type alias Model = {
   , profile : Profile.Profile
   , progress: Progress
   , gloss : Dict String Bool
+  , exception : Maybe Exception
   , flags : Flags }

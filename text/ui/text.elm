@@ -24,6 +24,7 @@ init flags =
      , profile=profile
      , progress=Init
      , flags=flags
+     , exception=Nothing
      } , Cmd.none)
 
 subscriptions : Model -> Sub Msg
@@ -49,34 +50,14 @@ update msg model =
       (model, Cmd.none)
 
     NextSection ->
-      case model.progress of
-        ViewIntro ->
-          ( model
-          , WebSocket.send model.flags.text_reader_ws_addr
-              (TextReader.Encode.jsonToString <| TextReader.Encode.send_command NextReq))
-
-        ViewSection section ->
-          ( model
-          , WebSocket.send model.flags.text_reader_ws_addr
-              (TextReader.Encode.jsonToString <| TextReader.Encode.send_command NextReq))
-
-        _ ->
-          (model, Cmd.none)
+      (model
+      , WebSocket.send model.flags.text_reader_ws_addr
+          (TextReader.Encode.jsonToString <| TextReader.Encode.send_command NextReq))
 
     PrevSection ->
-      case model.progress of
-        ViewSection section ->
-          ( model
-          , WebSocket.send model.flags.text_reader_ws_addr
-              (TextReader.Encode.jsonToString <| TextReader.Encode.send_command PrevReq))
-
-        Complete ->
-          ( model
-          , WebSocket.send model.flags.text_reader_ws_addr
-              (TextReader.Encode.jsonToString <| TextReader.Encode.send_command PrevReq))
-
-        _ ->
-          (model, Cmd.none)
+     (model
+      , WebSocket.send model.flags.text_reader_ws_addr
+          (TextReader.Encode.jsonToString <| TextReader.Encode.send_command PrevReq))
 
     WebSocketResp str ->
       TextReader.Update.handle_ws_resp model str

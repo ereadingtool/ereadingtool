@@ -5,7 +5,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
 
 from text.models import Text, TextSection
-from text_reading.models import TextReading, TextReadingException
+from text_reading.models import TextReading, TextReadingException, TextReadingNotAllQuestionsAnswered
 
 from user.student.models import Student
 from question.models import Question, Answer
@@ -55,7 +55,13 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
         if not student.user.is_authenticated:
             raise Unauthorized
 
-        self.text_reading.prev()
+        try:
+            self.text_reading.prev()
+        except TextReadingException as e:
+            await self.send_json({
+                'command': 'exception',
+                'result': {'code': e.code, 'error_msg': e.error_msg}
+            })
 
         if self.text_reading.current_state == self.text_reading.state_machine.in_progress:
             await self.send_json({
@@ -73,7 +79,13 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
         if not student.user.is_authenticated:
             raise Unauthorized
 
-        self.text_reading.next()
+        try:
+            self.text_reading.next()
+        except TextReadingNotAllQuestionsAnswered as e:
+            await self.send_json({
+                'command': 'exception',
+                'result': {'code': e.code, 'error_msg': e.error_msg}
+            })
 
         if self.text_reading.current_state == self.text_reading.state_machine.in_progress:
             await self.send_json({

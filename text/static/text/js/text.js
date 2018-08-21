@@ -21937,6 +21937,11 @@ var _user$project$TextReader_Model$emptyTextSection = {
 	questions: _elm_lang$core$Array$fromList(
 		{ctor: '[]'})
 };
+var _user$project$TextReader_Model$Exception = F2(
+	function (a, b) {
+		return {code: a, error_msg: b};
+	});
+var _user$project$TextReader_Model$TextScores = {};
 var _user$project$TextReader_Model$TextSection = F4(
 	function (a, b, c, d) {
 		return {order: a, body: b, question_count: c, questions: d};
@@ -21966,9 +21971,9 @@ var _user$project$TextReader_Model$Text = function (a) {
 		};
 	};
 };
-var _user$project$TextReader_Model$Model = F5(
-	function (a, b, c, d, e) {
-		return {text: a, profile: b, progress: c, gloss: d, flags: e};
+var _user$project$TextReader_Model$Model = F6(
+	function (a, b, c, d, e, f) {
+		return {text: a, profile: b, progress: c, gloss: d, exception: e, flags: f};
 	});
 var _user$project$TextReader_Model$Section = F2(
 	function (a, b) {
@@ -21986,21 +21991,19 @@ var _user$project$TextReader_Model$ViewSection = function (a) {
 };
 var _user$project$TextReader_Model$ViewIntro = {ctor: 'ViewIntro'};
 var _user$project$TextReader_Model$Init = {ctor: 'Init'};
-var _user$project$TextReader_Model$TextReq = {ctor: 'TextReq'};
-var _user$project$TextReader_Model$CurrentSectionReq = {ctor: 'CurrentSectionReq'};
 var _user$project$TextReader_Model$AnswerReq = function (a) {
 	return {ctor: 'AnswerReq', _0: a};
 };
+var _user$project$TextReader_Model$PrevReq = {ctor: 'PrevReq'};
 var _user$project$TextReader_Model$NextReq = {ctor: 'NextReq'};
-var _user$project$TextReader_Model$StartReq = {ctor: 'StartReq'};
-var _user$project$TextReader_Model$TextResp = function (a) {
-	return {ctor: 'TextResp', _0: a};
-};
-var _user$project$TextReader_Model$CurrentSectionResp = function (a) {
-	return {ctor: 'CurrentSectionResp', _0: a};
+var _user$project$TextReader_Model$ExceptionResp = function (a) {
+	return {ctor: 'ExceptionResp', _0: a};
 };
 var _user$project$TextReader_Model$AnswerResp = function (a) {
 	return {ctor: 'AnswerResp', _0: a};
+};
+var _user$project$TextReader_Model$CompleteResp = function (a) {
+	return {ctor: 'CompleteResp', _0: a};
 };
 var _user$project$TextReader_Model$NextResp = function (a) {
 	return {ctor: 'NextResp', _0: a};
@@ -22012,28 +22015,6 @@ var _user$project$TextReader_Model$StartResp = function (a) {
 var _user$project$TextReader_Encode$send_command = function (cmd_req) {
 	var _p0 = cmd_req;
 	switch (_p0.ctor) {
-		case 'StartReq':
-			return _elm_lang$core$Json_Encode$object(
-				{
-					ctor: '::',
-					_0: {
-						ctor: '_Tuple2',
-						_0: 'command',
-						_1: _elm_lang$core$Json_Encode$string('start')
-					},
-					_1: {ctor: '[]'}
-				});
-		case 'TextReq':
-			return _elm_lang$core$Json_Encode$object(
-				{
-					ctor: '::',
-					_0: {
-						ctor: '_Tuple2',
-						_0: 'command',
-						_1: _elm_lang$core$Json_Encode$string('text')
-					},
-					_1: {ctor: '[]'}
-				});
 		case 'NextReq':
 			return _elm_lang$core$Json_Encode$object(
 				{
@@ -22045,7 +22026,18 @@ var _user$project$TextReader_Encode$send_command = function (cmd_req) {
 					},
 					_1: {ctor: '[]'}
 				});
-		case 'AnswerReq':
+		case 'PrevReq':
+			return _elm_lang$core$Json_Encode$object(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'command',
+						_1: _elm_lang$core$Json_Encode$string('prev')
+					},
+					_1: {ctor: '[]'}
+				});
+		default:
 			return _elm_lang$core$Json_Encode$object(
 				{
 					ctor: '::',
@@ -22063,17 +22055,6 @@ var _user$project$TextReader_Encode$send_command = function (cmd_req) {
 						},
 						_1: {ctor: '[]'}
 					}
-				});
-		default:
-			return _elm_lang$core$Json_Encode$object(
-				{
-					ctor: '::',
-					_0: {
-						ctor: '_Tuple2',
-						_0: 'command',
-						_1: _elm_lang$core$Json_Encode$string('current_section')
-					},
-					_1: {ctor: '[]'}
 				});
 	}
 };
@@ -22107,6 +22088,27 @@ var _user$project$TextReader_Dictionary$dictionary = _elm_lang$core$Dict$fromLis
 		_1: {ctor: '[]'}
 	});
 
+var _user$project$TextReader_View$view_exceptions = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('exception'),
+			_1: {ctor: '[]'}
+		},
+		function () {
+			var _p0 = model.exception;
+			if (_p0.ctor === 'Just') {
+				return {
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(_p0._0.error_msg),
+					_1: {ctor: '[]'}
+				};
+			} else {
+				return {ctor: '[]'};
+			}
+		}());
+};
 var _user$project$TextReader_View$view_next_btn = A2(
 	_elm_lang$html$Html$div,
 	{
@@ -22261,11 +22263,11 @@ var _user$project$TextReader_View$view_text_introduction = function (text) {
 };
 var _user$project$TextReader_View$view_gloss = F2(
 	function (gloss, word) {
-		var word_def = function (_p0) {
+		var word_def = function (_p1) {
 			return A2(
 				_elm_lang$core$Maybe$withDefault,
 				'',
-				A3(_elm_lang$core$Basics$flip, _elm_lang$core$Dict$get, _user$project$TextReader_Dictionary$dictionary, _p0));
+				A3(_elm_lang$core$Basics$flip, _elm_lang$core$Dict$get, _user$project$TextReader_Dictionary$dictionary, _p1));
 		};
 		return A2(
 			_elm_lang$html$Html$div,
@@ -22465,8 +22467,8 @@ var _user$project$TextReader_View$view_question = F2(
 				}
 			});
 	});
-var _user$project$TextReader_View$view_questions = function (_p1) {
-	var _p2 = _p1;
+var _user$project$TextReader_View$view_questions = function (_p2) {
+	var _p3 = _p2;
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -22477,8 +22479,8 @@ var _user$project$TextReader_View$view_questions = function (_p1) {
 		_elm_lang$core$Array$toList(
 			A2(
 				_elm_lang$core$Array$map,
-				_user$project$TextReader_View$view_question(_p2),
-				_p2._1)));
+				_user$project$TextReader_View$view_question(_p3),
+				_p3._1)));
 };
 var _user$project$TextReader_View$tagWord = F2(
 	function (gloss, word) {
@@ -22507,22 +22509,22 @@ var _user$project$TextReader_View$tagWord = F2(
 	});
 var _user$project$TextReader_View$tagWordAndToVDOM = F2(
 	function (gloss, node) {
-		var _p3 = node;
-		switch (_p3.ctor) {
+		var _p4 = node;
+		switch (_p4.ctor) {
 			case 'Text':
-				return A2(_user$project$TextReader_View$tagWord, gloss, _p3._0);
+				return A2(_user$project$TextReader_View$tagWord, gloss, _p4._0);
 			case 'Element':
 				return A3(
 					_elm_lang$html$Html$node,
-					_p3._0,
+					_p4._0,
 					A2(
 						_elm_lang$core$List$map,
-						function (_p4) {
-							var _p5 = _p4;
-							return A2(_elm_lang$html$Html_Attributes$attribute, _p5._0, _p5._1);
+						function (_p5) {
+							var _p6 = _p5;
+							return A2(_elm_lang$html$Html_Attributes$attribute, _p6._0, _p6._1);
 						},
-						_p3._1),
-					A2(_user$project$TextReader_View$tagWordsAndToVDOM, gloss, _p3._2));
+						_p4._1),
+					A2(_user$project$TextReader_View$tagWordsAndToVDOM, gloss, _p4._2));
 			default:
 				return _elm_lang$virtual_dom$VirtualDom$text('');
 		}
@@ -22535,15 +22537,15 @@ var _user$project$TextReader_View$tagWordsAndToVDOM = F2(
 			text);
 	});
 var _user$project$TextReader_View$view_text_section = F3(
-	function (gloss, _p6, total_sections) {
-		var _p7 = _p6;
-		var _p8 = _p7._0;
+	function (gloss, _p7, total_sections) {
+		var _p8 = _p7;
+		var _p9 = _p8._0;
 		var section_title = A2(
 			_elm_lang$core$Basics_ops['++'],
 			'Section ',
 			A2(
 				_elm_lang$core$Basics_ops['++'],
-				_elm_lang$core$Basics$toString(_p8.order + 1),
+				_elm_lang$core$Basics$toString(_p9.order + 1),
 				A2(
 					_elm_lang$core$Basics_ops['++'],
 					'/',
@@ -22551,7 +22553,7 @@ var _user$project$TextReader_View$view_text_section = F3(
 		var text_body_vdom = A2(
 			_user$project$TextReader_View$tagWordsAndToVDOM,
 			gloss,
-			_jinjor$elm_html_parser$HtmlParser$parse(_p8.body));
+			_jinjor$elm_html_parser$HtmlParser$parse(_p9.body));
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -22585,15 +22587,15 @@ var _user$project$TextReader_View$view_text_section = F3(
 						text_body_vdom),
 					_1: {
 						ctor: '::',
-						_0: _user$project$TextReader_View$view_questions(_p7),
+						_0: _user$project$TextReader_View$view_questions(_p8),
 						_1: {ctor: '[]'}
 					}
 				}
 			});
 	});
 var _user$project$TextReader_View$view_content = function (model) {
-	var _p9 = model.progress;
-	switch (_p9.ctor) {
+	var _p10 = model.progress;
+	switch (_p10.ctor) {
 		case 'ViewIntro':
 			return A2(
 				_elm_lang$html$Html$div,
@@ -22647,26 +22649,30 @@ var _user$project$TextReader_View$view_content = function (model) {
 				},
 				{
 					ctor: '::',
-					_0: A3(_user$project$TextReader_View$view_text_section, model.gloss, _p9._0, 1),
+					_0: A3(_user$project$TextReader_View$view_text_section, model.gloss, _p10._0, 1),
 					_1: {
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('nav'),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: _user$project$TextReader_View$view_prev_btn,
-								_1: {
+						_0: _user$project$TextReader_View$view_exceptions(model),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
 									ctor: '::',
-									_0: _user$project$TextReader_View$view_next_btn,
+									_0: _elm_lang$html$Html_Attributes$class('nav'),
 									_1: {ctor: '[]'}
-								}
-							}),
-						_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _user$project$TextReader_View$view_prev_btn,
+									_1: {
+										ctor: '::',
+										_0: _user$project$TextReader_View$view_next_btn,
+										_1: {ctor: '[]'}
+									}
+								}),
+							_1: {ctor: '[]'}
+						}
 					}
 				});
 		case 'Complete':
@@ -22679,6 +22685,15 @@ var _user$project$TextReader_View$view_content = function (model) {
 	}
 };
 
+var _user$project$TextReader_Decode$exceptionDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'error_msg',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'code',
+		_elm_lang$core$Json_Decode$string,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$TextReader_Model$Exception)));
 var _user$project$TextReader_Decode$textDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'modified_dt',
@@ -22811,13 +22826,18 @@ var _user$project$TextReader_Decode$startDecoder = A2(
 	_elm_lang$core$Json_Decode$map,
 	_user$project$TextReader_Model$StartResp,
 	A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$TextReader_Decode$textDecoder));
-var _user$project$TextReader_Decode$command_decoder = function (cmd_str) {
+var _user$project$TextReader_Decode$command_resp_decoder = function (cmd_str) {
 	var _p0 = cmd_str;
 	switch (_p0) {
 		case 'start':
 			return _user$project$TextReader_Decode$startDecoder;
 		case 'next':
 			return _user$project$TextReader_Decode$nextDecoder;
+		case 'exception':
+			return A2(
+				_elm_lang$core$Json_Decode$map,
+				_user$project$TextReader_Model$ExceptionResp,
+				A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$TextReader_Decode$exceptionDecoder));
 		default:
 			return _elm_lang$core$Json_Decode$fail(
 				A2(
@@ -22828,7 +22848,7 @@ var _user$project$TextReader_Decode$command_decoder = function (cmd_str) {
 };
 var _user$project$TextReader_Decode$ws_resp_decoder = A2(
 	_elm_lang$core$Json_Decode$andThen,
-	_user$project$TextReader_Decode$command_decoder,
+	_user$project$TextReader_Decode$command_resp_decoder,
 	A2(_elm_lang$core$Json_Decode$field, 'command', _elm_lang$core$Json_Decode$string));
 
 var _user$project$TextReader_Update$questions = function (_p0) {
@@ -22882,31 +22902,16 @@ var _user$project$TextReader_Update$score = function (section) {
 				},
 				_user$project$TextReader_Update$questions(section))));
 };
-var _user$project$TextReader_Update$start = F2(
-	function (profile, web_socket_addr) {
-		var _p2 = profile;
-		if (_p2.ctor === 'Student') {
-			return A2(
-				_elm_lang$websocket$WebSocket$send,
-				web_socket_addr,
-				A2(
-					_elm_lang$core$Json_Encode$encode,
-					0,
-					_user$project$TextReader_Encode$send_command(_user$project$TextReader_Model$StartReq)));
-		} else {
-			return _elm_lang$core$Platform_Cmd$none;
-		}
-	});
 var _user$project$TextReader_Update$route_cmd_resp = F2(
 	function (model, cmd_resp) {
-		var _p3 = cmd_resp;
-		switch (_p3.ctor) {
+		var _p2 = cmd_resp;
+		switch (_p2.ctor) {
 			case 'StartResp':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{text: _p3._0, progress: _user$project$TextReader_Model$ViewIntro}),
+						{text: _p2._0, progress: _user$project$TextReader_Model$ViewIntro}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'NextResp':
@@ -22916,21 +22921,33 @@ var _user$project$TextReader_Update$route_cmd_resp = F2(
 						model,
 						{
 							progress: _user$project$TextReader_Model$ViewSection(
-								_user$project$TextReader_Model$newSection(_p3._0))
+								_user$project$TextReader_Model$newSection(_p2._0))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			default:
+			case 'CompleteResp':
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'AnswerResp':
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							exception: _elm_lang$core$Maybe$Just(_p2._0)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 		}
 	});
 var _user$project$TextReader_Update$handle_ws_resp = F2(
 	function (model, str) {
-		var _p4 = A2(_elm_lang$core$Json_Decode$decodeString, _user$project$TextReader_Decode$ws_resp_decoder, str);
-		if (_p4.ctor === 'Ok') {
-			return A2(_user$project$TextReader_Update$route_cmd_resp, model, _p4._0);
+		var _p3 = A2(_elm_lang$core$Json_Decode$decodeString, _user$project$TextReader_Decode$ws_resp_decoder, str);
+		if (_p3.ctor === 'Ok') {
+			return A2(_user$project$TextReader_Update$route_cmd_resp, model, _p3._0);
 		} else {
-			var _p5 = A2(_elm_lang$core$Debug$log, 'websocket decode error', _p4._0);
+			var _p4 = A2(_elm_lang$core$Debug$log, 'websocket decode error', _p3._0);
 			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
 	});
@@ -22988,37 +23005,25 @@ var _user$project$Main$update = F2(
 			case 'StartOver':
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'NextSection':
-				var _p1 = model.progress;
-				switch (_p1.ctor) {
-					case 'ViewIntro':
-						return {
-							ctor: '_Tuple2',
-							_0: model,
-							_1: A2(
-								_elm_lang$websocket$WebSocket$send,
-								model.flags.text_reader_ws_addr,
-								_user$project$TextReader_Encode$jsonToString(
-									_user$project$TextReader_Encode$send_command(_user$project$TextReader_Model$NextReq)))
-						};
-					case 'ViewSection':
-						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-					case 'Complete':
-						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-					default:
-						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: A2(
+						_elm_lang$websocket$WebSocket$send,
+						model.flags.text_reader_ws_addr,
+						_user$project$TextReader_Encode$jsonToString(
+							_user$project$TextReader_Encode$send_command(_user$project$TextReader_Model$NextReq)))
+				};
 			case 'PrevSection':
-				var _p2 = model.progress;
-				switch (_p2.ctor) {
-					case 'ViewIntro':
-						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-					case 'ViewSection':
-						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-					case 'Complete':
-						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-					default:
-						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: A2(
+						_elm_lang$websocket$WebSocket$send,
+						model.flags.text_reader_ws_addr,
+						_user$project$TextReader_Encode$jsonToString(
+							_user$project$TextReader_Encode$send_command(_user$project$TextReader_Model$PrevReq)))
+				};
 			default:
 				return A2(_user$project$TextReader_Update$handle_ws_resp, model, _p0._0);
 		}
@@ -23030,7 +23035,7 @@ var _user$project$Main$init = function (flags) {
 	var profile = _user$project$Profile$init_profile(flags);
 	return {
 		ctor: '_Tuple2',
-		_0: {text: _user$project$TextReader_Model$emptyText, gloss: _elm_lang$core$Dict$empty, profile: profile, progress: _user$project$TextReader_Model$Init, flags: flags},
+		_0: {text: _user$project$TextReader_Model$emptyText, gloss: _elm_lang$core$Dict$empty, profile: profile, progress: _user$project$TextReader_Model$Init, flags: flags, exception: _elm_lang$core$Maybe$Nothing},
 		_1: _elm_lang$core$Platform_Cmd$none
 	};
 };

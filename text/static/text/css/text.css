@@ -27,6 +27,14 @@
     grid-template-columns: 50% 50%;
 }
 
+.exception {
+    grid-column: 2;
+    display: grid;
+    font-size: 20px;
+    font-style: italic;
+    color: #bf2639;
+}
+
 .nav > div {
     display: inline-block;
 

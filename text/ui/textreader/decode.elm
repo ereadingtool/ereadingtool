@@ -16,7 +16,6 @@ startDecoder : Json.Decode.Decoder CmdResp
 startDecoder =
   Json.Decode.map StartResp (Json.Decode.field "result" textDecoder)
 
-
 answerDecoder : Json.Decode.Decoder Answer
 answerDecoder =
   decode Answer
@@ -43,7 +42,6 @@ questionDecoder =
 
 questionsDecoder : Json.Decode.Decoder (Array Question)
 questionsDecoder = Json.Decode.array questionDecoder
-
 
 textSectionDecoder : Json.Decode.Decoder TextSection
 textSectionDecoder =
@@ -76,16 +74,24 @@ nextDecoder : Json.Decode.Decoder CmdResp
 nextDecoder =
   Json.Decode.map NextResp (Json.Decode.field "result" textSectionDecoder)
 
+exceptionDecoder : Json.Decode.Decoder Exception
+exceptionDecoder =
+  decode Exception
+    |> required "code" (Json.Decode.string)
+    |> required "error_msg" (Json.Decode.string)
+
 ws_resp_decoder : Json.Decode.Decoder CmdResp
 ws_resp_decoder =
-  Json.Decode.field "command" Json.Decode.string |> Json.Decode.andThen command_decoder
+  Json.Decode.field "command" Json.Decode.string |> Json.Decode.andThen command_resp_decoder
 
-command_decoder : String -> Json.Decode.Decoder CmdResp
-command_decoder cmd_str =
+command_resp_decoder : String -> Json.Decode.Decoder CmdResp
+command_resp_decoder cmd_str =
   case cmd_str of
     "start" ->
       startDecoder
     "next" ->
       nextDecoder
+    "exception" ->
+      Json.Decode.map ExceptionResp (Json.Decode.field "result" exceptionDecoder)
     _ ->
       Json.Decode.fail ("Command " ++ cmd_str ++ " not supported")

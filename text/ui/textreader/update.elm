@@ -3,21 +3,14 @@ module TextReader.Update exposing (..)
 import Array exposing (Array)
 
 import TextReader.Model exposing (..)
-import TextReader exposing (TextItemAttributes, WebSocketAddress)
 
-import TextReader.Encode
 import TextReader.Decode
 
 import TextReader.Question exposing (TextQuestion)
 
 import TextReader.Msg exposing (Msg(..))
 
-import Json.Encode
 import Json.Decode
-
-import WebSocket
-
-import Profile
 
 
 route_cmd_resp : Model -> CmdResp -> (Model, Cmd Msg)
@@ -29,8 +22,14 @@ route_cmd_resp model cmd_resp =
     NextResp text_section ->
       ({ model | progress=ViewSection (newSection text_section) }, Cmd.none)
 
-    CompleteResp ->
+    CompleteResp text_scores ->
       (model, Cmd.none)
+
+    AnswerResp answer ->
+      (model, Cmd.none)
+
+    ExceptionResp exception ->
+      ({ model | exception = Just exception }, Cmd.none)
 
 handle_ws_resp : Model -> String -> (Model, Cmd Msg)
 handle_ws_resp model str =
@@ -40,14 +39,6 @@ handle_ws_resp model str =
 
     Err err -> let _ = Debug.log "websocket decode error" err in
       (model, Cmd.none)
-
-start : Profile.Profile -> WebSocketAddress -> Cmd Msg
-start profile web_socket_addr =
-  case profile of
-    Profile.Student profile ->
-      WebSocket.send web_socket_addr (Json.Encode.encode 0 (TextReader.Encode.send_command StartReq))
-    _ ->
-      Cmd.none
 
 questions : Section -> Array TextQuestion
 questions (Section section questions) = questions

@@ -169,6 +169,17 @@ view_text_complete model =
       ]
     ]
 
+view_exceptions : Model -> Html Msg
+view_exceptions model =
+  div [class "exception"] (case model.exception of
+    Just exception ->
+      [
+        Html.text exception.error_msg
+      ]
+    Nothing ->
+      [])
+
+
 view_content : Model -> Html Msg
 view_content model =
   case model.progress of
@@ -182,6 +193,7 @@ view_content model =
       div [class "text"] [
         -- TODO(andrew): fill out num of sections
         view_text_section model.gloss section 1
+      , view_exceptions model
       , div [class "nav"] [view_prev_btn, view_next_btn]
       ]
 

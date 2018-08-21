@@ -114,7 +114,10 @@ class TextReading(models.Model):
         if TextSectionReading.objects.filter(
                 text_reading=self,
                 text_section=self.current_section).count() < self.current_section.questions.count():
-            raise TextReadingNotAllQuestionsAnswered
+            raise TextReadingNotAllQuestionsAnswered(
+                code='questions_unanswered',
+                error_msg='Please answer all questions before continuing to the next section.'
+            )
 
     def __init__(self, *args, **kwargs):
         """
