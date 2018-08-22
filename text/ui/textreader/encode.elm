@@ -1,13 +1,12 @@
 module TextReader.Encode exposing (..)
 
 import TextReader.Model exposing (..)
+import TextReader.Answer.Model
 import Json.Encode
-
 
 
 jsonToString : (Json.Encode.Value -> String)
 jsonToString = (Json.Encode.encode 0)
-
 
 send_command : CmdReq -> Json.Encode.Value
 send_command cmd_req =
@@ -22,8 +21,11 @@ send_command cmd_req =
         ("command", Json.Encode.string  "prev")
       ]
 
-    AnswerReq answer_id ->
-      Json.Encode.object [
-        ("command", Json.Encode.string "answer")
-      , ("answer_id", Json.Encode.int answer_id)
-      ]
+    AnswerReq text_answer ->
+      let
+        text_reader_answer = TextReader.Answer.Model.answer text_answer
+      in
+        Json.Encode.object [
+          ("command", Json.Encode.string "answer")
+        , ("answer_id", Json.Encode.int text_reader_answer.id)
+        ]

@@ -52,11 +52,18 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
 
         try:
             self.text_reading.answer(answer)
+
+            await self.send_json({
+                'command': 'answer',
+                'result': self.text_reading.get_current_section().to_text_reading_dict()
+            })
+
         except (TextReadingQuestionAlreadyAnswered, TextReadingQuestionNotInSection):
             await self.send_json({
                 'command': 'exception',
                 'result': {'code': 'unknown', 'error_msg': 'Something went wrong.'}
             })
+
         except TextReadingException as e:
             await self.send_json({
                 'command': 'exception',
@@ -98,18 +105,28 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
                 'command': 'exception',
                 'result': {'code': e.code, 'error_msg': e.error_msg}
             })
+        except TextReadingException:
+            await self.send_json({
+                'command': 'exception',
+                'result': {'code': 'unknown', 'error_msg': 'something went wrong'}
+            })
 
-        if self.text_reading.current_state == self.text_reading.state_machine.in_progress:
+        if self.text_reading.state_machine.is_in_progress:
             await self.send_json({
                 'command': 'next',
                 'result': self.text_reading.get_current_section().to_text_reading_dict()
             })
 
-        elif self.text_reading.current_state == self.text_reading.state_machine.complete:
+        elif self.text_reading.state_machine.is_complete:
             await self.send_json({
                 'command': 'complete',
                 # scores
-                'result': {}
+                'result': {
+                    'num_of_sections': len(self.sections),
+                    'complete_sections': len(self.sections),
+                    'section_scores': 5,
+                    'possible_section_scores': 5
+                }
             })
 
     async def connect(self):

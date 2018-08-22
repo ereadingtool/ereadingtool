@@ -5,74 +5,51 @@ import Array exposing (Array)
 import Json.Decode
 import TextReader.Model exposing (..)
 
-import TextReader.Answer exposing (Answer)
-import TextReader.Question exposing (Question)
+import Answer.Decode
+
+import TextReader.Section.Model exposing (Section)
+import TextReader.Answer.Model exposing (Answer)
+
+import TextReader.Question.Decode
+import TextReader.Question.Model exposing (TextQuestion, Question)
+
+import TextReader.Section.Decode
+import TextReader.Text.Decode
 
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 import Json.Decode.Extra exposing (date)
 
 
+
+command_resp_decoder : String -> Json.Decode.Decoder CmdResp
+command_resp_decoder cmd_str =
+  case cmd_str of
+    "start" ->
+      startDecoder
+
+    "next" ->
+      sectionDecoder NextResp
+
+    "answer" ->
+      sectionDecoder AnswerResp
+
+    "exception" ->
+      Json.Decode.map ExceptionResp (Json.Decode.field "result" exceptionDecoder)
+
+    "complete" ->
+      Json.Decode.map CompleteResp (Json.Decode.field "result" textScoresDecoder)
+
+    _ ->
+      Json.Decode.fail ("Command " ++ cmd_str ++ " not supported")
+
+
+sectionDecoder : (Section -> CmdResp) -> Json.Decode.Decoder CmdResp
+sectionDecoder cmd_resp =
+  Json.Decode.map cmd_resp (Json.Decode.field "result" TextReader.Section.Decode.sectionDecoder)
+
 startDecoder : Json.Decode.Decoder CmdResp
 startDecoder =
-  Json.Decode.map StartResp (Json.Decode.field "result" textDecoder)
-
-answerDecoder : Json.Decode.Decoder Answer
-answerDecoder =
-  decode Answer
-    |> required "id" (Json.Decode.int)
-    |> required "question_id" (Json.Decode.int)
-    |> required "text" Json.Decode.string
-    |> required "order" Json.Decode.int
-    |> required "feedback" Json.Decode.string
-
-answersDecoder : Json.Decode.Decoder (Array Answer)
-answersDecoder = Json.Decode.array answerDecoder
-
-questionDecoder : Json.Decode.Decoder Question
-questionDecoder =
-  decode Question
-    |> required "id" (Json.Decode.int)
-    |> required "text_section_id" (Json.Decode.int)
-    |> required "created_dt" (Json.Decode.nullable date)
-    |> required "modified_dt" (Json.Decode.nullable date)
-    |> required "body" Json.Decode.string
-    |> required "order" Json.Decode.int
-    |> required "answers" answersDecoder
-    |> required "question_type" Json.Decode.string
-
-questionsDecoder : Json.Decode.Decoder (Array Question)
-questionsDecoder = Json.Decode.array questionDecoder
-
-textSectionDecoder : Json.Decode.Decoder TextSection
-textSectionDecoder =
-  decode TextSection
-    |> required "order" Json.Decode.int
-    |> required "body" Json.Decode.string
-    |> required "question_count" Json.Decode.int
-    |> required "questions" questionsDecoder
-
-textSectionsDecoder : Json.Decode.Decoder (List TextSection)
-textSectionsDecoder = Json.Decode.list textSectionDecoder
-
-textDecoder : Json.Decode.Decoder Text
-textDecoder =
-  decode Text
-    |> required "id" (Json.Decode.int)
-    |> required "title" (Json.Decode.string)
-    |> required "introduction" (Json.Decode.string)
-    |> required "author" (Json.Decode.string)
-    |> required "source" (Json.Decode.string)
-    |> required "difficulty" (Json.Decode.string)
-    |> required "conclusion" (Json.Decode.string)
-    |> required "created_by" (Json.Decode.nullable (Json.Decode.string))
-    |> required "last_modified_by" (Json.Decode.nullable (Json.Decode.string))
-    |> required "tags" (Json.Decode.nullable (Json.Decode.list (Json.Decode.string)))
-    |> required "created_dt" (Json.Decode.nullable date)
-    |> required "modified_dt" (Json.Decode.nullable date)
-
-nextDecoder : Json.Decode.Decoder CmdResp
-nextDecoder =
-  Json.Decode.map NextResp (Json.Decode.field "result" textSectionDecoder)
+  Json.Decode.map StartResp (Json.Decode.field "result" TextReader.Text.Decode.textDecoder)
 
 exceptionDecoder : Json.Decode.Decoder Exception
 exceptionDecoder =
@@ -80,18 +57,14 @@ exceptionDecoder =
     |> required "code" (Json.Decode.string)
     |> required "error_msg" (Json.Decode.string)
 
+textScoresDecoder : Json.Decode.Decoder TextScores
+textScoresDecoder =
+  decode TextScores
+    |> required "num_of_sections" (Json.Decode.int)
+    |> required "complete_sections" (Json.Decode.int)
+    |> required "section_scores" (Json.Decode.int)
+    |> required "possible_section_scores" (Json.Decode.int)
+
 ws_resp_decoder : Json.Decode.Decoder CmdResp
 ws_resp_decoder =
   Json.Decode.field "command" Json.Decode.string |> Json.Decode.andThen command_resp_decoder
-
-command_resp_decoder : String -> Json.Decode.Decoder CmdResp
-command_resp_decoder cmd_str =
-  case cmd_str of
-    "start" ->
-      startDecoder
-    "next" ->
-      nextDecoder
-    "exception" ->
-      Json.Decode.map ExceptionResp (Json.Decode.field "result" exceptionDecoder)
-    _ ->
-      Json.Decode.fail ("Command " ++ cmd_str ++ " not supported")

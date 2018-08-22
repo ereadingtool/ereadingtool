@@ -21221,6 +21221,33 @@ var _user$project$Answer_Model$Answer = F6(
 		return {id: a, question_id: b, text: c, correct: d, order: e, feedback: f};
 	});
 
+var _user$project$Answer_Decode$answerDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'feedback',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'order',
+		_elm_lang$core$Json_Decode$int,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'correct',
+			_elm_lang$core$Json_Decode$bool,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'text',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'question_id',
+					_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'id',
+						_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Answer_Model$Answer)))))));
+var _user$project$Answer_Decode$answersDecoder = _elm_lang$core$Json_Decode$array(_user$project$Answer_Decode$answerDecoder);
+
 var _user$project$Config$answer_feedback_limit = 2048;
 var _user$project$Config$student_api_endpoint = '/api/student/';
 var _user$project$Config$student_login_api_endpoint = '/api/student/login/';
@@ -21856,97 +21883,8 @@ var _user$project$Views$view_header = F2(
 			});
 	});
 
-
-var _user$project$TextReader_Answer$answer = function (_p0) {
-	var _p1 = _p0;
-	return _p1._0;
-};
-var _user$project$TextReader_Answer$selected = function (_p2) {
-	var _p3 = _p2;
-	return _p3._1;
-};
-var _user$project$TextReader_Answer$feedback_viewable = function (_p4) {
-	var _p5 = _p4;
-	return _p5._2;
-};
-var _user$project$TextReader_Answer$correct = function (text_answer) {
-	return false;
-};
-var _user$project$TextReader_Answer$Answer = F5(
-	function (a, b, c, d, e) {
-		return {id: a, question_id: b, text: c, order: d, feedback: e};
-	});
-var _user$project$TextReader_Answer$TextAnswer = F3(
-	function (a, b, c) {
-		return {ctor: 'TextAnswer', _0: a, _1: b, _2: c};
-	});
-var _user$project$TextReader_Answer$gen_text_answer = function (answer) {
-	return A3(_user$project$TextReader_Answer$TextAnswer, answer, false, false);
-};
-var _user$project$TextReader_Answer$set_answer_selected = F2(
-	function (_p6, selected) {
-		var _p7 = _p6;
-		return A3(_user$project$TextReader_Answer$TextAnswer, _p7._0, selected, _p7._2);
-	});
-var _user$project$TextReader_Answer$set_answer_feedback_viewable = F2(
-	function (_p8, feedback_viewable) {
-		var _p9 = _p8;
-		return A3(_user$project$TextReader_Answer$TextAnswer, _p9._0, _p9._1, feedback_viewable);
-	});
-
-var _user$project$TextReader_Question$answered_correctly = function (_p0) {
-	var _p1 = _p0;
-	return _elm_lang$core$Maybe$Just(false);
-};
-var _user$project$TextReader_Question$answers = function (_p2) {
-	var _p3 = _p2;
-	return _p3._1;
-};
-var _user$project$TextReader_Question$question = function (_p4) {
-	var _p5 = _p4;
-	return _p5._0;
-};
-var _user$project$TextReader_Question$answered = function (text_question) {
-	var _p6 = _user$project$TextReader_Question$answered_correctly(text_question);
-	if (_p6.ctor === 'Just') {
-		return true;
-	} else {
-		return false;
-	}
-};
-var _user$project$TextReader_Question$Question = F8(
-	function (a, b, c, d, e, f, g, h) {
-		return {id: a, text_section_id: b, created_dt: c, modified_dt: d, body: e, order: f, answers: g, question_type: h};
-	});
-var _user$project$TextReader_Question$TextQuestion = F2(
-	function (a, b) {
-		return {ctor: 'TextQuestion', _0: a, _1: b};
-	});
-var _user$project$TextReader_Question$gen_text_question = function (question) {
-	return A2(
-		_user$project$TextReader_Question$TextQuestion,
-		question,
-		A2(_elm_lang$core$Array$map, _user$project$TextReader_Answer$gen_text_answer, question.answers));
-};
-
-var _user$project$TextReader_Model$emptyText = {id: 0, title: '', introduction: '', author: '', source: '', difficulty: '', conclusion: '', created_by: _elm_lang$core$Maybe$Nothing, last_modified_by: _elm_lang$core$Maybe$Nothing, tags: _elm_lang$core$Maybe$Nothing, created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing};
-var _user$project$TextReader_Model$emptyTextSection = {
-	order: 0,
-	body: '',
-	question_count: 0,
-	questions: _elm_lang$core$Array$fromList(
-		{ctor: '[]'})
-};
-var _user$project$TextReader_Model$Exception = F2(
-	function (a, b) {
-		return {code: a, error_msg: b};
-	});
-var _user$project$TextReader_Model$TextScores = {};
-var _user$project$TextReader_Model$TextSection = F4(
-	function (a, b, c, d) {
-		return {order: a, body: b, question_count: c, questions: d};
-	});
-var _user$project$TextReader_Model$Text = function (a) {
+var _user$project$TextReader_Text_Model$emptyText = {id: 0, title: '', introduction: '', author: '', source: '', difficulty: '', conclusion: '', created_by: _elm_lang$core$Maybe$Nothing, last_modified_by: _elm_lang$core$Maybe$Nothing, tags: _elm_lang$core$Maybe$Nothing, created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing};
+var _user$project$TextReader_Text_Model$Text = function (a) {
 	return function (b) {
 		return function (c) {
 			return function (d) {
@@ -21971,21 +21909,173 @@ var _user$project$TextReader_Model$Text = function (a) {
 		};
 	};
 };
+
+
+var _user$project$TextReader_Answer_Model$answer = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0;
+};
+var _user$project$TextReader_Answer_Model$selected = function (_p2) {
+	var _p3 = _p2;
+	return _p3._1;
+};
+var _user$project$TextReader_Answer_Model$feedback_viewable = function (_p4) {
+	var _p5 = _p4;
+	return _p5._3;
+};
+var _user$project$TextReader_Answer_Model$correct = function (text_answer) {
+	return false;
+};
+var _user$project$TextReader_Answer_Model$Answer = F6(
+	function (a, b, c, d, e, f) {
+		return {id: a, question_id: b, text: c, order: d, correct: e, feedback: f};
+	});
+var _user$project$TextReader_Answer_Model$TextAnswer = F4(
+	function (a, b, c, d) {
+		return {ctor: 'TextAnswer', _0: a, _1: b, _2: c, _3: d};
+	});
+var _user$project$TextReader_Answer_Model$gen_text_answer = function (answer) {
+	return A4(_user$project$TextReader_Answer_Model$TextAnswer, answer, false, false, false);
+};
+var _user$project$TextReader_Answer_Model$set_answer_selected = F2(
+	function (_p6, selected) {
+		var _p7 = _p6;
+		return A4(_user$project$TextReader_Answer_Model$TextAnswer, _p7._0, selected, _p7._2, _p7._3);
+	});
+var _user$project$TextReader_Answer_Model$set_answer_feedback_viewable = F2(
+	function (_p8, feedback_viewable) {
+		var _p9 = _p8;
+		return A4(_user$project$TextReader_Answer_Model$TextAnswer, _p9._0, _p9._1, _p9._2, feedback_viewable);
+	});
+
+var _user$project$TextReader_Question_Model$answered_correctly = function (_p0) {
+	var _p1 = _p0;
+	return _p1._1;
+};
+var _user$project$TextReader_Question_Model$answers = function (_p2) {
+	var _p3 = _p2;
+	return _p3._2;
+};
+var _user$project$TextReader_Question_Model$question = function (_p4) {
+	var _p5 = _p4;
+	return _p5._0;
+};
+var _user$project$TextReader_Question_Model$answered = function (text_question) {
+	var _p6 = _user$project$TextReader_Question_Model$answered_correctly(text_question);
+	if (_p6.ctor === 'Just') {
+		return _p6._0;
+	} else {
+		return false;
+	}
+};
+var _user$project$TextReader_Question_Model$Question = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {id: a, text_section_id: b, created_dt: c, modified_dt: d, body: e, order: f, answers: g, question_type: h};
+	});
+var _user$project$TextReader_Question_Model$TextQuestion = F3(
+	function (a, b, c) {
+		return {ctor: 'TextQuestion', _0: a, _1: b, _2: c};
+	});
+var _user$project$TextReader_Question_Model$gen_text_question = function (question) {
+	return A3(
+		_user$project$TextReader_Question_Model$TextQuestion,
+		question,
+		_elm_lang$core$Maybe$Nothing,
+		A2(_elm_lang$core$Array$map, _user$project$TextReader_Answer_Model$gen_text_answer, question.answers));
+};
+
+var _user$project$TextReader_Section_Model$text_section = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0;
+};
+var _user$project$TextReader_Section_Model$questions = function (_p2) {
+	var _p3 = _p2;
+	return _p3._1;
+};
+var _user$project$TextReader_Section_Model$complete = function (section) {
+	return A2(
+		_elm_lang$core$List$all,
+		function (answered) {
+			return answered;
+		},
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (question) {
+					return _user$project$TextReader_Question_Model$answered(question);
+				},
+				_user$project$TextReader_Section_Model$questions(section))));
+};
+var _user$project$TextReader_Section_Model$completed_sections = function (sections) {
+	return _elm_lang$core$List$sum(
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (section) {
+					return _user$project$TextReader_Section_Model$complete(section) ? 1 : 0;
+				},
+				sections)));
+};
+var _user$project$TextReader_Section_Model$max_score = function (section) {
+	return _elm_lang$core$List$sum(
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (question) {
+					return 1;
+				},
+				_user$project$TextReader_Section_Model$questions(section))));
+};
+var _user$project$TextReader_Section_Model$score = function (section) {
+	return _elm_lang$core$List$sum(
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (question) {
+					return A2(
+						_elm_lang$core$Maybe$withDefault,
+						false,
+						_user$project$TextReader_Question_Model$answered_correctly(question)) ? 1 : 0;
+				},
+				_user$project$TextReader_Section_Model$questions(section))));
+};
+var _user$project$TextReader_Section_Model$emptyTextSection = {
+	order: 0,
+	body: '',
+	question_count: 0,
+	questions: _elm_lang$core$Array$fromList(
+		{ctor: '[]'})
+};
+var _user$project$TextReader_Section_Model$TextSection = F4(
+	function (a, b, c, d) {
+		return {order: a, body: b, question_count: c, questions: d};
+	});
+var _user$project$TextReader_Section_Model$Section = F2(
+	function (a, b) {
+		return {ctor: 'Section', _0: a, _1: b};
+	});
+var _user$project$TextReader_Section_Model$newSection = function (text_section) {
+	return A2(
+		_user$project$TextReader_Section_Model$Section,
+		text_section,
+		A2(_elm_lang$core$Array$map, _user$project$TextReader_Question_Model$gen_text_question, text_section.questions));
+};
+
+var _user$project$TextReader_Model$Exception = F2(
+	function (a, b) {
+		return {code: a, error_msg: b};
+	});
+var _user$project$TextReader_Model$TextScores = F4(
+	function (a, b, c, d) {
+		return {num_of_sections: a, complete_sections: b, section_scores: c, possible_section_scores: d};
+	});
 var _user$project$TextReader_Model$Model = F6(
 	function (a, b, c, d, e, f) {
 		return {text: a, profile: b, progress: c, gloss: d, exception: e, flags: f};
 	});
-var _user$project$TextReader_Model$Section = F2(
-	function (a, b) {
-		return {ctor: 'Section', _0: a, _1: b};
-	});
-var _user$project$TextReader_Model$newSection = function (text_section) {
-	return A2(
-		_user$project$TextReader_Model$Section,
-		text_section,
-		A2(_elm_lang$core$Array$map, _user$project$TextReader_Question$gen_text_question, text_section.questions));
+var _user$project$TextReader_Model$Complete = function (a) {
+	return {ctor: 'Complete', _0: a};
 };
-var _user$project$TextReader_Model$Complete = {ctor: 'Complete'};
 var _user$project$TextReader_Model$ViewSection = function (a) {
 	return {ctor: 'ViewSection', _0: a};
 };
@@ -21999,11 +22089,14 @@ var _user$project$TextReader_Model$NextReq = {ctor: 'NextReq'};
 var _user$project$TextReader_Model$ExceptionResp = function (a) {
 	return {ctor: 'ExceptionResp', _0: a};
 };
+var _user$project$TextReader_Model$CompleteResp = function (a) {
+	return {ctor: 'CompleteResp', _0: a};
+};
 var _user$project$TextReader_Model$AnswerResp = function (a) {
 	return {ctor: 'AnswerResp', _0: a};
 };
-var _user$project$TextReader_Model$CompleteResp = function (a) {
-	return {ctor: 'CompleteResp', _0: a};
+var _user$project$TextReader_Model$PrevResp = function (a) {
+	return {ctor: 'PrevResp', _0: a};
 };
 var _user$project$TextReader_Model$NextResp = function (a) {
 	return {ctor: 'NextResp', _0: a};
@@ -22038,6 +22131,7 @@ var _user$project$TextReader_Encode$send_command = function (cmd_req) {
 					_1: {ctor: '[]'}
 				});
 		default:
+			var text_reader_answer = _user$project$TextReader_Answer_Model$answer(_p0._0);
 			return _elm_lang$core$Json_Encode$object(
 				{
 					ctor: '::',
@@ -22051,7 +22145,7 @@ var _user$project$TextReader_Encode$send_command = function (cmd_req) {
 						_0: {
 							ctor: '_Tuple2',
 							_0: 'answer_id',
-							_1: _elm_lang$core$Json_Encode$int(_p0._0)
+							_1: _elm_lang$core$Json_Encode$int(text_reader_answer.id)
 						},
 						_1: {ctor: '[]'}
 					}
@@ -22076,10 +22170,9 @@ var _user$project$TextReader_Msg$ViewFeedback = F4(
 	function (a, b, c, d) {
 		return {ctor: 'ViewFeedback', _0: a, _1: b, _2: c, _3: d};
 	});
-var _user$project$TextReader_Msg$Select = F4(
-	function (a, b, c, d) {
-		return {ctor: 'Select', _0: a, _1: b, _2: c, _3: d};
-	});
+var _user$project$TextReader_Msg$Select = function (a) {
+	return {ctor: 'Select', _0: a};
+};
 
 var _user$project$TextReader_Dictionary$dictionary = _elm_lang$core$Dict$fromList(
 	{
@@ -22152,104 +22245,101 @@ var _user$project$TextReader_View$view_text_conclusion = function (text) {
 		_jinjor$elm_html_parser$HtmlParser_Util$toVirtualDom(
 			_jinjor$elm_html_parser$HtmlParser$parse(text.conclusion)));
 };
-var _user$project$TextReader_View$view_text_complete = function (model) {
-	var possible_section_scores = 0;
-	var section_scores = 0;
-	var complete_sections = 0;
-	var num_of_sections = 0;
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('text'),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_score'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							'Sections complete: ',
+var _user$project$TextReader_View$view_text_complete = F2(
+	function (model, scores) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('text'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_score'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(
 							A2(
 								_elm_lang$core$Basics_ops['++'],
-								_elm_lang$core$Basics$toString(complete_sections),
+								'Sections complete: ',
 								A2(
 									_elm_lang$core$Basics_ops['++'],
-									'/',
-									_elm_lang$core$Basics$toString(num_of_sections))))),
+									_elm_lang$core$Basics$toString(scores.complete_sections),
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										'/',
+										_elm_lang$core$Basics$toString(scores.num_of_sections))))),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											'Score: ',
+											A2(
+												_elm_lang$core$Basics_ops['++'],
+												_elm_lang$core$Basics$toString(scores.section_scores),
+												A2(
+													_elm_lang$core$Basics_ops['++'],
+													' out of ',
+													_elm_lang$core$Basics$toString(scores.possible_section_scores))))),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {
+					ctor: '::',
+					_0: _user$project$TextReader_View$view_text_conclusion(model.text),
 					_1: {
 						ctor: '::',
 						_0: A2(
 							_elm_lang$html$Html$div,
-							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(
-									A2(
-										_elm_lang$core$Basics_ops['++'],
-										'Score: ',
-										A2(
-											_elm_lang$core$Basics_ops['++'],
-											_elm_lang$core$Basics$toString(section_scores),
-											A2(
-												_elm_lang$core$Basics_ops['++'],
-												' out of ',
-												_elm_lang$core$Basics$toString(possible_section_scores))))),
+								_0: _elm_lang$html$Html_Attributes$class('nav'),
 								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _user$project$TextReader_View$view_prev_btn,
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$div,
+										{
+											ctor: '::',
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'goback'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Events$onClick(_user$project$TextReader_Msg$StartOver),
+												_1: {ctor: '[]'}
+											}
+										},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text('Start Over'),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
 							}),
 						_1: {ctor: '[]'}
 					}
-				}),
-			_1: {
-				ctor: '::',
-				_0: _user$project$TextReader_View$view_text_conclusion(model.text),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('nav'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: _user$project$TextReader_View$view_prev_btn,
-							_1: {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$div,
-									{
-										ctor: '::',
-										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'goback'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onClick(_user$project$TextReader_Msg$StartOver),
-											_1: {ctor: '[]'}
-										}
-									},
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text('Start Over'),
-										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							}
-						}),
-					_1: {ctor: '[]'}
 				}
-			}
-		});
-};
+			});
+	});
 var _user$project$TextReader_View$view_text_introduction = function (text) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -22321,14 +22411,14 @@ var _user$project$TextReader_View$view_gloss = F2(
 	});
 var _user$project$TextReader_View$view_answer = F3(
 	function (text_section, text_question, text_answer) {
-		var view_feedback = _user$project$TextReader_Answer$feedback_viewable(text_answer);
-		var is_correct = _user$project$TextReader_Answer$correct(text_answer);
-		var answer_selected = _user$project$TextReader_Answer$selected(text_answer);
-		var answer = _user$project$TextReader_Answer$answer(text_answer);
-		var question_answered = _user$project$TextReader_Question$answered(text_question);
+		var view_feedback = _user$project$TextReader_Answer_Model$feedback_viewable(text_answer);
+		var is_correct = _user$project$TextReader_Answer_Model$correct(text_answer);
+		var answer_selected = _user$project$TextReader_Answer_Model$selected(text_answer);
+		var answer = _user$project$TextReader_Answer_Model$answer(text_answer);
+		var question_answered = _user$project$TextReader_Question_Model$answered(text_question);
 		var on_click = question_answered ? _elm_lang$html$Html_Events$onClick(
 			A4(_user$project$TextReader_Msg$ViewFeedback, text_section, text_question, text_answer, true)) : _elm_lang$html$Html_Events$onClick(
-			A4(_user$project$TextReader_Msg$Select, text_section, text_question, text_answer, true));
+			_user$project$TextReader_Msg$Select(text_answer));
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -22410,8 +22500,8 @@ var _user$project$TextReader_View$view_answer = F3(
 	});
 var _user$project$TextReader_View$view_question = F2(
 	function (text_section, text_question) {
-		var answers = _user$project$TextReader_Question$answers(text_question);
-		var question = _user$project$TextReader_Question$question(text_question);
+		var answers = _user$project$TextReader_Question_Model$answers(text_question);
+		var question = _user$project$TextReader_Question_Model$question(text_question);
 		var text_question_id = A2(
 			_elm_lang$core$String$join,
 			'_',
@@ -22467,8 +22557,8 @@ var _user$project$TextReader_View$view_question = F2(
 				}
 			});
 	});
-var _user$project$TextReader_View$view_questions = function (_p2) {
-	var _p3 = _p2;
+var _user$project$TextReader_View$view_questions = function (section) {
+	var text_reader_questions = _user$project$TextReader_Section_Model$questions(section);
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -22479,8 +22569,8 @@ var _user$project$TextReader_View$view_questions = function (_p2) {
 		_elm_lang$core$Array$toList(
 			A2(
 				_elm_lang$core$Array$map,
-				_user$project$TextReader_View$view_question(_p3),
-				_p3._1)));
+				_user$project$TextReader_View$view_question(section),
+				text_reader_questions)));
 };
 var _user$project$TextReader_View$tagWord = F2(
 	function (gloss, word) {
@@ -22509,22 +22599,22 @@ var _user$project$TextReader_View$tagWord = F2(
 	});
 var _user$project$TextReader_View$tagWordAndToVDOM = F2(
 	function (gloss, node) {
-		var _p4 = node;
-		switch (_p4.ctor) {
+		var _p2 = node;
+		switch (_p2.ctor) {
 			case 'Text':
-				return A2(_user$project$TextReader_View$tagWord, gloss, _p4._0);
+				return A2(_user$project$TextReader_View$tagWord, gloss, _p2._0);
 			case 'Element':
 				return A3(
 					_elm_lang$html$Html$node,
-					_p4._0,
+					_p2._0,
 					A2(
 						_elm_lang$core$List$map,
-						function (_p5) {
-							var _p6 = _p5;
-							return A2(_elm_lang$html$Html_Attributes$attribute, _p6._0, _p6._1);
+						function (_p3) {
+							var _p4 = _p3;
+							return A2(_elm_lang$html$Html_Attributes$attribute, _p4._0, _p4._1);
 						},
-						_p4._1),
-					A2(_user$project$TextReader_View$tagWordsAndToVDOM, gloss, _p4._2));
+						_p2._1),
+					A2(_user$project$TextReader_View$tagWordsAndToVDOM, gloss, _p2._2));
 			default:
 				return _elm_lang$virtual_dom$VirtualDom$text('');
 		}
@@ -22537,23 +22627,22 @@ var _user$project$TextReader_View$tagWordsAndToVDOM = F2(
 			text);
 	});
 var _user$project$TextReader_View$view_text_section = F3(
-	function (gloss, _p7, total_sections) {
-		var _p8 = _p7;
-		var _p9 = _p8._0;
+	function (gloss, section, total_sections) {
+		var text_section = _user$project$TextReader_Section_Model$text_section(section);
+		var text_body_vdom = A2(
+			_user$project$TextReader_View$tagWordsAndToVDOM,
+			gloss,
+			_jinjor$elm_html_parser$HtmlParser$parse(text_section.body));
 		var section_title = A2(
 			_elm_lang$core$Basics_ops['++'],
 			'Section ',
 			A2(
 				_elm_lang$core$Basics_ops['++'],
-				_elm_lang$core$Basics$toString(_p9.order + 1),
+				_elm_lang$core$Basics$toString(text_section.order + 1),
 				A2(
 					_elm_lang$core$Basics_ops['++'],
 					'/',
 					_elm_lang$core$Basics$toString(total_sections))));
-		var text_body_vdom = A2(
-			_user$project$TextReader_View$tagWordsAndToVDOM,
-			gloss,
-			_jinjor$elm_html_parser$HtmlParser$parse(_p9.body));
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -22587,15 +22676,15 @@ var _user$project$TextReader_View$view_text_section = F3(
 						text_body_vdom),
 					_1: {
 						ctor: '::',
-						_0: _user$project$TextReader_View$view_questions(_p8),
+						_0: _user$project$TextReader_View$view_questions(section),
 						_1: {ctor: '[]'}
 					}
 				}
 			});
 	});
 var _user$project$TextReader_View$view_content = function (model) {
-	var _p10 = model.progress;
-	switch (_p10.ctor) {
+	var _p5 = model.progress;
+	switch (_p5.ctor) {
 		case 'ViewIntro':
 			return A2(
 				_elm_lang$html$Html$div,
@@ -22649,7 +22738,7 @@ var _user$project$TextReader_View$view_content = function (model) {
 				},
 				{
 					ctor: '::',
-					_0: A3(_user$project$TextReader_View$view_text_section, model.gloss, _p10._0, 1),
+					_0: A3(_user$project$TextReader_View$view_text_section, model.gloss, _p5._0, 1),
 					_1: {
 						ctor: '::',
 						_0: _user$project$TextReader_View$view_exceptions(model),
@@ -22676,7 +22765,7 @@ var _user$project$TextReader_View$view_content = function (model) {
 					}
 				});
 		case 'Complete':
-			return _user$project$TextReader_View$view_text_complete(model);
+			return A2(_user$project$TextReader_View$view_text_complete, model, _p5._0);
 		default:
 			return A2(
 				_elm_lang$html$Html$div,
@@ -22685,16 +22774,88 @@ var _user$project$TextReader_View$view_content = function (model) {
 	}
 };
 
-var _user$project$TextReader_Decode$exceptionDecoder = A3(
+var _user$project$TextReader_Question_Decode$answerDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'error_msg',
+	'feedback',
 	_elm_lang$core$Json_Decode$string,
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'code',
-		_elm_lang$core$Json_Decode$string,
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$TextReader_Model$Exception)));
-var _user$project$TextReader_Decode$textDecoder = A3(
+		'correct',
+		_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$bool),
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'order',
+			_elm_lang$core$Json_Decode$int,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'text',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'question_id',
+					_elm_lang$core$Json_Decode$int,
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'id',
+						_elm_lang$core$Json_Decode$int,
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$TextReader_Answer_Model$Answer)))))));
+var _user$project$TextReader_Question_Decode$answersDecoder = _elm_lang$core$Json_Decode$array(_user$project$TextReader_Question_Decode$answerDecoder);
+var _user$project$TextReader_Question_Decode$questionDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'question_type',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'answers',
+		_user$project$TextReader_Question_Decode$answersDecoder,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'order',
+			_elm_lang$core$Json_Decode$int,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'body',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'modified_dt',
+					_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'created_dt',
+						_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+						A3(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+							'text_section_id',
+							_elm_lang$core$Json_Decode$int,
+							A3(
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+								'id',
+								_elm_lang$core$Json_Decode$int,
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$TextReader_Question_Model$Question)))))))));
+var _user$project$TextReader_Question_Decode$questionsDecoder = _elm_lang$core$Json_Decode$array(_user$project$TextReader_Question_Decode$questionDecoder);
+
+var _user$project$TextReader_Section_Decode$textSectionDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'questions',
+	_user$project$TextReader_Question_Decode$questionsDecoder,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'question_count',
+		_elm_lang$core$Json_Decode$int,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'body',
+			_elm_lang$core$Json_Decode$string,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'order',
+				_elm_lang$core$Json_Decode$int,
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$TextReader_Section_Model$TextSection)))));
+var _user$project$TextReader_Section_Decode$textSectionsDecoder = _elm_lang$core$Json_Decode$list(_user$project$TextReader_Section_Decode$textSectionDecoder);
+var _user$project$TextReader_Section_Decode$sectionDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$TextReader_Section_Model$newSection, _user$project$TextReader_Section_Decode$textSectionDecoder);
+
+var _user$project$TextReader_Text_Decode$textDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'modified_dt',
 	_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
@@ -22743,101 +22904,63 @@ var _user$project$TextReader_Decode$textDecoder = A3(
 												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 												'id',
 												_elm_lang$core$Json_Decode$int,
-												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$TextReader_Model$Text)))))))))))));
-var _user$project$TextReader_Decode$answerDecoder = A3(
+												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$TextReader_Text_Model$Text)))))))))))));
+
+var _user$project$TextReader_Decode$textScoresDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'feedback',
-	_elm_lang$core$Json_Decode$string,
+	'possible_section_scores',
+	_elm_lang$core$Json_Decode$int,
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'order',
+		'section_scores',
 		_elm_lang$core$Json_Decode$int,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'text',
-			_elm_lang$core$Json_Decode$string,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'question_id',
-				_elm_lang$core$Json_Decode$int,
-				A3(
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'id',
-					_elm_lang$core$Json_Decode$int,
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$TextReader_Answer$Answer))))));
-var _user$project$TextReader_Decode$answersDecoder = _elm_lang$core$Json_Decode$array(_user$project$TextReader_Decode$answerDecoder);
-var _user$project$TextReader_Decode$questionDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'question_type',
-	_elm_lang$core$Json_Decode$string,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'answers',
-		_user$project$TextReader_Decode$answersDecoder,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'order',
+			'complete_sections',
 			_elm_lang$core$Json_Decode$int,
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'body',
-				_elm_lang$core$Json_Decode$string,
-				A3(
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'modified_dt',
-					_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
-					A3(
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'created_dt',
-						_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
-						A3(
-							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'text_section_id',
-							_elm_lang$core$Json_Decode$int,
-							A3(
-								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'id',
-								_elm_lang$core$Json_Decode$int,
-								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$TextReader_Question$Question)))))))));
-var _user$project$TextReader_Decode$questionsDecoder = _elm_lang$core$Json_Decode$array(_user$project$TextReader_Decode$questionDecoder);
-var _user$project$TextReader_Decode$textSectionDecoder = A3(
+				'num_of_sections',
+				_elm_lang$core$Json_Decode$int,
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$TextReader_Model$TextScores)))));
+var _user$project$TextReader_Decode$exceptionDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'questions',
-	_user$project$TextReader_Decode$questionsDecoder,
+	'error_msg',
+	_elm_lang$core$Json_Decode$string,
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'question_count',
-		_elm_lang$core$Json_Decode$int,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'body',
-			_elm_lang$core$Json_Decode$string,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'order',
-				_elm_lang$core$Json_Decode$int,
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$TextReader_Model$TextSection)))));
-var _user$project$TextReader_Decode$textSectionsDecoder = _elm_lang$core$Json_Decode$list(_user$project$TextReader_Decode$textSectionDecoder);
-var _user$project$TextReader_Decode$nextDecoder = A2(
-	_elm_lang$core$Json_Decode$map,
-	_user$project$TextReader_Model$NextResp,
-	A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$TextReader_Decode$textSectionDecoder));
+		'code',
+		_elm_lang$core$Json_Decode$string,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$TextReader_Model$Exception)));
 var _user$project$TextReader_Decode$startDecoder = A2(
 	_elm_lang$core$Json_Decode$map,
 	_user$project$TextReader_Model$StartResp,
-	A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$TextReader_Decode$textDecoder));
+	A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$TextReader_Text_Decode$textDecoder));
+var _user$project$TextReader_Decode$sectionDecoder = function (cmd_resp) {
+	return A2(
+		_elm_lang$core$Json_Decode$map,
+		cmd_resp,
+		A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$TextReader_Section_Decode$sectionDecoder));
+};
 var _user$project$TextReader_Decode$command_resp_decoder = function (cmd_str) {
 	var _p0 = cmd_str;
 	switch (_p0) {
 		case 'start':
 			return _user$project$TextReader_Decode$startDecoder;
 		case 'next':
-			return _user$project$TextReader_Decode$nextDecoder;
+			return _user$project$TextReader_Decode$sectionDecoder(_user$project$TextReader_Model$NextResp);
+		case 'answer':
+			return _user$project$TextReader_Decode$sectionDecoder(_user$project$TextReader_Model$AnswerResp);
 		case 'exception':
 			return A2(
 				_elm_lang$core$Json_Decode$map,
 				_user$project$TextReader_Model$ExceptionResp,
 				A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$TextReader_Decode$exceptionDecoder));
+		case 'complete':
+			return A2(
+				_elm_lang$core$Json_Decode$map,
+				_user$project$TextReader_Model$CompleteResp,
+				A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$TextReader_Decode$textScoresDecoder));
 		default:
 			return _elm_lang$core$Json_Decode$fail(
 				A2(
@@ -22851,67 +22974,16 @@ var _user$project$TextReader_Decode$ws_resp_decoder = A2(
 	_user$project$TextReader_Decode$command_resp_decoder,
 	A2(_elm_lang$core$Json_Decode$field, 'command', _elm_lang$core$Json_Decode$string));
 
-var _user$project$TextReader_Update$questions = function (_p0) {
-	var _p1 = _p0;
-	return _p1._1;
-};
-var _user$project$TextReader_Update$complete = function (section) {
-	return A2(
-		_elm_lang$core$List$all,
-		function (answered) {
-			return answered;
-		},
-		_elm_lang$core$Array$toList(
-			A2(
-				_elm_lang$core$Array$map,
-				function (question) {
-					return _user$project$TextReader_Question$answered(question);
-				},
-				_user$project$TextReader_Update$questions(section))));
-};
-var _user$project$TextReader_Update$completed_sections = function (sections) {
-	return _elm_lang$core$List$sum(
-		_elm_lang$core$Array$toList(
-			A2(
-				_elm_lang$core$Array$map,
-				function (section) {
-					return _user$project$TextReader_Update$complete(section) ? 1 : 0;
-				},
-				sections)));
-};
-var _user$project$TextReader_Update$max_score = function (section) {
-	return _elm_lang$core$List$sum(
-		_elm_lang$core$Array$toList(
-			A2(
-				_elm_lang$core$Array$map,
-				function (question) {
-					return 1;
-				},
-				_user$project$TextReader_Update$questions(section))));
-};
-var _user$project$TextReader_Update$score = function (section) {
-	return _elm_lang$core$List$sum(
-		_elm_lang$core$Array$toList(
-			A2(
-				_elm_lang$core$Array$map,
-				function (question) {
-					return A2(
-						_elm_lang$core$Maybe$withDefault,
-						false,
-						_user$project$TextReader_Question$answered_correctly(question)) ? 1 : 0;
-				},
-				_user$project$TextReader_Update$questions(section))));
-};
 var _user$project$TextReader_Update$route_cmd_resp = F2(
 	function (model, cmd_resp) {
-		var _p2 = cmd_resp;
-		switch (_p2.ctor) {
+		var _p0 = cmd_resp;
+		switch (_p0.ctor) {
 			case 'StartResp':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{text: _p2._0, progress: _user$project$TextReader_Model$ViewIntro}),
+						{text: _p0._0, progress: _user$project$TextReader_Model$ViewIntro}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'NextResp':
@@ -22920,22 +22992,47 @@ var _user$project$TextReader_Update$route_cmd_resp = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							progress: _user$project$TextReader_Model$ViewSection(
-								_user$project$TextReader_Model$newSection(_p2._0))
+							progress: _user$project$TextReader_Model$ViewSection(_p0._0)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'PrevResp':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							progress: _user$project$TextReader_Model$ViewSection(_p0._0)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'AnswerResp':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							progress: _user$project$TextReader_Model$ViewSection(_p0._0)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'CompleteResp':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'AnswerResp':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							progress: _user$project$TextReader_Model$Complete(_p0._0)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 			default:
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							exception: _elm_lang$core$Maybe$Just(_p2._0)
+							exception: _elm_lang$core$Maybe$Just(_p0._0)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -22943,11 +23040,11 @@ var _user$project$TextReader_Update$route_cmd_resp = F2(
 	});
 var _user$project$TextReader_Update$handle_ws_resp = F2(
 	function (model, str) {
-		var _p3 = A2(_elm_lang$core$Json_Decode$decodeString, _user$project$TextReader_Decode$ws_resp_decoder, str);
-		if (_p3.ctor === 'Ok') {
-			return A2(_user$project$TextReader_Update$route_cmd_resp, model, _p3._0);
+		var _p1 = A2(_elm_lang$core$Json_Decode$decodeString, _user$project$TextReader_Decode$ws_resp_decoder, str);
+		if (_p1.ctor === 'Ok') {
+			return A2(_user$project$TextReader_Update$route_cmd_resp, model, _p1._0);
 		} else {
-			var _p4 = A2(_elm_lang$core$Debug$log, 'websocket decode error', _p3._0);
+			var _p2 = A2(_elm_lang$core$Debug$log, 'websocket decode error', _p1._0);
 			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
 	});
@@ -22976,6 +23073,13 @@ var _user$project$Main$view = function (model) {
 };
 var _user$project$Main$update = F2(
 	function (msg, model) {
+		var send_command = function (cmd) {
+			return A2(
+				_elm_lang$websocket$WebSocket$send,
+				model.flags.text_reader_ws_addr,
+				_user$project$TextReader_Encode$jsonToString(
+					_user$project$TextReader_Encode$send_command(cmd)));
+		};
 		var _p0 = msg;
 		switch (_p0.ctor) {
 			case 'Gloss':
@@ -22999,7 +23103,12 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'Select':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: send_command(
+						_user$project$TextReader_Model$AnswerReq(_p0._0))
+				};
 			case 'ViewFeedback':
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'StartOver':
@@ -23008,21 +23117,13 @@ var _user$project$Main$update = F2(
 				return {
 					ctor: '_Tuple2',
 					_0: model,
-					_1: A2(
-						_elm_lang$websocket$WebSocket$send,
-						model.flags.text_reader_ws_addr,
-						_user$project$TextReader_Encode$jsonToString(
-							_user$project$TextReader_Encode$send_command(_user$project$TextReader_Model$NextReq)))
+					_1: send_command(_user$project$TextReader_Model$NextReq)
 				};
 			case 'PrevSection':
 				return {
 					ctor: '_Tuple2',
 					_0: model,
-					_1: A2(
-						_elm_lang$websocket$WebSocket$send,
-						model.flags.text_reader_ws_addr,
-						_user$project$TextReader_Encode$jsonToString(
-							_user$project$TextReader_Encode$send_command(_user$project$TextReader_Model$PrevReq)))
+					_1: send_command(_user$project$TextReader_Model$PrevReq)
 				};
 			default:
 				return A2(_user$project$TextReader_Update$handle_ws_resp, model, _p0._0);
@@ -23035,7 +23136,7 @@ var _user$project$Main$init = function (flags) {
 	var profile = _user$project$Profile$init_profile(flags);
 	return {
 		ctor: '_Tuple2',
-		_0: {text: _user$project$TextReader_Model$emptyText, gloss: _elm_lang$core$Dict$empty, profile: profile, progress: _user$project$TextReader_Model$Init, flags: flags, exception: _elm_lang$core$Maybe$Nothing},
+		_0: {text: _user$project$TextReader_Text_Model$emptyText, gloss: _elm_lang$core$Dict$empty, profile: profile, progress: _user$project$TextReader_Model$Init, flags: flags, exception: _elm_lang$core$Maybe$Nothing},
 		_1: _elm_lang$core$Platform_Cmd$none
 	};
 };

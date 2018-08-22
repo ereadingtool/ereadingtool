@@ -2,13 +2,14 @@ module TextReader.Msg exposing (..)
 
 import TextReader.Model exposing (..)
 
-import TextReader.Question exposing (TextQuestion)
-import TextReader.Answer exposing (TextAnswer)
+import TextReader.Section.Model exposing (Section)
+import TextReader.Question.Model exposing (TextQuestion)
+import TextReader.Answer.Model exposing (TextAnswer)
 
 
 -- UPDATE
 type Msg =
-    Select Section TextQuestion TextAnswer Bool
+    Select TextAnswer
   | ViewFeedback Section TextQuestion TextAnswer Bool
   | PrevSection
   | NextSection

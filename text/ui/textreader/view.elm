@@ -9,8 +9,10 @@ import Dict exposing (Dict)
 
 import TextReader.Model exposing (..)
 
-import TextReader.Question exposing (TextQuestion)
-import TextReader.Answer exposing (TextAnswer)
+import TextReader.Text.Model exposing (Text)
+import TextReader.Section.Model exposing (Section)
+import TextReader.Question.Model exposing (TextQuestion)
+import TextReader.Answer.Model exposing (TextAnswer)
 import TextReader.Msg exposing (Msg(..))
 
 
@@ -51,18 +53,18 @@ tagWordsAndToVDOM gloss text =
 view_answer : Section -> TextQuestion -> TextAnswer -> Html Msg
 view_answer text_section text_question text_answer =
   let
-    question_answered = TextReader.Question.answered text_question
+    question_answered = TextReader.Question.Model.answered text_question
 
     on_click =
       if question_answered then
         onClick (ViewFeedback text_section text_question text_answer True)
       else
-        onClick (Select text_section text_question text_answer True)
+        onClick (Select text_answer)
 
-    answer = TextReader.Answer.answer text_answer
-    answer_selected = TextReader.Answer.selected text_answer
-    is_correct = TextReader.Answer.correct text_answer
-    view_feedback = TextReader.Answer.feedback_viewable text_answer
+    answer = TextReader.Answer.Model.answer text_answer
+    answer_selected = TextReader.Answer.Model.selected text_answer
+    is_correct = TextReader.Answer.Model.correct text_answer
+    view_feedback = TextReader.Answer.Model.feedback_viewable text_answer
   in
     div [ classList <| [
             ("answer", True)
@@ -84,8 +86,8 @@ view_answer text_section text_question text_answer =
 view_question : Section -> TextQuestion -> Html Msg
 view_question text_section text_question =
   let
-    question = TextReader.Question.question text_question
-    answers = TextReader.Question.answers text_question
+    question = TextReader.Question.Model.question text_question
+    answers = TextReader.Question.Model.answers text_question
     text_question_id = String.join "_" ["question", toString question.order]
   in
     div [class "question", attribute "id" text_question_id] [
@@ -95,8 +97,11 @@ view_question text_section text_question =
     ]
 
 view_questions : Section -> Html Msg
-view_questions ((Section section questions) as text_section) =
-  div [class "questions"] (Array.toList <| Array.map (view_question text_section) questions)
+view_questions section =
+  let
+    text_reader_questions = TextReader.Section.Model.questions section
+  in
+    div [class "questions"] (Array.toList <| Array.map (view_question section) text_reader_questions)
 
 view_gloss : Dict String Bool -> String -> Html Msg
 view_gloss gloss word =
@@ -114,15 +119,16 @@ view_gloss gloss word =
         ) (Dict.keys gloss))
 
 view_text_section : Dict String Bool -> Section -> Int -> Html Msg
-view_text_section gloss ((Section section questions) as text_section) total_sections =
+view_text_section gloss section total_sections =
   let
-    text_body_vdom = tagWordsAndToVDOM gloss (HtmlParser.parse section.body)
-    section_title = ("Section " ++ (toString (section.order +1)) ++ "/" ++ (toString total_sections))
+    text_section = TextReader.Section.Model.text_section section
+    text_body_vdom = tagWordsAndToVDOM gloss (HtmlParser.parse text_section.body)
+    section_title = ("Section " ++ (toString (text_section.order +1)) ++ "/" ++ (toString total_sections))
   in
     div [class "text_section"] <| [
         div [class "section_title"] [ Html.text section_title ]
       , div [class "text_body"] text_body_vdom
-      , view_questions text_section
+      , view_questions section
     ]
 
 view_text_introduction : Text -> Html Msg
@@ -145,21 +151,15 @@ view_next_btn =
     Html.text "Next"
   ]
 
-view_text_complete : Model -> Html Msg
-view_text_complete model =
-  let
-    -- TODO(andrew): get these values from backend
-    num_of_sections = 0
-    complete_sections = 0
-    section_scores = 0
-    possible_section_scores = 0
-  in
-    div [class "text"] [
+view_text_complete : Model -> TextScores -> Html Msg
+view_text_complete model scores =
+  div [class "text"] [
       div [attribute "id" "text_score"] [
         Html.text
-          ("Sections complete: " ++ (toString complete_sections) ++ "/" ++ (toString num_of_sections))
+          ("Sections complete: " ++ (toString scores.complete_sections) ++ "/" ++ (toString scores.num_of_sections))
       , div [] [
-          Html.text ("Score: " ++ (toString section_scores) ++ " out of " ++ (toString possible_section_scores))
+          Html.text
+            ("Score: " ++ (toString scores.section_scores) ++ " out of " ++ (toString scores.possible_section_scores))
         ]
       ]
     , view_text_conclusion model.text
@@ -197,8 +197,8 @@ view_content model =
       , div [class "nav"] [view_prev_btn, view_next_btn]
       ]
 
-    Complete ->
-      view_text_complete model
+    Complete text_scores ->
+      view_text_complete model text_scores
 
     _ ->
       div [] []

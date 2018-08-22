@@ -1,12 +1,8 @@
 module TextReader.Update exposing (..)
 
-import Array exposing (Array)
-
 import TextReader.Model exposing (..)
 
 import TextReader.Decode
-
-import TextReader.Question exposing (TextQuestion)
 
 import TextReader.Msg exposing (Msg(..))
 
@@ -19,14 +15,17 @@ route_cmd_resp model cmd_resp =
     StartResp text ->
       ({ model | text = text, progress=ViewIntro }, Cmd.none)
 
-    NextResp text_section ->
-      ({ model | progress=ViewSection (newSection text_section) }, Cmd.none)
+    NextResp section ->
+      ({ model | progress=ViewSection section }, Cmd.none)
+
+    PrevResp section ->
+      ({ model | progress=ViewSection section }, Cmd.none)
+
+    AnswerResp section ->
+      ({ model | progress=ViewSection section }, Cmd.none)
 
     CompleteResp text_scores ->
-      (model, Cmd.none)
-
-    AnswerResp answer ->
-      (model, Cmd.none)
+      ({ model | progress=Complete text_scores }, Cmd.none)
 
     ExceptionResp exception ->
       ({ model | exception = Just exception }, Cmd.none)
@@ -39,31 +38,3 @@ handle_ws_resp model str =
 
     Err err -> let _ = Debug.log "websocket decode error" err in
       (model, Cmd.none)
-
-questions : Section -> Array TextQuestion
-questions (Section section questions) = questions
-
-complete : Section -> Bool
-complete section =
-     List.all (\answered -> answered)
-  <| Array.toList
-  <| Array.map (\question -> TextReader.Question.answered question) (questions section)
-
-completed_sections : Array Section -> Int
-completed_sections sections =
-     List.sum
-  <| Array.toList
-  <| Array.map (\section -> if (complete section) then 1 else 0) sections
-
-max_score : Section -> Int
-max_score section =
-     List.sum
-  <| Array.toList
-  <| Array.map (\question -> 1) (questions section)
-
-score : Section -> Int
-score section =
-     List.sum
-  <| Array.toList
-  <| Array.map (\question ->
-       if (Maybe.withDefault False (TextReader.Question.answered_correctly question)) then 1 else 0) (questions section)

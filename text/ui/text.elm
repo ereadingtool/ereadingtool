@@ -8,6 +8,7 @@ import Profile
 import WebSocket
 
 import TextReader.Encode
+import TextReader.Text.Model
 
 import TextReader.View exposing (..)
 import TextReader.Model exposing (..)
@@ -19,7 +20,7 @@ init flags =
   let
     profile = Profile.init_profile flags
   in
-    ({ text=TextReader.Model.emptyText
+    ({ text=TextReader.Text.Model.emptyText
      , gloss=Dict.empty
      , profile=profile
      , progress=Init
@@ -33,34 +34,36 @@ subscriptions model =
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-  case msg of
-    Gloss word ->
-      ({ model | gloss = Dict.insert word True model.gloss }, Cmd.none)
+  let
+    send_command = (\cmd ->
+      WebSocket.send
+        model.flags.text_reader_ws_addr
+        (TextReader.Encode.jsonToString <| TextReader.Encode.send_command cmd))
+  in
+    case msg of
+      Gloss word ->
+        ({ model | gloss = Dict.insert word True model.gloss }, Cmd.none)
 
-    UnGloss word ->
-      ({ model | gloss = Dict.remove word model.gloss }, Cmd.none)
+      UnGloss word ->
+        ({ model | gloss = Dict.remove word model.gloss }, Cmd.none)
 
-    Select text_section text_question text_answer selected ->
-      (model, Cmd.none)
+      Select text_answer ->
+        (model, send_command <| AnswerReq text_answer)
 
-    ViewFeedback text_section text_question text_answer view_feedback ->
-      (model, Cmd.none)
+      ViewFeedback text_section text_question text_answer view_feedback ->
+        (model, Cmd.none)
 
-    StartOver ->
-      (model, Cmd.none)
+      StartOver ->
+        (model, Cmd.none)
 
-    NextSection ->
-      (model
-      , WebSocket.send model.flags.text_reader_ws_addr
-          (TextReader.Encode.jsonToString <| TextReader.Encode.send_command NextReq))
+      NextSection ->
+        (model, send_command NextReq)
 
-    PrevSection ->
-     (model
-      , WebSocket.send model.flags.text_reader_ws_addr
-          (TextReader.Encode.jsonToString <| TextReader.Encode.send_command PrevReq))
+      PrevSection ->
+       (model, send_command PrevReq)
 
-    WebSocketResp str ->
-      TextReader.Update.handle_ws_resp model str
+      WebSocketResp str ->
+        TextReader.Update.handle_ws_resp model str
 
 
 main : Program Flags Model Msg

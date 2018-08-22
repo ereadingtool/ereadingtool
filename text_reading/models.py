@@ -135,13 +135,15 @@ class TextReading(models.Model):
 
     def answer(self, answer: Answer) -> TypeVar('TextSectionReading'):
         if answer.question.text_section != self.current_section:
-            raise TextReadingQuestionNotInSection
+            raise TextReadingQuestionNotInSection(code='queston_not_in_section',
+                                                  error_msg='This question is not in this section.')
 
         if TextSectionReading.objects.filter(text_reading=self,
                                              text_section=self.current_section,
                                              question=answer.question).count():
             # question already answered
-            raise TextReadingQuestionAlreadyAnswered
+            raise TextReadingQuestionAlreadyAnswered(code='question_already_answered',
+                                                     error_msg="You've already answered this question")
 
         text_section_reading = TextSectionReading(text_reading=self,
                                                   text_section=self.current_section,

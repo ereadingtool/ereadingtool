@@ -1,9 +1,8 @@
-module TextReader.Question exposing (..)
+module TextReader.Question.Model exposing (..)
 
 import Array exposing (Array)
 
-import TextReader exposing (TextItemAttributes, AnsweredCorrectly)
-import TextReader.Answer exposing (TextAnswer, Answer)
+import TextReader.Answer.Model exposing (TextAnswer, Answer)
 
 import Date exposing (Date)
 
@@ -18,27 +17,30 @@ type alias Question = {
   , answers: Array Answer
   , question_type: String }
 
-type TextQuestion = TextQuestion Question (Array TextAnswer)
+
+type alias AnsweredCorrectly = Maybe Bool
+
+type TextQuestion = TextQuestion Question AnsweredCorrectly (Array TextAnswer)
 
 gen_text_question : Question -> TextQuestion
 gen_text_question question =
-  TextQuestion question
-    (Array.map (TextReader.Answer.gen_text_answer) question.answers)
+  TextQuestion question Nothing
+    (Array.map (TextReader.Answer.Model.gen_text_answer) question.answers)
 
 answered : TextQuestion -> Bool
 answered text_question =
   case (answered_correctly text_question) of
-    Just _ ->
-      True
+    Just correct ->
+      correct
     Nothing ->
       False
 
 question : TextQuestion -> Question
-question (TextQuestion question _) = question
+question (TextQuestion question _ _) = question
 
 answers : TextQuestion -> Array TextAnswer
-answers (TextQuestion _ answers) = answers
+answers (TextQuestion _ _ answers) = answers
 
 answered_correctly : TextQuestion -> Maybe Bool
-answered_correctly (TextQuestion _ _) = Just False
+answered_correctly (TextQuestion _ answered_correctly _) = answered_correctly
 
