@@ -135,7 +135,7 @@ class TextReading(models.Model):
 
     def answer(self, answer: Answer) -> TypeVar('TextSectionReading'):
         if answer.question.text_section != self.current_section:
-            raise TextReadingQuestionNotInSection(code='queston_not_in_section',
+            raise TextReadingQuestionNotInSection(code='question_not_in_section',
                                                   error_msg='This question is not in this section.')
 
         if TextSectionReading.objects.filter(text_reading=self,
