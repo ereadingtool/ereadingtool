@@ -38,6 +38,10 @@
 .submit_btn {
 }
 
+.signup_title {
+    grid-column: 4;
+}
+
 .input_error {
     border: 1px solid #ff0000;
     background-color: #ffeeee;
@@ -65,7 +69,7 @@ select {
         flex-direction: column;
     }
 
-    .login_box > input {
+    .signup_box > input, .login_box > input {
         height: 45px;
     }
 

@@ -9958,6 +9958,7 @@ var _user$project$Config$student_signup_api_endpoint = '/api/student/signup/';
 var _user$project$Config$instructor_login_api_endpoint = '/api/instructor/login/';
 var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signup/';
 var _user$project$Config$question_api_endpoint = '/api/question/';
+var _user$project$Config$text_section_api_endpoint = '/api/section/';
 var _user$project$Config$text_api_endpoint = '/api/text/';
 
 var _user$project$Question_Model$new_question = function (i) {
@@ -10016,6 +10017,7 @@ var _user$project$Text_Model$new_text = {
 	source: '',
 	difficulty: '',
 	introduction: '',
+	conclusion: '',
 	tags: _elm_lang$core$Maybe$Nothing,
 	created_by: _elm_lang$core$Maybe$Nothing,
 	last_modified_by: _elm_lang$core$Maybe$Nothing,
@@ -10042,7 +10044,9 @@ var _user$project$Text_Model$Text = function (a) {
 										return function (k) {
 											return function (l) {
 												return function (m) {
-													return {id: a, title: b, introduction: c, author: d, source: e, difficulty: f, created_by: g, last_modified_by: h, tags: i, created_dt: j, modified_dt: k, sections: l, write_locker: m};
+													return function (n) {
+														return {id: a, title: b, introduction: c, author: d, source: e, difficulty: f, conclusion: g, created_by: h, last_modified_by: i, tags: j, created_dt: k, modified_dt: l, sections: m, write_locker: n};
+													};
 												};
 											};
 										};
@@ -10909,8 +10913,8 @@ var _user$project$SignUp$view_submit = F2(
 			_1: {ctor: '[]'}
 		};
 	});
-var _user$project$SignUp$view_content = F4(
-	function (email_msg, password_msgs, submit_msg, model) {
+var _user$project$SignUp$view_content = F5(
+	function (signup_label, email_msg, password_msgs, submit_msg, model) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -10929,22 +10933,37 @@ var _user$project$SignUp$view_content = F4(
 					_elm_lang$html$Html$div,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$classList(
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'signup_box', _1: true},
-								_1: {ctor: '[]'}
-							}),
+						_0: _elm_lang$html$Html_Attributes$class('signup_title'),
 						_1: {ctor: '[]'}
 					},
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						A2(_user$project$SignUp$view_email_input, email_msg, model),
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(signup_label),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$classList(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'signup_box', _1: true},
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						},
 						A2(
 							_elm_lang$core$Basics_ops['++'],
-							A2(_user$project$SignUp$view_password_input, password_msgs, model),
-							A2(_user$project$SignUp$view_submit, submit_msg, model)))),
-				_1: {ctor: '[]'}
+							A2(_user$project$SignUp$view_email_input, email_msg, model),
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								A2(_user$project$SignUp$view_password_input, password_msgs, model),
+								A2(_user$project$SignUp$view_submit, submit_msg, model)))),
+					_1: {ctor: '[]'}
+				}
 			});
 	});
 var _user$project$SignUp$view = F5(
@@ -10960,22 +10979,11 @@ var _user$project$SignUp$view = F5(
 					_0: _user$project$Views$view_filter,
 					_1: {
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{ctor: '[]'},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text(signup_label),
-								_1: {ctor: '[]'}
-							}),
+						_0: A5(_user$project$SignUp$view_content, signup_label, email_msg, password_msgs, submit_msg, model),
 						_1: {
 							ctor: '::',
-							_0: A4(_user$project$SignUp$view_content, email_msg, password_msgs, submit_msg, model),
-							_1: {
-								ctor: '::',
-								_0: _user$project$Views$view_footer,
-								_1: {ctor: '[]'}
-							}
+							_0: _user$project$Views$view_footer,
+							_1: {ctor: '[]'}
 						}
 					}
 				}

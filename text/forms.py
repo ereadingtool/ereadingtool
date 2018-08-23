@@ -17,14 +17,18 @@ class TagField(CharField):
             # need at least one tag
             raise ValidationError('Texts requires at least one tag.')
         else:
+            tags = []
+
             for tag_name in value:
                 tag, created = Tag.objects.get_or_create(name=tag_name)
 
-                yield tag
+                tags.append(tag)
+
+            return tags
 
 
 class TextForm(ModelForm):
-    tags = TagField()
+    tags = TagField(required=True)
 
     def __init__(self, *args, **kwargs):
         super(TextForm, self).__init__(*args, **kwargs)

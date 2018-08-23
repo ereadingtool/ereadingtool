@@ -2,7 +2,7 @@ module SignUp exposing (  view, UserID, URI, toggle_show_password, update_email,
                         , update_confirm_password, view_email_input, view_password_input, view_submit)
 
 import Html exposing (Html, div)
-import Html.Attributes exposing (classList, attribute)
+import Html.Attributes exposing (classList, class, attribute)
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
 
 import Dict exposing (Dict)
@@ -113,14 +113,17 @@ view_submit submit_msg model = [
   ]
 
 view_content
-    : (String -> a)
+    :  String
+    -> (String -> a)
     -> ( a, String -> a, String -> a )
     -> a
     -> { b | show_passwords : Bool, errors : Dict String String }
     -> Html a
-view_content email_msg password_msgs submit_msg model = Html.div [ classList [("signup", True)] ] [
-    Html.div [classList [("signup_box", True)] ] <|
-        (view_email_input email_msg model) ++ (view_password_input password_msgs model) ++ (view_submit submit_msg model)
+view_content signup_label email_msg password_msgs submit_msg model =
+  div [ classList [("signup", True)] ] [
+    div [class "signup_title"] [ Html.text signup_label ]
+  , div [classList [("signup_box", True)] ] <|
+      (view_email_input email_msg model) ++ (view_password_input password_msgs model) ++ (view_submit submit_msg model)
   ]
 
 -- VIEW
@@ -134,7 +137,6 @@ view :
 view signup_label email_msg password_msgs submit_msg model = div [] [
     (Views.view_header Profile.emptyProfile Nothing)
   , (Views.view_filter)
-  , div [] [ Html.text signup_label ]
-  , (view_content email_msg password_msgs submit_msg model)
+  , (view_content signup_label email_msg password_msgs submit_msg model)
   , (Views.view_footer)
   ]
