@@ -9,34 +9,40 @@ type alias Answer = {
   , question_id: Int
   , text: String
   , order: Int
-  , correct: Maybe Bool
+  , answered_correctly: Maybe Bool
   , feedback: String }
 
 
-type TextAnswer = TextAnswer Answer Selected AnswerCorrect FeedbackViewable
+type TextAnswer = TextAnswer Answer
 
 
 gen_text_answer : Answer -> TextAnswer
 gen_text_answer answer =
-  TextAnswer answer False False False
+  TextAnswer answer
 
 correct : TextAnswer -> Bool
 correct text_answer =
-  False
+  case (answer text_answer).answered_correctly of
+    Just correct ->
+      correct
+    Nothing ->
+      False
 
 feedback_viewable : TextAnswer -> Bool
-feedback_viewable (TextAnswer _ _ _ viewable) = viewable
+feedback_viewable text_answer =
+  case (answer text_answer).answered_correctly of
+    Just _ ->
+      True
+    Nothing ->
+      False
 
 selected : TextAnswer -> Bool
-selected (TextAnswer _ selected _ _) = selected
+selected text_answer =
+  case (answer text_answer).answered_correctly of
+    Just _ ->
+      True
+    Nothing ->
+      False
 
 answer : TextAnswer -> Answer
-answer (TextAnswer answer _ _ _) = answer
-
-set_answer_selected : TextAnswer -> Bool -> TextAnswer
-set_answer_selected (TextAnswer answer _ answer_correct feedback_viewable) selected =
-  TextAnswer answer selected answer_correct feedback_viewable
-
-set_answer_feedback_viewable : TextAnswer -> Bool -> TextAnswer
-set_answer_feedback_viewable (TextAnswer answer selected answer_correct _) feedback_viewable =
-  TextAnswer answer selected answer_correct feedback_viewable
+answer (TextAnswer answer) = answer

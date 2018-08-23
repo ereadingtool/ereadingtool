@@ -1,5 +1,7 @@
 from typing import Dict
+
 from django.db import models
+
 from mixins.model import Timestamped
 from text.models import TextSection
 
@@ -20,7 +22,7 @@ class Question(Timestamped, models.Model):
     def __str__(self):
         return self.body[:15]
 
-    def to_text_reading_dict(self) -> Dict:
+    def to_text_reading_dict(self, text_reading=None) -> Dict:
         return {
             'id': self.pk,
             'text_section_id': self.text_section.pk,
@@ -28,7 +30,7 @@ class Question(Timestamped, models.Model):
             'modified_dt': self.modified_dt.isoformat(),
             'body': self.body,
             'order': self.order,
-            'answers': [answer.to_text_reading_dict() for answer in self.answers.all()],
+            'answers': [answer.to_text_reading_dict(text_reading=text_reading) for answer in self.answers.all()],
             'question_type': self.type
         }
 
@@ -60,9 +62,20 @@ class Answer(models.Model):
     def __str__(self):
         return f'{self.order}'
 
-    def to_text_reading_dict(self) -> Dict:
+    def to_text_reading_dict(self, text_reading=None) -> Dict:
         answer_dict = self.to_dict()
-        answer_dict.pop('correct')
+
+        answer_dict['answered_correctly'] = None
+
+        # TODO (andrew): perhaps use django queryset annotations here to reduce the number of queries
+        if text_reading and self.text_reading_answers.filter(text_reading=text_reading).count():
+            # this was one of the student's answers
+            if self == self.text_reading_answers.model.objects.filter(text_reading=text_reading,
+                                                                      question=self.question)[0].answer:
+                # answer was given first
+                answer_dict['answered_correctly'] = self.correct
+
+            answer_dict['answered_correctly'] = self.correct
 
         return answer_dict
 
@@ -73,5 +86,5 @@ class Answer(models.Model):
             'text': self.text,
             'order': self.order,
             'feedback': self.feedback,
-            'correct': self.correct
+            'answered_correctly': self.correct
         }

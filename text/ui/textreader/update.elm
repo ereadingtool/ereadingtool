@@ -15,13 +15,7 @@ route_cmd_resp model cmd_resp =
     StartResp text ->
       ({ model | text = text, progress=ViewIntro }, Cmd.none)
 
-    NextResp section ->
-      ({ model | progress=ViewSection section }, Cmd.none)
-
-    PrevResp section ->
-      ({ model | progress=ViewSection section }, Cmd.none)
-
-    AnswerResp section ->
+    InProgressResp section ->
       ({ model | progress=ViewSection section }, Cmd.none)
 
     CompleteResp text_scores ->

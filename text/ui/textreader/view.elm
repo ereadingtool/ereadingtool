@@ -62,6 +62,7 @@ view_answer text_section text_question text_answer =
         onClick (Select text_answer)
 
     answer = TextReader.Answer.Model.answer text_answer
+
     answer_selected = TextReader.Answer.Model.selected text_answer
     is_correct = TextReader.Answer.Model.correct text_answer
     view_feedback = TextReader.Answer.Model.feedback_viewable text_answer
@@ -87,7 +88,7 @@ view_question : Section -> TextQuestion -> Html Msg
 view_question text_section text_question =
   let
     question = TextReader.Question.Model.question text_question
-    answers = TextReader.Question.Model.answers text_question
+    answers = Debug.log "answers" (TextReader.Question.Model.answers text_question)
     text_question_id = String.join "_" ["question", toString question.order]
   in
     div [class "question", attribute "id" text_question_id] [

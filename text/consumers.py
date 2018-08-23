@@ -1,15 +1,12 @@
-from typing import AnyStr
-
+from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
-from channels.db import database_sync_to_async
-
-from text.models import Text, TextSection
-from text_reading.models import (TextReading, TextReadingException, TextReadingNotAllQuestionsAnswered,
-                                 TextReadingQuestionAlreadyAnswered, TextReadingQuestionNotInSection)
-
+from question.models import Answer
+from text.models import Text
+from text_reading.models import (TextReading)
+from text_reading.exceptions import (TextReadingException, TextReadingNotAllQuestionsAnswered,
+                                     TextReadingQuestionAlreadyAnswered, TextReadingQuestionNotInSection)
 from user.student.models import Student
-from question.models import Question, Answer
 
 
 class Unauthorized(Exception):
@@ -54,8 +51,8 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             self.text_reading.answer(answer)
 
             await self.send_json({
-                'command': 'answer',
-                'result': self.text_reading.get_current_section().to_text_reading_dict()
+                'command': self.text_reading.current_state.name,
+                'result': self.text_reading.to_dict()
             })
 
         except (TextReadingQuestionAlreadyAnswered, TextReadingQuestionNotInSection):
@@ -76,22 +73,16 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
 
         try:
             self.text_reading.prev()
+
+            await self.send_json({
+                'command': self.text_reading.current_state.name,
+                'result': self.text_reading.to_dict()
+            })
+
         except TextReadingException as e:
             await self.send_json({
                 'command': 'exception',
                 'result': {'code': e.code, 'error_msg': e.error_msg}
-            })
-
-        if self.text_reading.current_state == self.text_reading.state_machine.in_progress:
-            await self.send_json({
-                'command': 'prev',
-                'result': self.text_reading.get_current_section().to_text_reading_dict()
-            })
-
-        elif self.text_reading.current_state == self.text_reading.state_machine.intro:
-            await self.send_json({
-                'command': 'start',
-                'result': self.text.to_text_reading_dict()
             })
 
     async def next(self, student: Student):
@@ -100,6 +91,12 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
 
         try:
             self.text_reading.next()
+
+            await self.send_json({
+                'command': self.text_reading.current_state.name,
+                'result': self.text_reading.to_dict()
+            })
+
         except TextReadingNotAllQuestionsAnswered as e:
             await self.send_json({
                 'command': 'exception',
@@ -109,24 +106,6 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             await self.send_json({
                 'command': 'exception',
                 'result': {'code': 'unknown', 'error_msg': 'something went wrong'}
-            })
-
-        if self.text_reading.state_machine.is_in_progress:
-            await self.send_json({
-                'command': 'next',
-                'result': self.text_reading.get_current_section().to_text_reading_dict()
-            })
-
-        elif self.text_reading.state_machine.is_complete:
-            await self.send_json({
-                'command': 'complete',
-                # scores
-                'result': {
-                    'num_of_sections': len(self.sections),
-                    'complete_sections': len(self.sections),
-                    'section_scores': 5,
-                    'possible_section_scores': 5
-                }
             })
 
     async def connect(self):
@@ -140,12 +119,18 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
 
             self.text = await get_text_or_error(text_id=text_id, student=student)
 
-            self.text_reading = TextReading.start(student=student, text=self.text)
+            started, self.text_reading = TextReading.start_or_resume(student=student, text=self.text)
 
-            await self.send_json({
-                'command': 'start',
-                'result': self.text.to_text_reading_dict()
-            })
+            if started:
+                await self.send_json({
+                    'command': self.text_reading.current_state.name,
+                    'result': self.text.to_text_reading_dict()
+                })
+            else:
+                await self.send_json({
+                    'command': self.text_reading.current_state.name,
+                    'result': self.text_reading.to_dict()
+                })
 
     async def receive_json(self, content, **kwargs):
         student = self.scope['user'].student

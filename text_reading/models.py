@@ -1,4 +1,4 @@
-from typing import TypeVar, Optional, AnyStr
+from typing import TypeVar, Optional, Dict
 
 from statemachine import StateMachine, State
 from django.db import models
@@ -9,33 +9,8 @@ from text.models import Text, TextSection
 from question.models import Question, Answer
 from user.student.models import Student
 from mixins.model import Timestamped
-
-
-class TextReadingException(Exception):
-    def __init__(self, code: AnyStr, error_msg: AnyStr, *args, **kwargs):
-        super(TextReadingException, self).__init__(*args, **kwargs)
-
-        self.code = code
-        self.error_msg = error_msg
-
-    def __repr__(self):
-        return self.error_msg
-
-
-class TextReadingInvalidState(TextReadingException):
-    pass
-
-
-class TextReadingQuestionNotInSection(TextReadingException):
-    pass
-
-
-class TextReadingQuestionAlreadyAnswered(TextReadingException):
-    pass
-
-
-class TextReadingNotAllQuestionsAnswered(TextReadingException):
-    pass
+from text_reading.exceptions import (TextReadingInvalidState, TextReadingNotAllQuestionsAnswered,
+                                     TextReadingQuestionNotInSection)
 
 
 class TextReadingStateMachine(StateMachine):
@@ -51,6 +26,8 @@ class TextReadingStateMachine(StateMachine):
     back_to_intro = in_progress.to(intro)
 
     completing = in_progress.to(complete)
+
+    back_to_reading = complete.to(in_progress)
 
     def next_state(self, next_section: Optional[TextSection]=None, reading=True, *args, **kwargs):
         if self.is_intro and next_section:
@@ -69,6 +46,9 @@ class TextReadingStateMachine(StateMachine):
         elif self.is_in_progress and not prev_section:
             self.back_to_intro()
 
+        elif self.is_complete:
+            self.back_to_reading()
+
 
 class TextReading(models.Model):
     """
@@ -80,10 +60,28 @@ class TextReading(models.Model):
     state = models.CharField(max_length=64, null=False, default=TextReadingStateMachine.intro.name)
 
     currently_reading = models.NullBooleanField()
-    current_section = models.ForeignKey(TextSection, null=True, on_delete=models.CASCADE)
+    current_section = models.ForeignKey(TextSection, null=True, on_delete=models.CASCADE, related_name='text_readings')
 
     start_dt = models.DateTimeField(null=False, auto_now_add=True)
     end_dt = models.DateTimeField(null=True)
+
+    def to_dict(self) -> Dict:
+        if self.state_machine.is_in_progress:
+            return self.get_current_section().to_text_reading_dict(text_reading=self)
+
+        elif self.state_machine.is_intro:
+            return self.text.to_text_reading_dict()
+
+        elif self.state_machine.is_complete:
+            # TODO (andrew): use django annotations to summarize results
+            # in TextReadingAnswers.objects.filter(text_reading=self)
+            return {
+                'num_of_sections': len(self.sections),
+                'complete_sections': len(self.sections),
+                'section_scores': len(self.sections) * sum([section.questions.count() for section in self.sections]),
+                'possible_section_scores':
+                    len(self.sections) * sum([section.questions.count() for section in self.sections])
+            }
 
     @cached_property
     def sections(self):
@@ -111,7 +109,7 @@ class TextReading(models.Model):
         pass
 
     def next_validator(self, *args, **kwargs):
-        if TextSectionReading.objects.filter(
+        if TextReadingAnswers.objects.filter(
                 text_reading=self,
                 text_section=self.current_section).count() < self.current_section.questions.count():
             raise TextReadingNotAllQuestionsAnswered(
@@ -133,26 +131,26 @@ class TextReading(models.Model):
 
         self.state_machine.current_state = getattr(TextReadingStateMachine, self.state)
 
-    def answer(self, answer: Answer) -> TypeVar('TextSectionReading'):
+    def answer(self, answer: Answer) -> Optional[TypeVar('TextReadingAnswers')]:
         if answer.question.text_section != self.current_section:
             raise TextReadingQuestionNotInSection(code='question_not_in_section',
                                                   error_msg='This question is not in this section.')
 
-        if TextSectionReading.objects.filter(text_reading=self,
-                                             text_section=self.current_section,
-                                             question=answer.question).count():
-            # question already answered
-            raise TextReadingQuestionAlreadyAnswered(code='question_already_answered',
-                                                     error_msg="You've already answered this question")
+        if not TextReadingAnswers.objects.filter(text_reading=self,
+                                                 text_section=self.current_section,
+                                                 question=answer.question,
+                                                 answer=answer).count():
 
-        text_section_reading = TextSectionReading(text_reading=self,
-                                                  text_section=self.current_section,
-                                                  question=answer.question,
-                                                  answer=answer)
+            text_reading_answers = TextReadingAnswers(text_reading=self,
+                                                      text_section=self.current_section,
+                                                      question=answer.question,
+                                                      answer=answer)
 
-        text_section_reading.save()
+            text_reading_answers.save()
 
-        return text_section_reading
+            return text_reading_answers
+
+        return None
 
     def prev(self, *args, **kwargs):
         """
@@ -163,7 +161,7 @@ class TextReading(models.Model):
         """
         prev_section = None
 
-        if self.current_section:
+        if self.state_machine.is_in_progress and self.current_section:
             try:
                 i = self.current_section.order - 1
 
@@ -171,10 +169,14 @@ class TextReading(models.Model):
                     prev_section = self.sections[i]
             except IndexError:
                 pass
+        elif self.state_machine.is_complete:
+            prev_section = self.sections[len(self.sections)-1]
 
         self.state_machine.prev_state(prev_section=prev_section, **kwargs)
 
         self.current_section = prev_section
+
+        self.state = self.current_state.name
 
         self.save()
 
@@ -200,6 +202,8 @@ class TextReading(models.Model):
 
         self.current_section = next_section
 
+        self.state = self.current_state.name
+
         self.save()
 
     @classmethod
@@ -214,13 +218,31 @@ class TextReading(models.Model):
 
         return text_reading
 
+    @classmethod
+    def resume(cls, student: Student, text: Text) -> TypeVar('TextReading'):
+        """
 
-class TextSectionReading(Timestamped, models.Model):
-    text_reading = models.ForeignKey(TextReading, on_delete=models.CASCADE, related_name='text_section_readings')
-    text_section = models.ForeignKey(TextSection, on_delete=models.CASCADE, related_name='text_section_readings')
+        :param student:
+        :param text:
+        :return:
+        """
 
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='text_section_readings')
-    answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name='text_section_readings')
+        return cls.objects.filter(student=student, text=text).exclude(state=TextReadingStateMachine.complete.name).get()
+
+    @classmethod
+    def start_or_resume(cls, student: Student, text: Text) -> TypeVar('TextReading'):
+        if cls.objects.filter(student=student, text=text).exclude(state=TextReadingStateMachine.complete.name).count():
+            return False, cls.resume(student=student, text=text)
+        else:
+            return True, cls.start(student=student, text=text)
+
+
+class TextReadingAnswers(Timestamped, models.Model):
+    text_reading = models.ForeignKey(TextReading, on_delete=models.CASCADE, related_name='text_reading_answers')
+    text_section = models.ForeignKey(TextSection, on_delete=models.CASCADE, related_name='text_reading_answers')
+
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='text_reading_answers')
+    answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name='text_reading_answers')
 
     class Meta:
-        unique_together = (('text_reading', 'text_section', 'question'),)
+        unique_together = (('text_reading', 'text_section', 'question', 'answer'),)

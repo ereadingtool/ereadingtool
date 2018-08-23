@@ -1,22 +1,11 @@
 module TextReader.Section.Decode exposing (..)
 
-
-import Array exposing (Array)
-
 import Json.Decode
-import TextReader.Model exposing (..)
-
-import Answer.Decode
-
-import TextReader.Answer.Model exposing (Answer)
-
-import TextReader.Question.Decode
-import TextReader.Question.Model exposing (TextQuestion, Question)
-
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
-import Json.Decode.Extra exposing (date)
 
 import TextReader.Section.Model exposing (TextSection, Section)
+
+import TextReader.Question.Decode
 
 
 sectionDecoder : Json.Decode.Decoder Section

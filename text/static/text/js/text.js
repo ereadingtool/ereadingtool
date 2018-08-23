@@ -21221,33 +21221,6 @@ var _user$project$Answer_Model$Answer = F6(
 		return {id: a, question_id: b, text: c, correct: d, order: e, feedback: f};
 	});
 
-var _user$project$Answer_Decode$answerDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'feedback',
-	_elm_lang$core$Json_Decode$string,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'order',
-		_elm_lang$core$Json_Decode$int,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'correct',
-			_elm_lang$core$Json_Decode$bool,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'text',
-				_elm_lang$core$Json_Decode$string,
-				A3(
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'question_id',
-					_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-					A3(
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'id',
-						_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Answer_Model$Answer)))))));
-var _user$project$Answer_Decode$answersDecoder = _elm_lang$core$Json_Decode$array(_user$project$Answer_Decode$answerDecoder);
-
 var _user$project$Config$answer_feedback_limit = 2048;
 var _user$project$Config$student_api_endpoint = '/api/student/';
 var _user$project$Config$student_login_api_endpoint = '/api/student/login/';
@@ -21915,38 +21888,40 @@ var _user$project$TextReader_Answer_Model$answer = function (_p0) {
 	var _p1 = _p0;
 	return _p1._0;
 };
-var _user$project$TextReader_Answer_Model$selected = function (_p2) {
-	var _p3 = _p2;
-	return _p3._1;
+var _user$project$TextReader_Answer_Model$selected = function (text_answer) {
+	var _p2 = _user$project$TextReader_Answer_Model$answer(text_answer).answered_correctly;
+	if (_p2.ctor === 'Just') {
+		return true;
+	} else {
+		return false;
+	}
 };
-var _user$project$TextReader_Answer_Model$feedback_viewable = function (_p4) {
-	var _p5 = _p4;
-	return _p5._3;
+var _user$project$TextReader_Answer_Model$feedback_viewable = function (text_answer) {
+	var _p3 = _user$project$TextReader_Answer_Model$answer(text_answer).answered_correctly;
+	if (_p3.ctor === 'Just') {
+		return true;
+	} else {
+		return false;
+	}
 };
 var _user$project$TextReader_Answer_Model$correct = function (text_answer) {
-	return false;
+	var _p4 = _user$project$TextReader_Answer_Model$answer(text_answer).answered_correctly;
+	if (_p4.ctor === 'Just') {
+		return _p4._0;
+	} else {
+		return false;
+	}
 };
 var _user$project$TextReader_Answer_Model$Answer = F6(
 	function (a, b, c, d, e, f) {
-		return {id: a, question_id: b, text: c, order: d, correct: e, feedback: f};
+		return {id: a, question_id: b, text: c, order: d, answered_correctly: e, feedback: f};
 	});
-var _user$project$TextReader_Answer_Model$TextAnswer = F4(
-	function (a, b, c, d) {
-		return {ctor: 'TextAnswer', _0: a, _1: b, _2: c, _3: d};
-	});
-var _user$project$TextReader_Answer_Model$gen_text_answer = function (answer) {
-	return A4(_user$project$TextReader_Answer_Model$TextAnswer, answer, false, false, false);
+var _user$project$TextReader_Answer_Model$TextAnswer = function (a) {
+	return {ctor: 'TextAnswer', _0: a};
 };
-var _user$project$TextReader_Answer_Model$set_answer_selected = F2(
-	function (_p6, selected) {
-		var _p7 = _p6;
-		return A4(_user$project$TextReader_Answer_Model$TextAnswer, _p7._0, selected, _p7._2, _p7._3);
-	});
-var _user$project$TextReader_Answer_Model$set_answer_feedback_viewable = F2(
-	function (_p8, feedback_viewable) {
-		var _p9 = _p8;
-		return A4(_user$project$TextReader_Answer_Model$TextAnswer, _p9._0, _p9._1, _p9._2, feedback_viewable);
-	});
+var _user$project$TextReader_Answer_Model$gen_text_answer = function (answer) {
+	return _user$project$TextReader_Answer_Model$TextAnswer(answer);
+};
 
 var _user$project$TextReader_Question_Model$answered_correctly = function (_p0) {
 	var _p1 = _p0;
@@ -22092,14 +22067,8 @@ var _user$project$TextReader_Model$ExceptionResp = function (a) {
 var _user$project$TextReader_Model$CompleteResp = function (a) {
 	return {ctor: 'CompleteResp', _0: a};
 };
-var _user$project$TextReader_Model$AnswerResp = function (a) {
-	return {ctor: 'AnswerResp', _0: a};
-};
-var _user$project$TextReader_Model$PrevResp = function (a) {
-	return {ctor: 'PrevResp', _0: a};
-};
-var _user$project$TextReader_Model$NextResp = function (a) {
-	return {ctor: 'NextResp', _0: a};
+var _user$project$TextReader_Model$InProgressResp = function (a) {
+	return {ctor: 'InProgressResp', _0: a};
 };
 var _user$project$TextReader_Model$StartResp = function (a) {
 	return {ctor: 'StartResp', _0: a};
@@ -22500,7 +22469,10 @@ var _user$project$TextReader_View$view_answer = F3(
 	});
 var _user$project$TextReader_View$view_question = F2(
 	function (text_section, text_question) {
-		var answers = _user$project$TextReader_Question_Model$answers(text_question);
+		var answers = A2(
+			_elm_lang$core$Debug$log,
+			'answers',
+			_user$project$TextReader_Question_Model$answers(text_question));
 		var question = _user$project$TextReader_Question_Model$question(text_question);
 		var text_question_id = A2(
 			_elm_lang$core$String$join,
@@ -22780,7 +22752,7 @@ var _user$project$TextReader_Question_Decode$answerDecoder = A3(
 	_elm_lang$core$Json_Decode$string,
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'correct',
+		'answered_correctly',
 		_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$bool),
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -22945,18 +22917,19 @@ var _user$project$TextReader_Decode$sectionDecoder = function (cmd_resp) {
 var _user$project$TextReader_Decode$command_resp_decoder = function (cmd_str) {
 	var _p0 = cmd_str;
 	switch (_p0) {
-		case 'start':
+		case 'intro':
+			var _p1 = A2(_elm_lang$core$Debug$log, 'server resp', 'intro');
 			return _user$project$TextReader_Decode$startDecoder;
-		case 'next':
-			return _user$project$TextReader_Decode$sectionDecoder(_user$project$TextReader_Model$NextResp);
-		case 'answer':
-			return _user$project$TextReader_Decode$sectionDecoder(_user$project$TextReader_Model$AnswerResp);
+		case 'in_progress':
+			var _p2 = A2(_elm_lang$core$Debug$log, 'server resp', 'in_progress');
+			return _user$project$TextReader_Decode$sectionDecoder(_user$project$TextReader_Model$InProgressResp);
 		case 'exception':
 			return A2(
 				_elm_lang$core$Json_Decode$map,
 				_user$project$TextReader_Model$ExceptionResp,
 				A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$TextReader_Decode$exceptionDecoder));
 		case 'complete':
+			var _p3 = A2(_elm_lang$core$Debug$log, 'server resp', 'complete');
 			return A2(
 				_elm_lang$core$Json_Decode$map,
 				_user$project$TextReader_Model$CompleteResp,
@@ -22986,27 +22959,7 @@ var _user$project$TextReader_Update$route_cmd_resp = F2(
 						{text: _p0._0, progress: _user$project$TextReader_Model$ViewIntro}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			case 'NextResp':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							progress: _user$project$TextReader_Model$ViewSection(_p0._0)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'PrevResp':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							progress: _user$project$TextReader_Model$ViewSection(_p0._0)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'AnswerResp':
+			case 'InProgressResp':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(

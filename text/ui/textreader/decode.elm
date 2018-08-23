@@ -1,42 +1,29 @@
 module TextReader.Decode exposing (..)
 
-import Array exposing (Array)
-
 import Json.Decode
 import TextReader.Model exposing (..)
 
-import Answer.Decode
-
 import TextReader.Section.Model exposing (Section)
-import TextReader.Answer.Model exposing (Answer)
-
-import TextReader.Question.Decode
-import TextReader.Question.Model exposing (TextQuestion, Question)
 
 import TextReader.Section.Decode
 import TextReader.Text.Decode
 
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
-import Json.Decode.Extra exposing (date)
-
 
 
 command_resp_decoder : String -> Json.Decode.Decoder CmdResp
 command_resp_decoder cmd_str =
   case cmd_str of
-    "start" ->
+    "intro" -> let _ = Debug.log "server resp" "intro" in
       startDecoder
 
-    "next" ->
-      sectionDecoder NextResp
-
-    "answer" ->
-      sectionDecoder AnswerResp
+    "in_progress" -> let _ = Debug.log "server resp" "in_progress" in
+      sectionDecoder InProgressResp
 
     "exception" ->
       Json.Decode.map ExceptionResp (Json.Decode.field "result" exceptionDecoder)
 
-    "complete" ->
+    "complete" -> let _ = Debug.log "server resp" "complete" in
       Json.Decode.map CompleteResp (Json.Decode.field "result" textScoresDecoder)
 
     _ ->

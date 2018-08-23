@@ -1,20 +1,14 @@
 module TextReader.Model exposing (..)
 
-import Array exposing (Array)
 import Dict exposing (Dict)
 
 import TextReader.Text.Model exposing (Text)
 import TextReader.Section.Model exposing (Section)
-import TextReader.Question.Model exposing (TextQuestion, Question)
 import TextReader.Answer.Model exposing (TextAnswer, Answer, AnswerCorrect)
-
-import Answer.Model
 
 import TextReader exposing (TextItemAttributes, WebSocketAddress)
 
 import Flags exposing (CSRFToken)
-
-import Date exposing (Date)
 
 import Profile
 
@@ -31,9 +25,7 @@ type CmdReq =
 
 type CmdResp =
     StartResp Text
-  | NextResp Section
-  | PrevResp Section
-  | AnswerResp Section
+  | InProgressResp Section
   | CompleteResp TextScores
   | ExceptionResp Exception
 
