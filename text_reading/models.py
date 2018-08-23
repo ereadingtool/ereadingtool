@@ -67,7 +67,8 @@ class TextReading(models.Model):
 
     def to_dict(self) -> Dict:
         if self.state_machine.is_in_progress:
-            return self.get_current_section().to_text_reading_dict(text_reading=self)
+            return self.get_current_section().to_text_reading_dict(text_reading=self,
+                                                                   num_of_sections=len(self.sections))
 
         elif self.state_machine.is_intro:
             return self.text.to_text_reading_dict()

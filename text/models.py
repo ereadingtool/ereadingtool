@@ -231,8 +231,8 @@ class TextSection(Timestamped, models.Model):
 
         return schema
 
-    def to_text_reading_dict(self, text_reading=None) -> Dict:
-        return {
+    def to_text_reading_dict(self, text_reading=None, *args, **kwargs) -> Dict:
+        text_section_dict = {
             'created_dt': self.created_dt.isoformat(),
             'modified_dt': self.modified_dt.isoformat(),
             'question_count': self.questions.count(),
@@ -240,6 +240,10 @@ class TextSection(Timestamped, models.Model):
             'body': self.body,
             'questions': [question.to_text_reading_dict(text_reading) for question in self.questions.all()]
         }
+
+        text_section_dict.update(**kwargs)
+
+        return text_section_dict
 
     def to_dict(self) -> Dict:
         questions = [question.to_dict() for question in self.questions.all()]

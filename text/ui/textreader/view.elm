@@ -119,12 +119,12 @@ view_gloss gloss word =
           ]
         ) (Dict.keys gloss))
 
-view_text_section : Dict String Bool -> Section -> Int -> Html Msg
-view_text_section gloss section total_sections =
+view_text_section : Dict String Bool -> Section -> Html Msg
+view_text_section gloss section =
   let
     text_section = TextReader.Section.Model.text_section section
     text_body_vdom = tagWordsAndToVDOM gloss (HtmlParser.parse text_section.body)
-    section_title = ("Section " ++ (toString (text_section.order +1)) ++ "/" ++ (toString total_sections))
+    section_title = ("Section " ++ (toString (text_section.order +1)) ++ "/" ++ (toString text_section.num_of_sections))
   in
     div [class "text_section"] <| [
         div [class "section_title"] [ Html.text section_title ]
@@ -192,8 +192,7 @@ view_content model =
 
     ViewSection section ->
       div [class "text"] [
-        -- TODO(andrew): fill out num of sections
-        view_text_section model.gloss section 1
+        view_text_section model.gloss section
       , view_exceptions model
       , div [class "nav"] [view_prev_btn, view_next_btn]
       ]

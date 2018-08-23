@@ -7,10 +7,11 @@ import TextReader.Question.Model exposing (TextQuestion, Question)
 type Section = Section TextSection (Array TextQuestion)
 
 type alias TextSection = {
-    order: Int
+    order : Int
   , body : String
   , question_count : Int
-  , questions : Array TextReader.Question.Model.Question }
+  , questions : Array TextReader.Question.Model.Question
+  , num_of_sections : Int }
 
 emptyTextSection : TextSection
 emptyTextSection = {
@@ -18,6 +19,7 @@ emptyTextSection = {
   , body=""
   , question_count=0
   , questions=Array.fromList []
+  , num_of_sections=0
   }
 
 questions : Section -> Array TextQuestion

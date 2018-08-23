@@ -19,6 +19,7 @@ textSectionDecoder =
     |> required "body" Json.Decode.string
     |> required "question_count" Json.Decode.int
     |> required "questions" TextReader.Question.Decode.questionsDecoder
+    |> required "num_of_sections" Json.Decode.int
 
 textSectionsDecoder : Json.Decode.Decoder (List TextSection)
 textSectionsDecoder = Json.Decode.list textSectionDecoder

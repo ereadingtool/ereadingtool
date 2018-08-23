@@ -22019,11 +22019,12 @@ var _user$project$TextReader_Section_Model$emptyTextSection = {
 	body: '',
 	question_count: 0,
 	questions: _elm_lang$core$Array$fromList(
-		{ctor: '[]'})
+		{ctor: '[]'}),
+	num_of_sections: 0
 };
-var _user$project$TextReader_Section_Model$TextSection = F4(
-	function (a, b, c, d) {
-		return {order: a, body: b, question_count: c, questions: d};
+var _user$project$TextReader_Section_Model$TextSection = F5(
+	function (a, b, c, d, e) {
+		return {order: a, body: b, question_count: c, questions: d, num_of_sections: e};
 	});
 var _user$project$TextReader_Section_Model$Section = F2(
 	function (a, b) {
@@ -22598,8 +22599,8 @@ var _user$project$TextReader_View$tagWordsAndToVDOM = F2(
 			_user$project$TextReader_View$tagWordAndToVDOM(gloss),
 			text);
 	});
-var _user$project$TextReader_View$view_text_section = F3(
-	function (gloss, section, total_sections) {
+var _user$project$TextReader_View$view_text_section = F2(
+	function (gloss, section) {
 		var text_section = _user$project$TextReader_Section_Model$text_section(section);
 		var text_body_vdom = A2(
 			_user$project$TextReader_View$tagWordsAndToVDOM,
@@ -22614,7 +22615,7 @@ var _user$project$TextReader_View$view_text_section = F3(
 				A2(
 					_elm_lang$core$Basics_ops['++'],
 					'/',
-					_elm_lang$core$Basics$toString(total_sections))));
+					_elm_lang$core$Basics$toString(text_section.num_of_sections))));
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -22710,7 +22711,7 @@ var _user$project$TextReader_View$view_content = function (model) {
 				},
 				{
 					ctor: '::',
-					_0: A3(_user$project$TextReader_View$view_text_section, model.gloss, _p5._0, 1),
+					_0: A2(_user$project$TextReader_View$view_text_section, model.gloss, _p5._0),
 					_1: {
 						ctor: '::',
 						_0: _user$project$TextReader_View$view_exceptions(model),
@@ -22809,21 +22810,25 @@ var _user$project$TextReader_Question_Decode$questionsDecoder = _elm_lang$core$J
 
 var _user$project$TextReader_Section_Decode$textSectionDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'questions',
-	_user$project$TextReader_Question_Decode$questionsDecoder,
+	'num_of_sections',
+	_elm_lang$core$Json_Decode$int,
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'question_count',
-		_elm_lang$core$Json_Decode$int,
+		'questions',
+		_user$project$TextReader_Question_Decode$questionsDecoder,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'body',
-			_elm_lang$core$Json_Decode$string,
+			'question_count',
+			_elm_lang$core$Json_Decode$int,
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'order',
-				_elm_lang$core$Json_Decode$int,
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$TextReader_Section_Model$TextSection)))));
+				'body',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'order',
+					_elm_lang$core$Json_Decode$int,
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$TextReader_Section_Model$TextSection))))));
 var _user$project$TextReader_Section_Decode$textSectionsDecoder = _elm_lang$core$Json_Decode$list(_user$project$TextReader_Section_Decode$textSectionDecoder);
 var _user$project$TextReader_Section_Decode$sectionDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$TextReader_Section_Model$newSection, _user$project$TextReader_Section_Decode$textSectionDecoder);
 
