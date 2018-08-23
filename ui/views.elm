@@ -1,5 +1,5 @@
 module Views exposing (view_filter, view_header, view_footer, view_preview, view_menu,
-  view_user_profile_menu_item, set_selected)
+  view_user_profile_menu_items, set_selected)
 
 import Html exposing (..)
 import Html.Attributes exposing (classList, attribute)
@@ -19,9 +19,6 @@ type MenuItems = MenuItems (Array MenuItem)
 menu_items : MenuItems
 menu_items = MenuItems <| Array.fromList [
     MenuItem "/text/search" "Search" False
-  , MenuItem "/admin/texts/" "Texts" False
-  , MenuItem "/login/student/" "Student Login" False
-  , MenuItem "/login/instructor/" "Instructor Login" False
   ]
 
 set_selected_menu_item : MenuItem -> Bool -> MenuItem
@@ -39,26 +36,31 @@ view_menu_item (MenuItem uri link_text selected) =
   span [ classList [("menu_item", True), ("menu_item_selected", selected)] ]
     [ Html.a [attribute "href" uri] [ Html.text link_text ] ]
 
-view_user_profile_menu_item : Maybe (List (Html msg)) -> List (Html msg)
-view_user_profile_menu_item view =
+view_user_profile_menu_items : Maybe (List (Html msg)) -> List (Html msg)
+view_user_profile_menu_items view =
   case view of
-    Just profile_view -> [ span [ classList [("menu_item", True)] ] profile_view ]
-    _ -> []
+    Just profile_view ->
+      profile_view
+    _ ->
+      []
 
 view_menu : MenuItems -> Profile.Profile -> List (Html msg)
 view_menu (MenuItems menu_items) profile =
   (Array.toList <| Array.map view_menu_item menu_items) ++
-  view_user_profile_menu_item (Profile.view_profile_header profile)
+  (view_user_profile_menu_items (Profile.view_profile_header profile))
 
 view_header : Profile.Profile -> Maybe SelectedMenuItem -> Html msg
 view_header profile selected_menu_item =
   let
-    m_items = case selected_menu_item of
-      Just selected_index -> (set_selected menu_items selected_index True)
-      _ -> menu_items
+    m_items =
+      case selected_menu_item of
+        Just selected_index ->
+          (set_selected menu_items selected_index True)
+        _ ->
+          menu_items
   in
     div [classList [("header", True)]] [
-      text "E-Reader"
+      div [] [ Html.text "E-Reader" ]
     , div [classList [("menu", True)]] (view_menu m_items profile)
     ]
 

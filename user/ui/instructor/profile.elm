@@ -17,5 +17,10 @@ username (InstructorProfile attrs) = attrs.username
 
 view_instructor_profile_header : InstructorProfile -> List (Html msg)
 view_instructor_profile_header (InstructorProfile attrs) = [
-    Html.div [] [ Html.a [attribute "href" "/profile/instructor/"] [ Html.text attrs.username ] ]
+    div [classList [("menu_item", True)]] [
+      Html.a [attribute "href" "/admin/texts/"] [ Html.text "Texts" ]
+    ]
+  , div [classList [("profile_menu_item", True)]] [
+      Html.a [attribute "href" "/profile/instructor/"] [ Html.text attrs.username ]
+    ]
   ]

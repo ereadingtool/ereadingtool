@@ -49,7 +49,12 @@ studentUserName (StudentProfile attrs) = attrs.username
 
 view_student_profile_header : StudentProfile -> List (Html msg)
 view_student_profile_header (StudentProfile attrs) = [
-    Html.div [] [ Html.a [attribute "href" "/profile/student/"] [ Html.text attrs.username ] ]
+    div [classList [("menu_item", True)]] [
+      Html.a [attribute "href" ""] [ Html.text "Flashcards" ]
+    ]
+  , div [classList [("profile_menu_item", True)]] [
+      Html.a [attribute "href" "/profile/student/"] [ Html.text attrs.username ]
+    ]
   ]
 
 init_profile:
@@ -72,8 +77,12 @@ emptyProfile = EmptyProfile
 view_profile_header : Profile -> Maybe (List (Html msg))
 view_profile_header profile =
   case profile of
-    (Instructor instructor_profile) -> Just (Instructor.Profile.view_instructor_profile_header instructor_profile)
-    (Student student_profile) -> Just (view_student_profile_header student_profile)
+    (Instructor instructor_profile) ->
+      Just (Instructor.Profile.view_instructor_profile_header instructor_profile)
+
+    (Student student_profile) ->
+      Just (view_student_profile_header student_profile)
+
     EmptyProfile -> Nothing
 
 emptyStudentProfile : StudentProfile

@@ -86,5 +86,5 @@ class Answer(models.Model):
             'text': self.text,
             'order': self.order,
             'feedback': self.feedback,
-            'answered_correctly': self.correct
+            'correct': self.correct
         }
