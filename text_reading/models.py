@@ -69,7 +69,7 @@ class TextReading(models.Model):
         return {
             'id': self.pk,
             'text': str(self.text),
-            'current_section': (self.current_section.order+1) if self.current_section else None,
+            'current_section': str(self.current_section.order+1) if self.current_section else None,
             'status': self.state
         }
 
