@@ -2,7 +2,7 @@
     display: grid;
 
     grid-template-columns: 4% 10% auto 15% 4%;
-    grid-auto-rows: 450px;
+    grid-auto-rows: 750px;
 }
 
 .profile_items {
