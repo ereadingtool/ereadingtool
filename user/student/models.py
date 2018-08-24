@@ -20,7 +20,8 @@ class Student(models.Model):
             'username': self.user.username,
             'difficulty_preference': [self.difficulty_preference.slug, self.difficulty_preference.name]
             if self.difficulty_preference else None,
-            'difficulties': difficulties
+            'difficulties': difficulties,
+            'text_reading': [text_reading.to_dict() for text_reading in self.text_readings.all()]
         }
 
     def __str__(self):

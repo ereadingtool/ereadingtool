@@ -52,7 +52,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
 
             await self.send_json({
                 'command': self.text_reading.current_state.name,
-                'result': self.text_reading.to_dict()
+                'result': self.text_reading.to_text_reading_dict()
             })
 
         except (TextReadingQuestionAlreadyAnswered, TextReadingQuestionNotInSection):
@@ -76,7 +76,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
 
             await self.send_json({
                 'command': self.text_reading.current_state.name,
-                'result': self.text_reading.to_dict()
+                'result': self.text_reading.to_text_reading_dict()
             })
 
         except TextReadingException as e:
@@ -94,7 +94,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
 
             await self.send_json({
                 'command': self.text_reading.current_state.name,
-                'result': self.text_reading.to_dict()
+                'result': self.text_reading.to_text_reading_dict()
             })
 
         except TextReadingNotAllQuestionsAnswered as e:
@@ -129,7 +129,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             else:
                 await self.send_json({
                     'command': self.text_reading.current_state.name,
-                    'result': self.text_reading.to_dict()
+                    'result': self.text_reading.to_text_reading_dict()
                 })
 
     async def receive_json(self, content, **kwargs):

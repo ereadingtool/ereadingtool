@@ -54,7 +54,7 @@ class TextReading(models.Model):
     """
     A model that keeps track of individual text reading sessions.
     """
-    student = models.ForeignKey(Student, null=False, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, null=False, on_delete=models.CASCADE, related_name='text_readings')
     text = models.ForeignKey(Text, null=False, on_delete=models.CASCADE)
 
     state = models.CharField(max_length=64, null=False, default=TextReadingStateMachine.intro.name)
@@ -66,6 +66,14 @@ class TextReading(models.Model):
     end_dt = models.DateTimeField(null=True)
 
     def to_dict(self) -> Dict:
+        return {
+            'id': self.pk,
+            'text': str(self.text),
+            'current_section': (self.current_section.order+1) if self.current_section else None,
+            'status': self.state
+        }
+
+    def to_text_reading_dict(self) -> Dict:
         if self.state_machine.is_in_progress:
             return self.get_current_section().to_text_reading_dict(text_reading=self,
                                                                    num_of_sections=len(self.sections))

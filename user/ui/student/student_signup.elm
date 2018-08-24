@@ -8,7 +8,7 @@ import Json.Encode as Encode
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 import Json.Decode as Decode
 import Views
-import Html.Attributes exposing (classList, attribute)
+import Html.Attributes exposing (classList, class, attribute)
 
 import HttpHelpers exposing (post_with_headers)
 import Config exposing (student_signup_api_endpoint)
@@ -141,7 +141,7 @@ view_difficulty_choices model = [
 view_content : Model -> Html Msg
 view_content model =
   div [ classList [("signup", True)] ] [
-    div [] [Html.text "Student Signup"]
+    div [class "signup_title"] [Html.text "Student Signup"]
   , div [classList [("signup_box", True)] ] <|
       (SignUp.view_email_input UpdateEmail model) ++
       (SignUp.view_password_input (ToggleShowPassword, UpdatePassword, UpdateConfirmPassword) model) ++

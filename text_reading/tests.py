@@ -41,7 +41,7 @@ class TestTextReading(TestCase):
         self.assertIn('command', resp)
         self.assertIn('result', resp)
 
-        self.assertEquals(resp['command'], 'start')
+        self.assertEquals(resp['command'], 'intro')
         self.assertEquals(resp['result'], self.text.to_text_reading_dict())
 
         # proceed to the next step
@@ -52,7 +52,10 @@ class TestTextReading(TestCase):
         self.assertIn('command', resp)
         self.assertIn('result', resp)
 
-        self.assertEquals(resp['result'], self.text.sections.all()[0].to_text_reading_dict())
+        num_of_sections = self.text.sections.count()
+
+        self.assertEquals(resp['result'], self.text.sections.all()[0].to_text_reading_dict(
+            num_of_sections=num_of_sections))
 
         # test we're not giving the client the answers
         self.assertIn('questions', resp['result'])
@@ -66,7 +69,7 @@ class TestTextReading(TestCase):
 
         # back to 'start'
         self.assertIn('command', resp)
-        self.assertEquals(resp['command'], 'start')
+        self.assertEquals(resp['command'], 'intro')
         self.assertIn('result', resp)
 
         self.assertEquals(resp['result'], self.text.to_text_reading_dict())

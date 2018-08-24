@@ -65,6 +65,8 @@ class Answer(models.Model):
     def to_text_reading_dict(self, text_reading=None) -> Dict:
         answer_dict = self.to_dict()
 
+        answer_dict.pop('correct')
+
         answer_dict['answered_correctly'] = None
 
         # TODO (andrew): perhaps use django queryset annotations here to reduce the number of queries

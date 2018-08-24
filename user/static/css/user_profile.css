@@ -1,12 +1,51 @@
 .profile {
     display: grid;
 
-    margin-top: 50px;
-    grid-template-columns: 4% 15% auto 10% 15% 4%;
-    grid-auto-rows: 50px;
+    grid-template-columns: 4% 10% auto 15% 4%;
+    grid-auto-rows: 450px;
+
 }
 
 .profile_items {
     display: grid;
     grid-column: 3;
+
+    padding: 25px;
+    grid-template-columns: 25% 25% 25% 25%;
+    grid-template-rows: 150px 150px 150px;
+
+    border: solid 0.5px lightgrey;
+
+    grid-row-gap: 25px;
+    grid-column-gap: 10px;
+}
+
+.text_reading_actions {
+    display: grid;
+
+    grid-template-columns: 55px 75px;
+
+    grid-column-gap: 5px;
+    grid-row-gap: 10px;
+
+    margin-top: 10px;
+}
+
+.text_reading_item {
+    margin-bottom: 5px;
+}
+
+.profile_item {
+    display: grid;
+
+    grid-template-columns: auto;
+    grid-template-rows: 25px 35px;
+}
+
+.profile_item_title {
+    border-bottom: solid 0.5px grey;
+}
+
+.profile_item_value {
+    margin-top: 15px;
 }

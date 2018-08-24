@@ -8,9 +8,6 @@ import Flags
 
 import Profile
 
-import Instructor.Profile exposing (InstructorProfile)
-
-
 -- UPDATE
 type Msg = Update
 

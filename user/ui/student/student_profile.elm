@@ -1,5 +1,5 @@
-import Html exposing (Html, div)
-import Html.Attributes exposing (classList, attribute)
+import Html exposing (Html, div, span)
+import Html.Attributes exposing (class, classList, attribute)
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
 
 import Http exposing (..)
@@ -9,7 +9,7 @@ import Json.Encode as Encode
 
 import Dict exposing (Dict)
 
-import Profile exposing (StudentProfile)
+import Profile exposing (StudentProfile, TextReading)
 
 import Views
 import Config exposing (student_api_endpoint)
@@ -32,21 +32,26 @@ type alias Model = {
 type alias UpdateProfileResp = Dict.Dict String String
 
 profileEncoder : Profile.StudentProfile -> Encode.Value
-profileEncoder student = let
-  encode_pref = (case (Profile.studentDifficultyPreference student) of
-    Just difficulty -> Encode.string (Tuple.first difficulty)
-    _ -> Encode.null) in Encode.object [
-     ("difficulty_preference", encode_pref)
-  ]
+profileEncoder student =
+  let
+    encode_pref =
+      (case (Profile.studentDifficultyPreference student) of
+        Just difficulty ->
+          Encode.string (Tuple.first difficulty)
+        _ ->
+          Encode.null)
+  in
+    Encode.object [ ("difficulty_preference", encode_pref) ]
 
 updateRespDecoder : Decode.Decoder (UpdateProfileResp)
 updateRespDecoder = Decode.dict Decode.string
 
 post_profile : Flags.CSRFToken -> Profile.StudentProfile -> Cmd Msg
 post_profile csrftoken profile =
-  let encoded_profile = profileEncoder profile
-      req =
-    post_with_headers
+  let
+    encoded_profile = profileEncoder profile
+    req =
+      post_with_headers
        student_api_endpoint
        [Http.header "X-CSRFToken" csrftoken]
        (Http.jsonBody encoded_profile)
@@ -94,26 +99,75 @@ main =
     }
 
 view_difficulty : Model -> Html Msg
-view_difficulty model = let pref = (case Profile.studentDifficultyPreference model.profile of
-  Just pref -> Tuple.first pref
-  _ -> "") in Html.div [classList [("profile_item", True)] ] [
-    Html.select [
-         onInput UpdateDifficulty ] [
+view_difficulty model =
+  let
+    pref =
+      (case Profile.studentDifficultyPreference model.profile of
+        Just pref -> Tuple.first pref
+        _ -> "")
+  in
+    div [] [
+      Html.select [ onInput UpdateDifficulty ] [
         Html.optgroup [] (List.map (\(k,v) ->
-          Html.option ([attribute "value" k] ++
-            (if k == pref then [attribute "selected" ""] else []))
-           [ Html.text v ]) (Profile.studentDifficulties model.profile))
-       ]
+          Html.option ([attribute "value" k] ++ (if k == pref then [attribute "selected" ""] else []))
+         [ Html.text v ]) (Profile.studentDifficulties model.profile))
+      ]
+    ]
+
+view_text_reading : TextReading -> Html Msg
+view_text_reading text_reading =
+  span [] [
+    div [class "text_reading_item"] [
+      Html.text "Text: "
+    , Html.text text_reading.text
+    ]
+  , div [class "text_reading_item"] [
+      Html.text "Current Section: "
+    , Html.text (Maybe.withDefault "None" text_reading.current_section)
+    ]
+  , div [class "text_reading_item"] [
+      Html.text "Status: "
+    , Html.text text_reading.status
+    ]
+  , div [class "text_reading_item"] [
+      Html.text "Actions"
+    , div [class "text_reading_actions"] [
+        div [] [ Html.a [attribute "href" ("/text/" ++ toString text_reading.id ++ "/")] [ Html.text "Resume" ] ]
+      , div [] [ Html.a [attribute "href" "#"] [ Html.text "Start Over" ] ]
+      ]
+    ]
   ]
 
+
+view_student_text_readings : StudentProfile -> List (Html Msg)
+view_student_text_readings student_profile =
+  case (Profile.studentTextReading student_profile) of
+    Just text_readings ->
+      [
+        div [class "profile_item"] [
+          span [class "profile_item_title"] [ Html.text "Texts In Progress" ]
+        , span [class "profile_item_value"] (List.map view_text_reading text_readings)
+        ]
+      ]
+    Nothing ->
+      []
+
 view_content : Model -> Html Msg
-view_content model = Html.div [ classList [("profile", True)] ] [
-    Html.div [classList [("profile_items", True)] ] [
-        Html.span [] [Html.text "Username: ", Html.text (Profile.studentUserName model.profile)]
-      , Html.text "Preferred Difficulty", (view_difficulty model)
-      , (if not (String.isEmpty model.err_str) then
-          Html.span [attribute "class" "error"] [ Html.text "error", Html.text model.err_str ]
-        else Html.text "")]
+view_content model =
+  div [ classList [("profile", True)] ] [
+    div [classList [("profile_items", True)] ] <| [
+      div [class "profile_item"] [
+        span [class "profile_item_title"] [ Html.text "Username" ]
+      , span [class "profile_item_value"] [ Html.text (Profile.studentUserName model.profile) ]
+      ]
+    , div [class "profile_item"] [
+        span [class "profile_item_title"] [ Html.text "Preferred Difficulty" ]
+      , span [class "profile_item_value"] [ (view_difficulty model) ]
+      ]
+    , (if not (String.isEmpty model.err_str) then
+        span [attribute "class" "error"] [ Html.text "error", Html.text model.err_str ]
+       else Html.text "")
+    ] ++ (view_student_text_readings model.profile)
   ]
 
 -- VIEW

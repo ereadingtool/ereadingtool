@@ -2,7 +2,7 @@ module Profile exposing (StudentProfile, studentProfile, studentDifficultyPrefer
   studentDifficulties, studentProfileDecoder, studentUserName, view_student_profile_header, retrieve_student_profile
   , view_profile_header, init_profile, ProfileID, ProfileType
   , StudentProfileParams, Profile(..), emptyProfile, fromStudentProfile
-  , fromInstructorProfile)
+  , fromInstructorProfile, studentTextReading, TextReading)
 
 import Text.Model as Text
 import Config exposing (student_api_endpoint)
@@ -19,11 +19,20 @@ import Instructor.Profile exposing (InstructorProfile, InstructorProfileParams)
 type alias ProfileID = Int
 type alias ProfileType = String
 
+
+type alias TextReading = {
+    id: Int
+  , text: String
+  , current_section: Maybe String
+  , status: String }
+
+
 type alias StudentProfileParams = {
     id: Maybe Int
   , username: String
   , difficulty_preference: Maybe Text.TextDifficulty
-  , difficulties: List Text.TextDifficulty }
+  , difficulties: List Text.TextDifficulty
+  , text_reading: Maybe (List TextReading) }
 
 type StudentProfile = StudentProfile StudentProfileParams
 
@@ -43,6 +52,9 @@ studentDifficultyPreference (StudentProfile attrs) = attrs.difficulty_preference
 
 studentDifficulties : StudentProfile -> List Text.TextDifficulty
 studentDifficulties (StudentProfile attrs) = attrs.difficulties
+
+studentTextReading : StudentProfile -> Maybe (List TextReading)
+studentTextReading (StudentProfile attrs) = attrs.text_reading
 
 studentUserName : StudentProfile -> String
 studentUserName (StudentProfile attrs) = attrs.username
@@ -90,10 +102,23 @@ emptyStudentProfile = StudentProfile {
     id = Nothing
   , username = ""
   , difficulty_preference = Nothing
-  , difficulties = [] }
+  , difficulties = []
+  , text_reading = Nothing }
 
 tupleDecoder : Decode.Decoder ( String, String )
 tupleDecoder = Decode.map2 (,) (Decode.index 0 Decode.string) (Decode.index 1 Decode.string)
+
+textReadingDecoder : Decode.Decoder TextReading
+textReadingDecoder =
+  decode TextReading
+    |> required "id" Decode.int
+    |> required "text" Decode.string
+    |> required "current_section" (Decode.nullable (Decode.string))
+    |> required "status" Decode.string
+
+textReadingsDecoder : Decode.Decoder (List TextReading)
+textReadingsDecoder =
+  Decode.list textReadingDecoder
 
 studentProfileParamsDecoder : Decode.Decoder StudentProfileParams
 studentProfileParamsDecoder =
@@ -102,6 +127,7 @@ studentProfileParamsDecoder =
     |> required "username" Decode.string
     |> required "difficulty_preference" (Decode.nullable tupleDecoder)
     |> required "difficulties" (Decode.list tupleDecoder)
+    |> required "text_reading" (Decode.nullable textReadingsDecoder)
 
 
 studentProfileDecoder : Decode.Decoder StudentProfile
@@ -109,7 +135,8 @@ studentProfileDecoder =
   Decode.map StudentProfile studentProfileParamsDecoder
 
 retrieve_student_profile : (Result Error StudentProfile -> msg) -> ProfileID -> Cmd msg
-retrieve_student_profile msg profile_id =  let
-    request = Http.get (String.join "" [student_api_endpoint, (toString profile_id) ++ "/"])
-      studentProfileDecoder
-  in Http.send msg request
+retrieve_student_profile msg profile_id =
+  let
+    request = Http.get (String.join "" [student_api_endpoint, (toString profile_id) ++ "/"]) studentProfileDecoder
+  in
+    Http.send msg request
