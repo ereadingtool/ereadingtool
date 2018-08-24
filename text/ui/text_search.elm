@@ -43,13 +43,29 @@ init flags =
     tag_search =
       Text.Search.Tag.new "text_tag_search"
         (Text.Search.Option.new_options (List.map (\tag -> (tag, tag)) flags.text_tags))
+
     difficulty_search =
       Text.Search.Difficulty.new "text_difficulty_search" (Text.Search.Option.new_options flags.text_difficulties)
+
+    profile=Profile.init_profile flags
+
+    default_search = Text.Search.new text_api_endpoint tag_search difficulty_search
+
+    text_search =
+      (case profile of
+        Profile.Student student_profile ->
+          case Profile.studentDifficultyPreference student_profile of
+            Just difficulty ->
+              Text.Search.add_difficulty_to_search default_search (Tuple.first difficulty) True
+            _ ->
+              default_search
+        _ ->
+          default_search)
   in
     ({
       results=[]
-    , profile=Profile.init_profile flags
-    , text_search=Text.Search.new text_api_endpoint tag_search difficulty_search
+    , profile=profile
+    , text_search=text_search
     , flags=flags
     }
     , Cmd.none)
@@ -75,9 +91,7 @@ update msg model =
   case msg of
     AddDifficulty difficulty select ->
       let
-        difficulty_search = Text.Search.difficulty_search model.text_search
-        new_difficulty_search = Text.Search.Difficulty.select_difficulty difficulty_search difficulty select
-        new_text_search = Text.Search.set_difficulty_search model.text_search new_difficulty_search
+        new_text_search = Text.Search.add_difficulty_to_search model.text_search difficulty select
       in
         ({ model | text_search = new_text_search, results = [] }, update_results new_text_search)
 
@@ -216,8 +230,8 @@ view_content model =
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    (Views.view_header model.profile Nothing)
-  , (Views.view_filter)
-  , (view_content model)
-  , (Views.view_footer)
+    Views.view_header model.profile (Just 0)
+  , Views.view_filter
+  , view_content model
+  , Views.view_footer
   ]

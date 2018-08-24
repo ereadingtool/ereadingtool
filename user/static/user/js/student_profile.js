@@ -10131,61 +10131,56 @@ var _user$project$Main$view_text_reading = function (text_reading) {
 		});
 };
 var _user$project$Main$view_student_text_readings = function (student_profile) {
-	var _p0 = _user$project$Profile$studentTextReading(student_profile);
-	if (_p0.ctor === 'Just') {
-		return {
+	var text_readings = A2(
+		_elm_lang$core$Maybe$withDefault,
+		{ctor: '[]'},
+		_user$project$Profile$studentTextReading(student_profile));
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('profile_item'),
+			_1: {ctor: '[]'}
+		},
+		{
 			ctor: '::',
 			_0: A2(
-				_elm_lang$html$Html$div,
+				_elm_lang$html$Html$span,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('profile_item'),
+					_0: _elm_lang$html$Html_Attributes$class('profile_item_title'),
 					_1: {ctor: '[]'}
 				},
 				{
 					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$span,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('profile_item_title'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('Texts In Progress'),
-							_1: {ctor: '[]'}
-						}),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$span,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('profile_item_value'),
-								_1: {ctor: '[]'}
-							},
-							A2(_elm_lang$core$List$map, _user$project$Main$view_text_reading, _p0._0)),
-						_1: {ctor: '[]'}
-					}
+					_0: _elm_lang$html$Html$text('Texts In Progress'),
+					_1: {ctor: '[]'}
 				}),
-			_1: {ctor: '[]'}
-		};
-	} else {
-		return {ctor: '[]'};
-	}
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$span,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('profile_item_value'),
+						_1: {ctor: '[]'}
+					},
+					A2(_elm_lang$core$List$map, _user$project$Main$view_text_reading, text_readings)),
+				_1: {ctor: '[]'}
+			}
+		});
 };
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p1 = msg;
-		switch (_p1.ctor) {
+		var _p0 = msg;
+		switch (_p0.ctor) {
 			case 'UpdateStudentProfile':
-				if (_p1._0.ctor === 'Ok') {
+				if (_p0._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{profile: _p1._0._0}),
+							{profile: _p0._0._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
@@ -10194,7 +10189,7 @@ var _user$project$Main$update = F2(
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								err_str: _elm_lang$core$Basics$toString(_p1._0._0)
+								err_str: _elm_lang$core$Basics$toString(_p0._0._0)
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
@@ -10202,22 +10197,22 @@ var _user$project$Main$update = F2(
 			case 'UpdateDifficulty':
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			default:
-				if (_p1._0.ctor === 'Ok') {
+				if (_p0._0.ctor === 'Ok') {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
-					var _p2 = _p1._0._0;
-					switch (_p2.ctor) {
+					var _p1 = _p0._0._0;
+					switch (_p1.ctor) {
 						case 'BadStatus':
-							var _p3 = A2(
+							var _p2 = A2(
 								_elm_lang$core$Json_Decode$decodeString,
 								_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
-								_p2._0.body);
-							if (_p3.ctor === 'Ok') {
+								_p1._0.body);
+							if (_p2.ctor === 'Ok') {
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
 										model,
-										{errors: _p3._0}),
+										{errors: _p2._0}),
 									_1: _elm_lang$core$Platform_Cmd$none
 								};
 							} else {
@@ -10237,10 +10232,10 @@ var _user$project$Main$subscriptions = function (model) {
 var _user$project$Main$updateRespDecoder = _elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string);
 var _user$project$Main$profileEncoder = function (student) {
 	var encode_pref = function () {
-		var _p4 = _user$project$Profile$studentDifficultyPreference(student);
-		if (_p4.ctor === 'Just') {
+		var _p3 = _user$project$Profile$studentDifficultyPreference(student);
+		if (_p3.ctor === 'Just') {
 			return _elm_lang$core$Json_Encode$string(
-				_elm_lang$core$Tuple$first(_p4._0));
+				_elm_lang$core$Tuple$first(_p3._0));
 		} else {
 			return _elm_lang$core$Json_Encode$null;
 		}
@@ -10279,9 +10274,9 @@ var _user$project$Main$UpdateDifficulty = function (a) {
 };
 var _user$project$Main$view_difficulty = function (model) {
 	var pref = function () {
-		var _p5 = _user$project$Profile$studentDifficultyPreference(model.profile);
-		if (_p5.ctor === 'Just') {
-			return _elm_lang$core$Tuple$first(_p5._0);
+		var _p4 = _user$project$Profile$studentDifficultyPreference(model.profile);
+		if (_p4.ctor === 'Just') {
+			return _elm_lang$core$Tuple$first(_p4._0);
 		} else {
 			return '';
 		}
@@ -10305,26 +10300,26 @@ var _user$project$Main$view_difficulty = function (model) {
 						{ctor: '[]'},
 						A2(
 							_elm_lang$core$List$map,
-							function (_p6) {
-								var _p7 = _p6;
-								var _p8 = _p7._0;
+							function (_p5) {
+								var _p6 = _p5;
+								var _p7 = _p6._0;
 								return A2(
 									_elm_lang$html$Html$option,
 									A2(
 										_elm_lang$core$Basics_ops['++'],
 										{
 											ctor: '::',
-											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', _p8),
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', _p7),
 											_1: {ctor: '[]'}
 										},
-										_elm_lang$core$Native_Utils.eq(_p8, pref) ? {
+										_elm_lang$core$Native_Utils.eq(_p7, pref) ? {
 											ctor: '::',
 											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'selected', ''),
 											_1: {ctor: '[]'}
 										} : {ctor: '[]'}),
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text(_p7._1),
+										_0: _elm_lang$html$Html$text(_p6._1),
 										_1: {ctor: '[]'}
 									});
 							},
@@ -10361,9 +10356,48 @@ var _user$project$Main$view_content = function (model) {
 						}),
 					_1: {ctor: '[]'}
 				},
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					{
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('profile_item'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$span,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('profile_item_title'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('Username'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$span,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('profile_item_value'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text(
+											_user$project$Profile$studentUserName(model.profile)),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {
 						ctor: '::',
 						_0: A2(
 							_elm_lang$html$Html$div,
@@ -10383,7 +10417,7 @@ var _user$project$Main$view_content = function (model) {
 									},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text('Username'),
+										_0: _elm_lang$html$Html$text('Preferred Difficulty'),
 										_1: {ctor: '[]'}
 									}),
 								_1: {
@@ -10397,8 +10431,7 @@ var _user$project$Main$view_content = function (model) {
 										},
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html$text(
-												_user$project$Profile$studentUserName(model.profile)),
+											_0: _user$project$Main$view_difficulty(model),
 											_1: {ctor: '[]'}
 										}),
 									_1: {ctor: '[]'}
@@ -10424,7 +10457,7 @@ var _user$project$Main$view_content = function (model) {
 										},
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html$text('Preferred Difficulty'),
+											_0: _elm_lang$html$Html$text('Flashcards: '),
 											_1: {ctor: '[]'}
 										}),
 									_1: {
@@ -10438,7 +10471,45 @@ var _user$project$Main$view_content = function (model) {
 											},
 											{
 												ctor: '::',
-												_0: _user$project$Main$view_difficulty(model),
+												_0: A2(
+													_elm_lang$html$Html$div,
+													{ctor: '[]'},
+													A2(
+														_elm_lang$core$List$map,
+														function (fake_name) {
+															return A2(
+																_elm_lang$html$Html$div,
+																{ctor: '[]'},
+																{
+																	ctor: '::',
+																	_0: A2(
+																		_elm_lang$html$Html$a,
+																		{
+																			ctor: '::',
+																			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '#'),
+																			_1: {ctor: '[]'}
+																		},
+																		{
+																			ctor: '::',
+																			_0: _elm_lang$html$Html$text(fake_name),
+																			_1: {ctor: '[]'}
+																		}),
+																	_1: {ctor: '[]'}
+																});
+														},
+														{
+															ctor: '::',
+															_0: 'word',
+															_1: {
+																ctor: '::',
+																_0: 'word',
+																_1: {
+																	ctor: '::',
+																	_0: 'word',
+																	_1: {ctor: '[]'}
+																}
+															}
+														})),
 												_1: {ctor: '[]'}
 											}),
 										_1: {ctor: '[]'}
@@ -10446,27 +10517,31 @@ var _user$project$Main$view_content = function (model) {
 								}),
 							_1: {
 								ctor: '::',
-								_0: (!_elm_lang$core$String$isEmpty(model.err_str)) ? A2(
-									_elm_lang$html$Html$span,
-									{
-										ctor: '::',
-										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'error'),
-										_1: {ctor: '[]'}
-									},
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text('error'),
-										_1: {
+								_0: _user$project$Main$view_student_text_readings(model.profile),
+								_1: {
+									ctor: '::',
+									_0: (!_elm_lang$core$String$isEmpty(model.err_str)) ? A2(
+										_elm_lang$html$Html$span,
+										{
 											ctor: '::',
-											_0: _elm_lang$html$Html$text(model.err_str),
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'error'),
 											_1: {ctor: '[]'}
-										}
-									}) : _elm_lang$html$Html$text(''),
-								_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text('error'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html$text(model.err_str),
+												_1: {ctor: '[]'}
+											}
+										}) : _elm_lang$html$Html$text(''),
+									_1: {ctor: '[]'}
+								}
 							}
 						}
-					},
-					_user$project$Main$view_student_text_readings(model.profile))),
+					}
+				}),
 			_1: {ctor: '[]'}
 		});
 };

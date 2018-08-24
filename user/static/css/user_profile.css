@@ -3,7 +3,6 @@
 
     grid-template-columns: 4% 10% auto 15% 4%;
     grid-auto-rows: 450px;
-
 }
 
 .profile_items {
@@ -11,7 +10,7 @@
     grid-column: 3;
 
     padding: 25px;
-    grid-template-columns: 25% 25% 25% 25%;
+    grid-template-columns: 25% 25% 50%;
     grid-template-rows: 150px 150px 150px;
 
     border: solid 0.5px lightgrey;

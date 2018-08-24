@@ -138,24 +138,20 @@ view_text_reading text_reading =
     ]
   ]
 
-
-view_student_text_readings : StudentProfile -> List (Html Msg)
+view_student_text_readings : StudentProfile -> Html Msg
 view_student_text_readings student_profile =
-  case (Profile.studentTextReading student_profile) of
-    Just text_readings ->
-      [
-        div [class "profile_item"] [
-          span [class "profile_item_title"] [ Html.text "Texts In Progress" ]
-        , span [class "profile_item_value"] (List.map view_text_reading text_readings)
-        ]
-      ]
-    Nothing ->
-      []
+  let
+    text_readings = Maybe.withDefault [] (Profile.studentTextReading student_profile)
+  in
+    div [class "profile_item"] [
+      span [class "profile_item_title"] [ Html.text "Texts In Progress" ]
+    , span [class "profile_item_value"] (List.map view_text_reading text_readings)
+    ]
 
 view_content : Model -> Html Msg
 view_content model =
   div [ classList [("profile", True)] ] [
-    div [classList [("profile_items", True)] ] <| [
+    div [classList [("profile_items", True)] ] [
       div [class "profile_item"] [
         span [class "profile_item_title"] [ Html.text "Username" ]
       , span [class "profile_item_value"] [ Html.text (Profile.studentUserName model.profile) ]
@@ -164,10 +160,19 @@ view_content model =
         span [class "profile_item_title"] [ Html.text "Preferred Difficulty" ]
       , span [class "profile_item_value"] [ (view_difficulty model) ]
       ]
+    , div [class "profile_item"] [
+          span [class "profile_item_title"] [ Html.text "Flashcards: " ]
+        , span [class "profile_item_value"] [
+            div [] (List.map (\fake_name ->
+              div [] [ Html.a [attribute "href" "#"] [ Html.text fake_name ] ]
+            ) ["word", "word", "word"])
+          ]
+      ]
+    , view_student_text_readings model.profile
     , (if not (String.isEmpty model.err_str) then
         span [attribute "class" "error"] [ Html.text "error", Html.text model.err_str ]
        else Html.text "")
-    ] ++ (view_student_text_readings model.profile)
+    ]
   ]
 
 -- VIEW
