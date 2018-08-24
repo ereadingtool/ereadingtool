@@ -9893,9 +9893,31 @@ var _user$project$Profile$studentDifficulties = function (_p7) {
 	var _p8 = _p7;
 	return _p8._0.difficulties;
 };
-var _user$project$Profile$studentDifficultyPreference = function (_p9) {
+var _user$project$Profile$studentUpdateURI = function (id) {
+	return A2(
+		_elm_lang$core$String$join,
+		'',
+		{
+			ctor: '::',
+			_0: _user$project$Config$student_api_endpoint,
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$core$Basics$toString(id),
+				_1: {
+					ctor: '::',
+					_0: '/',
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
+var _user$project$Profile$studentID = function (_p9) {
 	var _p10 = _p9;
-	return _p10._0.difficulty_preference;
+	return _p10._0.id;
+};
+var _user$project$Profile$studentDifficultyPreference = function (_p11) {
+	var _p12 = _p11;
+	return _p12._0.difficulty_preference;
 };
 var _user$project$Profile$TextReading = F4(
 	function (a, b, c, d) {
@@ -9950,6 +9972,16 @@ var _user$project$Profile$StudentProfile = function (a) {
 var _user$project$Profile$studentProfile = function (params) {
 	return _user$project$Profile$StudentProfile(params);
 };
+var _user$project$Profile$setStudentDifficultyPreference = F2(
+	function (_p13, preference) {
+		var _p14 = _p13;
+		return _user$project$Profile$StudentProfile(
+			_elm_lang$core$Native_Utils.update(
+				_p14._0,
+				{
+					difficulty_preference: _elm_lang$core$Maybe$Just(preference)
+				}));
+	});
 var _user$project$Profile$emptyStudentProfile = _user$project$Profile$StudentProfile(
 	{
 		id: _elm_lang$core$Maybe$Nothing,
@@ -9996,15 +10028,15 @@ var _user$project$Profile$fromStudentProfile = function (student_profile) {
 	return _user$project$Profile$Student(student_profile);
 };
 var _user$project$Profile$init_profile = function (flags) {
-	var _p11 = flags.instructor_profile;
-	if (_p11.ctor === 'Just') {
+	var _p15 = flags.instructor_profile;
+	if (_p15.ctor === 'Just') {
 		return _user$project$Profile$Instructor(
-			_user$project$Instructor_Profile$init_profile(_p11._0));
+			_user$project$Instructor_Profile$init_profile(_p15._0));
 	} else {
-		var _p12 = flags.student_profile;
-		if (_p12.ctor === 'Just') {
+		var _p16 = flags.student_profile;
+		if (_p16.ctor === 'Just') {
 			return _user$project$Profile$Student(
-				_user$project$Profile$StudentProfile(_p12._0));
+				_user$project$Profile$StudentProfile(_p16._0));
 		} else {
 			return _user$project$Profile$EmptyProfile;
 		}
@@ -11069,7 +11101,11 @@ var _user$project$Main$view_search_results = function (text_list_items) {
 										},
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html$text('1 / 4'),
+											_0: _elm_lang$html$Html$text(
+												A2(
+													_elm_lang$core$Basics_ops['++'],
+													'1 / ',
+													_elm_lang$core$Basics$toString(text_item.text_section_count))),
 											_1: {ctor: '[]'}
 										}),
 									_1: {

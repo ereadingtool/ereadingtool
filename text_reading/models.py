@@ -118,9 +118,11 @@ class TextReading(models.Model):
         pass
 
     def next_validator(self, *args, **kwargs):
+        current_section = self.get_current_section()
+
         if TextReadingAnswers.objects.filter(
                 text_reading=self,
-                text_section=self.current_section).count() < self.current_section.questions.count():
+                text_section=current_section).count() < current_section.questions.count():
             raise TextReadingNotAllQuestionsAnswered(
                 code='questions_unanswered',
                 error_msg='Please answer all questions before continuing to the next section.'
