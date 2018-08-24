@@ -9537,9 +9537,31 @@ var _user$project$Profile$studentDifficulties = function (_p7) {
 	var _p8 = _p7;
 	return _p8._0.difficulties;
 };
-var _user$project$Profile$studentDifficultyPreference = function (_p9) {
+var _user$project$Profile$studentUpdateURI = function (id) {
+	return A2(
+		_elm_lang$core$String$join,
+		'',
+		{
+			ctor: '::',
+			_0: _user$project$Config$student_api_endpoint,
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$core$Basics$toString(id),
+				_1: {
+					ctor: '::',
+					_0: '/',
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
+var _user$project$Profile$studentID = function (_p9) {
 	var _p10 = _p9;
-	return _p10._0.difficulty_preference;
+	return _p10._0.id;
+};
+var _user$project$Profile$studentDifficultyPreference = function (_p11) {
+	var _p12 = _p11;
+	return _p12._0.difficulty_preference;
 };
 var _user$project$Profile$TextReading = F4(
 	function (a, b, c, d) {
@@ -9594,6 +9616,16 @@ var _user$project$Profile$StudentProfile = function (a) {
 var _user$project$Profile$studentProfile = function (params) {
 	return _user$project$Profile$StudentProfile(params);
 };
+var _user$project$Profile$setStudentDifficultyPreference = F2(
+	function (_p13, preference) {
+		var _p14 = _p13;
+		return _user$project$Profile$StudentProfile(
+			_elm_lang$core$Native_Utils.update(
+				_p14._0,
+				{
+					difficulty_preference: _elm_lang$core$Maybe$Just(preference)
+				}));
+	});
 var _user$project$Profile$emptyStudentProfile = _user$project$Profile$StudentProfile(
 	{
 		id: _elm_lang$core$Maybe$Nothing,
@@ -9640,15 +9672,15 @@ var _user$project$Profile$fromStudentProfile = function (student_profile) {
 	return _user$project$Profile$Student(student_profile);
 };
 var _user$project$Profile$init_profile = function (flags) {
-	var _p11 = flags.instructor_profile;
-	if (_p11.ctor === 'Just') {
+	var _p15 = flags.instructor_profile;
+	if (_p15.ctor === 'Just') {
 		return _user$project$Profile$Instructor(
-			_user$project$Instructor_Profile$init_profile(_p11._0));
+			_user$project$Instructor_Profile$init_profile(_p15._0));
 	} else {
-		var _p12 = flags.student_profile;
-		if (_p12.ctor === 'Just') {
+		var _p16 = flags.student_profile;
+		if (_p16.ctor === 'Just') {
 			return _user$project$Profile$Student(
-				_user$project$Profile$StudentProfile(_p12._0));
+				_user$project$Profile$StudentProfile(_p16._0));
 		} else {
 			return _user$project$Profile$EmptyProfile;
 		}
@@ -9698,6 +9730,24 @@ var _user$project$HttpHelpers$put_with_headers = F4(
 				withCredentials: false
 			});
 	});
+
+var _user$project$Student_Encode$profileEncoder = function (student) {
+	var encode_pref = function () {
+		var _p0 = _user$project$Profile$studentDifficultyPreference(student);
+		if (_p0.ctor === 'Just') {
+			return _elm_lang$core$Json_Encode$string(
+				_elm_lang$core$Tuple$first(_p0._0));
+		} else {
+			return _elm_lang$core$Json_Encode$null;
+		}
+	}();
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {ctor: '_Tuple2', _0: 'difficulty_preference', _1: encode_pref},
+			_1: {ctor: '[]'}
+		});
+};
 
 var _user$project$Views$view_preview = A2(
 	_elm_lang$html$Html$div,
@@ -10170,17 +10220,48 @@ var _user$project$Main$view_student_text_readings = function (student_profile) {
 			}
 		});
 };
+var _user$project$Main$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$none;
+};
+var _user$project$Main$updateRespDecoder = _elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string);
+var _user$project$Main$Model = F4(
+	function (a, b, c, d) {
+		return {flags: a, profile: b, err_str: c, errors: d};
+	});
+var _user$project$Main$Submitted = function (a) {
+	return {ctor: 'Submitted', _0: a};
+};
+var _user$project$Main$put_profile = F2(
+	function (csrftoken, student_profile) {
+		var _p0 = _user$project$Profile$studentID(student_profile);
+		if (_p0.ctor === 'Just') {
+			var encoded_profile = _user$project$Student_Encode$profileEncoder(student_profile);
+			var req = A4(
+				_user$project$HttpHelpers$put_with_headers,
+				_user$project$Profile$studentUpdateURI(_p0._0),
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
+					_1: {ctor: '[]'}
+				},
+				_elm_lang$http$Http$jsonBody(encoded_profile),
+				_user$project$Main$updateRespDecoder);
+			return A2(_elm_lang$http$Http$send, _user$project$Main$Submitted, req);
+		} else {
+			return _elm_lang$core$Platform_Cmd$none;
+		}
+	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p0 = msg;
-		switch (_p0.ctor) {
+		var _p1 = msg;
+		switch (_p1.ctor) {
 			case 'UpdateStudentProfile':
-				if (_p0._0.ctor === 'Ok') {
+				if (_p1._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{profile: _p0._0._0}),
+							{profile: _p1._0._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
@@ -10189,30 +10270,37 @@ var _user$project$Main$update = F2(
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								err_str: _elm_lang$core$Basics$toString(_p0._0._0)
+								err_str: _elm_lang$core$Basics$toString(_p1._0._0)
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				}
 			case 'UpdateDifficulty':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				var _p2 = _p1._0;
+				var new_difficulty_preference = {ctor: '_Tuple2', _0: _p2, _1: _p2};
+				var new_student_profile = A2(_user$project$Profile$setStudentDifficultyPreference, model.profile, new_difficulty_preference);
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: A2(_user$project$Main$put_profile, model.flags.csrftoken, new_student_profile)
+				};
 			default:
-				if (_p0._0.ctor === 'Ok') {
+				if (_p1._0.ctor === 'Ok') {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
-					var _p1 = _p0._0._0;
-					switch (_p1.ctor) {
+					var _p3 = _p1._0._0;
+					switch (_p3.ctor) {
 						case 'BadStatus':
-							var _p2 = A2(
+							var _p4 = A2(
 								_elm_lang$core$Json_Decode$decodeString,
 								_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
-								_p1._0.body);
-							if (_p2.ctor === 'Ok') {
+								_p3._0.body);
+							if (_p4.ctor === 'Ok') {
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
 										model,
-										{errors: _p2._0}),
+										{errors: _p4._0}),
 									_1: _elm_lang$core$Platform_Cmd$none
 								};
 							} else {
@@ -10226,57 +10314,14 @@ var _user$project$Main$update = F2(
 				}
 		}
 	});
-var _user$project$Main$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$none;
-};
-var _user$project$Main$updateRespDecoder = _elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string);
-var _user$project$Main$profileEncoder = function (student) {
-	var encode_pref = function () {
-		var _p3 = _user$project$Profile$studentDifficultyPreference(student);
-		if (_p3.ctor === 'Just') {
-			return _elm_lang$core$Json_Encode$string(
-				_elm_lang$core$Tuple$first(_p3._0));
-		} else {
-			return _elm_lang$core$Json_Encode$null;
-		}
-	}();
-	return _elm_lang$core$Json_Encode$object(
-		{
-			ctor: '::',
-			_0: {ctor: '_Tuple2', _0: 'difficulty_preference', _1: encode_pref},
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Main$Model = F4(
-	function (a, b, c, d) {
-		return {flags: a, profile: b, err_str: c, errors: d};
-	});
-var _user$project$Main$Submitted = function (a) {
-	return {ctor: 'Submitted', _0: a};
-};
-var _user$project$Main$post_profile = F2(
-	function (csrftoken, profile) {
-		var encoded_profile = _user$project$Main$profileEncoder(profile);
-		var req = A4(
-			_user$project$HttpHelpers$post_with_headers,
-			_user$project$Config$student_api_endpoint,
-			{
-				ctor: '::',
-				_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
-				_1: {ctor: '[]'}
-			},
-			_elm_lang$http$Http$jsonBody(encoded_profile),
-			_user$project$Main$updateRespDecoder);
-		return A2(_elm_lang$http$Http$send, _user$project$Main$Submitted, req);
-	});
 var _user$project$Main$UpdateDifficulty = function (a) {
 	return {ctor: 'UpdateDifficulty', _0: a};
 };
 var _user$project$Main$view_difficulty = function (model) {
 	var pref = function () {
-		var _p4 = _user$project$Profile$studentDifficultyPreference(model.profile);
-		if (_p4.ctor === 'Just') {
-			return _elm_lang$core$Tuple$first(_p4._0);
+		var _p5 = _user$project$Profile$studentDifficultyPreference(model.profile);
+		if (_p5.ctor === 'Just') {
+			return _elm_lang$core$Tuple$first(_p5._0);
 		} else {
 			return '';
 		}
@@ -10300,26 +10345,26 @@ var _user$project$Main$view_difficulty = function (model) {
 						{ctor: '[]'},
 						A2(
 							_elm_lang$core$List$map,
-							function (_p5) {
-								var _p6 = _p5;
-								var _p7 = _p6._0;
+							function (_p6) {
+								var _p7 = _p6;
+								var _p8 = _p7._0;
 								return A2(
 									_elm_lang$html$Html$option,
 									A2(
 										_elm_lang$core$Basics_ops['++'],
 										{
 											ctor: '::',
-											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', _p7),
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', _p8),
 											_1: {ctor: '[]'}
 										},
-										_elm_lang$core$Native_Utils.eq(_p7, pref) ? {
+										_elm_lang$core$Native_Utils.eq(_p8, pref) ? {
 											ctor: '::',
 											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'selected', ''),
 											_1: {ctor: '[]'}
 										} : {ctor: '[]'}),
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text(_p6._1),
+										_0: _elm_lang$html$Html$text(_p7._1),
 										_1: {ctor: '[]'}
 									});
 							},

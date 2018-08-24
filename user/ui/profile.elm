@@ -1,8 +1,4 @@
-module Profile exposing (StudentProfile, studentProfile, studentDifficultyPreference, emptyStudentProfile,
-  studentDifficulties, studentProfileDecoder, studentUserName, view_student_profile_header, retrieve_student_profile
-  , view_profile_header, init_profile, ProfileID, ProfileType
-  , StudentProfileParams, Profile(..), emptyProfile, fromStudentProfile
-  , fromInstructorProfile, studentTextReading, TextReading)
+module Profile exposing (..)
 
 import Text.Model as Text
 import Config exposing (student_api_endpoint)
@@ -49,6 +45,17 @@ studentProfile params = StudentProfile params
 
 studentDifficultyPreference : StudentProfile -> Maybe Text.TextDifficulty
 studentDifficultyPreference (StudentProfile attrs) = attrs.difficulty_preference
+
+setStudentDifficultyPreference : StudentProfile -> Text.TextDifficulty -> StudentProfile
+setStudentDifficultyPreference (StudentProfile attrs) preference =
+  StudentProfile { attrs | difficulty_preference = Just preference }
+
+studentID : StudentProfile -> Maybe Int
+studentID (StudentProfile attrs) = attrs.id
+
+studentUpdateURI : Int -> String
+studentUpdateURI id =
+  String.join "" [student_api_endpoint, toString id, "/"]
 
 studentDifficulties : StudentProfile -> List Text.TextDifficulty
 studentDifficulties (StudentProfile attrs) = attrs.difficulties

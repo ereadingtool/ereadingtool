@@ -3,16 +3,15 @@ import Html.Attributes exposing (class, classList, attribute)
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
 
 import Http exposing (..)
-import HttpHelpers exposing (post_with_headers)
+import HttpHelpers
 import Json.Decode as Decode
-import Json.Encode as Encode
 
 import Dict exposing (Dict)
 
 import Profile exposing (StudentProfile, TextReading)
+import Student.Encode
 
 import Views
-import Config exposing (student_api_endpoint)
 import Flags
 
 -- UPDATE
@@ -31,33 +30,24 @@ type alias Model = {
 
 type alias UpdateProfileResp = Dict.Dict String String
 
-profileEncoder : Profile.StudentProfile -> Encode.Value
-profileEncoder student =
-  let
-    encode_pref =
-      (case (Profile.studentDifficultyPreference student) of
-        Just difficulty ->
-          Encode.string (Tuple.first difficulty)
-        _ ->
-          Encode.null)
-  in
-    Encode.object [ ("difficulty_preference", encode_pref) ]
-
 updateRespDecoder : Decode.Decoder (UpdateProfileResp)
 updateRespDecoder = Decode.dict Decode.string
 
-post_profile : Flags.CSRFToken -> Profile.StudentProfile -> Cmd Msg
-post_profile csrftoken profile =
-  let
-    encoded_profile = profileEncoder profile
-    req =
-      post_with_headers
-       student_api_endpoint
-       [Http.header "X-CSRFToken" csrftoken]
-       (Http.jsonBody encoded_profile)
-       updateRespDecoder
-  in
-    Http.send Submitted req
+put_profile : Flags.CSRFToken -> Profile.StudentProfile -> Cmd Msg
+put_profile csrftoken student_profile =
+  case Profile.studentID student_profile of
+    Just id ->
+      let
+        encoded_profile = Student.Encode.profileEncoder student_profile
+        req =
+          HttpHelpers.put_with_headers
+           (Profile.studentUpdateURI id)
+           [Http.header "X-CSRFToken" csrftoken]
+           (Http.jsonBody encoded_profile) updateRespDecoder
+      in
+        Http.send Submitted req
+    Nothing ->
+      Cmd.none
 
 init : Flags -> (Model, Cmd Msg)
 init flags = ({
@@ -78,15 +68,30 @@ update msg model = case msg of
   UpdateStudentProfile (Err err) ->
     ({ model | err_str = toString err }, Cmd.none)
 
-  UpdateDifficulty _ -> (model, Cmd.none)
+  UpdateDifficulty difficulty ->
+    let
+      new_difficulty_preference = (difficulty, difficulty)
+      new_student_profile = Profile.setStudentDifficultyPreference model.profile new_difficulty_preference
+    in
+      (model, put_profile model.flags.csrftoken new_student_profile )
 
-  Submitted (Ok resp) -> (model, Cmd.none)
-  Submitted (Err err) -> case err of
-      Http.BadStatus resp -> case (Decode.decodeString (Decode.dict Decode.string) resp.body) of
-        Ok errors -> ({ model | errors = errors }, Cmd.none)
-        _ -> (model, Cmd.none)
-      Http.BadPayload err resp -> (model, Cmd.none)
-      _ -> (model, Cmd.none)
+  Submitted (Ok resp) ->
+    (model, Cmd.none)
+
+  Submitted (Err err) ->
+    case err of
+      Http.BadStatus resp ->
+        case (Decode.decodeString (Decode.dict Decode.string) resp.body) of
+          Ok errors ->
+            ({ model | errors = errors }, Cmd.none)
+          _ ->
+            (model, Cmd.none)
+
+      Http.BadPayload err resp ->
+        (model, Cmd.none)
+
+      _ ->
+        (model, Cmd.none)
 
 
 main : Program Flags Model Msg

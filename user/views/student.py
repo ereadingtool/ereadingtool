@@ -20,8 +20,8 @@ class StudentAPIView(LoginRequiredMixin, APIView):
     # returns permission denied HTTP message rather than redirect to login
     raise_exception = True
 
-    def form(self, request: HttpRequest, params: dict) -> TypeVar('forms.Form'):
-        return StudentForm(params)
+    def form(self, request: HttpRequest, params: dict, **kwargs) -> TypeVar('forms.Form'):
+        return StudentForm(params, **kwargs)
 
     def get(self, request, *args, **kwargs) -> HttpResponse:
         if not Student.objects.filter(pk=kwargs['pk']).count():
@@ -36,6 +36,34 @@ class StudentAPIView(LoginRequiredMixin, APIView):
 
     def post_success(self, form: TypeVar('forms.Form')) -> HttpResponse:
         raise NotImplementedError
+
+    def put(self, request, *args, **kwargs) -> HttpResponse:
+        if not Student.objects.filter(pk=kwargs['pk']).count():
+            return HttpResponse(status=400)
+
+        student = Student.objects.get(pk=kwargs['pk'])
+
+        if student.user != self.request.user:
+            return HttpResponseForbidden()
+
+        try:
+            params = json.loads(request.body.decode('utf8'))
+        except json.JSONDecodeError as e:
+            return self.put_json_error(e)
+
+        try:
+            params['difficulty_preference'] = TextDifficulty.objects.get(slug=params['difficulty_preference']).pk
+        except TextDifficulty.DoesNotExist:
+            pass
+
+        form = self.form(request, params, instance=student)
+
+        if form.is_valid():
+            student = form.save()
+        else:
+            return HttpResponse(status=400)
+
+        return HttpResponse(json.dumps(student.to_dict()))
 
 
 class StudentSignupAPIView(APIView):
