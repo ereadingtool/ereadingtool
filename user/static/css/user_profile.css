@@ -48,3 +48,34 @@
 .profile_item_value {
     margin-top: 15px;
 }
+
+@media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
+    .header {
+        display: flex;
+        font-size: 12px;
+    }
+
+    .profile {
+        display: flex;
+        font-size: 11px;
+    }
+
+    .profile_items {
+        grid-template-columns: 50% 50%;
+    }
+
+    .menu {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .menu > .menu_item {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+    .filter {
+        display: none;
+    }
+
+}
