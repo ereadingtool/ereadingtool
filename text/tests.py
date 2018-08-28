@@ -386,6 +386,8 @@ class TextTest(TestCase):
     def test_post_text(self, test_data: Optional[Dict]=None) -> Text:
         test_data = test_data or self.get_test_data()
 
+        num_of_sections = len(test_data['text_sections'])
+
         resp = self.instructor.post('/api/text/', json.dumps({"malformed": "json"}), content_type='application/json')
 
         self.assertEquals(resp.status_code, 400)
@@ -403,7 +405,7 @@ class TextTest(TestCase):
 
         text = Text.objects.get(pk=resp_content['id'])
 
-        self.assertEquals(TextSection.objects.count(), 2)
+        self.assertEquals(TextSection.objects.count(), num_of_sections)
 
         resp = self.instructor.get('/api/text/{0}/'.format(text.id), content_type='application/json')
 
@@ -471,7 +473,7 @@ class TextTest(TestCase):
             'questions': question_params or [self.gen_text_section_question_params(order=0)]
          }
 
-    def get_test_data(self) -> Dict:
+    def get_test_data(self, section_params: Optional[List[Dict]]=None) -> Dict:
         return {
             'title': 'text title',
             'introduction': 'an introduction to the text',
@@ -479,5 +481,5 @@ class TextTest(TestCase):
             'tags': ['Sports', 'Science/Technology', 'Other'],
             'author': 'author',
             'source': 'source',
-            'text_sections': [self.gen_text_section_params(0), self.gen_text_section_params(1)]
+            'text_sections': section_params or [self.gen_text_section_params(0), self.gen_text_section_params(1)]
         }

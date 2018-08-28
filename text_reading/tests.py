@@ -1,9 +1,14 @@
+import random
+
+from typing import Dict, AnyStr, List, Tuple
 
 from asynctest import TestCase
 from channels.testing import WebsocketCommunicator
 
 from ereadingtool.routing import application
-from text.tests import TextTest
+from text.tests import TextTest, TextSection
+from text_reading.models import TextReadingAnswers
+from question.models import Answer
 
 
 class TestTextReading(TestCase):
@@ -15,9 +20,119 @@ class TestTextReading(TestCase):
         test_text_suite = TextTest()
         test_text_suite.setUp()
 
-        cls.text = test_text_suite.test_post_text()
+        def rand_question_params():
+            return [test_text_suite.gen_text_section_question_params(order=i) for i in range(0, random.randint(0, 3))]
+
+        section_params = [test_text_suite.gen_text_section_params(order=i, question_params=rand_question_params())
+                          for i in range(0, random.randint(0, 10))]
+
+        text_params = test_text_suite.get_test_data(section_params=section_params)
+
+        print(f'testing {len(section_params)} sections..')
+
+        cls.text = test_text_suite.test_post_text(test_data=text_params)
+        cls.num_of_sections = cls.text.sections.count()
 
         cls.student_client = test_text_suite.student
+
+    def not_state(self, resp: Dict, state_name: AnyStr) -> bool:
+        self.assertIn('command', resp)
+
+        return resp['command'] != state_name
+
+    def check_for_intro(self, resp: Dict):
+        self.assertIn('command', resp)
+        self.assertIn('result', resp)
+
+        self.assertEquals(resp['command'], 'intro')
+        self.assertEquals(resp['result'], self.text.to_text_reading_dict())
+
+    def check_complete_scores(self, resp: Dict, correct_answers: int):
+        # test scores
+        self.maxDiff = None
+
+        self.assertDictEqual(resp['result'], {
+            'complete_sections': self.num_of_sections,
+            'num_of_sections': self.num_of_sections,
+            'possible_section_scores': self.num_of_sections * sum([section.questions.count()
+                                                                   for section in self.text.sections.all()]),
+            # total score across sections
+            'section_scores': correct_answers
+        })
+
+    async def to_next(self, communicator: WebsocketCommunicator) -> Dict:
+        await communicator.send_json_to(data={'command': 'next'})
+
+        resp = await communicator.receive_json_from()
+
+        self.assertIn('command', resp)
+        self.assertIn('result', resp)
+
+        if self.not_state(resp, 'complete'):
+            self.assertEquals(resp['result'], self.text.sections.all()[resp['result']['order']].to_text_reading_dict(
+                num_of_sections=self.num_of_sections))
+
+        return resp
+
+    async def to_prev(self, communicator: WebsocketCommunicator) -> Dict:
+        await communicator.send_json_to(data={'command': 'prev'})
+
+        resp = await communicator.receive_json_from()
+
+        return resp
+
+    async def answer(self, communicator: WebsocketCommunicator, answer: Answer) -> Dict:
+        await communicator.send_json_to(data={'command': 'answer', 'answer_id': answer.pk})
+
+        resp = await communicator.receive_json_from()
+
+        return resp
+
+    def check_questions(self, resp: Dict):
+        self.assertIn('questions', resp['result'])
+
+        # test we're not giving the client the answers
+        self.assertNotIn('correct', resp['result']['questions'][0]['answers'][0])
+
+    def choose_random_answer(self, answers: List[Answer]) -> Answer:
+        return answers[random.randint(0, len(answers)-1)]
+
+    async def complete_section(self, communicator: WebsocketCommunicator, section: TextSection) -> Tuple[Dict, int]:
+        resp = None
+        correct_answers = 0
+
+        for question in section.questions.all():
+            all_answers = question.answers.all()
+
+            # random number of answer attempts
+            answers = [self.choose_random_answer(all_answers) for _ in range(0, random.randint(1, 3))]
+
+            for answer in answers:
+                resp = await self.answer(communicator, answer)
+
+            if answers[0].correct:
+                correct_answers += 1
+
+        return resp, correct_answers
+
+    async def complete_reading(self, resp: Dict, communicator: WebsocketCommunicator) -> Tuple[Dict, int]:
+        num_of_correct_answers = 0
+        # ensure we're starting at the beginning
+        self.check_for_intro(resp)
+
+        # first section
+        resp = await self.to_next(communicator)
+
+        while self.not_state(resp, 'complete'):
+            current_section = self.text.sections.get(order=resp['result']['order'])
+
+            _, correct_answers = await self.complete_section(communicator, current_section)
+
+            resp = await self.to_next(communicator)
+
+            num_of_correct_answers += correct_answers
+
+        return resp, num_of_correct_answers
 
     async def test_text_reader_consumer(self):
         headers = dict()
@@ -38,123 +153,21 @@ class TestTextReading(TestCase):
 
         resp = await communicator.receive_json_from()
 
-        self.assertIn('command', resp)
-        self.assertIn('result', resp)
+        self.check_for_intro(resp)
 
-        self.assertEquals(resp['command'], 'intro')
-        self.assertEquals(resp['result'], self.text.to_text_reading_dict())
+        resp = await self.to_next(communicator)
 
-        # proceed to the next step
-        await communicator.send_json_to(data={'command': 'next'})
+        self.check_questions(resp)
 
-        resp = await communicator.receive_json_from()
-
-        self.assertIn('command', resp)
-        self.assertIn('result', resp)
-
-        num_of_sections = self.text.sections.count()
-
-        self.assertEquals(resp['result'], self.text.sections.all()[0].to_text_reading_dict(
-            num_of_sections=num_of_sections))
-
-        # test we're not giving the client the answers
-        self.assertIn('questions', resp['result'])
-
-        self.assertNotIn('correct', resp['result']['questions'][0]['answers'][0])
-
-        # test go to prev section
-        await communicator.send_json_to(data={'command': 'prev'})
-
-        resp = await communicator.receive_json_from()
+        # go back
+        resp = await self.to_prev(communicator)
 
         # back to 'start'
-        self.assertIn('command', resp)
-        self.assertEquals(resp['command'], 'intro')
-        self.assertIn('result', resp)
+        self.check_for_intro(resp)
 
-        self.assertEquals(resp['result'], self.text.to_text_reading_dict())
+        # fill out all text reading answers
+        resp, correct_answers = await self.complete_reading(resp, communicator)
 
-        # go back to next section and answer
-        await communicator.send_json_to(data={'command': 'next'})
-
-        resp = await communicator.receive_json_from()
-
-        self.assertIn('command', resp)
-        self.assertEquals(resp['command'], 'in_progress')
-        self.assertIn('result', resp)
-
-        current_section = self.text.sections.get(order=resp['result']['order'])
-
-        current_questions = current_section.questions.all()
-
-        # answer the first question incorrectly
-        question_0_answers = current_questions[0].answers.all()
-
-        incorrect_answer = question_0_answers[0] if not question_0_answers[0].correct else question_0_answers[1]
-
-        await communicator.send_json_to(data={'command': 'answer', 'answer_id': incorrect_answer.pk})
-
-        resp = await communicator.receive_json_from()
-
-        self.assertIn('command', resp)
-        self.assertEquals(resp['command'], 'in_progress')
-        self.assertIn('result', resp)
-
-        # next section
-        await communicator.send_json_to(data={'command': 'next'})
-
-        resp = await communicator.receive_json_from()
-
-        self.assertIn('command', resp)
-        self.assertEquals(resp['command'], 'in_progress')
-        self.assertIn('result', resp)
-
-        # answer correctly for section 2
-        current_section = self.text.sections.get(order=resp['result']['order'])
-
-        current_questions = current_section.questions.all()
-
-        question_0_answers = current_questions[0].answers.all()
-
-        correct_answer = question_0_answers[0]
-
-        if not correct_answer.correct:
-            for answer in question_0_answers:
-                if answer.correct:
-                    correct_answer = answer
-                    break
-
-        await communicator.send_json_to(data={'command': 'answer', 'answer_id': correct_answer.pk})
-
-        _ = await communicator.receive_json_from()
-
-        # throw in another incorrect answer (displaying feedback)
-        incorrect_answer_two = current_questions[0].answers.exclude(id=correct_answer.pk).filter()[0]
-
-        await communicator.send_json_to(data={'command': 'answer', 'answer_id': incorrect_answer_two.pk})
-
-        resp = await communicator.receive_json_from()
-
-        self.assertIn('command', resp)
-        self.assertEquals(resp['command'], 'in_progress')
-        self.assertIn('result', resp)
-
-        # next section
-        await communicator.send_json_to(data={'command': 'next'})
-
-        resp = await communicator.receive_json_from()
-
-        self.assertIn('command', resp)
-        self.assertEquals(resp['command'], 'complete')
-        self.assertIn('result', resp)
-
-        # test scores
-        self.assertDictEqual(resp['result'], {
-            'complete_sections': num_of_sections,
-            'num_of_sections': num_of_sections,
-            'possible_section_scores': num_of_sections * sum([section.questions.count()
-                                                              for section in self.text.sections.all()]),
-            'section_scores': 1
-        })
+        self.check_complete_scores(resp, correct_answers)
 
         await communicator.disconnect()
