@@ -86,7 +86,7 @@ class TextReading(models.Model):
                                                                    answer__correct=True)
 
             scores = TextReadingAnswers.objects.values('question', 'text_section').annotate(
-                num_answered_question=models.Count('question')).annotate(
+                num_answered_question=models.Count('question'),
                 answered_correctly=models.Exists(answered_correctly))
 
             question_scores = sum([1 if answer['answered_correctly'] else 0 for answer in scores])
