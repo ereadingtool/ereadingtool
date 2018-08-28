@@ -150,9 +150,10 @@ class TestTextReading(TestCase):
 
         # test scores
         self.assertDictEqual(resp['result'], {
-            'complete_sections': 2,
-            'num_of_sections': 2,
-            'possible_section_scores': 4,
+            'complete_sections': num_of_sections,
+            'num_of_sections': num_of_sections,
+            'possible_section_scores': num_of_sections * sum([section.questions.count()
+                                                              for section in self.text.sections.all()]),
             'section_scores': 1
         })
 

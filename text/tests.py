@@ -4,7 +4,7 @@ from django.test import TestCase
 from hypothesis.extra.django.models import models
 from hypothesis.strategies import just, text, one_of
 
-from typing import Dict, AnyStr
+from typing import Dict, AnyStr, Optional, List
 from django.test.client import Client
 
 from ereadingtool.urls import reverse_lazy
@@ -383,8 +383,8 @@ class TextTest(TestCase):
 
         self.assertEquals(len(text_section.body), test_text_section_body_size)
 
-    def test_post_text(self) -> Text:
-        test_data = self.get_test_data()
+    def test_post_text(self, test_data: Optional[Dict]=None) -> Text:
+        test_data = test_data or self.get_test_data()
 
         resp = self.instructor.post('/api/text/', json.dumps({"malformed": "json"}), content_type='application/json')
 
@@ -464,11 +464,11 @@ class TextTest(TestCase):
                    'order': 3, 'feedback': 'Answer 4 Feedback.'}
                   ], 'question_type': self.gen_question_type()}
 
-    def gen_text_section_params(self, order: int) -> Dict:
+    def gen_text_section_params(self, order: int, question_params: Optional[List[Dict]]=None) -> Dict:
         return {
             'order': order,
             'body': f'<p style="text-align:center">section {order}</p>\n',
-            'questions': [self.gen_text_section_question_params(order=0)]
+            'questions': question_params or [self.gen_text_section_question_params(order=0)]
          }
 
     def get_test_data(self) -> Dict:
