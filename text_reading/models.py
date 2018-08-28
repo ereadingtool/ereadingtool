@@ -83,11 +83,12 @@ class TextReading(models.Model):
 
         elif self.state_machine.is_complete:
             answered_correctly = TextReadingAnswers.objects.filter(question=models.OuterRef('question'),
-                                                                   answer__correct=True)
+                                                                   answer__correct=True).order_by(
+                '-created_dt').values('answer__correct')
 
             scores = TextReadingAnswers.objects.values('question', 'text_section').annotate(
                 num_answered_question=models.Count('question'),
-                answered_correctly=models.Exists(answered_correctly))
+                answered_correctly=models.Subquery(answered_correctly[:1], output_field=models.BooleanField()))
 
             question_scores = sum([1 if answer['answered_correctly'] else 0 for answer in scores])
 
