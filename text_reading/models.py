@@ -82,12 +82,19 @@ class TextReading(models.Model):
             return self.text.to_text_reading_dict()
 
         elif self.state_machine.is_complete:
-            # TODO (andrew): use django annotations to summarize results
-            # in TextReadingAnswers.objects.filter(text_reading=self)
+            answered_correctly = TextReadingAnswers.objects.filter(question=models.OuterRef('question'),
+                                                                   answer__correct=True)
+
+            scores = TextReadingAnswers.objects.values('question', 'text_section').annotate(
+                num_answered_question=models.Count('question')).annotate(
+                answered_correctly=models.Exists(answered_correctly))
+
+            question_scores = sum([1 if answer['answered_correctly'] else 0 for answer in scores])
+
             return {
                 'num_of_sections': len(self.sections),
                 'complete_sections': len(self.sections),
-                'section_scores': len(self.sections) * sum([section.questions.count() for section in self.sections]),
+                'section_scores': question_scores,
                 'possible_section_scores':
                     len(self.sections) * sum([section.questions.count() for section in self.sections])
             }

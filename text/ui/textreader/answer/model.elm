@@ -1,7 +1,5 @@
 module TextReader.Answer.Model exposing (..)
 
-import TextReader exposing (TextItemAttributes, Selected, FeedbackViewable)
-
 type alias AnswerCorrect = Bool
 
 type alias Answer = {
@@ -28,21 +26,21 @@ correct text_answer =
     Nothing ->
       False
 
-feedback_viewable : TextAnswer -> Bool
-feedback_viewable text_answer =
+answered : TextAnswer -> Bool
+answered text_answer =
   case (answer text_answer).answered_correctly of
     Just _ ->
       True
     Nothing ->
       False
 
+feedback_viewable : TextAnswer -> Bool
+feedback_viewable text_answer =
+  answered text_answer
+
 selected : TextAnswer -> Bool
 selected text_answer =
-  case (answer text_answer).answered_correctly of
-    Just _ ->
-      True
-    Nothing ->
-      False
+  answered text_answer
 
 answer : TextAnswer -> Answer
 answer (TextAnswer answer) = answer

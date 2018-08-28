@@ -74,4 +74,86 @@ class TestTextReading(TestCase):
 
         self.assertEquals(resp['result'], self.text.to_text_reading_dict())
 
+        # go back to next section and answer
+        await communicator.send_json_to(data={'command': 'next'})
+
+        resp = await communicator.receive_json_from()
+
+        self.assertIn('command', resp)
+        self.assertEquals(resp['command'], 'in_progress')
+        self.assertIn('result', resp)
+
+        current_section = self.text.sections.get(order=resp['result']['order'])
+
+        current_questions = current_section.questions.all()
+
+        # answer the first question incorrectly
+        question_0_answers = current_questions[0].answers.all()
+
+        incorrect_answer = question_0_answers[0] if not question_0_answers[0].correct else question_0_answers[1]
+
+        await communicator.send_json_to(data={'command': 'answer', 'answer_id': incorrect_answer.pk})
+
+        resp = await communicator.receive_json_from()
+
+        self.assertIn('command', resp)
+        self.assertEquals(resp['command'], 'in_progress')
+        self.assertIn('result', resp)
+
+        # next section
+        await communicator.send_json_to(data={'command': 'next'})
+
+        resp = await communicator.receive_json_from()
+
+        self.assertIn('command', resp)
+        self.assertEquals(resp['command'], 'in_progress')
+        self.assertIn('result', resp)
+
+        # answer correctly for section 2
+        current_section = self.text.sections.get(order=resp['result']['order'])
+
+        current_questions = current_section.questions.all()
+
+        question_0_answers = current_questions[0].answers.all()
+
+        correct_answer = question_0_answers[0]
+
+        if not correct_answer.correct:
+            for answer in question_0_answers:
+                if answer.correct:
+                    correct_answer = answer
+                    break
+
+        await communicator.send_json_to(data={'command': 'answer', 'answer_id': correct_answer.pk})
+
+        _ = await communicator.receive_json_from()
+
+        # throw in another incorrect answer (displaying feedback)
+        incorrect_answer_two = current_questions[0].answers.exclude(id=correct_answer.pk).filter()[0]
+
+        await communicator.send_json_to(data={'command': 'answer', 'answer_id': incorrect_answer_two.pk})
+
+        resp = await communicator.receive_json_from()
+
+        self.assertIn('command', resp)
+        self.assertEquals(resp['command'], 'in_progress')
+        self.assertIn('result', resp)
+
+        # next section
+        await communicator.send_json_to(data={'command': 'next'})
+
+        resp = await communicator.receive_json_from()
+
+        self.assertIn('command', resp)
+        self.assertEquals(resp['command'], 'complete')
+        self.assertIn('result', resp)
+
+        # test scores
+        self.assertDictEqual(resp['result'], {
+            'complete_sections': 2,
+            'num_of_sections': 2,
+            'possible_section_scores': 4,
+            'section_scores': 1
+        })
+
         await communicator.disconnect()

@@ -55,7 +55,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
                 'result': self.text_reading.to_text_reading_dict()
             })
 
-        except (TextReadingQuestionAlreadyAnswered, TextReadingQuestionNotInSection):
+        except TextReadingQuestionNotInSection:
             await self.send_json({
                 'command': 'exception',
                 'result': {'code': 'unknown', 'error_msg': 'Something went wrong.'}

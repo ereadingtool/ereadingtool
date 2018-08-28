@@ -22005,7 +22005,6 @@ var _user$project$TextReader_Text_Model$Text = function (a) {
 	};
 };
 
-
 var _user$project$TextReader_Answer_Model$answer = function (_p0) {
 	var _p1 = _p0;
 	return _p1._0;
@@ -22158,6 +22157,7 @@ var _user$project$TextReader_Section_Model$newSection = function (text_section) 
 		text_section,
 		A2(_elm_lang$core$Array$map, _user$project$TextReader_Question_Model$gen_text_question, text_section.questions));
 };
+
 
 var _user$project$TextReader_Model$Exception = F2(
 	function (a, b) {
