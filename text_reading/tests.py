@@ -28,7 +28,7 @@ class TestTextReading(TestCase):
 
         text_params = test_text_suite.get_test_data(section_params=section_params)
 
-        print(f'testing {len(section_params)} sections..')
+        print(f'testing {len(section_params)+1} sections..')
 
         cls.text = test_text_suite.test_post_text(test_data=text_params)
         cls.num_of_sections = cls.text.sections.count()
@@ -51,14 +51,14 @@ class TestTextReading(TestCase):
         # test scores
         self.maxDiff = None
 
-        self.assertDictEqual(resp['result'], {
-            'complete_sections': self.num_of_sections,
-            'num_of_sections': self.num_of_sections,
-            'possible_section_scores': self.num_of_sections * sum([section.questions.count()
-                                                                   for section in self.text.sections.all()]),
-            # total score across sections
-            'section_scores': correct_answers
-        })
+        self.assertEquals(resp['result']['complete_sections'], self.num_of_sections)
+        self.assertEquals(resp['result']['num_of_sections'], self.num_of_sections)
+
+        self.assertEquals(resp['result']['possible_section_scores'],
+                          self.num_of_sections * sum([section.questions.count()
+                                                      for section in self.text.sections.all()]))
+
+        self.assertEquals(resp['result']['section_scores'], correct_answers)
 
     async def to_next(self, communicator: WebsocketCommunicator) -> Dict:
         await communicator.send_json_to(data={'command': 'next'})
@@ -107,11 +107,11 @@ class TestTextReading(TestCase):
             # random number of answer attempts
             answers = [self.choose_random_answer(all_answers) for _ in range(0, random.randint(1, 3))]
 
-            for answer in answers:
-                resp = await self.answer(communicator, answer)
-
             if answers[0].correct:
                 correct_answers += 1
+
+            for answer in answers:
+                resp = await self.answer(communicator, answer)
 
         return resp, correct_answers
 
@@ -128,9 +128,9 @@ class TestTextReading(TestCase):
 
             _, correct_answers = await self.complete_section(communicator, current_section)
 
-            resp = await self.to_next(communicator)
-
             num_of_correct_answers += correct_answers
+
+            resp = await self.to_next(communicator)
 
         return resp, num_of_correct_answers
 

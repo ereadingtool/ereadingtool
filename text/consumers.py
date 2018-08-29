@@ -5,7 +5,7 @@ from question.models import Answer
 from text.models import Text
 from text_reading.models import (TextReading)
 from text_reading.exceptions import (TextReadingException, TextReadingNotAllQuestionsAnswered,
-                                     TextReadingQuestionAlreadyAnswered, TextReadingQuestionNotInSection)
+                                     TextReadingQuestionNotInSection)
 from user.student.models import Student
 
 
@@ -48,7 +48,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
         answer = await get_answer_or_error(answer_id=answer_id, student=student)
 
         try:
-            self.text_reading.answer(answer)
+            await database_sync_to_async(self.text_reading.answer)(answer)
 
             await self.send_json({
                 'command': self.text_reading.current_state.name,
@@ -72,7 +72,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             raise Unauthorized
 
         try:
-            self.text_reading.prev()
+            await database_sync_to_async(self.text_reading.prev)()
 
             await self.send_json({
                 'command': self.text_reading.current_state.name,
@@ -90,7 +90,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             raise Unauthorized
 
         try:
-            self.text_reading.next()
+            await database_sync_to_async(self.text_reading.next)()
 
             await self.send_json({
                 'command': self.text_reading.current_state.name,
@@ -119,7 +119,8 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
 
             self.text = await get_text_or_error(text_id=text_id, student=student)
 
-            started, self.text_reading = TextReading.start_or_resume(student=student, text=self.text)
+            started, self.text_reading = await database_sync_to_async(TextReading.start_or_resume)(
+                student=student, text=self.text)
 
             if started:
                 await self.send_json({

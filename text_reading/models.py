@@ -1,16 +1,16 @@
 from typing import TypeVar, Optional, Dict
 
-from statemachine import StateMachine, State
 from django.db import models
+from django.utils import timezone
 from django.utils.functional import cached_property
-from datetime import datetime as dt
+from statemachine import StateMachine, State
 
-from text.models import Text, TextSection
-from question.models import Question, Answer
-from user.student.models import Student
 from mixins.model import Timestamped
+from question.models import Question, Answer
+from text.models import Text, TextSection
 from text_reading.exceptions import (TextReadingInvalidState, TextReadingNotAllQuestionsAnswered,
                                      TextReadingQuestionNotInSection)
+from user.student.models import Student
 
 
 class TextReadingStateMachine(StateMachine):
@@ -82,14 +82,12 @@ class TextReading(models.Model):
             return self.text.to_text_reading_dict()
 
         elif self.state_machine.is_complete:
-            answered_correctly = self.text_reading_answers.filter(question=models.OuterRef('question'),
-                                                                  answer__correct=True).order_by('-created_dt').values(
-                'answer__correct')
+            answered_correctly = self.text_reading_answers.order_by('-created_dt').filter(
+                question=models.OuterRef('question'))
 
-            scores = self.text_reading_answers.values('question', 'text_section').annotate(
+            scores = self.text_reading_answers.values('question').annotate(
                 num_answered_question=models.Count('question'),
-                answered_correctly=models.Subquery(answered_correctly[:1], output_field=models.BooleanField())
-            )
+            ).annotate(answered_correctly=models.Subquery(answered_correctly.values('answer__correct')[:1]))
 
             question_scores = sum([1 if answer['answered_correctly'] else 0 for answer in scores])
 
@@ -117,7 +115,7 @@ class TextReading(models.Model):
         return self.current_section
 
     def set_end_dt(self):
-        self.end_dt = dt.now()
+        self.end_dt = timezone.now()
         self.save()
 
     def on_enter_complete(self, *args, **kwargs):
@@ -263,6 +261,10 @@ class TextReadingAnswers(Timestamped, models.Model):
 
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='text_reading_answers')
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name='text_reading_answers')
+
+    def __str__(self):
+        return f'Text Reading {self.text_reading.pk} for section {self.text_section.pk} question {self.question.pk} ' \
+               f'answer {self.answer.pk} (correct: {self.answer.correct})'
 
     class Meta:
         unique_together = (('text_reading', 'text_section', 'question', 'answer'),)
