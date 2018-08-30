@@ -2,7 +2,7 @@ import json
 
 from csp.decorators import csp_replace
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
@@ -14,6 +14,12 @@ from user.views.mixin import ProfileView
 
 class AdminView(ProfileView, LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('instructor-login')
+
+    def get(self, request, *args, **kwargs) -> HttpResponse:
+        if not hasattr(request.user, 'instructor'):
+            return HttpResponseRedirect(reverse_lazy('error-page'))
+
+        return super(AdminView, self).get(request, *args, **kwargs)
 
 
 class TextAdminView(AdminView):

@@ -34,6 +34,7 @@ type alias TextListItem = {
   , created_dt: Date
   , modified_dt: Date
   , text_section_count: Int
+  , text_sections_complete: Maybe Int
   , uri: String
   , write_locker: Maybe String }
 

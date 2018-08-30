@@ -10,6 +10,7 @@ from django.http import HttpResponseNotAllowed
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.views.generic import View
+from django.db import models
 
 from mixins.model import WriteLocked
 from question.forms import QuestionForm, AnswerForm
@@ -200,6 +201,7 @@ class TextAPIView(LoginRequiredMixin, View):
             return HttpResponse(json.dumps({'errors': 'something went wrong'}))
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        student = request.user.student if hasattr(request.user, 'student') else None
         filter_by = {}
 
         all_difficulties = {difficulty: 1 for difficulty in TextDifficulty.difficulty_keys()}
@@ -241,7 +243,10 @@ class TextAPIView(LoginRequiredMixin, View):
         if 'tag' in request.GET.keys():
             filter_by['tags__name__in'] = tags
 
-        texts = [text.to_summary_dict() for text in self.model.objects.filter(**filter_by)]
+        texts = [text.to_summary_dict(student=student)
+                 for text in self.model.objects.annotate(
+                num_of_readings=models.Count('textreading')).order_by(
+                'num_of_readings').filter(**filter_by)]
 
         return HttpResponse(json.dumps(texts))
 

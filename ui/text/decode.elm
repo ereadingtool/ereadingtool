@@ -25,20 +25,20 @@ type alias TextsRespError = Dict String String
 textDecoder : Decode.Decoder Text
 textDecoder =
   decode Text
-    |> required "id" (Decode.nullable (Decode.int))
-    |> required "title" (Decode.string)
-    |> required "introduction" (Decode.string)
-    |> required "author" (Decode.string)
-    |> required "source" (Decode.string)
-    |> required "difficulty" (Decode.string)
-    |> required "conclusion" (Decode.string)
-    |> required "created_by" (Decode.nullable (Decode.string))
-    |> required "last_modified_by" (Decode.nullable (Decode.string))
-    |> required "tags" (Decode.nullable (Decode.list (Decode.string)))
+    |> required "id" (Decode.nullable Decode.int)
+    |> required "title" Decode.string
+    |> required "introduction" Decode.string
+    |> required "author" Decode.string
+    |> required "source" Decode.string
+    |> required "difficulty" Decode.string
+    |> required "conclusion" Decode.string
+    |> required "created_by" (Decode.nullable Decode.string)
+    |> required "last_modified_by" (Decode.nullable Decode.string)
+    |> required "tags" (Decode.nullable (Decode.list Decode.string))
     |> required "created_dt" (Decode.nullable date)
     |> required "modified_dt" (Decode.nullable date)
     |> required "text_sections" (Decode.map Array.fromList (Text.Section.Decode.textSectionsDecoder))
-    |> required "write_locker" (Decode.nullable (Decode.string))
+    |> required "write_locker" (Decode.nullable Decode.string)
 
 textListItemDecoder : Decode.Decoder TextListItem
 textListItemDecoder =
@@ -48,13 +48,14 @@ textListItemDecoder =
     |> required "author" Decode.string
     |> required "difficulty" Decode.string
     |> required "created_by" Decode.string
-    |> required "last_modified_by" (Decode.nullable (Decode.string))
-    |> required "tags" (Decode.nullable (Decode.list (Decode.string)))
+    |> required "last_modified_by" (Decode.nullable Decode.string)
+    |> required "tags" (Decode.nullable (Decode.list Decode.string))
     |> required "created_dt" date
     |> required "modified_dt" date
     |> required "text_section_count" Decode.int
+    |> required "text_sections_complete" (Decode.nullable Decode.int)
     |> required "uri" Decode.string
-    |> required "write_locker" (Decode.nullable (Decode.string))
+    |> required "write_locker" (Decode.nullable Decode.string)
 
 
 textListDecoder : Decode.Decoder (List TextListItem)

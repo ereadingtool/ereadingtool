@@ -181,6 +181,12 @@ view_search_results text_list_items =
           (case text_item.tags of
             Just tags -> String.join ", " tags
             Nothing -> "")
+        sections_complete =
+          (case text_item.text_sections_complete of
+            Just sections_complete ->
+              toString sections_complete ++ " / " ++ toString text_item.text_section_count
+            Nothing ->
+              "Unread")
       in
         div [class "search_result"] [
           div [class "result_item"] [
@@ -196,7 +202,7 @@ view_search_results text_list_items =
           , div [class "sub_description"] [ Html.text "Author" ]
           ]
         , div [class "result_item"] [
-            div [class "result_item_title"] [ Html.text "1 / 4" ]
+            div [class "result_item_title"] [ Html.text sections_complete ]
           , div [class "sub_description"] [ Html.text "Sections Complete" ]
           ]
         , div [class "result_item"] [

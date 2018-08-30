@@ -2,11 +2,11 @@ import json
 from typing import TypeVar
 
 from django import forms
-from django.contrib.auth import login
-from django.http import HttpResponse, HttpRequest, HttpResponseForbidden
+from django.contrib.auth import login, logout
+from django.http import HttpResponse, HttpRequest, HttpResponseForbidden, HttpResponseRedirect
 from django.urls import reverse
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, View
 
 from text.models import TextDifficulty
 from user.forms import StudentSignUpForm, StudentLoginForm, StudentForm
@@ -74,6 +74,13 @@ class StudentSignupAPIView(APIView):
         student = student_signup_form.save()
 
         return HttpResponse(json.dumps({'id': student.pk, 'redirect': reverse('student-login')}))
+
+
+class StudentLogoutAPIView(LoginRequiredMixin, View):
+    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        logout(request)
+
+        return HttpResponseRedirect(reverse_lazy('student-login'))
 
 
 class StudentLoginAPIView(APIView):

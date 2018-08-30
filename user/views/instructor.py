@@ -2,15 +2,16 @@ import json
 from typing import TypeVar
 
 from django import forms
-from django.contrib.auth import login
-from django.http import HttpResponse, HttpRequest
+from django.contrib.auth import login, logout
+from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
 from django.urls import reverse
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, View
 
 from user.forms import InstructorSignUpForm, InstructorLoginForm
 from user.views.api import APIView
 from user.views.mixin import ProfileView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class InstructorSignupAPIView(APIView):
@@ -38,6 +39,13 @@ class InstructorLoginAPIView(APIView):
         instructor = reader_user.instructor
 
         return HttpResponse(json.dumps({'id': instructor.pk, 'redirect': reverse('instructor-profile')}))
+
+
+class InstructorLogoutAPIView(LoginRequiredMixin, View):
+    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        logout(request)
+
+        return HttpResponseRedirect(reverse_lazy('instructor-login'))
 
 
 class InstructorLoginView(TemplateView):

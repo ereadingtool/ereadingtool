@@ -21342,7 +21342,9 @@ var _user$project$Text_Model$TextListItem = function (a) {
 									return function (j) {
 										return function (k) {
 											return function (l) {
-												return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, text_section_count: j, uri: k, write_locker: l};
+												return function (m) {
+													return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, text_section_count: j, text_sections_complete: k, uri: l, write_locker: m};
+												};
 											};
 										};
 									};
@@ -22009,7 +22011,7 @@ var _user$project$TextReader_Answer_Model$answer = function (_p0) {
 	var _p1 = _p0;
 	return _p1._0;
 };
-var _user$project$TextReader_Answer_Model$selected = function (text_answer) {
+var _user$project$TextReader_Answer_Model$answered = function (text_answer) {
 	var _p2 = _user$project$TextReader_Answer_Model$answer(text_answer).answered_correctly;
 	if (_p2.ctor === 'Just') {
 		return true;
@@ -22018,17 +22020,15 @@ var _user$project$TextReader_Answer_Model$selected = function (text_answer) {
 	}
 };
 var _user$project$TextReader_Answer_Model$feedback_viewable = function (text_answer) {
-	var _p3 = _user$project$TextReader_Answer_Model$answer(text_answer).answered_correctly;
-	if (_p3.ctor === 'Just') {
-		return true;
-	} else {
-		return false;
-	}
+	return _user$project$TextReader_Answer_Model$answered(text_answer);
+};
+var _user$project$TextReader_Answer_Model$selected = function (text_answer) {
+	return _user$project$TextReader_Answer_Model$answered(text_answer);
 };
 var _user$project$TextReader_Answer_Model$correct = function (text_answer) {
-	var _p4 = _user$project$TextReader_Answer_Model$answer(text_answer).answered_correctly;
-	if (_p4.ctor === 'Just') {
-		return _p4._0;
+	var _p3 = _user$project$TextReader_Answer_Model$answer(text_answer).answered_correctly;
+	if (_p3.ctor === 'Just') {
+		return _p3._0;
 	} else {
 		return false;
 	}

@@ -1,3 +1,4 @@
+from typing import Optional, TypeVar
 from django.db import models
 from text.models import TextDifficulty
 from user.models import ReaderUser
@@ -23,6 +24,15 @@ class Student(models.Model):
             'difficulties': difficulties,
             'text_reading': [text_reading.to_dict() for text_reading in self.text_readings.all()]
         }
+
+    def sections_complete_for(self, text: Optional[TypeVar('Text')]):
+        if self.text_readings.filter(text=text).exists():
+            current_text_reading = self.text_readings.exclude(state='complete').get(text=text)
+
+            if current_text_reading.state_machine.is_intro:
+                return 0
+            else:
+                return current_text_reading.current_section.order+1
 
     def __str__(self):
         return self.user.username

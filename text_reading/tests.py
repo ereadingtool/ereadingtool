@@ -4,10 +4,10 @@ from typing import Dict, AnyStr, List, Tuple
 
 from asynctest import TestCase
 from channels.testing import WebsocketCommunicator
+from channels.db import database_sync_to_async
 
 from ereadingtool.routing import application
 from text.tests import TextTest, TextSection
-from text_reading.models import TextReadingAnswers
 from question.models import Answer
 
 
@@ -48,9 +48,6 @@ class TestTextReading(TestCase):
         self.assertEquals(resp['result'], self.text.to_text_reading_dict())
 
     def check_complete_scores(self, resp: Dict, correct_answers: int):
-        # test scores
-        self.maxDiff = None
-
         self.assertEquals(resp['result']['complete_sections'], self.num_of_sections)
         self.assertEquals(resp['result']['num_of_sections'], self.num_of_sections)
 
@@ -101,8 +98,10 @@ class TestTextReading(TestCase):
         resp = None
         correct_answers = 0
 
-        for question in section.questions.all():
-            all_answers = question.answers.all()
+        questions = await database_sync_to_async(section.questions.all)()
+
+        for question in questions:
+            all_answers = await database_sync_to_async(question.answers.all)()
 
             # random number of answer attempts
             answers = [self.choose_random_answer(all_answers) for _ in range(0, random.randint(1, 3))]
@@ -124,7 +123,7 @@ class TestTextReading(TestCase):
         resp = await self.to_next(communicator)
 
         while self.not_state(resp, 'complete'):
-            current_section = self.text.sections.get(order=resp['result']['order'])
+            current_section = await database_sync_to_async(self.text.sections.get)(order=resp['result']['order'])
 
             _, correct_answers = await self.complete_section(communicator, current_section)
 

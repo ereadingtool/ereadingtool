@@ -9699,7 +9699,9 @@ var _user$project$Text_Model$TextListItem = function (a) {
 									return function (j) {
 										return function (k) {
 											return function (l) {
-												return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, text_section_count: j, uri: k, write_locker: l};
+												return function (m) {
+													return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, text_section_count: j, text_sections_complete: k, uri: l, write_locker: m};
+												};
 											};
 										};
 									};
@@ -10124,46 +10126,50 @@ var _user$project$Text_Decode$textListItemDecoder = A3(
 		_elm_lang$core$Json_Decode$string,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'text_section_count',
-			_elm_lang$core$Json_Decode$int,
+			'text_sections_complete',
+			_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'modified_dt',
-				_elm_community$json_extra$Json_Decode_Extra$date,
+				'text_section_count',
+				_elm_lang$core$Json_Decode$int,
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'created_dt',
+					'modified_dt',
 					_elm_community$json_extra$Json_Decode_Extra$date,
 					A3(
 						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'tags',
-						_elm_lang$core$Json_Decode$nullable(
-							_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
+						'created_dt',
+						_elm_community$json_extra$Json_Decode_Extra$date,
 						A3(
 							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'last_modified_by',
-							_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+							'tags',
+							_elm_lang$core$Json_Decode$nullable(
+								_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
 							A3(
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'created_by',
-								_elm_lang$core$Json_Decode$string,
+								'last_modified_by',
+								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 								A3(
 									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-									'difficulty',
+									'created_by',
 									_elm_lang$core$Json_Decode$string,
 									A3(
 										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-										'author',
+										'difficulty',
 										_elm_lang$core$Json_Decode$string,
 										A3(
 											_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-											'title',
+											'author',
 											_elm_lang$core$Json_Decode$string,
 											A3(
 												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-												'id',
-												_elm_lang$core$Json_Decode$int,
-												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextListItem)))))))))))));
+												'title',
+												_elm_lang$core$Json_Decode$string,
+												A3(
+													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+													'id',
+													_elm_lang$core$Json_Decode$int,
+													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextListItem))))))))))))));
 var _user$project$Text_Decode$textListDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textListItemDecoder);
 var _user$project$Text_Decode$textDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -10935,10 +10941,24 @@ var _user$project$Main$view_search_footer = function (model) {
 };
 var _user$project$Main$view_search_results = function (text_list_items) {
 	var view_search_result = function (text_item) {
-		var tags = function () {
-			var _p0 = text_item.tags;
+		var sections_complete = function () {
+			var _p0 = text_item.text_sections_complete;
 			if (_p0.ctor === 'Just') {
-				return A2(_elm_lang$core$String$join, ', ', _p0._0);
+				return A2(
+					_elm_lang$core$Basics_ops['++'],
+					_elm_lang$core$Basics$toString(_p0._0),
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						' / ',
+						_elm_lang$core$Basics$toString(text_item.text_section_count)));
+			} else {
+				return 'Unread';
+			}
+		}();
+		var tags = function () {
+			var _p1 = text_item.tags;
+			if (_p1.ctor === 'Just') {
+				return A2(_elm_lang$core$String$join, ', ', _p1._0);
 			} else {
 				return '';
 			}
@@ -11101,7 +11121,7 @@ var _user$project$Main$view_search_results = function (text_list_items) {
 										},
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html$text('1 / 4'),
+											_0: _elm_lang$html$Html$text(sections_complete),
 											_1: {ctor: '[]'}
 										}),
 									_1: {
@@ -11198,14 +11218,14 @@ var _user$project$Main$init = function (flags) {
 				flags.text_tags)));
 	var default_search = A3(_user$project$Text_Search$new, _user$project$Config$text_api_endpoint, tag_search, difficulty_search);
 	var text_search = function () {
-		var _p1 = profile;
-		if (_p1.ctor === 'Student') {
-			var _p2 = _user$project$Profile$studentDifficultyPreference(_p1._0);
-			if (_p2.ctor === 'Just') {
+		var _p2 = profile;
+		if (_p2.ctor === 'Student') {
+			var _p3 = _user$project$Profile$studentDifficultyPreference(_p2._0);
+			if (_p3.ctor === 'Just') {
 				return A3(
 					_user$project$Text_Search$add_difficulty_to_search,
 					default_search,
-					_elm_lang$core$Tuple$first(_p2._0),
+					_elm_lang$core$Tuple$first(_p3._0),
 					true);
 			} else {
 				return default_search;
@@ -11256,10 +11276,10 @@ var _user$project$Main$update_results = function (text_search) {
 };
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p3 = msg;
-		switch (_p3.ctor) {
+		var _p4 = msg;
+		switch (_p4.ctor) {
 			case 'AddDifficulty':
-				var new_text_search = A3(_user$project$Text_Search$add_difficulty_to_search, model.text_search, _p3._0, _p3._1);
+				var new_text_search = A3(_user$project$Text_Search$add_difficulty_to_search, model.text_search, _p4._0, _p4._1);
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -11273,7 +11293,7 @@ var _user$project$Main$update = F2(
 			case 'SelectTag':
 				var tag_search = _user$project$Text_Search$tag_search(model.text_search);
 				var tag_search_input_id = _user$project$Text_Search_Tag$input_id(tag_search);
-				var new_tag_search = A3(_user$project$Text_Search_Tag$select_tag, tag_search, _p3._0, _p3._1);
+				var new_tag_search = A3(_user$project$Text_Search_Tag$select_tag, tag_search, _p4._0, _p4._1);
 				var new_text_search = A2(_user$project$Text_Search$set_tag_search, model.text_search, new_tag_search);
 				return {
 					ctor: '_Tuple2',
@@ -11295,17 +11315,17 @@ var _user$project$Main$update = F2(
 						})
 				};
 			default:
-				var _p4 = _p3._0;
-				if (_p4.ctor === 'Ok') {
+				var _p5 = _p4._0;
+				if (_p5.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{results: _p4._0}),
+							{results: _p5._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p5 = A2(_elm_lang$core$Debug$log, 'error retrieving results', _p4._0);
+					var _p6 = A2(_elm_lang$core$Debug$log, 'error retrieving results', _p5._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 		}
@@ -11376,11 +11396,11 @@ var _user$project$Main$AddDifficulty = F2(
 		return {ctor: 'AddDifficulty', _0: a, _1: b};
 	});
 var _user$project$Main$view_difficulties = function (difficulty_search) {
-	var view_difficulty = function (_p6) {
-		var _p7 = _p6;
-		var _p8 = _p7._1;
-		var label = _user$project$Text_Search_Option$label(_p8);
-		var selected = _user$project$Text_Search_Option$selected(_p8);
+	var view_difficulty = function (_p7) {
+		var _p8 = _p7;
+		var _p9 = _p8._1;
+		var label = _user$project$Text_Search_Option$label(_p9);
+		var selected = _user$project$Text_Search_Option$selected(_p9);
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -11398,7 +11418,7 @@ var _user$project$Main$view_difficulties = function (difficulty_search) {
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html_Events$onClick(
-						A2(_user$project$Main$AddDifficulty, _p7._0, !selected)),
+						A2(_user$project$Main$AddDifficulty, _p8._0, !selected)),
 					_1: {ctor: '[]'}
 				}
 			},

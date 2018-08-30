@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include, reverse_lazy
-from django.views.generic import RedirectView
+from django.views.generic import RedirectView, TemplateView
 
 from mixins.view import ElmLoadJsView, NoAuthElmLoadJsView, ElmLoadStudentSignUpView
 
@@ -34,5 +34,6 @@ urlpatterns = [
     path('admin/', include('instructor_admin.urls')),
 
     path('django-admin/', admin.site.urls),
+    path('error', TemplateView.as_view(template_name='error_page.html'), name='error-page'),
     path('', RedirectView.as_view(url=reverse_lazy('student-login')))
 ]

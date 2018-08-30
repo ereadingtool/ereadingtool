@@ -132,7 +132,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
 
         return text
 
-    def to_summary_dict(self) -> Dict:
+    def to_summary_dict(self, student: Optional[TypeVar('Student')]=None) -> Dict:
         return {
             'id': self.pk,
             'title': self.title,
@@ -143,6 +143,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
             'last_modified_by': str(self.last_modified_by) if self.last_modified_by else None,
             'tags': [tag.name for tag in self.tags.all()],
             'text_section_count': self.sections.count(),
+            'text_sections_complete': student.sections_complete_for(self) if student else None,
             'uri': reverse('text', kwargs={'pk': self.pk}),
             'difficulty': self.difficulty.name,
             'write_locker': str(self.write_locker) if self.write_locker else None
