@@ -9953,13 +9953,124 @@ var _user$project$Answer_Model$Answer = F6(
 
 var _user$project$Config$answer_feedback_limit = 2048;
 var _user$project$Config$student_api_endpoint = '/api/student/';
+var _user$project$Config$student_logout_api_endpoint = '/api/student/logout/';
 var _user$project$Config$student_login_api_endpoint = '/api/student/login/';
 var _user$project$Config$student_signup_api_endpoint = '/api/student/signup/';
+var _user$project$Config$instructor_logout_api_endpoint = '/api/instructor/logout/';
 var _user$project$Config$instructor_login_api_endpoint = '/api/instructor/login/';
 var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signup/';
 var _user$project$Config$question_api_endpoint = '/api/question/';
 var _user$project$Config$text_section_api_endpoint = '/api/section/';
 var _user$project$Config$text_api_endpoint = '/api/text/';
+
+var _user$project$HttpHelpers$delete_with_headers = F4(
+	function (url, headers, body, decoder) {
+		return _elm_lang$http$Http$request(
+			{
+				method: 'DELETE',
+				headers: headers,
+				url: url,
+				body: body,
+				expect: _elm_lang$http$Http$expectJson(decoder),
+				timeout: _elm_lang$core$Maybe$Nothing,
+				withCredentials: false
+			});
+	});
+var _user$project$HttpHelpers$post_with_headers = F4(
+	function (url, headers, body, decoder) {
+		return _elm_lang$http$Http$request(
+			{
+				method: 'POST',
+				headers: headers,
+				url: url,
+				body: body,
+				expect: _elm_lang$http$Http$expectJson(decoder),
+				timeout: _elm_lang$core$Maybe$Nothing,
+				withCredentials: false
+			});
+	});
+var _user$project$HttpHelpers$put_with_headers = F4(
+	function (url, headers, body, decoder) {
+		return _elm_lang$http$Http$request(
+			{
+				method: 'PUT',
+				headers: headers,
+				url: url,
+				body: body,
+				expect: _elm_lang$http$Http$expectJson(decoder),
+				timeout: _elm_lang$core$Maybe$Nothing,
+				withCredentials: false
+			});
+	});
+
+var _user$project$Instructor_Profile$logout = F3(
+	function (instructor_profile, csrftoken, msg) {
+		var request = A4(
+			_user$project$HttpHelpers$post_with_headers,
+			_user$project$Config$instructor_logout_api_endpoint,
+			{
+				ctor: '::',
+				_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
+				_1: {ctor: '[]'}
+			},
+			_elm_lang$http$Http$emptyBody,
+			_elm_lang$core$Json_Decode$succeed(true));
+		return A2(_elm_lang$http$Http$send, msg, request);
+	});
+var _user$project$Instructor_Profile$attrs = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0;
+};
+var _user$project$Instructor_Profile$texts = function (instructor_profile) {
+	return _user$project$Instructor_Profile$attrs(instructor_profile).texts;
+};
+var _user$project$Instructor_Profile$username = function (_p2) {
+	var _p3 = _p2;
+	return _p3._0.username;
+};
+var _user$project$Instructor_Profile$Text = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return function (k) {
+											return function (l) {
+												return function (m) {
+													return function (n) {
+														return function (o) {
+															return function (p) {
+																return {id: a, title: b, introduction: c, author: d, source: e, difficulty: f, conclusion: g, created_by: h, last_modified_by: i, tags: j, created_dt: k, modified_dt: l, write_locker: m, tags: n, text_section_count: o, edit_uri: p};
+															};
+														};
+													};
+												};
+											};
+										};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+var _user$project$Instructor_Profile$InstructorProfileParams = F3(
+	function (a, b, c) {
+		return {id: a, texts: b, username: c};
+	});
+var _user$project$Instructor_Profile$InstructorProfile = function (a) {
+	return {ctor: 'InstructorProfile', _0: a};
+};
+var _user$project$Instructor_Profile$init_profile = function (params) {
+	return _user$project$Instructor_Profile$InstructorProfile(params);
+};
 
 var _user$project$Question_Model$new_question = function (i) {
 	return {
@@ -10110,28 +10221,6 @@ var _user$project$Text_Reading_Model$textReadingDecoder = A3(
 				_elm_lang$core$Json_Decode$int,
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Reading_Model$TextReading)))));
 var _user$project$Text_Reading_Model$textReadingsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Reading_Model$textReadingDecoder);
-
-var _user$project$Instructor_Profile$logout = function (instructor_profile) {
-	return _elm_lang$core$Platform_Cmd$none;
-};
-var _user$project$Instructor_Profile$attrs = function (_p0) {
-	var _p1 = _p0;
-	return _p1._0;
-};
-var _user$project$Instructor_Profile$username = function (_p2) {
-	var _p3 = _p2;
-	return _p3._0.username;
-};
-var _user$project$Instructor_Profile$InstructorProfileParams = F2(
-	function (a, b) {
-		return {id: a, username: b};
-	});
-var _user$project$Instructor_Profile$InstructorProfile = function (a) {
-	return {ctor: 'InstructorProfile', _0: a};
-};
-var _user$project$Instructor_Profile$init_profile = function (params) {
-	return _user$project$Instructor_Profile$InstructorProfile(params);
-};
 
 var _user$project$Util$tupleDecoder = A3(
 	_elm_lang$core$Json_Decode$map2,
@@ -10506,46 +10595,6 @@ var _user$project$Profile$init_profile = function (flags) {
 var _user$project$Flags$UnAuthedFlags = function (a) {
 	return {csrftoken: a};
 };
-
-var _user$project$HttpHelpers$delete_with_headers = F4(
-	function (url, headers, body, decoder) {
-		return _elm_lang$http$Http$request(
-			{
-				method: 'DELETE',
-				headers: headers,
-				url: url,
-				body: body,
-				expect: _elm_lang$http$Http$expectJson(decoder),
-				timeout: _elm_lang$core$Maybe$Nothing,
-				withCredentials: false
-			});
-	});
-var _user$project$HttpHelpers$post_with_headers = F4(
-	function (url, headers, body, decoder) {
-		return _elm_lang$http$Http$request(
-			{
-				method: 'POST',
-				headers: headers,
-				url: url,
-				body: body,
-				expect: _elm_lang$http$Http$expectJson(decoder),
-				timeout: _elm_lang$core$Maybe$Nothing,
-				withCredentials: false
-			});
-	});
-var _user$project$HttpHelpers$put_with_headers = F4(
-	function (url, headers, body, decoder) {
-		return _elm_lang$http$Http$request(
-			{
-				method: 'PUT',
-				headers: headers,
-				url: url,
-				body: body,
-				expect: _elm_lang$http$Http$expectJson(decoder),
-				timeout: _elm_lang$core$Maybe$Nothing,
-				withCredentials: false
-			});
-	});
 
 var _user$project$Views$view_preview = A2(
 	_elm_lang$html$Html$div,

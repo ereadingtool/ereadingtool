@@ -1,15 +1,10 @@
 module Profile exposing (..)
 
-import Text.Model as Text
 import Config exposing (student_api_endpoint)
-import Json.Decode as Decode
+
 import Html exposing (Html, div)
 
 import Http exposing (..)
-
-import Html.Attributes exposing (classList, attribute)
-
-import Text.Reading.Model exposing (TextReading)
 
 import Instructor.Profile exposing (InstructorProfile, InstructorProfileParams)
 import Instructor.View

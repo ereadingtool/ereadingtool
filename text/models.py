@@ -149,6 +149,25 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
             'write_locker': str(self.write_locker) if self.write_locker else None
         }
 
+    def to_instructor_summary_dict(self) -> Dict:
+        return {
+            'id': self.pk,
+            'introduction': self.introduction,
+            'title': self.title,
+            'author': self.author,
+            'source': self.source,
+            'difficulty': self.difficulty.name,
+            'conclusion': self.conclusion,
+            'created_by': str(self.created_by),
+            'last_modified_by': str(self.last_modified_by) if self.last_modified_by else None,
+            'modified_dt': str(self.modified_dt),
+            'write_locker': str(self.write_locker) if self.write_locker else None,
+            'created_dt': str(self.created_dt.isoformat()),
+            'tags': [tag.name for tag in self.tags.all()],
+            'text_section_count': self.sections.count(),
+            'edit_uri': reverse('text-edit', kwargs={'pk': self.pk})
+        }
+
     def to_text_reading_dict(self) -> Dict:
         return {
             'id': self.pk,

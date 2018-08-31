@@ -1,6 +1,16 @@
 {% extends "user_base.html" %}
 {% load static %}
 
+{% block styles %}
+    <link rel="stylesheet" href="{% static "css/ereader.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/user_profile.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/instructor_profile.css" %}"/>
+{% endblock %}
+
 {% block scripts %}
     <script src="{% static "user/js/instructor_profile.js" %}"></script>
+{% endblock %}
+
+{% block body %}
+    <script src="{% url "load-elm-instructor" %}"></script>
 {% endblock %}

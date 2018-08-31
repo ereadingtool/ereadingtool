@@ -1,7 +1,5 @@
 module Menu.Msg exposing (..)
 
-import Config exposing (..)
-
 import Student.Profile exposing (StudentProfile)
 import Instructor.Profile exposing (InstructorProfile)
 

@@ -15,11 +15,17 @@ instructor_signup_api_endpoint = "/api/instructor/signup/"
 instructor_login_api_endpoint : String
 instructor_login_api_endpoint = "/api/instructor/login/"
 
+instructor_logout_api_endpoint : String
+instructor_logout_api_endpoint = "/api/instructor/logout/"
+
 student_signup_api_endpoint : String
 student_signup_api_endpoint = "/api/student/signup/"
 
 student_login_api_endpoint : String
 student_login_api_endpoint = "/api/student/login/"
+
+student_logout_api_endpoint : String
+student_logout_api_endpoint = "/api/student/logout/"
 
 student_api_endpoint : String
 student_api_endpoint = "/api/student/"

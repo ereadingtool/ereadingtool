@@ -1,5 +1,6 @@
 import json
 
+from typing import Dict
 from rjsmin import jsmin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
@@ -28,7 +29,7 @@ class ElmLoadJsBaseView(TemplateView):
 
         return response
 
-    def get_context_data(self, **kwargs) -> dict:
+    def get_context_data(self, **kwargs) -> Dict:
         context = super(ElmLoadJsBaseView, self).get_context_data(**kwargs)
 
         context.setdefault('elm', {})
@@ -36,8 +37,40 @@ class ElmLoadJsBaseView(TemplateView):
         return context
 
 
+class ElmLoadJsInstructorView(LoginRequiredMixin, ElmLoadJsBaseView):
+    def get_context_data(self, **kwargs) -> Dict:
+        context = super(ElmLoadJsInstructorView, self).get_context_data(**kwargs)
+
+        profile = None
+
+        try:
+            profile = self.request.user.instructor
+        except ObjectDoesNotExist:
+            pass
+
+        context['elm']['instructor_profile'] = {'quote': False, 'safe': True, 'value': profile or 'null'}
+
+        return context
+
+
+class ElmLoadJsStudentView(LoginRequiredMixin, ElmLoadJsBaseView):
+    def get_context_data(self, **kwargs) -> Dict:
+        context = super(ElmLoadJsStudentView, self).get_context_data(**kwargs)
+
+        profile = None
+
+        try:
+            profile = self.request.user.student
+        except ObjectDoesNotExist:
+            pass
+
+        context['elm']['instructor_profile'] = {'quote': False, 'safe': True, 'value': profile or 'null'}
+
+        return context
+
+
 class ElmLoadJsView(LoginRequiredMixin, ElmLoadJsBaseView):
-    def get_context_data(self, **kwargs) -> dict:
+    def get_context_data(self, **kwargs) -> Dict:
         context = super(ElmLoadJsView, self).get_context_data(**kwargs)
 
         profile = None
@@ -77,7 +110,7 @@ class NoAuthElmLoadJsView(ElmLoadJsBaseView):
 
 
 class ElmLoadStudentSignUpView(NoAuthElmLoadJsView):
-    def get_context_data(self, **kwargs) -> dict:
+    def get_context_data(self, **kwargs) -> Dict:
         context = super(ElmLoadStudentSignUpView, self).get_context_data(**kwargs)
 
         context['elm']['difficulties'] = {'quote': False, 'safe': True,

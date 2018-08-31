@@ -95,8 +95,7 @@ class TextReading(models.Model):
                 'num_of_sections': len(self.sections),
                 'complete_sections': len(self.sections),
                 'section_scores': question_scores,
-                'possible_section_scores':
-                    len(self.sections) * sum([section.questions.count() for section in self.sections])
+                'possible_section_scores': len(self.sections) * len(scores)
             }
 
     @cached_property

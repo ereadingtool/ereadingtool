@@ -67,10 +67,13 @@ tagsToDict tag_list =
 textJSONtoComponent : Maybe Json.Encode.Value -> Cmd Msg
 textJSONtoComponent text =
   case text of
-    Just json -> Task.attempt TextJSONDecode
-      (case (Decode.decodeValue Text.Decode.textDecoder json) of
-        Ok text -> Task.succeed (Text.Component.init text)
-        Err err -> Task.fail err)
+    Just json ->
+      Task.attempt TextJSONDecode (case (Decode.decodeValue Text.Decode.textDecoder json) of
+          Ok text ->
+            Task.succeed (Text.Component.init text)
+          Err err ->
+            Task.fail err)
+
     Nothing ->
       -- CreateMode, initialize the text field editors
       Task.attempt (\_-> InitTextFieldEditors) (Task.succeed Nothing)
