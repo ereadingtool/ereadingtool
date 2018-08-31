@@ -8,23 +8,29 @@ import Json.Decode as Decode
 
 import Dict exposing (Dict)
 
-import Profile exposing (StudentProfile, TextReading)
+import Profile
+
+import Text.Reading.Model exposing (TextReading)
+import Student.Profile
 import Student.Encode
 
 import Views
 import Flags
 
+import Menu.Msg as MenuMsg
+
 -- UPDATE
 type Msg =
-    UpdateStudentProfile (Result Error Profile.StudentProfile)
+    UpdateStudentProfile (Result Error Student.Profile.StudentProfile)
   | UpdateDifficulty String
   | Submitted (Result Error UpdateProfileResp )
+  | Logout MenuMsg.Msg
 
 type alias Flags = Flags.Flags {}
 
 type alias Model = {
     flags : Flags
-  , profile : Profile.StudentProfile
+  , profile : Student.Profile.StudentProfile
   , err_str : String
   , errors : Dict String String }
 
@@ -33,15 +39,15 @@ type alias UpdateProfileResp = Dict.Dict String String
 updateRespDecoder : Decode.Decoder (UpdateProfileResp)
 updateRespDecoder = Decode.dict Decode.string
 
-put_profile : Flags.CSRFToken -> Profile.StudentProfile -> Cmd Msg
+put_profile : Flags.CSRFToken -> Student.Profile.StudentProfile -> Cmd Msg
 put_profile csrftoken student_profile =
-  case Profile.studentID student_profile of
+  case Student.Profile.studentID student_profile of
     Just id ->
       let
         encoded_profile = Student.Encode.profileEncoder student_profile
         req =
           HttpHelpers.put_with_headers
-           (Profile.studentUpdateURI id)
+           (Student.Profile.studentUpdateURI id)
            [Http.header "X-CSRFToken" csrftoken]
            (Http.jsonBody encoded_profile) updateRespDecoder
       in
@@ -52,7 +58,7 @@ put_profile csrftoken student_profile =
 init : Flags -> (Model, Cmd Msg)
 init flags = ({
     flags = flags
-  , profile = Profile.emptyStudentProfile
+  , profile = Student.Profile.emptyStudentProfile
   , err_str = "", errors = Dict.fromList [] }, Profile.retrieve_student_profile UpdateStudentProfile flags.profile_id)
 
 subscriptions : Model -> Sub Msg
@@ -71,7 +77,7 @@ update msg model = case msg of
   UpdateDifficulty difficulty ->
     let
       new_difficulty_preference = (difficulty, difficulty)
-      new_student_profile = Profile.setStudentDifficultyPreference model.profile new_difficulty_preference
+      new_student_profile = Student.Profile.setStudentDifficultyPreference model.profile new_difficulty_preference
     in
       (model, put_profile model.flags.csrftoken new_student_profile )
 
@@ -93,6 +99,9 @@ update msg model = case msg of
       _ ->
         (model, Cmd.none)
 
+  Logout msg ->
+    (model, Student.Profile.logout model.profile)
+
 
 main : Program Flags Model Msg
 main =
@@ -107,7 +116,7 @@ view_difficulty : Model -> Html Msg
 view_difficulty model =
   let
     pref =
-      (case Profile.studentDifficultyPreference model.profile of
+      (case Student.Profile.studentDifficultyPreference model.profile of
         Just pref -> Tuple.first pref
         _ -> "")
   in
@@ -115,7 +124,7 @@ view_difficulty model =
       Html.select [ onInput UpdateDifficulty ] [
         Html.optgroup [] (List.map (\(k,v) ->
           Html.option ([attribute "value" k] ++ (if k == pref then [attribute "selected" ""] else []))
-         [ Html.text v ]) (Profile.studentDifficulties model.profile))
+         [ Html.text v ]) (Student.Profile.studentDifficulties model.profile))
       ]
     ]
 
@@ -143,10 +152,10 @@ view_text_reading text_reading =
     ]
   ]
 
-view_student_text_readings : StudentProfile -> Html Msg
+view_student_text_readings : Student.Profile.StudentProfile -> Html Msg
 view_student_text_readings student_profile =
   let
-    text_readings = Maybe.withDefault [] (Profile.studentTextReading student_profile)
+    text_readings = Maybe.withDefault [] (Student.Profile.studentTextReading student_profile)
   in
     div [class "profile_item"] [
       span [class "profile_item_title"] [ Html.text "Texts In Progress" ]
@@ -159,7 +168,7 @@ view_content model =
     div [classList [("profile_items", True)] ] [
       div [class "profile_item"] [
         span [class "profile_item_title"] [ Html.text "Username" ]
-      , span [class "profile_item_value"] [ Html.text (Profile.studentUserName model.profile) ]
+      , span [class "profile_item_value"] [ Html.text (Student.Profile.studentUserName model.profile) ]
       ]
     , div [class "profile_item"] [
         span [class "profile_item_title"] [ Html.text "Preferred Difficulty" ]
@@ -183,7 +192,7 @@ view_content model =
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    (Views.view_header (Profile.fromStudentProfile model.profile) Nothing)
+    (Views.view_header (Profile.fromStudentProfile model.profile) Nothing Logout)
   , (Views.view_filter)
   , (view_content model)
   , (Views.view_footer)

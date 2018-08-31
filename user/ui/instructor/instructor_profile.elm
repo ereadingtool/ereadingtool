@@ -7,9 +7,14 @@ import Views
 import Flags
 
 import Profile
+import Instructor.Profile
+
+import Menu.Msg as MenuMsg
 
 -- UPDATE
-type Msg = Update
+type Msg =
+   Update
+ | Logout MenuMsg.Msg
 
 type alias Flags = Flags.Flags {}
 
@@ -28,10 +33,13 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
-
 update : Msg -> Model -> (Model, Cmd Msg)
-update msg model = case msg of
-  Update -> (model, Cmd.none)
+update msg model =
+  case msg of
+    Update ->
+      (model, Cmd.none)
+    Logout msg ->
+      (model, Instructor.Profile.logout model.profile)
 
 main : Program Flags Model Msg
 main =
@@ -53,7 +61,7 @@ view_content model =
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    (Views.view_header model.profile Nothing)
+    (Views.view_header model.profile Nothing Logout)
   , (Views.view_filter)
   , (view_content model)
   , (Views.view_footer)

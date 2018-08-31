@@ -3,34 +3,24 @@ module Profile exposing (..)
 import Text.Model as Text
 import Config exposing (student_api_endpoint)
 import Json.Decode as Decode
-import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 import Html exposing (Html, div)
 
 import Http exposing (..)
 
 import Html.Attributes exposing (classList, attribute)
 
+import Text.Reading.Model exposing (TextReading)
+
 import Instructor.Profile exposing (InstructorProfile, InstructorProfileParams)
+import Instructor.View
+
+import Student.Profile exposing (StudentProfile, StudentProfileParams, studentProfileDecoder)
+import Student.View
+
+import Menu.Msg exposing (Msg)
 
 type alias ProfileID = Int
 type alias ProfileType = String
-
-
-type alias TextReading = {
-    id: Int
-  , text: String
-  , current_section: Maybe String
-  , status: String }
-
-
-type alias StudentProfileParams = {
-    id: Maybe Int
-  , username: String
-  , difficulty_preference: Maybe Text.TextDifficulty
-  , difficulties: List Text.TextDifficulty
-  , text_reading: Maybe (List TextReading) }
-
-type StudentProfile = StudentProfile StudentProfileParams
 
 type Profile = Student StudentProfile | Instructor InstructorProfile | EmptyProfile
 
@@ -39,42 +29,6 @@ fromStudentProfile student_profile = Student student_profile
 
 fromInstructorProfile : InstructorProfile -> Profile
 fromInstructorProfile instructor_profile = Instructor instructor_profile
-
-studentProfile : StudentProfileParams -> StudentProfile
-studentProfile params = StudentProfile params
-
-studentDifficultyPreference : StudentProfile -> Maybe Text.TextDifficulty
-studentDifficultyPreference (StudentProfile attrs) = attrs.difficulty_preference
-
-setStudentDifficultyPreference : StudentProfile -> Text.TextDifficulty -> StudentProfile
-setStudentDifficultyPreference (StudentProfile attrs) preference =
-  StudentProfile { attrs | difficulty_preference = Just preference }
-
-studentID : StudentProfile -> Maybe Int
-studentID (StudentProfile attrs) = attrs.id
-
-studentUpdateURI : Int -> String
-studentUpdateURI id =
-  String.join "" [student_api_endpoint, toString id, "/"]
-
-studentDifficulties : StudentProfile -> List Text.TextDifficulty
-studentDifficulties (StudentProfile attrs) = attrs.difficulties
-
-studentTextReading : StudentProfile -> Maybe (List TextReading)
-studentTextReading (StudentProfile attrs) = attrs.text_reading
-
-studentUserName : StudentProfile -> String
-studentUserName (StudentProfile attrs) = attrs.username
-
-view_student_profile_header : StudentProfile -> List (Html msg)
-view_student_profile_header (StudentProfile attrs) = [
-    div [classList [("menu_item", True)]] [
-      Html.a [attribute "href" ""] [ Html.text "Flashcards" ]
-    ]
-  , div [classList [("profile_menu_item", True)]] [
-      Html.a [attribute "href" "/profile/student/"] [ Html.text attrs.username ]
-    ]
-  ]
 
 init_profile:
  { a | instructor_profile : Maybe InstructorProfileParams, student_profile : Maybe StudentProfileParams }
@@ -86,60 +40,24 @@ init_profile flags =
     Nothing ->
       case flags.student_profile of
         Just student_profile_params ->
-          Student (StudentProfile student_profile_params)
+          Student (Student.Profile.init_profile student_profile_params)
         Nothing ->
           EmptyProfile
 
 emptyProfile : Profile
 emptyProfile = EmptyProfile
 
-view_profile_header : Profile -> Maybe (List (Html msg))
-view_profile_header profile =
+view_profile_header : Profile -> (Msg -> msg) -> Maybe (List (Html msg))
+view_profile_header profile top_level_msg =
   case profile of
     (Instructor instructor_profile) ->
-      Just (Instructor.Profile.view_instructor_profile_header instructor_profile)
+      Just (Instructor.View.view_instructor_profile_header instructor_profile top_level_msg)
 
     (Student student_profile) ->
-      Just (view_student_profile_header student_profile)
+      Just (Student.View.view_student_profile_header student_profile top_level_msg)
 
-    EmptyProfile -> Nothing
-
-emptyStudentProfile : StudentProfile
-emptyStudentProfile = StudentProfile {
-    id = Nothing
-  , username = ""
-  , difficulty_preference = Nothing
-  , difficulties = []
-  , text_reading = Nothing }
-
-tupleDecoder : Decode.Decoder ( String, String )
-tupleDecoder = Decode.map2 (,) (Decode.index 0 Decode.string) (Decode.index 1 Decode.string)
-
-textReadingDecoder : Decode.Decoder TextReading
-textReadingDecoder =
-  decode TextReading
-    |> required "id" Decode.int
-    |> required "text" Decode.string
-    |> required "current_section" (Decode.nullable (Decode.string))
-    |> required "status" Decode.string
-
-textReadingsDecoder : Decode.Decoder (List TextReading)
-textReadingsDecoder =
-  Decode.list textReadingDecoder
-
-studentProfileParamsDecoder : Decode.Decoder StudentProfileParams
-studentProfileParamsDecoder =
-  decode StudentProfileParams
-    |> required "id" (Decode.nullable Decode.int)
-    |> required "username" Decode.string
-    |> required "difficulty_preference" (Decode.nullable tupleDecoder)
-    |> required "difficulties" (Decode.list tupleDecoder)
-    |> required "text_reading" (Decode.nullable textReadingsDecoder)
-
-
-studentProfileDecoder : Decode.Decoder StudentProfile
-studentProfileDecoder =
-  Decode.map StudentProfile studentProfileParamsDecoder
+    EmptyProfile ->
+      Nothing
 
 retrieve_student_profile : (Result Error StudentProfile -> msg) -> ProfileID -> Cmd msg
 retrieve_student_profile msg profile_id =

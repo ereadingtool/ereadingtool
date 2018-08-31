@@ -12,6 +12,8 @@ import HttpHelpers exposing (post_with_headers)
 import Config exposing (instructor_signup_api_endpoint)
 import Http exposing (..)
 
+import Menu.Msg as MenuMsg
+
 type alias SignUpResp = { id: SignUp.UserID, redirect: SignUp.URI }
 
 type alias SignUpParams = {
@@ -26,6 +28,8 @@ type Msg =
   | UpdateConfirmPassword String
   | Submitted (Result Http.Error SignUpResp)
   | Submit
+  | Logout MenuMsg.Msg
+
 
 type alias Model = {
     flags : Flags.UnAuthedFlags
@@ -108,12 +112,16 @@ update msg model =
         _ ->
           (model, Cmd.none)
 
+    Logout msg ->
+      (model, Cmd.none)
+
 main : Program Flags.UnAuthedFlags Model Msg
 main =
   Html.programWithFlags
     { init = init
     , view =
-        (SignUp.view "Instructor Signup" UpdateEmail (ToggleShowPassword, UpdatePassword, UpdateConfirmPassword) Submit)
+        (SignUp.view
+          "Instructor Signup" UpdateEmail (ToggleShowPassword, UpdatePassword, UpdateConfirmPassword) Submit Logout)
     , subscriptions = subscriptions
     , update = update
     }

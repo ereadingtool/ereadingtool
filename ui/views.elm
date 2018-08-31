@@ -7,6 +7,8 @@ import Array exposing (Array)
 
 import Profile
 
+import Menu.Msg exposing (Msg)
+
 type alias Selected = Bool
 type alias URI = String
 type alias LinkText = String
@@ -33,8 +35,9 @@ set_selected (MenuItems menu_items) index select =
 
 view_menu_item : MenuItem -> Html msg
 view_menu_item (MenuItem uri link_text selected) =
-  span [ classList [("menu_item", True), ("menu_item_selected", selected)] ]
-    [ Html.a [attribute "href" uri] [ Html.text link_text ] ]
+  div [ classList [("menu_item", True), ("menu_item_selected", selected)] ] [
+    Html.a [attribute "href" uri] [ Html.text link_text ]
+  ]
 
 view_user_profile_menu_items : Maybe (List (Html msg)) -> List (Html msg)
 view_user_profile_menu_items view =
@@ -44,13 +47,13 @@ view_user_profile_menu_items view =
     _ ->
       []
 
-view_menu : MenuItems -> Profile.Profile -> List (Html msg)
-view_menu (MenuItems menu_items) profile =
+view_menu : MenuItems -> Profile.Profile -> (Msg -> msg) -> List (Html msg)
+view_menu (MenuItems menu_items) profile top_level_msg =
   (Array.toList <| Array.map view_menu_item menu_items) ++
-  (view_user_profile_menu_items (Profile.view_profile_header profile))
+  (view_user_profile_menu_items (Profile.view_profile_header profile top_level_msg ))
 
-view_header : Profile.Profile -> Maybe SelectedMenuItem -> Html msg
-view_header profile selected_menu_item =
+view_header : Profile.Profile -> Maybe SelectedMenuItem -> (Msg -> msg) -> Html msg
+view_header profile selected_menu_item top_level_msg =
   let
     m_items =
       case selected_menu_item of
@@ -61,7 +64,7 @@ view_header profile selected_menu_item =
   in
     div [classList [("header", True)]] [
       div [] [ Html.text "E-Reader" ]
-    , div [classList [("menu", True)]] (view_menu m_items profile)
+    , div [classList [("menu", True)]] (view_menu m_items profile top_level_msg)
     ]
 
 view_filter : Html msg

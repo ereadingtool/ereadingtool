@@ -10,6 +10,9 @@ import Util exposing (is_valid_email)
 import Views
 import Profile
 
+import Menu.Msg as MenuMsg
+
+
 
 type alias UserID = Int
 type alias URI = String
@@ -132,10 +135,12 @@ view :
     -> (String -> msg)
     -> ( msg, String -> msg, String -> msg )
     -> msg
+    -> (MenuMsg.Msg -> msg)
     -> { a | show_passwords : Bool, errors : Dict String String }
     -> Html msg
-view signup_label email_msg password_msgs submit_msg model = div [] [
-    (Views.view_header Profile.emptyProfile Nothing)
+view signup_label email_msg password_msgs submit_msg logout_msg model =
+  div [] [
+    (Views.view_header Profile.emptyProfile Nothing logout_msg)
   , (Views.view_filter)
   , (view_content signup_label email_msg password_msgs submit_msg model)
   , (Views.view_footer)

@@ -56,28 +56,30 @@ view_question params question_field =
 
 view_delete_menu_item : (QuestionFieldParams msg) -> QuestionField -> Html msg
 view_delete_menu_item params field =
-    Html.span [onClick (params.msg ((DeleteQuestion params.text_section_component field)))] [ Html.text "Delete" ]
+    span [onClick (params.msg ((DeleteQuestion params.text_section_component field)))] [ Html.text "Delete" ]
 
 view_question_type_menu_item : (QuestionFieldParams msg) -> QuestionField -> Html msg
 view_question_type_menu_item params field =
-    Html.div [] [
-        (if params.question.question_type == "main_idea" then
-          Html.strong [] [ Html.text "Main Idea" ]
-         else
-          Html.span [
-            onClick
-              (params.msg
-                (UpdateQuestionField params.text_section_component (Question.Field.set_question_type field Question.Field.MainIdea)))
-          ] [ Html.text "Main Idea" ])
-      , Html.text " | "
-      , (if params.question.question_type == "detail" then
-          Html.strong [] [ Html.text "Detail" ]
-         else
-          Html.span [
-            onClick
-              (params.msg
-                (UpdateQuestionField params.text_section_component (Question.Field.set_question_type field Question.Field.Detail)))
-          ] [ Html.text "Detail" ])
+    div [] [
+      (if params.question.question_type == "main_idea" then
+        Html.strong [] [ Html.text "Main Idea" ]
+       else
+        span [
+          onClick
+            (params.msg
+              (UpdateQuestionField params.text_section_component
+                (Question.Field.set_question_type field Question.Field.MainIdea)))
+        ] [ Html.text "Main Idea" ])
+    , Html.text " | "
+    , (if params.question.question_type == "detail" then
+        Html.strong [] [ Html.text "Detail" ]
+       else
+        span [
+          onClick
+            (params.msg
+              (UpdateQuestionField params.text_section_component
+                (Question.Field.set_question_type field Question.Field.Detail)))
+        ] [ Html.text "Detail" ])
     ]
 
 view_menu_items : (QuestionFieldParams msg) -> QuestionField -> List (Html msg)
@@ -90,13 +92,13 @@ view_menu_items params field =
 view_question_menu : (QuestionFieldParams msg) -> QuestionField -> Html msg
 view_question_menu params field =
     div [ classList [("question_menu", True)] ] [
-        Html.div [] [
+        div [] [
           Html.img [
               attribute "src" "/static/img/action_arrow.svg"
             , (onClick (params.msg (ToggleQuestionMenu params.text_section_component field)))
           ] []
-        ], Html.div [
-          classList [("question_menu_overlay", True), ("hidden", not (Question.Field.menu_visible field))]
+        ]
+        , div [classList [("question_menu_overlay", True), ("hidden", not (Question.Field.menu_visible field))]
         ] (view_menu_items params field)
     ]
 

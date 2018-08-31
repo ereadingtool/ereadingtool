@@ -21,6 +21,8 @@ import Flags
 
 import Profile
 
+import Menu.Msg as MenuMsg
+
 type alias UserID = Int
 type alias URI = String
 type alias SignUpURI = String
@@ -33,6 +35,7 @@ type Msg =
   | Submitted (Result Http.Error LoginResp)
   | UpdateEmail String
   | UpdatePassword String
+  | Logout MenuMsg.Msg
 
 type Login = StudentLogin SignUpURI Int | InstructorLogin SignUpURI Int
 
@@ -142,6 +145,9 @@ update endpoint msg model =
         Http.BadPayload err resp -> (model, Cmd.none)
         _ -> (model, Cmd.none)
 
+    Logout msg ->
+      (model, Cmd.none)
+
 login_label : Html Msg -> Html Msg
 login_label html = Html.div [attribute "class" "login_label"] [ html ]
 
@@ -214,7 +220,7 @@ view_content login model =
 view : Login -> Model -> Html Msg
 view login model =
   div [] [
-    (Views.view_header Profile.emptyProfile (Just <| menu_index login))
+    (Views.view_header Profile.emptyProfile (Just <| menu_index login) Logout)
   , (Views.view_filter)
   , (view_content login model)
   , (Views.view_footer)

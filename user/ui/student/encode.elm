@@ -2,13 +2,13 @@ module Student.Encode exposing (..)
 
 import Json.Encode as Encode
 
-import Profile
+import Student.Profile
 
-profileEncoder : Profile.StudentProfile -> Encode.Value
+profileEncoder : Student.Profile.StudentProfile -> Encode.Value
 profileEncoder student =
   let
     encode_pref =
-      (case (Profile.studentDifficultyPreference student) of
+      (case (Student.Profile.studentDifficultyPreference student) of
         Just difficulty ->
           Encode.string (Tuple.first difficulty)
         _ ->

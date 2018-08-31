@@ -18,6 +18,8 @@ import Html.Events exposing (onClick, onBlur, onInput)
 
 import Profile
 
+import Menu.Msg as MenuMsg
+
 type alias SignUpResp = { id: SignUp.UserID, redirect: SignUp.URI }
 
 type alias Flags = { csrftoken : Flags.CSRFToken, difficulties: List TextDifficulty }
@@ -36,6 +38,7 @@ type Msg =
   | UpdateDifficulty String
   | Submitted (Result Http.Error SignUpResp)
   | Submit
+  | Logout MenuMsg.Msg
 
 type alias Model = {
     flags : Flags
@@ -126,6 +129,9 @@ update msg model =
         _ ->
           (model, Cmd.none)
 
+    Logout msg ->
+      (model, Cmd.none)
+
 view_difficulty_choices : Model -> List (Html Msg)
 view_difficulty_choices model = [
       SignUp.signup_label (Html.text "Choose a preferred difficulty:")
@@ -151,7 +157,7 @@ view_content model =
 
 view : Model -> Html Msg
 view model = div [] [
-    (Views.view_header Profile.emptyProfile Nothing)
+    (Views.view_header Profile.emptyProfile Nothing Logout)
   , (Views.view_filter)
   , (view_content model)
   , (Views.view_footer)

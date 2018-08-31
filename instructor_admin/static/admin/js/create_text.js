@@ -11025,7 +11025,9 @@ var _user$project$Text_Model$TextListItem = function (a) {
 									return function (j) {
 										return function (k) {
 											return function (l) {
-												return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, text_section_count: j, uri: k, write_locker: l};
+												return function (m) {
+													return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, text_section_count: j, text_sections_complete: k, uri: l, write_locker: m};
+												};
 											};
 										};
 									};
@@ -13184,15 +13186,64 @@ var _user$project$Instructor_Profile$view_instructor_profile_header = function (
 				{
 					ctor: '::',
 					_0: A2(
-						_elm_lang$html$Html$a,
+						_elm_lang$html$Html$div,
 						{
 							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/profile/instructor/'),
+							_0: _elm_lang$html$Html_Attributes$class('profile_menu'),
 							_1: {ctor: '[]'}
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text(_p1._0.username),
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$classList(
+										{
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'profile_menu_overlay', _1: true},
+											_1: {
+												ctor: '::',
+												_0: {ctor: '_Tuple2', _0: 'hidden', _1: false},
+												_1: {ctor: '[]'}
+											}
+										}),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$div,
+										{ctor: '[]'},
+										{
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$a,
+												{
+													ctor: '::',
+													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/profile/instructor/'),
+													_1: {ctor: '[]'}
+												},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text('Profile'),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$div,
+											{ctor: '[]'},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text('Logout'),
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}
+								}),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}
@@ -13307,47 +13358,110 @@ var _user$project$Profile$studentUserName = function (_p3) {
 	var _p4 = _p3;
 	return _p4._0.username;
 };
-var _user$project$Profile$studentDifficulties = function (_p5) {
+var _user$project$Profile$studentTextReading = function (_p5) {
 	var _p6 = _p5;
-	return _p6._0.difficulties;
+	return _p6._0.text_reading;
 };
-var _user$project$Profile$studentDifficultyPreference = function (_p7) {
+var _user$project$Profile$studentDifficulties = function (_p7) {
 	var _p8 = _p7;
-	return _p8._0.difficulty_preference;
+	return _p8._0.difficulties;
 };
-var _user$project$Profile$StudentProfileParams = F4(
+var _user$project$Profile$studentUpdateURI = function (id) {
+	return A2(
+		_elm_lang$core$String$join,
+		'',
+		{
+			ctor: '::',
+			_0: _user$project$Config$student_api_endpoint,
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$core$Basics$toString(id),
+				_1: {
+					ctor: '::',
+					_0: '/',
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
+var _user$project$Profile$studentID = function (_p9) {
+	var _p10 = _p9;
+	return _p10._0.id;
+};
+var _user$project$Profile$studentDifficultyPreference = function (_p11) {
+	var _p12 = _p11;
+	return _p12._0.difficulty_preference;
+};
+var _user$project$Profile$TextReading = F4(
 	function (a, b, c, d) {
-		return {id: a, username: b, difficulty_preference: c, difficulties: d};
+		return {id: a, text: b, current_section: c, status: d};
 	});
-var _user$project$Profile$studentProfileParamsDecoder = A3(
+var _user$project$Profile$textReadingDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'difficulties',
-	_elm_lang$core$Json_Decode$list(_user$project$Profile$tupleDecoder),
+	'status',
+	_elm_lang$core$Json_Decode$string,
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'difficulty_preference',
-		_elm_lang$core$Json_Decode$nullable(_user$project$Profile$tupleDecoder),
+		'current_section',
+		_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'username',
+			'text',
 			_elm_lang$core$Json_Decode$string,
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 				'id',
-				_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Profile$StudentProfileParams)))));
+				_elm_lang$core$Json_Decode$int,
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Profile$TextReading)))));
+var _user$project$Profile$textReadingsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Profile$textReadingDecoder);
+var _user$project$Profile$StudentProfileParams = F5(
+	function (a, b, c, d, e) {
+		return {id: a, username: b, difficulty_preference: c, difficulties: d, text_reading: e};
+	});
+var _user$project$Profile$studentProfileParamsDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'text_reading',
+	_elm_lang$core$Json_Decode$nullable(_user$project$Profile$textReadingsDecoder),
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'difficulties',
+		_elm_lang$core$Json_Decode$list(_user$project$Profile$tupleDecoder),
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'difficulty_preference',
+			_elm_lang$core$Json_Decode$nullable(_user$project$Profile$tupleDecoder),
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'username',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'id',
+					_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Profile$StudentProfileParams))))));
 var _user$project$Profile$StudentProfile = function (a) {
 	return {ctor: 'StudentProfile', _0: a};
 };
 var _user$project$Profile$studentProfile = function (params) {
 	return _user$project$Profile$StudentProfile(params);
 };
+var _user$project$Profile$setStudentDifficultyPreference = F2(
+	function (_p13, preference) {
+		var _p14 = _p13;
+		return _user$project$Profile$StudentProfile(
+			_elm_lang$core$Native_Utils.update(
+				_p14._0,
+				{
+					difficulty_preference: _elm_lang$core$Maybe$Just(preference)
+				}));
+	});
 var _user$project$Profile$emptyStudentProfile = _user$project$Profile$StudentProfile(
 	{
 		id: _elm_lang$core$Maybe$Nothing,
 		username: '',
 		difficulty_preference: _elm_lang$core$Maybe$Nothing,
-		difficulties: {ctor: '[]'}
+		difficulties: {ctor: '[]'},
+		text_reading: _elm_lang$core$Maybe$Nothing
 	});
 var _user$project$Profile$studentProfileDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Profile$StudentProfile, _user$project$Profile$studentProfileParamsDecoder);
 var _user$project$Profile$retrieve_student_profile = F2(
@@ -13387,15 +13501,15 @@ var _user$project$Profile$fromStudentProfile = function (student_profile) {
 	return _user$project$Profile$Student(student_profile);
 };
 var _user$project$Profile$init_profile = function (flags) {
-	var _p9 = flags.instructor_profile;
-	if (_p9.ctor === 'Just') {
+	var _p15 = flags.instructor_profile;
+	if (_p15.ctor === 'Just') {
 		return _user$project$Profile$Instructor(
-			_user$project$Instructor_Profile$init_profile(_p9._0));
+			_user$project$Instructor_Profile$init_profile(_p15._0));
 	} else {
-		var _p10 = flags.student_profile;
-		if (_p10.ctor === 'Just') {
+		var _p16 = flags.student_profile;
+		if (_p16.ctor === 'Just') {
 			return _user$project$Profile$Student(
-				_user$project$Profile$StudentProfile(_p10._0));
+				_user$project$Profile$StudentProfile(_p16._0));
 		} else {
 			return _user$project$Profile$EmptyProfile;
 		}
@@ -13971,46 +14085,50 @@ var _user$project$Text_Decode$textListItemDecoder = A3(
 		_elm_lang$core$Json_Decode$string,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'text_section_count',
-			_elm_lang$core$Json_Decode$int,
+			'text_sections_complete',
+			_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'modified_dt',
-				_elm_community$json_extra$Json_Decode_Extra$date,
+				'text_section_count',
+				_elm_lang$core$Json_Decode$int,
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'created_dt',
+					'modified_dt',
 					_elm_community$json_extra$Json_Decode_Extra$date,
 					A3(
 						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'tags',
-						_elm_lang$core$Json_Decode$nullable(
-							_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
+						'created_dt',
+						_elm_community$json_extra$Json_Decode_Extra$date,
 						A3(
 							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'last_modified_by',
-							_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+							'tags',
+							_elm_lang$core$Json_Decode$nullable(
+								_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
 							A3(
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'created_by',
-								_elm_lang$core$Json_Decode$string,
+								'last_modified_by',
+								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 								A3(
 									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-									'difficulty',
+									'created_by',
 									_elm_lang$core$Json_Decode$string,
 									A3(
 										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-										'author',
+										'difficulty',
 										_elm_lang$core$Json_Decode$string,
 										A3(
 											_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-											'title',
+											'author',
 											_elm_lang$core$Json_Decode$string,
 											A3(
 												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-												'id',
-												_elm_lang$core$Json_Decode$int,
-												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextListItem)))))))))))));
+												'title',
+												_elm_lang$core$Json_Decode$string,
+												A3(
+													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+													'id',
+													_elm_lang$core$Json_Decode$int,
+													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextListItem))))))))))))));
 var _user$project$Text_Decode$textListDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textListItemDecoder);
 var _user$project$Text_Decode$textDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
