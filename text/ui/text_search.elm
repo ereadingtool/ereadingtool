@@ -18,16 +18,22 @@ import Ports exposing (clearInputText)
 import Dict exposing (Dict)
 
 import Views
+
+import Student.Profile
 import Profile
 
 import Config exposing (..)
 import Flags exposing (CSRFToken)
+
+import Menu.Msg as MenuMsg
 
 -- UPDATE
 type Msg =
    AddDifficulty String Bool
  | SelectTag String Bool
  | TextSearch (Result Http.Error (List Text.Model.TextListItem))
+ | LogOut MenuMsg.Msg
+ | LoggedOut (Result Http.Error Bool)
 
 type alias Flags = Flags.Flags { text_difficulties: List Text.Model.TextDifficulty, text_tags: List String }
 
@@ -54,7 +60,7 @@ init flags =
     text_search =
       (case profile of
         Profile.Student student_profile ->
-          case Profile.studentDifficultyPreference student_profile of
+          case Student.Profile.studentDifficultyPreference student_profile of
             Just difficulty ->
               Text.Search.add_difficulty_to_search default_search (Tuple.first difficulty) True
             _ ->
@@ -111,6 +117,16 @@ update msg model =
           ({ model | results = texts }, Cmd.none)
         Err err -> let _ = Debug.log "error retrieving results" err in
           (model, Cmd.none)
+
+    LogOut msg ->
+      -- TODO(andrew): save text for user, or prompt them for a decision?
+      (model, Cmd.none)
+
+    LoggedOut (Ok resp) ->
+      (model, Cmd.none)
+
+    LoggedOut (Err err) ->
+      (model, Cmd.none)
 
 main : Program Flags Model Msg
 main =
@@ -236,7 +252,7 @@ view_content model =
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    Views.view_header model.profile (Just 0)
+    Views.view_header model.profile (Just 0) LogOut
   , Views.view_filter
   , view_content model
   , Views.view_footer

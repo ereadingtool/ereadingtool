@@ -10,6 +10,7 @@ import Profile
 import Instructor.Profile
 
 import Menu.Msg as MenuMsg
+import Navigation
 
 
 -- UPDATE
@@ -47,7 +48,7 @@ update msg model =
       (model, Instructor.Profile.logout model.profile model.flags.csrftoken LoggedOut)
 
     LoggedOut (Ok resp) ->
-      (model, Cmd.none)
+      (model, Navigation.newUrl "/profile/instructor/")
 
     LoggedOut (Err err) ->
       (model, Cmd.none)

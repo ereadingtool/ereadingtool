@@ -65,6 +65,16 @@ update msg model =
       WebSocketResp str ->
         TextReader.Update.handle_ws_resp model str
 
+      -- TODO(andrew): disconnect websocket explicitly, redirect to login.
+      LogOut msg ->
+        (model, Cmd.none)
+
+      LoggedOut (Ok resp) ->
+        (model, Cmd.none)
+
+      LoggedOut (Err err) ->
+        (model, Cmd.none)
+
 
 main : Program Flags Model Msg
 main =
@@ -78,7 +88,7 @@ main =
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    (Views.view_header model.profile Nothing)
+    (Views.view_header model.profile Nothing LogOut)
   , (Views.view_filter)
   , (TextReader.View.view_content model)
   , (Views.view_footer)

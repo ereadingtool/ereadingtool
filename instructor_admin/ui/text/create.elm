@@ -19,6 +19,7 @@ import Text.Field exposing (TextIntro, TextTitle, TextTags, TextAuthor, TextSour
 import Text.Decode
 
 import Instructor.Profile
+import Menu.Msg as MenuMsg
 
 
 type alias Flags = {
@@ -64,6 +65,8 @@ type Msg =
   | ConfirmTextDelete Bool
   | TextDelete (Result Http.Error Text.Decode.TextDeleteResp)
   | InitTextFieldEditors
+  | LogOut MenuMsg.Msg
+  | LoggedOut (Result Http.Error Bool)
 
 type alias Model = {
     flags : Flags

@@ -14,7 +14,7 @@ from django.views.decorators.cache import cache_control
 class ElmLoadJsBaseView(TemplateView):
     template_name = "load_elm_base.html"
 
-    @cache_control(private=True, must_revalidate=True)
+    # @cache_control(private=True, must_revalidate=True)
     @vary_on_cookie
     def dispatch(self, request, *args, **kwargs):
         return super(ElmLoadJsBaseView, self).dispatch(request, *args, **kwargs)

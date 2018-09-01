@@ -333,6 +333,16 @@ update msg model = case msg of
         _ -> let _ = Debug.log "delete text error bad payload" err in
           (model, Cmd.none)
 
+    LogOut msg ->
+      -- TODO(andrew): save text for user, or prompt them for a decision?
+      (model, Cmd.none)
+
+    LoggedOut (Ok resp) ->
+      (model, Navigation.newUrl "/profile/instructor/")
+
+    LoggedOut (Err err) ->
+      (model, Cmd.none)
+
 
 post_lock : Flags.CSRFToken -> Text.Model.Text -> Cmd Msg
 post_lock csrftoken text =
@@ -452,7 +462,7 @@ view model =
       , text_difficulties=model.text_difficulties }
   in
     div [] [
-        Views.view_header (Profile.fromInstructorProfile model.profile) Nothing
+        Views.view_header (Profile.fromInstructorProfile model.profile) Nothing Text.Create.LogOut
       , view_msgs model
       , Views.view_preview
       , Text.View.view_text text_view_params

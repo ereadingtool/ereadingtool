@@ -13,8 +13,14 @@ import Flags
 import Views
 import Profile
 
+import Menu.Msg as MenuMsg
+
+
 -- UPDATE
-type Msg = Update (Result Http.Error (List TextListItem))
+type Msg =
+    Update (Result Http.Error (List TextListItem))
+  | LogOut MenuMsg.Msg
+  | LoggedOut (Result Http.Error Bool)
 
 type alias Flags = Flags.Flags {}
 
@@ -51,8 +57,19 @@ update msg model =
   case msg of
     Update (Ok texts) ->
       ({ model | texts = texts }, Cmd.none)
+
     -- handle user-friendly msgs
     Update (Err err) -> let _ = Debug.log "error" err in
+      (model, Cmd.none)
+
+    -- TODO(andrew): this page is becoming an instructor-specific page, implement logout + redirect once this happens
+    LogOut msg ->
+      (model, Cmd.none)
+
+    LoggedOut (Ok resp) ->
+      (model, Cmd.none)
+
+    LoggedOut (Err err) ->
       (model, Cmd.none)
 
 
@@ -139,7 +156,7 @@ view_footer model = div [classList [("footer_items", True)] ] [
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    Views.view_header model.profile Nothing
+    Views.view_header model.profile Nothing LogOut
   , Views.view_filter
   , view_texts model
   , view_footer model
