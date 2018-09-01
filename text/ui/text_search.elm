@@ -202,7 +202,7 @@ view_search_results text_list_items =
             Just sections_complete ->
               toString sections_complete ++ " / " ++ toString text_item.text_section_count
             Nothing ->
-              "Unread")
+              toString "0 / " ++ toString text_item.text_section_count)
       in
         div [class "search_result"] [
           div [class "result_item"] [
