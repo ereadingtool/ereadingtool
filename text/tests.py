@@ -217,6 +217,29 @@ class TextTest(TestCase):
 
         self.assertEquals(3, text.sections.count())
 
+    def test_get_text_by_tag_or(self):
+        student = Student.objects.get()
+
+        test_tags = list()
+
+        text_one = self.create_text()
+        text_two = self.create_text(diff_data={'tags': ['Economics/Business', 'Medicine/Health Care']})
+
+        test_tags.append(text_one.tags.all()[0])
+        test_tags.append(text_two.tags.all()[1])
+
+        # tag search should be ORed
+        tag_search = '&'.join([f'tag={tag}' for tag in test_tags])
+
+        resp = self.student.get(f'/api/text/?{tag_search}')
+
+        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        resp_content = json.loads(resp.content.decode('utf8'))
+
+        self.assertListEqual(resp_content, [text_one.to_summary_dict(student=student),
+                                            text_two.to_summary_dict(student=student)])
+
     def test_put_text(self):
         test_data = self.get_test_data()
 
