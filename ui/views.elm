@@ -30,8 +30,10 @@ set_selected_menu_item (MenuItem uri link_text selected) select =
 set_selected : MenuItems -> Int -> Bool -> MenuItems
 set_selected (MenuItems menu_items) index select =
   case Array.get index menu_items of
-    Just menu_item -> MenuItems (Array.set index (set_selected_menu_item menu_item select) menu_items)
-    _ -> MenuItems menu_items
+    Just menu_item ->
+      MenuItems (Array.set index (set_selected_menu_item menu_item select) menu_items)
+    _ ->
+      MenuItems menu_items
 
 view_menu_item : MenuItem -> Html msg
 view_menu_item (MenuItem uri link_text selected) =

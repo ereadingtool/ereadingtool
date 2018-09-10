@@ -10,14 +10,17 @@ import Profile
 import Instructor.Profile
 
 import Menu.Msg as MenuMsg
-import Navigation
+import Menu.Logout
 
+import Ports
+
+import Http
 
 -- UPDATE
 type Msg =
    Update
  | LogOut MenuMsg.Msg
- | LoggedOut (Result Http.Error Bool)
+ | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
 
 type alias Flags = {
    csrftoken : Flags.CSRFToken
@@ -47,8 +50,8 @@ update msg model =
     LogOut msg ->
       (model, Instructor.Profile.logout model.profile model.flags.csrftoken LoggedOut)
 
-    LoggedOut (Ok resp) ->
-      (model, Navigation.newUrl "/profile/instructor/")
+    LoggedOut (Ok logout_resp) ->
+      (model, Ports.redirect logout_resp.redirect)
 
     LoggedOut (Err err) ->
       (model, Cmd.none)

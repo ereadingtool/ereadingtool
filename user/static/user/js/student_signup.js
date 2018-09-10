@@ -10003,8 +10003,17 @@ var _user$project$HttpHelpers$put_with_headers = F4(
 			});
 	});
 
+var _user$project$Menu_Logout$LogOutResp = function (a) {
+	return {redirect: a};
+};
+var _user$project$Menu_Logout$logoutRespDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'redirect',
+	_elm_lang$core$Json_Decode$string,
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Menu_Logout$LogOutResp));
+
 var _user$project$Instructor_Profile$logout = F3(
-	function (instructor_profile, csrftoken, msg) {
+	function (instructor_profile, csrftoken, logout_msg) {
 		var request = A4(
 			_user$project$HttpHelpers$post_with_headers,
 			_user$project$Config$instructor_logout_api_endpoint,
@@ -10014,8 +10023,8 @@ var _user$project$Instructor_Profile$logout = F3(
 				_1: {ctor: '[]'}
 			},
 			_elm_lang$http$Http$emptyBody,
-			_elm_lang$core$Json_Decode$succeed(true));
-		return A2(_elm_lang$http$Http$send, msg, request);
+			_user$project$Menu_Logout$logoutRespDecoder);
+		return A2(_elm_lang$http$Http$send, logout_msg, request);
 	});
 var _user$project$Instructor_Profile$attrs = function (_p0) {
 	var _p1 = _p0;
@@ -10236,9 +10245,20 @@ var _user$project$Util$is_valid_email = function (addr) {
 	return A2(_elm_lang$core$Regex$contains, _user$project$Util$valid_email_regex, addr);
 };
 
-var _user$project$Student_Profile$logout = function (student_profile) {
-	return _elm_lang$core$Platform_Cmd$none;
-};
+var _user$project$Student_Profile$logout = F3(
+	function (student_profile, csrftoken, logout_msg) {
+		var request = A4(
+			_user$project$HttpHelpers$post_with_headers,
+			_user$project$Config$student_logout_api_endpoint,
+			{
+				ctor: '::',
+				_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
+				_1: {ctor: '[]'}
+			},
+			_elm_lang$http$Http$emptyBody,
+			_user$project$Menu_Logout$logoutRespDecoder);
+		return A2(_elm_lang$http$Http$send, logout_msg, request);
+	});
 var _user$project$Student_Profile$studentUserName = function (_p0) {
 	var _p1 = _p0;
 	return _p1._0.username;
@@ -10499,7 +10519,7 @@ var _user$project$Student_View$view_student_profile_header = F2(
 						_0: _elm_lang$html$Html_Attributes$classList(
 							{
 								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'profile_menu_item', _1: true},
+								_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
 								_1: {ctor: '[]'}
 							}),
 						_1: {ctor: '[]'}
@@ -10507,17 +10527,72 @@ var _user$project$Student_View$view_student_profile_header = F2(
 					{
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$a,
+							_elm_lang$html$Html$div,
 							{
 								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/profile/student/'),
+								_0: _elm_lang$html$Html_Attributes$class('profile_dropdown_menu'),
 								_1: {ctor: '[]'}
 							},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(
-									_user$project$Student_Profile$studentUserName(student_profile)),
-								_1: {ctor: '[]'}
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$a,
+											{
+												ctor: '::',
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/profile/instructor/'),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text(
+													_user$project$Student_Profile$studentUserName(student_profile)),
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$div,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$classList(
+												{
+													ctor: '::',
+													_0: {ctor: '_Tuple2', _0: 'profile_dropdown_menu_overlay', _1: true},
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$div,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class('profile_dropdown_menu_item'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Events$onClick(
+															top_level_msg(
+																_user$project$Menu_Msg$StudentLogout(student_profile))),
+														_1: {ctor: '[]'}
+													}
+												},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text('Logout'),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
 							}),
 						_1: {ctor: '[]'}
 					}),

@@ -45,7 +45,7 @@ class InstructorLogoutAPIView(LoginRequiredMixin, View):
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         logout(request)
 
-        return HttpResponseRedirect(reverse_lazy('instructor-login'))
+        return HttpResponse(json.dumps({'redirect': reverse('instructor-login')}))
 
 
 class InstructorLoginView(TemplateView):

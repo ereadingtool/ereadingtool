@@ -80,7 +80,7 @@ class StudentLogoutAPIView(LoginRequiredMixin, View):
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         logout(request)
 
-        return HttpResponseRedirect(reverse_lazy('student-login'))
+        return HttpResponse(json.dumps({'redirect': reverse('student-login')}))
 
 
 class StudentLoginAPIView(APIView):

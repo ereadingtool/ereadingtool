@@ -16,3 +16,5 @@ port addClassToCKEditor : (String, String) -> Cmd msg
 port confirm : String -> Cmd msg
 
 port confirmation : (Bool -> msg) -> Sub msg
+
+port redirect : String -> Cmd msg

@@ -34,6 +34,13 @@
             }
        }
 
+       app.ports.redirect.subscribe(function redirect(url) {
+            // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
+            window.requestAnimationFrame(function (timestamp) {
+               window.location.assign(url);
+            });
+       });
+
        app.ports.clearInputText.subscribe(function (elem_id) {
             // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
             window.requestAnimationFrame(function (timestamp) {

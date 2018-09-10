@@ -7,6 +7,8 @@ import Json.Decode
 
 import Config exposing (..)
 
+import Menu.Logout
+
 type alias Tag = String
 type alias URI = String
 
@@ -49,11 +51,12 @@ texts : InstructorProfile -> List Text
 texts instructor_profile =
   (attrs instructor_profile).texts
 
-logout : InstructorProfile -> String -> (Result Http.Error Bool -> msg) -> Cmd msg
-logout instructor_profile csrftoken msg =
+logout : InstructorProfile -> String -> (Result Http.Error Menu.Logout.LogOutResp -> msg) -> Cmd msg
+logout instructor_profile csrftoken logout_msg =
   let
     request =
       HttpHelpers.post_with_headers
-        instructor_logout_api_endpoint [Http.header "X-CSRFToken" csrftoken] Http.emptyBody (Json.Decode.succeed True)
+        Config.instructor_logout_api_endpoint
+        [Http.header "X-CSRFToken" csrftoken] Http.emptyBody Menu.Logout.logoutRespDecoder
   in
-    Http.send msg request
+    Http.send logout_msg request

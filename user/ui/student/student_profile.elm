@@ -4,7 +4,8 @@ import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onM
 
 import Http exposing (..)
 import HttpHelpers
-import Json.Decode as Decode
+
+import Json.Decode
 
 import Dict exposing (Dict)
 
@@ -17,7 +18,10 @@ import Student.Encode
 import Views
 import Flags
 
+import Ports
+
 import Menu.Msg as MenuMsg
+import Menu.Logout
 
 -- UPDATE
 type Msg =
@@ -25,6 +29,7 @@ type Msg =
   | UpdateDifficulty String
   | Submitted (Result Error UpdateProfileResp )
   | Logout MenuMsg.Msg
+  | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
 
 type alias Flags = Flags.Flags {}
 
@@ -36,8 +41,8 @@ type alias Model = {
 
 type alias UpdateProfileResp = Dict.Dict String String
 
-updateRespDecoder : Decode.Decoder (UpdateProfileResp)
-updateRespDecoder = Decode.dict Decode.string
+updateRespDecoder : Json.Decode.Decoder (UpdateProfileResp)
+updateRespDecoder = Json.Decode.dict Json.Decode.string
 
 put_profile : Flags.CSRFToken -> Student.Profile.StudentProfile -> Cmd Msg
 put_profile csrftoken student_profile =
@@ -87,7 +92,7 @@ update msg model = case msg of
   Submitted (Err err) ->
     case err of
       Http.BadStatus resp ->
-        case (Decode.decodeString (Decode.dict Decode.string) resp.body) of
+        case (Json.Decode.decodeString (Json.Decode.dict Json.Decode.string) resp.body) of
           Ok errors ->
             ({ model | errors = errors }, Cmd.none)
           _ ->
@@ -100,7 +105,14 @@ update msg model = case msg of
         (model, Cmd.none)
 
   Logout msg ->
-    (model, Student.Profile.logout model.profile)
+    (model, Student.Profile.logout model.profile model.flags.csrftoken LoggedOut)
+
+  LoggedOut (Ok logout_resp) ->
+    (model, Ports.redirect logout_resp.redirect)
+
+  LoggedOut (Err err) -> let _ = Debug.log "log out error" err in
+      (model, Cmd.none)
+
 
 
 main : Program Flags Model Msg

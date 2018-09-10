@@ -6,10 +6,16 @@ import Text.Reading.Model exposing (TextReading)
 import Json.Decode
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 
-import Config exposing (student_api_endpoint)
+import Config exposing (student_api_endpoint, student_logout_api_endpoint)
 
 import Text.Reading.Model exposing (textReadingsDecoder)
 import Util exposing (tupleDecoder)
+
+import HttpHelpers
+import Http
+
+import Menu.Logout
+
 
 type alias StudentProfileParams = {
     id: Maybe Int
@@ -70,6 +76,12 @@ studentUserName (StudentProfile attrs) = attrs.username
 init_profile : StudentProfileParams -> StudentProfile
 init_profile params = StudentProfile params
 
-logout : StudentProfile -> Cmd msg
-logout student_profile =
-  Cmd.none
+logout : StudentProfile -> String -> (Result Http.Error Menu.Logout.LogOutResp -> msg) -> Cmd msg
+logout student_profile csrftoken logout_msg =
+  let
+    request =
+      HttpHelpers.post_with_headers
+        Config.student_logout_api_endpoint
+        [Http.header "X-CSRFToken" csrftoken] Http.emptyBody Menu.Logout.logoutRespDecoder
+  in
+    Http.send logout_msg request
