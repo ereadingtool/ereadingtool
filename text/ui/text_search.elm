@@ -119,11 +119,10 @@ update msg model =
           (model, Cmd.none)
 
     LogOut msg ->
-      -- TODO(andrew): save text for user, or prompt them for a decision?
-      (model, Cmd.none)
+        (model, Profile.logout model.profile model.flags.csrftoken LoggedOut)
 
-    LoggedOut (Ok resp) ->
-      (model, Cmd.none)
+    LoggedOut (Ok logout_resp) ->
+      (model, Ports.redirect logout_resp.redirect)
 
     LoggedOut (Err err) ->
       (model, Cmd.none)

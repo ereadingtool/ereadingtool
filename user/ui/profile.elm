@@ -14,6 +14,8 @@ import Student.View
 
 import Menu.Msg exposing (Msg)
 
+import Menu.Logout
+
 type alias ProfileID = Int
 type alias ProfileType = String
 
@@ -60,3 +62,15 @@ retrieve_student_profile msg profile_id =
     request = Http.get (String.join "" [student_api_endpoint, (toString profile_id) ++ "/"]) studentProfileDecoder
   in
     Http.send msg request
+
+logout : Profile -> String -> (Result Http.Error Menu.Logout.LogOutResp -> msg) -> Cmd msg
+logout profile csrftoken logout_msg =
+  case profile of
+    Student student_profile ->
+      Student.Profile.logout student_profile csrftoken logout_msg
+
+    Instructor instructor_profile ->
+      Instructor.Profile.logout instructor_profile csrftoken logout_msg
+
+    EmptyProfile ->
+      Cmd.none

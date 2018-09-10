@@ -10601,6 +10601,18 @@ var _user$project$Student_View$view_student_profile_header = F2(
 		};
 	});
 
+var _user$project$Profile$logout = F3(
+	function (profile, csrftoken, logout_msg) {
+		var _p0 = profile;
+		switch (_p0.ctor) {
+			case 'Student':
+				return A3(_user$project$Student_Profile$logout, _p0._0, csrftoken, logout_msg);
+			case 'Instructor':
+				return A3(_user$project$Instructor_Profile$logout, _p0._0, csrftoken, logout_msg);
+			default:
+				return _elm_lang$core$Platform_Cmd$none;
+		}
+	});
 var _user$project$Profile$retrieve_student_profile = F2(
 	function (msg, profile_id) {
 		var request = A2(
@@ -10625,14 +10637,14 @@ var _user$project$Profile$retrieve_student_profile = F2(
 	});
 var _user$project$Profile$view_profile_header = F2(
 	function (profile, top_level_msg) {
-		var _p0 = profile;
-		switch (_p0.ctor) {
+		var _p1 = profile;
+		switch (_p1.ctor) {
 			case 'Instructor':
 				return _elm_lang$core$Maybe$Just(
-					A2(_user$project$Instructor_View$view_instructor_profile_header, _p0._0, top_level_msg));
+					A2(_user$project$Instructor_View$view_instructor_profile_header, _p1._0, top_level_msg));
 			case 'Student':
 				return _elm_lang$core$Maybe$Just(
-					A2(_user$project$Student_View$view_student_profile_header, _p0._0, top_level_msg));
+					A2(_user$project$Student_View$view_student_profile_header, _p1._0, top_level_msg));
 			default:
 				return _elm_lang$core$Maybe$Nothing;
 		}
@@ -10652,15 +10664,15 @@ var _user$project$Profile$fromStudentProfile = function (student_profile) {
 	return _user$project$Profile$Student(student_profile);
 };
 var _user$project$Profile$init_profile = function (flags) {
-	var _p1 = flags.instructor_profile;
-	if (_p1.ctor === 'Just') {
+	var _p2 = flags.instructor_profile;
+	if (_p2.ctor === 'Just') {
 		return _user$project$Profile$Instructor(
-			_user$project$Instructor_Profile$init_profile(_p1._0));
+			_user$project$Instructor_Profile$init_profile(_p2._0));
 	} else {
-		var _p2 = flags.student_profile;
-		if (_p2.ctor === 'Just') {
+		var _p3 = flags.student_profile;
+		if (_p3.ctor === 'Just') {
 			return _user$project$Profile$Student(
-				_user$project$Student_Profile$init_profile(_p2._0));
+				_user$project$Student_Profile$init_profile(_p3._0));
 		} else {
 			return _user$project$Profile$EmptyProfile;
 		}

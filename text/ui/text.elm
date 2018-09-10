@@ -15,6 +15,8 @@ import TextReader.Model exposing (..)
 import TextReader.Msg exposing (Msg(..))
 import TextReader.Update exposing (..)
 
+import Ports
+
 init : Flags -> (Model, Cmd Msg)
 init flags =
   let
@@ -65,12 +67,12 @@ update msg model =
       WebSocketResp str ->
         TextReader.Update.handle_ws_resp model str
 
-      -- TODO(andrew): disconnect websocket explicitly, redirect to login.
+      -- TODO(andrew): clean up / disconnect websocket explicitly.
       LogOut msg ->
-        (model, Cmd.none)
+        (model, Profile.logout model.profile model.flags.csrftoken LoggedOut)
 
-      LoggedOut (Ok resp) ->
-        (model, Cmd.none)
+      LoggedOut (Ok logout_resp) ->
+        (model, Ports.redirect logout_resp.redirect)
 
       LoggedOut (Err err) ->
         (model, Cmd.none)
