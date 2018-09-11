@@ -9,7 +9,7 @@ import Http exposing (..)
 import Instructor.Profile exposing (InstructorProfile, InstructorProfileParams)
 import Instructor.View
 
-import Student.Profile exposing (StudentProfile, StudentProfileParams, studentProfileDecoder)
+import Student.Profile.Model exposing (StudentProfile, StudentProfileParams, studentProfileDecoder)
 import Student.View
 
 import Menu.Msg exposing (Msg)
@@ -37,7 +37,7 @@ init_profile flags =
     Nothing ->
       case flags.student_profile of
         Just student_profile_params ->
-          Student (Student.Profile.init_profile student_profile_params)
+          Student (Student.Profile.Model.init_profile student_profile_params)
         Nothing ->
           EmptyProfile
 
@@ -67,7 +67,7 @@ logout : Profile -> String -> (Result Http.Error Menu.Logout.LogOutResp -> msg) 
 logout profile csrftoken logout_msg =
   case profile of
     Student student_profile ->
-      Student.Profile.logout student_profile csrftoken logout_msg
+      Student.Profile.Model.logout student_profile csrftoken logout_msg
 
     Instructor instructor_profile ->
       Instructor.Profile.logout instructor_profile csrftoken logout_msg

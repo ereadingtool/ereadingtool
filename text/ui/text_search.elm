@@ -19,7 +19,7 @@ import Dict exposing (Dict)
 
 import Views
 
-import Student.Profile
+import Student.Profile.Model
 import Profile
 
 import Config exposing (..)
@@ -62,7 +62,7 @@ init flags =
     text_search =
       (case profile of
         Profile.Student student_profile ->
-          case Student.Profile.studentDifficultyPreference student_profile of
+          case Student.Profile.Model.studentDifficultyPreference student_profile of
             Just difficulty ->
               Text.Search.add_difficulty_to_search default_search (Tuple.first difficulty) True
             _ ->

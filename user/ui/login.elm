@@ -1,8 +1,8 @@
 module Login exposing (init, view, subscriptions, update, Model, Msg, student_login, instructor_login)
 
-import Html exposing (Html, div)
+import Html exposing (Html, div, span)
 import Html.Attributes exposing (class, classList, attribute)
-import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
+import Html.Events exposing (on, onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
 
 import Http exposing (..)
 import HttpHelpers exposing (post_with_headers)
@@ -18,6 +18,8 @@ import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardc
 
 import Views
 import Flags
+
+import Util
 
 import Profile
 
@@ -57,14 +59,20 @@ signup_uri login =
 label : Login -> String
 label login =
   case login of
-    StudentLogin _ _ -> "Student Login"
-    InstructorLogin _ _ -> "Instructor Login"
+    StudentLogin _ _ ->
+      "Student Login"
+
+    InstructorLogin _ _ ->
+      "Instructor Login"
 
 menu_index : Login -> Int
 menu_index login =
   case login of
-    StudentLogin _ menu_index -> menu_index
-    InstructorLogin _ menu_index -> menu_index
+    StudentLogin _ menu_index ->
+      menu_index
+
+    InstructorLogin _ menu_index ->
+      menu_index
 
 student_login : URI -> Int -> Login
 student_login signup_uri menu_index =
@@ -75,9 +83,10 @@ instructor_login signup_uri menu_index =
   InstructorLogin signup_uri menu_index
 
 loginEncoder : LoginParams -> Encode.Value
-loginEncoder login_params = Encode.object [
-     ("username", Encode.string login_params.username)
-   , ("password", Encode.string login_params.password)
+loginEncoder login_params =
+  Encode.object [
+    ("username", Encode.string login_params.username)
+  , ("password", Encode.string login_params.password)
   ]
 
 loginRespDecoder : Decode.Decoder (LoginResp)
@@ -142,25 +151,32 @@ update endpoint msg model =
           case (Decode.decodeString (Decode.dict Decode.string) resp.body) of
             Ok errors -> ({ model | errors = errors }, Cmd.none)
             _ -> (model, Cmd.none)
+
         Http.BadPayload err resp -> (model, Cmd.none)
         _ -> (model, Cmd.none)
 
     Logout msg ->
       (model, Cmd.none)
 
-login_label : Html Msg -> Html Msg
-login_label html = Html.div [attribute "class" "login_label"] [ html ]
+login_label : (List (Html.Attribute Msg)) -> Html Msg -> Html Msg
+login_label attributes html =
+  div ([attribute "class" "login_label"] ++ attributes) [
+    html
+  ]
 
 view_email_input : Model -> List (Html Msg)
 view_email_input model =
-  let err_msg = case Dict.get "email" model.errors of
-    Just err_msg -> login_label (Html.em [] [Html.text err_msg])
-    Nothing -> Html.text ""
+  let err_msg =
+    case Dict.get "email" model.errors of
+      Just err_msg ->
+        login_label [] (Html.em [] [Html.text err_msg])
+      Nothing ->
+        Html.text ""
   in
     let email_error = if (Dict.member "email" model.errors) then
       [attribute "class" "input_error"]
     else [] in [
-      login_label (Html.span [] [ Html.text "Username (e-mail address):" ])
+      login_label [] (span [] [ Html.text "Username (e-mail address):" ])
     , Html.input ([
         attribute "size" "25"
       , onInput UpdateEmail ] ++ (email_error)) []
@@ -168,41 +184,49 @@ view_email_input model =
     ]
 
 view_password_input : Model -> List (Html Msg)
-view_password_input model = let
-  password_err_msg = case Dict.get "password" model.errors of
-    Just err_msg -> login_label (Html.em [] [Html.text err_msg])
-    Nothing -> Html.text ""
-  pass_err =
-    (Dict.member "password" model.errors)
-  attrs = [attribute "size" "35", attribute "type" "password"] ++
-    (if pass_err then [attribute "class" "input_error"] else []) in [
-    login_label (Html.span [] [
+view_password_input model =
+  let
+    password_err_msg =
+      case Dict.get "password" model.errors of
+        Just err_msg ->
+          login_label [] (Html.em [] [Html.text err_msg])
+        Nothing ->
+          Html.text ""
+
+    pass_err =
+      (Dict.member "password" model.errors)
+
+    attrs =
+      [attribute "size" "35", attribute "type" "password"] ++
+      (if pass_err then [attribute "class" "input_error"] else [])
+
+  in [
+    login_label [] (span [] [
       Html.text "Password:"
     ])
-  , Html.input (attrs ++ [onInput UpdatePassword]) []
-  , password_err_msg
-  ]
+    , Html.input (attrs ++ [onInput UpdatePassword, Util.onEnterUp Submit]) []
+    , password_err_msg
+    ]
 
 view_errors : Model -> List (Html Msg)
 view_errors model =
   case Dict.get "all" model.errors of
     Just all_err ->
-      [ login_label (Html.span [attribute "class" "errors"] [ Html.em [] [Html.text <| all_err ]]) ]
+      [ login_label [] (span [attribute "class" "errors"] [ Html.em [] [Html.text <| all_err ]]) ]
     _ ->
-      [ Html.span [attribute "class" "errors"] [] ]
+      [ span [attribute "class" "errors"] [] ]
 
 view_submit : Model -> List (Html Msg)
 view_submit model = [
-    login_label (div [classList [("login_submit", True), ("button", True)]] [
-      Html.span [classList [("cursor", True)], onClick Submit ] [ Html.text "Login" ]
-    ])
+    login_label [class "button", onClick Submit, class "cursor"]
+      (div [class "login_submit"] [ span [] [ Html.text "Login" ] ])
   ]
 
 view_signup : SignUpURI -> List (Html Msg)
 view_signup signup_uri = [
-  Html.span [] [
+  span [] [
     Html.text "Not registered? "
-  , Html.a [attribute "href" signup_uri] [ Html.span [attribute "class" "cursor"] [Html.text "Sign Up"]]
+  , Html.a [attribute "href" signup_uri] [ span [attribute "class" "cursor"] [Html.text "Sign Up"]]
   ]]
 
 view_content : Login -> Model -> Html Msg

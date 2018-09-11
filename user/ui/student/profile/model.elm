@@ -1,4 +1,4 @@
-module Student.Profile exposing (..)
+module Student.Profile.Model exposing (..)
 
 import Text.Model as Text
 import Text.Reading.Model exposing (TextReading)
