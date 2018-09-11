@@ -333,7 +333,6 @@ update msg model = case msg of
           (model, Cmd.none)
 
     LogOut msg ->
-      -- TODO(andrew): save text for user, or prompt them for a decision?
       (model, Instructor.Profile.logout model.profile model.flags.csrftoken LoggedOut)
 
     LoggedOut (Ok logout_resp) ->

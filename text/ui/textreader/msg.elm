@@ -9,6 +9,8 @@ import TextReader.Question.Model exposing (TextQuestion)
 import TextReader.Answer.Model exposing (TextAnswer)
 
 import Menu.Msg as MenuMsg
+import Menu.Logout
+
 
 -- UPDATE
 type Msg =
@@ -21,4 +23,4 @@ type Msg =
   | UnGloss Word
   | WebSocketResp String
   | LogOut MenuMsg.Msg
-  | LoggedOut (Result Http.Error Bool)
+  | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)

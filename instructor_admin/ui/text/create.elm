@@ -20,6 +20,8 @@ import Text.Decode
 
 import Instructor.Profile
 import Menu.Msg as MenuMsg
+import Menu.Logout
+
 
 
 type alias Flags = {
@@ -66,7 +68,7 @@ type Msg =
   | TextDelete (Result Http.Error Text.Decode.TextDeleteResp)
   | InitTextFieldEditors
   | LogOut MenuMsg.Msg
-  | LoggedOut (Result Http.Error Bool)
+  | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
 
 type alias Model = {
     flags : Flags

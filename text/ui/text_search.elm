@@ -26,6 +26,8 @@ import Config exposing (..)
 import Flags exposing (CSRFToken)
 
 import Menu.Msg as MenuMsg
+import Menu.Logout
+
 
 -- UPDATE
 type Msg =
@@ -33,7 +35,7 @@ type Msg =
  | SelectTag String Bool
  | TextSearch (Result Http.Error (List Text.Model.TextListItem))
  | LogOut MenuMsg.Msg
- | LoggedOut (Result Http.Error Bool)
+ | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
 
 type alias Flags = Flags.Flags { text_difficulties: List Text.Model.TextDifficulty, text_tags: List String }
 

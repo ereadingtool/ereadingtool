@@ -9767,8 +9767,17 @@ var _user$project$HttpHelpers$put_with_headers = F4(
 			});
 	});
 
+var _user$project$Menu_Logout$LogOutResp = function (a) {
+	return {redirect: a};
+};
+var _user$project$Menu_Logout$logoutRespDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'redirect',
+	_elm_lang$core$Json_Decode$string,
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Menu_Logout$LogOutResp));
+
 var _user$project$Instructor_Profile$logout = F3(
-	function (instructor_profile, csrftoken, msg) {
+	function (instructor_profile, csrftoken, logout_msg) {
 		var request = A4(
 			_user$project$HttpHelpers$post_with_headers,
 			_user$project$Config$instructor_logout_api_endpoint,
@@ -9778,8 +9787,8 @@ var _user$project$Instructor_Profile$logout = F3(
 				_1: {ctor: '[]'}
 			},
 			_elm_lang$http$Http$emptyBody,
-			_elm_lang$core$Json_Decode$succeed(true));
-		return A2(_elm_lang$http$Http$send, msg, request);
+			_user$project$Menu_Logout$logoutRespDecoder);
+		return A2(_elm_lang$http$Http$send, logout_msg, request);
 	});
 var _user$project$Instructor_Profile$attrs = function (_p0) {
 	var _p1 = _p0;
@@ -10000,9 +10009,20 @@ var _user$project$Util$is_valid_email = function (addr) {
 	return A2(_elm_lang$core$Regex$contains, _user$project$Util$valid_email_regex, addr);
 };
 
-var _user$project$Student_Profile$logout = function (student_profile) {
-	return _elm_lang$core$Platform_Cmd$none;
-};
+var _user$project$Student_Profile$logout = F3(
+	function (student_profile, csrftoken, logout_msg) {
+		var request = A4(
+			_user$project$HttpHelpers$post_with_headers,
+			_user$project$Config$student_logout_api_endpoint,
+			{
+				ctor: '::',
+				_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
+				_1: {ctor: '[]'}
+			},
+			_elm_lang$http$Http$emptyBody,
+			_user$project$Menu_Logout$logoutRespDecoder);
+		return A2(_elm_lang$http$Http$send, logout_msg, request);
+	});
 var _user$project$Student_Profile$studentUserName = function (_p0) {
 	var _p1 = _p0;
 	return _p1._0.username;
@@ -10263,7 +10283,7 @@ var _user$project$Student_View$view_student_profile_header = F2(
 						_0: _elm_lang$html$Html_Attributes$classList(
 							{
 								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'profile_menu_item', _1: true},
+								_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
 								_1: {ctor: '[]'}
 							}),
 						_1: {ctor: '[]'}
@@ -10271,17 +10291,72 @@ var _user$project$Student_View$view_student_profile_header = F2(
 					{
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$a,
+							_elm_lang$html$Html$div,
 							{
 								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/profile/student/'),
+								_0: _elm_lang$html$Html_Attributes$class('profile_dropdown_menu'),
 								_1: {ctor: '[]'}
 							},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(
-									_user$project$Student_Profile$studentUserName(student_profile)),
-								_1: {ctor: '[]'}
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$a,
+											{
+												ctor: '::',
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/profile/instructor/'),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text(
+													_user$project$Student_Profile$studentUserName(student_profile)),
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$div,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$classList(
+												{
+													ctor: '::',
+													_0: {ctor: '_Tuple2', _0: 'profile_dropdown_menu_overlay', _1: true},
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$div,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class('profile_dropdown_menu_item'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Events$onClick(
+															top_level_msg(
+																_user$project$Menu_Msg$StudentLogout(student_profile))),
+														_1: {ctor: '[]'}
+													}
+												},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text('Logout'),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
 							}),
 						_1: {ctor: '[]'}
 					}),
@@ -10290,6 +10365,18 @@ var _user$project$Student_View$view_student_profile_header = F2(
 		};
 	});
 
+var _user$project$Profile$logout = F3(
+	function (profile, csrftoken, logout_msg) {
+		var _p0 = profile;
+		switch (_p0.ctor) {
+			case 'Student':
+				return A3(_user$project$Student_Profile$logout, _p0._0, csrftoken, logout_msg);
+			case 'Instructor':
+				return A3(_user$project$Instructor_Profile$logout, _p0._0, csrftoken, logout_msg);
+			default:
+				return _elm_lang$core$Platform_Cmd$none;
+		}
+	});
 var _user$project$Profile$retrieve_student_profile = F2(
 	function (msg, profile_id) {
 		var request = A2(
@@ -10314,14 +10401,14 @@ var _user$project$Profile$retrieve_student_profile = F2(
 	});
 var _user$project$Profile$view_profile_header = F2(
 	function (profile, top_level_msg) {
-		var _p0 = profile;
-		switch (_p0.ctor) {
+		var _p1 = profile;
+		switch (_p1.ctor) {
 			case 'Instructor':
 				return _elm_lang$core$Maybe$Just(
-					A2(_user$project$Instructor_View$view_instructor_profile_header, _p0._0, top_level_msg));
+					A2(_user$project$Instructor_View$view_instructor_profile_header, _p1._0, top_level_msg));
 			case 'Student':
 				return _elm_lang$core$Maybe$Just(
-					A2(_user$project$Student_View$view_student_profile_header, _p0._0, top_level_msg));
+					A2(_user$project$Student_View$view_student_profile_header, _p1._0, top_level_msg));
 			default:
 				return _elm_lang$core$Maybe$Nothing;
 		}
@@ -10341,15 +10428,15 @@ var _user$project$Profile$fromStudentProfile = function (student_profile) {
 	return _user$project$Profile$Student(student_profile);
 };
 var _user$project$Profile$init_profile = function (flags) {
-	var _p1 = flags.instructor_profile;
-	if (_p1.ctor === 'Just') {
+	var _p2 = flags.instructor_profile;
+	if (_p2.ctor === 'Just') {
 		return _user$project$Profile$Instructor(
-			_user$project$Instructor_Profile$init_profile(_p1._0));
+			_user$project$Instructor_Profile$init_profile(_p2._0));
 	} else {
-		var _p2 = flags.student_profile;
-		if (_p2.ctor === 'Just') {
+		var _p3 = flags.student_profile;
+		if (_p3.ctor === 'Just') {
 			return _user$project$Profile$Student(
-				_user$project$Student_Profile$init_profile(_p2._0));
+				_user$project$Student_Profile$init_profile(_p3._0));
 		} else {
 			return _user$project$Profile$EmptyProfile;
 		}
@@ -10888,6 +10975,57 @@ var _user$project$Views$view_header = F3(
 			});
 	});
 
+var _user$project$Ports$selectAllInputText = _elm_lang$core$Native_Platform.outgoingPort(
+	'selectAllInputText',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$clearInputText = _elm_lang$core$Native_Platform.outgoingPort(
+	'clearInputText',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$ckEditor = _elm_lang$core$Native_Platform.outgoingPort(
+	'ckEditor',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$ckEditorUpdate = _elm_lang$core$Native_Platform.incomingPort(
+	'ckEditorUpdate',
+	A2(
+		_elm_lang$core$Json_Decode$andThen,
+		function (x0) {
+			return A2(
+				_elm_lang$core$Json_Decode$andThen,
+				function (x1) {
+					return _elm_lang$core$Json_Decode$succeed(
+						{ctor: '_Tuple2', _0: x0, _1: x1});
+				},
+				A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
+		},
+		A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string)));
+var _user$project$Ports$ckEditorSetHtml = _elm_lang$core$Native_Platform.outgoingPort(
+	'ckEditorSetHtml',
+	function (v) {
+		return [v._0, v._1];
+	});
+var _user$project$Ports$addClassToCKEditor = _elm_lang$core$Native_Platform.outgoingPort(
+	'addClassToCKEditor',
+	function (v) {
+		return [v._0, v._1];
+	});
+var _user$project$Ports$confirm = _elm_lang$core$Native_Platform.outgoingPort(
+	'confirm',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$confirmation = _elm_lang$core$Native_Platform.incomingPort('confirmation', _elm_lang$core$Json_Decode$bool);
+var _user$project$Ports$redirect = _elm_lang$core$Native_Platform.outgoingPort(
+	'redirect',
+	function (v) {
+		return v;
+	});
+
 var _user$project$Main$view_footer = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -11314,6 +11452,16 @@ var _user$project$Main$view_texts = function (model) {
 		},
 		A2(_elm_lang$core$List$map, _user$project$Main$view_text, model.texts));
 };
+var _user$project$Main$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$none;
+};
+var _user$project$Main$Model = F3(
+	function (a, b, c) {
+		return {texts: a, profile: b, flags: c};
+	});
+var _user$project$Main$LoggedOut = function (a) {
+	return {ctor: 'LoggedOut', _0: a};
+};
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var _p1 = msg;
@@ -11332,25 +11480,23 @@ var _user$project$Main$update = F2(
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'LogOut':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: A3(_user$project$Profile$logout, model.profile, model.flags.csrftoken, _user$project$Main$LoggedOut)
+				};
 			default:
 				if (_p1._0.ctor === 'Ok') {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					return {
+						ctor: '_Tuple2',
+						_0: model,
+						_1: _user$project$Ports$redirect(_p1._0._0.redirect)
+					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 		}
 	});
-var _user$project$Main$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$none;
-};
-var _user$project$Main$Model = F3(
-	function (a, b, c) {
-		return {texts: a, profile: b, flags: c};
-	});
-var _user$project$Main$LoggedOut = function (a) {
-	return {ctor: 'LoggedOut', _0: a};
-};
 var _user$project$Main$LogOut = function (a) {
 	return {ctor: 'LogOut', _0: a};
 };

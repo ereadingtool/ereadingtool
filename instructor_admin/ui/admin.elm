@@ -13,14 +13,16 @@ import Flags
 import Views
 import Profile
 
-import Menu.Msg as MenuMsg
+import Ports
 
+import Menu.Msg as MenuMsg
+import Menu.Logout
 
 -- UPDATE
 type Msg =
     Update (Result Http.Error (List TextListItem))
   | LogOut MenuMsg.Msg
-  | LoggedOut (Result Http.Error Bool)
+  | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
 
 type alias Flags = Flags.Flags {}
 
@@ -62,12 +64,11 @@ update msg model =
     Update (Err err) -> let _ = Debug.log "error" err in
       (model, Cmd.none)
 
-    -- TODO(andrew): this page is becoming an instructor-specific page, implement logout + redirect once this happens
     LogOut msg ->
-      (model, Cmd.none)
+      (model, Profile.logout model.profile model.flags.csrftoken LoggedOut)
 
-    LoggedOut (Ok resp) ->
-      (model, Cmd.none)
+    LoggedOut (Ok logout_resp) ->
+      (model, Ports.redirect logout_resp.redirect)
 
     LoggedOut (Err err) ->
       (model, Cmd.none)

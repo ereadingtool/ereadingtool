@@ -67,7 +67,6 @@ update msg model =
       WebSocketResp str ->
         TextReader.Update.handle_ws_resp model str
 
-      -- TODO(andrew): clean up / disconnect websocket explicitly.
       LogOut msg ->
         (model, Profile.logout model.profile model.flags.csrftoken LoggedOut)
 
