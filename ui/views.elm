@@ -1,5 +1,4 @@
-module Views exposing (view_filter, view_header, view_footer, view_preview, view_menu,
-  view_user_profile_menu_items, set_selected)
+module Views exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (classList, attribute)
@@ -53,6 +52,12 @@ view_menu : MenuItems -> Profile.Profile -> (Msg -> msg) -> List (Html msg)
 view_menu (MenuItems menu_items) profile top_level_msg =
   (Array.toList <| Array.map view_menu_item menu_items) ++
   (view_user_profile_menu_items (Profile.view_profile_header profile top_level_msg ))
+
+view_unauthed_header : Html msg
+view_unauthed_header =
+  div [classList [("header", True)]] [
+      div [] [ Html.text "E-Reader" ]
+    ]
 
 view_header : Profile.Profile -> Maybe SelectedMenuItem -> (Msg -> msg) -> Html msg
 view_header profile selected_menu_item top_level_msg =
