@@ -24,7 +24,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0', '198.199.110.226']
+ALLOWED_HOSTS = ['0.0.0.0', '198.199.110.226', '142.93.20.73']
 
 CSP_DEFAULT_SRC = ("'self'",)
 CSP_SCRIPT_SRC = ("'self'",)
@@ -57,6 +57,10 @@ INSTALLED_APPS += [
 ]
 
 AUTH_USER_MODEL = 'user.ReaderUser'
+
+EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
+
+SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
 
 ASGI_APPLICATION = 'ereadingtool.routing.application'
 # CHANNEL_LAYERS = {}
