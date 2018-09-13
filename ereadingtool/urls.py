@@ -32,6 +32,7 @@ urlpatterns = [
 
     path('', include('user.urls.instructor')),
     path('', include('user.urls.student')),
+    path('', include('user.urls.forgot_pass')),
 
     path('', include('text.urls')),
     path('api/question/', include('question.urls')),

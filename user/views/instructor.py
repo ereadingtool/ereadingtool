@@ -3,7 +3,8 @@ from typing import TypeVar
 
 from django import forms
 from django.contrib.auth import login, logout
-from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse, HttpRequest
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, View
@@ -11,14 +12,13 @@ from django.views.generic import TemplateView, View
 from user.forms import InstructorSignUpForm, InstructorLoginForm
 from user.views.api import APIView
 from user.views.mixin import ProfileView
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class InstructorSignupAPIView(APIView):
     def form(self, request: HttpRequest, params: dict) -> TypeVar('forms.Form'):
         return InstructorSignUpForm(params)
 
-    def post_success(self, instructor_signup_form: TypeVar('forms.Form')) -> HttpResponse:
+    def post_success(self, request: HttpRequest, instructor_signup_form: TypeVar('forms.Form')) -> HttpResponse:
         instructor = instructor_signup_form.save()
 
         return HttpResponse(json.dumps({'id': instructor.pk, 'redirect': reverse('instructor-login')}))
@@ -28,7 +28,7 @@ class InstructorLoginAPIView(APIView):
     def form(self, request: HttpRequest, params: dict) -> TypeVar('forms.Form'):
         return InstructorLoginForm(request, params)
 
-    def post_success(self, instructor_login_form: TypeVar('forms.Form')) -> HttpResponse:
+    def post_success(self, request: HttpRequest, instructor_login_form: TypeVar('forms.Form')) -> HttpResponse:
         reader_user = instructor_login_form.get_user()
 
         if hasattr(reader_user, 'student'):

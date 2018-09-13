@@ -34,7 +34,7 @@ class StudentAPIView(LoginRequiredMixin, APIView):
 
         return HttpResponse(json.dumps(student.to_dict()))
 
-    def post_success(self, form: TypeVar('forms.Form')) -> HttpResponse:
+    def post_success(self, request: HttpRequest, form: TypeVar('forms.Form')) -> HttpResponse:
         raise NotImplementedError
 
     def put(self, request, *args, **kwargs) -> HttpResponse:
@@ -70,7 +70,7 @@ class StudentSignupAPIView(APIView):
     def form(self, request: HttpRequest, params: dict) -> TypeVar('forms.Form'):
         return StudentSignUpForm(params)
 
-    def post_success(self, student_signup_form: TypeVar('forms.Form')) -> HttpResponse:
+    def post_success(self, request: HttpRequest, student_signup_form: TypeVar('forms.Form')) -> HttpResponse:
         student = student_signup_form.save()
 
         return HttpResponse(json.dumps({'id': student.pk, 'redirect': reverse('student-login')}))
@@ -87,7 +87,7 @@ class StudentLoginAPIView(APIView):
     def form(self, request: HttpRequest, params: dict) -> TypeVar('forms.Form'):
         return StudentLoginForm(request, params)
 
-    def post_success(self, student_login_form: TypeVar('forms.Form')) -> HttpResponse:
+    def post_success(self, request: HttpRequest, student_login_form: TypeVar('forms.Form')) -> HttpResponse:
         reader_user = student_login_form.get_user()
 
         if hasattr(reader_user, 'instructor'):

@@ -1,72 +1,24 @@
 import json
+from typing import Dict, AnyStr, Optional, List
 
 from django.test import TestCase
-from hypothesis.extra.django.models import models
-from hypothesis.strategies import just, text, one_of
-
-from typing import Dict, AnyStr, Optional, List
 from django.test.client import Client
+from hypothesis.strategies import just, one_of
 
+from ereadingtool.test.user import TestUser
 from ereadingtool.urls import reverse_lazy
+from question.models import Answer
 from tag.models import Tag
 from text.models import TextDifficulty, Text, TextSection
 from text_reading.models import TextReading, TextReadingNotAllQuestionsAnswered
-
-from user.models import ReaderUser, Instructor
 from user.student.models import Student
-from question.models import Answer
 
 
-class TextTest(TestCase):
+class TextTest(TestUser, TestCase):
     def __init__(self, *args, **kwargs):
         super(TextTest, self).__init__(*args, **kwargs)
 
-        self.instructor = None
-        self.user = None
-        self.user_passwd = None
-
         self.text_endpoint = reverse_lazy('text-api')
-
-    def new_user(self) -> (ReaderUser, AnyStr):
-        user = models(ReaderUser, username=text(min_size=5, max_size=150)).example()
-        user_passwd = text(min_size=8, max_size=12).example()
-
-        user.set_password(user_passwd)
-        user.is_active = True
-        user.save()
-
-        return user, user_passwd
-
-    def new_student(self) -> Student:
-        user, user_passwd = self.new_user()
-
-        student = models(Student, user=just(user)).example()
-
-        return student
-
-    def new_instructor_client(self, client: Client) -> Client:
-        user, user_passwd = self.new_user()
-
-        instructor = models(Instructor, user=just(user)).example()
-        instructor.save()
-
-        logged_in = client.login(username=user.username, password=user_passwd)
-
-        self.assertTrue(logged_in, 'couldnt login with username="{0}" passwd="{1}"'.format(user.username, user_passwd))
-
-        return client
-
-    def new_student_client(self, client: Client) -> Client:
-        user, user_passwd = self.new_user()
-
-        student = models(Student, user=just(user)).example()
-        student.save()
-
-        logged_in = client.login(username=user.username, password=user_passwd)
-
-        self.assertTrue(logged_in, 'couldnt login with username="{0}" passwd="{1}"'.format(user.username, user_passwd))
-
-        return client
 
     def test_text_reading(self):
         # add an additional question for testing

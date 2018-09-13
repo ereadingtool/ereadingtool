@@ -1,5 +1,5 @@
 import json
-from typing import TypeVar, Type
+from typing import TypeVar
 
 from django import forms
 from django.http import HttpResponse, HttpRequest
@@ -14,7 +14,7 @@ class APIView(View):
     def form(self, request: HttpRequest, params: dict) -> TypeVar('forms.Form'):
         raise NotImplementedError
 
-    def post_success(self, form: TypeVar('forms.Form')) -> HttpResponse:
+    def post_success(self, request: HttpRequest, form: TypeVar('forms.Form')) -> HttpResponse:
         raise NotImplementedError
 
     @method_decorator(sensitive_post_parameters())
@@ -54,4 +54,4 @@ class APIView(View):
         if errors:
             return self.post_error(errors)
         else:
-            return self.post_success(form)
+            return self.post_success(request, form)

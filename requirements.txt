@@ -7,3 +7,4 @@ hypothesis[django]
 jsonschema
 channels
 python-statemachine
+django-sendgrid-v5
