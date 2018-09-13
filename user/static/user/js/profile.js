@@ -6626,6 +6626,8 @@ var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
 
 var _user$project$Config$answer_feedback_limit = 2048;
 var _user$project$Config$student_api_endpoint = '/api/student/';
+var _user$project$Config$reset_pass_endpoint = '/api/password/reset/confirm/';
+var _user$project$Config$forgot_pass_endpoint = '/api/password/reset/';
 var _user$project$Config$student_logout_api_endpoint = '/api/student/logout/';
 var _user$project$Config$student_login_api_endpoint = '/api/student/login/';
 var _user$project$Config$student_signup_api_endpoint = '/api/student/signup/';

@@ -1,7 +1,7 @@
 module Views exposing (..)
 
 import Html exposing (..)
-import Html.Attributes exposing (classList, attribute)
+import Html.Attributes exposing (class, classList, attribute)
 import Array exposing (Array)
 
 import Profile
@@ -55,9 +55,9 @@ view_menu (MenuItems menu_items) profile top_level_msg =
 
 view_unauthed_header : Html msg
 view_unauthed_header =
-  div [classList [("header", True)]] [
-      div [] [ Html.text "E-Reader" ]
-    ]
+  div [class "header"] [
+    div [] [ Html.text "E-Reader" ]
+  ]
 
 view_header : Profile.Profile -> Maybe SelectedMenuItem -> (Msg -> msg) -> Html msg
 view_header profile selected_menu_item top_level_msg =

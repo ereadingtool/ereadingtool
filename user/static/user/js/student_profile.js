@@ -9361,6 +9361,8 @@ var _user$project$Answer_Model$Answer = F6(
 
 var _user$project$Config$answer_feedback_limit = 2048;
 var _user$project$Config$student_api_endpoint = '/api/student/';
+var _user$project$Config$reset_pass_endpoint = '/api/password/reset/confirm/';
+var _user$project$Config$forgot_pass_endpoint = '/api/password/reset/';
 var _user$project$Config$student_logout_api_endpoint = '/api/student/logout/';
 var _user$project$Config$student_login_api_endpoint = '/api/student/login/';
 var _user$project$Config$student_signup_api_endpoint = '/api/student/signup/';
@@ -10277,12 +10279,7 @@ var _user$project$Views$view_unauthed_header = A2(
 	_elm_lang$html$Html$div,
 	{
 		ctor: '::',
-		_0: _elm_lang$html$Html_Attributes$classList(
-			{
-				ctor: '::',
-				_0: {ctor: '_Tuple2', _0: 'header', _1: true},
-				_1: {ctor: '[]'}
-			}),
+		_0: _elm_lang$html$Html_Attributes$class('header'),
 		_1: {ctor: '[]'}
 	},
 	{

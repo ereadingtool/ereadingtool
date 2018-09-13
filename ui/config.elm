@@ -27,6 +27,12 @@ student_login_api_endpoint = "/api/student/login/"
 student_logout_api_endpoint : String
 student_logout_api_endpoint = "/api/student/logout/"
 
+forgot_pass_endpoint : String
+forgot_pass_endpoint = "/api/password/reset/"
+
+reset_pass_endpoint : String
+reset_pass_endpoint = "/api/password/reset/confirm/"
+
 student_api_endpoint : String
 student_api_endpoint = "/api/student/"
 

@@ -8969,196 +8969,6 @@ var _elm_lang$core$Date$Mar = {ctor: 'Mar'};
 var _elm_lang$core$Date$Feb = {ctor: 'Feb'};
 var _elm_lang$core$Date$Jan = {ctor: 'Jan'};
 
-var _elm_lang$core$Process$kill = _elm_lang$core$Native_Scheduler.kill;
-var _elm_lang$core$Process$sleep = _elm_lang$core$Native_Scheduler.sleep;
-var _elm_lang$core$Process$spawn = _elm_lang$core$Native_Scheduler.spawn;
-
-var _elm_lang$dom$Native_Dom = function() {
-
-var fakeNode = {
-	addEventListener: function() {},
-	removeEventListener: function() {}
-};
-
-var onDocument = on(typeof document !== 'undefined' ? document : fakeNode);
-var onWindow = on(typeof window !== 'undefined' ? window : fakeNode);
-
-function on(node)
-{
-	return function(eventName, decoder, toTask)
-	{
-		return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback) {
-
-			function performTask(event)
-			{
-				var result = A2(_elm_lang$core$Json_Decode$decodeValue, decoder, event);
-				if (result.ctor === 'Ok')
-				{
-					_elm_lang$core$Native_Scheduler.rawSpawn(toTask(result._0));
-				}
-			}
-
-			node.addEventListener(eventName, performTask);
-
-			return function()
-			{
-				node.removeEventListener(eventName, performTask);
-			};
-		});
-	};
-}
-
-var rAF = typeof requestAnimationFrame !== 'undefined'
-	? requestAnimationFrame
-	: function(callback) { callback(); };
-
-function withNode(id, doStuff)
-{
-	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
-	{
-		rAF(function()
-		{
-			var node = document.getElementById(id);
-			if (node === null)
-			{
-				callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'NotFound', _0: id }));
-				return;
-			}
-			callback(_elm_lang$core$Native_Scheduler.succeed(doStuff(node)));
-		});
-	});
-}
-
-
-// FOCUS
-
-function focus(id)
-{
-	return withNode(id, function(node) {
-		node.focus();
-		return _elm_lang$core$Native_Utils.Tuple0;
-	});
-}
-
-function blur(id)
-{
-	return withNode(id, function(node) {
-		node.blur();
-		return _elm_lang$core$Native_Utils.Tuple0;
-	});
-}
-
-
-// SCROLLING
-
-function getScrollTop(id)
-{
-	return withNode(id, function(node) {
-		return node.scrollTop;
-	});
-}
-
-function setScrollTop(id, desiredScrollTop)
-{
-	return withNode(id, function(node) {
-		node.scrollTop = desiredScrollTop;
-		return _elm_lang$core$Native_Utils.Tuple0;
-	});
-}
-
-function toBottom(id)
-{
-	return withNode(id, function(node) {
-		node.scrollTop = node.scrollHeight;
-		return _elm_lang$core$Native_Utils.Tuple0;
-	});
-}
-
-function getScrollLeft(id)
-{
-	return withNode(id, function(node) {
-		return node.scrollLeft;
-	});
-}
-
-function setScrollLeft(id, desiredScrollLeft)
-{
-	return withNode(id, function(node) {
-		node.scrollLeft = desiredScrollLeft;
-		return _elm_lang$core$Native_Utils.Tuple0;
-	});
-}
-
-function toRight(id)
-{
-	return withNode(id, function(node) {
-		node.scrollLeft = node.scrollWidth;
-		return _elm_lang$core$Native_Utils.Tuple0;
-	});
-}
-
-
-// SIZE
-
-function width(options, id)
-{
-	return withNode(id, function(node) {
-		switch (options.ctor)
-		{
-			case 'Content':
-				return node.scrollWidth;
-			case 'VisibleContent':
-				return node.clientWidth;
-			case 'VisibleContentWithBorders':
-				return node.offsetWidth;
-			case 'VisibleContentWithBordersAndMargins':
-				var rect = node.getBoundingClientRect();
-				return rect.right - rect.left;
-		}
-	});
-}
-
-function height(options, id)
-{
-	return withNode(id, function(node) {
-		switch (options.ctor)
-		{
-			case 'Content':
-				return node.scrollHeight;
-			case 'VisibleContent':
-				return node.clientHeight;
-			case 'VisibleContentWithBorders':
-				return node.offsetHeight;
-			case 'VisibleContentWithBordersAndMargins':
-				var rect = node.getBoundingClientRect();
-				return rect.bottom - rect.top;
-		}
-	});
-}
-
-return {
-	onDocument: F3(onDocument),
-	onWindow: F3(onWindow),
-
-	focus: focus,
-	blur: blur,
-
-	getScrollTop: getScrollTop,
-	setScrollTop: F2(setScrollTop),
-	getScrollLeft: getScrollLeft,
-	setScrollLeft: F2(setScrollLeft),
-	toBottom: toBottom,
-	toRight: toRight,
-
-	height: F2(height),
-	width: F2(width)
-};
-
-}();
-
-var _elm_lang$dom$Dom_LowLevel$onWindow = _elm_lang$dom$Native_Dom.onWindow;
-var _elm_lang$dom$Dom_LowLevel$onDocument = _elm_lang$dom$Native_Dom.onDocument;
-
 var _elm_lang$http$Native_Http = function() {
 
 
@@ -9519,408 +9329,6 @@ var _elm_lang$http$Http$StringPart = F2(
 		return {ctor: 'StringPart', _0: a, _1: b};
 	});
 var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
-
-var _elm_lang$navigation$Native_Navigation = function() {
-
-
-// FAKE NAVIGATION
-
-function go(n)
-{
-	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
-	{
-		if (n !== 0)
-		{
-			history.go(n);
-		}
-		callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Native_Utils.Tuple0));
-	});
-}
-
-function pushState(url)
-{
-	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
-	{
-		history.pushState({}, '', url);
-		callback(_elm_lang$core$Native_Scheduler.succeed(getLocation()));
-	});
-}
-
-function replaceState(url)
-{
-	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
-	{
-		history.replaceState({}, '', url);
-		callback(_elm_lang$core$Native_Scheduler.succeed(getLocation()));
-	});
-}
-
-
-// REAL NAVIGATION
-
-function reloadPage(skipCache)
-{
-	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
-	{
-		document.location.reload(skipCache);
-		callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Native_Utils.Tuple0));
-	});
-}
-
-function setLocation(url)
-{
-	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
-	{
-		try
-		{
-			window.location = url;
-		}
-		catch(err)
-		{
-			// Only Firefox can throw a NS_ERROR_MALFORMED_URI exception here.
-			// Other browsers reload the page, so let's be consistent about that.
-			document.location.reload(false);
-		}
-		callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Native_Utils.Tuple0));
-	});
-}
-
-
-// GET LOCATION
-
-function getLocation()
-{
-	var location = document.location;
-
-	return {
-		href: location.href,
-		host: location.host,
-		hostname: location.hostname,
-		protocol: location.protocol,
-		origin: location.origin,
-		port_: location.port,
-		pathname: location.pathname,
-		search: location.search,
-		hash: location.hash,
-		username: location.username,
-		password: location.password
-	};
-}
-
-
-// DETECT IE11 PROBLEMS
-
-function isInternetExplorer11()
-{
-	return window.navigator.userAgent.indexOf('Trident') !== -1;
-}
-
-
-return {
-	go: go,
-	setLocation: setLocation,
-	reloadPage: reloadPage,
-	pushState: pushState,
-	replaceState: replaceState,
-	getLocation: getLocation,
-	isInternetExplorer11: isInternetExplorer11
-};
-
-}();
-
-var _elm_lang$navigation$Navigation$replaceState = _elm_lang$navigation$Native_Navigation.replaceState;
-var _elm_lang$navigation$Navigation$pushState = _elm_lang$navigation$Native_Navigation.pushState;
-var _elm_lang$navigation$Navigation$go = _elm_lang$navigation$Native_Navigation.go;
-var _elm_lang$navigation$Navigation$reloadPage = _elm_lang$navigation$Native_Navigation.reloadPage;
-var _elm_lang$navigation$Navigation$setLocation = _elm_lang$navigation$Native_Navigation.setLocation;
-var _elm_lang$navigation$Navigation_ops = _elm_lang$navigation$Navigation_ops || {};
-_elm_lang$navigation$Navigation_ops['&>'] = F2(
-	function (task1, task2) {
-		return A2(
-			_elm_lang$core$Task$andThen,
-			function (_p0) {
-				return task2;
-			},
-			task1);
-	});
-var _elm_lang$navigation$Navigation$notify = F3(
-	function (router, subs, location) {
-		var send = function (_p1) {
-			var _p2 = _p1;
-			return A2(
-				_elm_lang$core$Platform$sendToApp,
-				router,
-				_p2._0(location));
-		};
-		return A2(
-			_elm_lang$navigation$Navigation_ops['&>'],
-			_elm_lang$core$Task$sequence(
-				A2(_elm_lang$core$List$map, send, subs)),
-			_elm_lang$core$Task$succeed(
-				{ctor: '_Tuple0'}));
-	});
-var _elm_lang$navigation$Navigation$cmdHelp = F3(
-	function (router, subs, cmd) {
-		var _p3 = cmd;
-		switch (_p3.ctor) {
-			case 'Jump':
-				return _elm_lang$navigation$Navigation$go(_p3._0);
-			case 'New':
-				return A2(
-					_elm_lang$core$Task$andThen,
-					A2(_elm_lang$navigation$Navigation$notify, router, subs),
-					_elm_lang$navigation$Navigation$pushState(_p3._0));
-			case 'Modify':
-				return A2(
-					_elm_lang$core$Task$andThen,
-					A2(_elm_lang$navigation$Navigation$notify, router, subs),
-					_elm_lang$navigation$Navigation$replaceState(_p3._0));
-			case 'Visit':
-				return _elm_lang$navigation$Navigation$setLocation(_p3._0);
-			default:
-				return _elm_lang$navigation$Navigation$reloadPage(_p3._0);
-		}
-	});
-var _elm_lang$navigation$Navigation$killPopWatcher = function (popWatcher) {
-	var _p4 = popWatcher;
-	if (_p4.ctor === 'Normal') {
-		return _elm_lang$core$Process$kill(_p4._0);
-	} else {
-		return A2(
-			_elm_lang$navigation$Navigation_ops['&>'],
-			_elm_lang$core$Process$kill(_p4._0),
-			_elm_lang$core$Process$kill(_p4._1));
-	}
-};
-var _elm_lang$navigation$Navigation$onSelfMsg = F3(
-	function (router, location, state) {
-		return A2(
-			_elm_lang$navigation$Navigation_ops['&>'],
-			A3(_elm_lang$navigation$Navigation$notify, router, state.subs, location),
-			_elm_lang$core$Task$succeed(state));
-	});
-var _elm_lang$navigation$Navigation$subscription = _elm_lang$core$Native_Platform.leaf('Navigation');
-var _elm_lang$navigation$Navigation$command = _elm_lang$core$Native_Platform.leaf('Navigation');
-var _elm_lang$navigation$Navigation$Location = function (a) {
-	return function (b) {
-		return function (c) {
-			return function (d) {
-				return function (e) {
-					return function (f) {
-						return function (g) {
-							return function (h) {
-								return function (i) {
-									return function (j) {
-										return function (k) {
-											return {href: a, host: b, hostname: c, protocol: d, origin: e, port_: f, pathname: g, search: h, hash: i, username: j, password: k};
-										};
-									};
-								};
-							};
-						};
-					};
-				};
-			};
-		};
-	};
-};
-var _elm_lang$navigation$Navigation$State = F2(
-	function (a, b) {
-		return {subs: a, popWatcher: b};
-	});
-var _elm_lang$navigation$Navigation$init = _elm_lang$core$Task$succeed(
-	A2(
-		_elm_lang$navigation$Navigation$State,
-		{ctor: '[]'},
-		_elm_lang$core$Maybe$Nothing));
-var _elm_lang$navigation$Navigation$Reload = function (a) {
-	return {ctor: 'Reload', _0: a};
-};
-var _elm_lang$navigation$Navigation$reload = _elm_lang$navigation$Navigation$command(
-	_elm_lang$navigation$Navigation$Reload(false));
-var _elm_lang$navigation$Navigation$reloadAndSkipCache = _elm_lang$navigation$Navigation$command(
-	_elm_lang$navigation$Navigation$Reload(true));
-var _elm_lang$navigation$Navigation$Visit = function (a) {
-	return {ctor: 'Visit', _0: a};
-};
-var _elm_lang$navigation$Navigation$load = function (url) {
-	return _elm_lang$navigation$Navigation$command(
-		_elm_lang$navigation$Navigation$Visit(url));
-};
-var _elm_lang$navigation$Navigation$Modify = function (a) {
-	return {ctor: 'Modify', _0: a};
-};
-var _elm_lang$navigation$Navigation$modifyUrl = function (url) {
-	return _elm_lang$navigation$Navigation$command(
-		_elm_lang$navigation$Navigation$Modify(url));
-};
-var _elm_lang$navigation$Navigation$New = function (a) {
-	return {ctor: 'New', _0: a};
-};
-var _elm_lang$navigation$Navigation$newUrl = function (url) {
-	return _elm_lang$navigation$Navigation$command(
-		_elm_lang$navigation$Navigation$New(url));
-};
-var _elm_lang$navigation$Navigation$Jump = function (a) {
-	return {ctor: 'Jump', _0: a};
-};
-var _elm_lang$navigation$Navigation$back = function (n) {
-	return _elm_lang$navigation$Navigation$command(
-		_elm_lang$navigation$Navigation$Jump(0 - n));
-};
-var _elm_lang$navigation$Navigation$forward = function (n) {
-	return _elm_lang$navigation$Navigation$command(
-		_elm_lang$navigation$Navigation$Jump(n));
-};
-var _elm_lang$navigation$Navigation$cmdMap = F2(
-	function (_p5, myCmd) {
-		var _p6 = myCmd;
-		switch (_p6.ctor) {
-			case 'Jump':
-				return _elm_lang$navigation$Navigation$Jump(_p6._0);
-			case 'New':
-				return _elm_lang$navigation$Navigation$New(_p6._0);
-			case 'Modify':
-				return _elm_lang$navigation$Navigation$Modify(_p6._0);
-			case 'Visit':
-				return _elm_lang$navigation$Navigation$Visit(_p6._0);
-			default:
-				return _elm_lang$navigation$Navigation$Reload(_p6._0);
-		}
-	});
-var _elm_lang$navigation$Navigation$Monitor = function (a) {
-	return {ctor: 'Monitor', _0: a};
-};
-var _elm_lang$navigation$Navigation$program = F2(
-	function (locationToMessage, stuff) {
-		var init = stuff.init(
-			_elm_lang$navigation$Native_Navigation.getLocation(
-				{ctor: '_Tuple0'}));
-		var subs = function (model) {
-			return _elm_lang$core$Platform_Sub$batch(
-				{
-					ctor: '::',
-					_0: _elm_lang$navigation$Navigation$subscription(
-						_elm_lang$navigation$Navigation$Monitor(locationToMessage)),
-					_1: {
-						ctor: '::',
-						_0: stuff.subscriptions(model),
-						_1: {ctor: '[]'}
-					}
-				});
-		};
-		return _elm_lang$html$Html$program(
-			{init: init, view: stuff.view, update: stuff.update, subscriptions: subs});
-	});
-var _elm_lang$navigation$Navigation$programWithFlags = F2(
-	function (locationToMessage, stuff) {
-		var init = function (flags) {
-			return A2(
-				stuff.init,
-				flags,
-				_elm_lang$navigation$Native_Navigation.getLocation(
-					{ctor: '_Tuple0'}));
-		};
-		var subs = function (model) {
-			return _elm_lang$core$Platform_Sub$batch(
-				{
-					ctor: '::',
-					_0: _elm_lang$navigation$Navigation$subscription(
-						_elm_lang$navigation$Navigation$Monitor(locationToMessage)),
-					_1: {
-						ctor: '::',
-						_0: stuff.subscriptions(model),
-						_1: {ctor: '[]'}
-					}
-				});
-		};
-		return _elm_lang$html$Html$programWithFlags(
-			{init: init, view: stuff.view, update: stuff.update, subscriptions: subs});
-	});
-var _elm_lang$navigation$Navigation$subMap = F2(
-	function (func, _p7) {
-		var _p8 = _p7;
-		return _elm_lang$navigation$Navigation$Monitor(
-			function (_p9) {
-				return func(
-					_p8._0(_p9));
-			});
-	});
-var _elm_lang$navigation$Navigation$InternetExplorer = F2(
-	function (a, b) {
-		return {ctor: 'InternetExplorer', _0: a, _1: b};
-	});
-var _elm_lang$navigation$Navigation$Normal = function (a) {
-	return {ctor: 'Normal', _0: a};
-};
-var _elm_lang$navigation$Navigation$spawnPopWatcher = function (router) {
-	var reportLocation = function (_p10) {
-		return A2(
-			_elm_lang$core$Platform$sendToSelf,
-			router,
-			_elm_lang$navigation$Native_Navigation.getLocation(
-				{ctor: '_Tuple0'}));
-	};
-	return _elm_lang$navigation$Native_Navigation.isInternetExplorer11(
-		{ctor: '_Tuple0'}) ? A3(
-		_elm_lang$core$Task$map2,
-		_elm_lang$navigation$Navigation$InternetExplorer,
-		_elm_lang$core$Process$spawn(
-			A3(_elm_lang$dom$Dom_LowLevel$onWindow, 'popstate', _elm_lang$core$Json_Decode$value, reportLocation)),
-		_elm_lang$core$Process$spawn(
-			A3(_elm_lang$dom$Dom_LowLevel$onWindow, 'hashchange', _elm_lang$core$Json_Decode$value, reportLocation))) : A2(
-		_elm_lang$core$Task$map,
-		_elm_lang$navigation$Navigation$Normal,
-		_elm_lang$core$Process$spawn(
-			A3(_elm_lang$dom$Dom_LowLevel$onWindow, 'popstate', _elm_lang$core$Json_Decode$value, reportLocation)));
-};
-var _elm_lang$navigation$Navigation$onEffects = F4(
-	function (router, cmds, subs, _p11) {
-		var _p12 = _p11;
-		var _p15 = _p12.popWatcher;
-		var stepState = function () {
-			var _p13 = {ctor: '_Tuple2', _0: subs, _1: _p15};
-			_v6_2:
-			do {
-				if (_p13._0.ctor === '[]') {
-					if (_p13._1.ctor === 'Just') {
-						return A2(
-							_elm_lang$navigation$Navigation_ops['&>'],
-							_elm_lang$navigation$Navigation$killPopWatcher(_p13._1._0),
-							_elm_lang$core$Task$succeed(
-								A2(_elm_lang$navigation$Navigation$State, subs, _elm_lang$core$Maybe$Nothing)));
-					} else {
-						break _v6_2;
-					}
-				} else {
-					if (_p13._1.ctor === 'Nothing') {
-						return A2(
-							_elm_lang$core$Task$map,
-							function (_p14) {
-								return A2(
-									_elm_lang$navigation$Navigation$State,
-									subs,
-									_elm_lang$core$Maybe$Just(_p14));
-							},
-							_elm_lang$navigation$Navigation$spawnPopWatcher(router));
-					} else {
-						break _v6_2;
-					}
-				}
-			} while(false);
-			return _elm_lang$core$Task$succeed(
-				A2(_elm_lang$navigation$Navigation$State, subs, _p15));
-		}();
-		return A2(
-			_elm_lang$navigation$Navigation_ops['&>'],
-			_elm_lang$core$Task$sequence(
-				A2(
-					_elm_lang$core$List$map,
-					A2(_elm_lang$navigation$Navigation$cmdHelp, router, subs),
-					cmds)),
-			stepState);
-	});
-_elm_lang$core$Native_Platform.effectManagers['Navigation'] = {pkg: 'elm-lang/navigation', init: _elm_lang$navigation$Navigation$init, onEffects: _elm_lang$navigation$Navigation$onEffects, onSelfMsg: _elm_lang$navigation$Navigation$onSelfMsg, tag: 'fx', cmdMap: _elm_lang$navigation$Navigation$cmdMap, subMap: _elm_lang$navigation$Navigation$subMap};
 
 var _user$project$Answer_Model$generate_answer = function (i) {
 	return {id: _elm_lang$core$Maybe$Nothing, question_id: _elm_lang$core$Maybe$Nothing, text: '', correct: false, order: i, feedback: ''};
@@ -10701,6 +10109,29 @@ var _user$project$Flags$UnAuthedFlags = function (a) {
 	return {csrftoken: a};
 };
 
+var _user$project$ForgotPassword$emptyResp = {
+	errors: _elm_lang$core$Dict$fromList(
+		{ctor: '[]'}),
+	body: ''
+};
+var _user$project$ForgotPassword$ForgotPassResp = F2(
+	function (a, b) {
+		return {errors: a, body: b};
+	});
+var _user$project$ForgotPassword$forgotRespDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'body',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'errors',
+		_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$ForgotPassword$ForgotPassResp)));
+var _user$project$ForgotPassword$PassResetConfirmResp = F2(
+	function (a, b) {
+		return {errors: a, body: b};
+	});
+
 var _user$project$Views$view_preview = A2(
 	_elm_lang$html$Html$div,
 	{
@@ -11008,543 +10439,265 @@ var _user$project$Views$view_header = F3(
 			});
 	});
 
-var _user$project$SignUp$toggle_show_password = function (model) {
-	return _elm_lang$core$Native_Utils.update(
-		model,
-		{
-			show_passwords: model.show_passwords ? false : true
-		});
-};
-var _user$project$SignUp$update_password = F2(
-	function (model, password) {
-		var signup_params = model.signup_params;
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{
-				signup_params: _elm_lang$core$Native_Utils.update(
-					signup_params,
-					{password: password})
-			});
-	});
-var _user$project$SignUp$update_confirm_password = F2(
-	function (model, confirm_password) {
-		var signup_params = model.signup_params;
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{
-				signup_params: _elm_lang$core$Native_Utils.update(
-					signup_params,
-					{confirm_password: confirm_password}),
-				errors: _elm_lang$core$Native_Utils.eq(confirm_password, model.signup_params.password) ? A2(
-					_elm_lang$core$Dict$remove,
-					'password',
-					A2(_elm_lang$core$Dict$remove, 'confirm_password', model.errors)) : A3(_elm_lang$core$Dict$insert, 'confirm_password', 'Passwords don\'t match.', model.errors)
-			});
-	});
-var _user$project$SignUp$update_email = F2(
-	function (model, addr) {
-		var signup_params = model.signup_params;
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{
-				signup_params: _elm_lang$core$Native_Utils.update(
-					signup_params,
-					{email: addr}),
-				errors: (_user$project$Util$is_valid_email(addr) || _elm_lang$core$Native_Utils.eq(addr, '')) ? A2(_elm_lang$core$Dict$remove, 'email', model.errors) : A3(_elm_lang$core$Dict$insert, 'email', 'This e-mail is invalid', model.errors)
-			});
-	});
-var _user$project$SignUp$submit = function (model) {
-	return _elm_lang$core$Native_Utils.update(
-		model,
-		{
-			errors: _elm_lang$core$Dict$fromList(
-				{ctor: '[]'})
-		});
-};
-var _user$project$SignUp$signup_label = function (html) {
-	return A2(
+var _user$project$Main$view_resp = function (forgot_pass_resp) {
+	return (!_elm_lang$core$String$isEmpty(forgot_pass_resp.body)) ? A2(
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'signup_label'),
+			_0: _elm_lang$html$Html_Attributes$class('msg'),
 			_1: {ctor: '[]'}
 		},
 		{
 			ctor: '::',
-			_0: html,
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$SignUp$view_email_input = F2(
-	function (update_email_msg, model) {
-		var email_error = A2(_elm_lang$core$Dict$member, 'email', model.errors) ? {
-			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'input_error'),
-			_1: {ctor: '[]'}
-		} : {ctor: '[]'};
-		var err_msg = function () {
-			var _p0 = A2(_elm_lang$core$Dict$get, 'email', model.errors);
-			if (_p0.ctor === 'Just') {
-				return _user$project$SignUp$signup_label(
-					A2(
-						_elm_lang$html$Html$em,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(_p0._0),
-							_1: {ctor: '[]'}
-						}));
-			} else {
-				return _elm_lang$html$Html$text('');
-			}
-		}();
-		return {
-			ctor: '::',
-			_0: _user$project$SignUp$signup_label(
-				_elm_lang$html$Html$text('Email Address')),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$input,
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						{
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'size', '25'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onInput(update_email_msg),
-								_1: {ctor: '[]'}
-							}
-						},
-						email_error),
-					{ctor: '[]'}),
-				_1: {
+			_0: A2(
+				_elm_lang$html$Html$span,
+				{ctor: '[]'},
+				{
 					ctor: '::',
-					_0: err_msg,
+					_0: _elm_lang$html$Html$text(forgot_pass_resp.body),
 					_1: {ctor: '[]'}
-				}
-			}
-		};
-	});
-var _user$project$SignUp$view_password_input = F2(
-	function (_p1, model) {
-		var _p2 = _p1;
-		var pass_err = A2(_elm_lang$core$Dict$member, 'confirm_password', model.errors) || A2(_elm_lang$core$Dict$member, 'password', model.errors);
-		var attrs = A2(
-			_elm_lang$core$Basics_ops['++'],
-			{
-				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'size', '35'),
-				_1: {ctor: '[]'}
-			},
+				}),
+			_1: {ctor: '[]'}
+		}) : _elm_lang$html$Html$text('');
+};
+var _user$project$Main$login_label = F2(
+	function (attributes, html) {
+		return A2(
+			_elm_lang$html$Html$div,
 			A2(
 				_elm_lang$core$Basics_ops['++'],
-				pass_err ? {
+				{
 					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'input_error'),
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'login_label'),
 					_1: {ctor: '[]'}
-				} : {ctor: '[]'},
-				model.show_passwords ? {
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
-					_1: {ctor: '[]'}
-				} : {
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'password'),
-					_1: {ctor: '[]'}
-				}));
-		var password_err_msg = function () {
-			var _p3 = A2(_elm_lang$core$Dict$get, 'password', model.errors);
-			if (_p3.ctor === 'Just') {
-				return _user$project$SignUp$signup_label(
-					A2(
-						_elm_lang$html$Html$em,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(_p3._0),
-							_1: {ctor: '[]'}
-						}));
-			} else {
-				return _elm_lang$html$Html$text('');
-			}
-		}();
-		var confirm_err_msg = function () {
-			var _p4 = A2(_elm_lang$core$Dict$get, 'confirm_password', model.errors);
-			if (_p4.ctor === 'Just') {
-				return _user$project$SignUp$signup_label(
-					A2(
-						_elm_lang$html$Html$em,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(_p4._0),
-							_1: {ctor: '[]'}
-						}));
-			} else {
-				return _elm_lang$html$Html$text('');
-			}
-		}();
-		return {
-			ctor: '::',
-			_0: _user$project$SignUp$signup_label(
-				A2(
-					_elm_lang$html$Html$span,
-					{ctor: '[]'},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('Password '),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$span,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onClick(_p2._0),
-									_1: {
-										ctor: '::',
-										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'cursor'),
-										_1: {ctor: '[]'}
-									}
-								},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text('(show)'),
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}
-					})),
-			_1: {
+				},
+				attributes),
+			{
 				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$input,
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						attrs,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onInput(_p2._1),
-							_1: {ctor: '[]'}
-						}),
-					{ctor: '[]'}),
-				_1: {
-					ctor: '::',
-					_0: password_err_msg,
-					_1: {
-						ctor: '::',
-						_0: _user$project$SignUp$signup_label(
-							_elm_lang$html$Html$text('Confirm Password')),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$input,
-								A2(
-									_elm_lang$core$Basics_ops['++'],
-									attrs,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Events$onInput(_p2._2),
-										_1: {ctor: '[]'}
-									}),
-								{ctor: '[]'}),
-							_1: {
-								ctor: '::',
-								_0: confirm_err_msg,
-								_1: {ctor: '[]'}
-							}
-						}
-					}
-				}
-			}
-		};
+				_0: html,
+				_1: {ctor: '[]'}
+			});
 	});
-var _user$project$SignUp$view_submit = F2(
-	function (submit_msg, model) {
+var _user$project$Main$view_errors = function (model) {
+	var _p0 = A2(_elm_lang$core$Dict$get, 'all', model.errors);
+	if (_p0.ctor === 'Just') {
 		return {
 			ctor: '::',
-			_0: _user$project$SignUp$signup_label(
+			_0: A2(
+				_user$project$Main$login_label,
+				{ctor: '[]'},
 				A2(
 					_elm_lang$html$Html$span,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$classList(
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'cursor', _1: true},
-								_1: {ctor: '[]'}
-							}),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onClick(submit_msg),
-							_1: {ctor: '[]'}
-						}
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'errors'),
+						_1: {ctor: '[]'}
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text('Sign Up'),
+						_0: A2(
+							_elm_lang$html$Html$em,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(_p0._0),
+								_1: {ctor: '[]'}
+							}),
 						_1: {ctor: '[]'}
 					})),
 			_1: {ctor: '[]'}
 		};
-	});
-var _user$project$SignUp$view_content = F5(
-	function (signup_label, email_msg, password_msgs, submit_msg, model) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$classList(
-					{
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'signup', _1: true},
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('signup_title'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text(signup_label),
-						_1: {ctor: '[]'}
-					}),
-				_1: {
+	} else {
+		return {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$span,
+				{
 					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$classList(
-								{
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'signup_box', _1: true},
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						},
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							A2(_user$project$SignUp$view_email_input, email_msg, model),
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								A2(_user$project$SignUp$view_password_input, password_msgs, model),
-								A2(_user$project$SignUp$view_submit, submit_msg, model)))),
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'errors'),
 					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _user$project$SignUp$view = F6(
-	function (signup_label, email_msg, password_msgs, submit_msg, logout_msg, model) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
-			{
-				ctor: '::',
-				_0: A3(_user$project$Views$view_header, _user$project$Profile$emptyProfile, _elm_lang$core$Maybe$Nothing, logout_msg),
-				_1: {
-					ctor: '::',
-					_0: _user$project$Views$view_filter,
-					_1: {
-						ctor: '::',
-						_0: A5(_user$project$SignUp$view_content, signup_label, email_msg, password_msgs, submit_msg, model),
-						_1: {
-							ctor: '::',
-							_0: _user$project$Views$view_footer,
-							_1: {ctor: '[]'}
-						}
-					}
-				}
-			});
-	});
-
-var _user$project$Main$init = function (flags) {
-	return {
-		ctor: '_Tuple2',
-		_0: {
-			flags: flags,
-			signup_params: {
-				email: '',
-				password: '',
-				confirm_password: '',
-				difficulty: function () {
-					var _p0 = _elm_lang$core$List$head(flags.difficulties);
-					if ((_p0.ctor === 'Just') && (_p0._0.ctor === '_Tuple2')) {
-						return _p0._0._0;
-					} else {
-						return '';
-					}
-				}()
-			},
-			show_passwords: false,
-			errors: _elm_lang$core$Dict$fromList(
-				{ctor: '[]'})
-		},
-		_1: _elm_lang$core$Platform_Cmd$none
-	};
+				},
+				{ctor: '[]'}),
+			_1: {ctor: '[]'}
+		};
+	}
 };
-var _user$project$Main$signUpEncoder = function (signup_params) {
+var _user$project$Main$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$none;
+};
+var _user$project$Main$forgot_pass_encoder = function (user_email) {
 	return _elm_lang$core$Json_Encode$object(
 		{
 			ctor: '::',
 			_0: {
 				ctor: '_Tuple2',
 				_0: 'email',
-				_1: _elm_lang$core$Json_Encode$string(signup_params.email)
+				_1: _elm_lang$core$Json_Encode$string(user_email)
 			},
-			_1: {
-				ctor: '::',
-				_0: {
-					ctor: '_Tuple2',
-					_0: 'password',
-					_1: _elm_lang$core$Json_Encode$string(signup_params.password)
-				},
-				_1: {
-					ctor: '::',
-					_0: {
-						ctor: '_Tuple2',
-						_0: 'confirm_password',
-						_1: _elm_lang$core$Json_Encode$string(signup_params.confirm_password)
-					},
-					_1: {
-						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'difficulty',
-							_1: _elm_lang$core$Json_Encode$string(signup_params.difficulty)
-						},
-						_1: {ctor: '[]'}
-					}
-				}
-			}
+			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Main$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$none;
+var _user$project$Main$init = function (flags) {
+	return {
+		ctor: '_Tuple2',
+		_0: {
+			flags: flags,
+			user_email: '',
+			resp: _user$project$ForgotPassword$emptyResp,
+			errors: _elm_lang$core$Dict$fromList(
+				{ctor: '[]'})
+		},
+		_1: _elm_lang$core$Platform_Cmd$none
+	};
 };
-var _user$project$Main$SignUpResp = F2(
-	function (a, b) {
-		return {id: a, redirect: b};
-	});
-var _user$project$Main$signUpRespDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'redirect',
-	_elm_lang$core$Json_Decode$string,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'id',
-		_elm_lang$core$Json_Decode$int,
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Main$SignUpResp)));
-var _user$project$Main$Flags = F2(
-	function (a, b) {
-		return {csrftoken: a, difficulties: b};
-	});
-var _user$project$Main$SignUpParams = F4(
-	function (a, b, c, d) {
-		return {email: a, password: b, confirm_password: c, difficulty: d};
-	});
 var _user$project$Main$Model = F4(
 	function (a, b, c, d) {
-		return {flags: a, signup_params: b, show_passwords: c, errors: d};
+		return {flags: a, user_email: b, resp: c, errors: d};
 	});
-var _user$project$Main$Logout = function (a) {
-	return {ctor: 'Logout', _0: a};
+var _user$project$Main$UpdateEmail = function (a) {
+	return {ctor: 'UpdateEmail', _0: a};
 };
-var _user$project$Main$Submit = {ctor: 'Submit'};
+var _user$project$Main$view_email_input = function (model) {
+	var email_error = A2(_elm_lang$core$Dict$member, 'email', model.errors) ? {
+		ctor: '::',
+		_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'input_error'),
+		_1: {ctor: '[]'}
+	} : {ctor: '[]'};
+	var err_msg = function () {
+		var _p1 = A2(_elm_lang$core$Dict$get, 'email', model.errors);
+		if (_p1.ctor === 'Just') {
+			return A2(
+				_user$project$Main$login_label,
+				{ctor: '[]'},
+				A2(
+					_elm_lang$html$Html$em,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(_p1._0),
+						_1: {ctor: '[]'}
+					}));
+		} else {
+			return _elm_lang$html$Html$text('');
+		}
+	}();
+	return {
+		ctor: '::',
+		_0: A2(
+			_user$project$Main$login_label,
+			{ctor: '[]'},
+			A2(
+				_elm_lang$html$Html$span,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Username (e-mail address):'),
+					_1: {ctor: '[]'}
+				})),
+		_1: {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$input,
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					{
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'size', '25'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateEmail),
+							_1: {ctor: '[]'}
+						}
+					},
+					email_error),
+				{ctor: '[]'}),
+			_1: {
+				ctor: '::',
+				_0: err_msg,
+				_1: {
+					ctor: '::',
+					_0: _user$project$Main$view_resp(model.resp),
+					_1: {ctor: '[]'}
+				}
+			}
+		}
+	};
+};
 var _user$project$Main$Submitted = function (a) {
 	return {ctor: 'Submitted', _0: a};
 };
-var _user$project$Main$post_signup = F2(
-	function (csrftoken, signup_params) {
-		var encoded_signup_params = _user$project$Main$signUpEncoder(signup_params);
+var _user$project$Main$post_forgot_pass = F3(
+	function (forgot_pass_endpoint, csrftoken, user_email) {
+		var encoded_login_params = _user$project$Main$forgot_pass_encoder(user_email);
 		var req = A4(
 			_user$project$HttpHelpers$post_with_headers,
-			_user$project$Config$student_signup_api_endpoint,
+			forgot_pass_endpoint,
 			{
 				ctor: '::',
 				_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
 				_1: {ctor: '[]'}
 			},
-			_elm_lang$http$Http$jsonBody(encoded_signup_params),
-			_user$project$Main$signUpRespDecoder);
+			_elm_lang$http$Http$jsonBody(encoded_login_params),
+			_user$project$ForgotPassword$forgotRespDecoder);
 		return A2(_elm_lang$http$Http$send, _user$project$Main$Submitted, req);
 	});
-var _user$project$Main$update = F2(
-	function (msg, model) {
-		var _p1 = msg;
-		switch (_p1.ctor) {
-			case 'ToggleShowPassword':
-				return {
-					ctor: '_Tuple2',
-					_0: _user$project$SignUp$toggle_show_password(model),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'UpdatePassword':
-				return {
-					ctor: '_Tuple2',
-					_0: A2(_user$project$SignUp$update_password, model, _p1._0),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'UpdateConfirmPassword':
-				return {
-					ctor: '_Tuple2',
-					_0: A2(_user$project$SignUp$update_confirm_password, model, _p1._0),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
+var _user$project$Main$update = F3(
+	function (endpoint, msg, model) {
+		var _p2 = msg;
+		switch (_p2.ctor) {
 			case 'UpdateEmail':
-				return {
-					ctor: '_Tuple2',
-					_0: A2(_user$project$SignUp$update_email, model, _p1._0),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'UpdateDifficulty':
-				var signup_params = model.signup_params;
+				var _p3 = _p2._0;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							signup_params: _elm_lang$core$Native_Utils.update(
-								signup_params,
-								{difficulty: _p1._0})
+							user_email: _p3,
+							resp: _user$project$ForgotPassword$emptyResp,
+							errors: (_user$project$Util$is_valid_email(_p3) || _elm_lang$core$Native_Utils.eq(_p3, '')) ? A2(_elm_lang$core$Dict$remove, 'email', model.errors) : A3(_elm_lang$core$Dict$insert, 'email', 'This e-mail is invalid', model.errors)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'Submit':
 				return {
 					ctor: '_Tuple2',
-					_0: _user$project$SignUp$submit(model),
-					_1: A2(_user$project$Main$post_signup, model.flags.csrftoken, model.signup_params)
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							errors: _elm_lang$core$Dict$fromList(
+								{ctor: '[]'})
+						}),
+					_1: A3(_user$project$Main$post_forgot_pass, endpoint, model.flags.csrftoken, model.user_email)
 				};
-			case 'Submitted':
-				if (_p1._0.ctor === 'Ok') {
+			default:
+				if (_p2._0.ctor === 'Ok') {
+					var _p4 = _p2._0._0;
+					var new_errors = _elm_lang$core$Dict$fromList(
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							_elm_lang$core$Dict$toList(model.errors),
+							_elm_lang$core$Dict$toList(_p4.errors)));
 					return {
 						ctor: '_Tuple2',
-						_0: model,
-						_1: _elm_lang$navigation$Navigation$load(_p1._0._0.redirect)
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{errors: new_errors, resp: _p4}),
+						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p2 = _p1._0._0;
-					switch (_p2.ctor) {
+					var _p5 = _p2._0._0;
+					switch (_p5.ctor) {
 						case 'BadStatus':
-							var _p3 = A2(
+							var _p6 = A2(
 								_elm_lang$core$Json_Decode$decodeString,
 								_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
-								_p2._0.body);
-							if (_p3.ctor === 'Ok') {
+								_p5._0.body);
+							if (_p6.ctor === 'Ok') {
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
 										model,
-										{errors: _p3._0}),
+										{errors: _p6._0}),
 									_1: _elm_lang$core$Platform_Cmd$none
 								};
 							} else {
@@ -11556,181 +10709,122 @@ var _user$project$Main$update = F2(
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 					}
 				}
-			default:
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
 	});
-var _user$project$Main$UpdateDifficulty = function (a) {
-	return {ctor: 'UpdateDifficulty', _0: a};
-};
-var _user$project$Main$view_difficulty_choices = function (model) {
-	return {
+var _user$project$Main$Submit = {ctor: 'Submit'};
+var _user$project$Main$view_submit = function (model) {
+	var has_error = A2(_elm_lang$core$Dict$member, 'email', model.errors);
+	var button_disabled = (has_error || _elm_lang$core$String$isEmpty(model.user_email)) ? {
 		ctor: '::',
-		_0: _user$project$SignUp$signup_label(
-			_elm_lang$html$Html$text('Choose a preferred difficulty:')),
+		_0: _elm_lang$html$Html_Attributes$class('disabled'),
+		_1: {ctor: '[]'}
+	} : {
+		ctor: '::',
+		_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$Submit),
 		_1: {
 			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$select,
+			_0: _elm_lang$html$Html_Attributes$class('cursor'),
+			_1: {ctor: '[]'}
+		}
+	};
+	return {
+		ctor: '::',
+		_0: A2(
+			_user$project$Main$login_label,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateDifficulty),
+					_0: _elm_lang$html$Html_Attributes$class('button'),
+					_1: {ctor: '[]'}
+				},
+				button_disabled),
+			A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('login_submit'),
 					_1: {ctor: '[]'}
 				},
 				{
 					ctor: '::',
 					_0: A2(
-						_elm_lang$html$Html$optgroup,
+						_elm_lang$html$Html$span,
 						{ctor: '[]'},
-						A2(
-							_elm_lang$core$List$map,
-							function (_p4) {
-								var _p5 = _p4;
-								var _p6 = _p5._1;
-								return A2(
-									_elm_lang$html$Html$option,
-									A2(
-										_elm_lang$core$Basics_ops['++'],
-										{
-											ctor: '::',
-											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', _p5._0),
-											_1: {ctor: '[]'}
-										},
-										_elm_lang$core$Native_Utils.eq(_p6, model.signup_params.difficulty) ? {
-											ctor: '::',
-											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'selected', ''),
-											_1: {ctor: '[]'}
-										} : {ctor: '[]'}),
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text(_p6),
-										_1: {ctor: '[]'}
-									});
-							},
-							model.flags.difficulties)),
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Forgot Password'),
+							_1: {ctor: '[]'}
+						}),
 					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		}
+				})),
+		_1: {ctor: '[]'}
 	};
 };
-var _user$project$Main$UpdateConfirmPassword = function (a) {
-	return {ctor: 'UpdateConfirmPassword', _0: a};
-};
-var _user$project$Main$UpdatePassword = function (a) {
-	return {ctor: 'UpdatePassword', _0: a};
-};
-var _user$project$Main$UpdateEmail = function (a) {
-	return {ctor: 'UpdateEmail', _0: a};
-};
-var _user$project$Main$ToggleShowPassword = {ctor: 'ToggleShowPassword'};
-var _user$project$Main$view_content = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$classList(
-				{
-					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'signup', _1: true},
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('signup_title'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text('Student Signup'),
-					_1: {ctor: '[]'}
-				}),
-			_1: {
+var _user$project$Main$view_content = F2(
+	function (login, model) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'login', _1: true},
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			},
+			{
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$div,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$classList(
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'signup_box', _1: true},
-								_1: {ctor: '[]'}
-							}),
+						_0: _elm_lang$html$Html_Attributes$class('login_box'),
 						_1: {ctor: '[]'}
 					},
 					A2(
 						_elm_lang$core$Basics_ops['++'],
-						A2(_user$project$SignUp$view_email_input, _user$project$Main$UpdateEmail, model),
+						_user$project$Main$view_email_input(model),
 						A2(
 							_elm_lang$core$Basics_ops['++'],
-							A2(
-								_user$project$SignUp$view_password_input,
-								{ctor: '_Tuple3', _0: _user$project$Main$ToggleShowPassword, _1: _user$project$Main$UpdatePassword, _2: _user$project$Main$UpdateConfirmPassword},
-								model),
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								_user$project$Main$view_difficulty_choices(model),
-								A2(_user$project$SignUp$view_submit, _user$project$Main$Submit, model))))),
+							_user$project$Main$view_submit(model),
+							_user$project$Main$view_errors(model)))),
 				_1: {ctor: '[]'}
-			}
-		});
-};
-var _user$project$Main$view = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: A3(_user$project$Views$view_header, _user$project$Profile$emptyProfile, _elm_lang$core$Maybe$Nothing, _user$project$Main$Logout),
-			_1: {
+			});
+	});
+var _user$project$Main$view = F2(
+	function (forgot_pass_uri, model) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
 				ctor: '::',
-				_0: _user$project$Views$view_filter,
+				_0: _user$project$Views$view_unauthed_header,
 				_1: {
 					ctor: '::',
-					_0: _user$project$Main$view_content(model),
+					_0: A2(_user$project$Main$view_content, forgot_pass_uri, model),
 					_1: {
 						ctor: '::',
 						_0: _user$project$Views$view_footer,
 						_1: {ctor: '[]'}
 					}
 				}
-			}
-		});
-};
+			});
+	});
 var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
-	{init: _user$project$Main$init, view: _user$project$Main$view, subscriptions: _user$project$Main$subscriptions, update: _user$project$Main$update})(
+	{
+		init: _user$project$Main$init,
+		view: _user$project$Main$view(_user$project$Config$forgot_pass_endpoint),
+		subscriptions: _user$project$Main$subscriptions,
+		update: _user$project$Main$update(_user$project$Config$forgot_pass_endpoint)
+	})(
 	A2(
 		_elm_lang$core$Json_Decode$andThen,
 		function (csrftoken) {
-			return A2(
-				_elm_lang$core$Json_Decode$andThen,
-				function (difficulties) {
-					return _elm_lang$core$Json_Decode$succeed(
-						{csrftoken: csrftoken, difficulties: difficulties});
-				},
-				A2(
-					_elm_lang$core$Json_Decode$field,
-					'difficulties',
-					_elm_lang$core$Json_Decode$list(
-						A2(
-							_elm_lang$core$Json_Decode$andThen,
-							function (x0) {
-								return A2(
-									_elm_lang$core$Json_Decode$andThen,
-									function (x1) {
-										return _elm_lang$core$Json_Decode$succeed(
-											{ctor: '_Tuple2', _0: x0, _1: x1});
-									},
-									A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
-							},
-							A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string)))));
+			return _elm_lang$core$Json_Decode$succeed(
+				{csrftoken: csrftoken});
 		},
 		A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string)));
 

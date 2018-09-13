@@ -1,14 +1,23 @@
 import json
+from typing import Dict, AnyStr
 
-from typing import Dict
-from rjsmin import jsmin
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView
+from django.contrib.auth.tokens import default_token_generator
+from django.core.exceptions import ValidationError
 from django.db.models import ObjectDoesNotExist
-from text.models import TextDifficulty
+from django.utils.http import urlsafe_base64_decode
 
 from django.views.decorators.vary import vary_on_cookie
-from django.views.decorators.cache import cache_control
+from django.views.generic import TemplateView
+from rjsmin import jsmin
+
+from text.models import TextDifficulty
+
+UserModel = get_user_model()
+
+INTERNAL_RESET_URL_TOKEN = 'set-password'
+INTERNAL_RESET_SESSION_TOKEN = '_password_reset_token'
 
 
 class ElmLoadJsBaseView(TemplateView):
@@ -107,6 +116,45 @@ class ElmLoadJsView(LoginRequiredMixin, ElmLoadJsBaseView):
 
 class NoAuthElmLoadJsView(ElmLoadJsBaseView):
     pass
+
+
+class ElmLoadPassResetConfirmView(NoAuthElmLoadJsView):
+    token_generator = default_token_generator
+
+    def __init__(self, *args, **kwargs):
+        super(ElmLoadPassResetConfirmView, self).__init__(*args, **kwargs)
+
+        self.user = None
+        self.validlink = False
+
+    def dispatch(self, request, *args, **kwargs):
+        session_token = self.request.session.get(INTERNAL_RESET_SESSION_TOKEN)
+
+        if self.token_generator.check_token(self.user, session_token):
+            # If the token is valid, display the password reset form.
+            self.validlink = True
+
+            return super(ElmLoadPassResetConfirmView, self).dispatch(request, *args, **kwargs)
+
+        return super(ElmLoadPassResetConfirmView, self).dispatch(request, *args, **kwargs)
+
+    def get_user(self, uidb64: AnyStr):
+        try:
+            # urlsafe_base64_decode() decodes to bytestring
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = UserModel._default_manager.get(pk=uid)
+
+        except (TypeError, ValueError, OverflowError, UserModel.DoesNotExist, ValidationError):
+            user = None
+
+        return user
+
+    def get_context_data(self, **kwargs: Dict) -> Dict:
+        context = super(ElmLoadPassResetConfirmView, self).get_context_data(**kwargs)
+
+        context['elm']['validlink'] = {'quote': False, 'safe': True, 'value': 'true' if self.validlink else 'false'}
+
+        return context
 
 
 class ElmLoadStudentSignUpView(NoAuthElmLoadJsView):

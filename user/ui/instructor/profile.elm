@@ -3,8 +3,6 @@ module Instructor.Profile exposing (..)
 import Http
 import HttpHelpers
 
-import Json.Decode
-
 import Config exposing (..)
 
 import Menu.Logout

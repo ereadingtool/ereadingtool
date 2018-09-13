@@ -1,10 +1,5 @@
 module Menu.Logout exposing (..)
 
-import Http
-import HttpHelpers
-
-import Config
-
 import Json.Decode
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 
