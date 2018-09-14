@@ -21,8 +21,6 @@ import Flags
 
 import Util
 
-import Profile
-
 import Menu.Msg as MenuMsg
 
 type alias UserID = Int
@@ -244,8 +242,7 @@ view_content login model =
 view : Login -> Model -> Html Msg
 view login model =
   div [] [
-    (Views.view_header Profile.emptyProfile (Just <| menu_index login) Logout)
-  , (Views.view_filter)
-  , (view_content login model)
-  , (Views.view_footer)
+    Views.view_unauthed_header
+  , view_content login model
+  , Views.view_footer
   ]

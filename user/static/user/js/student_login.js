@@ -11543,23 +11543,14 @@ var _user$project$Login$view = F2(
 			{ctor: '[]'},
 			{
 				ctor: '::',
-				_0: A3(
-					_user$project$Views$view_header,
-					_user$project$Profile$emptyProfile,
-					_elm_lang$core$Maybe$Just(
-						_user$project$Login$menu_index(login)),
-					_user$project$Login$Logout),
+				_0: _user$project$Views$view_unauthed_header,
 				_1: {
 					ctor: '::',
-					_0: _user$project$Views$view_filter,
+					_0: A2(_user$project$Login$view_content, login, model),
 					_1: {
 						ctor: '::',
-						_0: A2(_user$project$Login$view_content, login, model),
-						_1: {
-							ctor: '::',
-							_0: _user$project$Views$view_footer,
-							_1: {ctor: '[]'}
-						}
+						_0: _user$project$Views$view_footer,
+						_1: {ctor: '[]'}
 					}
 				}
 			});
