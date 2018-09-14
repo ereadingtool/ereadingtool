@@ -36,5 +36,11 @@ reset_pass_endpoint = "/api/password/reset/confirm/"
 student_api_endpoint : String
 student_api_endpoint = "/api/student/"
 
+student_profile_page : String
+student_profile_page = "/profile/student/"
+
+instructor_profile_page : String
+instructor_profile_page = "/profile/instructor/"
+
 answer_feedback_limit : Int
 answer_feedback_limit = 2048

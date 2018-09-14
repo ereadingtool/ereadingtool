@@ -21222,7 +21222,11 @@ var _user$project$Answer_Model$Answer = F6(
 	});
 
 var _user$project$Config$answer_feedback_limit = 2048;
+var _user$project$Config$instructor_profile_page = '/profile/instructor/';
+var _user$project$Config$student_profile_page = '/profile/student/';
 var _user$project$Config$student_api_endpoint = '/api/student/';
+var _user$project$Config$reset_pass_endpoint = '/api/password/reset/confirm/';
+var _user$project$Config$forgot_pass_endpoint = '/api/password/reset/';
 var _user$project$Config$student_logout_api_endpoint = '/api/student/logout/';
 var _user$project$Config$student_login_api_endpoint = '/api/student/login/';
 var _user$project$Config$student_signup_api_endpoint = '/api/student/signup/';
@@ -21501,6 +21505,22 @@ var _user$project$Text_Reading_Model$textReadingDecoder = A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Reading_Model$TextReading)))));
 var _user$project$Text_Reading_Model$textReadingsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Reading_Model$textReadingDecoder);
 
+var _user$project$Util$onEnterUp = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'keyup',
+		A2(
+			_elm_lang$core$Json_Decode$andThen,
+			function (key) {
+				var _p0 = key;
+				if (_p0 === 13) {
+					return _elm_lang$core$Json_Decode$succeed(msg);
+				} else {
+					return _elm_lang$core$Json_Decode$fail('not enter key');
+				}
+			},
+			_elm_lang$html$Html_Events$keyCode));
+};
 var _user$project$Util$tupleDecoder = A3(
 	_elm_lang$core$Json_Decode$map2,
 	F2(
@@ -21691,7 +21711,7 @@ var _user$project$Instructor_View$view_instructor_profile_header = F2(
 											_elm_lang$html$Html$a,
 											{
 												ctor: '::',
-												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/profile/instructor/'),
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', _user$project$Config$instructor_profile_page),
 												_1: {ctor: '[]'}
 											},
 											{
@@ -21814,7 +21834,7 @@ var _user$project$Student_View$view_student_profile_header = F2(
 											_elm_lang$html$Html$a,
 											{
 												ctor: '::',
-												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/profile/instructor/'),
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', _user$project$Config$student_profile_page),
 												_1: {ctor: '[]'}
 											},
 											{
@@ -22098,6 +22118,25 @@ var _user$project$Views$view_filter = A2(
 						}),
 					_1: {ctor: '[]'}
 				}
+			}),
+		_1: {ctor: '[]'}
+	});
+var _user$project$Views$view_unauthed_header = A2(
+	_elm_lang$html$Html$div,
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html_Attributes$class('header'),
+		_1: {ctor: '[]'}
+	},
+	{
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('E-Reader'),
+				_1: {ctor: '[]'}
 			}),
 		_1: {ctor: '[]'}
 	});

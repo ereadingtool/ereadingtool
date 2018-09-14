@@ -7,6 +7,8 @@ import Html.Events exposing (onClick)
 import Student.Profile.Model exposing (StudentProfile)
 import Menu.Msg exposing (Msg(..))
 
+import Config
+
 
 view_student_profile_header : StudentProfile -> (Msg -> msg) -> List (Html msg)
 view_student_profile_header student_profile top_level_msg =
@@ -16,7 +18,7 @@ view_student_profile_header student_profile top_level_msg =
     ]
   , div [classList [("menu_item", True)]] [
       div [class "profile_dropdown_menu"] [
-        div [] [ Html.a [attribute "href" "/profile/instructor/"] [
+        div [] [ Html.a [attribute "href" Config.student_profile_page] [
             Html.text (Student.Profile.Model.studentUserName student_profile)
           ]
         ]

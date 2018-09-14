@@ -6625,6 +6625,8 @@ var _elm_lang$http$Http$StringPart = F2(
 var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
 
 var _user$project$Config$answer_feedback_limit = 2048;
+var _user$project$Config$instructor_profile_page = '/profile/instructor/';
+var _user$project$Config$student_profile_page = '/profile/student/';
 var _user$project$Config$student_api_endpoint = '/api/student/';
 var _user$project$Config$reset_pass_endpoint = '/api/password/reset/confirm/';
 var _user$project$Config$forgot_pass_endpoint = '/api/password/reset/';

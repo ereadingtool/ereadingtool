@@ -9952,6 +9952,8 @@ var _user$project$Answer_Model$Answer = F6(
 	});
 
 var _user$project$Config$answer_feedback_limit = 2048;
+var _user$project$Config$instructor_profile_page = '/profile/instructor/';
+var _user$project$Config$student_profile_page = '/profile/student/';
 var _user$project$Config$student_api_endpoint = '/api/student/';
 var _user$project$Config$reset_pass_endpoint = '/api/password/reset/confirm/';
 var _user$project$Config$forgot_pass_endpoint = '/api/password/reset/';
@@ -10439,7 +10441,7 @@ var _user$project$Instructor_View$view_instructor_profile_header = F2(
 											_elm_lang$html$Html$a,
 											{
 												ctor: '::',
-												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/profile/instructor/'),
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', _user$project$Config$instructor_profile_page),
 												_1: {ctor: '[]'}
 											},
 											{
@@ -10562,7 +10564,7 @@ var _user$project$Student_View$view_student_profile_header = F2(
 											_elm_lang$html$Html$a,
 											{
 												ctor: '::',
-												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/profile/instructor/'),
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', _user$project$Config$student_profile_page),
 												_1: {ctor: '[]'}
 											},
 											{
