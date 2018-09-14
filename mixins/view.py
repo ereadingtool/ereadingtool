@@ -146,7 +146,9 @@ class ElmLoadPassResetConfirmView(NoAuthElmLoadJsView):
         context = super(ElmLoadPassResetConfirmView, self).get_context_data(**kwargs)
 
         context['elm']['validlink'] = {'quote': False, 'safe': True, 'value': 'true' if self.validlink else 'false'}
+
         context['elm']['uidb64'] = {'quote': True, 'safe': True, 'value': self.request.session.get('uidb64')}
+        context['elm']['token'] = {'quote': True, 'safe': True, 'value': self.request.session.get('token')}
 
         return context
 

@@ -1,8 +1,12 @@
 import json
 
+import re
+
 from django.test import TestCase
 
 from django.test.client import Client
+
+from django.http.response import HttpResponse, HttpResponseRedirect
 
 from ereadingtool.test.user import TestUser as TestUserBase
 from django.urls import reverse
@@ -19,7 +23,10 @@ class TestUser(TestUserBase, TestCase):
 
         self.student_client = self.new_student_client(Client(), user_and_pass=(self.student_user, self.student_passwd))
 
+        self.student_client.logout()
+
         self.password_reset_api_endpoint = reverse('api-password-reset')
+        self.password_reset_confirm_api_endpoint = reverse('api-password-reset-confirm')
 
     def test_password_reset(self):
         resp = self.anonymous_client.post(self.password_reset_api_endpoint,
@@ -35,3 +42,51 @@ class TestUser(TestUserBase, TestCase):
                                                  'if that e-mail exists in the system.'})
 
         self.assertEquals(len(mail.outbox), 1)
+
+        email_body = mail.outbox[0].body
+
+        token_re = re.compile(r'.+/user/password_reset/confirm/(?P<uidb64>.+?)/(?P<token>.+?)/',
+                              re.IGNORECASE | re.DOTALL)
+
+        matches = token_re.match(email_body)
+
+        self.assertTrue(matches, 'tokens not sent in email')
+
+        uidb64, token = matches.group('uidb64'), matches.group('token')
+
+        self.assertTrue(len(uidb64) > 1 and len(token) > 1)
+
+        redirect_resp = self.anonymous_client.get(reverse('password-reset-confirm',
+                                                          kwargs={'uidb64': uidb64, 'token': token}))
+
+        self.assertIsInstance(redirect_resp, HttpResponseRedirect)
+
+        resp = self.anonymous_client.get(reverse('password-reset-confirm', kwargs={'uidb64': uidb64, 'token': token}),
+                                         follow=True)
+
+        self.assertIsInstance(resp, HttpResponse)
+
+        self.assertTrue(resp)
+
+        resp = self.anonymous_client.get(reverse('load-elm-unauth-pass-reset-confirm'))
+
+        self.assertTrue(resp)
+
+        valid_link_re = re.compile(r".+validlink:(?P<validlink>.+?),.+", re.IGNORECASE | re.DOTALL)
+
+        valid_link = valid_link_re.match(resp.content.decode('utf-8')).group('validlink')
+
+        self.assertEquals(valid_link, 'true')
+
+        resp = self.anonymous_client.post(self.password_reset_confirm_api_endpoint,
+                                          data=json.dumps({
+                                           'uidb64': uidb64,
+                                           'new_password1': 'a new pass',
+                                           'new_password2': 'a new pass'}), content_type='application/json')
+
+        self.assertEquals(resp.status_code, 200)
+
+        # test can login with new password
+        logged_in = self.student_client.login(user=self.student_user.username, password='a new pass')
+
+        self.assertTrue(logged_in)

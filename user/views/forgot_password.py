@@ -56,10 +56,11 @@ class PasswordResetConfirmView(TemplateView):
 class PasswordResetConfirmAPIView(APIView):
     def form(self, request: HttpRequest, params: Dict) -> TypeVar('forms.Form'):
         user = user_utils.get_user(params.pop('uidb64'))
+
         return SetPasswordForm(user, params)
 
     def post_success(self, request: HttpRequest, form: TypeVar('forms.Form')):
-        form.save(request=request)
+        form.save()
 
         return HttpResponse(json.dumps({'errors': {}, 'body': 'Your password has been reset.', 'redirect': ''}))
 
