@@ -37,7 +37,7 @@ init : Flags.UnAuthedFlags -> (Model, Cmd Msg)
 init flags = ({
     flags = flags
   , user_email = ""
-  , resp = ForgotPassword.emptyResp
+  , resp = ForgotPassword.emptyForgotPassResp
   , errors = Dict.fromList [] }, Cmd.none)
 
 forgot_pass_encoder : UserEmail -> Encode.Value
@@ -64,7 +64,7 @@ update endpoint msg model =
   case msg of
     UpdateEmail addr ->
       ({ model | user_email = addr
-       , resp = ForgotPassword.emptyResp
+       , resp = ForgotPassword.emptyForgotPassResp
        , errors =
            (if (is_valid_email addr) || (addr == "") then
              Dict.remove "email" model.errors

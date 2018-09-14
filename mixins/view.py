@@ -1,4 +1,6 @@
 import json
+
+import ereadingtool.user as user_utils
 from typing import Dict, AnyStr
 
 from django.contrib.auth import get_user_model
@@ -130,6 +132,8 @@ class ElmLoadPassResetConfirmView(NoAuthElmLoadJsView):
     def dispatch(self, request, *args, **kwargs):
         session_token = self.request.session.get(INTERNAL_RESET_SESSION_TOKEN)
 
+        self.user = user_utils.get_user(self.request.session.get('uidb64'))
+
         if self.token_generator.check_token(self.user, session_token):
             # If the token is valid, display the password reset form.
             self.validlink = True
@@ -138,21 +142,11 @@ class ElmLoadPassResetConfirmView(NoAuthElmLoadJsView):
 
         return super(ElmLoadPassResetConfirmView, self).dispatch(request, *args, **kwargs)
 
-    def get_user(self, uidb64: AnyStr):
-        try:
-            # urlsafe_base64_decode() decodes to bytestring
-            uid = urlsafe_base64_decode(uidb64).decode()
-            user = UserModel._default_manager.get(pk=uid)
-
-        except (TypeError, ValueError, OverflowError, UserModel.DoesNotExist, ValidationError):
-            user = None
-
-        return user
-
     def get_context_data(self, **kwargs: Dict) -> Dict:
         context = super(ElmLoadPassResetConfirmView, self).get_context_data(**kwargs)
 
         context['elm']['validlink'] = {'quote': False, 'safe': True, 'value': 'true' if self.validlink else 'false'}
+        context['elm']['uidb64'] = {'quote': True, 'safe': True, 'value': self.request.session.get('uidb64')}
 
         return context
 

@@ -10109,11 +10109,20 @@ var _user$project$Flags$UnAuthedFlags = function (a) {
 	return {csrftoken: a};
 };
 
-var _user$project$ForgotPassword$emptyResp = {
+var _user$project$ForgotPassword$emptyForgotPassResp = {
 	errors: _elm_lang$core$Dict$fromList(
 		{ctor: '[]'}),
 	body: ''
 };
+var _user$project$ForgotPassword$emptyPassResetResp = {
+	errors: _elm_lang$core$Dict$fromList(
+		{ctor: '[]'}),
+	body: ''
+};
+var _user$project$ForgotPassword$Password = F3(
+	function (a, b, c) {
+		return {password: a, confirm_password: b, uidb64: c};
+	});
 var _user$project$ForgotPassword$ForgotPassResp = F2(
 	function (a, b) {
 		return {errors: a, body: b};
@@ -10543,7 +10552,7 @@ var _user$project$Main$init = function (flags) {
 		_0: {
 			flags: flags,
 			user_email: '',
-			resp: _user$project$ForgotPassword$emptyResp,
+			resp: _user$project$ForgotPassword$emptyForgotPassResp,
 			errors: _elm_lang$core$Dict$fromList(
 				{ctor: '[]'})
 		},
@@ -10653,7 +10662,7 @@ var _user$project$Main$update = F3(
 						model,
 						{
 							user_email: _p3,
-							resp: _user$project$ForgotPassword$emptyResp,
+							resp: _user$project$ForgotPassword$emptyForgotPassResp,
 							errors: (_user$project$Util$is_valid_email(_p3) || _elm_lang$core$Native_Utils.eq(_p3, '')) ? A2(_elm_lang$core$Dict$remove, 'email', model.errors) : A3(_elm_lang$core$Dict$insert, 'email', 'This e-mail is invalid', model.errors)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none

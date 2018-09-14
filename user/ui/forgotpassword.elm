@@ -10,14 +10,17 @@ type alias ForgotPassURI = String
 type alias ResetPassURI = String
 type alias UserEmail = String
 
-type alias Password = (String, String)
+type alias Password = {password: String, confirm_password: String, uidb64 : String }
 
 type alias ForgotPassResp = { errors : Dict String String, body : String }
 
 type alias PassResetConfirmResp = { errors : Dict String String, body: String }
 
-emptyResp : ForgotPassResp
-emptyResp = { errors=Dict.fromList [], body="" }
+emptyPassResetResp : PassResetConfirmResp
+emptyPassResetResp = {errors=Dict.fromList [], body=""}
+
+emptyForgotPassResp : ForgotPassResp
+emptyForgotPassResp = { errors=Dict.fromList [], body="" }
 
 forgotRespDecoder : Decode.Decoder (ForgotPassResp)
 forgotRespDecoder =
