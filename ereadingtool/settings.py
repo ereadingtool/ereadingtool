@@ -62,6 +62,9 @@ EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
 
 SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
 
+# TODO(andrew): disable this when we're ready for a prod env
+SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+
 ASGI_APPLICATION = 'ereadingtool.routing.application'
 # CHANNEL_LAYERS = {}
 
