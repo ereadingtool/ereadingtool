@@ -86,7 +86,9 @@ class TestUser(TestUserBase, TestCase):
 
         self.assertEquals(resp.status_code, 200)
 
-        # test can login with new password
-        logged_in = self.student_client.login(user=self.student_user.username, password='a new pass')
+        self.student_user.refresh_from_db()
 
-        self.assertTrue(logged_in)
+        # test new password works
+        new_pass = self.student_user.check_password('a new pass')
+
+        self.assertTrue(new_pass)
