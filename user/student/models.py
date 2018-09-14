@@ -1,10 +1,15 @@
 from typing import Optional, TypeVar
 from django.db import models
+
+from django.urls import reverse
+
 from text.models import TextDifficulty
 from user.models import ReaderUser
 
+from user.mixins.models import URIs
 
-class Student(models.Model):
+
+class Student(URIs, models.Model):
     user = models.OneToOneField(ReaderUser, on_delete=models.CASCADE)
     difficulty_preference = models.ForeignKey(TextDifficulty, null=True, on_delete=models.SET_NULL,
                                               related_name='students')
@@ -36,3 +41,7 @@ class Student(models.Model):
 
     def __str__(self):
         return self.user.username
+
+    @property
+    def login_url(self):
+        return reverse('student-login')

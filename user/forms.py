@@ -5,7 +5,9 @@ from django.core.validators import validate_email
 from django.utils.translation import ugettext_lazy as _
 
 from text.models import TextDifficulty
-from user.models import ReaderUser, Instructor
+from user.models import ReaderUser
+
+from user.instructor.models import Instructor
 from user.student.models import Student
 
 

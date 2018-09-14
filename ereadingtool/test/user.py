@@ -5,7 +5,9 @@ from django.test.client import Client
 from hypothesis.extra.django.models import models
 from hypothesis.strategies import just, text
 
-from user.models import ReaderUser, Instructor
+from user.models import ReaderUser
+
+from user.instructor.models import Instructor
 from user.student.models import Student
 
 
