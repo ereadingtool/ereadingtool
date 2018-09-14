@@ -42,5 +42,8 @@ student_profile_page = "/profile/student/"
 instructor_profile_page : String
 instructor_profile_page = "/profile/instructor/"
 
+forgot_password_page : String
+forgot_password_page = "/user/password_reset/"
+
 answer_feedback_limit : Int
 answer_feedback_limit = 2048

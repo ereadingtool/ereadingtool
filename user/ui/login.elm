@@ -20,6 +20,7 @@ import Views
 import Flags
 
 import Util
+import Config
 
 import Menu.Msg as MenuMsg
 
@@ -225,6 +226,14 @@ view_signup signup_uri = [
   span [] [
     Html.text "Not registered? "
   , Html.a [attribute "href" signup_uri] [ span [attribute "class" "cursor"] [Html.text "Sign Up"]]
+  , div [] [
+      Html.text "Forgot Password? "
+    , Html.a [attribute "href" Config.forgot_password_page] [
+        span [attribute "class" "cursor"] [
+          Html.text "Reset Password"
+        ]
+      ]
+    ]
   ]]
 
 view_content : Login -> Model -> Html Msg

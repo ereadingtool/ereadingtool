@@ -21222,6 +21222,7 @@ var _user$project$Answer_Model$Answer = F6(
 	});
 
 var _user$project$Config$answer_feedback_limit = 2048;
+var _user$project$Config$forgot_password_page = '/user/password_reset/';
 var _user$project$Config$instructor_profile_page = '/profile/instructor/';
 var _user$project$Config$student_profile_page = '/profile/student/';
 var _user$project$Config$student_api_endpoint = '/api/student/';
