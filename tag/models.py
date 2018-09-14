@@ -9,10 +9,10 @@ class Tag(models.Model):
 
     @classmethod
     def setup_default(cls):
-        for default_tag in ['Culture', 'Music', 'Film', 'Literary Arts', 'Visual Arts', 'Sports', 'Politics', 'History',
-                            'Biography', 'Current Events', 'Economics/Business', 'Medicine/Health Care',
+        for default_tag in ['Culture', 'Music', 'Film', 'Literary Arts', 'Visual Arts', 'Sports', 'Internal Affairs',
+                            'History', 'Biography', 'News Briefs', 'Economics/Business', 'Medicine/Health Care',
                             'Science/Technology', 'Human Interest', 'Society and Societal Trends',
-                            'Internal Affairs/Foreign Policy', 'Public Policy', 'Other']:
+                            'International Relations', 'Public Policy', 'Other', 'Kazakhstan']:
             tag = Tag.objects.create(name=default_tag)
             tag.save()
 
