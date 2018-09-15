@@ -132,11 +132,9 @@ login_label attributes html =
 
 view_errors : Model -> List (Html Msg)
 view_errors model =
-  case Dict.get "all" model.errors of
-    Just all_err ->
-      [ login_label [] (span [attribute "class" "errors"] [ Html.em [] [Html.text <| all_err ]]) ]
-    _ ->
-      [ span [attribute "class" "errors"] [] ]
+  List.map (\(k, v) ->
+    login_label [] (span [attribute "class" "errors"] [ Html.em [] [Html.text <| v ]])
+  ) (Dict.toList model.errors)
 
 view_submit : Model -> List (Html Msg)
 view_submit model =

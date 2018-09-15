@@ -11097,11 +11097,11 @@ var _user$project$Main$login_label = F2(
 			});
 	});
 var _user$project$Main$view_errors = function (model) {
-	var _p0 = A2(_elm_lang$core$Dict$get, 'all', model.errors);
-	if (_p0.ctor === 'Just') {
-		return {
-			ctor: '::',
-			_0: A2(
+	return A2(
+		_elm_lang$core$List$map,
+		function (_p0) {
+			var _p1 = _p0;
+			return A2(
 				_user$project$Main$login_label,
 				{ctor: '[]'},
 				A2(
@@ -11118,27 +11118,13 @@ var _user$project$Main$view_errors = function (model) {
 							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(_p0._0),
+								_0: _elm_lang$html$Html$text(_p1._1),
 								_1: {ctor: '[]'}
 							}),
 						_1: {ctor: '[]'}
-					})),
-			_1: {ctor: '[]'}
-		};
-	} else {
-		return {
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$span,
-				{
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'errors'),
-					_1: {ctor: '[]'}
-				},
-				{ctor: '[]'}),
-			_1: {ctor: '[]'}
-		};
-	}
+					}));
+		},
+		_elm_lang$core$Dict$toList(model.errors));
 };
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
@@ -11248,8 +11234,8 @@ var _user$project$Main$view_password_confirm_input = function (model) {
 		_1: {ctor: '[]'}
 	} : {ctor: '[]'};
 	var err_msg = function () {
-		var _p1 = A2(_elm_lang$core$Dict$get, 'confirm_password', model.errors);
-		if (_p1.ctor === 'Just') {
+		var _p2 = A2(_elm_lang$core$Dict$get, 'confirm_password', model.errors);
+		if (_p2.ctor === 'Just') {
 			return A2(
 				_user$project$Main$login_label,
 				{ctor: '[]'},
@@ -11258,7 +11244,7 @@ var _user$project$Main$view_password_confirm_input = function (model) {
 					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(_p1._0),
+						_0: _elm_lang$html$Html$text(_p2._0),
 						_1: {ctor: '[]'}
 					}));
 		} else {
@@ -11322,8 +11308,8 @@ var _user$project$Main$view_password_input = function (model) {
 		_1: {ctor: '[]'}
 	} : {ctor: '[]'};
 	var err_msg = function () {
-		var _p2 = A2(_elm_lang$core$Dict$get, 'password', model.errors);
-		if (_p2.ctor === 'Just') {
+		var _p3 = A2(_elm_lang$core$Dict$get, 'password', model.errors);
+		if (_p3.ctor === 'Just') {
 			return A2(
 				_user$project$Main$login_label,
 				{ctor: '[]'},
@@ -11332,7 +11318,7 @@ var _user$project$Main$view_password_input = function (model) {
 					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(_p2._0),
+						_0: _elm_lang$html$Html$text(_p3._0),
 						_1: {ctor: '[]'}
 					}));
 		} else {
@@ -11401,8 +11387,8 @@ var _user$project$Main$post_passwd_reset = F3(
 	});
 var _user$project$Main$update = F3(
 	function (endpoint, msg, model) {
-		var _p3 = msg;
-		switch (_p3.ctor) {
+		var _p4 = msg;
+		switch (_p4.ctor) {
 			case 'ToggleShowPassword':
 				return {
 					ctor: '_Tuple2',
@@ -11412,16 +11398,16 @@ var _user$project$Main$update = F3(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'UpdatePassword':
-				var _p4 = _p3._0;
+				var _p5 = _p4._0;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							password: _p4,
+							password: _p5,
 							resp: _user$project$ForgotPassword$emptyPassResetResp,
 							errors: _elm_lang$core$Dict$fromList(
-								(!_elm_lang$core$Native_Utils.eq(_p4, model.confirm_password)) ? {
+								(!_elm_lang$core$Native_Utils.eq(_p5, model.confirm_password)) ? {
 									ctor: '::',
 									_0: {ctor: '_Tuple2', _0: 'all', _1: 'Passwords must match'},
 									_1: {ctor: '[]'}
@@ -11430,16 +11416,16 @@ var _user$project$Main$update = F3(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'UpdatePasswordConfirm':
-				var _p5 = _p3._0;
+				var _p6 = _p4._0;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							confirm_password: _p5,
+							confirm_password: _p6,
 							resp: _user$project$ForgotPassword$emptyPassResetResp,
 							errors: _elm_lang$core$Dict$fromList(
-								(!_elm_lang$core$Native_Utils.eq(_p5, model.password)) ? {
+								(!_elm_lang$core$Native_Utils.eq(_p6, model.password)) ? {
 									ctor: '::',
 									_0: {ctor: '_Tuple2', _0: 'all', _1: 'Passwords must match'},
 									_1: {ctor: '[]'}
@@ -11463,29 +11449,29 @@ var _user$project$Main$update = F3(
 						A3(_user$project$ForgotPassword$Password, model.password, model.confirm_password, model.flags.uidb64))
 				};
 			default:
-				if (_p3._0.ctor === 'Ok') {
-					var _p6 = _p3._0._0;
+				if (_p4._0.ctor === 'Ok') {
+					var _p7 = _p4._0._0;
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{resp: _p6}),
-						_1: _elm_lang$navigation$Navigation$load(_p6.redirect)
+							{resp: _p7}),
+						_1: _elm_lang$navigation$Navigation$load(_p7.redirect)
 					};
 				} else {
-					var _p7 = _p3._0._0;
-					switch (_p7.ctor) {
+					var _p8 = _p4._0._0;
+					switch (_p8.ctor) {
 						case 'BadStatus':
-							var _p8 = A2(
+							var _p9 = A2(
 								_elm_lang$core$Json_Decode$decodeString,
 								_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
-								_p7._0.body);
-							if (_p8.ctor === 'Ok') {
+								_p8._0.body);
+							if (_p9.ctor === 'Ok') {
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
 										model,
-										{errors: _p8._0}),
+										{errors: _p9._0}),
 									_1: _elm_lang$core$Platform_Cmd$none
 								};
 							} else {
