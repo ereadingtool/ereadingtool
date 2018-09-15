@@ -10120,7 +10120,8 @@ var _user$project$ForgotPassword$emptyForgotPassResp = {
 var _user$project$ForgotPassword$emptyPassResetResp = {
 	errors: _elm_lang$core$Dict$fromList(
 		{ctor: '[]'}),
-	body: ''
+	body: '',
+	redirect: ''
 };
 var _user$project$ForgotPassword$Password = F3(
 	function (a, b, c) {
@@ -10130,7 +10131,7 @@ var _user$project$ForgotPassword$ForgotPassResp = F2(
 	function (a, b) {
 		return {errors: a, body: b};
 	});
-var _user$project$ForgotPassword$forgotRespDecoder = A3(
+var _user$project$ForgotPassword$forgotPassRespDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'body',
 	_elm_lang$core$Json_Decode$string,
@@ -10139,10 +10140,23 @@ var _user$project$ForgotPassword$forgotRespDecoder = A3(
 		'errors',
 		_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$ForgotPassword$ForgotPassResp)));
-var _user$project$ForgotPassword$PassResetConfirmResp = F2(
-	function (a, b) {
-		return {errors: a, body: b};
+var _user$project$ForgotPassword$PassResetConfirmResp = F3(
+	function (a, b, c) {
+		return {errors: a, body: b, redirect: c};
 	});
+var _user$project$ForgotPassword$forgotPassConfirmRespDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'redirect',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'body',
+		_elm_lang$core$Json_Decode$string,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'errors',
+			_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$ForgotPassword$PassResetConfirmResp))));
 
 var _user$project$Views$view_preview = A2(
 	_elm_lang$html$Html$div,
@@ -10650,7 +10664,7 @@ var _user$project$Main$post_forgot_pass = F3(
 				_1: {ctor: '[]'}
 			},
 			_elm_lang$http$Http$jsonBody(encoded_login_params),
-			_user$project$ForgotPassword$forgotRespDecoder);
+			_user$project$ForgotPassword$forgotPassRespDecoder);
 		return A2(_elm_lang$http$Http$send, _user$project$Main$Submitted, req);
 	});
 var _user$project$Main$update = F3(

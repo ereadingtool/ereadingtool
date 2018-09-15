@@ -14,16 +14,23 @@ type alias Password = {password: String, confirm_password: String, uidb64 : Stri
 
 type alias ForgotPassResp = { errors : Dict String String, body : String }
 
-type alias PassResetConfirmResp = { errors : Dict String String, body: String }
+type alias PassResetConfirmResp = { errors : Dict String String, body: String, redirect: String }
 
 emptyPassResetResp : PassResetConfirmResp
-emptyPassResetResp = {errors=Dict.fromList [], body=""}
+emptyPassResetResp = {errors=Dict.fromList [], body="", redirect=""}
 
 emptyForgotPassResp : ForgotPassResp
 emptyForgotPassResp = { errors=Dict.fromList [], body="" }
 
-forgotRespDecoder : Decode.Decoder (ForgotPassResp)
-forgotRespDecoder =
+forgotPassRespDecoder : Decode.Decoder (ForgotPassResp)
+forgotPassRespDecoder =
   decode ForgotPassResp
     |> required "errors" (Decode.dict Decode.string)
     |> required "body" Decode.string
+
+forgotPassConfirmRespDecoder : Decode.Decoder (PassResetConfirmResp)
+forgotPassConfirmRespDecoder =
+  decode PassResetConfirmResp
+    |> required "errors" (Decode.dict Decode.string)
+    |> required "body" Decode.string
+    |> required "redirect" Decode.string

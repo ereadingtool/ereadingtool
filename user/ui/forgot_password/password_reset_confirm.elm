@@ -1,4 +1,4 @@
-import ForgotPassword exposing (PassResetConfirmResp, Password, ResetPassURI, UserEmail, forgotRespDecoder)
+import ForgotPassword exposing (PassResetConfirmResp, Password, ResetPassURI, UserEmail, forgotPassConfirmRespDecoder)
 
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (class, classList, attribute)
@@ -16,6 +16,8 @@ import Config
 
 import Views
 import Flags
+
+import Navigation
 
 
 type alias Flags = { csrftoken : Flags.CSRFToken, uidb64: String, validlink : Bool }
@@ -41,7 +43,7 @@ init flags = ({
   , password = ""
   , confirm_password = ""
   , show_password = False
-  , resp = {errors=Dict.fromList [], body=""}
+  , resp = ForgotPassword.emptyPassResetResp
   , errors = Dict.fromList [] }, Cmd.none)
 
 reset_pass_encoder : Password -> Encode.Value
@@ -61,7 +63,7 @@ post_passwd_reset reset_pass_endpoint csrftoken password =
          reset_pass_endpoint
          [Http.header "X-CSRFToken" csrftoken]
          (Http.jsonBody encoded_login_params)
-         forgotRespDecoder
+         forgotPassConfirmRespDecoder
   in
     Http.send Submitted req
 
@@ -91,10 +93,7 @@ update endpoint msg model =
            (Password model.password model.confirm_password model.flags.uidb64))
 
     Submitted (Ok resp) ->
-      let
-        new_errors = Dict.fromList <| Dict.toList model.errors ++ Dict.toList resp.errors
-      in
-        ({ model | errors = new_errors, resp = resp }, Cmd.none)
+      ({ model | resp = resp }, Navigation.load resp.redirect)
 
     Submitted (Err err) ->
       case err of
@@ -196,7 +195,7 @@ view_password_confirm_input : Model -> List (Html Msg)
 view_password_confirm_input model =
   let
     err_msg =
-      case Dict.get "password" model.errors of
+      case Dict.get "confirm_password" model.errors of
        Just err_msg ->
          login_label [] (Html.em [] [Html.text err_msg])
 

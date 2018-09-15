@@ -1,4 +1,4 @@
-import ForgotPassword exposing (ForgotPassResp, ForgotPassURI, UserEmail, forgotRespDecoder)
+import ForgotPassword exposing (ForgotPassResp, ForgotPassURI, UserEmail, forgotPassRespDecoder)
 
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (class, classList, attribute)
@@ -55,7 +55,7 @@ post_forgot_pass forgot_pass_endpoint csrftoken user_email =
          forgot_pass_endpoint
          [Http.header "X-CSRFToken" csrftoken]
          (Http.jsonBody encoded_login_params)
-         forgotRespDecoder
+         forgotPassRespDecoder
   in
     Http.send Submitted req
 
