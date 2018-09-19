@@ -11,11 +11,9 @@ from django.views.generic import TemplateView
 
 from mixins.view import ElmLoadJsView
 from text.models import Text, TextDifficulty
-from user.views.mixin import ProfileView
 
 
-class TextSearchView(ProfileView, TemplateView):
-    login_url = reverse_lazy('student-login')
+class TextSearchView(TemplateView):
     template_name = 'text_search.html'
 
     model = Text
@@ -40,8 +38,7 @@ class TextSearchLoadElm(ElmLoadJsView):
         return context
 
 
-class TextView(ProfileView, TemplateView):
-    login_url = reverse_lazy('student-login')
+class TextView(TemplateView):
     template_name = 'text.html'
 
     model = Text

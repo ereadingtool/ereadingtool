@@ -6,12 +6,20 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpRequest
 from django.urls import reverse
-from django.urls import reverse_lazy
+
 from django.views.generic import TemplateView, View
 
 from user.forms import InstructorSignUpForm, InstructorLoginForm
+
+from user.instructor.models import Instructor
+
 from user.views.api import APIView
 from user.views.mixin import ProfileView
+
+
+class InstructorView(ProfileView):
+    profile_model = Instructor
+    login_url = Instructor.login_url
 
 
 class InstructorSignupAPIView(APIView):
@@ -56,8 +64,5 @@ class InstructorSignUpView(TemplateView):
     template_name = 'instructor/signup.html'
 
 
-class InstructorProfileView(ProfileView):
-    login_url = reverse_lazy('instructor-login')
-
+class InstructorProfileView(InstructorView, TemplateView):
     template_name = 'instructor/profile.html'
-

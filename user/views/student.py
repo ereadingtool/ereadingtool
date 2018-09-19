@@ -16,6 +16,11 @@ from user.views.mixin import ProfileView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
+class StudentView(ProfileView):
+    profile_model = Student
+    login_url = Student.login_url
+
+
 class StudentAPIView(LoginRequiredMixin, APIView):
     # returns permission denied HTTP message rather than redirect to login
     raise_exception = True
@@ -116,7 +121,6 @@ class StudentLoginView(TemplateView):
     template_name = 'student/login.html'
 
 
-class StudentProfileView(ProfileView):
+class StudentProfileView(StudentView, TemplateView):
     template_name = 'student/profile.html'
-    login_url = reverse_lazy('student-login')
 

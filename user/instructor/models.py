@@ -1,13 +1,15 @@
 from django.db import models
 from django.db.models import Q
-from django.urls import reverse
+from django.urls import reverse_lazy
 
 from user.models import ReaderUser
-from user.mixins.models import URIs
+from user.mixins.models import Profile
 
 
-class Instructor(URIs, models.Model):
+class Instructor(Profile, models.Model):
     user = models.OneToOneField(ReaderUser, on_delete=models.CASCADE)
+
+    login_url = reverse_lazy('instructor-login')
 
     def to_dict(self):
         return {
@@ -21,6 +23,3 @@ class Instructor(URIs, models.Model):
     def __str__(self):
         return self.user.username
 
-    @property
-    def login_url(self):
-        return reverse('instructor-login')

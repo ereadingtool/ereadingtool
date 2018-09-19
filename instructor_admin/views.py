@@ -9,17 +9,12 @@ from django.views.generic import TemplateView
 
 from mixins.view import ElmLoadJsView
 from text.models import Text
-from user.views.mixin import ProfileView
+
+from user.views.instructor import InstructorView
 
 
-class AdminView(ProfileView, LoginRequiredMixin, TemplateView):
-    login_url = reverse_lazy('instructor-login')
-
-    def get(self, request, *args, **kwargs) -> HttpResponse:
-        if not hasattr(request.user, 'instructor'):
-            return HttpResponseRedirect(reverse_lazy('error-page'))
-
-        return super(AdminView, self).get(request, *args, **kwargs)
+class AdminView(InstructorView, TemplateView):
+    pass
 
 
 class TextAdminView(AdminView):
