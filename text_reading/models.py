@@ -68,9 +68,29 @@ class TextReading(models.Model):
     def to_dict(self) -> Dict:
         return {
             'id': self.pk,
+            'text_id': self.text.pk,
             'text': str(self.text),
             'current_section': str(self.current_section.order+1) if self.current_section else None,
-            'status': self.state
+            'status': self.state,
+            'score': self.score
+        }
+
+    @property
+    def score(self) -> Dict:
+        answered_correctly = self.text_reading_answers.order_by('-created_dt').filter(
+            question=models.OuterRef('question'))
+
+        scores = self.text_reading_answers.values('question').annotate(
+            num_answered_question=models.Count('question'),
+        ).annotate(answered_correctly=models.Subquery(answered_correctly.values('answer__correct')[:1]))
+
+        question_scores = sum([1 if answer['answered_correctly'] else 0 for answer in scores])
+
+        return {
+            'num_of_sections': len(self.sections),
+            'complete_sections': len(self.sections),
+            'section_scores': question_scores,
+            'possible_section_scores': len(self.sections) * len(scores)
         }
 
     def to_text_reading_dict(self) -> Dict:
@@ -82,21 +102,7 @@ class TextReading(models.Model):
             return self.text.to_text_reading_dict()
 
         elif self.state_machine.is_complete:
-            answered_correctly = self.text_reading_answers.order_by('-created_dt').filter(
-                question=models.OuterRef('question'))
-
-            scores = self.text_reading_answers.values('question').annotate(
-                num_answered_question=models.Count('question'),
-            ).annotate(answered_correctly=models.Subquery(answered_correctly.values('answer__correct')[:1]))
-
-            question_scores = sum([1 if answer['answered_correctly'] else 0 for answer in scores])
-
-            return {
-                'num_of_sections': len(self.sections),
-                'complete_sections': len(self.sections),
-                'section_scores': question_scores,
-                'possible_section_scores': len(self.sections) * len(scores)
-            }
+            return self.score
 
     @cached_property
     def sections(self):

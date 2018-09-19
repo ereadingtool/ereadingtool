@@ -63,7 +63,7 @@ class ElmLoadJsStudentView(LoginRequiredMixin, ElmLoadJsBaseView):
         except ObjectDoesNotExist:
             pass
 
-        context['elm']['instructor_profile'] = {'quote': False, 'safe': True, 'value': profile or 'null'}
+        context['elm']['student_profile'] = {'quote': False, 'safe': True, 'value': profile or 'null'}
 
         return context
 

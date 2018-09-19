@@ -11397,7 +11397,7 @@ var _user$project$Main$view_search_results = function (text_list_items) {
 			} else {
 				return A2(
 					_elm_lang$core$Basics_ops['++'],
-					_elm_lang$core$Basics$toString('0 / '),
+					'0 / ',
 					_elm_lang$core$Basics$toString(text_item.text_section_count));
 			}
 		}();
@@ -11646,6 +11646,41 @@ var _user$project$Main$view_search_results = function (text_list_items) {
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
+var _user$project$Main$Model = F4(
+	function (a, b, c, d) {
+		return {results: a, profile: b, text_search: c, flags: d};
+	});
+var _user$project$Main$LoggedOut = function (a) {
+	return {ctor: 'LoggedOut', _0: a};
+};
+var _user$project$Main$LogOut = function (a) {
+	return {ctor: 'LogOut', _0: a};
+};
+var _user$project$Main$TextSearch = function (a) {
+	return {ctor: 'TextSearch', _0: a};
+};
+var _user$project$Main$update_results = function (text_search) {
+	var filter_params = _user$project$Text_Search$filter_params(text_search);
+	var query_string = A2(
+		_elm_lang$core$Basics_ops['++'],
+		A2(
+			_elm_lang$core$String$join,
+			'',
+			{
+				ctor: '::',
+				_0: _user$project$Config$text_api_endpoint,
+				_1: {
+					ctor: '::',
+					_0: '?',
+					_1: {ctor: '[]'}
+				}
+			}),
+		A2(_elm_lang$core$String$join, '&', filter_params));
+	var request = A2(_elm_lang$http$Http$get, query_string, _user$project$Text_Decode$textListDecoder);
+	return (_elm_lang$core$Native_Utils.cmp(
+		_elm_lang$core$List$length(filter_params),
+		0) > 0) ? A2(_elm_lang$http$Http$send, _user$project$Main$TextSearch, request) : _elm_lang$core$Platform_Cmd$none;
+};
 var _user$project$Main$init = function (flags) {
 	var profile = _user$project$Profile$init_profile(flags);
 	var difficulty_search = A2(
@@ -11688,43 +11723,8 @@ var _user$project$Main$init = function (flags) {
 			text_search: text_search,
 			flags: flags
 		},
-		_1: _elm_lang$core$Platform_Cmd$none
+		_1: _user$project$Main$update_results(text_search)
 	};
-};
-var _user$project$Main$Model = F4(
-	function (a, b, c, d) {
-		return {results: a, profile: b, text_search: c, flags: d};
-	});
-var _user$project$Main$LoggedOut = function (a) {
-	return {ctor: 'LoggedOut', _0: a};
-};
-var _user$project$Main$LogOut = function (a) {
-	return {ctor: 'LogOut', _0: a};
-};
-var _user$project$Main$TextSearch = function (a) {
-	return {ctor: 'TextSearch', _0: a};
-};
-var _user$project$Main$update_results = function (text_search) {
-	var filter_params = _user$project$Text_Search$filter_params(text_search);
-	var query_string = A2(
-		_elm_lang$core$Basics_ops['++'],
-		A2(
-			_elm_lang$core$String$join,
-			'',
-			{
-				ctor: '::',
-				_0: _user$project$Config$text_api_endpoint,
-				_1: {
-					ctor: '::',
-					_0: '?',
-					_1: {ctor: '[]'}
-				}
-			}),
-		A2(_elm_lang$core$String$join, '&', filter_params));
-	var request = A2(_elm_lang$http$Http$get, query_string, _user$project$Text_Decode$textListDecoder);
-	return (_elm_lang$core$Native_Utils.cmp(
-		_elm_lang$core$List$length(filter_params),
-		0) > 0) ? A2(_elm_lang$http$Http$send, _user$project$Main$TextSearch, request) : _elm_lang$core$Platform_Cmd$none;
 };
 var _user$project$Main$update = F2(
 	function (msg, model) {

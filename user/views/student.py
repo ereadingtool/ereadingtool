@@ -3,7 +3,7 @@ from typing import TypeVar
 
 from django import forms
 from django.contrib.auth import login, logout
-from django.http import HttpResponse, HttpRequest, HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponse, HttpRequest, HttpResponseForbidden
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, View

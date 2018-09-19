@@ -14,5 +14,4 @@ urlpatterns = [
     path('signup/student/', StudentSignUpView.as_view(), name='student-signup'),
     path('login/student/', StudentLoginView.as_view(), name='student-login'),
     path('profile/student/', StudentProfileView.as_view(), name='student-profile')
-
 ] + api_urlpatterns

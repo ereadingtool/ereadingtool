@@ -76,7 +76,7 @@ init flags =
     , text_search=text_search
     , flags=flags
     }
-    , Cmd.none)
+    , update_results text_search)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -203,7 +203,7 @@ view_search_results text_list_items =
             Just sections_complete ->
               toString sections_complete ++ " / " ++ toString text_item.text_section_count
             Nothing ->
-              toString "0 / " ++ toString text_item.text_section_count)
+              "0 / " ++ toString text_item.text_section_count)
       in
         div [class "search_result"] [
           div [class "result_item"] [

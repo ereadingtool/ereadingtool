@@ -48,7 +48,7 @@ class TextView(ProfileView, TemplateView):
 
     # for text reading, relax connect-src CSP
     # since websockets are not the same origin as the HTTP requests (https://github.com/w3c/webappsec/issues/489)
-    @csp_replace(CONNECT_SRC=("ws://*",))
+    @csp_replace(CONNECT_SRC=("ws://*", "*"))
     def dispatch(self, request, *args, **kwargs):
         return super(TextView, self).dispatch(request, *args, **kwargs)
 
