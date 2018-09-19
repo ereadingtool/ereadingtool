@@ -11134,15 +11134,11 @@ var _user$project$Main$view = function (model) {
 				_user$project$Main$Logout),
 			_1: {
 				ctor: '::',
-				_0: _user$project$Views$view_filter,
+				_0: _user$project$Main$view_content(model),
 				_1: {
 					ctor: '::',
-					_0: _user$project$Main$view_content(model),
-					_1: {
-						ctor: '::',
-						_0: _user$project$Views$view_footer,
-						_1: {ctor: '[]'}
-					}
+					_0: _user$project$Views$view_footer,
+					_1: {ctor: '[]'}
 				}
 			}
 		});

@@ -1,5 +1,5 @@
 import json
-from typing import TypeVar
+from typing import TypeVar, Dict
 
 from django import forms
 from django.contrib.auth import login, logout
@@ -15,6 +15,24 @@ from user.instructor.models import Instructor
 
 from user.views.api import APIView
 from user.views.mixin import ProfileView
+
+from mixins.view import ElmLoadJsBaseView
+
+
+class ElmLoadJsInstructorView(LoginRequiredMixin, ElmLoadJsBaseView):
+    def get_context_data(self, **kwargs) -> Dict:
+        context = super(ElmLoadJsInstructorView, self).get_context_data(**kwargs)
+
+        profile = None
+
+        try:
+            profile = self.request.user.instructor
+        except Instructor.DoesNotExist:
+            pass
+
+        context['elm']['instructor_profile'] = {'quote': False, 'safe': True, 'value': profile or 'null'}
+
+        return context
 
 
 class InstructorView(ProfileView):

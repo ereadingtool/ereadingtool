@@ -1,11 +1,11 @@
 import json
-from typing import TypeVar
+from typing import TypeVar, Dict
 
 from django import forms
 from django.contrib.auth import login, logout
 from django.http import HttpResponse, HttpRequest, HttpResponseForbidden
 from django.urls import reverse
-from django.urls import reverse_lazy
+
 from django.views.generic import TemplateView, View
 
 from text.models import TextDifficulty
@@ -14,6 +14,35 @@ from user.student.models import Student
 from user.views.api import APIView
 from user.views.mixin import ProfileView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from mixins.view import ElmLoadJsBaseView, NoAuthElmLoadJsView
+
+
+class ElmLoadJsStudentView(LoginRequiredMixin, ElmLoadJsBaseView):
+    def get_context_data(self, **kwargs) -> Dict:
+        context = super(ElmLoadJsStudentView, self).get_context_data(**kwargs)
+
+        profile = None
+
+        try:
+            profile = self.request.user.student
+        except Student.DoesNotExist:
+            pass
+
+        context['elm']['student_profile'] = {'quote': False, 'safe': True, 'value': profile or 'null'}
+
+        return context
+
+
+class ElmLoadStudentSignUpView(NoAuthElmLoadJsView):
+    def get_context_data(self, **kwargs) -> Dict:
+        context = super(ElmLoadStudentSignUpView, self).get_context_data(**kwargs)
+
+        context['elm']['difficulties'] = {'quote': False, 'safe': True,
+                                          'value':
+                                              json.dumps([(text_difficulty.slug, text_difficulty.name)
+                                                          for text_difficulty in TextDifficulty.objects.all()])}
+
+        return context
 
 
 class StudentView(ProfileView):

@@ -17,18 +17,11 @@ from django.contrib import admin
 from django.urls import path, include, reverse_lazy
 from django.views.generic import RedirectView, TemplateView
 
-from mixins.view import (ElmLoadJsView, ElmLoadJsInstructorView, ElmLoadJsStudentView, NoAuthElmLoadJsView,
-                         ElmLoadStudentSignUpView)
+from mixins.view import (ElmLoadJsView, NoAuthElmLoadJsView)
 
 urlpatterns = [
     path('load_elm.js', ElmLoadJsView.as_view(), name='load-elm'),
-
-    path('load_elm.js', ElmLoadJsInstructorView.as_view(), name='load-elm-instructor'),
-    path('load_elm.js', ElmLoadJsStudentView.as_view(), name='load-elm-student'),
-
     path('load_elm_unauth.js', NoAuthElmLoadJsView.as_view(), name='load-elm-unauth'),
-
-    path('load_elm_unauth_student.js', ElmLoadStudentSignUpView.as_view(), name='load-elm-unauth-student-signup'),
 
     path('', include('user.urls.instructor')),
     path('', include('user.urls.student')),
