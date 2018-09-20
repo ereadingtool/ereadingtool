@@ -45,5 +45,9 @@ instructor_profile_page = "/profile/instructor/"
 forgot_password_page : String
 forgot_password_page = "/user/password_reset/"
 
+text_page : Int -> String
+text_page text_id =
+  "/text/" ++ toString text_id ++ "/"
+
 answer_feedback_limit : Int
 answer_feedback_limit = 2048

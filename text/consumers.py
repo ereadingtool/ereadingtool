@@ -6,7 +6,9 @@ from text.models import Text
 from text_reading.models import (TextReading)
 from text_reading.exceptions import (TextReadingException, TextReadingNotAllQuestionsAnswered,
                                      TextReadingQuestionNotInSection)
+
 from user.student.models import Student
+from user.models import ReaderUser
 
 
 class Unauthorized(Exception):
@@ -14,8 +16,8 @@ class Unauthorized(Exception):
 
 
 @database_sync_to_async
-def get_text_or_error(text_id: int, student: Student):
-    if not student.user.is_authenticated:
+def get_text_or_error(text_id: int, user: ReaderUser):
+    if not user.is_authenticated:
         raise Unauthorized
 
     text = Text.objects.get(pk=text_id)
@@ -24,8 +26,8 @@ def get_text_or_error(text_id: int, student: Student):
 
 
 @database_sync_to_async
-def get_answer_or_error(answer_id: int, student: Student):
-    if not student.user.is_authenticated:
+def get_answer_or_error(answer_id: int, user: ReaderUser):
+    if not user.is_authenticated:
         raise Unauthorized
 
     try:
@@ -45,7 +47,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
         if not student.user.is_authenticated:
             raise Unauthorized
 
-        answer = await get_answer_or_error(answer_id=answer_id, student=student)
+        answer = await get_answer_or_error(answer_id=answer_id, user=student.user)
 
         try:
             await database_sync_to_async(self.text_reading.answer)(answer)
@@ -117,7 +119,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             text_id = self.scope['url_route']['kwargs']['text_id']
             student = self.scope['user'].student
 
-            self.text = await get_text_or_error(text_id=text_id, student=student)
+            self.text = await get_text_or_error(text_id=text_id, user=student.user)
 
             started, self.text_reading = await database_sync_to_async(TextReading.start_or_resume)(
                 student=student, text=self.text)

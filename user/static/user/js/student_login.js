@@ -9952,6 +9952,15 @@ var _user$project$Answer_Model$Answer = F6(
 	});
 
 var _user$project$Config$answer_feedback_limit = 2048;
+var _user$project$Config$text_page = function (text_id) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		'/text/',
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$Basics$toString(text_id),
+			'/'));
+};
 var _user$project$Config$forgot_password_page = '/user/password_reset/';
 var _user$project$Config$instructor_profile_page = '/profile/instructor/';
 var _user$project$Config$student_profile_page = '/profile/student/';

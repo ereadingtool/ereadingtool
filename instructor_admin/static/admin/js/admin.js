@@ -9714,6 +9714,15 @@ var _user$project$Answer_Decode$answerDecoder = A3(
 var _user$project$Answer_Decode$answersDecoder = _elm_lang$core$Json_Decode$array(_user$project$Answer_Decode$answerDecoder);
 
 var _user$project$Config$answer_feedback_limit = 2048;
+var _user$project$Config$text_page = function (text_id) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		'/text/',
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$Basics$toString(text_id),
+			'/'));
+};
 var _user$project$Config$forgot_password_page = '/user/password_reset/';
 var _user$project$Config$instructor_profile_page = '/profile/instructor/';
 var _user$project$Config$student_profile_page = '/profile/student/';
@@ -9977,27 +9986,56 @@ var _user$project$Text_Model$TextListItem = function (a) {
 	};
 };
 
-var _user$project$Text_Reading_Model$TextReading = F4(
+var _user$project$Text_Reading_Model$TextReadingScore = F4(
 	function (a, b, c, d) {
-		return {id: a, text: b, current_section: c, status: d};
+		return {num_of_sections: a, complete_sections: b, section_scores: c, possible_section_scores: d};
+	});
+var _user$project$Text_Reading_Model$textReadingScoreDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'possible_section_scores',
+	_elm_lang$core$Json_Decode$int,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'section_scores',
+		_elm_lang$core$Json_Decode$int,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'complete_sections',
+			_elm_lang$core$Json_Decode$int,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'num_of_sections',
+				_elm_lang$core$Json_Decode$int,
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Reading_Model$TextReadingScore)))));
+var _user$project$Text_Reading_Model$TextReading = F6(
+	function (a, b, c, d, e, f) {
+		return {id: a, text_id: b, text: c, current_section: d, status: e, score: f};
 	});
 var _user$project$Text_Reading_Model$textReadingDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'status',
-	_elm_lang$core$Json_Decode$string,
+	'score',
+	_user$project$Text_Reading_Model$textReadingScoreDecoder,
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'current_section',
-		_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+		'status',
+		_elm_lang$core$Json_Decode$string,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'text',
-			_elm_lang$core$Json_Decode$string,
+			'current_section',
+			_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'id',
-				_elm_lang$core$Json_Decode$int,
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Reading_Model$TextReading)))));
+				'text',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'text_id',
+					_elm_lang$core$Json_Decode$int,
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'id',
+						_elm_lang$core$Json_Decode$int,
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Reading_Model$TextReading)))))));
 var _user$project$Text_Reading_Model$textReadingsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Reading_Model$textReadingDecoder);
 
 var _user$project$Util$onEnterUp = function (msg) {
@@ -11654,16 +11692,50 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 																															function (id) {
 																																return A2(
 																																	_elm_lang$core$Json_Decode$andThen,
-																																	function (status) {
+																																	function (score) {
 																																		return A2(
 																																			_elm_lang$core$Json_Decode$andThen,
-																																			function (text) {
-																																				return _elm_lang$core$Json_Decode$succeed(
-																																					{current_section: current_section, id: id, status: status, text: text});
+																																			function (status) {
+																																				return A2(
+																																					_elm_lang$core$Json_Decode$andThen,
+																																					function (text) {
+																																						return A2(
+																																							_elm_lang$core$Json_Decode$andThen,
+																																							function (text_id) {
+																																								return _elm_lang$core$Json_Decode$succeed(
+																																									{current_section: current_section, id: id, score: score, status: status, text: text, text_id: text_id});
+																																							},
+																																							A2(_elm_lang$core$Json_Decode$field, 'text_id', _elm_lang$core$Json_Decode$int));
+																																					},
+																																					A2(_elm_lang$core$Json_Decode$field, 'text', _elm_lang$core$Json_Decode$string));
 																																			},
-																																			A2(_elm_lang$core$Json_Decode$field, 'text', _elm_lang$core$Json_Decode$string));
+																																			A2(_elm_lang$core$Json_Decode$field, 'status', _elm_lang$core$Json_Decode$string));
 																																	},
-																																	A2(_elm_lang$core$Json_Decode$field, 'status', _elm_lang$core$Json_Decode$string));
+																																	A2(
+																																		_elm_lang$core$Json_Decode$field,
+																																		'score',
+																																		A2(
+																																			_elm_lang$core$Json_Decode$andThen,
+																																			function (complete_sections) {
+																																				return A2(
+																																					_elm_lang$core$Json_Decode$andThen,
+																																					function (num_of_sections) {
+																																						return A2(
+																																							_elm_lang$core$Json_Decode$andThen,
+																																							function (possible_section_scores) {
+																																								return A2(
+																																									_elm_lang$core$Json_Decode$andThen,
+																																									function (section_scores) {
+																																										return _elm_lang$core$Json_Decode$succeed(
+																																											{complete_sections: complete_sections, num_of_sections: num_of_sections, possible_section_scores: possible_section_scores, section_scores: section_scores});
+																																									},
+																																									A2(_elm_lang$core$Json_Decode$field, 'section_scores', _elm_lang$core$Json_Decode$int));
+																																							},
+																																							A2(_elm_lang$core$Json_Decode$field, 'possible_section_scores', _elm_lang$core$Json_Decode$int));
+																																					},
+																																					A2(_elm_lang$core$Json_Decode$field, 'num_of_sections', _elm_lang$core$Json_Decode$int));
+																																			},
+																																			A2(_elm_lang$core$Json_Decode$field, 'complete_sections', _elm_lang$core$Json_Decode$int))));
 																															},
 																															A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int));
 																													},

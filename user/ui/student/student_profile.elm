@@ -15,6 +15,7 @@ import Text.Reading.Model exposing (TextReading, TextReadingScore)
 import Student.Profile.Model exposing (StudentProfile)
 import Student.Profile.Encode
 
+import Config
 import Views
 import Flags
 
@@ -165,7 +166,7 @@ view_text_reading text_reading =
   , div [class "text_reading_item"] [
       Html.text "Actions"
     , div [class "text_reading_actions"] [
-        div [] [ Html.a [attribute "href" ("/text/" ++ toString text_reading.text_id ++ "/")] [ Html.text "Resume" ] ]
+        div [] [ Html.a [attribute "href" (Config.text_page text_reading.text_id)] [ Html.text "Resume" ] ]
       , div [] [ Html.a [attribute "href" "#"] [ Html.text "Start Over" ] ]
       ]
     ]

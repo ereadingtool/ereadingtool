@@ -1,12 +1,9 @@
 import json
-
 from typing import Dict
 
 from csp.decorators import csp_replace
-
 from django.http import Http404
 from django.http import HttpResponse, HttpRequest
-from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 
 from mixins.view import ElmLoadJsView
@@ -45,7 +42,7 @@ class TextView(TemplateView):
 
     # for text reading, relax connect-src CSP
     # since websockets are not the same origin as the HTTP requests (https://github.com/w3c/webappsec/issues/489)
-    @csp_replace(CONNECT_SRC=("ws://*", "*"))
+    @csp_replace(CONNECT_SRC=("ws://*",))
     def dispatch(self, request, *args, **kwargs):
         return super(TextView, self).dispatch(request, *args, **kwargs)
 
