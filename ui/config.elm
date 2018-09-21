@@ -42,6 +42,18 @@ student_profile_page = "/profile/student/"
 instructor_profile_page : String
 instructor_profile_page = "/profile/instructor/"
 
+student_signup_page : String
+student_signup_page = "/signup/student/"
+
+instructor_signup_page : String
+instructor_signup_page = "/signup/instructor/"
+
+student_login_page : String
+student_login_page = "/login/student/"
+
+instructor_login_page : String
+instructor_login_page = "/login/instructor/"
+
 forgot_password_page : String
 forgot_password_page = "/user/password_reset/"
 

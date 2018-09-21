@@ -16,6 +16,8 @@ import TextReader.Msg exposing (Msg(..))
 import TextReader.Update exposing (..)
 
 import Ports
+import Config
+
 
 init : Flags -> (Model, Cmd Msg)
 init flags =
@@ -56,7 +58,7 @@ update msg model =
         (model, Cmd.none)
 
       StartOver ->
-        (model, Cmd.none)
+        (model, Ports.redirect (Config.text_page model.text.id))
 
       NextSection ->
         (model, send_command NextReq)

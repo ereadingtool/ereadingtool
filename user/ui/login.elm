@@ -22,11 +22,11 @@ import Flags
 import Util
 import Config
 
-import Menu.Msg as MenuMsg
 
 type alias UserID = Int
 type alias URI = String
 type alias SignUpURI = String
+type alias LoginURI = String
 
 type alias LoginResp = { id: UserID, redirect : URI }
 
@@ -36,9 +36,10 @@ type Msg =
   | Submitted (Result Http.Error LoginResp)
   | UpdateEmail String
   | UpdatePassword String
-  | Logout MenuMsg.Msg
 
-type Login = StudentLogin SignUpURI Int | InstructorLogin SignUpURI Int
+type Login =
+    StudentLogin SignUpURI LoginURI Int
+  | InstructorLogin SignUpURI LoginURI Int
 
 type alias LoginParams = {
     username : String
@@ -52,34 +53,37 @@ type alias Model = {
 signup_uri : Login -> URI
 signup_uri login =
   case login of
-    StudentLogin uri _ -> uri
-    InstructorLogin uri _ -> uri
+    StudentLogin uri _ _ ->
+      uri
+
+    InstructorLogin uri _ _ ->
+      uri
 
 label : Login -> String
 label login =
   case login of
-    StudentLogin _ _ ->
+    StudentLogin _ _ _ ->
       "Student Login"
 
-    InstructorLogin _ _ ->
+    InstructorLogin _ _ _ ->
       "Instructor Login"
 
 menu_index : Login -> Int
 menu_index login =
   case login of
-    StudentLogin _ menu_index ->
+    StudentLogin _ _ menu_index ->
       menu_index
 
-    InstructorLogin _ menu_index ->
+    InstructorLogin _ _ menu_index ->
       menu_index
 
-student_login : URI -> Int -> Login
-student_login signup_uri menu_index =
-  StudentLogin signup_uri menu_index
+student_login : URI -> URI -> Int -> Login
+student_login signup_uri login_uri menu_index =
+  StudentLogin signup_uri login_uri menu_index
 
-instructor_login : URI -> Int -> Login
-instructor_login signup_uri menu_index =
-  InstructorLogin signup_uri menu_index
+instructor_login : URI -> URI -> Int -> Login
+instructor_login signup_uri login_uri menu_index =
+  InstructorLogin signup_uri login_uri menu_index
 
 loginEncoder : LoginParams -> Encode.Value
 loginEncoder login_params =
@@ -154,9 +158,6 @@ update endpoint msg model =
         Http.BadPayload err resp -> (model, Cmd.none)
         _ -> (model, Cmd.none)
 
-    Logout msg ->
-      (model, Cmd.none)
-
 login_label : (List (Html.Attribute Msg)) -> Html Msg -> Html Msg
 login_label attributes html =
   div ([attribute "class" "login_label"] ++ attributes) [
@@ -167,10 +168,10 @@ view_email_input : Model -> List (Html Msg)
 view_email_input model =
   let err_msg =
     case Dict.get "email" model.errors of
-      Just err_msg ->
-        login_label [] (Html.em [] [Html.text err_msg])
-      Nothing ->
-        Html.text ""
+       Just err_msg ->
+         login_label [] (Html.em [] [Html.text err_msg])
+       Nothing ->
+         Html.text ""
   in
     let email_error = if (Dict.member "email" model.errors) then
       [attribute "class" "input_error"]
@@ -221,20 +222,47 @@ view_submit model = [
       (div [class "login_submit"] [ span [] [ Html.text "Login" ] ])
   ]
 
-view_signup : SignUpURI -> List (Html Msg)
-view_signup signup_uri = [
-  span [] [
-    Html.text "Not registered? "
-  , Html.a [attribute "href" signup_uri] [ span [attribute "class" "cursor"] [Html.text "Sign Up"]]
-  , div [] [
-      Html.text "Forgot Password? "
-    , Html.a [attribute "href" Config.forgot_password_page] [
-        span [attribute "class" "cursor"] [
-          Html.text "Reset Password"
+view_other_login_option : Login -> Html Msg
+view_other_login_option login =
+  case login of
+    StudentLogin _ _ _ ->
+      div [] [
+        Html.text "Are you an instructor? "
+      , Html.a [attribute "href" Config.instructor_login_page] [
+          span [attribute "class" "cursor"] [
+            Html.text "Login as an instructor"
+          ]
         ]
       ]
+    InstructorLogin _ _ _ ->
+      div [] [
+        Html.text "Are you a student? "
+      , Html.a [attribute "href" Config.student_login_page] [
+          span [attribute "class" "cursor"] [
+            Html.text "Login as an student"
+          ]
+        ]
+      ]
+
+view_login : Login -> List (Html Msg)
+view_login login =
+  [
+    span [class "login_options"] [
+      div [] [
+         Html.text "Not registered? "
+      ,  Html.a [attribute "href" (signup_uri login)] [ span [attribute "class" "cursor"] [Html.text "Sign Up"]]
+      ]
+    , div [] [
+        Html.text "Forgot Password? "
+      , Html.a [attribute "href" Config.forgot_password_page] [
+          span [attribute "class" "cursor"] [
+            Html.text "Reset Password"
+          ]
+        ]
+      ]
+    , view_other_login_option login
     ]
-  ]]
+  ]
 
 view_content : Login -> Model -> Html Msg
 view_content login model =
@@ -242,7 +270,7 @@ view_content login model =
     div [class "login_type"] [ Html.text (label login) ]
   , div [classList [("login_box", True)] ] <|
       (view_email_input model) ++
-      (view_password_input model) ++ (view_signup (signup_uri login)) ++
+      (view_password_input model) ++ (view_login login) ++
       (view_submit model) ++
       (view_errors model)
   ]

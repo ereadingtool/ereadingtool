@@ -23588,7 +23588,12 @@ var _user$project$Main$update = F2(
 			case 'ViewFeedback':
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'StartOver':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _user$project$Ports$redirect(
+						_user$project$Config$text_page(model.text.id))
+				};
 			case 'NextSection':
 				return {
 					ctor: '_Tuple2',

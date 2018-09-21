@@ -13,7 +13,13 @@
     display: grid;
 
     grid-template-columns: auto;
-    grid-auto-rows: 50px;
+    grid-auto-rows: minmax(50px, auto);
+}
+
+.login_options {
+    display: grid;
+
+    margin: 15px 0 15px 0;
 }
 
 .login_type {

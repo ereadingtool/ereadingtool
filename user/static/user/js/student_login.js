@@ -9962,6 +9962,10 @@ var _user$project$Config$text_page = function (text_id) {
 			'/'));
 };
 var _user$project$Config$forgot_password_page = '/user/password_reset/';
+var _user$project$Config$instructor_login_page = '/login/instructor/';
+var _user$project$Config$student_login_page = '/login/student/';
+var _user$project$Config$instructor_signup_page = '/signup/instructor/';
+var _user$project$Config$student_signup_page = '/signup/student/';
 var _user$project$Config$instructor_profile_page = '/profile/instructor/';
 var _user$project$Config$student_profile_page = '/profile/student/';
 var _user$project$Config$student_api_endpoint = '/api/student/';
@@ -11049,22 +11053,22 @@ var _user$project$Views$view_header = F3(
 			});
 	});
 
-var _user$project$Login$view_signup = function (signup_uri) {
-	return {
-		ctor: '::',
-		_0: A2(
-			_elm_lang$html$Html$span,
+var _user$project$Login$view_login_options = function (login) {
+	var _p0 = login;
+	if (_p0.ctor === 'StudentLogin') {
+		return A2(
+			_elm_lang$html$Html$div,
 			{ctor: '[]'},
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html$text('Not registered? '),
+				_0: _elm_lang$html$Html$text('Are you an instructor? '),
 				_1: {
 					ctor: '::',
 					_0: A2(
 						_elm_lang$html$Html$a,
 						{
 							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', signup_uri),
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', _user$project$Config$instructor_login_page),
 							_1: {ctor: '[]'}
 						},
 						{
@@ -11078,53 +11082,50 @@ var _user$project$Login$view_signup = function (signup_uri) {
 								},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text('Sign Up'),
+									_0: _elm_lang$html$Html$text('Login as an instructor'),
 									_1: {ctor: '[]'}
 								}),
 							_1: {ctor: '[]'}
 						}),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{ctor: '[]'},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text('Forgot Password? '),
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$a,
-										{
-											ctor: '::',
-											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', _user$project$Config$forgot_password_page),
-											_1: {ctor: '[]'}
-										},
-										{
-											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$span,
-												{
-													ctor: '::',
-													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'cursor'),
-													_1: {ctor: '[]'}
-												},
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html$text('Reset Password'),
-													_1: {ctor: '[]'}
-												}),
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								}
-							}),
-						_1: {ctor: '[]'}
-					}
+					_1: {ctor: '[]'}
 				}
-			}),
-		_1: {ctor: '[]'}
-	};
+			});
+	} else {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('Are you a student? '),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$a,
+						{
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', _user$project$Config$student_login_page),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$span,
+								{
+									ctor: '::',
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'cursor'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('Login as an student'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			});
+	}
 };
 var _user$project$Login$login_label = F2(
 	function (attributes, html) {
@@ -11145,8 +11146,8 @@ var _user$project$Login$login_label = F2(
 			});
 	});
 var _user$project$Login$view_errors = function (model) {
-	var _p0 = A2(_elm_lang$core$Dict$get, 'all', model.errors);
-	if (_p0.ctor === 'Just') {
+	var _p1 = A2(_elm_lang$core$Dict$get, 'all', model.errors);
+	if (_p1.ctor === 'Just') {
 		return {
 			ctor: '::',
 			_0: A2(
@@ -11166,7 +11167,7 @@ var _user$project$Login$view_errors = function (model) {
 							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(_p0._0),
+								_0: _elm_lang$html$Html$text(_p1._0),
 								_1: {ctor: '[]'}
 							}),
 						_1: {ctor: '[]'}
@@ -11212,28 +11213,123 @@ var _user$project$Login$loginEncoder = function (login_params) {
 		});
 };
 var _user$project$Login$menu_index = function (login) {
-	var _p1 = login;
-	if (_p1.ctor === 'StudentLogin') {
-		return _p1._1;
+	var _p2 = login;
+	if (_p2.ctor === 'StudentLogin') {
+		return _p2._2;
 	} else {
-		return _p1._1;
+		return _p2._2;
 	}
 };
 var _user$project$Login$label = function (login) {
-	var _p2 = login;
-	if (_p2.ctor === 'StudentLogin') {
+	var _p3 = login;
+	if (_p3.ctor === 'StudentLogin') {
 		return 'Student Login';
 	} else {
 		return 'Instructor Login';
 	}
 };
 var _user$project$Login$signup_uri = function (login) {
-	var _p3 = login;
-	if (_p3.ctor === 'StudentLogin') {
-		return _p3._0;
+	var _p4 = login;
+	if (_p4.ctor === 'StudentLogin') {
+		return _p4._0;
 	} else {
-		return _p3._0;
+		return _p4._0;
 	}
+};
+var _user$project$Login$view_login = function (login) {
+	return {
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$span,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('login_options'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Not registered? '),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$a,
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html_Attributes$attribute,
+										'href',
+										_user$project$Login$signup_uri(login)),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$span,
+										{
+											ctor: '::',
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'cursor'),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text('Sign Up'),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Forgot Password? '),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$a,
+									{
+										ctor: '::',
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', _user$project$Config$forgot_password_page),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$span,
+											{
+												ctor: '::',
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'cursor'),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text('Reset Password'),
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Login$view_login_options(login),
+						_1: {ctor: '[]'}
+					}
+				}
+			}),
+		_1: {ctor: '[]'}
+	};
 };
 var _user$project$Login$LoginResp = F2(
 	function (a, b) {
@@ -11268,9 +11364,6 @@ var _user$project$Login$Model = F3(
 	function (a, b, c) {
 		return {flags: a, login_params: b, errors: c};
 	});
-var _user$project$Login$Logout = function (a) {
-	return {ctor: 'Logout', _0: a};
-};
 var _user$project$Login$UpdatePassword = function (a) {
 	return {ctor: 'UpdatePassword', _0: a};
 };
@@ -11279,8 +11372,8 @@ var _user$project$Login$UpdateEmail = function (a) {
 };
 var _user$project$Login$view_email_input = function (model) {
 	var err_msg = function () {
-		var _p4 = A2(_elm_lang$core$Dict$get, 'email', model.errors);
-		if (_p4.ctor === 'Just') {
+		var _p5 = A2(_elm_lang$core$Dict$get, 'email', model.errors);
+		if (_p5.ctor === 'Just') {
 			return A2(
 				_user$project$Login$login_label,
 				{ctor: '[]'},
@@ -11289,7 +11382,7 @@ var _user$project$Login$view_email_input = function (model) {
 					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(_p4._0),
+						_0: _elm_lang$html$Html$text(_p5._0),
 						_1: {ctor: '[]'}
 					}));
 		} else {
@@ -11359,8 +11452,8 @@ var _user$project$Login$post_login = F3(
 	});
 var _user$project$Login$update = F3(
 	function (endpoint, msg, model) {
-		var _p5 = msg;
-		switch (_p5.ctor) {
+		var _p6 = msg;
+		switch (_p6.ctor) {
 			case 'UpdatePassword':
 				var login_params = model.login_params;
 				return {
@@ -11370,12 +11463,12 @@ var _user$project$Login$update = F3(
 						{
 							login_params: _elm_lang$core$Native_Utils.update(
 								login_params,
-								{password: _p5._0})
+								{password: _p6._0})
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'UpdateEmail':
-				var _p6 = _p5._0;
+				var _p7 = _p6._0;
 				var login_params = model.login_params;
 				return {
 					ctor: '_Tuple2',
@@ -11384,8 +11477,8 @@ var _user$project$Login$update = F3(
 						{
 							login_params: _elm_lang$core$Native_Utils.update(
 								login_params,
-								{username: _p6}),
-							errors: (_user$project$Util$is_valid_email(_p6) || _elm_lang$core$Native_Utils.eq(_p6, '')) ? A2(_elm_lang$core$Dict$remove, 'email', model.errors) : A3(_elm_lang$core$Dict$insert, 'email', 'This e-mail is invalid', model.errors)
+								{username: _p7}),
+							errors: (_user$project$Util$is_valid_email(_p7) || _elm_lang$core$Native_Utils.eq(_p7, '')) ? A2(_elm_lang$core$Dict$remove, 'email', model.errors) : A3(_elm_lang$core$Dict$insert, 'email', 'This e-mail is invalid', model.errors)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -11400,27 +11493,27 @@ var _user$project$Login$update = F3(
 						}),
 					_1: A3(_user$project$Login$post_login, endpoint, model.flags.csrftoken, model.login_params)
 				};
-			case 'Submitted':
-				if (_p5._0.ctor === 'Ok') {
+			default:
+				if (_p6._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: model,
-						_1: _elm_lang$navigation$Navigation$load(_p5._0._0.redirect)
+						_1: _elm_lang$navigation$Navigation$load(_p6._0._0.redirect)
 					};
 				} else {
-					var _p7 = _p5._0._0;
-					switch (_p7.ctor) {
+					var _p8 = _p6._0._0;
+					switch (_p8.ctor) {
 						case 'BadStatus':
-							var _p8 = A2(
+							var _p9 = A2(
 								_elm_lang$core$Json_Decode$decodeString,
 								_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
-								_p7._0.body);
-							if (_p8.ctor === 'Ok') {
+								_p8._0.body);
+							if (_p9.ctor === 'Ok') {
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
 										model,
-										{errors: _p8._0}),
+										{errors: _p9._0}),
 									_1: _elm_lang$core$Platform_Cmd$none
 								};
 							} else {
@@ -11432,8 +11525,6 @@ var _user$project$Login$update = F3(
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 					}
 				}
-			default:
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
 	});
 var _user$project$Login$Submit = {ctor: 'Submit'};
@@ -11456,8 +11547,8 @@ var _user$project$Login$view_password_input = function (model) {
 			_1: {ctor: '[]'}
 		} : {ctor: '[]'});
 	var password_err_msg = function () {
-		var _p9 = A2(_elm_lang$core$Dict$get, 'password', model.errors);
-		if (_p9.ctor === 'Just') {
+		var _p10 = A2(_elm_lang$core$Dict$get, 'password', model.errors);
+		if (_p10.ctor === 'Just') {
 			return A2(
 				_user$project$Login$login_label,
 				{ctor: '[]'},
@@ -11466,7 +11557,7 @@ var _user$project$Login$view_password_input = function (model) {
 					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(_p9._0),
+						_0: _elm_lang$html$Html$text(_p10._0),
 						_1: {ctor: '[]'}
 					}));
 		} else {
@@ -11602,8 +11693,7 @@ var _user$project$Login$view_content = F2(
 								_user$project$Login$view_password_input(model),
 								A2(
 									_elm_lang$core$Basics_ops['++'],
-									_user$project$Login$view_signup(
-										_user$project$Login$signup_uri(login)),
+									_user$project$Login$view_login(login),
 									A2(
 										_elm_lang$core$Basics_ops['++'],
 										_user$project$Login$view_submit(model),
@@ -11631,28 +11721,28 @@ var _user$project$Login$view = F2(
 				}
 			});
 	});
-var _user$project$Login$InstructorLogin = F2(
-	function (a, b) {
-		return {ctor: 'InstructorLogin', _0: a, _1: b};
+var _user$project$Login$InstructorLogin = F3(
+	function (a, b, c) {
+		return {ctor: 'InstructorLogin', _0: a, _1: b, _2: c};
 	});
-var _user$project$Login$instructor_login = F2(
-	function (signup_uri, menu_index) {
-		return A2(_user$project$Login$InstructorLogin, signup_uri, menu_index);
+var _user$project$Login$instructor_login = F3(
+	function (signup_uri, login_uri, menu_index) {
+		return A3(_user$project$Login$InstructorLogin, signup_uri, login_uri, menu_index);
 	});
-var _user$project$Login$StudentLogin = F2(
-	function (a, b) {
-		return {ctor: 'StudentLogin', _0: a, _1: b};
+var _user$project$Login$StudentLogin = F3(
+	function (a, b, c) {
+		return {ctor: 'StudentLogin', _0: a, _1: b, _2: c};
 	});
-var _user$project$Login$student_login = F2(
-	function (signup_uri, menu_index) {
-		return A2(_user$project$Login$StudentLogin, signup_uri, menu_index);
+var _user$project$Login$student_login = F3(
+	function (signup_uri, login_uri, menu_index) {
+		return A3(_user$project$Login$StudentLogin, signup_uri, login_uri, menu_index);
 	});
 
 var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 	{
 		init: _user$project$Login$init,
 		view: _user$project$Login$view(
-			A2(_user$project$Login$student_login, '/signup/student', 2)),
+			A3(_user$project$Login$student_login, _user$project$Config$student_signup_page, _user$project$Config$student_login_page, 2)),
 		subscriptions: _user$project$Login$subscriptions,
 		update: _user$project$Login$update(_user$project$Config$student_login_api_endpoint)
 	})(
