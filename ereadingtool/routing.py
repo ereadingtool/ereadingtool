@@ -3,7 +3,8 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.security.websocket import AllowedHostsOriginValidator
 from django.conf.urls import url
 
-from text.consumers import StudentTextReaderConsumer, InstructorTextReaderConsumer
+from text.consumers.student import StudentTextReaderConsumer
+from text.consumers.instructor import InstructorTextReaderConsumer
 
 application = ProtocolTypeRouter({
     # web socket textreader handler
