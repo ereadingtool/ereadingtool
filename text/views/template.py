@@ -9,6 +9,8 @@ from django.views.generic import TemplateView
 from mixins.view import ElmLoadJsView
 from text.models import Text, TextDifficulty
 
+from user.instructor.models import Instructor
+
 
 class TextSearchView(TemplateView):
     template_name = 'text_search.html'
@@ -61,9 +63,18 @@ class TextLoadElm(ElmLoadJsView):
 
         host = self.request.get_host()
 
+        profile = self.request.user.profile
+
+        profile_type = 'student'
+
+        if isinstance(profile, Instructor):
+            profile_type = 'instructor'
+
         context['elm']['text_id'] = {'quote': False, 'safe': True, 'value': context['pk']}
+
+        ws_addr = f"ws://{host}/{profile_type}/text_read/{context['pk']}/"
+
         context['elm']['text_reader_ws_addr'] = {'quote': True, 'safe': True,
-                                                 'value': f"ws://{host}/text_read/{context['pk']}/"}
+                                                 'value': ws_addr}
 
         return context
-

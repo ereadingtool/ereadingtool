@@ -4,11 +4,11 @@ from django.db import models
 
 from text.models import Text
 
-from text_reading.models import TextReading, TextReadingAnswers
+from text_reading.base import TextReading, TextReadingAnswers
 from user.student.models import Student
 
 
-class StudentTextReading(TextReading):
+class StudentTextReading(TextReading, models.Model):
     student = models.ForeignKey(Student, null=False, on_delete=models.CASCADE, related_name='text_readings')
 
     @classmethod
@@ -48,7 +48,11 @@ class StudentTextReading(TextReading):
         else:
             return True, cls.start(student=student, text=text)
 
+    @property
+    def text_reading_answer_cls(self):
+        return StudentTextReadingAnswers
 
-class StudentTextReadingAnswers(TextReadingAnswers):
+
+class StudentTextReadingAnswers(TextReadingAnswers, models.Model):
     text_reading = models.ForeignKey(StudentTextReading, on_delete=models.CASCADE,
                                      related_name='text_reading_answers')

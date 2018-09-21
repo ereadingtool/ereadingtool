@@ -245,7 +245,7 @@ class TextAPIView(LoginRequiredMixin, View):
 
         texts = [text.to_summary_dict(student=student)
                  for text in self.model.objects.annotate(
-                num_of_readings=models.Count('textreading')).order_by(
+                num_of_readings=models.Count('studenttextreading')).order_by(
                 'num_of_readings').filter(**filter_by)]
 
         return HttpResponse(json.dumps(texts))

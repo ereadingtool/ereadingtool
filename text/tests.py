@@ -7,10 +7,16 @@ from hypothesis.strategies import just, one_of
 
 from ereadingtool.test.user import TestUser
 from ereadingtool.urls import reverse_lazy
+
 from question.models import Answer
+
 from tag.models import Tag
+
 from text.models import TextDifficulty, Text, TextSection
-from text_reading.models import TextReading, TextReadingNotAllQuestionsAnswered
+
+from text_reading.base import TextReadingNotAllQuestionsAnswered
+from text_reading.models import StudentTextReading
+
 from user.student.models import Student
 
 
@@ -34,7 +40,7 @@ class TextTest(TestUser, TestCase):
 
         self.assertEquals(text_sections[0].questions.count(), num_of_questions)
 
-        text_reading = TextReading.start(student=student, text=text_obj)
+        text_reading = StudentTextReading.start(student=student, text=text_obj)
 
         self.assertEquals(text_reading.current_state, text_reading.state_machine.intro)
 

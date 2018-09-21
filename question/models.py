@@ -69,11 +69,9 @@ class Answer(models.Model):
 
         answer_dict['answered_correctly'] = None
 
-        # TODO (andrew): perhaps use django queryset annotations here to reduce the number of queries
-        if text_reading and self.text_reading_answers.filter(text_reading=text_reading).count():
-            # this was one of the student's answers
-            if self == self.text_reading_answers.model.objects.filter(text_reading=text_reading,
-                                                                      question=self.question)[0].answer:
+        if text_reading and text_reading.text_reading_answers.filter(answer=self).count():
+            # this was one of the user's answers
+            if self == text_reading.text_reading_answers.filter(question=self.question)[0].answer:
                 # answer was given first
                 answer_dict['answered_correctly'] = self.correct
 

@@ -3,7 +3,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 from question.models import Answer
 from text.models import Text
-from text_reading.models import (TextReading)
+from text_reading.models import (InstructorTextReading, StudentTextReading)
 from text_reading.exceptions import (TextReadingException, TextReadingNotAllQuestionsAnswered,
                                      TextReadingQuestionNotInSection)
 
@@ -123,8 +123,8 @@ class InstructorTextReaderConsumer(AsyncJsonWebsocketConsumer):
 
             self.text = await get_text_or_error(text_id=text_id, user=instructor.user)
 
-            started, self.text_reading = await database_sync_to_async(TextReading.start_or_resume)(
-                student=instructor, text=self.text)
+            started, self.text_reading = await database_sync_to_async(InstructorTextReading.start_or_resume)(
+                instructor=instructor, text=self.text)
 
             if started:
                 await self.send_json({
@@ -169,7 +169,7 @@ class InstructorTextReaderConsumer(AsyncJsonWebsocketConsumer):
 
 class StudentTextReaderConsumer(AsyncJsonWebsocketConsumer):
     def __init__(self, *args, **kwargs):
-        super(TextReaderConsumer, self).__init__(*args, **kwargs)
+        super(StudentTextReaderConsumer, self).__init__(*args, **kwargs)
 
         self.text = None
         self.text_reading = None
@@ -252,7 +252,7 @@ class StudentTextReaderConsumer(AsyncJsonWebsocketConsumer):
 
             self.text = await get_text_or_error(text_id=text_id, user=student.user)
 
-            started, self.text_reading = await database_sync_to_async(TextReading.start_or_resume)(
+            started, self.text_reading = await database_sync_to_async(StudentTextReading.start_or_resume)(
                 student=student, text=self.text)
 
             if started:
@@ -300,17 +300,31 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super(TextReaderConsumer, self).__init__(*args, **kwargs)
 
+        self.args = args
+        self.kwargs = kwargs
+
         self.consumer = None
 
-    async def receive_json(self, content, **kwargs):
-        profile = self.scope['user'].profile
+    async def connect(self):
+        if self.scope['user'].is_anonymous:
+            await self.close()
+        else:
+            await self.accept()
 
+            profile = self.scope['user'].profile
+
+            if not self.consumer:
+                if isinstance(profile, Student):
+                    self.consumer = StudentTextReaderConsumer(*self.args, **self.kwargs)
+                elif isinstance(profile, Instructor):
+                    self.consumer = InstructorTextReaderConsumer(*self.args, **self.kwargs)
+
+                self.consumer.base_send = self.base_send
+
+            await self.consumer.connect()
+
+    async def receive_json(self, content, **kwargs):
         if not self.consumer:
-            if isinstance(profile, Student):
-                self.consumer = StudentTextReaderConsumer()
-            elif isinstance(profile, Instructor):
-                self.consumer = InstructorTextReaderConsumer()
-            else:
-                await self.send_json({'error': {'code': 'no_consumer', 'error_msg': 'Not a valid user.'}})
+            await self.send_json({'error': {'code': 'no_consumer', 'error_msg': 'Not a valid user.'}})
 
         await self.consumer.receive_json(content, **kwargs)
