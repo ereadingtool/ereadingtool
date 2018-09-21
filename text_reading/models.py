@@ -51,19 +51,36 @@ class TextReadingStateMachine(StateMachine):
 
 
 class TextReading(models.Model):
+    class Meta:
+        abstract = True
+
     """
     A model that keeps track of individual text reading sessions.
     """
-    student = models.ForeignKey(Student, null=False, on_delete=models.CASCADE, related_name='text_readings')
+    state_machine_cls = TextReadingStateMachine
+
     text = models.ForeignKey(Text, null=False, on_delete=models.CASCADE)
 
-    state = models.CharField(max_length=64, null=False, default=TextReadingStateMachine.intro.name)
+    state = models.CharField(max_length=64, null=False, default=state_machine_cls.intro.name)
 
     currently_reading = models.NullBooleanField()
     current_section = models.ForeignKey(TextSection, null=True, on_delete=models.CASCADE, related_name='text_readings')
 
     start_dt = models.DateTimeField(null=False, auto_now_add=True)
     end_dt = models.DateTimeField(null=True)
+
+    def __init__(self, *args, **kwargs):
+        """
+        Deserialize the state from the db.
+        """
+        super(TextReading, self).__init__(*args, **kwargs)
+
+        self.state_machine = self.state_machine_cls()
+
+        self.state_machine.next.validators = [self.next_validator]
+        self.state_machine.on_enter_complete = self.on_enter_complete
+
+        self.state_machine.current_state = getattr(self.state_machine_cls, self.state)
 
     def to_dict(self) -> Dict:
         return {
@@ -126,9 +143,6 @@ class TextReading(models.Model):
     def on_enter_complete(self, *args, **kwargs):
         self.set_end_dt()
 
-    def began_reading_validator(self, *args, **kwargs):
-        pass
-
     def next_validator(self, *args, **kwargs):
         current_section = self.get_current_section()
 
@@ -140,21 +154,7 @@ class TextReading(models.Model):
                 error_msg='Please answer all questions before continuing to the next section.'
             )
 
-    def __init__(self, *args, **kwargs):
-        """
-        Deserialize the state from the db.
-        """
-        super(TextReading, self).__init__(*args, **kwargs)
-
-        self.state_machine = TextReadingStateMachine()
-
-        self.state_machine.reading.validators = [self.began_reading_validator]
-        self.state_machine.next.validators = [self.next_validator]
-        self.state_machine.on_enter_complete = self.on_enter_complete
-
-        self.state_machine.current_state = getattr(TextReadingStateMachine, self.state)
-
-    def answer(self, answer: Answer) -> Optional[TypeVar('TextReadingAnswers')]:
+    def answer(self, answer: Answer) -> Optional[TypeVar(bound='TextReadingAnswers')]:
         if answer.question.text_section != self.current_section:
             raise TextReadingQuestionNotInSection(code='question_not_in_section',
                                                   error_msg='This question is not in this section.')
@@ -230,38 +230,24 @@ class TextReading(models.Model):
         self.save()
 
     @classmethod
-    def start(cls, student: Student, text: Text) -> TypeVar('TextReading'):
-        """
-
-        :param student:
-        :param text:
-        :return: TextReading
-        """
-        text_reading = cls.objects.create(student=student, text=text)
-
-        return text_reading
+    def start(cls, student: Student, text: Text) -> TypeVar(bound='TextReading'):
+        raise NotImplementedError
 
     @classmethod
-    def resume(cls, student: Student, text: Text) -> TypeVar('TextReading'):
-        """
-
-        :param student:
-        :param text:
-        :return:
-        """
-
-        return cls.objects.filter(student=student, text=text).exclude(state=TextReadingStateMachine.complete.name).get()
+    def resume(cls, student: Student, text: Text) -> TypeVar(bound='TextReading'):
+        raise NotImplementedError
 
     @classmethod
-    def start_or_resume(cls, student: Student, text: Text) -> TypeVar('TextReading'):
-        if cls.objects.filter(student=student, text=text).exclude(state=TextReadingStateMachine.complete.name).count():
-            return False, cls.resume(student=student, text=text)
-        else:
-            return True, cls.start(student=student, text=text)
+    def start_or_resume(cls, student: Student, text: Text) -> TypeVar(bound='TextReading'):
+        raise NotImplementedError
 
 
 class TextReadingAnswers(Timestamped, models.Model):
-    text_reading = models.ForeignKey(TextReading, on_delete=models.CASCADE, related_name='text_reading_answers')
+    class Meta:
+        abstract = True
+        unique_together = (('text_reading', 'text_section', 'question', 'answer'),)
+
+    text_reading = NotImplemented
     text_section = models.ForeignKey(TextSection, on_delete=models.CASCADE, related_name='text_reading_answers')
 
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='text_reading_answers')
@@ -270,6 +256,3 @@ class TextReadingAnswers(Timestamped, models.Model):
     def __str__(self):
         return f'Text Reading {self.text_reading.pk} for section {self.text_section.pk} question {self.question.pk} ' \
                f'answer {self.answer.pk} (correct: {self.answer.correct})'
-
-    class Meta:
-        unique_together = (('text_reading', 'text_section', 'question', 'answer'),)
