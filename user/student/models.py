@@ -1,9 +1,11 @@
-from typing import Optional, TypeVar
+from typing import TypeVar
 from django.db import models
 
 from django.urls import reverse_lazy
 
 from text.models import TextDifficulty
+from text_reading.base import TextReadingStateMachine
+
 from user.models import ReaderUser
 
 from user.mixins.models import Profile
@@ -32,14 +34,15 @@ class Student(Profile, models.Model):
             'text_reading': [text_reading.to_dict() for text_reading in self.text_readings.all()]
         }
 
-    def sections_complete_for(self, text: Optional[TypeVar('Text')]) -> int:
+    def sections_complete_for(self, text: TypeVar('Text')) -> int:
         sections_complete = 0
 
         if self.text_readings.filter(text=text).exists():
-            current_text_reading = self.text_readings.exclude(state='complete').get(text=text)
+            current_text_reading = self.text_readings.exclude(
+                state=TextReadingStateMachine.complete.name).get(text=text)
 
             if not current_text_reading.state_machine.is_intro:
-                sections_complete = current_text_reading.current_section.order+1
+                sections_complete = current_text_reading.current_section.order
 
         return sections_complete
 

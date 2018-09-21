@@ -11053,7 +11053,7 @@ var _user$project$Views$view_header = F3(
 			});
 	});
 
-var _user$project$Login$view_login_options = function (login) {
+var _user$project$Login$view_other_login_option = function (login) {
 	var _p0 = login;
 	if (_p0.ctor === 'StudentLogin') {
 		return A2(
@@ -11323,7 +11323,7 @@ var _user$project$Login$view_login = function (login) {
 						}),
 					_1: {
 						ctor: '::',
-						_0: _user$project$Login$view_login_options(login),
+						_0: _user$project$Login$view_other_login_option(login),
 						_1: {ctor: '[]'}
 					}
 				}

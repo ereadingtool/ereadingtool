@@ -10530,6 +10530,49 @@ var _user$project$Ports$redirect = _elm_lang$core$Native_Platform.outgoingPort(
 		return v;
 	});
 
+var _user$project$Main$view_text_reading_actions = function (text_reading) {
+	var action_label = function () {
+		var _p0 = text_reading.status;
+		if (_p0 === 'complete') {
+			return 'Start Over';
+		} else {
+			return 'Resume';
+		}
+	}();
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('text_reading_actions'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$a,
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html_Attributes$attribute,
+								'href',
+								_user$project$Config$text_page(text_reading.text_id)),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(action_label),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		});
+};
 var _user$project$Main$view_scores = function (score) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -10630,61 +10673,7 @@ var _user$project$Main$view_text_reading = function (text_reading) {
 									_0: _elm_lang$html$Html$text('Actions'),
 									_1: {
 										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$div,
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('text_reading_actions'),
-												_1: {ctor: '[]'}
-											},
-											{
-												ctor: '::',
-												_0: A2(
-													_elm_lang$html$Html$div,
-													{ctor: '[]'},
-													{
-														ctor: '::',
-														_0: A2(
-															_elm_lang$html$Html$a,
-															{
-																ctor: '::',
-																_0: A2(
-																	_elm_lang$html$Html_Attributes$attribute,
-																	'href',
-																	_user$project$Config$text_page(text_reading.text_id)),
-																_1: {ctor: '[]'}
-															},
-															{
-																ctor: '::',
-																_0: _elm_lang$html$Html$text('Resume'),
-																_1: {ctor: '[]'}
-															}),
-														_1: {ctor: '[]'}
-													}),
-												_1: {
-													ctor: '::',
-													_0: A2(
-														_elm_lang$html$Html$div,
-														{ctor: '[]'},
-														{
-															ctor: '::',
-															_0: A2(
-																_elm_lang$html$Html$a,
-																{
-																	ctor: '::',
-																	_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '#'),
-																	_1: {ctor: '[]'}
-																},
-																{
-																	ctor: '::',
-																	_0: _elm_lang$html$Html$text('Start Over'),
-																	_1: {ctor: '[]'}
-																}),
-															_1: {ctor: '[]'}
-														}),
-													_1: {ctor: '[]'}
-												}
-											}),
+										_0: _user$project$Main$view_text_reading_actions(text_reading),
 										_1: {ctor: '[]'}
 									}
 								}),
@@ -10754,12 +10743,12 @@ var _user$project$Main$Submitted = function (a) {
 };
 var _user$project$Main$put_profile = F2(
 	function (csrftoken, student_profile) {
-		var _p0 = _user$project$Student_Profile_Model$studentID(student_profile);
-		if (_p0.ctor === 'Just') {
+		var _p1 = _user$project$Student_Profile_Model$studentID(student_profile);
+		if (_p1.ctor === 'Just') {
 			var encoded_profile = _user$project$Student_Profile_Encode$profileEncoder(student_profile);
 			var req = A4(
 				_user$project$HttpHelpers$put_with_headers,
-				_user$project$Student_Profile_Model$studentUpdateURI(_p0._0),
+				_user$project$Student_Profile_Model$studentUpdateURI(_p1._0),
 				{
 					ctor: '::',
 					_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
@@ -10774,15 +10763,15 @@ var _user$project$Main$put_profile = F2(
 	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p1 = msg;
-		switch (_p1.ctor) {
+		var _p2 = msg;
+		switch (_p2.ctor) {
 			case 'UpdateStudentProfile':
-				if (_p1._0.ctor === 'Ok') {
+				if (_p2._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{profile: _p1._0._0}),
+							{profile: _p2._0._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
@@ -10791,14 +10780,14 @@ var _user$project$Main$update = F2(
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								err_str: _elm_lang$core$Basics$toString(_p1._0._0)
+								err_str: _elm_lang$core$Basics$toString(_p2._0._0)
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				}
 			case 'UpdateDifficulty':
-				var _p2 = _p1._0;
-				var new_difficulty_preference = {ctor: '_Tuple2', _0: _p2, _1: _p2};
+				var _p3 = _p2._0;
+				var new_difficulty_preference = {ctor: '_Tuple2', _0: _p3, _1: _p3};
 				var new_student_profile = A2(_user$project$Student_Profile_Model$setStudentDifficultyPreference, model.profile, new_difficulty_preference);
 				return {
 					ctor: '_Tuple2',
@@ -10806,22 +10795,22 @@ var _user$project$Main$update = F2(
 					_1: A2(_user$project$Main$put_profile, model.flags.csrftoken, new_student_profile)
 				};
 			case 'Submitted':
-				if (_p1._0.ctor === 'Ok') {
+				if (_p2._0.ctor === 'Ok') {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
-					var _p3 = _p1._0._0;
-					switch (_p3.ctor) {
+					var _p4 = _p2._0._0;
+					switch (_p4.ctor) {
 						case 'BadStatus':
-							var _p4 = A2(
+							var _p5 = A2(
 								_elm_lang$core$Json_Decode$decodeString,
 								_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
-								_p3._0.body);
-							if (_p4.ctor === 'Ok') {
+								_p4._0.body);
+							if (_p5.ctor === 'Ok') {
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
 										model,
-										{errors: _p4._0}),
+										{errors: _p5._0}),
 									_1: _elm_lang$core$Platform_Cmd$none
 								};
 							} else {
@@ -10840,14 +10829,14 @@ var _user$project$Main$update = F2(
 					_1: A3(_user$project$Student_Profile_Model$logout, model.profile, model.flags.csrftoken, _user$project$Main$LoggedOut)
 				};
 			default:
-				if (_p1._0.ctor === 'Ok') {
+				if (_p2._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: model,
-						_1: _user$project$Ports$redirect(_p1._0._0.redirect)
+						_1: _user$project$Ports$redirect(_p2._0._0.redirect)
 					};
 				} else {
-					var _p5 = A2(_elm_lang$core$Debug$log, 'log out error', _p1._0._0);
+					var _p6 = A2(_elm_lang$core$Debug$log, 'log out error', _p2._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 		}
@@ -10857,9 +10846,9 @@ var _user$project$Main$UpdateDifficulty = function (a) {
 };
 var _user$project$Main$view_difficulty = function (model) {
 	var pref = function () {
-		var _p6 = _user$project$Student_Profile_Model$studentDifficultyPreference(model.profile);
-		if (_p6.ctor === 'Just') {
-			return _elm_lang$core$Tuple$first(_p6._0);
+		var _p7 = _user$project$Student_Profile_Model$studentDifficultyPreference(model.profile);
+		if (_p7.ctor === 'Just') {
+			return _elm_lang$core$Tuple$first(_p7._0);
 		} else {
 			return '';
 		}
@@ -10883,26 +10872,26 @@ var _user$project$Main$view_difficulty = function (model) {
 						{ctor: '[]'},
 						A2(
 							_elm_lang$core$List$map,
-							function (_p7) {
-								var _p8 = _p7;
-								var _p9 = _p8._0;
+							function (_p8) {
+								var _p9 = _p8;
+								var _p10 = _p9._0;
 								return A2(
 									_elm_lang$html$Html$option,
 									A2(
 										_elm_lang$core$Basics_ops['++'],
 										{
 											ctor: '::',
-											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', _p9),
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', _p10),
 											_1: {ctor: '[]'}
 										},
-										_elm_lang$core$Native_Utils.eq(_p9, pref) ? {
+										_elm_lang$core$Native_Utils.eq(_p10, pref) ? {
 											ctor: '::',
 											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'selected', ''),
 											_1: {ctor: '[]'}
 										} : {ctor: '[]'}),
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text(_p8._1),
+										_0: _elm_lang$html$Html$text(_p9._1),
 										_1: {ctor: '[]'}
 									});
 							},

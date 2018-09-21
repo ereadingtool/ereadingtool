@@ -1,4 +1,4 @@
-from typing import TypeVar, Optional, Dict
+from typing import TypeVar, Optional, Dict, Union
 
 from django.db import models
 from django.utils import timezone
@@ -10,7 +10,6 @@ from question.models import Question, Answer
 from text.models import Text, TextSection
 from text_reading.exceptions import (TextReadingInvalidState, TextReadingNotAllQuestionsAnswered,
                                      TextReadingQuestionNotInSection)
-from user.student.models import Student
 
 
 class TextReadingStateMachine(StateMachine):
@@ -233,15 +232,18 @@ class TextReading(models.Model):
         self.save()
 
     @classmethod
-    def start(cls, student: Student, text: Text) -> TypeVar('TextReadingAnswers', bound='TextReading'):
+    def start(cls, profile: Union[TypeVar('Student'), TypeVar('Instructor')],
+              text: Text) -> TypeVar('TextReadingAnswers', bound='TextReading'):
         raise NotImplementedError
 
     @classmethod
-    def resume(cls, student: Student, text: Text) -> TypeVar('TextReadingAnswers', bound='TextReading'):
+    def resume(cls, profile: Union[TypeVar('Student'), TypeVar('Instructor')],
+               text: Text) -> TypeVar('TextReadingAnswers', bound='TextReading'):
         raise NotImplementedError
 
     @classmethod
-    def start_or_resume(cls, student: Student, text: Text) -> TypeVar('TextReadingAnswers', bound='TextReading'):
+    def start_or_resume(cls, profile: Union[TypeVar('Student'), TypeVar('Instructor')],
+                        text: Text) -> TypeVar('TextReadingAnswers', bound='TextReading'):
         raise NotImplementedError
 
 

@@ -147,6 +147,20 @@ view_scores score =
     Html.text ("Score: " ++ (toString score.complete_sections) ++ " / " ++ (toString score.num_of_sections))
   ]
 
+view_text_reading_actions : TextReading -> Html Msg
+view_text_reading_actions text_reading =
+  let
+    action_label =
+      (case text_reading.status of
+         "complete" -> "Start Over"
+         _ -> "Resume")
+  in
+    div [class "text_reading_actions"] [
+      div [] [
+        Html.a [attribute "href" (Config.text_page text_reading.text_id)] [ Html.text action_label ]
+      ]
+    ]
+
 view_text_reading : TextReading -> Html Msg
 view_text_reading text_reading =
   span [] [
@@ -165,10 +179,7 @@ view_text_reading text_reading =
   , view_scores text_reading.score
   , div [class "text_reading_item"] [
       Html.text "Actions"
-    , div [class "text_reading_actions"] [
-        div [] [ Html.a [attribute "href" (Config.text_page text_reading.text_id)] [ Html.text "Resume" ] ]
-      , div [] [ Html.a [attribute "href" "#"] [ Html.text "Start Over" ] ]
-      ]
+    , view_text_reading_actions text_reading
     ]
   ]
 
