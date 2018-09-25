@@ -9730,17 +9730,21 @@ var _user$project$Student_Profile_Model$logout = F3(
 			_user$project$Menu_Logout$logoutRespDecoder);
 		return A2(_elm_lang$http$Http$send, logout_msg, request);
 	});
-var _user$project$Student_Profile_Model$studentUserName = function (_p0) {
+var _user$project$Student_Profile_Model$studentEmail = function (_p0) {
 	var _p1 = _p0;
-	return _p1._0.username;
+	return _p1._0.email;
 };
-var _user$project$Student_Profile_Model$studentTextReading = function (_p2) {
+var _user$project$Student_Profile_Model$studentUserName = function (_p2) {
 	var _p3 = _p2;
-	return _p3._0.text_reading;
+	return _p3._0.username;
 };
-var _user$project$Student_Profile_Model$studentDifficulties = function (_p4) {
+var _user$project$Student_Profile_Model$studentTextReading = function (_p4) {
 	var _p5 = _p4;
-	return _p5._0.difficulties;
+	return _p5._0.text_reading;
+};
+var _user$project$Student_Profile_Model$studentDifficulties = function (_p6) {
+	var _p7 = _p6;
+	return _p7._0.difficulties;
 };
 var _user$project$Student_Profile_Model$studentUpdateURI = function (id) {
 	return A2(
@@ -9760,17 +9764,17 @@ var _user$project$Student_Profile_Model$studentUpdateURI = function (id) {
 			}
 		});
 };
-var _user$project$Student_Profile_Model$studentID = function (_p6) {
-	var _p7 = _p6;
-	return _p7._0.id;
-};
-var _user$project$Student_Profile_Model$studentDifficultyPreference = function (_p8) {
+var _user$project$Student_Profile_Model$studentID = function (_p8) {
 	var _p9 = _p8;
-	return _p9._0.difficulty_preference;
+	return _p9._0.id;
 };
-var _user$project$Student_Profile_Model$StudentProfileParams = F5(
-	function (a, b, c, d, e) {
-		return {id: a, username: b, difficulty_preference: c, difficulties: d, text_reading: e};
+var _user$project$Student_Profile_Model$studentDifficultyPreference = function (_p10) {
+	var _p11 = _p10;
+	return _p11._0.difficulty_preference;
+};
+var _user$project$Student_Profile_Model$StudentProfileParams = F6(
+	function (a, b, c, d, e, f) {
+		return {id: a, username: b, email: c, difficulty_preference: d, difficulties: e, text_reading: f};
 	});
 var _user$project$Student_Profile_Model$studentProfileParamsDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -9786,13 +9790,17 @@ var _user$project$Student_Profile_Model$studentProfileParamsDecoder = A3(
 			_elm_lang$core$Json_Decode$nullable(_user$project$Util$tupleDecoder),
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'username',
+				'email',
 				_elm_lang$core$Json_Decode$string,
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'id',
-					_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Student_Profile_Model$StudentProfileParams))))));
+					'username',
+					_elm_lang$core$Json_Decode$string,
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'id',
+						_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Student_Profile_Model$StudentProfileParams)))))));
 var _user$project$Student_Profile_Model$StudentProfile = function (a) {
 	return {ctor: 'StudentProfile', _0: a};
 };
@@ -9800,17 +9808,18 @@ var _user$project$Student_Profile_Model$emptyStudentProfile = _user$project$Stud
 	{
 		id: _elm_lang$core$Maybe$Nothing,
 		username: '',
+		email: '',
 		difficulty_preference: _elm_lang$core$Maybe$Nothing,
 		difficulties: {ctor: '[]'},
 		text_reading: _elm_lang$core$Maybe$Nothing
 	});
 var _user$project$Student_Profile_Model$studentProfileDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Student_Profile_Model$StudentProfile, _user$project$Student_Profile_Model$studentProfileParamsDecoder);
 var _user$project$Student_Profile_Model$setStudentDifficultyPreference = F2(
-	function (_p10, preference) {
-		var _p11 = _p10;
+	function (_p12, preference) {
+		var _p13 = _p12;
 		return _user$project$Student_Profile_Model$StudentProfile(
 			_elm_lang$core$Native_Utils.update(
-				_p11._0,
+				_p13._0,
 				{
 					difficulty_preference: _elm_lang$core$Maybe$Just(preference)
 				}));
@@ -10728,9 +10737,9 @@ var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
 var _user$project$Main$updateRespDecoder = _elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string);
-var _user$project$Main$Model = F4(
-	function (a, b, c, d) {
-		return {flags: a, profile: b, err_str: c, errors: d};
+var _user$project$Main$Model = F5(
+	function (a, b, c, d, e) {
+		return {flags: a, profile: b, editing: c, err_str: d, errors: e};
 	});
 var _user$project$Main$LoggedOut = function (a) {
 	return {ctor: 'LoggedOut', _0: a};
@@ -10794,6 +10803,16 @@ var _user$project$Main$update = F2(
 					_0: model,
 					_1: A2(_user$project$Main$put_profile, model.flags.csrftoken, new_student_profile)
 				};
+			case 'UserNameUpdate':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							editing: A2(_elm_lang$core$Dict$member, 'username', model.editing) ? A2(_elm_lang$core$Dict$remove, 'username', model.editing) : A3(_elm_lang$core$Dict$insert, 'username', true, model.editing)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 			case 'Submitted':
 				if (_p2._0.ctor === 'Ok') {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
@@ -10841,14 +10860,113 @@ var _user$project$Main$update = F2(
 				}
 		}
 	});
+var _user$project$Main$UserNameUpdate = {ctor: 'UserNameUpdate'};
+var _user$project$Main$view_username = function (model) {
+	var username = _user$project$Student_Profile_Model$studentUserName(model.profile);
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('profile_item'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$span,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('profile_item_title'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Username'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: function () {
+					var _p7 = A2(_elm_lang$core$Dict$member, 'username', model.editing);
+					if (_p7 === false) {
+						return A2(
+							_elm_lang$html$Html$span,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('profile_item_value'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(
+									_user$project$Student_Profile_Model$studentUserName(model.profile)),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$div,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('update_username'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('cursor'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$UserNameUpdate),
+													_1: {ctor: '[]'}
+												}
+											}
+										},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text('Update'),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
+							});
+					} else {
+						return A2(
+							_elm_lang$html$Html$span,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('profile_item_value'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$input,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('username_input'),
+										_1: {
+											ctor: '::',
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Username'),
+											_1: {
+												ctor: '::',
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', username),
+												_1: {ctor: '[]'}
+											}
+										}
+									},
+									{ctor: '[]'}),
+								_1: {ctor: '[]'}
+							});
+					}
+				}(),
+				_1: {ctor: '[]'}
+			}
+		});
+};
 var _user$project$Main$UpdateDifficulty = function (a) {
 	return {ctor: 'UpdateDifficulty', _0: a};
 };
 var _user$project$Main$view_difficulty = function (model) {
 	var pref = function () {
-		var _p7 = _user$project$Student_Profile_Model$studentDifficultyPreference(model.profile);
-		if (_p7.ctor === 'Just') {
-			return _elm_lang$core$Tuple$first(_p7._0);
+		var _p8 = _user$project$Student_Profile_Model$studentDifficultyPreference(model.profile);
+		if (_p8.ctor === 'Just') {
+			return _elm_lang$core$Tuple$first(_p8._0);
 		} else {
 			return '';
 		}
@@ -10872,26 +10990,26 @@ var _user$project$Main$view_difficulty = function (model) {
 						{ctor: '[]'},
 						A2(
 							_elm_lang$core$List$map,
-							function (_p8) {
-								var _p9 = _p8;
-								var _p10 = _p9._0;
+							function (_p9) {
+								var _p10 = _p9;
+								var _p11 = _p10._0;
 								return A2(
 									_elm_lang$html$Html$option,
 									A2(
 										_elm_lang$core$Basics_ops['++'],
 										{
 											ctor: '::',
-											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', _p10),
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', _p11),
 											_1: {ctor: '[]'}
 										},
-										_elm_lang$core$Native_Utils.eq(_p10, pref) ? {
+										_elm_lang$core$Native_Utils.eq(_p11, pref) ? {
 											ctor: '::',
 											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'selected', ''),
 											_1: {ctor: '[]'}
 										} : {ctor: '[]'}),
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text(_p9._1),
+										_0: _elm_lang$html$Html$text(_p10._1),
 										_1: {ctor: '[]'}
 									});
 							},
@@ -10930,45 +11048,7 @@ var _user$project$Main$view_content = function (model) {
 				},
 				{
 					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('profile_item'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$span,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('profile_item_title'),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text('Username'),
-									_1: {ctor: '[]'}
-								}),
-							_1: {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$span,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('profile_item_value'),
-										_1: {ctor: '[]'}
-									},
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text(
-											_user$project$Student_Profile_Model$studentUserName(model.profile)),
-										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							}
-						}),
+					_0: _user$project$Main$view_username(model),
 					_1: {
 						ctor: '::',
 						_0: A2(
@@ -10989,7 +11069,7 @@ var _user$project$Main$view_content = function (model) {
 									},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text('Preferred Difficulty'),
+										_0: _elm_lang$html$Html$text('User E-Mail'),
 										_1: {ctor: '[]'}
 									}),
 								_1: {
@@ -11003,7 +11083,8 @@ var _user$project$Main$view_content = function (model) {
 										},
 										{
 											ctor: '::',
-											_0: _user$project$Main$view_difficulty(model),
+											_0: _elm_lang$html$Html$text(
+												_user$project$Student_Profile_Model$studentEmail(model.profile)),
 											_1: {ctor: '[]'}
 										}),
 									_1: {ctor: '[]'}
@@ -11029,7 +11110,7 @@ var _user$project$Main$view_content = function (model) {
 										},
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html$text('Flashcards: '),
+											_0: _elm_lang$html$Html$text('Preferred Difficulty'),
 											_1: {ctor: '[]'}
 										}),
 									_1: {
@@ -11043,45 +11124,7 @@ var _user$project$Main$view_content = function (model) {
 											},
 											{
 												ctor: '::',
-												_0: A2(
-													_elm_lang$html$Html$div,
-													{ctor: '[]'},
-													A2(
-														_elm_lang$core$List$map,
-														function (fake_name) {
-															return A2(
-																_elm_lang$html$Html$div,
-																{ctor: '[]'},
-																{
-																	ctor: '::',
-																	_0: A2(
-																		_elm_lang$html$Html$a,
-																		{
-																			ctor: '::',
-																			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '#'),
-																			_1: {ctor: '[]'}
-																		},
-																		{
-																			ctor: '::',
-																			_0: _elm_lang$html$Html$text(fake_name),
-																			_1: {ctor: '[]'}
-																		}),
-																	_1: {ctor: '[]'}
-																});
-														},
-														{
-															ctor: '::',
-															_0: 'word',
-															_1: {
-																ctor: '::',
-																_0: 'word',
-																_1: {
-																	ctor: '::',
-																	_0: 'word',
-																	_1: {ctor: '[]'}
-																}
-															}
-														})),
+												_0: _user$project$Main$view_difficulty(model),
 												_1: {ctor: '[]'}
 											}),
 										_1: {ctor: '[]'}
@@ -11089,26 +11132,105 @@ var _user$project$Main$view_content = function (model) {
 								}),
 							_1: {
 								ctor: '::',
-								_0: _user$project$Main$view_student_text_readings(model.profile),
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('profile_item'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$span,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('profile_item_title'),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text('Flashcards: '),
+												_1: {ctor: '[]'}
+											}),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$span,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class('profile_item_value'),
+													_1: {ctor: '[]'}
+												},
+												{
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$div,
+														{ctor: '[]'},
+														A2(
+															_elm_lang$core$List$map,
+															function (fake_name) {
+																return A2(
+																	_elm_lang$html$Html$div,
+																	{ctor: '[]'},
+																	{
+																		ctor: '::',
+																		_0: A2(
+																			_elm_lang$html$Html$a,
+																			{
+																				ctor: '::',
+																				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '#'),
+																				_1: {ctor: '[]'}
+																			},
+																			{
+																				ctor: '::',
+																				_0: _elm_lang$html$Html$text(fake_name),
+																				_1: {ctor: '[]'}
+																			}),
+																		_1: {ctor: '[]'}
+																	});
+															},
+															{
+																ctor: '::',
+																_0: 'word',
+																_1: {
+																	ctor: '::',
+																	_0: 'word',
+																	_1: {
+																		ctor: '::',
+																		_0: 'word',
+																		_1: {ctor: '[]'}
+																	}
+																}
+															})),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}
+									}),
 								_1: {
 									ctor: '::',
-									_0: (!_elm_lang$core$String$isEmpty(model.err_str)) ? A2(
-										_elm_lang$html$Html$span,
-										{
-											ctor: '::',
-											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'error'),
-											_1: {ctor: '[]'}
-										},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text('error'),
-											_1: {
+									_0: _user$project$Main$view_student_text_readings(model.profile),
+									_1: {
+										ctor: '::',
+										_0: (!_elm_lang$core$String$isEmpty(model.err_str)) ? A2(
+											_elm_lang$html$Html$span,
+											{
 												ctor: '::',
-												_0: _elm_lang$html$Html$text(model.err_str),
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'error'),
 												_1: {ctor: '[]'}
-											}
-										}) : _elm_lang$html$Html$text(''),
-									_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text('error'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html$text(model.err_str),
+													_1: {ctor: '[]'}
+												}
+											}) : _elm_lang$html$Html$text(''),
+										_1: {ctor: '[]'}
+									}
 								}
 							}
 						}
@@ -11148,6 +11270,8 @@ var _user$project$Main$init = function (flags) {
 		_0: {
 			flags: flags,
 			profile: _user$project$Student_Profile_Model$emptyStudentProfile,
+			editing: _elm_lang$core$Dict$fromList(
+				{ctor: '[]'}),
 			err_str: '',
 			errors: _elm_lang$core$Dict$fromList(
 				{ctor: '[]'})
@@ -11195,116 +11319,121 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 																		function (difficulty_preference) {
 																			return A2(
 																				_elm_lang$core$Json_Decode$andThen,
-																				function (id) {
+																				function (email) {
 																					return A2(
 																						_elm_lang$core$Json_Decode$andThen,
-																						function (text_reading) {
+																						function (id) {
 																							return A2(
 																								_elm_lang$core$Json_Decode$andThen,
-																								function (username) {
-																									return _elm_lang$core$Json_Decode$succeed(
-																										{difficulties: difficulties, difficulty_preference: difficulty_preference, id: id, text_reading: text_reading, username: username});
+																								function (text_reading) {
+																									return A2(
+																										_elm_lang$core$Json_Decode$andThen,
+																										function (username) {
+																											return _elm_lang$core$Json_Decode$succeed(
+																												{difficulties: difficulties, difficulty_preference: difficulty_preference, email: email, id: id, text_reading: text_reading, username: username});
+																										},
+																										A2(_elm_lang$core$Json_Decode$field, 'username', _elm_lang$core$Json_Decode$string));
 																								},
-																								A2(_elm_lang$core$Json_Decode$field, 'username', _elm_lang$core$Json_Decode$string));
+																								A2(
+																									_elm_lang$core$Json_Decode$field,
+																									'text_reading',
+																									_elm_lang$core$Json_Decode$oneOf(
+																										{
+																											ctor: '::',
+																											_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																											_1: {
+																												ctor: '::',
+																												_0: A2(
+																													_elm_lang$core$Json_Decode$map,
+																													_elm_lang$core$Maybe$Just,
+																													_elm_lang$core$Json_Decode$list(
+																														A2(
+																															_elm_lang$core$Json_Decode$andThen,
+																															function (current_section) {
+																																return A2(
+																																	_elm_lang$core$Json_Decode$andThen,
+																																	function (id) {
+																																		return A2(
+																																			_elm_lang$core$Json_Decode$andThen,
+																																			function (score) {
+																																				return A2(
+																																					_elm_lang$core$Json_Decode$andThen,
+																																					function (status) {
+																																						return A2(
+																																							_elm_lang$core$Json_Decode$andThen,
+																																							function (text) {
+																																								return A2(
+																																									_elm_lang$core$Json_Decode$andThen,
+																																									function (text_id) {
+																																										return _elm_lang$core$Json_Decode$succeed(
+																																											{current_section: current_section, id: id, score: score, status: status, text: text, text_id: text_id});
+																																									},
+																																									A2(_elm_lang$core$Json_Decode$field, 'text_id', _elm_lang$core$Json_Decode$int));
+																																							},
+																																							A2(_elm_lang$core$Json_Decode$field, 'text', _elm_lang$core$Json_Decode$string));
+																																					},
+																																					A2(_elm_lang$core$Json_Decode$field, 'status', _elm_lang$core$Json_Decode$string));
+																																			},
+																																			A2(
+																																				_elm_lang$core$Json_Decode$field,
+																																				'score',
+																																				A2(
+																																					_elm_lang$core$Json_Decode$andThen,
+																																					function (complete_sections) {
+																																						return A2(
+																																							_elm_lang$core$Json_Decode$andThen,
+																																							function (num_of_sections) {
+																																								return A2(
+																																									_elm_lang$core$Json_Decode$andThen,
+																																									function (possible_section_scores) {
+																																										return A2(
+																																											_elm_lang$core$Json_Decode$andThen,
+																																											function (section_scores) {
+																																												return _elm_lang$core$Json_Decode$succeed(
+																																													{complete_sections: complete_sections, num_of_sections: num_of_sections, possible_section_scores: possible_section_scores, section_scores: section_scores});
+																																											},
+																																											A2(_elm_lang$core$Json_Decode$field, 'section_scores', _elm_lang$core$Json_Decode$int));
+																																									},
+																																									A2(_elm_lang$core$Json_Decode$field, 'possible_section_scores', _elm_lang$core$Json_Decode$int));
+																																							},
+																																							A2(_elm_lang$core$Json_Decode$field, 'num_of_sections', _elm_lang$core$Json_Decode$int));
+																																					},
+																																					A2(_elm_lang$core$Json_Decode$field, 'complete_sections', _elm_lang$core$Json_Decode$int))));
+																																	},
+																																	A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int));
+																															},
+																															A2(
+																																_elm_lang$core$Json_Decode$field,
+																																'current_section',
+																																_elm_lang$core$Json_Decode$oneOf(
+																																	{
+																																		ctor: '::',
+																																		_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																																		_1: {
+																																			ctor: '::',
+																																			_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+																																			_1: {ctor: '[]'}
+																																		}
+																																	}))))),
+																												_1: {ctor: '[]'}
+																											}
+																										})));
 																						},
 																						A2(
 																							_elm_lang$core$Json_Decode$field,
-																							'text_reading',
+																							'id',
 																							_elm_lang$core$Json_Decode$oneOf(
 																								{
 																									ctor: '::',
 																									_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
 																									_1: {
 																										ctor: '::',
-																										_0: A2(
-																											_elm_lang$core$Json_Decode$map,
-																											_elm_lang$core$Maybe$Just,
-																											_elm_lang$core$Json_Decode$list(
-																												A2(
-																													_elm_lang$core$Json_Decode$andThen,
-																													function (current_section) {
-																														return A2(
-																															_elm_lang$core$Json_Decode$andThen,
-																															function (id) {
-																																return A2(
-																																	_elm_lang$core$Json_Decode$andThen,
-																																	function (score) {
-																																		return A2(
-																																			_elm_lang$core$Json_Decode$andThen,
-																																			function (status) {
-																																				return A2(
-																																					_elm_lang$core$Json_Decode$andThen,
-																																					function (text) {
-																																						return A2(
-																																							_elm_lang$core$Json_Decode$andThen,
-																																							function (text_id) {
-																																								return _elm_lang$core$Json_Decode$succeed(
-																																									{current_section: current_section, id: id, score: score, status: status, text: text, text_id: text_id});
-																																							},
-																																							A2(_elm_lang$core$Json_Decode$field, 'text_id', _elm_lang$core$Json_Decode$int));
-																																					},
-																																					A2(_elm_lang$core$Json_Decode$field, 'text', _elm_lang$core$Json_Decode$string));
-																																			},
-																																			A2(_elm_lang$core$Json_Decode$field, 'status', _elm_lang$core$Json_Decode$string));
-																																	},
-																																	A2(
-																																		_elm_lang$core$Json_Decode$field,
-																																		'score',
-																																		A2(
-																																			_elm_lang$core$Json_Decode$andThen,
-																																			function (complete_sections) {
-																																				return A2(
-																																					_elm_lang$core$Json_Decode$andThen,
-																																					function (num_of_sections) {
-																																						return A2(
-																																							_elm_lang$core$Json_Decode$andThen,
-																																							function (possible_section_scores) {
-																																								return A2(
-																																									_elm_lang$core$Json_Decode$andThen,
-																																									function (section_scores) {
-																																										return _elm_lang$core$Json_Decode$succeed(
-																																											{complete_sections: complete_sections, num_of_sections: num_of_sections, possible_section_scores: possible_section_scores, section_scores: section_scores});
-																																									},
-																																									A2(_elm_lang$core$Json_Decode$field, 'section_scores', _elm_lang$core$Json_Decode$int));
-																																							},
-																																							A2(_elm_lang$core$Json_Decode$field, 'possible_section_scores', _elm_lang$core$Json_Decode$int));
-																																					},
-																																					A2(_elm_lang$core$Json_Decode$field, 'num_of_sections', _elm_lang$core$Json_Decode$int));
-																																			},
-																																			A2(_elm_lang$core$Json_Decode$field, 'complete_sections', _elm_lang$core$Json_Decode$int))));
-																															},
-																															A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int));
-																													},
-																													A2(
-																														_elm_lang$core$Json_Decode$field,
-																														'current_section',
-																														_elm_lang$core$Json_Decode$oneOf(
-																															{
-																																ctor: '::',
-																																_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-																																_1: {
-																																	ctor: '::',
-																																	_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
-																																	_1: {ctor: '[]'}
-																																}
-																															}))))),
+																										_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$int),
 																										_1: {ctor: '[]'}
 																									}
 																								})));
 																				},
-																				A2(
-																					_elm_lang$core$Json_Decode$field,
-																					'id',
-																					_elm_lang$core$Json_Decode$oneOf(
-																						{
-																							ctor: '::',
-																							_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-																							_1: {
-																								ctor: '::',
-																								_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$int),
-																								_1: {ctor: '[]'}
-																							}
-																						})));
+																				A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string));
 																		},
 																		A2(
 																			_elm_lang$core$Json_Decode$field,

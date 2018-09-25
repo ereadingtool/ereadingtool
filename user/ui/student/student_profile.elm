@@ -28,6 +28,7 @@ import Menu.Logout
 type Msg =
     UpdateStudentProfile (Result Error StudentProfile)
   | UpdateDifficulty String
+  | UserNameUpdate
   | Submitted (Result Error UpdateProfileResp )
   | Logout MenuMsg.Msg
   | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
@@ -37,6 +38,7 @@ type alias Flags = Flags.Flags {}
 type alias Model = {
     flags : Flags
   , profile : StudentProfile
+  , editing : Dict String Bool
   , err_str : String
   , errors : Dict String String }
 
@@ -65,6 +67,7 @@ init : Flags -> (Model, Cmd Msg)
 init flags = ({
     flags = flags
   , profile = Student.Profile.Model.emptyStudentProfile
+  , editing = Dict.fromList []
   , err_str = "", errors = Dict.fromList [] }, Profile.retrieve_student_profile UpdateStudentProfile flags.profile_id)
 
 subscriptions : Model -> Sub Msg
@@ -86,6 +89,13 @@ update msg model = case msg of
       new_student_profile = Student.Profile.Model.setStudentDifficultyPreference model.profile new_difficulty_preference
     in
       (model, put_profile model.flags.csrftoken new_student_profile )
+
+  UserNameUpdate ->
+    ({ model | editing =
+      (if Dict.member "username" model.editing then
+        Dict.remove "username" model.editing
+       else Dict.insert "username" True model.editing) }
+    , Cmd.none)
 
   Submitted (Ok resp) ->
     (model, Cmd.none)
@@ -193,13 +203,35 @@ view_student_text_readings student_profile =
     , span [class "profile_item_value"] (List.map view_text_reading text_readings)
     ]
 
+view_username : Model -> Html Msg
+view_username model =
+  let
+    username = Student.Profile.Model.studentUserName model.profile
+  in
+    div [class "profile_item"] [
+      span [class "profile_item_title"] [ Html.text "Username" ]
+    , case Dict.member "username" model.editing of
+        False ->
+          span [class "profile_item_value"] [
+            Html.text (Student.Profile.Model.studentUserName model.profile)
+          , div [class "update_username", class "cursor", onClick UserNameUpdate] [ Html.text "Update" ]
+          ]
+        True ->
+          span [class "profile_item_value"] [
+            Html.input [class "username_input", attribute "placeholder" "Username", attribute "value" username] []
+          ]
+    ]
+
 view_content : Model -> Html Msg
 view_content model =
   div [ classList [("profile", True)] ] [
     div [classList [("profile_items", True)] ] [
-      div [class "profile_item"] [
-        span [class "profile_item_title"] [ Html.text "Username" ]
-      , span [class "profile_item_value"] [ Html.text (Student.Profile.Model.studentUserName model.profile) ]
+      view_username model
+    , div [class "profile_item"] [
+        span [class "profile_item_title"] [ Html.text "User E-Mail" ]
+      , span [class "profile_item_value"] [
+          Html.text (Student.Profile.Model.studentEmail model.profile)
+        ]
       ]
     , div [class "profile_item"] [
         span [class "profile_item_title"] [ Html.text "Preferred Difficulty" ]

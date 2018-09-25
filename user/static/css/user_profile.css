@@ -53,6 +53,11 @@
     margin-top: 15px;
 }
 
+.update_username {
+    margin-top: 10px;
+    font-size: smaller;
+}
+
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
     .header {
         display: flex;

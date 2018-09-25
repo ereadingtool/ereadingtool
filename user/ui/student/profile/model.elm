@@ -20,6 +20,7 @@ import Menu.Logout
 type alias StudentProfileParams = {
     id: Maybe Int
   , username: String
+  , email: String
   , difficulty_preference: Maybe Text.TextDifficulty
   , difficulties: List Text.TextDifficulty
   , text_reading: Maybe (List TextReading) }
@@ -31,6 +32,7 @@ emptyStudentProfile : StudentProfile
 emptyStudentProfile = StudentProfile {
     id = Nothing
   , username = ""
+  , email = ""
   , difficulty_preference = Nothing
   , difficulties = []
   , text_reading = Nothing }
@@ -41,6 +43,7 @@ studentProfileParamsDecoder =
   decode StudentProfileParams
     |> required "id" (Json.Decode.nullable Json.Decode.int)
     |> required "username" Json.Decode.string
+    |> required "email" Json.Decode.string
     |> required "difficulty_preference" (Json.Decode.nullable tupleDecoder)
     |> required "difficulties" (Json.Decode.list tupleDecoder)
     |> required "text_reading" (Json.Decode.nullable textReadingsDecoder)
@@ -72,6 +75,9 @@ studentTextReading (StudentProfile attrs) = attrs.text_reading
 
 studentUserName : StudentProfile -> String
 studentUserName (StudentProfile attrs) = attrs.username
+
+studentEmail : StudentProfile -> String
+studentEmail (StudentProfile attrs) = attrs.email
 
 init_profile : StudentProfileParams -> StudentProfile
 init_profile params = StudentProfile params
