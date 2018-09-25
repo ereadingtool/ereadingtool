@@ -29,12 +29,12 @@ class TestUser(TestCase):
 
         return user, user_passwd
 
-    def new_student(self) -> Student:
+    def new_student(self) -> (ReaderUser, AnyStr, Student):
         user, user_passwd = self.new_user()
 
         student = models(Student, user=just(user)).example()
 
-        return student
+        return user, user_passwd, student
 
     def new_instructor_client(self, client: Client) -> Client:
         user, user_passwd = self.new_user()

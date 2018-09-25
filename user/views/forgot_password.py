@@ -32,8 +32,6 @@ class ElmLoadPassResetConfirmView(NoAuthElmLoadJsView):
             # If the token is valid, display the password reset form.
             self.validlink = True
 
-            return super(ElmLoadPassResetConfirmView, self).dispatch(request, *args, **kwargs)
-
         return super(ElmLoadPassResetConfirmView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs: Dict) -> Dict:
@@ -96,7 +94,7 @@ class PasswordResetConfirmAPIView(APIView):
         user = form.save()
 
         return HttpResponse(json.dumps({'errors': {}, 'body': 'Your password has been reset.',
-                                        'redirect': user.profile.login_url}))
+                                        'redirect': str(user.profile.login_url)}))
 
 
 class PasswordResetAPIView(APIView):

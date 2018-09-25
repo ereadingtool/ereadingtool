@@ -33,7 +33,7 @@ class TextTest(TestUser, TestCase):
         test_data['text_sections'][0]['questions'].append(self.gen_text_section_question_params(order=1))
         num_of_questions = len(test_data['text_sections'][0]['questions'])
 
-        student = self.new_student()
+        _, _, student = self.new_student()
         text_obj = self.create_text(diff_data=test_data)
 
         text_sections = text_obj.sections.all()

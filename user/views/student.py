@@ -1,4 +1,6 @@
 import json
+import jsonschema
+
 from typing import TypeVar, Dict
 
 from django import forms
@@ -71,7 +73,17 @@ class StudentAPIView(LoginRequiredMixin, APIView):
     def post_success(self, request: HttpRequest, form: TypeVar('forms.Form')) -> HttpResponse:
         raise NotImplementedError
 
+    def put_error(self, errors: dict) -> HttpResponse:
+        return HttpResponse(json.dumps(errors), status=400)
+
+    def put_success(self, request: HttpRequest, student_form: TypeVar('forms.Form')) -> HttpResponse:
+        student = student_form.save()
+
+        return HttpResponse(json.dumps(student.to_dict()))
+
     def put(self, request, *args, **kwargs) -> HttpResponse:
+        errors = params = {}
+
         if not Student.objects.filter(pk=kwargs['pk']).count():
             return HttpResponse(status=400)
 
@@ -85,19 +97,21 @@ class StudentAPIView(LoginRequiredMixin, APIView):
         except json.JSONDecodeError as e:
             return self.put_json_error(e)
 
-        try:
-            params['difficulty_preference'] = TextDifficulty.objects.get(slug=params['difficulty_preference']).pk
-        except TextDifficulty.DoesNotExist:
-            pass
+        if 'difficulty_preference' in params:
+            try:
+                params['difficulty_preference'] = TextDifficulty.objects.get(slug=params['difficulty_preference']).pk
+            except TextDifficulty.DoesNotExist:
+                pass
 
         form = self.form(request, params, instance=student)
 
-        if form.is_valid():
-            student = form.save()
-        else:
-            return HttpResponse(status=400)
+        if not form.is_valid():
+            errors = self.format_form_errors(form)
 
-        return HttpResponse(json.dumps(student.to_dict()))
+        if errors:
+            return self.put_error(errors)
+        else:
+            return self.put_success(request, form)
 
 
 class StudentSignupAPIView(APIView):

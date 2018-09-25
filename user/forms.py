@@ -36,7 +36,7 @@ class SignUpForm(forms.ModelForm):
 
         validate_email(email)
 
-        if ReaderUser.objects.filter(username=email).count():
+        if ReaderUser.objects.filter(username=email).exists():
             raise forms.ValidationError(_('Email address already exists.'), code='email_exists')
 
         return email
@@ -91,6 +91,21 @@ class StudentLoginForm(AuthenticationForm):
 
 
 class StudentForm(forms.ModelForm):
+    username = forms.CharField(validators=[ReaderUser.username_validator], required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(StudentForm, self).__init__(*args, **kwargs)
+
+        self.fields['difficulty_preference'].required = False
+
+    def save(self, commit=True):
+        student = super(StudentForm, self).save(commit=commit)
+
+        student.user.username = self.cleaned_data['username']
+        student.user.save()
+
+        return student
+
     class Meta:
         model = Student
         exclude = ('user',)

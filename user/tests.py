@@ -19,16 +19,36 @@ class TestUser(TestUserBase, TestCase):
 
         self.anonymous_client = Client()
 
-        self.student_user, self.student_passwd = self.new_user()
+        self.student_user, self.student_passwd, self.student_profile = self.new_student()
 
         self.student_client = self.new_student_client(Client(), user_and_pass=(self.student_user, self.student_passwd))
 
-        self.student_client.logout()
-
+        self.student_api_endpoint = reverse('api-student', args=[self.student_profile.pk])
         self.password_reset_api_endpoint = reverse('api-password-reset')
         self.password_reset_confirm_api_endpoint = reverse('api-password-reset-confirm')
 
+    def test_set_username(self):
+        resp = self.student_client.put(self.student_api_endpoint,
+                                       data=json.dumps({'username': '$$$invalid$$$'}), content_type='application/json')
+
+        self.assertTrue(resp)
+
+        resp_content = json.loads(resp.content)
+
+        self.assertEquals(resp.status_code, 400)
+
+        self.assertEquals(list(resp_content.keys()), ['username'])
+
+        resp = self.student_client.put(self.student_api_endpoint,
+                                       data=json.dumps({'username': 'newusername14'}), content_type='application/json')
+
+        self.assertTrue(resp)
+
+        self.assertEquals(resp.status_code, 200)
+
     def test_password_reset(self):
+        self.student_client.logout()
+
         resp = self.anonymous_client.post(self.password_reset_api_endpoint,
                                           data=json.dumps({'email': self.student_user.email}),
                                           content_type='application/json')
