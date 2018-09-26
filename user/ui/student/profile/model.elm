@@ -60,6 +60,10 @@ setStudentDifficultyPreference : StudentProfile -> Text.TextDifficulty -> Studen
 setStudentDifficultyPreference (StudentProfile attrs) preference =
   StudentProfile { attrs | difficulty_preference = Just preference }
 
+setUserName : StudentProfile -> String -> StudentProfile
+setUserName (StudentProfile attrs) new_username =
+  StudentProfile { attrs | username = new_username }
+
 studentID : StudentProfile -> Maybe Int
 studentID (StudentProfile attrs) = attrs.id
 

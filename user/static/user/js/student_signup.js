@@ -10417,6 +10417,14 @@ var _user$project$Student_Profile_Model$setStudentDifficultyPreference = F2(
 					difficulty_preference: _elm_lang$core$Maybe$Just(preference)
 				}));
 	});
+var _user$project$Student_Profile_Model$setUserName = F2(
+	function (_p14, new_username) {
+		var _p15 = _p14;
+		return _user$project$Student_Profile_Model$StudentProfile(
+			_elm_lang$core$Native_Utils.update(
+				_p15._0,
+				{username: new_username}));
+	});
 var _user$project$Student_Profile_Model$init_profile = function (params) {
 	return _user$project$Student_Profile_Model$StudentProfile(params);
 };

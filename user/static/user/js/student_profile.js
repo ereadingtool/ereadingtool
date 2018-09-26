@@ -9825,6 +9825,14 @@ var _user$project$Student_Profile_Model$setStudentDifficultyPreference = F2(
 					difficulty_preference: _elm_lang$core$Maybe$Just(preference)
 				}));
 	});
+var _user$project$Student_Profile_Model$setUserName = F2(
+	function (_p14, new_username) {
+		var _p15 = _p14;
+		return _user$project$Student_Profile_Model$StudentProfile(
+			_elm_lang$core$Native_Utils.update(
+				_p15._0,
+				{username: new_username}));
+	});
 var _user$project$Student_Profile_Model$init_profile = function (params) {
 	return _user$project$Student_Profile_Model$StudentProfile(params);
 };
@@ -10165,6 +10173,8 @@ var _user$project$Flags$UnAuthedFlags = function (a) {
 };
 
 var _user$project$Student_Profile_Encode$profileEncoder = function (student) {
+	var username = _elm_lang$core$Json_Encode$string(
+		_user$project$Student_Profile_Model$studentUserName(student));
 	var encode_pref = function () {
 		var _p0 = _user$project$Student_Profile_Model$studentDifficultyPreference(student);
 		if (_p0.ctor === 'Just') {
@@ -10178,7 +10188,11 @@ var _user$project$Student_Profile_Encode$profileEncoder = function (student) {
 		{
 			ctor: '::',
 			_0: {ctor: '_Tuple2', _0: 'difficulty_preference', _1: encode_pref},
-			_1: {ctor: '[]'}
+			_1: {
+				ctor: '::',
+				_0: {ctor: '_Tuple2', _0: 'username', _1: username},
+				_1: {ctor: '[]'}
+			}
 		});
 };
 
@@ -10540,42 +10554,10 @@ var _user$project$Ports$redirect = _elm_lang$core$Native_Platform.outgoingPort(
 		return v;
 	});
 
-var _user$project$Main$view_username_submit = function (username) {
-	var _p0 = username.valid;
-	if (_p0.ctor === 'Just') {
-		var _p1 = _p0._0;
-		if (_p1 === false) {
-			return {ctor: '[]'};
-		} else {
-			return {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('username_submit'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('cursor'),
-							_1: {ctor: '[]'}
-						}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('Update'),
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			};
-		}
-	} else {
-		return {ctor: '[]'};
-	}
-};
 var _user$project$Main$view_text_reading_actions = function (text_reading) {
 	var action_label = function () {
-		var _p2 = text_reading.status;
-		if (_p2 === 'complete') {
+		var _p0 = text_reading.status;
+		if (_p0 === 'complete') {
 			return 'Start Over';
 		} else {
 			return 'Resume';
@@ -10766,6 +10748,13 @@ var _user$project$Main$view_student_text_readings = function (student_profile) {
 			}
 		});
 };
+var _user$project$Main$toggle_username_update = function (model) {
+	return _elm_lang$core$Native_Utils.update(
+		model,
+		{
+			editing: A2(_elm_lang$core$Dict$member, 'username', model.editing) ? A2(_elm_lang$core$Dict$remove, 'username', model.editing) : A3(_elm_lang$core$Dict$insert, 'username', true, model.editing)
+		});
+};
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
@@ -10814,12 +10803,12 @@ var _user$project$Main$Submitted = function (a) {
 };
 var _user$project$Main$put_profile = F2(
 	function (csrftoken, student_profile) {
-		var _p3 = _user$project$Student_Profile_Model$studentID(student_profile);
-		if (_p3.ctor === 'Just') {
+		var _p1 = _user$project$Student_Profile_Model$studentID(student_profile);
+		if (_p1.ctor === 'Just') {
 			var encoded_profile = _user$project$Student_Profile_Encode$profileEncoder(student_profile);
 			var req = A4(
 				_user$project$HttpHelpers$put_with_headers,
-				_user$project$Student_Profile_Model$studentUpdateURI(_p3._0),
+				_user$project$Student_Profile_Model$studentUpdateURI(_p1._0),
 				{
 					ctor: '::',
 					_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
@@ -10852,22 +10841,22 @@ var _user$project$Main$validate_username = F2(
 	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p4 = msg;
-		switch (_p4.ctor) {
+		var _p2 = msg;
+		switch (_p2.ctor) {
 			case 'UpdateStudentProfile':
-				if (_p4._0.ctor === 'Ok') {
-					var _p5 = _p4._0._0;
+				if (_p2._0.ctor === 'Ok') {
+					var _p3 = _p2._0._0;
 					var username = model.username;
 					var new_username = _elm_lang$core$Native_Utils.update(
 						username,
 						{
-							username: _user$project$Student_Profile_Model$studentUserName(_p5)
+							username: _user$project$Student_Profile_Model$studentUserName(_p3)
 						});
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{profile: _p5, username: new_username}),
+							{profile: _p3, username: new_username}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
@@ -10876,62 +10865,62 @@ var _user$project$Main$update = F2(
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								err_str: _elm_lang$core$Basics$toString(_p4._0._0)
+								err_str: _elm_lang$core$Basics$toString(_p2._0._0)
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				}
 			case 'UpdateUsername':
-				var _p6 = _p4._0;
+				var _p4 = _p2._0;
 				var username = model.username;
 				var new_username = _elm_lang$core$Native_Utils.update(
 					username,
-					{username: _p6});
+					{username: _p4});
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{username: new_username}),
-					_1: A2(_user$project$Main$validate_username, model.flags.csrftoken, _p6)
+					_1: A2(_user$project$Main$validate_username, model.flags.csrftoken, _p4)
 				};
 			case 'ValidUsername':
-				if (_p4._0.ctor === 'Ok') {
+				if (_p2._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{username: _p4._0._0}),
+							{username: _p2._0._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p7 = _p4._0._0;
-					switch (_p7.ctor) {
+					var _p5 = _p2._0._0;
+					switch (_p5.ctor) {
 						case 'BadStatus':
-							var _p8 = A2(
+							var _p6 = A2(
 								_elm_lang$core$Json_Decode$decodeString,
 								_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
-								_p7._0.body);
-							if (_p8.ctor === 'Ok') {
+								_p5._0.body);
+							if (_p6.ctor === 'Ok') {
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
 										model,
-										{errors: _p8._0}),
+										{errors: _p6._0}),
 									_1: _elm_lang$core$Platform_Cmd$none
 								};
 							} else {
 								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 							}
 						case 'BadPayload':
-							var _p9 = A2(_elm_lang$core$Debug$log, 'bad payload', _p7._0);
+							var _p7 = A2(_elm_lang$core$Debug$log, 'bad payload', _p5._0);
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 						default:
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 					}
 				}
 			case 'UpdateDifficulty':
-				var _p10 = _p4._0;
-				var new_difficulty_preference = {ctor: '_Tuple2', _0: _p10, _1: _p10};
+				var _p8 = _p2._0;
+				var new_difficulty_preference = {ctor: '_Tuple2', _0: _p8, _1: _p8};
 				var new_student_profile = A2(_user$project$Student_Profile_Model$setStudentDifficultyPreference, model.profile, new_difficulty_preference);
 				return {
 					ctor: '_Tuple2',
@@ -10941,30 +10930,39 @@ var _user$project$Main$update = F2(
 			case 'UserNameUpdate':
 				return {
 					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							editing: A2(_elm_lang$core$Dict$member, 'username', model.editing) ? A2(_elm_lang$core$Dict$remove, 'username', model.editing) : A3(_elm_lang$core$Dict$insert, 'username', true, model.editing)
-						}),
+					_0: _user$project$Main$toggle_username_update(model),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
+			case 'SubmitUsernameUpdate':
+				var profile = A2(_user$project$Student_Profile_Model$setUserName, model.profile, model.username.username);
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{profile: profile}),
+					_1: A2(_user$project$Main$put_profile, model.flags.csrftoken, profile)
+				};
 			case 'Submitted':
-				if (_p4._0.ctor === 'Ok') {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				if (_p2._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _user$project$Main$toggle_username_update(model),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
 				} else {
-					var _p11 = _p4._0._0;
-					switch (_p11.ctor) {
+					var _p9 = _p2._0._0;
+					switch (_p9.ctor) {
 						case 'BadStatus':
-							var _p12 = A2(
+							var _p10 = A2(
 								_elm_lang$core$Json_Decode$decodeString,
 								_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
-								_p11._0.body);
-							if (_p12.ctor === 'Ok') {
+								_p9._0.body);
+							if (_p10.ctor === 'Ok') {
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
 										model,
-										{errors: _p12._0}),
+										{errors: _p10._0}),
 									_1: _elm_lang$core$Platform_Cmd$none
 								};
 							} else {
@@ -10983,18 +10981,55 @@ var _user$project$Main$update = F2(
 					_1: A3(_user$project$Student_Profile_Model$logout, model.profile, model.flags.csrftoken, _user$project$Main$LoggedOut)
 				};
 			default:
-				if (_p4._0.ctor === 'Ok') {
+				if (_p2._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: model,
-						_1: _user$project$Ports$redirect(_p4._0._0.redirect)
+						_1: _user$project$Ports$redirect(_p2._0._0.redirect)
 					};
 				} else {
-					var _p13 = A2(_elm_lang$core$Debug$log, 'log out error', _p4._0._0);
+					var _p11 = A2(_elm_lang$core$Debug$log, 'log out error', _p2._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 		}
 	});
+var _user$project$Main$SubmitUsernameUpdate = {ctor: 'SubmitUsernameUpdate'};
+var _user$project$Main$view_username_submit = function (username) {
+	var _p12 = username.valid;
+	if (_p12.ctor === 'Just') {
+		var _p13 = _p12._0;
+		if (_p13 === false) {
+			return {ctor: '[]'};
+		} else {
+			return {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('username_submit'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('cursor'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$SubmitUsernameUpdate),
+								_1: {ctor: '[]'}
+							}
+						}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Update'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			};
+		}
+	} else {
+		return {ctor: '[]'};
+	}
+};
 var _user$project$Main$UpdateUsername = function (a) {
 	return {ctor: 'UpdateUsername', _0: a};
 };

@@ -107,6 +107,13 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
+toggle_username_update : Model -> Model
+toggle_username_update model =
+  { model | editing =
+      (if Dict.member "username" model.editing then
+        Dict.remove "username" model.editing
+       else Dict.insert "username" True model.editing) }
+
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = case msg of
   UpdateStudentProfile (Ok profile) ->
@@ -153,14 +160,16 @@ update msg model = case msg of
       (model, put_profile model.flags.csrftoken new_student_profile )
 
   UserNameUpdate ->
-    ({ model | editing =
-      (if Dict.member "username" model.editing then
-        Dict.remove "username" model.editing
-       else Dict.insert "username" True model.editing) }
-    , Cmd.none)
+    (toggle_username_update model, Cmd.none)
+
+  SubmitUsernameUpdate ->
+    let
+      profile = Student.Profile.Model.setUserName model.profile model.username.username
+    in
+      ({ model | profile = profile }, put_profile model.flags.csrftoken profile)
 
   Submitted (Ok resp) ->
-    (model, Cmd.none)
+    (toggle_username_update model, Cmd.none)
 
   Submitted (Err err) ->
     case err of
@@ -273,7 +282,7 @@ view_username_submit username =
         False ->
           []
         True ->
-          [ div [class "username_submit", class "cursor", onClick UserNameUpdate] [Html.text "Update"] ]
+          [ div [class "username_submit", class "cursor", onClick SubmitUsernameUpdate] [Html.text "Update"] ]
 
     Nothing ->
       []

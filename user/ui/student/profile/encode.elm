@@ -14,5 +14,6 @@ profileEncoder student =
           Encode.string (Tuple.first difficulty)
         _ ->
           Encode.null)
+    username = Encode.string (Student.Profile.Model.studentUserName student)
   in
-    Encode.object [ ("difficulty_preference", encode_pref) ]
+    Encode.object [ ("difficulty_preference", encode_pref), ("username", username) ]
