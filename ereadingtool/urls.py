@@ -19,6 +19,8 @@ from django.views.generic import RedirectView, TemplateView
 
 from mixins.view import (ElmLoadJsView, NoAuthElmLoadJsView)
 
+from user.views.username import username
+
 urlpatterns = [
     path('load_elm.js', ElmLoadJsView.as_view(), name='load-elm'),
     path('load_elm_unauth.js', NoAuthElmLoadJsView.as_view(), name='load-elm-unauth'),
@@ -28,6 +30,8 @@ urlpatterns = [
     path('', include('user.urls.forgot_pass')),
 
     path('', include('text.urls')),
+
+    path('api/username/', username, name='username-api'),
     path('api/question/', include('question.urls')),
 
     path('admin/', include('instructor_admin.urls')),

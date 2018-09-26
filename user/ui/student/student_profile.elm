@@ -5,13 +5,17 @@ import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onM
 import Http exposing (..)
 import HttpHelpers
 
+import Json.Encode
 import Json.Decode
+import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
+
 
 import Dict exposing (Dict)
 
 import Profile
 
 import Text.Reading.Model exposing (TextReading, TextReadingScore)
+
 import Student.Profile.Model exposing (StudentProfile)
 import Student.Profile.Encode
 
@@ -29,23 +33,51 @@ type Msg =
     UpdateStudentProfile (Result Error StudentProfile)
   | UpdateDifficulty String
   | UserNameUpdate
-  | Submitted (Result Error UpdateProfileResp )
+  | UpdateUsername String
+  | SubmitUsernameUpdate
+  | ValidUsername (Result Error Username)
+  | Submitted (Result Error UpdateProfileResp)
   | Logout MenuMsg.Msg
   | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
 
 type alias Flags = Flags.Flags {}
+
+type alias Username = { username: String, valid: Maybe Bool, msg: Maybe String }
 
 type alias Model = {
     flags : Flags
   , profile : StudentProfile
   , editing : Dict String Bool
   , err_str : String
+  , username : Username
   , errors : Dict String String }
 
 type alias UpdateProfileResp = Dict.Dict String String
 
 updateRespDecoder : Json.Decode.Decoder (UpdateProfileResp)
 updateRespDecoder = Json.Decode.dict Json.Decode.string
+
+username_valid_encode : String -> Json.Encode.Value
+username_valid_encode username =
+  Json.Encode.object [("username", Json.Encode.string username)]
+
+username_valid_decoder : Json.Decode.Decoder Username
+username_valid_decoder =
+  decode Username
+    |> required "username" Json.Decode.string
+    |> required "valid" (Json.Decode.nullable Json.Decode.bool)
+    |> required "msg" (Json.Decode.nullable Json.Decode.string)
+
+validate_username : Flags.CSRFToken -> String -> Cmd Msg
+validate_username csrftoken username =
+  let
+    req =
+      HttpHelpers.post_with_headers
+       Config.username_validation_api_endpoint
+       [Http.header "X-CSRFToken" csrftoken]
+       (Http.jsonBody (username_valid_encode username)) username_valid_decoder
+  in
+    Http.send ValidUsername req
 
 put_profile : Flags.CSRFToken -> Student.Profile.Model.StudentProfile -> Cmd Msg
 put_profile csrftoken student_profile =
@@ -68,6 +100,7 @@ init flags = ({
     flags = flags
   , profile = Student.Profile.Model.emptyStudentProfile
   , editing = Dict.fromList []
+  , username = {username = "", valid = Nothing, msg = Nothing}
   , err_str = "", errors = Dict.fromList [] }, Profile.retrieve_student_profile UpdateStudentProfile flags.profile_id)
 
 subscriptions : Model -> Sub Msg
@@ -77,11 +110,40 @@ subscriptions model =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = case msg of
   UpdateStudentProfile (Ok profile) ->
-    ({ model | profile = profile }, Cmd.none)
+    let
+      username = model.username
+      new_username = { username | username = Student.Profile.Model.studentUserName profile }
+    in
+      ({ model | profile = profile, username = new_username }, Cmd.none)
 
   -- handle user-friendly msgs
   UpdateStudentProfile (Err err) ->
     ({ model | err_str = toString err }, Cmd.none)
+
+  UpdateUsername value ->
+    let
+      username = model.username
+      new_username = { username | username = value }
+    in
+      ({ model | username = new_username }, validate_username model.flags.csrftoken value)
+
+  ValidUsername (Ok username) ->
+    ({ model | username = username }, Cmd.none)
+
+  ValidUsername (Err err) ->
+    case err of
+      Http.BadStatus resp ->
+        case (Json.Decode.decodeString (Json.Decode.dict Json.Decode.string) resp.body) of
+          Ok errors ->
+            ({ model | errors = errors }, Cmd.none)
+          _ ->
+            (model, Cmd.none)
+
+      Http.BadPayload err resp -> let _ = Debug.log "bad payload" err in
+        (model, Cmd.none)
+
+      _ ->
+        (model, Cmd.none)
 
   UpdateDifficulty difficulty ->
     let
@@ -203,10 +265,39 @@ view_student_text_readings student_profile =
     , span [class "profile_item_value"] (List.map view_text_reading text_readings)
     ]
 
+view_username_submit : Username -> List (Html Msg)
+view_username_submit username =
+  case username.valid of
+    Just valid ->
+      case valid of
+        False ->
+          []
+        True ->
+          [ div [class "username_submit", class "cursor", onClick UserNameUpdate] [Html.text "Update"] ]
+
+    Nothing ->
+      []
+
 view_username : Model -> Html Msg
 view_username model =
   let
     username = Student.Profile.Model.studentUserName model.profile
+    username_valid_attrs =
+      (case model.username.valid of
+        Just valid ->
+          case valid of
+            True ->
+              [class "valid_username"]
+            False ->
+              [class "invalid_username"]
+        Nothing ->
+          [])
+    username_msgs =
+      (case model.username.msg of
+        Just msg ->
+          [div [] [ Html.text msg ]]
+        Nothing ->
+          [])
   in
     div [class "profile_item"] [
       span [class "profile_item_title"] [ Html.text "Username" ]
@@ -217,9 +308,17 @@ view_username model =
           , div [class "update_username", class "cursor", onClick UserNameUpdate] [ Html.text "Update" ]
           ]
         True ->
-          span [class "profile_item_value"] [
-            Html.input [class "username_input", attribute "placeholder" "Username", attribute "value" username] []
-          ]
+          span [class "profile_item_value"] <| [
+            Html.input [
+              class "username_input"
+            , attribute "placeholder" "Username"
+            , attribute "value" username
+            , attribute "maxlength" "150"
+            , attribute "minlength" "8"
+            , onInput UpdateUsername] []
+          , span ([] ++ username_valid_attrs) []
+          , div [class "username_msg"] username_msgs
+          ] ++ view_username_submit model.username
     ]
 
 view_content : Model -> Html Msg

@@ -1,5 +1,4 @@
 import json
-import jsonschema
 
 from typing import TypeVar, Dict
 

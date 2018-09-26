@@ -14,9 +14,6 @@ class APIView(View):
     def form(self, request: HttpRequest, params: dict) -> TypeVar('forms.Form'):
         raise NotImplementedError
 
-    def post_success(self, request: HttpRequest, form: TypeVar('forms.Form')) -> HttpResponse:
-        raise NotImplementedError
-
     @method_decorator(sensitive_post_parameters())
     @method_decorator(csrf_protect)
     @method_decorator(never_cache)

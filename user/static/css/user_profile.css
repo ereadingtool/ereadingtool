@@ -58,6 +58,26 @@
     font-size: smaller;
 }
 
+.valid_username:after {
+    content: '✓';
+    color: #26b72b;
+    padding-left: 5px;
+}
+
+.invalid_username:after {
+    content: '✖';
+    color: #f00;
+    padding-left: 5px;
+}
+
+.username_msg {
+    margin-top: 5px;
+}
+
+.username_submit {
+    margin-top: 5px;
+}
+
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
     .header {
         display: flex;

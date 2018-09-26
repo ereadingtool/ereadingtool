@@ -1,5 +1,9 @@
 module Config exposing (..)
 
+
+username_validation_api_endpoint : String
+username_validation_api_endpoint = "/api/username/"
+
 text_api_endpoint : String
 text_api_endpoint = "/api/text/"
 

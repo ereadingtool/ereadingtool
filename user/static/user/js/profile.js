@@ -6653,6 +6653,7 @@ var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signu
 var _user$project$Config$question_api_endpoint = '/api/question/';
 var _user$project$Config$text_section_api_endpoint = '/api/section/';
 var _user$project$Config$text_api_endpoint = '/api/text/';
+var _user$project$Config$username_validation_api_endpoint = '/api/username/';
 
 var _user$project$HttpHelpers$delete_with_headers = F4(
 	function (url, headers, body, decoder) {
