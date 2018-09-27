@@ -78,6 +78,11 @@
     margin-top: 5px;
 }
 
+.username_submit > span {
+    margin-left: 5px;
+    text-decoration: underline;
+}
+
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
     .header {
         display: flex;

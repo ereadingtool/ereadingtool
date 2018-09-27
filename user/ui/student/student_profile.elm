@@ -30,40 +30,40 @@ import Menu.Logout
 
 -- UPDATE
 type Msg =
-    UpdateStudentProfile (Result Error StudentProfile)
+    RetrieveStudentProfile (Result Error StudentProfile)
+  -- preferred difficulty
   | UpdateDifficulty String
-  | UserNameUpdate
+  -- username
+  | ToggleUsernameUpdate
+  | ValidUsername (Result Error UsernameUpdate)
   | UpdateUsername String
   | SubmitUsernameUpdate
-  | ValidUsername (Result Error Username)
-  | Submitted (Result Error UpdateProfileResp)
+  | CancelUsernameUpdate
+  -- profile update submission
+  | Submitted (Result Error StudentProfile)
+  -- site-wide messages
   | Logout MenuMsg.Msg
   | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
 
 type alias Flags = Flags.Flags {}
 
-type alias Username = { username: String, valid: Maybe Bool, msg: Maybe String }
+type alias UsernameUpdate = { username: String, valid: Maybe Bool, msg: Maybe String }
 
 type alias Model = {
     flags : Flags
   , profile : StudentProfile
   , editing : Dict String Bool
   , err_str : String
-  , username : Username
+  , username_update : UsernameUpdate
   , errors : Dict String String }
-
-type alias UpdateProfileResp = Dict.Dict String String
-
-updateRespDecoder : Json.Decode.Decoder (UpdateProfileResp)
-updateRespDecoder = Json.Decode.dict Json.Decode.string
 
 username_valid_encode : String -> Json.Encode.Value
 username_valid_encode username =
   Json.Encode.object [("username", Json.Encode.string username)]
 
-username_valid_decoder : Json.Decode.Decoder Username
+username_valid_decoder : Json.Decode.Decoder UsernameUpdate
 username_valid_decoder =
-  decode Username
+  decode UsernameUpdate
     |> required "username" Json.Decode.string
     |> required "valid" (Json.Decode.nullable Json.Decode.bool)
     |> required "msg" (Json.Decode.nullable Json.Decode.string)
@@ -89,7 +89,7 @@ put_profile csrftoken student_profile =
           HttpHelpers.put_with_headers
            (Student.Profile.Model.studentUpdateURI id)
            [Http.header "X-CSRFToken" csrftoken]
-           (Http.jsonBody encoded_profile) updateRespDecoder
+           (Http.jsonBody encoded_profile) Student.Profile.Model.studentProfileDecoder
       in
         Http.send Submitted req
     Nothing ->
@@ -100,8 +100,8 @@ init flags = ({
     flags = flags
   , profile = Student.Profile.Model.emptyStudentProfile
   , editing = Dict.fromList []
-  , username = {username = "", valid = Nothing, msg = Nothing}
-  , err_str = "", errors = Dict.fromList [] }, Profile.retrieve_student_profile UpdateStudentProfile flags.profile_id)
+  , username_update = {username = "", valid = Nothing, msg = Nothing}
+  , err_str = "", errors = Dict.fromList [] }, Profile.retrieve_student_profile RetrieveStudentProfile flags.profile_id)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -116,26 +116,26 @@ toggle_username_update model =
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = case msg of
-  UpdateStudentProfile (Ok profile) ->
+  RetrieveStudentProfile (Ok profile) ->
     let
-      username = model.username
-      new_username = { username | username = Student.Profile.Model.studentUserName profile }
+      username_update = model.username_update
+      new_username_update = { username_update | username = Student.Profile.Model.studentUserName profile }
     in
-      ({ model | profile = profile, username = new_username }, Cmd.none)
+      ({ model | profile = profile, username_update = new_username_update }, Cmd.none)
 
   -- handle user-friendly msgs
-  UpdateStudentProfile (Err err) ->
+  RetrieveStudentProfile (Err err) ->
     ({ model | err_str = toString err }, Cmd.none)
 
   UpdateUsername value ->
     let
-      username = model.username
-      new_username = { username | username = value }
+      username_update = model.username_update
+      new_username_update = { username_update | username = value }
     in
-      ({ model | username = new_username }, validate_username model.flags.csrftoken value)
+      ({ model | username_update = new_username_update }, validate_username model.flags.csrftoken value)
 
-  ValidUsername (Ok username) ->
-    ({ model | username = username }, Cmd.none)
+  ValidUsername (Ok username_update) ->
+    ({ model | username_update = username_update }, Cmd.none)
 
   ValidUsername (Err err) ->
     case err of
@@ -157,21 +157,24 @@ update msg model = case msg of
       new_difficulty_preference = (difficulty, difficulty)
       new_student_profile = Student.Profile.Model.setStudentDifficultyPreference model.profile new_difficulty_preference
     in
-      (model, put_profile model.flags.csrftoken new_student_profile )
+      (model, put_profile model.flags.csrftoken new_student_profile)
 
-  UserNameUpdate ->
+  ToggleUsernameUpdate ->
     (toggle_username_update model, Cmd.none)
 
   SubmitUsernameUpdate ->
     let
-      profile = Student.Profile.Model.setUserName model.profile model.username.username
+      profile = Student.Profile.Model.setUserName model.profile model.username_update.username
     in
       ({ model | profile = profile }, put_profile model.flags.csrftoken profile)
 
-  Submitted (Ok resp) ->
+  CancelUsernameUpdate ->
     (toggle_username_update model, Cmd.none)
 
-  Submitted (Err err) ->
+  Submitted (Ok student_profile) ->
+    ({ model | profile = student_profile, editing = Dict.fromList [] }, Cmd.none)
+
+  Submitted (Err err) -> let _ = Debug.log "submitted error" err in
     case err of
       Http.BadStatus resp ->
         case (Json.Decode.decodeString (Json.Decode.dict Json.Decode.string) resp.body) of
@@ -274,25 +277,33 @@ view_student_text_readings student_profile =
     , span [class "profile_item_value"] (List.map view_text_reading text_readings)
     ]
 
-view_username_submit : Username -> List (Html Msg)
+view_username_submit : UsernameUpdate -> List (Html Msg)
 view_username_submit username =
-  case username.valid of
-    Just valid ->
-      case valid of
-        False ->
-          []
-        True ->
-          [ div [class "username_submit", class "cursor", onClick SubmitUsernameUpdate] [Html.text "Update"] ]
+  let
+    cancel_btn = span [class "cursor", onClick CancelUsernameUpdate] [ Html.text "Cancel" ]
+  in
+    case username.valid of
+      Just valid ->
+        case valid of
+          False ->
+            []
+          True ->
+            [
+              div [class "username_submit"] [
+                span [class "cursor", onClick SubmitUsernameUpdate] [ Html.text "Submit" ]
+              , cancel_btn
+              ]
+            ]
 
-    Nothing ->
-      []
+      Nothing ->
+        [cancel_btn]
 
 view_username : Model -> Html Msg
 view_username model =
   let
     username = Student.Profile.Model.studentUserName model.profile
     username_valid_attrs =
-      (case model.username.valid of
+      (case model.username_update.valid of
         Just valid ->
           case valid of
             True ->
@@ -302,7 +313,7 @@ view_username model =
         Nothing ->
           [])
     username_msgs =
-      (case model.username.msg of
+      (case model.username_update.msg of
         Just msg ->
           [div [] [ Html.text msg ]]
         Nothing ->
@@ -314,7 +325,7 @@ view_username model =
         False ->
           span [class "profile_item_value"] [
             Html.text (Student.Profile.Model.studentUserName model.profile)
-          , div [class "update_username", class "cursor", onClick UserNameUpdate] [ Html.text "Update" ]
+          , div [class "update_username", class "cursor", onClick ToggleUsernameUpdate] [ Html.text "Update" ]
           ]
         True ->
           span [class "profile_item_value"] <| [
@@ -327,33 +338,54 @@ view_username model =
             , onInput UpdateUsername] []
           , span ([] ++ username_valid_attrs) []
           , div [class "username_msg"] username_msgs
-          ] ++ view_username_submit model.username
+          ] ++ view_username_submit model.username_update
     ]
+
+view_user_email : Model -> Html Msg
+view_user_email model =
+  div [class "profile_item"] [
+    span [class "profile_item_title"] [ Html.text "User E-Mail" ]
+  , span [class "profile_item_value"] [
+      Html.text (Student.Profile.Model.studentEmail model.profile)
+    ]
+  ]
+
+view_preferred_difficulty : Model -> Html Msg
+view_preferred_difficulty model =
+  div [class "profile_item"] [
+    span [class "profile_item_title"] [ Html.text "Preferred Difficulty" ]
+  , span [class "profile_item_value"] [ (view_difficulty model) ]
+  ]
+
+view_flashcards : Model -> Html Msg
+view_flashcards model =
+  div [class "profile_item"] [
+    span [class "profile_item_title"] [ Html.text "Flashcards: " ]
+  , span [class "profile_item_value"] [
+      div [] (List.map (\fake_name ->
+        div [] [ Html.a [attribute "href" "#"] [ Html.text fake_name ] ]
+       ) ["word", "word", "word"])
+    ]
+  ]
+
+view_student_performance : Model -> Html Msg
+view_student_performance model =
+  div [class "profile_item"] [
+    span [class "profile_item_title"] [ Html.text "My Performance: " ]
+  , span [class "profile_item_value"] [
+    ]
+  ]
 
 view_content : Model -> Html Msg
 view_content model =
   div [ classList [("profile", True)] ] [
     div [classList [("profile_items", True)] ] [
       view_username model
-    , div [class "profile_item"] [
-        span [class "profile_item_title"] [ Html.text "User E-Mail" ]
-      , span [class "profile_item_value"] [
-          Html.text (Student.Profile.Model.studentEmail model.profile)
-        ]
-      ]
-    , div [class "profile_item"] [
-        span [class "profile_item_title"] [ Html.text "Preferred Difficulty" ]
-      , span [class "profile_item_value"] [ (view_difficulty model) ]
-      ]
-    , div [class "profile_item"] [
-          span [class "profile_item_title"] [ Html.text "Flashcards: " ]
-        , span [class "profile_item_value"] [
-            div [] (List.map (\fake_name ->
-              div [] [ Html.a [attribute "href" "#"] [ Html.text fake_name ] ]
-            ) ["word", "word", "word"])
-          ]
-      ]
+    , view_user_email model
+    , view_preferred_difficulty model
+    , view_flashcards model
     , view_student_text_readings model.profile
+    , view_student_performance model
     , (if not (String.isEmpty model.err_str) then
         span [attribute "class" "error"] [ Html.text "error", Html.text model.err_str ]
        else Html.text "")

@@ -9,6 +9,7 @@ from text_reading.base import TextReadingStateMachine
 from user.models import ReaderUser
 
 from user.mixins.models import Profile
+from user.student.performance import StudentPerformance
 
 
 class Student(Profile, models.Model):
@@ -17,6 +18,10 @@ class Student(Profile, models.Model):
                                               related_name='students')
 
     login_url = reverse_lazy('student-login')
+
+    @property
+    def performance(self):
+        return StudentPerformance(self)
 
     def to_dict(self):
         difficulties = [(text_difficulty.slug, text_difficulty.name)

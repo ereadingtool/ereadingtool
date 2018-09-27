@@ -58,7 +58,7 @@ class StudentAPIView(LoginRequiredMixin, APIView):
     def form(self, request: HttpRequest, params: dict, **kwargs) -> TypeVar('forms.Form'):
         return StudentForm(params, **kwargs)
 
-    def get(self, request, *args, **kwargs) -> HttpResponse:
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if not Student.objects.filter(pk=kwargs['pk']).count():
             return HttpResponse(status=400)
 

@@ -3,11 +3,13 @@ from user.views.student import (StudentSignUpView, StudentSignupAPIView, Student
                                 StudentLoginView, StudentLoginAPIView, StudentLogoutAPIView, ElmLoadJsStudentView,
                                 ElmLoadStudentSignUpView)
 
+from user.views.student_performance import StudentPerformanceAPIView
 
 api_urlpatterns = [
     path('api/student/signup/', StudentSignupAPIView.as_view(), name='api-student-signup'),
     path('api/student/login/', StudentLoginAPIView.as_view(), name='api-student-login'),
     path('api/student/logout/', StudentLogoutAPIView.as_view(), name='api-student-logout'),
+    path('api/student/<int:pk>/performance/', StudentPerformanceAPIView.as_view(), name='api-student-performance'),
     path('api/student/<int:pk>/', StudentAPIView.as_view(), name='api-student'),
 ]
 
