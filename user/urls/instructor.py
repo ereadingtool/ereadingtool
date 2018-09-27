@@ -1,5 +1,5 @@
 from django.urls import path
-from user.views.instructor import (InstructorSignupAPIView, InstructorLoginAPIView, InstructorLogoutAPIView, 
+from user.views.instructor import (InstructorSignupAPIView, InstructorLoginAPIView, InstructorLogoutAPIView,
                                    InstructorSignUpView, InstructorLoginView, InstructorProfileView,
                                    ElmLoadJsInstructorView)
 

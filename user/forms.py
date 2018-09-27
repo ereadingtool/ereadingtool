@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth import password_validation
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm as BaseAuthenticationForm
 from django.core.validators import validate_email
+
 from django.utils.translation import ugettext_lazy as _
 
 from text.models import TextDifficulty
@@ -80,6 +81,22 @@ class StudentSignUpForm(SignUpForm):
     class Meta:
         model = Student
         exclude = ('user', 'difficulty_preference',)
+
+
+class AuthenticationForm(BaseAuthenticationForm):
+    def clean_username(self):
+        username = self.cleaned_data['username']
+
+        # we prefer the e-mail address for logging in but Django can only auth by username, so we swap the two
+        user = ReaderUser.objects.filter(email__iexact=self.cleaned_data['username'])
+
+        if user.exists():
+            try:
+                username = user.get().username
+            except ReaderUser.MultipleObjectsReturned:
+                pass
+
+        return username
 
 
 class InstructorLoginForm(AuthenticationForm):

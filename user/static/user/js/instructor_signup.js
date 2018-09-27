@@ -11332,16 +11332,19 @@ var _user$project$SignUp$view_submit = F2(
 					_elm_lang$html$Html$span,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$classList(
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'cursor', _1: true},
-								_1: {ctor: '[]'}
-							}),
+						_0: _elm_lang$html$Html_Attributes$class('cursor'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onClick(submit_msg),
-							_1: {ctor: '[]'}
+							_0: _elm_lang$html$Html_Attributes$class('signup_submit'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('button'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onClick(submit_msg),
+									_1: {ctor: '[]'}
+								}
+							}
 						}
 					},
 					{
@@ -11412,18 +11415,14 @@ var _user$project$SignUp$view = F6(
 			{ctor: '[]'},
 			{
 				ctor: '::',
-				_0: A3(_user$project$Views$view_header, _user$project$Profile$emptyProfile, _elm_lang$core$Maybe$Nothing, logout_msg),
+				_0: _user$project$Views$view_unauthed_header,
 				_1: {
 					ctor: '::',
-					_0: _user$project$Views$view_filter,
+					_0: A5(_user$project$SignUp$view_content, signup_label, email_msg, password_msgs, submit_msg, model),
 					_1: {
 						ctor: '::',
-						_0: A5(_user$project$SignUp$view_content, signup_label, email_msg, password_msgs, submit_msg, model),
-						_1: {
-							ctor: '::',
-							_0: _user$project$Views$view_footer,
-							_1: {ctor: '[]'}
-						}
+						_0: _user$project$Views$view_footer,
+						_1: {ctor: '[]'}
 					}
 				}
 			});

@@ -41,7 +41,7 @@ class InstructorView(ProfileView):
 
 
 class InstructorSignupAPIView(APIView):
-    def form(self, request: HttpRequest, params: dict) -> TypeVar('forms.Form'):
+    def form(self, request: HttpRequest, params: Dict) -> TypeVar('forms.Form'):
         return InstructorSignUpForm(params)
 
     def post_success(self, request: HttpRequest, instructor_signup_form: TypeVar('forms.Form')) -> HttpResponse:
@@ -51,7 +51,7 @@ class InstructorSignupAPIView(APIView):
 
 
 class InstructorLoginAPIView(APIView):
-    def form(self, request: HttpRequest, params: dict) -> TypeVar('forms.Form'):
+    def form(self, request: HttpRequest, params: Dict) -> TypeVar('forms.Form'):
         return InstructorLoginForm(request, params)
 
     def post_success(self, request: HttpRequest, instructor_login_form: TypeVar('forms.Form')) -> HttpResponse:

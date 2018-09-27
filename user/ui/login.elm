@@ -152,11 +152,17 @@ update endpoint msg model =
       case err of
         Http.BadStatus resp ->
           case (Decode.decodeString (Decode.dict Decode.string) resp.body) of
-            Ok errors -> ({ model | errors = errors }, Cmd.none)
-            _ -> (model, Cmd.none)
+            Ok errors ->
+              ({ model | errors = errors }, Cmd.none)
 
-        Http.BadPayload err resp -> (model, Cmd.none)
-        _ -> (model, Cmd.none)
+            _ ->
+              (model, Cmd.none)
+
+        Http.BadPayload err resp ->
+          (model, Cmd.none)
+
+        _ ->
+          (model, Cmd.none)
 
 login_label : (List (Html.Attribute Msg)) -> Html Msg -> Html Msg
 login_label attributes html =
@@ -176,7 +182,7 @@ view_email_input model =
     let email_error = if (Dict.member "email" model.errors) then
       [attribute "class" "input_error"]
     else [] in [
-      login_label [] (span [] [ Html.text "Username (e-mail address):" ])
+      login_label [] (span [] [ Html.text "E-mail Address:" ])
     , Html.input ([
         attribute "size" "25"
       , onInput UpdateEmail ] ++ (email_error)) []

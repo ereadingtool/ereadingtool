@@ -1,14 +1,13 @@
 module SignUp exposing (  view, UserID, URI, toggle_show_password, update_email, update_password, submit, signup_label
                         , update_confirm_password, view_email_input, view_password_input, view_submit)
 
-import Html exposing (Html, div)
+import Html exposing (Html, div, span)
 import Html.Attributes exposing (classList, class, attribute)
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
 
 import Dict exposing (Dict)
 import Util exposing (is_valid_email)
 import Views
-import Profile
 
 import Menu.Msg as MenuMsg
 
@@ -112,7 +111,9 @@ view_password_input (toggle_msg, update_msg, update_confirm_msg) model = let
 
 view_submit : msg -> a -> List (Html msg)
 view_submit submit_msg model = [
-    signup_label (Html.span [classList [("cursor", True)], onClick submit_msg ] [ Html.text "Sign Up" ])
+    signup_label (Html.span [class "cursor", class "signup_submit", class "button", onClick submit_msg ] [
+      Html.text "Sign Up"
+    ])
   ]
 
 view_content
@@ -140,8 +141,7 @@ view :
     -> Html msg
 view signup_label email_msg password_msgs submit_msg logout_msg model =
   div [] [
-    (Views.view_header Profile.emptyProfile Nothing logout_msg)
-  , (Views.view_filter)
-  , (view_content signup_label email_msg password_msgs submit_msg model)
-  , (Views.view_footer)
+    Views.view_unauthed_header
+  , view_content signup_label email_msg password_msgs submit_msg model
+  , Views.view_footer
   ]

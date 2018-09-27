@@ -24,6 +24,8 @@ class TestUser(TestUserBase, TestCase):
         self.student_client = self.new_student_client(Client(), user_and_pass=(self.student_user, self.student_passwd))
 
         self.student_api_endpoint = reverse('api-student', args=[self.student_profile.pk])
+        self.student_login_api_endpoint = reverse('api-student-login')
+
         self.password_reset_api_endpoint = reverse('api-password-reset')
         self.password_reset_confirm_api_endpoint = reverse('api-password-reset-confirm')
 
@@ -43,6 +45,14 @@ class TestUser(TestUserBase, TestCase):
                                        data=json.dumps({'username': 'newusername14'}), content_type='application/json')
 
         self.assertTrue(resp)
+
+        self.assertEquals(resp.status_code, 200)
+
+        # test we can still login via e-mail address
+        resp = self.student_client.post(self.student_login_api_endpoint,
+                                        data=json.dumps(
+                                            {'username': self.student_user.email, 'password': self.student_passwd}),
+                                        content_type='application/json')
 
         self.assertEquals(resp.status_code, 200)
 

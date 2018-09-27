@@ -16,8 +16,6 @@ import Http exposing (..)
 import Text.Model exposing (TextDifficulty)
 import Html.Events exposing (onClick, onBlur, onInput)
 
-import Profile
-
 import Menu.Msg as MenuMsg
 
 type alias SignUpResp = { id: SignUp.UserID, redirect: SignUp.URI }
@@ -157,10 +155,9 @@ view_content model =
 
 view : Model -> Html Msg
 view model = div [] [
-    (Views.view_header Profile.emptyProfile Nothing Logout)
-  , (Views.view_filter)
-  , (view_content model)
-  , (Views.view_footer)
+    Views.view_unauthed_header
+  , view_content model
+  , Views.view_footer
   ]
 
 main : Program Flags Model Msg

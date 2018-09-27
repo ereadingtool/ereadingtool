@@ -24,6 +24,7 @@
 
 .login_type {
     grid-column: 4;
+    font-size: x-large;
 }
 
 .login_label, .signup_label {
@@ -32,7 +33,7 @@
     -webkit-padding-before: 2.5%;
 }
 
-.login_submit {
+.signup_submit, .login_submit {
     display: grid;
     justify-content: center;
 }
@@ -41,11 +42,9 @@
     cursor: pointer;
 }
 
-.submit_btn {
-}
-
 .signup_title {
     grid-column: 4;
+    font-size: x-large;
 }
 
 .input_error {

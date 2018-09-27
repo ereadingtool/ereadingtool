@@ -11422,7 +11422,7 @@ var _user$project$Login$view_email_input = function (model) {
 				{ctor: '[]'},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text('Username (e-mail address):'),
+					_0: _elm_lang$html$Html$text('E-mail Address:'),
 					_1: {ctor: '[]'}
 				})),
 		_1: {
