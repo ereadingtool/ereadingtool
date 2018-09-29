@@ -12,6 +12,8 @@ from ereadingtool.test.user import TestUser as TestUserBase
 from django.urls import reverse
 from django.core import mail
 
+from text.tests import TextTest
+
 
 class TestUser(TestUserBase, TestCase):
     def setUp(self):
@@ -28,6 +30,18 @@ class TestUser(TestUserBase, TestCase):
 
         self.password_reset_api_endpoint = reverse('api-password-reset')
         self.password_reset_confirm_api_endpoint = reverse('api-password-reset-confirm')
+
+    def test_student_performance_report(self):
+        text_test = TextTest()
+        text_test.setUp()
+
+        student_text_reading = text_test.test_text_reading(student=self.student_profile)
+
+        self.assertTrue(student_text_reading.text_reading_answers.exists())
+
+        performance_report = self.student_profile.performance.to_dict()
+
+        self.assertEquals(performance_report, [[(1, 1, 0.5)]])
 
     def test_set_username(self):
         resp = self.student_client.put(self.student_api_endpoint,

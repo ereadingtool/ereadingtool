@@ -26,14 +26,16 @@ class TextTest(TestUser, TestCase):
 
         self.text_endpoint = reverse_lazy('text-api')
 
-    def test_text_reading(self):
+    def test_text_reading(self, student: Student=None) -> StudentTextReading:
         # add an additional question for testing
         test_data = self.get_test_data()
 
         test_data['text_sections'][0]['questions'].append(self.gen_text_section_question_params(order=1))
         num_of_questions = len(test_data['text_sections'][0]['questions'])
 
-        _, _, student = self.new_student()
+        if not student:
+            _, _, student = self.new_student()
+
         text_obj = self.create_text(diff_data=test_data)
 
         text_sections = text_obj.sections.all()
@@ -79,6 +81,8 @@ class TextTest(TestUser, TestCase):
         self.assertEquals(text_reading.current_section, None)
 
         self.assertTrue(text_reading.end_dt)
+
+        return text_reading
 
     def setUp(self):
         super(TextTest, self).setUp()
