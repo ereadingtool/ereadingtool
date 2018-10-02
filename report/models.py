@@ -8,8 +8,6 @@ from user.student.models import Student
 
 
 class StudentPerformance(models.Model):
-    id = models.BigIntegerField(primary_key=True)
-
     student = models.ForeignKey(Student, on_delete=models.DO_NOTHING)
 
     text = models.ForeignKey(Text, on_delete=models.DO_NOTHING)
@@ -19,7 +17,7 @@ class StudentPerformance(models.Model):
     start_dt = models.DateTimeField()
     end_dt = models.DateTimeField()
 
-    text_difficulty = models.ForeignKey(TextDifficulty, on_delete=models.DO_NOTHING)
+    text_difficulty_slug = models.SlugField(blank=False)
 
     percentage_correct = models.FloatField()
 

@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         text_section_id,
         start_dt,
         end_dt,
-        text_difficulty,
+        text_difficulty_slug,
         CAST(SUM(student_answers.correct) AS FLOAT) / CAST(COUNT(DISTINCT question_id) AS FLOAT) as percentage_correct
     FROM
         (SELECT
@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
             text_readings_answers.created_dt,
             text_readings.start_dt start_dt,
             text_readings.end_dt end_dt,
-            text_difficulty.slug as text_difficulty
+            text_difficulty.slug as text_difficulty_slug
             
         FROM text_reading_studenttextreadinganswers as text_readings_answers
         
