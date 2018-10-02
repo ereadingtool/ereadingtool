@@ -1,15 +1,12 @@
 from typing import TypeVar
-from django.db import models
 
+from django.db import models
 from django.urls import reverse_lazy
 
-from text.models import TextDifficulty
+from text.models import TextDifficulty, Text
 from text_reading.base import TextReadingStateMachine
-
-from user.models import ReaderUser
-
 from user.mixins.models import Profile
-from user.student.performance import StudentPerformance
+from user.models import ReaderUser
 
 
 class Student(Profile, models.Model):
@@ -21,7 +18,7 @@ class Student(Profile, models.Model):
 
     @property
     def performance(self):
-        return StudentPerformance(self)
+        return ''
 
     def to_dict(self):
         difficulties = [(text_difficulty.slug, text_difficulty.name)
@@ -54,3 +51,4 @@ class Student(Profile, models.Model):
 
     def __str__(self):
         return self.user.username
+

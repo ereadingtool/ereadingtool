@@ -53,7 +53,8 @@ INSTALLED_APPS += [
     'instructor_admin',
     'text',
     'text_reading',
-    'tag'
+    'tag',
+    'report'
 ]
 
 AUTH_USER_MODEL = 'user.ReaderUser'
