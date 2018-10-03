@@ -11,6 +11,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunSQL("""
     CREATE VIEW report_student_performance AS SELECT
+        rowid as id,
         student_id,
         text_id,
         text_reading_id,
@@ -18,7 +19,8 @@ class Migration(migrations.Migration):
         start_dt,
         end_dt,
         text_difficulty_slug,
-        CAST(SUM(student_answers.correct) AS FLOAT) / CAST(COUNT(DISTINCT question_id) AS FLOAT) as percentage_correct
+        CAST(SUM(student_answers.correct) AS FLOAT) as answered_correctly,
+        CAST(COUNT(DISTINCT question_id) AS FLOAT) as attempted_questions
     FROM
         (SELECT
             text_readings.student_id as student_id,
@@ -45,6 +47,8 @@ class Migration(migrations.Migration):
         
         LEFT JOIN text_textdifficulty text_difficulty
         on texts.difficulty_id = text_difficulty.id
+        
+        WHERE text_readings.state = 'complete'
         
         GROUP BY text_reading_id, text_section_id, answers.question_id
         ORDER BY text_readings_answers.created_dt) as student_answers

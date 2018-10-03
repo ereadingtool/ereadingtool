@@ -8,6 +8,8 @@ from text_reading.base import TextReadingStateMachine
 from user.mixins.models import Profile
 from user.models import ReaderUser
 
+from report.models import StudentPerformanceReport
+
 
 class Student(Profile, models.Model):
     user = models.OneToOneField(ReaderUser, on_delete=models.CASCADE)
@@ -18,7 +20,7 @@ class Student(Profile, models.Model):
 
     @property
     def performance(self):
-        return ''
+        return StudentPerformanceReport(student=self)
 
     def to_dict(self):
         difficulties = [(text_difficulty.slug, text_difficulty.name)

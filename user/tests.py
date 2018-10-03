@@ -41,7 +41,7 @@ class TestUser(TestUserBase, TestCase):
 
         performance_report = self.student_profile.performance.to_dict()
 
-        self.assertEquals(performance_report, [[(1, 1, 0.5)]])
+        self.assertEquals(performance_report['all']['cumulative'], {'percent_correct': 0.5, 'texts_complete': 1})
 
     def test_set_username(self):
         resp = self.student_client.put(self.student_api_endpoint,
