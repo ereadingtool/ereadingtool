@@ -7,7 +7,7 @@ from channels.testing import WebsocketCommunicator
 from channels.db import database_sync_to_async
 
 from ereadingtool.routing import application
-from text.tests import TextTest, TextSection
+from text.tests import TestText, TextSection
 from question.models import Answer
 
 
@@ -17,7 +17,7 @@ class TestTextReading(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        test_text_suite = TextTest()
+        test_text_suite = TestText()
         test_text_suite.setUp()
 
         def rand_question_params():

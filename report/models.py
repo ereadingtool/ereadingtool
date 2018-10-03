@@ -79,8 +79,9 @@ class StudentPerformanceReport(object):
         performance = {'all': categories}
 
         aggregates = {
-            'percent_correct': models.Sum('answered_correctly', output_field=models.FloatField()) /
-                               models.Sum('attempted_questions', output_field=models.FloatField()),
+            'percent_correct': (models.Sum('answered_correctly', output_field=models.FloatField()) /
+                                models.Sum('attempted_questions', output_field=models.FloatField())),
+
             'texts_complete': models.Count(distinct=True, expression='text')
         }
 

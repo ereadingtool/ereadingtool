@@ -20,9 +20,9 @@ from text_reading.models import StudentTextReading
 from user.student.models import Student
 
 
-class TextTest(TestUser, TestCase):
+class TestText(TestUser, TestCase):
     def __init__(self, *args, **kwargs):
-        super(TextTest, self).__init__(*args, **kwargs)
+        super(TestText, self).__init__(*args, **kwargs)
 
         self.text_endpoint = reverse_lazy('text-api')
 
@@ -85,7 +85,7 @@ class TextTest(TestUser, TestCase):
         return text_reading
 
     def setUp(self):
-        super(TextTest, self).setUp()
+        super(TestText, self).setUp()
 
         Tag.setup_default()
         TextDifficulty.setup_default()
@@ -93,8 +93,8 @@ class TextTest(TestUser, TestCase):
         self.instructor = self.new_instructor_client(Client())
         self.student = self.new_student_client(Client())
 
-    def create_text(self, diff_data: dict=None) -> Text:
-        text_data = self.get_test_data()
+    def create_text(self, test_data: Dict=None, diff_data: Dict=None) -> Text:
+        text_data = test_data or self.get_test_data()
 
         if diff_data:
             text_data.update(diff_data)
@@ -426,6 +426,22 @@ class TextTest(TestUser, TestCase):
         self.assertTrue(resp_content)
 
         self.assertTrue('deleted' in resp_content)
+
+    def generate_text_params(self, sections: List[Dict[AnyStr, int]]) -> Dict:
+        section_num = 0
+        section_params = []
+
+        for section in sections:
+            questions_for_section = [self.gen_text_section_question_params(i)
+                                     for i in range(0, section['num_of_questions'])]
+
+            section_params.append(self.gen_text_section_params(section_num, question_params=questions_for_section))
+
+            section_num += 1
+
+        test_data = self.get_test_data(section_params=section_params)
+
+        return test_data
 
     def gen_question_type(self) -> AnyStr:
         return one_of([just('main_idea'), just('detail')]).example()
