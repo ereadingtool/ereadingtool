@@ -1,0 +1,22 @@
+{% for difficulty_key, difficulty in performance_report.items %}
+    <div class="difficulty">
+        <div class="title">
+            {{ difficulty.title }} {% if difficulty_key == 'all' %}Difficulties{% else %}Difficulty{% endif %}</div>
+
+    {% for category_key, report in difficulty.categories.items %}
+        <div class="category">
+            <div class="title">{{ report.title }}</div>
+
+              <div class="metric">
+                  <div class="value">{{ report.metrics.percent_correct|default_if_none:0 }}%</div>
+                  <div class="title">Answered Correctly</div>
+              </div>
+
+              <div class="metric">
+                  <div class="value">{{ report.metrics.texts_complete }}</div>
+                  <div class="title">Texts Complete</div>
+              </div>
+        </div>
+    {% endfor %}
+    </div>
+{% endfor %}

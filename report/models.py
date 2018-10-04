@@ -1,3 +1,5 @@
+import copy
+
 from typing import Dict, TypeVar
 
 from django.db import models
@@ -75,8 +77,15 @@ class StudentPerformanceReport(object):
             end_dt__lt=self.first_of_current_month)
 
     def to_dict(self) -> Dict:
-        categories = {'cumulative': {}, 'current_month': {}, 'past_month': {}}
-        performance = {'all': categories}
+        categories = {
+            'cumulative': {'metrics': {}, 'title': 'Cumulative'},
+            'current_month': {'metrics': {}, 'title': 'Current Month'},
+            'past_month': {'metrics': {}, 'title': 'Past Month'}
+        }
+
+        difficulty_dict = {'title': '', 'categories': categories}
+
+        performance = {'all': difficulty_dict}
 
         aggregates = {
             'percent_correct': (models.Sum('answered_correctly', output_field=models.FloatField()) /
@@ -85,21 +94,23 @@ class StudentPerformanceReport(object):
             'texts_complete': models.Count(distinct=True, expression='text')
         }
 
+        performance['all']['categories']['cumulative']['metrics'] = self.cumulative.aggregate(**aggregates)
+        performance['all']['categories']['past_month']['metrics'] = self.past_month.aggregate(**aggregates)
+        performance['all']['categories']['current_month']['metrics'] = self.current_month.aggregate(**aggregates)
+
+        performance['all']['title'] = 'All'
+
         for difficulty in TextDifficulty.objects.all():
-            performance.setdefault(difficulty.slug, {})
+            performance[difficulty.slug] = copy.copy(difficulty_dict)
+            performance[difficulty.slug]['title'] = difficulty.name
 
-        performance['all']['cumulative'] = self.cumulative.aggregate(**aggregates)
-        performance['all']['past_month'] = self.past_month.aggregate(**aggregates)
-        performance['all']['current_month'] = self.current_month.aggregate(**aggregates)
-
-        for difficulty in TextDifficulty.objects.all():
-            performance.setdefault(difficulty.slug, categories)
-
-            performance[difficulty.slug]['cumulative'] = self.cumulative.filter(
+            performance[difficulty.slug]['categories']['cumulative']['metrics'] = self.cumulative.filter(
                 text_difficulty_slug=difficulty.slug).aggregate(**aggregates)
-            performance[difficulty.slug]['past_month'] = self.past_month.filter(
+
+            performance[difficulty.slug]['categories']['past_month']['metrics'] = self.past_month.filter(
                 text_difficulty_slug=difficulty.slug).aggregate(**aggregates)
-            performance[difficulty.slug]['current_month'] = self.current_month.filter(
+
+            performance[difficulty.slug]['categories']['current_month']['metrics'] = self.current_month.filter(
                 text_difficulty_slug=difficulty.slug).aggregate(**aggregates)
 
         return performance

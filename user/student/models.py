@@ -3,6 +3,8 @@ from typing import TypeVar
 from django.db import models
 from django.urls import reverse_lazy
 
+from django.template import loader
+
 from text.models import TextDifficulty, Text
 from text_reading.base import TextReadingStateMachine
 from user.mixins.models import Profile
@@ -36,7 +38,9 @@ class Student(Profile, models.Model):
             'difficulty_preference': [self.difficulty_preference.slug, self.difficulty_preference.name]
             if self.difficulty_preference else None,
             'difficulties': difficulties,
-            'text_reading': [text_reading.to_dict() for text_reading in self.text_readings.all()]
+            'text_reading': [text_reading.to_dict() for text_reading in self.text_readings.all()],
+            'performance_report': loader.render_to_string('student_performance_report.html',
+                                                          {'performance_report': self.performance.to_dict()})
         }
 
     def sections_complete_for(self, text: TypeVar('Text')) -> int:

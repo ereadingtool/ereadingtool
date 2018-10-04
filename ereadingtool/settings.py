@@ -90,7 +90,8 @@ TEMPLATES = [
             os.path.join(BASE_DIR, 'user/templates'),
             os.path.join(BASE_DIR, 'question/templates'),
             os.path.join(BASE_DIR, 'instructor_admin/templates'),
-            os.path.join(BASE_DIR, 'text/templates')
+            os.path.join(BASE_DIR, 'text/templates'),
+            os.path.join(BASE_DIR, 'report/templates')
         ]
         ,
         'APP_DIRS': True,

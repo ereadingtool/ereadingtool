@@ -28,6 +28,10 @@ import Ports
 import Menu.Msg as MenuMsg
 import Menu.Logout
 
+import HtmlParser
+import HtmlParser.Util
+
+
 -- UPDATE
 type Msg =
     RetrieveStudentProfile (Result Error StudentProfile)
@@ -373,6 +377,8 @@ view_student_performance model =
   div [class "profile_item"] [
     span [class "profile_item_title"] [ Html.text "My Performance: " ]
   , span [class "profile_item_value"] [
+      div [class "performance_report"]
+       (HtmlParser.Util.toVirtualDom <| HtmlParser.parse (Student.Profile.Model.studentPerformanceReport model.profile))
     ]
   ]
 

@@ -23,7 +23,8 @@ type alias StudentProfileParams = {
   , email: String
   , difficulty_preference: Maybe Text.TextDifficulty
   , difficulties: List Text.TextDifficulty
-  , text_reading: Maybe (List TextReading) }
+  , text_reading: Maybe (List TextReading)
+  , performance_report: String }
 
 type StudentProfile = StudentProfile StudentProfileParams
 
@@ -35,7 +36,8 @@ emptyStudentProfile = StudentProfile {
   , email = ""
   , difficulty_preference = Nothing
   , difficulties = []
-  , text_reading = Nothing }
+  , text_reading = Nothing
+  , performance_report = "" }
 
 
 studentProfileParamsDecoder : Json.Decode.Decoder StudentProfileParams
@@ -47,6 +49,7 @@ studentProfileParamsDecoder =
     |> required "difficulty_preference" (Json.Decode.nullable tupleDecoder)
     |> required "difficulties" (Json.Decode.list tupleDecoder)
     |> required "text_reading" (Json.Decode.nullable textReadingsDecoder)
+    |> required "performance_report" Json.Decode.string
 
 
 studentProfileDecoder : Json.Decode.Decoder StudentProfile
@@ -82,6 +85,9 @@ studentUserName (StudentProfile attrs) = attrs.username
 
 studentEmail : StudentProfile -> String
 studentEmail (StudentProfile attrs) = attrs.email
+
+studentPerformanceReport : StudentProfile -> String
+studentPerformanceReport (StudentProfile attrs) = attrs.performance_report
 
 init_profile : StudentProfileParams -> StudentProfile
 init_profile params = StudentProfile params
