@@ -1,22 +1,21 @@
-{% for difficulty_key, difficulty in performance_report.items %}
-    <div class="difficulty">
-        <div class="title">
-            {{ difficulty.title }} {% if difficulty_key == 'all' %}Difficulties{% else %}Difficulty{% endif %}</div>
+<table border="1">
+    <th>Level</th>
+    <th>Time Period</th>
+    <th>Number of Texts Read</th>
+    <th>Percent Correct</th>
 
-    {% for category_key, report in difficulty.categories.items %}
-        <div class="category">
-            <div class="title">{{ report.title }}</div>
+    {% for difficulty_key, difficulty in performance_report.items %}
+        <tr>
+            <td rowspan="4">{{ difficulty.title }}</td>
+        </tr>
 
-              <div class="metric">
-                  <div class="value">{{ report.metrics.percent_correct|default_if_none:0 }}%</div>
-                  <div class="title">Answered Correctly</div>
-              </div>
+        {% for category_key, report in difficulty.categories.items %}
+            <tr>
+                <td>{{ report.title }}</td>
+                <td>{{ report.metrics.texts_complete }} out of {{ report.metrics.total_texts }}</td>
+                <td>{{ report.metrics.percent_correct|default_if_none:0 }}%</td>
+            </tr>
+        {% endfor %}
 
-              <div class="metric">
-                  <div class="value">{{ report.metrics.texts_complete }}</div>
-                  <div class="title">Texts Complete</div>
-              </div>
-        </div>
     {% endfor %}
-    </div>
-{% endfor %}
+</table>

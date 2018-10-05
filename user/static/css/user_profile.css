@@ -15,7 +15,7 @@
     overflow: auto;
 
     grid-template-columns: 35% 35% 25%;
-    grid-template-rows: 100px auto;
+    grid-template-rows: 100px minmax(auto, 180px) auto;
 
     border: solid 0.5px lightgrey;
 
@@ -23,14 +23,37 @@
     grid-column-gap: 10px;
 }
 
-.text_reading_actions {
+.text_readings {
     display: grid;
 
-    grid-template-columns: 55px 75px;
+    grid-column: 1 / 4;
+    grid-row: 2;
 
-    grid-column-gap: 5px;
-    grid-row-gap: 10px;
+    grid-template-rows: 25px auto;
+}
 
+.performance {
+    display: grid;
+
+    grid-column: 1 / 4;
+    grid-row: 3;
+
+    grid-template-rows: 25px auto;
+}
+
+.performance_report {
+    margin-top: 10px;
+}
+
+.text_readings_values {
+    display: grid;
+
+    margin-top: 10px;
+    grid-template-columns: repeat(5, auto);
+}
+
+.text_reading_actions {
+    grid-template-columns: auto;
     margin-top: 10px;
 }
 
@@ -47,6 +70,7 @@
 
 .profile_item_title {
     border-bottom: solid 0.5px grey;
+    padding-bottom: 10px;
 }
 
 .profile_item_value {

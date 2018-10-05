@@ -251,7 +251,7 @@ view_text_reading_actions text_reading =
 
 view_text_reading : TextReading -> Html Msg
 view_text_reading text_reading =
-  span [] [
+  div [] [
     div [class "text_reading_item"] [
       Html.text "Text: "
     , Html.text text_reading.text
@@ -276,9 +276,9 @@ view_student_text_readings student_profile =
   let
     text_readings = Maybe.withDefault [] (Student.Profile.Model.studentTextReading student_profile)
   in
-    div [class "profile_item"] [
+    div [class "text_readings"] [
       span [class "profile_item_title"] [ Html.text "Text Readings (Current and Complete)" ]
-    , span [class "profile_item_value"] (List.map view_text_reading text_readings)
+    , div [class "text_readings_values"] (List.map view_text_reading text_readings)
     ]
 
 view_username_submit : UsernameUpdate -> List (Html Msg)
@@ -374,7 +374,7 @@ view_flashcards model =
 
 view_student_performance : Model -> Html Msg
 view_student_performance model =
-  div [class "profile_item"] [
+  div [class "performance"] [
     span [class "profile_item_title"] [ Html.text "My Performance: " ]
   , span [class "profile_item_value"] [
       div [class "performance_report"]
@@ -389,9 +389,9 @@ view_content model =
       view_username model
     , view_user_email model
     , view_preferred_difficulty model
-    , view_flashcards model
     , view_student_text_readings model.profile
     , view_student_performance model
+    , view_flashcards model
     , (if not (String.isEmpty model.err_str) then
         span [attribute "class" "error"] [ Html.text "error", Html.text model.err_str ]
        else Html.text "")

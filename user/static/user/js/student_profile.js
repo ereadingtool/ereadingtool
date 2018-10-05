@@ -21695,7 +21695,7 @@ var _user$project$Main$view_student_performance = function (model) {
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('profile_item'),
+			_0: _elm_lang$html$Html_Attributes$class('performance'),
 			_1: {ctor: '[]'}
 		},
 		{
@@ -21927,7 +21927,7 @@ var _user$project$Main$view_scores = function (score) {
 };
 var _user$project$Main$view_text_reading = function (text_reading) {
 	return A2(
-		_elm_lang$html$Html$span,
+		_elm_lang$html$Html$div,
 		{ctor: '[]'},
 		{
 			ctor: '::',
@@ -22021,7 +22021,7 @@ var _user$project$Main$view_student_text_readings = function (student_profile) {
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('profile_item'),
+			_0: _elm_lang$html$Html_Attributes$class('text_readings'),
 			_1: {ctor: '[]'}
 		},
 		{
@@ -22041,10 +22041,10 @@ var _user$project$Main$view_student_text_readings = function (student_profile) {
 			_1: {
 				ctor: '::',
 				_0: A2(
-					_elm_lang$html$Html$span,
+					_elm_lang$html$Html$div,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('profile_item_value'),
+						_0: _elm_lang$html$Html_Attributes$class('text_readings_values'),
 						_1: {ctor: '[]'}
 					},
 					A2(_elm_lang$core$List$map, _user$project$Main$view_text_reading, text_readings)),
@@ -22695,13 +22695,13 @@ var _user$project$Main$view_content = function (model) {
 							_0: _user$project$Main$view_preferred_difficulty(model),
 							_1: {
 								ctor: '::',
-								_0: _user$project$Main$view_flashcards(model),
+								_0: _user$project$Main$view_student_text_readings(model.profile),
 								_1: {
 									ctor: '::',
-									_0: _user$project$Main$view_student_text_readings(model.profile),
+									_0: _user$project$Main$view_student_performance(model),
 									_1: {
 										ctor: '::',
-										_0: _user$project$Main$view_student_performance(model),
+										_0: _user$project$Main$view_flashcards(model),
 										_1: {
 											ctor: '::',
 											_0: (!_elm_lang$core$String$isEmpty(model.err_str)) ? A2(

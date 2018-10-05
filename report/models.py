@@ -40,6 +40,7 @@ class StudentPerformance(models.Model):
 class StudentPerformanceReport(object):
     def __init__(self, student: TypeVar('Student'), *args, **kwargs):
         self.student = student
+        self.queryset = StudentPerformance.objects.filter(student=self.student)
 
     @property
     def today_dt(self):
@@ -60,21 +61,21 @@ class StudentPerformanceReport(object):
 
     @property
     def cumulative(self):
-        return StudentPerformance.objects.filter(student=self.student)
+        return self.queryset
 
     @property
     def current_month(self):
-        return StudentPerformance.objects.filter(
-            student=self.student,
+        return self.queryset.filter(
             end_dt__gte=self.first_of_current_month,
-            end_dt__lt=self.first_of_next_month)
+            end_dt__lt=self.first_of_next_month
+        )
 
     @property
     def past_month(self):
-        return StudentPerformance.objects.filter(
-            student=self.student,
+        return self.queryset.filter(
             end_dt__gte=self.first_of_last_month,
-            end_dt__lt=self.first_of_current_month)
+            end_dt__lt=self.first_of_current_month
+        )
 
     def to_dict(self) -> Dict:
         categories = {
@@ -89,7 +90,7 @@ class StudentPerformanceReport(object):
 
         aggregates = {
             'percent_correct': (models.Sum('answered_correctly', output_field=models.FloatField()) /
-                                models.Sum('attempted_questions', output_field=models.FloatField())),
+                                models.Sum('attempted_questions', output_field=models.FloatField())) * 100,
 
             'texts_complete': models.Count(distinct=True, expression='text')
         }
@@ -98,19 +99,22 @@ class StudentPerformanceReport(object):
         performance['all']['categories']['past_month']['metrics'] = self.past_month.aggregate(**aggregates)
         performance['all']['categories']['current_month']['metrics'] = self.current_month.aggregate(**aggregates)
 
-        performance['all']['title'] = 'All'
+        performance['all']['title'] = 'All Levels'
 
-        for difficulty in TextDifficulty.objects.all():
+        for difficulty in TextDifficulty.objects.annotate(total_texts=models.Count('texts')).all():
             performance[difficulty.slug] = copy.copy(difficulty_dict)
             performance[difficulty.slug]['title'] = difficulty.name
 
             performance[difficulty.slug]['categories']['cumulative']['metrics'] = self.cumulative.filter(
                 text_difficulty_slug=difficulty.slug).aggregate(**aggregates)
+            performance[difficulty.slug]['categories']['cumulative']['metrics']['total_texts'] = difficulty.total_texts
 
             performance[difficulty.slug]['categories']['past_month']['metrics'] = self.past_month.filter(
                 text_difficulty_slug=difficulty.slug).aggregate(**aggregates)
+            performance[difficulty.slug]['categories']['past_month']['metrics']['total_texts'] = difficulty.total_texts
 
             performance[difficulty.slug]['categories']['current_month']['metrics'] = self.current_month.filter(
                 text_difficulty_slug=difficulty.slug).aggregate(**aggregates)
+            performance[difficulty.slug]['categories']['current_month']['metrics']['total_texts'] = difficulty.total_texts
 
         return performance
