@@ -109,12 +109,30 @@ class StudentPerformanceReport(object):
                 text_difficulty_slug=difficulty.slug).aggregate(**aggregates)
             performance[difficulty.slug]['categories']['cumulative']['metrics']['total_texts'] = difficulty.total_texts
 
+            try:
+                performance[difficulty.slug]['categories']['cumulative']['metrics']['percent_correct'] = round(
+                    performance[difficulty.slug]['categories']['cumulative']['metrics']['percent_correct'], 2)
+            except TypeError:
+                pass
+
             performance[difficulty.slug]['categories']['past_month']['metrics'] = self.past_month.filter(
                 text_difficulty_slug=difficulty.slug).aggregate(**aggregates)
             performance[difficulty.slug]['categories']['past_month']['metrics']['total_texts'] = difficulty.total_texts
 
+            try:
+                performance[difficulty.slug]['categories']['past_month']['metrics']['percent_correct'] = round(
+                    performance[difficulty.slug]['categories']['past_month']['metrics']['percent_correct'], 2)
+            except TypeError:
+                pass
+
             performance[difficulty.slug]['categories']['current_month']['metrics'] = self.current_month.filter(
                 text_difficulty_slug=difficulty.slug).aggregate(**aggregates)
             performance[difficulty.slug]['categories']['current_month']['metrics']['total_texts'] = difficulty.total_texts
+
+            try:
+                performance[difficulty.slug]['categories']['current_month']['metrics']['percent_correct'] = round(
+                    performance[difficulty.slug]['categories']['current_month']['metrics']['percent_correct'], 2)
+            except TypeError:
+                pass
 
         return performance
