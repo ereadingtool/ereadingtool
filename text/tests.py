@@ -18,6 +18,7 @@ from text_reading.base import TextReadingNotAllQuestionsAnswered
 from text_reading.models import StudentTextReading
 
 from user.student.models import Student
+from text.glosbe.api import GlosbeAPI, GlosbeDefinitions, GlosbeDefinition
 
 
 class TestText(TestUser, TestCase):
@@ -25,6 +26,17 @@ class TestText(TestUser, TestCase):
         super(TestText, self).__init__(*args, **kwargs)
 
         self.text_endpoint = reverse_lazy('text-api')
+
+    def test_definition_objs(self):
+        glosbe_api = GlosbeAPI()
+
+        defs = glosbe_api.translate('заявление')
+
+        self.assertIsInstance(defs, GlosbeDefinitions)
+
+        definitions = list(defs.definitions.values())
+
+        self.assertIsInstance(definitions[0], GlosbeDefinition)
 
     def test_text_reading(self, student: Student=None) -> StudentTextReading:
         # add an additional question for testing

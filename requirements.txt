@@ -9,3 +9,4 @@ channels
 python-statemachine
 django-sendgrid-v5
 sqlparse
+requests
