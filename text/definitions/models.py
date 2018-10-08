@@ -24,7 +24,7 @@ class TextDefinitions(models.Model):
         morph = pymorphy2.MorphAnalyzer()
         glosbe_api = GlosbeAPI()
 
-        for section in self.sections:
+        for section in self.sections.all():
             for word in section.body.split('\s'):
                 word = word_re.match(word).group(0)
 
