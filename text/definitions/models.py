@@ -52,9 +52,14 @@ class TextDefinitions(models.Model):
                     if meanings:
                         words[normalized_word] = []
 
-                        for i in range(0, 2):
+                        for i in range(0, 3):
                             try:
-                                words[normalized_word].append(meanings[i])
+                                meaning = meanings[i]
+
+                                if meaning['language'] != 'en':
+                                    continue
+
+                                words[normalized_word].append(meaning)
                             except IndexError:
                                 pass
 
