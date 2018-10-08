@@ -41,7 +41,12 @@ class TextDefinitions(models.Model):
                 definitions = list(glosbe_api.translate(normalized_word).definitions.values())
 
                 if definitions:
-                    words[normalized_word] = definitions[0].meanings
+                    meanings = definitions[0].meanings
+
+                    if meanings:
+                        words[normalized_word] = meanings[0]
+                    else:
+                        words[normalized_word] = None
                 else:
                     words[normalized_word] = None
 
