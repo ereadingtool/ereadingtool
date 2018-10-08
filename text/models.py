@@ -5,6 +5,8 @@ from django.db import models
 from mixins.model import Timestamped, WriteLockable, WriteLocked
 from tag.models import Taggable
 
+from text.definitions.models import TextDefinitions
+
 from django.urls import reverse
 
 
@@ -37,7 +39,7 @@ class TextDifficulty(models.Model):
                 difficulty.save()
 
 
-class Text(Taggable, WriteLockable, Timestamped, models.Model):
+class Text(TextDefinitions, Taggable, WriteLockable, Timestamped, models.Model):
     introduction = models.CharField(max_length=512, null=False, blank=False)
 
     title = models.CharField(max_length=255, null=False, blank=False)
