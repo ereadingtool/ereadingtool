@@ -12,3 +12,4 @@ sqlparse
 requests
 pymorphy2[fast]
 pymorphy2-dicts-ru
+beautifulsoup4

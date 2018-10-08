@@ -1,4 +1,6 @@
 import re
+from bs4 import BeautifulSoup
+
 from typing import Dict
 
 import pymorphy2
@@ -25,7 +27,9 @@ class TextDefinitions(models.Model):
         glosbe_api = GlosbeAPI()
 
         for section in self.sections.all():
-            for word in section.body.split('\s'):
+            text = BeautifulSoup(section.body).get_text()
+
+            for word in text.split():
                 word_match = word_re.match(word)
 
                 if word_match:
