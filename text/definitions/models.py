@@ -34,7 +34,7 @@ class TextDefinitions(models.Model):
                 parsed_word = morph.parse(word)[0]
                 normalized_word = parsed_word.normal_form
 
-                definitions = glosbe_api.translate(normalized_word).definitions
+                definitions = list(glosbe_api.translate(normalized_word).definitions.values())
 
                 words[normalized_word] = definitions[0].meanings
 
