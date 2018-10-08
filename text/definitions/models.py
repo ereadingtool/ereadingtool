@@ -26,7 +26,10 @@ class TextDefinitions(models.Model):
 
         for section in self.sections.all():
             for word in section.body.split('\s'):
-                word = word_re.match(word).group(0)
+                word_match = word_re.match(word)
+
+                if word_match:
+                    word = word_match.group(0)
 
                 parsed_word = morph.parse(word)[0]
                 normalized_word = parsed_word.normal_form
