@@ -1,18 +1,13 @@
 import json
-
 from typing import Dict
-from csp.decorators import csp_replace
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404, HttpResponseRedirect
-from django.http import HttpResponse
-from django.urls import reverse_lazy
-from django.views.generic import TemplateView
 
+from csp.decorators import csp_replace
+from django.http import Http404
 from django.http import HttpResponse, HttpRequest
+from django.views.generic import TemplateView
 
 from mixins.view import ElmLoadJsView
 from text.models import Text
-
 from user.views.instructor import InstructorView
 
 
