@@ -29,8 +29,17 @@ class TextDefinitionElmLoadView(ElmLoadJsView):
                 text = Text.objects.get(pk=context['pk'])
                 words, word_freqs = text.definitions
 
-                context['elm']['words'] = {'quote': False, 'safe': True, 'value': words}
-                context['elm']['word_frequencies'] = {'quote': False, 'safe': True, 'value': word_freqs}
+                context['elm']['words'] = {
+                    'quote': False,
+                    'safe': True,
+                    'value': json.dumps(list(words.items()))
+                }
+
+                context['elm']['word_frequencies'] = {
+                    'quote': False,
+                    'safe': True,
+                    'value': json.dumps(list(word_freqs.items()))
+                }
             except Text.DoesNotExist:
                 pass
 
