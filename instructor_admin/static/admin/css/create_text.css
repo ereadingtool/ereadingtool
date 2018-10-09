@@ -242,6 +242,7 @@ body {
     font-size: 18px;
     font-weight: 200;
 
+    margin-top: 100px;
     margin-bottom: 15px;
 
     grid-template-columns: 15% auto 15%;

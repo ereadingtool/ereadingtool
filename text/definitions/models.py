@@ -61,6 +61,6 @@ class TextDefinitions(models.Model):
 
                                 words[normalized_word].append(meaning)
                             except IndexError:
-                                pass
+                                break
 
         return words, word_freq

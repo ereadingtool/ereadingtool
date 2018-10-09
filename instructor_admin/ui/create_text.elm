@@ -462,6 +462,5 @@ view model =
     div [] [
         Views.view_header (Profile.fromInstructorProfile model.profile) Nothing Text.Create.LogOut
       , view_msgs model
-      , Views.view_preview
       , Text.View.view_text text_view_params
     ]

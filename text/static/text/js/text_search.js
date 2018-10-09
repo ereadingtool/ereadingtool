@@ -11031,7 +11031,7 @@ var _user$project$Text_Search$set_difficulty_search = F2(
 		var _p5 = _p4;
 		return A3(_user$project$Text_Search$TextSearch, _p5._0, _p5._1, difficulty_search);
 	});
-var _user$project$Text_Search$set_difficulty = F3(
+var _user$project$Text_Search$add_difficulty_to_search = F3(
 	function (text_search, difficulty, selected) {
 		var new_difficulty_search = A3(
 			_user$project$Text_Search_Difficulty$select_difficulty,
@@ -11773,7 +11773,7 @@ var _user$project$Main$init = function (flags) {
 			var _p3 = _user$project$Student_Profile_Model$studentDifficultyPreference(_p2._0);
 			if (_p3.ctor === 'Just') {
 				return A3(
-					_user$project$Text_Search$set_difficulty,
+					_user$project$Text_Search$add_difficulty_to_search,
 					default_search,
 					_elm_lang$core$Tuple$first(_p3._0),
 					true);
@@ -11799,8 +11799,8 @@ var _user$project$Main$update = F2(
 	function (msg, model) {
 		var _p4 = msg;
 		switch (_p4.ctor) {
-			case 'SelectDifficulty':
-				var new_text_search = A3(_user$project$Text_Search$set_difficulty, model.text_search, _p4._0, _p4._1);
+			case 'AddDifficulty':
+				var new_text_search = A3(_user$project$Text_Search$add_difficulty_to_search, model.text_search, _p4._0, _p4._1);
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -11928,9 +11928,9 @@ var _user$project$Main$view_tags = function (tag_search) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Main$SelectDifficulty = F2(
+var _user$project$Main$AddDifficulty = F2(
 	function (a, b) {
-		return {ctor: 'SelectDifficulty', _0: a, _1: b};
+		return {ctor: 'AddDifficulty', _0: a, _1: b};
 	});
 var _user$project$Main$view_difficulties = function (difficulty_search) {
 	var view_difficulty = function (_p7) {
@@ -11955,7 +11955,7 @@ var _user$project$Main$view_difficulties = function (difficulty_search) {
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html_Events$onClick(
-						A2(_user$project$Main$SelectDifficulty, _p8._0, !selected)),
+						A2(_user$project$Main$AddDifficulty, _p8._0, !selected)),
 					_1: {ctor: '[]'}
 				}
 			},
