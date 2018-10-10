@@ -270,12 +270,25 @@ view_submit =
     ]
   ]
 
+view_tab_menu : TextViewParams -> Html Msg
+view_tab_menu params =
+  div [attribute "id" "tabs_menu"] [
+     div [classList [("selected", True)]] [ Html.text "Text" ]
+  ,  div [] [ Html.text "Definitions" ]
+  ]
+
 view_text : TextViewParams -> Html Msg
 view_text params =
-  div [attribute "id" "text"] <| [
-    (view_text_attributes params)
-  , (Text.Section.View.view_text_section_components TextComponentMsg (Text.Component.text_section_components params.text_component)
-    params.text_difficulties)
-  ] ++ (case params.mode of
-            ReadOnlyMode write_locker -> []
-            _ -> [view_submit])
+  div [attribute "id" "tabs"] [
+    view_tab_menu params
+  , div [attribute "id" "tabs_contents"] [
+      div [attribute "id" "text"] <| [
+        (view_text_attributes params)
+      , (Text.Section.View.view_text_section_components TextComponentMsg
+          (Text.Component.text_section_components params.text_component)
+        params.text_difficulties)
+      ] ++ (case params.mode of
+                ReadOnlyMode write_locker -> []
+                _ -> [view_submit])
+    ]
+  ]

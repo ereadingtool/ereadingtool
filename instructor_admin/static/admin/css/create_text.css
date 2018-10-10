@@ -128,8 +128,6 @@ body {
     font-size: 23px;
     font-weight: 300;
 
-    margin-top: 15px;
-
     grid-template-columns: 100%;
 }
 
@@ -233,10 +231,12 @@ body {
     background: black;
 }
 
-#text {
+#tabs {
     display: grid;
-    grid-row-gap: 5%;
-    row-gap: 5%;
+
+    grid-template-columns: 15% 70% 15%;
+
+    row-gap: 0;
 
     font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 18px;
@@ -244,8 +244,31 @@ body {
 
     margin-top: 100px;
     margin-bottom: 15px;
+}
 
-    grid-template-columns: 15% auto 15%;
+#tabs_menu {
+    grid-column: 2;
+    display: grid;
+
+    grid-template-columns: 6% 10% auto;
+    text-align: center;
+}
+
+#tabs_menu > div {
+    border-top: solid 1px #a4a4a4;
+    border-left: solid 1px #a4a4a4;
+    border-right: solid 1px #a4a4a4;
+    border-radius: 10px 10px 0 0;
+}
+
+#tabs_menu > .selected {
+    background: #f9f9f9;
+    font-weight: bold;
+}
+
+#tabs_contents {
+    grid-column: 2;
+    border: solid 1px #a4a4a4;
 }
 
 #text_tags > div {

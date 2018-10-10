@@ -15711,6 +15711,42 @@ var _user$project$Text_Tags_View$view_tags = F5(
 			});
 	});
 
+var _user$project$Text_View$view_tab_menu = function (params) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'tabs_menu'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'selected'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Text'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Definitions'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
 var _user$project$Text_View$view_submit = A2(
 	_elm_lang$html$Html$div,
 	{
@@ -16783,36 +16819,62 @@ var _user$project$Text_View$view_text = function (params) {
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text'),
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'tabs'),
 			_1: {ctor: '[]'}
 		},
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			{
+		{
+			ctor: '::',
+			_0: _user$project$Text_View$view_tab_menu(params),
+			_1: {
 				ctor: '::',
-				_0: _user$project$Text_View$view_text_attributes(params),
-				_1: {
-					ctor: '::',
-					_0: A3(
-						_user$project$Text_Section_View$view_text_section_components,
-						_user$project$Text_Create$TextComponentMsg,
-						_user$project$Text_Component$text_section_components(params.text_component),
-						params.text_difficulties),
-					_1: {ctor: '[]'}
-				}
-			},
-			function () {
-				var _p12 = params.mode;
-				if (_p12.ctor === 'ReadOnlyMode') {
-					return {ctor: '[]'};
-				} else {
-					return {
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
 						ctor: '::',
-						_0: _user$project$Text_View$view_submit,
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'tabs_contents'),
 						_1: {ctor: '[]'}
-					};
-				}
-			}()));
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text'),
+								_1: {ctor: '[]'}
+							},
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								{
+									ctor: '::',
+									_0: _user$project$Text_View$view_text_attributes(params),
+									_1: {
+										ctor: '::',
+										_0: A3(
+											_user$project$Text_Section_View$view_text_section_components,
+											_user$project$Text_Create$TextComponentMsg,
+											_user$project$Text_Component$text_section_components(params.text_component),
+											params.text_difficulties),
+										_1: {ctor: '[]'}
+									}
+								},
+								function () {
+									var _p12 = params.mode;
+									if (_p12.ctor === 'ReadOnlyMode') {
+										return {ctor: '[]'};
+									} else {
+										return {
+											ctor: '::',
+											_0: _user$project$Text_View$view_submit,
+											_1: {ctor: '[]'}
+										};
+									}
+								}())),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
 };
 
 var _user$project$Text_Subscriptions$subscriptions = F2(
