@@ -1,10 +1,11 @@
 from channels.auth import AuthMiddlewareStack
-from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.routing import ProtocolTypeRouter, URLRouter, ChannelNameRouter
 from channels.security.websocket import AllowedHostsOriginValidator
 from django.conf.urls import url
 
 from text.consumers.student import StudentTextReaderConsumer
-from text.consumers.instructor import InstructorTextReaderConsumer
+from text.consumers.instructor import InstructorTextReaderConsumer, ParseTextForDefinitions
+
 
 application = ProtocolTypeRouter({
     # web socket textreader handler
@@ -14,4 +15,7 @@ application = ProtocolTypeRouter({
             url(r'^instructor/text_read/(?P<text_id>\d+)/$', InstructorTextReaderConsumer),
         ])
     )),
+    'channel': ChannelNameRouter({
+        'parse_text_for_definitions': ParseTextForDefinitions
+    })
 })

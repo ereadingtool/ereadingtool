@@ -79,7 +79,8 @@ type alias Model = {
   , text_component : TextComponent
   , text_difficulties : List Text.Model.TextDifficulty
   , tags: Dict String String
-  , write_locked: Bool }
+  , write_locked: Bool
+  , tabs: Dict String Bool }
 
 type alias TextViewParams = {
     text: Text.Model.Text
