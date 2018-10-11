@@ -5,7 +5,7 @@ from django.db import models
 from mixins.model import Timestamped, WriteLockable, WriteLocked
 from tag.models import Taggable
 
-from text.definitions.mixins import TextDefinitionsMixin
+from text.definitions.mixins import TextSectionDefinitionsMixin
 
 from django.urls import reverse
 
@@ -39,7 +39,7 @@ class TextDifficulty(models.Model):
                 difficulty.save()
 
 
-class Text(TextDefinitionsMixin, Taggable, WriteLockable, Timestamped, models.Model):
+class Text(Taggable, WriteLockable, Timestamped, models.Model):
     introduction = models.CharField(max_length=512, null=False, blank=False)
 
     title = models.CharField(max_length=255, null=False, blank=False)
@@ -92,6 +92,9 @@ class Text(TextDefinitionsMixin, Taggable, WriteLockable, Timestamped, models.Mo
             text_section.text = text
             text_section.save()
 
+            if section_params['instance'] and section_params['instance'].body != section_params['body']:
+                text_section.update_definitions()
+
             for i, question in enumerate(section_params['questions']):
                 question_obj = question['form'].save(commit=False)
 
@@ -117,6 +120,8 @@ class Text(TextDefinitionsMixin, Taggable, WriteLockable, Timestamped, models.Mo
             text_section = section_params['text_section_form'].save(commit=False)
             text_section.text = text
             text_section.save()
+
+            text_section.update_definitions()
 
             for i, question in enumerate(section_params['questions']):
                 question_obj = question['form'].save(commit=False)
@@ -216,7 +221,7 @@ class Text(TextDefinitionsMixin, Taggable, WriteLockable, Timestamped, models.Mo
         super(Text, self).delete(*args, **kwargs)
 
 
-class TextSection(Timestamped, models.Model):
+class TextSection(TextSectionDefinitionsMixin, Timestamped, models.Model):
     text = models.ForeignKey(Text, null=True, related_name='sections', on_delete=models.SET_NULL)
 
     order = models.IntegerField(blank=False)

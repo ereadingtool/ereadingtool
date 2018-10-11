@@ -126,12 +126,13 @@ class TextAPIView(LoginRequiredMixin, View):
         return questions, errors
 
     @classmethod
-    def validate_text_section_param(cls, text_section_param: dict, order: int, errors: dict, output_params: dict,
-                                    text_section_instance: Optional[TypeVar('TextSection')]=None) -> (dict, dict):
+    def validate_text_section_param(cls, text_section_param: Dict, order: int, errors: Dict, output_params: Dict,
+                                    text_section_instance: Optional[TypeVar('TextSection')]=None) -> (Dict, Dict):
         text_section = dict()
         text_section_key = f'textsection_{order}'
 
         text_section_param['order'] = order
+        text_section_param['instance'] = text_section_instance
 
         text_section['text_section_form'] = TextSectionForm(instance=text_section_instance, data=text_section_param)
 
