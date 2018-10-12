@@ -93,7 +93,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
             text_section.save()
 
             if section_params['instance']:
-                text_section.update_definitons_if_new(old_body=section_params['body'])
+                text_section.update_definitions_if_new(old_body=section_params['body'])
 
             for i, question in enumerate(section_params['questions']):
                 question_obj = question['form'].save(commit=False)

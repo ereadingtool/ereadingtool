@@ -24,7 +24,7 @@ class TextSectionDefinitionsMixin(models.Model):
     glosbe_api = GlosbeAPI()
     body = NotImplemented
 
-    def update_definitons_if_new(self, old_body: AnyStr):
+    def update_definitions_if_new(self, old_body: AnyStr):
         channel_layer = get_channel_layer()
 
         try:
