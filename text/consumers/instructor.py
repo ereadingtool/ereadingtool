@@ -21,4 +21,3 @@ class ParseTextForDefinitions(SyncConsumer):
         text = async_to_sync(get_text_or_error)(text_id=text_id, user=user)
 
         word_defs, word_freqs = text.parse_for_definitions()
-

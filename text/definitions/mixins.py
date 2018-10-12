@@ -21,10 +21,7 @@ class TextSectionDefinitionsMixin(models.Model):
     word_re = re.compile(r'(\w+-\w+|\w+)')
     morph = pymorphy2.MorphAnalyzer()
     glosbe_api = GlosbeAPI()
-
-    @property
-    def body(self):
-        raise NotImplementedError
+    body = NotImplemented
 
     def update_definitions(self):
         channel_layer = get_channel_layer()

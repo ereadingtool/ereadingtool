@@ -132,7 +132,6 @@ class TextAPIView(LoginRequiredMixin, View):
         text_section_key = f'textsection_{order}'
 
         text_section_param['order'] = order
-        text_section_param['instance'] = text_section_instance
 
         text_section['text_section_form'] = TextSectionForm(instance=text_section_instance, data=text_section_param)
 
@@ -148,6 +147,8 @@ class TextAPIView(LoginRequiredMixin, View):
         if not text_section['text_section_form'].is_valid():
             errors = TextAPIView.form_validation_errors(errors=errors, parent_key=text_section_key,
                                                         form=text_section['text_section_form'])
+
+        text_section['instance'] = text_section_instance
 
         output_params[text_section_key] = text_section
 
