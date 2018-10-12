@@ -26,8 +26,11 @@ class TextSectionDefinitionsMixin(models.Model):
     def update_definitions(self):
         channel_layer = get_channel_layer()
 
-        async_to_sync(channel_layer.send)('text', {'type': 'text.parse.word.definitions',
-                                                   'text_section_pk': self.pk})
+        try:
+            async_to_sync(channel_layer.send)('text', {'type': 'text.parse.word.definitions',
+                                                       'text_section_pk': self.pk})
+        except OSError:
+            pass
 
     def parse_for_definitions(self) -> [Dict, Dict]:
         words = {}

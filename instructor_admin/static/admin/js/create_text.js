@@ -11107,7 +11107,7 @@ var _user$project$Text_Model$new_text = {
 	source: '',
 	difficulty: '',
 	introduction: '',
-	conclusion: '',
+	conclusion: _elm_lang$core$Maybe$Nothing,
 	tags: _elm_lang$core$Maybe$Nothing,
 	created_by: _elm_lang$core$Maybe$Nothing,
 	last_modified_by: _elm_lang$core$Maybe$Nothing,
@@ -12308,7 +12308,9 @@ var _user$project$Text_Component$set_text_attribute = F3(
 					_user$project$Text_Component$TextComponent,
 					_elm_lang$core$Native_Utils.update(
 						_p42,
-						{conclusion: value}),
+						{
+							conclusion: _elm_lang$core$Maybe$Just(value)
+						}),
 					_p41,
 					_p43,
 					_p40);
@@ -14043,75 +14045,86 @@ var _user$project$Text_Section_Encode$textSectionsEncoder = function (texts) {
 };
 
 var _user$project$Text_Encode$textEncoder = function (text) {
-	return _elm_lang$core$Json_Encode$object(
-		{
-			ctor: '::',
-			_0: {
-				ctor: '_Tuple2',
-				_0: 'introduction',
-				_1: _elm_lang$core$Json_Encode$string(text.introduction)
-			},
-			_1: {
+	var conclusion = function () {
+		var _p0 = text.conclusion;
+		if (_p0.ctor === 'Just') {
+			return {
 				ctor: '::',
 				_0: {
 					ctor: '_Tuple2',
-					_0: 'title',
-					_1: _elm_lang$core$Json_Encode$string(text.title)
+					_0: 'conclusion',
+					_1: _elm_lang$core$Json_Encode$string(_p0._0)
+				},
+				_1: {ctor: '[]'}
+			};
+		} else {
+			return {ctor: '[]'};
+		}
+	}();
+	return _elm_lang$core$Json_Encode$object(
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			{
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'introduction',
+					_1: _elm_lang$core$Json_Encode$string(text.introduction)
 				},
 				_1: {
 					ctor: '::',
 					_0: {
 						ctor: '_Tuple2',
-						_0: 'source',
-						_1: _elm_lang$core$Json_Encode$string(text.source)
+						_0: 'title',
+						_1: _elm_lang$core$Json_Encode$string(text.title)
 					},
 					_1: {
 						ctor: '::',
 						_0: {
 							ctor: '_Tuple2',
-							_0: 'author',
-							_1: _elm_lang$core$Json_Encode$string(text.author)
+							_0: 'source',
+							_1: _elm_lang$core$Json_Encode$string(text.source)
 						},
 						_1: {
 							ctor: '::',
 							_0: {
 								ctor: '_Tuple2',
-								_0: 'difficulty',
-								_1: _elm_lang$core$Json_Encode$string(text.difficulty)
+								_0: 'author',
+								_1: _elm_lang$core$Json_Encode$string(text.author)
 							},
 							_1: {
 								ctor: '::',
 								_0: {
 									ctor: '_Tuple2',
-									_0: 'text_sections',
-									_1: _user$project$Text_Section_Encode$textSectionsEncoder(text.sections)
+									_0: 'difficulty',
+									_1: _elm_lang$core$Json_Encode$string(text.difficulty)
 								},
 								_1: {
 									ctor: '::',
 									_0: {
 										ctor: '_Tuple2',
-										_0: 'tags',
-										_1: _elm_lang$core$Json_Encode$list(
-											function () {
-												var _p0 = text.tags;
-												if (_p0.ctor === 'Just') {
-													return A2(
-														_elm_lang$core$List$map,
-														function (tag) {
-															return _elm_lang$core$Json_Encode$string(tag);
-														},
-														_p0._0);
-												} else {
-													return {ctor: '[]'};
-												}
-											}())
+										_0: 'text_sections',
+										_1: _user$project$Text_Section_Encode$textSectionsEncoder(text.sections)
 									},
 									_1: {
 										ctor: '::',
 										_0: {
 											ctor: '_Tuple2',
-											_0: 'conclusion',
-											_1: _elm_lang$core$Json_Encode$string(text.conclusion)
+											_0: 'tags',
+											_1: _elm_lang$core$Json_Encode$list(
+												function () {
+													var _p1 = text.tags;
+													if (_p1.ctor === 'Just') {
+														return A2(
+															_elm_lang$core$List$map,
+															function (tag) {
+																return _elm_lang$core$Json_Encode$string(tag);
+															},
+															_p1._0);
+													} else {
+														return {ctor: '[]'};
+													}
+												}())
 										},
 										_1: {ctor: '[]'}
 									}
@@ -14120,8 +14133,8 @@ var _user$project$Text_Encode$textEncoder = function (text) {
 						}
 					}
 				}
-			}
-		});
+			},
+			conclusion));
 };
 
 var _user$project$Views$view_preview = A2(
@@ -14585,7 +14598,7 @@ var _user$project$Text_Decode$textDecoder = A3(
 							A3(
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 								'conclusion',
-								_elm_lang$core$Json_Decode$string,
+								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 								A3(
 									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 									'difficulty',
@@ -14675,10 +14688,27 @@ var _user$project$Text_Create$Flags = F4(
 	function (a, b, c, d) {
 		return {instructor_profile: a, csrftoken: b, text: c, tags: d};
 	});
-var _user$project$Text_Create$Model = F9(
-	function (a, b, c, d, e, f, g, h, i) {
-		return {flags: a, mode: b, profile: c, success_msg: d, error_msg: e, text_component: f, text_difficulties: g, tags: h, write_locked: i};
-	});
+var _user$project$Text_Create$Model = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return {flags: a, mode: b, profile: c, success_msg: d, error_msg: e, text_component: f, text_difficulties: g, tags: h, write_locked: i, tabs: j};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
 var _user$project$Text_Create$TextViewParams = F8(
 	function (a, b, c, d, e, f, g, h) {
 		return {text: a, text_component: b, text_fields: c, profile: d, tags: e, write_locked: f, mode: g, text_difficulties: h};
@@ -15725,7 +15755,12 @@ var _user$project$Text_View$view_tab_menu = function (params) {
 				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'selected'),
+					_0: _elm_lang$html$Html_Attributes$classList(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'selected', _1: true},
+							_1: {ctor: '[]'}
+						}),
 					_1: {ctor: '[]'}
 				},
 				{
@@ -16492,7 +16527,8 @@ var _user$project$Text_View$view_text_conclusion = F2(
 									},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text(params.text.conclusion),
+										_0: _elm_lang$html$Html$text(
+											A2(_elm_lang$core$Maybe$withDefault, '', params.text.conclusion)),
 										_1: {ctor: '[]'}
 									}),
 								_1: {ctor: '[]'}
@@ -17764,6 +17800,8 @@ var _user$project$Main$init = function (flags) {
 			text_difficulties: {ctor: '[]'},
 			tags: _elm_lang$core$Dict$fromList(
 				{ctor: '[]'}),
+			tabs: _elm_lang$core$Dict$fromList(
+				{ctor: '[]'}),
 			write_locked: false
 		},
 		_1: _elm_lang$core$Platform_Cmd$batch(
@@ -17940,7 +17978,19 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 															},
 															A2(_elm_lang$core$Json_Decode$field, 'created_by', _elm_lang$core$Json_Decode$string));
 													},
-													A2(_elm_lang$core$Json_Decode$field, 'conclusion', _elm_lang$core$Json_Decode$string));
+													A2(
+														_elm_lang$core$Json_Decode$field,
+														'conclusion',
+														_elm_lang$core$Json_Decode$oneOf(
+															{
+																ctor: '::',
+																_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																_1: {
+																	ctor: '::',
+																	_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+																	_1: {ctor: '[]'}
+																}
+															})));
 											},
 											A2(_elm_lang$core$Json_Decode$field, 'author', _elm_lang$core$Json_Decode$string)))));
 						},

@@ -1,9 +1,6 @@
 import Html exposing (..)
-import Html.Attributes exposing (classList, attribute)
 
 import Http
-import HttpHelpers exposing (post_with_headers, put_with_headers, delete_with_headers)
-
 import Flags
 
 import Profile

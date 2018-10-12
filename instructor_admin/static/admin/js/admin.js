@@ -9920,7 +9920,7 @@ var _user$project$Text_Model$new_text = {
 	source: '',
 	difficulty: '',
 	introduction: '',
-	conclusion: '',
+	conclusion: _elm_lang$core$Maybe$Nothing,
 	tags: _elm_lang$core$Maybe$Nothing,
 	created_by: _elm_lang$core$Maybe$Nothing,
 	last_modified_by: _elm_lang$core$Maybe$Nothing,
@@ -10691,7 +10691,7 @@ var _user$project$Text_Decode$textDecoder = A3(
 							A3(
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 								'conclusion',
-								_elm_lang$core$Json_Decode$string,
+								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 								A3(
 									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 									'difficulty',
@@ -11994,7 +11994,19 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 																			},
 																			A2(_elm_lang$core$Json_Decode$field, 'created_by', _elm_lang$core$Json_Decode$string));
 																	},
-																	A2(_elm_lang$core$Json_Decode$field, 'conclusion', _elm_lang$core$Json_Decode$string));
+																	A2(
+																		_elm_lang$core$Json_Decode$field,
+																		'conclusion',
+																		_elm_lang$core$Json_Decode$oneOf(
+																			{
+																				ctor: '::',
+																				_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																				_1: {
+																					ctor: '::',
+																					_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+																					_1: {ctor: '[]'}
+																				}
+																			})));
 															},
 															A2(_elm_lang$core$Json_Decode$field, 'author', _elm_lang$core$Json_Decode$string)))));
 										},

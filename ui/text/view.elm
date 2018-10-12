@@ -84,7 +84,7 @@ view_text_conclusion params text_conclusion =
         textarea [
           attribute "id" text_conclusion_attrs.input_id
         , classList [("text_conclusion", True), ("input_error", text_conclusion_attrs.error)]
-        , onInput (UpdateTextAttributes "conclusion") ] [ Html.text params.text.conclusion ]
+        , onInput (UpdateTextAttributes "conclusion") ] [ Html.text (Maybe.withDefault "" params.text.conclusion) ]
       ]
     ] ++ (if text_conclusion_attrs.error then
         [ div [class "error"] [ Html.text text_conclusion_attrs.error_string ]]

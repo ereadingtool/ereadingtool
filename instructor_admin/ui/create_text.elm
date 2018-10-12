@@ -51,6 +51,7 @@ init flags = ({
       , text_component=Text.Component.emptyTextComponent
       , text_difficulties=[]
       , tags=Dict.fromList []
+      , tabs=Dict.fromList []
       , write_locked=False
   }
   , Cmd.batch [

@@ -100,7 +100,7 @@ set_text_attribute ((TextComponent text fields text_tags components) as text_com
     "difficulty" ->
       TextComponent { text | difficulty = value } fields text_tags components
     "conclusion" ->
-      TextComponent { text | conclusion = value } fields text_tags components
+      TextComponent { text | conclusion = Just value } fields text_tags components
     _ ->
       text_component
 

@@ -17,7 +17,7 @@ type alias Text = {
   , author: String
   , source: String
   , difficulty: String
-  , conclusion: String
+  , conclusion: Maybe String
   , created_by: String
   , last_modified_by: Maybe String
   , tags: Maybe (List String)
