@@ -1,6 +1,9 @@
 import json
+import channels.layers
+
 from typing import Dict, AnyStr, Optional, List
 
+from asgiref.sync import async_to_sync
 from django.test import TestCase
 from django.test.client import Client
 from hypothesis.strategies import just, one_of
@@ -18,7 +21,9 @@ from text_reading.base import TextReadingNotAllQuestionsAnswered
 from text_reading.models import StudentTextReading
 
 from user.student.models import Student
+
 from text.glosbe.api import GlosbeAPI, GlosbeDefinitions, GlosbeDefinition
+from text.consumers.instructor import ParseTextSectionForDefinitions
 
 
 class TestText(TestUser, TestCase):
@@ -37,6 +42,39 @@ class TestText(TestUser, TestCase):
         definitions = list(defs.definitions.values())
 
         self.assertIsInstance(definitions[0], GlosbeDefinition)
+
+    def test_word_definition_background_job(self):
+        test_data = self.get_test_data()
+
+        test_data['text_sections'][0]['body'] = 'заявление'
+        test_data['text_sections'][1]['body'] = 'заявление'
+
+        self.test_post_text(test_data=test_data)
+
+        # receive one message from the channel layer
+        channel_layer = channels.layers.get_channel_layer()
+
+        ret = async_to_sync(channel_layer.receive)('text')
+
+        self.assertTrue(ret)
+
+        # process the message and test the output
+        text_parse_consumer = ParseTextSectionForDefinitions(scope=ret)
+
+        text_section_definitions = text_parse_consumer.text_parse_word_definitions(
+            text_section_pk=ret['text_section_pk'])
+
+        self.assertTrue(text_section_definitions)
+
+        self.assertEquals(text_section_definitions.words.count(), 1)
+
+        text_section_word = text_section_definitions.words.all()[0]
+
+        self.assertTrue(text_section_word.meanings.count())
+
+        text_section_word_meaning = text_section_word.meanings.all()[0]
+
+        self.assertTrue(text_section_word_meaning.text)
 
     def test_text_reading(self, student: Student=None) -> StudentTextReading:
         # add an additional question for testing

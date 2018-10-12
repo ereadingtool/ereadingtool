@@ -26,7 +26,8 @@ class TextSectionDefinitionsMixin(models.Model):
     def update_definitions(self):
         channel_layer = get_channel_layer()
 
-        async_to_sync(channel_layer.send)('text', {'type': 'text.parse.word.definitions', 'text_pk': self.pk})
+        async_to_sync(channel_layer.send)('text', {'type': 'text.parse.word.definitions',
+                                                   'text_section_pk': self.pk})
 
     def parse_for_definitions(self) -> [Dict, Dict]:
         words = {}
@@ -48,22 +49,30 @@ class TextSectionDefinitionsMixin(models.Model):
 
             definitions = list(self.glosbe_api.translate(normalized_word).definitions.values())
 
-            words[normalized_word] = None
+            words.setdefault(normalized_word, {})
+
+            words[normalized_word]['grammemes'] = {
+                'pos': parsed_word.tag.POS,
+                'tense': parsed_word.tag.tense,
+                'aspect': parsed_word.tag.aspect,
+                'form': parsed_word.tag.case,
+                'mood': parsed_word.tag.mood,
+            }
+
+            words[normalized_word]['meanings'] = []
 
             if definitions:
                 meanings = definitions[0].meanings
 
                 if meanings:
-                    words[normalized_word] = []
-
-                    for i in range(0, 3):
+                    for i in range(0, 5):
                         try:
                             meaning = meanings[i]
 
                             if meaning['language'] != 'en':
                                 continue
 
-                            words[normalized_word].append(meaning)
+                            words[normalized_word]['meanings'].append(meaning)
                         except IndexError:
                             break
 

@@ -4,7 +4,7 @@ from channels.security.websocket import AllowedHostsOriginValidator
 from django.conf.urls import url
 
 from text.consumers.student import StudentTextReaderConsumer
-from text.consumers.instructor import InstructorTextReaderConsumer, ParseTextForDefinitions
+from text.consumers.instructor import InstructorTextReaderConsumer, ParseTextSectionForDefinitions
 
 
 application = ProtocolTypeRouter({
@@ -15,7 +15,7 @@ application = ProtocolTypeRouter({
             url(r'^instructor/text_read/(?P<text_id>\d+)/$', InstructorTextReaderConsumer),
         ])
     )),
-    'channel': ChannelNameRouter({
-        'parse_text_for_definitions': ParseTextForDefinitions
+    'text': ChannelNameRouter({
+        'parse_text_for_definitions': ParseTextSectionForDefinitions
     })
 })
