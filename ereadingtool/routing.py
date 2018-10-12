@@ -15,7 +15,7 @@ application = ProtocolTypeRouter({
             url(r'^instructor/text_read/(?P<text_id>\d+)/$', InstructorTextReaderConsumer),
         ])
     )),
-    'text': ChannelNameRouter({
-        'parse_text_for_definitions': ParseTextSectionForDefinitions
+    'channel': ChannelNameRouter({
+        'text': ParseTextSectionForDefinitions
     })
 })
