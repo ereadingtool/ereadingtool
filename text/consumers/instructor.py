@@ -1,3 +1,8 @@
+from typing import AnyStr
+
+from lxml.html import fragment_fromstring
+from lxml.html.diff import htmldiff
+
 from channels.db import database_sync_to_async
 
 from channels.consumer import SyncConsumer
@@ -17,7 +22,16 @@ class InstructorTextReaderConsumer(TextReaderConsumer):
 
 
 class ParseTextSectionForDefinitions(SyncConsumer):
-    def text_parse_word_definitions(self, text_section_pk: int):
+    def text_section_update_definitions_if_new(self, old_body: AnyStr, text_section_pk: int):
+        text_section = TextSection.objects.get(pk=text_section_pk)
+
+        old_html = fragment_fromstring(old_body, create_parent='div')
+        new_html = fragment_fromstring(text_section.body, create_parent='div')
+
+        if htmldiff(old_html, new_html):
+            text_section.update_definitions()
+
+    def text_section_parse_word_definitions(self, text_section_pk: int):
         text_section = TextSection.objects.get(pk=text_section_pk)
         text_section_definitions = text_section.definitions
 
@@ -25,7 +39,7 @@ class ParseTextSectionForDefinitions(SyncConsumer):
             text_section_definitions = TextDefinitions.objects.create()
             text_section_definitions.save()
 
-        word_defs, word_freqs = text_section.parse_for_definitions()
+        word_defs, word_freqs = text_section.parse_word_definitions()
 
         for word in word_defs:
             text_word = TextWord.objects.create(

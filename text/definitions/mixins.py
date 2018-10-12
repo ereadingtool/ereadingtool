@@ -1,9 +1,10 @@
 import re
 import pymorphy2
 
-from typing import Dict
+from lxml.html import fragment_fromstring
 
-from bs4 import BeautifulSoup
+from typing import Dict, AnyStr
+
 from django.db import models
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
@@ -23,20 +24,29 @@ class TextSectionDefinitionsMixin(models.Model):
     glosbe_api = GlosbeAPI()
     body = NotImplemented
 
+    def update_definitons_if_new(self, old_body: AnyStr):
+        channel_layer = get_channel_layer()
+
+        try:
+            async_to_sync(channel_layer.send)('text', {'type': 'text.section.update.definitions.if.new',
+                                                       'old_body': old_body, 'text_section_pk': self.pk})
+        except OSError:
+            pass
+
     def update_definitions(self):
         channel_layer = get_channel_layer()
 
         try:
-            async_to_sync(channel_layer.send)('text', {'type': 'text.parse.word.definitions',
+            async_to_sync(channel_layer.send)('text', {'type': 'text.section.parse.word.definitions',
                                                        'text_section_pk': self.pk})
         except OSError:
             pass
 
-    def parse_for_definitions(self) -> [Dict, Dict]:
+    def parse_word_definitions(self) -> [Dict, Dict]:
         words = {}
         word_freq = {}
 
-        text = BeautifulSoup(self.body, features='html.parser').get_text()
+        text = fragment_fromstring(self.body, create_parent='div').text_content()
 
         for word in text.split():
             word_match = self.word_re.match(word)
