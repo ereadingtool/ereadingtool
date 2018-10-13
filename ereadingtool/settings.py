@@ -49,10 +49,15 @@ LOGGING = {
         }
     },
     'loggers': {
-        'django.request': {
+        'django': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
-            'propagate': True,
+            'propagate': False,
+        },
+        'django.consumers': {
+            'handlers': ['mail_admins'],
+            'level': 'INFO',
+            'propagate': False,
         },
     },
 }

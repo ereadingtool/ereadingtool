@@ -1,3 +1,5 @@
+import logging
+
 from typing import Dict
 
 from lxml.html import fragment_fromstring
@@ -12,6 +14,8 @@ from text_reading.models import InstructorTextReading
 from text.models import TextSection
 
 from text.definitions.models import TextWordMeaning, TextDefinitions, TextWord
+
+logger = logging.getLogger('django.consumers')
 
 
 class InstructorTextReaderConsumer(TextReaderConsumer):
@@ -29,6 +33,8 @@ class ParseTextSectionForDefinitions(SyncConsumer):
         new_html = fragment_fromstring(text_section.body, create_parent='div')
 
         if htmldiff(old_html, new_html):
+            logger.info(f'Found new body in text section pk={message["text_section_pk"]}')
+
             text_section.update_definitions()
 
     def text_section_parse_word_definitions(self, message: Dict):
@@ -38,6 +44,8 @@ class ParseTextSectionForDefinitions(SyncConsumer):
         if not text_section_definitions:
             text_section_definitions = TextDefinitions.objects.create()
             text_section_definitions.save()
+
+        logger.info(f'Parsing definitions for text section pk={message["text_section_pk"]}')
 
         word_defs, word_freqs = text_section.parse_word_definitions()
 
