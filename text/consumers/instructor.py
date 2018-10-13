@@ -50,17 +50,21 @@ class ParseTextSectionForDefinitions(SyncConsumer):
         word_defs, word_freqs = text_section.parse_word_definitions()
 
         for word in word_defs:
-            text_word = TextWord.objects.create(
+            text_word, text_word_created = TextWord.objects.get_or_create(
                 definitions=text_section_definitions,
                 normal_form=word,
                 **word_defs[word]['grammemes'])
 
-            text_word.save()
+            if text_word_created:
+                text_word.save()
 
             if word_defs[word] is not None:
                 for meaning in word_defs[word]['meanings']:
-                    text_meaning = TextWordMeaning.objects.create(word=text_word, text=meaning['text'])
-                    text_meaning.save()
+                    text_meaning, text_meaning_created = TextWordMeaning.objects.get_or_create(word=text_word,
+                                                                                              text=meaning['text'])
+
+                    if text_meaning_created:
+                        text_meaning.save()
 
         logger.info(f'Finished parsing definitions for text section pk={message["text_section_pk"]}')
 

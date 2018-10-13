@@ -62,7 +62,7 @@ class TestText(TestUser, TestCase):
         text_parse_consumer = ParseTextSectionForDefinitions(scope=ret)
 
         text_section_definitions = text_parse_consumer.text_section_parse_word_definitions(
-            text_section_pk=ret['text_section_pk'])
+            {'text_section_pk': ret['text_section_pk']})
 
         self.assertTrue(text_section_definitions)
 
