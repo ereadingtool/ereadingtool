@@ -32,6 +32,16 @@ ADMINs = [('Andrew', 'als2@pdx.edu')]
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
     'filters': {
         'require_debug_false': {
                 '()': 'django.utils.log.RequireDebugFalse',
