@@ -64,4 +64,7 @@ class ParseTextSectionForDefinitions(SyncConsumer):
 
         logger.info(f'Finished parsing definitions for text section pk={message["text_section_pk"]}')
 
+        text_section.definitions = text_section_definitions
+        text_section.save()
+
         return text_section_definitions
