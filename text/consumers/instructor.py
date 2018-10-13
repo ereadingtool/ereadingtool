@@ -62,4 +62,6 @@ class ParseTextSectionForDefinitions(SyncConsumer):
                     text_meaning = TextWordMeaning.objects.create(word=text_word, text=meaning['text'])
                     text_meaning.save()
 
+        logger.info(f'Finished parsing definitions for text section pk={message["text_section_pk"]}')
+
         return text_section_definitions
