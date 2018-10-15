@@ -6,6 +6,7 @@ from lxml.html import fragment_fromstring
 from typing import Dict, AnyStr
 
 from django.db import models
+from django.utils.functional import cached_property
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
@@ -19,10 +20,24 @@ class TextSectionDefinitionsMixin(models.Model):
     class Meta:
         abstract = True
 
-    word_re = re.compile(r'(\w+-\w+|\w+)')
+    word_re = re.compile(r'([^\W\d]+-[^\W\d]+|[^\W\d]+)')
     morph = pymorphy2.MorphAnalyzer()
     glosbe_api = GlosbeAPI()
     body = NotImplemented
+
+    @cached_property
+    def body_text(self):
+        return fragment_fromstring(self.body, create_parent='div').text_content()
+
+    @property
+    def words(self):
+        for word in self.body_text.split():
+            word_match = self.word_re.match(word)
+
+            if word_match:
+                yield word_match.group(0)
+            else:
+                continue
 
     def update_definitions_if_new(self, old_body: AnyStr):
         channel_layer = get_channel_layer()
@@ -46,14 +61,7 @@ class TextSectionDefinitionsMixin(models.Model):
         words = {}
         word_freq = {}
 
-        text = fragment_fromstring(self.body, create_parent='div').text_content()
-
-        for word in text.split():
-            word_match = self.word_re.match(word)
-
-            if word_match:
-                word = word_match.group(0)
-
+        for word in self.words:
             word_freq.setdefault(word, 0)
             word_freq[word] += 1
 

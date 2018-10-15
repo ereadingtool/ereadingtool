@@ -3,6 +3,20 @@ from typing import AnyStr, Union, Dict, List
 import requests
 import json
 
+from django.utils import timezone
+
+
+class GlosbeException(Exception):
+    def __init__(self, message: AnyStr, *args, **kwargs):
+        self.message = message
+
+    def __str__(self):
+        return f'{self.message}'
+
+
+class GlosbeThrottlingException(GlosbeException):
+    pass
+
 
 class GlosbeDefinition(object):
     def __init__(self, phrase: AnyStr, definition: Dict, *args, **kwargs):
@@ -49,6 +63,7 @@ class GlosbeAPI(object):
         self.to_lang = to_lang
 
         self.tm = tm
+        self.last_request = None
 
     def translate(self, phrase: AnyStr) -> Union[GlosbeDefinitions, None]:
         definitions = None
@@ -62,7 +77,22 @@ class GlosbeAPI(object):
 
         req = '/'.join([self.glosbe_domain, 'translate', '?' + req_params])
 
+        if self.last_request:
+            while True:
+                time_diff = timezone.now() - self.last_request
+
+                if time_diff.total_seconds() >= 5:
+                    break
+
         resp = json.loads(requests.get(req).text)
+
+        self.last_request = timezone.now()
+
+        if resp['result'] == 'error':
+            if resp['message'] == 'Too many queries, your IP has been blocked':
+                raise GlosbeThrottlingException(message=resp['message'])
+            else:
+                raise GlosbeException(message=resp['message'])
 
         tuc = resp['tuc']
 

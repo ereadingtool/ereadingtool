@@ -43,6 +43,31 @@ class TestText(TestUser, TestCase):
 
         self.assertIsInstance(definitions[0], GlosbeDefinition)
 
+    def test_parsing_words(self):
+        test_data = self.get_test_data()
+
+        test_body = '''<p>Минувшую неделю рубль завершил стремительным укреплением позиций. По данным Московской 
+        биржи, курс доллара по итогам торгов пятницы составил 56,25 руб./$, потеряв за неделю более 2 руб. Падение 
+        розничных продаж в США снизило вероятность агрессивного повышения ставки в стране и подорвало интерес к 
+        американской валюте. Дополнительную поддержку российской валюте оказывают цены на нефть и высокий интерес 
+        иностранных инвесторов к ОФЗ (облигации федерального займа).</p>'''
+
+        test_data['text_sections'][0]['body'] = test_body
+        test_data['text_sections'][1]['body'] = test_body
+
+        self.test_post_text(test_data=test_data)
+
+        self.assertTrue(TextSection.objects.count())
+
+        text_section = TextSection.objects.all()[0]
+
+        words = {w: 1 for w in text_section.words}
+
+        self.assertTrue(len(words.keys()))
+
+        self.assertNotIn('2', words)
+        self.assertIn('руб', words)
+
     def test_word_definition_background_job(self):
         test_data = self.get_test_data()
 
