@@ -1,3 +1,5 @@
+import logging
+
 import re
 import pymorphy2
 
@@ -11,7 +13,9 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
 from text.definitions.models import TextDefinitions
-from text.glosbe.api import GlosbeAPI
+from text.glosbe.api import GlosbeAPI, GlosbeThrottlingException
+
+logger = logging.getLogger('django')
 
 
 class TextSectionDefinitionsMixin(models.Model):
@@ -62,13 +66,17 @@ class TextSectionDefinitionsMixin(models.Model):
         word_freq = {}
 
         for word in self.words:
+            definitions = []
             word_freq.setdefault(word, 0)
             word_freq[word] += 1
 
             parsed_word = self.morph.parse(word)[0]
             normalized_word = parsed_word.normal_form
 
-            definitions = list(self.glosbe_api.translate(normalized_word).definitions.values())
+            try:
+                definitions = list(self.glosbe_api.translate(normalized_word).definitions.values())
+            except GlosbeThrottlingException as e:
+                logger.error(f'GlosbeThrottlingException {e.message}')
 
             words.setdefault(normalized_word, {})
 
