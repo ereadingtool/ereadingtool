@@ -7,7 +7,7 @@ class TextDefinitions(models.Model):
             word.normal_form: {
                 'grammemes': word.grammemes,
                 'meaning': [meanings.text for meanings in word.meanings.all()]
-            } for word in self.words.select_related('meanings').all()
+            } for word in self.words.prefetch_related('meanings').all()
         }
 
 
