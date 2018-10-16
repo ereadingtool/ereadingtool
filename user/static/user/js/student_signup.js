@@ -10137,6 +10137,7 @@ var _user$project$Text_Section_Model$TextSection = F4(
 		return {order: a, body: b, question_count: c, questions: d};
 	});
 
+
 var _user$project$Text_Model$set_tags = F2(
 	function (text, tags) {
 		return _elm_lang$core$Native_Utils.update(
@@ -10168,7 +10169,8 @@ var _user$project$Text_Model$new_text = {
 			_0: _user$project$Text_Section_Model$emptyTextSection(0),
 			_1: {ctor: '[]'}
 		}),
-	write_locker: _elm_lang$core$Maybe$Nothing
+	write_locker: _elm_lang$core$Maybe$Nothing,
+	words: _elm_lang$core$Dict$empty
 };
 var _user$project$Text_Model$Text = function (a) {
 	return function (b) {
@@ -10184,7 +10186,9 @@ var _user$project$Text_Model$Text = function (a) {
 											return function (l) {
 												return function (m) {
 													return function (n) {
-														return {id: a, title: b, introduction: c, author: d, source: e, difficulty: f, conclusion: g, created_by: h, last_modified_by: i, tags: j, created_dt: k, modified_dt: l, sections: m, write_locker: n};
+														return function (o) {
+															return {id: a, title: b, introduction: c, author: d, source: e, difficulty: f, conclusion: g, created_by: h, last_modified_by: i, tags: j, created_dt: k, modified_dt: l, sections: m, write_locker: n, words: o};
+														};
 													};
 												};
 											};
