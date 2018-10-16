@@ -255,6 +255,7 @@ body {
 }
 
 #tabs_menu > div {
+    cursor: pointer;
     border-top: solid 1px #a4a4a4;
     border-left: solid 1px #a4a4a4;
     border-right: solid 1px #a4a4a4;

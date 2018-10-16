@@ -11088,6 +11088,7 @@ var _user$project$Text_Section_Model$TextSection = F4(
 		return {order: a, body: b, question_count: c, questions: d};
 	});
 
+
 var _user$project$Text_Model$set_tags = F2(
 	function (text, tags) {
 		return _elm_lang$core$Native_Utils.update(
@@ -11119,7 +11120,8 @@ var _user$project$Text_Model$new_text = {
 			_0: _user$project$Text_Section_Model$emptyTextSection(0),
 			_1: {ctor: '[]'}
 		}),
-	write_locker: _elm_lang$core$Maybe$Nothing
+	write_locker: _elm_lang$core$Maybe$Nothing,
+	words: _elm_lang$core$Dict$empty
 };
 var _user$project$Text_Model$Text = function (a) {
 	return function (b) {
@@ -11135,7 +11137,9 @@ var _user$project$Text_Model$Text = function (a) {
 											return function (l) {
 												return function (m) {
 													return function (n) {
-														return {id: a, title: b, introduction: c, author: d, source: e, difficulty: f, conclusion: g, created_by: h, last_modified_by: i, tags: j, created_dt: k, modified_dt: l, sections: m, write_locker: n};
+														return function (o) {
+															return {id: a, title: b, introduction: c, author: d, source: e, difficulty: f, conclusion: g, created_by: h, last_modified_by: i, tags: j, created_dt: k, modified_dt: l, sections: m, write_locker: n, words: o};
+														};
 													};
 												};
 											};
@@ -14566,64 +14570,71 @@ var _user$project$Text_Decode$textListItemDecoder = A3(
 													_elm_lang$core$Json_Decode$int,
 													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextListItem))))))))))))));
 var _user$project$Text_Decode$textListDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textListItemDecoder);
+var _user$project$Text_Decode$wordsDecoder = _elm_lang$core$Json_Decode$dict(
+	_elm_lang$core$Json_Decode$nullable(
+		_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)));
 var _user$project$Text_Decode$textDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'write_locker',
-	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+	'words',
+	_user$project$Text_Decode$wordsDecoder,
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'text_sections',
-		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Array$fromList, _user$project$Text_Section_Decode$textSectionsDecoder),
+		'write_locker',
+		_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'modified_dt',
-			_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+			'text_sections',
+			A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Array$fromList, _user$project$Text_Section_Decode$textSectionsDecoder),
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'created_dt',
+				'modified_dt',
 				_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'tags',
-					_elm_lang$core$Json_Decode$nullable(
-						_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
+					'created_dt',
+					_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
 					A3(
 						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'last_modified_by',
-						_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+						'tags',
+						_elm_lang$core$Json_Decode$nullable(
+							_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
 						A3(
 							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'created_by',
+							'last_modified_by',
 							_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 							A3(
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'conclusion',
+								'created_by',
 								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 								A3(
 									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-									'difficulty',
-									_elm_lang$core$Json_Decode$string,
+									'conclusion',
+									_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 									A3(
 										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-										'source',
+										'difficulty',
 										_elm_lang$core$Json_Decode$string,
 										A3(
 											_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-											'author',
+											'source',
 											_elm_lang$core$Json_Decode$string,
 											A3(
 												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-												'introduction',
+												'author',
 												_elm_lang$core$Json_Decode$string,
 												A3(
 													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-													'title',
+													'introduction',
 													_elm_lang$core$Json_Decode$string,
 													A3(
 														_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-														'id',
-														_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-														_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$Text)))))))))))))));
+														'title',
+														_elm_lang$core$Json_Decode$string,
+														A3(
+															_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+															'id',
+															_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+															_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$Text))))))))))))))));
 var _user$project$Text_Decode$TextCreateResp = F2(
 	function (a, b) {
 		return {id: a, redirect: b};
@@ -14698,7 +14709,7 @@ var _user$project$Text_Create$Model = function (a) {
 							return function (h) {
 								return function (i) {
 									return function (j) {
-										return {flags: a, mode: b, profile: c, success_msg: d, error_msg: e, text_component: f, text_difficulties: g, tags: h, write_locked: i, tabs: j};
+										return {flags: a, mode: b, profile: c, success_msg: d, error_msg: e, text_component: f, text_difficulties: g, tags: h, write_locked: i, selected_tab: j};
 									};
 								};
 							};
@@ -14709,15 +14720,17 @@ var _user$project$Text_Create$Model = function (a) {
 		};
 	};
 };
-var _user$project$Text_Create$TextViewParams = F8(
-	function (a, b, c, d, e, f, g, h) {
-		return {text: a, text_component: b, text_fields: c, profile: d, tags: e, write_locked: f, mode: g, text_difficulties: h};
+var _user$project$Text_Create$TextViewParams = F9(
+	function (a, b, c, d, e, f, g, h, i) {
+		return {text: a, text_component: b, text_fields: c, profile: d, tags: e, selected_tab: f, write_locked: g, mode: h, text_difficulties: i};
 	});
 var _user$project$Text_Create$ReadOnlyMode = function (a) {
 	return {ctor: 'ReadOnlyMode', _0: a};
 };
 var _user$project$Text_Create$CreateMode = {ctor: 'CreateMode'};
 var _user$project$Text_Create$EditMode = {ctor: 'EditMode'};
+var _user$project$Text_Create$DefinitionsTab = {ctor: 'DefinitionsTab'};
+var _user$project$Text_Create$TextTab = {ctor: 'TextTab'};
 var _user$project$Text_Create$Conclusion = function (a) {
 	return {ctor: 'Conclusion', _0: a};
 };
@@ -14744,6 +14757,9 @@ var _user$project$Text_Create$LoggedOut = function (a) {
 };
 var _user$project$Text_Create$LogOut = function (a) {
 	return {ctor: 'LogOut', _0: a};
+};
+var _user$project$Text_Create$ToggleTab = function (a) {
+	return {ctor: 'ToggleTab', _0: a};
 };
 var _user$project$Text_Create$InitTextFieldEditors = {ctor: 'InitTextFieldEditors'};
 var _user$project$Text_Create$TextDelete = function (a) {
@@ -15741,6 +15757,69 @@ var _user$project$Text_Tags_View$view_tags = F5(
 			});
 	});
 
+var _user$project$Text_Definitions_View$view_meaning = function (meaning) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(
+						A2(_elm_lang$core$Basics_ops['++'], ' :', meaning)),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Text_Definitions_View$view_word_definition = function (_p0) {
+	var _p1 = _p0;
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(_p1._0),
+			_1: {
+				ctor: '::',
+				_0: function () {
+					var _p2 = _p1._1;
+					if (_p2.ctor === 'Just') {
+						return A2(
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
+							A2(_elm_lang$core$List$map, _user$project$Text_Definitions_View$view_meaning, _p2._0));
+					} else {
+						return A2(
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('Undefined'),
+								_1: {ctor: '[]'}
+							});
+					}
+				}(),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Text_Definitions_View$view_definitions = function (definitions) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		A2(
+			_elm_lang$core$List$map,
+			_user$project$Text_Definitions_View$view_word_definition,
+			_elm_lang$core$Dict$toList(definitions)));
+};
+
+var _user$project$Text_View$view_definitions_tab = function (params) {
+	return _user$project$Text_Definitions_View$view_definitions(params.text.words);
+};
 var _user$project$Text_View$view_tab_menu = function (params) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -15758,10 +15837,19 @@ var _user$project$Text_View$view_tab_menu = function (params) {
 					_0: _elm_lang$html$Html_Attributes$classList(
 						{
 							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'selected', _1: true},
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'selected',
+								_1: _elm_lang$core$Native_Utils.eq(params.selected_tab, _user$project$Text_Create$TextTab)
+							},
 							_1: {ctor: '[]'}
 						}),
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(
+							_user$project$Text_Create$ToggleTab(_user$project$Text_Create$TextTab)),
+						_1: {ctor: '[]'}
+					}
 				},
 				{
 					ctor: '::',
@@ -15772,7 +15860,25 @@ var _user$project$Text_View$view_tab_menu = function (params) {
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$div,
-					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$classList(
+							{
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'selected',
+									_1: _elm_lang$core$Native_Utils.eq(params.selected_tab, _user$project$Text_Create$DefinitionsTab)
+								},
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(
+								_user$project$Text_Create$ToggleTab(_user$project$Text_Create$DefinitionsTab)),
+							_1: {ctor: '[]'}
+						}
+					},
 					{
 						ctor: '::',
 						_0: _elm_lang$html$Html$text('Definitions'),
@@ -16850,6 +16956,50 @@ var _user$project$Text_View$view_text_attributes = function (params) {
 			}
 		});
 };
+var _user$project$Text_View$view_text_tab = function (params) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text'),
+			_1: {ctor: '[]'}
+		},
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			{
+				ctor: '::',
+				_0: _user$project$Text_View$view_text_attributes(params),
+				_1: {
+					ctor: '::',
+					_0: A3(
+						_user$project$Text_Section_View$view_text_section_components,
+						_user$project$Text_Create$TextComponentMsg,
+						_user$project$Text_Component$text_section_components(params.text_component),
+						params.text_difficulties),
+					_1: {ctor: '[]'}
+				}
+			},
+			function () {
+				var _p12 = params.mode;
+				if (_p12.ctor === 'ReadOnlyMode') {
+					return {ctor: '[]'};
+				} else {
+					return {
+						ctor: '::',
+						_0: _user$project$Text_View$view_submit,
+						_1: {ctor: '[]'}
+					};
+				}
+			}()));
+};
+var _user$project$Text_View$view_tab_contents = function (params) {
+	var _p13 = params.selected_tab;
+	if (_p13.ctor === 'TextTab') {
+		return _user$project$Text_View$view_text_tab(params);
+	} else {
+		return _user$project$Text_View$view_definitions_tab(params);
+	}
+};
 var _user$project$Text_View$view_text = function (params) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -16872,40 +17022,7 @@ var _user$project$Text_View$view_text = function (params) {
 					},
 					{
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{
-								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text'),
-								_1: {ctor: '[]'}
-							},
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								{
-									ctor: '::',
-									_0: _user$project$Text_View$view_text_attributes(params),
-									_1: {
-										ctor: '::',
-										_0: A3(
-											_user$project$Text_Section_View$view_text_section_components,
-											_user$project$Text_Create$TextComponentMsg,
-											_user$project$Text_Component$text_section_components(params.text_component),
-											params.text_difficulties),
-										_1: {ctor: '[]'}
-									}
-								},
-								function () {
-									var _p12 = params.mode;
-									if (_p12.ctor === 'ReadOnlyMode') {
-										return {ctor: '[]'};
-									} else {
-										return {
-											ctor: '::',
-											_0: _user$project$Text_View$view_submit,
-											_1: {ctor: '[]'}
-										};
-									}
-								}())),
+						_0: _user$project$Text_View$view_tab_contents(params),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
@@ -16990,6 +17107,7 @@ var _user$project$Main$view = function (model) {
 		text_component: model.text_component,
 		text_fields: _user$project$Text_Component$text_fields(model.text_component),
 		tags: model.tags,
+		selected_tab: model.selected_tab,
 		profile: model.profile,
 		write_locked: model.write_locked,
 		mode: model.mode,
@@ -17714,6 +17832,23 @@ var _user$project$Main$update = F2(
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 					}
 				}
+			case 'ToggleTab':
+				var _p52 = _p6._0;
+				var post_toggle_cmd = function () {
+					var _p51 = _elm_lang$core$Native_Utils.eq(_p52, _user$project$Text_Create$TextTab);
+					if (_p51 === true) {
+						return _user$project$Text_Component$reinitialize_ck_editors(model.text_component);
+					} else {
+						return _elm_lang$core$Platform_Cmd$none;
+					}
+				}();
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{selected_tab: _p52}),
+					_1: post_toggle_cmd
+				};
 			case 'LogOut':
 				return {
 					ctor: '_Tuple2',
@@ -17751,24 +17886,24 @@ var _user$project$Main$retrieveTextDifficultyOptions = function () {
 	return A2(_elm_lang$http$Http$send, _user$project$Text_Create$UpdateTextDifficultyOptions, request);
 }();
 var _user$project$Main$textJSONtoComponent = function (text) {
-	var _p51 = text;
-	if (_p51.ctor === 'Just') {
+	var _p53 = text;
+	if (_p53.ctor === 'Just') {
 		return A2(
 			_elm_lang$core$Task$attempt,
 			_user$project$Text_Create$TextJSONDecode,
 			function () {
-				var _p52 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Text_Decode$textDecoder, _p51._0);
-				if (_p52.ctor === 'Ok') {
+				var _p54 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Text_Decode$textDecoder, _p53._0);
+				if (_p54.ctor === 'Ok') {
 					return _elm_lang$core$Task$succeed(
-						_user$project$Text_Component$init(_p52._0));
+						_user$project$Text_Component$init(_p54._0));
 				} else {
-					return _elm_lang$core$Task$fail(_p52._0);
+					return _elm_lang$core$Task$fail(_p54._0);
 				}
 			}());
 	} else {
 		return A2(
 			_elm_lang$core$Task$attempt,
-			function (_p53) {
+			function (_p55) {
 				return _user$project$Text_Create$InitTextFieldEditors;
 			},
 			_elm_lang$core$Task$succeed(_elm_lang$core$Maybe$Nothing));
@@ -17800,8 +17935,7 @@ var _user$project$Main$init = function (flags) {
 			text_difficulties: {ctor: '[]'},
 			tags: _elm_lang$core$Dict$fromList(
 				{ctor: '[]'}),
-			tabs: _elm_lang$core$Dict$fromList(
-				{ctor: '[]'}),
+			selected_tab: _user$project$Text_Create$TextTab,
 			write_locked: false
 		},
 		_1: _elm_lang$core$Platform_Cmd$batch(

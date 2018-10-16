@@ -19,6 +19,8 @@ import Text.Update
 
 import Text.Tags.View
 
+import Text.Definitions.View exposing (view_definitions)
+
 
 view_text_date : TextViewParams -> Html Msg
 view_text_date params =
@@ -273,22 +275,44 @@ view_submit =
 view_tab_menu : TextViewParams -> Html Msg
 view_tab_menu params =
   div [attribute "id" "tabs_menu"] [
-     div [classList [("selected", True)]] [ Html.text "Text" ]
-  ,  div [] [ Html.text "Definitions" ]
+     div [classList [("selected", params.selected_tab == TextTab)], onClick (ToggleTab TextTab)] [
+       Html.text "Text"
+     ]
+  ,  div [classList [("selected", params.selected_tab == DefinitionsTab)], onClick (ToggleTab DefinitionsTab)] [
+       Html.text "Definitions"
+     ]
   ]
+
+view_text_tab : TextViewParams -> Html Msg
+view_text_tab params =
+  div [attribute "id" "text"] <| [
+    (view_text_attributes params)
+  , (Text.Section.View.view_text_section_components TextComponentMsg
+      (Text.Component.text_section_components params.text_component)
+    params.text_difficulties)
+  ] ++ (case params.mode of
+          ReadOnlyMode write_locker -> []
+          _ -> [view_submit])
+
+view_definitions_tab : TextViewParams -> Html Msg
+view_definitions_tab params =
+  view_definitions params.text.words
+
+
+view_tab_contents : TextViewParams -> Html Msg
+view_tab_contents params =
+  case params.selected_tab of
+    TextTab ->
+      view_text_tab params
+
+    DefinitionsTab ->
+      view_definitions_tab params
 
 view_text : TextViewParams -> Html Msg
 view_text params =
   div [attribute "id" "tabs"] [
     view_tab_menu params
   , div [attribute "id" "tabs_contents"] [
-      div [attribute "id" "text"] <| [
-        (view_text_attributes params)
-      , (Text.Section.View.view_text_section_components TextComponentMsg
-          (Text.Component.text_section_components params.text_component)
-        params.text_difficulties)
-      ] ++ (case params.mode of
-                ReadOnlyMode write_locker -> []
-                _ -> [view_submit])
+      view_tab_contents params
     ]
   ]

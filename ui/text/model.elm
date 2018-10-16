@@ -2,6 +2,9 @@ module Text.Model exposing (Text, TextListItem, TextDifficulty, new_text, set_se
 
 import Text.Section.Model exposing (emptyTextSection)
 
+import Text.Definitions exposing (Word, Meaning)
+
+import Dict exposing (Dict)
 import Date exposing (Date)
 import Array exposing (Array)
 
@@ -21,7 +24,8 @@ type alias Text = {
   , created_dt: Maybe Date
   , modified_dt: Maybe Date
   , sections: Array Text.Section.Model.TextSection
-  , write_locker: Maybe String }
+  , write_locker: Maybe String
+  , words: Dict String (Maybe (List Meaning)) }
 
 type alias TextListItem = {
     id: Int
@@ -53,7 +57,8 @@ new_text = {
   , created_dt=Nothing
   , modified_dt=Nothing
   , sections=Array.fromList [Text.Section.Model.emptyTextSection 0]
-  , write_locker=Nothing }
+  , write_locker=Nothing
+  , words=Dict.empty }
 
 set_sections : Text -> Array Text.Section.Model.TextSection -> Text
 set_sections text text_sections = { text | sections = text_sections }

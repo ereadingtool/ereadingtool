@@ -1,4 +1,4 @@
-module Text.Create exposing (Flags, Mode(..), Msg(..), TextField(..), Model, TextViewParams)
+module Text.Create exposing (Flags, Mode(..), Msg(..), TextField(..), Model, TextViewParams, Tab(..))
 
 import Time
 import Dict exposing (Dict)
@@ -22,8 +22,6 @@ import Instructor.Profile
 import Menu.Msg as MenuMsg
 import Menu.Logout
 
-
-
 type alias Flags = {
     instructor_profile : Instructor.Profile.InstructorProfileParams
   , csrftoken: Flags.CSRFToken
@@ -36,6 +34,8 @@ type alias Filter = List String
 type alias WriteLocked = Bool
 
 type Mode = EditMode | CreateMode | ReadOnlyMode InstructorUser
+
+type Tab = TextTab | DefinitionsTab
 
 type TextField =
     Title TextTitle
@@ -67,6 +67,7 @@ type Msg =
   | ConfirmTextDelete Bool
   | TextDelete (Result Http.Error Text.Decode.TextDeleteResp)
   | InitTextFieldEditors
+  | ToggleTab Tab
   | LogOut MenuMsg.Msg
   | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
 
@@ -80,7 +81,7 @@ type alias Model = {
   , text_difficulties : List Text.Model.TextDifficulty
   , tags: Dict String String
   , write_locked: Bool
-  , tabs: Dict String Bool }
+  , selected_tab: Tab }
 
 type alias TextViewParams = {
     text: Text.Model.Text
@@ -88,6 +89,7 @@ type alias TextViewParams = {
   , text_fields: Text.Field.TextFields
   , profile: Instructor.Profile.InstructorProfile
   , tags: Dict String String
+  , selected_tab: Tab
   , write_locked: WriteLocked
   , mode: Mode
   , text_difficulties: List Text.Model.TextDifficulty }

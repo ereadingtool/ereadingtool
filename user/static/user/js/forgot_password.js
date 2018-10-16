@@ -9564,7 +9564,7 @@ var _user$project$Text_Model$new_text = {
 	source: '',
 	difficulty: '',
 	introduction: '',
-	conclusion: '',
+	conclusion: _elm_lang$core$Maybe$Nothing,
 	tags: _elm_lang$core$Maybe$Nothing,
 	created_by: _elm_lang$core$Maybe$Nothing,
 	last_modified_by: _elm_lang$core$Maybe$Nothing,

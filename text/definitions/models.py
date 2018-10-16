@@ -2,7 +2,13 @@ from django.db import models
 
 
 class TextDefinitions(models.Model):
-    pass
+    def to_dict(self):
+        return {
+            word.normal_form: {
+                'grammemes': word.grammemes,
+                'meaning': [meanings.text for meanings in word.meanings.all()]
+            } for word in self.words.select_related('meanings').all()
+        }
 
 
 class TextWord(models.Model):
@@ -15,6 +21,16 @@ class TextWord(models.Model):
     aspect = models.CharField(max_length=32, null=True, blank=True)
     form = models.CharField(max_length=32, null=True, blank=True)
     mood = models.CharField(max_length=32, null=True, blank=True)
+
+    @property
+    def grammemes(self):
+        return {
+            'pos': self.pos,
+            'tense': self.tense,
+            'aspect': self.aspect,
+            'form': self.form,
+            'mood': self.mood
+        }
 
     def __str__(self):
         return f'{self.normal_form} ({self.pos, self.tense, self.aspect, self.form, self.mood})'

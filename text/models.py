@@ -193,6 +193,16 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
         }
 
     def to_dict(self, text_sections: Optional[List]=None) -> Dict:
+        text_sections = text_sections or self.sections.all()
+        text_section_dicts = []
+        text_section_definitions = {}
+
+        for text_section in text_sections:
+            text_section_dicts.append(text_section.to_dict())
+
+            if text_section.definitions:
+                text_section_definitions.update(text_section.definitions.to_dict())
+
         return {
             'id': self.pk,
             'title': self.title,
@@ -206,8 +216,8 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
             'tags': [tag.name for tag in self.tags.all()],
             'modified_dt': self.modified_dt.isoformat(),
             'created_dt': self.created_dt.isoformat(),
-            'text_sections': [text_section.to_dict() for text_section in
-                              (text_sections if text_sections else self.sections.all())],
+            'text_sections': text_section_dicts,
+            'words': text_section_definitions,
             'write_locker': str(self.write_locker) if self.write_locker else None
         }
 

@@ -51,7 +51,7 @@ init flags = ({
       , text_component=Text.Component.emptyTextComponent
       , text_difficulties=[]
       , tags=Dict.fromList []
-      , tabs=Dict.fromList []
+      , selected_tab=TextTab
       , write_locked=False
   }
   , Cmd.batch [
@@ -333,6 +333,18 @@ update msg model = case msg of
         _ -> let _ = Debug.log "delete text error bad payload" err in
           (model, Cmd.none)
 
+    ToggleTab tab ->
+      let
+        post_toggle_cmd =
+          (case tab == TextTab of
+            True ->
+              Text.Component.reinitialize_ck_editors model.text_component
+
+            False ->
+              Cmd.none)
+      in
+        ({ model | selected_tab = tab }, post_toggle_cmd)
+
     LogOut msg ->
       (model, Instructor.Profile.logout model.profile model.flags.csrftoken LoggedOut)
 
@@ -455,6 +467,7 @@ view model =
       , text_component=model.text_component
       , text_fields=Text.Component.text_fields model.text_component
       , tags=model.tags
+      , selected_tab=model.selected_tab
       , profile=model.profile
       , write_locked=model.write_locked
       , mode=model.mode

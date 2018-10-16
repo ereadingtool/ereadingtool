@@ -22,6 +22,12 @@ type alias TextProgressUpdateResp = { updated: Bool }
 
 type alias TextsRespError = Dict String String
 
+type alias Definitions = Dict String (List String)
+
+wordsDecoder : Decode.Decoder (Dict String (Maybe (List String)))
+wordsDecoder =
+  Decode.dict (Decode.nullable (Decode.list Decode.string))
+
 textDecoder : Decode.Decoder Text
 textDecoder =
   decode Text
@@ -39,6 +45,7 @@ textDecoder =
     |> required "modified_dt" (Decode.nullable date)
     |> required "text_sections" (Decode.map Array.fromList (Text.Section.Decode.textSectionsDecoder))
     |> required "write_locker" (Decode.nullable Decode.string)
+    |> required "words" wordsDecoder
 
 textListItemDecoder : Decode.Decoder TextListItem
 textListItemDecoder =
