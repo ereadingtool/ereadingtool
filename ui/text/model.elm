@@ -1,4 +1,4 @@
-module Text.Model exposing (Text, TextListItem, TextDifficulty, new_text, set_sections, set_tags)
+module Text.Model exposing (Text, TextListItem, TextDifficulty, new_text, set_sections, set_tags, WordValues, Words)
 
 import Text.Section.Model exposing (emptyTextSection)
 
@@ -9,6 +9,10 @@ import Date exposing (Date)
 import Array exposing (Array)
 
 type alias TextDifficulty = (String, String)
+
+type alias WordValues = { grammemes: Dict String String, meanings: Maybe (List Text.Definitions.Meaning) }
+
+type alias Words = Dict String WordValues
 
 type alias Text = {
     id: Maybe Int
@@ -25,7 +29,7 @@ type alias Text = {
   , modified_dt: Maybe Date
   , sections: Array Text.Section.Model.TextSection
   , write_locker: Maybe String
-  , words: Dict String (Maybe (List Meaning)) }
+  , words: Words }
 
 type alias TextListItem = {
     id: Int

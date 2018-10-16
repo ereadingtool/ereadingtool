@@ -11123,6 +11123,10 @@ var _user$project$Text_Model$new_text = {
 	write_locker: _elm_lang$core$Maybe$Nothing,
 	words: _elm_lang$core$Dict$empty
 };
+var _user$project$Text_Model$WordValues = F2(
+	function (a, b) {
+		return {grammemes: a, meanings: b};
+	});
 var _user$project$Text_Model$Text = function (a) {
 	return function (b) {
 		return function (c) {
@@ -14570,9 +14574,17 @@ var _user$project$Text_Decode$textListItemDecoder = A3(
 													_elm_lang$core$Json_Decode$int,
 													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextListItem))))))))))))));
 var _user$project$Text_Decode$textListDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textListItemDecoder);
-var _user$project$Text_Decode$wordsDecoder = _elm_lang$core$Json_Decode$dict(
+var _user$project$Text_Decode$wordValuesDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'meaning',
 	_elm_lang$core$Json_Decode$nullable(
-		_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)));
+		_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'grammemes',
+		_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$WordValues)));
+var _user$project$Text_Decode$wordsDecoder = _elm_lang$core$Json_Decode$dict(_user$project$Text_Decode$wordValuesDecoder);
 var _user$project$Text_Decode$textDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'words',
@@ -15757,6 +15769,34 @@ var _user$project$Text_Tags_View$view_tags = F5(
 			});
 	});
 
+var _user$project$Text_Definitions_View$view_grammeme = function (_p0) {
+	var _p1 = _p0;
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(_p1._0),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(' : '),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(_p1._1),
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
+var _user$project$Text_Definitions_View$view_grammemes = function (grammemes) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		A2(
+			_elm_lang$core$List$map,
+			_user$project$Text_Definitions_View$view_grammeme,
+			_elm_lang$core$Dict$toList(grammemes)));
+};
 var _user$project$Text_Definitions_View$view_meaning = function (meaning) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -15775,23 +15815,24 @@ var _user$project$Text_Definitions_View$view_meaning = function (meaning) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Text_Definitions_View$view_word_definition = function (_p0) {
-	var _p1 = _p0;
+var _user$project$Text_Definitions_View$view_word_definition = function (_p2) {
+	var _p3 = _p2;
+	var _p5 = _p3._1;
 	return A2(
 		_elm_lang$html$Html$div,
 		{ctor: '[]'},
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html$text(_p1._0),
+			_0: _elm_lang$html$Html$text(_p3._0),
 			_1: {
 				ctor: '::',
 				_0: function () {
-					var _p2 = _p1._1;
-					if (_p2.ctor === 'Just') {
+					var _p4 = _p5.meanings;
+					if (_p4.ctor === 'Just') {
 						return A2(
 							_elm_lang$html$Html$div,
 							{ctor: '[]'},
-							A2(_elm_lang$core$List$map, _user$project$Text_Definitions_View$view_meaning, _p2._0));
+							A2(_elm_lang$core$List$map, _user$project$Text_Definitions_View$view_meaning, _p4._0));
 					} else {
 						return A2(
 							_elm_lang$html$Html$div,
@@ -15803,18 +15844,26 @@ var _user$project$Text_Definitions_View$view_word_definition = function (_p0) {
 							});
 					}
 				}(),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Grammemes'),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Text_Definitions_View$view_grammemes(_p5.grammemes),
+						_1: {ctor: '[]'}
+					}
+				}
 			}
 		});
 };
-var _user$project$Text_Definitions_View$view_definitions = function (definitions) {
+var _user$project$Text_Definitions_View$view_definitions = function (words) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{ctor: '[]'},
 		A2(
 			_elm_lang$core$List$map,
 			_user$project$Text_Definitions_View$view_word_definition,
-			_elm_lang$core$Dict$toList(definitions)));
+			_elm_lang$core$Dict$toList(words)));
 };
 
 var _user$project$Text_View$view_definitions_tab = function (params) {

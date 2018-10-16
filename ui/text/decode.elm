@@ -2,7 +2,7 @@ module Text.Decode exposing (textDecoder, textCreateRespDecoder, decodeRespError
   , textUpdateRespDecoder, TextCreateResp, TextUpdateResp, TextProgressUpdateResp, textListDecoder, textLockRespDecoder
   , TextLockResp, textDeleteRespDecoder, textDifficultyDecoder)
 
-import Text.Model exposing (Text, TextDifficulty, TextListItem)
+import Text.Model exposing (Text, TextDifficulty, TextListItem, WordValues, Words)
 import Text.Section.Decode
 
 import Array exposing (Array)
@@ -22,11 +22,16 @@ type alias TextProgressUpdateResp = { updated: Bool }
 
 type alias TextsRespError = Dict String String
 
-type alias Definitions = Dict String (List String)
 
-wordsDecoder : Decode.Decoder (Dict String (Maybe (List String)))
+wordValuesDecoder : Decode.Decoder WordValues
+wordValuesDecoder =
+  decode WordValues
+    |> required "grammemes" (Decode.dict Decode.string)
+    |> required "meaning" (Decode.nullable (Decode.list Decode.string))
+
+wordsDecoder : Decode.Decoder Words
 wordsDecoder =
-  Decode.dict (Decode.nullable (Decode.list Decode.string))
+  Decode.dict wordValuesDecoder
 
 textDecoder : Decode.Decoder Text
 textDecoder =
