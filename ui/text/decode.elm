@@ -26,7 +26,7 @@ type alias TextsRespError = Dict String String
 wordValuesDecoder : Decode.Decoder WordValues
 wordValuesDecoder =
   decode WordValues
-    |> required "grammemes" (Decode.dict Decode.string)
+    |> required "grammemes" (Decode.dict (Decode.nullable Decode.string))
     |> required "meaning" (Decode.nullable (Decode.list Decode.string))
 
 wordsDecoder : Decode.Decoder Words

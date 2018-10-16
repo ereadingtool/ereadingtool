@@ -15,11 +15,16 @@ view_meaning meaning =
     div [] [ Html.text (" :" ++ meaning) ]
   ]
 
-view_grammeme : (String, String) -> Html Msg
-view_grammeme (grammeme, value) =
-  div [] [ Html.text grammeme, Html.text " : ", Html.text value ]
+view_grammeme : (String, Maybe String) -> Html Msg
+view_grammeme (grammeme, grammeme_value) =
+  case grammeme_value of
+    Just value ->
+      div [] [ Html.text grammeme, Html.text " : ", Html.text value ]
 
-view_grammemes : Dict String String -> Html Msg
+    Nothing ->
+      div [] []
+
+view_grammemes : Dict String (Maybe String) -> Html Msg
 view_grammemes grammemes =
   div [] (List.map view_grammeme (Dict.toList grammemes))
 

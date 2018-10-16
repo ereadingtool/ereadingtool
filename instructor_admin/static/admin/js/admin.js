@@ -10675,7 +10675,8 @@ var _user$project$Text_Decode$wordValuesDecoder = A3(
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'grammemes',
-		_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
+		_elm_lang$core$Json_Decode$dict(
+			_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string)),
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$WordValues)));
 var _user$project$Text_Decode$wordsDecoder = _elm_lang$core$Json_Decode$dict(_user$project$Text_Decode$wordValuesDecoder);
 var _user$project$Text_Decode$textDecoder = A3(
