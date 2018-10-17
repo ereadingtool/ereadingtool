@@ -14,3 +14,4 @@ pymorphy2[fast]
 pymorphy2-dicts-ru
 channels_redis
 lxml
+pdfkit

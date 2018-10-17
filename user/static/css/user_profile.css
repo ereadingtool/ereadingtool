@@ -59,6 +59,10 @@ table td {
     margin-top: 10px;
 }
 
+.performance_download_link {
+    margin-top: 10px;
+}
+
 .text_readings_values {
     display: grid;
 

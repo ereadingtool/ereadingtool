@@ -3,13 +3,12 @@ from user.views.student import (StudentSignUpView, StudentSignupAPIView, Student
                                 StudentLoginView, StudentLoginAPIView, StudentLogoutAPIView, ElmLoadJsStudentView,
                                 ElmLoadStudentSignUpView)
 
-from user.views.student_performance import StudentPerformanceAPIView
+from user.views.student_performance import StudentPerformancePDFView
 
 api_urlpatterns = [
     path('api/student/signup/', StudentSignupAPIView.as_view(), name='api-student-signup'),
     path('api/student/login/', StudentLoginAPIView.as_view(), name='api-student-login'),
     path('api/student/logout/', StudentLogoutAPIView.as_view(), name='api-student-logout'),
-    path('api/student/<int:pk>/performance/', StudentPerformanceAPIView.as_view(), name='api-student-performance'),
     path('api/student/<int:pk>/', StudentAPIView.as_view(), name='api-student'),
 ]
 
@@ -19,7 +18,9 @@ elm_load_urlpatterns = [
 ]
 
 urlpatterns = [
+    path('profile/student/<int:pk>/performance_report.pdf', StudentPerformancePDFView.as_view(),
+         name='student-performance-pdf-link'),
     path('signup/student/', StudentSignUpView.as_view(), name='student-signup'),
     path('login/student/', StudentLoginView.as_view(), name='student-login'),
-    path('profile/student/', StudentProfileView.as_view(), name='student-profile')
+    path('profile/student/', StudentProfileView.as_view(), name='student-profile'),
 ] + api_urlpatterns + elm_load_urlpatterns

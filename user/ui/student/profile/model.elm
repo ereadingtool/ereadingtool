@@ -16,6 +16,7 @@ import Http
 
 import Menu.Logout
 
+type alias PerformanceReport = {html: String, pdf_link: String}
 
 type alias StudentProfileParams = {
     id: Maybe Int
@@ -24,7 +25,8 @@ type alias StudentProfileParams = {
   , difficulty_preference: Maybe Text.TextDifficulty
   , difficulties: List Text.TextDifficulty
   , text_reading: Maybe (List TextReading)
-  , performance_report: String }
+  , performance_report: PerformanceReport
+  }
 
 type StudentProfile = StudentProfile StudentProfileParams
 
@@ -37,8 +39,14 @@ emptyStudentProfile = StudentProfile {
   , difficulty_preference = Nothing
   , difficulties = []
   , text_reading = Nothing
-  , performance_report = "" }
+  , performance_report = {html="", pdf_link=""} }
 
+
+performanceReportDecoder : Json.Decode.Decoder PerformanceReport
+performanceReportDecoder =
+  decode PerformanceReport
+    |> required "html" Json.Decode.string
+    |> required "pdf_link" Json.Decode.string
 
 studentProfileParamsDecoder : Json.Decode.Decoder StudentProfileParams
 studentProfileParamsDecoder =
@@ -49,7 +57,7 @@ studentProfileParamsDecoder =
     |> required "difficulty_preference" (Json.Decode.nullable tupleDecoder)
     |> required "difficulties" (Json.Decode.list tupleDecoder)
     |> required "text_reading" (Json.Decode.nullable textReadingsDecoder)
-    |> required "performance_report" Json.Decode.string
+    |> required "performance_report" performanceReportDecoder
 
 
 studentProfileDecoder : Json.Decode.Decoder StudentProfile
@@ -86,7 +94,7 @@ studentUserName (StudentProfile attrs) = attrs.username
 studentEmail : StudentProfile -> String
 studentEmail (StudentProfile attrs) = attrs.email
 
-studentPerformanceReport : StudentProfile -> String
+studentPerformanceReport : StudentProfile -> PerformanceReport
 studentPerformanceReport (StudentProfile attrs) = attrs.performance_report
 
 init_profile : StudentProfileParams -> StudentProfile

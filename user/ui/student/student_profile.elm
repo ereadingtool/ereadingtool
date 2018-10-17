@@ -374,13 +374,21 @@ view_flashcards model =
 
 view_student_performance : Model -> Html Msg
 view_student_performance model =
-  div [class "performance"] [
-    span [class "profile_item_title"] [ Html.text "My Performance: " ]
-  , span [class "profile_item_value"] [
-      div [class "performance_report"]
-       (HtmlParser.Util.toVirtualDom <| HtmlParser.parse (Student.Profile.Model.studentPerformanceReport model.profile))
+  let
+    performance_report_attrs = Student.Profile.Model.studentPerformanceReport model.profile
+  in
+    div [class "performance"] [
+      span [class "profile_item_title"] [ Html.text "My Performance: " ]
+    , span [class "profile_item_value"] [
+        div [class "performance_report"]
+         (HtmlParser.Util.toVirtualDom <| HtmlParser.parse performance_report_attrs.html)
+      ]
+    , div [class "performance_download_link"] [
+        Html.a [attribute "href" performance_report_attrs.pdf_link] [
+          Html.text "Download as PDF"
+        ]
+      ]
     ]
-  ]
 
 view_content : Model -> Html Msg
 view_content model =

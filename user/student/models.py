@@ -1,7 +1,7 @@
 from typing import TypeVar
 
 from django.db import models
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 
 from django.template import loader
 
@@ -31,6 +31,11 @@ class Student(Profile, models.Model):
         # difficulty_preference can be null
         difficulties.append(('', ''))
 
+        performance_report_html = loader.render_to_string('student_performance_report.html',
+                                                          {'performance_report': self.performance.to_dict()})
+
+        performance_report_pdf_link = reverse('student-performance-pdf-link', kwargs={'pk': self.pk})
+
         return {
             'id': self.pk,
             'username': self.user.username,
@@ -39,8 +44,7 @@ class Student(Profile, models.Model):
             if self.difficulty_preference else None,
             'difficulties': difficulties,
             'text_reading': [text_reading.to_dict() for text_reading in self.text_readings.all()],
-            'performance_report': loader.render_to_string('student_performance_report.html',
-                                                          {'performance_report': self.performance.to_dict()})
+            'performance_report': {'html': performance_report_html, 'pdf_link': performance_report_pdf_link}
         }
 
     def sections_complete_for(self, text: TypeVar('Text')) -> int:

@@ -10373,6 +10373,19 @@ var _user$project$Student_Profile_Model$studentDifficultyPreference = function (
 	var _p13 = _p12;
 	return _p13._0.difficulty_preference;
 };
+var _user$project$Student_Profile_Model$PerformanceReport = F2(
+	function (a, b) {
+		return {html: a, pdf_link: b};
+	});
+var _user$project$Student_Profile_Model$performanceReportDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'pdf_link',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'html',
+		_elm_lang$core$Json_Decode$string,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Student_Profile_Model$PerformanceReport)));
 var _user$project$Student_Profile_Model$StudentProfileParams = F7(
 	function (a, b, c, d, e, f, g) {
 		return {id: a, username: b, email: c, difficulty_preference: d, difficulties: e, text_reading: f, performance_report: g};
@@ -10380,7 +10393,7 @@ var _user$project$Student_Profile_Model$StudentProfileParams = F7(
 var _user$project$Student_Profile_Model$studentProfileParamsDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'performance_report',
-	_elm_lang$core$Json_Decode$string,
+	_user$project$Student_Profile_Model$performanceReportDecoder,
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'text_reading',
@@ -10417,7 +10430,7 @@ var _user$project$Student_Profile_Model$emptyStudentProfile = _user$project$Stud
 		difficulty_preference: _elm_lang$core$Maybe$Nothing,
 		difficulties: {ctor: '[]'},
 		text_reading: _elm_lang$core$Maybe$Nothing,
-		performance_report: ''
+		performance_report: {html: '', pdf_link: ''}
 	});
 var _user$project$Student_Profile_Model$studentProfileDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Student_Profile_Model$StudentProfile, _user$project$Student_Profile_Model$studentProfileParamsDecoder);
 var _user$project$Student_Profile_Model$setStudentDifficultyPreference = F2(
