@@ -59,9 +59,12 @@ class ParseTextSectionForDefinitions(SyncConsumer):
                 text_word.save()
 
             if word_defs[word] is not None:
-                for meaning in word_defs[word]['meanings']:
+                for i, meaning in enumerate(word_defs[word]['meanings']):
                     text_meaning, text_meaning_created = TextWordMeaning.objects.get_or_create(word=text_word,
-                                                                                               text=meaning['text'])
+                                                                                               text=meaning['text'],
+                                                                                               correct_for_context=
+                                                                                               (True if i == 0
+                                                                                                else False))
 
                     if text_meaning_created:
                         text_meaning.save()
