@@ -29,7 +29,6 @@ table td {
     overflow: auto;
 
     grid-template-columns: 35% 35% 25%;
-    grid-template-rows: 100px minmax(auto, 180px) auto;
 
     border: solid 0.5px lightgrey;
 
@@ -39,6 +38,8 @@ table td {
 
 .text_readings {
     display: grid;
+
+    margin-top: 15px;
 
     grid-column: 1 / 4;
     grid-row: 2;

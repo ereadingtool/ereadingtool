@@ -102,8 +102,8 @@
 
     grid-column: 2;
     grid-template-columns: auto;
-    grid-row-gap: 10%;
-    row-gap: 10%;
+    grid-row-gap: 50px;
+    row-gap: 50px;
 }
 
 .question {
