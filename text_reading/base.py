@@ -98,6 +98,18 @@ class TextReading(models.Model):
         raise NotImplementedError
 
     @property
+    def complete(self):
+        return self.state == self.state_machine_cls.complete.name
+
+    @property
+    def in_progress(self):
+        return self.state == self.state_machine_cls.in_progress.name
+
+    @property
+    def intro(self):
+        return self.state == self.state_machine_cls.intro.name
+
+    @property
     def score(self) -> Dict:
         answered_correctly = self.text_reading_answers.order_by('-created_dt').filter(
             question=models.OuterRef('question'))
@@ -110,9 +122,16 @@ class TextReading(models.Model):
 
         question_scores = sum([1 if answer['answered_correctly'] else 0 for answer in scores])
 
+        complete_sections = 0
+
+        if self.in_progress:
+            complete_sections = self.current_section.order
+        elif self.complete:
+            complete_sections = self.number_of_sections
+
         return {
-            'num_of_sections': len(self.sections),
-            'complete_sections': len(self.sections),
+            'num_of_sections': self.number_of_sections,
+            'complete_sections': complete_sections,
             'section_scores': question_scores,
             'possible_section_scores': len(scores)
         }
@@ -120,13 +139,17 @@ class TextReading(models.Model):
     def to_text_reading_dict(self) -> Dict:
         if self.state_machine.is_in_progress:
             return self.get_current_section().to_text_reading_dict(text_reading=self,
-                                                                   num_of_sections=len(self.sections))
+                                                                   num_of_sections=self.number_of_sections)
 
         elif self.state_machine.is_intro:
             return self.text.to_text_reading_dict()
 
         elif self.state_machine.is_complete:
             return self.score
+
+    @property
+    def number_of_sections(self):
+        return self.sections.count()
 
     @cached_property
     def sections(self):

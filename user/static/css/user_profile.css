@@ -69,6 +69,9 @@ table td {
 
     margin-top: 10px;
     grid-template-columns: repeat(5, auto);
+
+    grid-row-gap: 15px;
+    row-gap: 15px;
 }
 
 .text_reading_actions {
