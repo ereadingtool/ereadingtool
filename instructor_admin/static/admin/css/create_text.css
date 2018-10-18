@@ -578,3 +578,41 @@ body {
     font-style: italic;
     font-size: 14px;
 }
+
+.definitions {
+    display: grid;
+    padding: 10px 10px 10px 10px;
+
+    grid-template-columns: auto;
+}
+
+.meanings {
+    display: grid;
+    margin-top: 15px;
+}
+
+.definition {
+    display: grid;
+    margin-top: 15px;
+}
+
+.grammemes {
+    margin-top: 15px;
+}
+
+.word > div:nth-child(1) {
+    display: inline-block;
+    font-weight: bolder;
+    margin-bottom: 15px;
+}
+
+.word > div:nth-child(2) {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.meanings {
+    display: grid;
+    grid-template-columns: auto;
+    padding: 10px 10px 10px 10px;
+}

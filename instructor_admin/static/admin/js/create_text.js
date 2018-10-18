@@ -15783,22 +15783,47 @@ var _user$project$Text_Tags_View$view_tags = F5(
 			});
 	});
 
-var _user$project$Text_Definitions_View$view_grammeme = function (_p0) {
+var _user$project$Text_Definitions_View$view_grammeme_as_string = function (_p0) {
 	var _p1 = _p0;
 	var _p2 = _p1._1;
 	if (_p2.ctor === 'Just') {
 		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			_p1._0,
+			A2(_elm_lang$core$Basics_ops['++'], ': ', _p2._0));
+	} else {
+		return '';
+	}
+};
+var _user$project$Text_Definitions_View$view_grammemes_as_string = function (grammemes) {
+	return A2(
+		_elm_lang$core$String$join,
+		', ',
+		A2(
+			_elm_lang$core$List$map,
+			_user$project$Text_Definitions_View$view_grammeme_as_string,
+			_elm_lang$core$Dict$toList(grammemes)));
+};
+var _user$project$Text_Definitions_View$view_grammeme = function (_p3) {
+	var _p4 = _p3;
+	var _p5 = _p4._1;
+	if (_p5.ctor === 'Just') {
+		return A2(
 			_elm_lang$html$Html$div,
-			{ctor: '[]'},
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html$text(_p1._0),
+				_0: _elm_lang$html$Html_Attributes$class('grammeme'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(_p4._0),
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html$text(' : '),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(_p2._0),
+						_0: _elm_lang$html$Html$text(_p5._0),
 						_1: {ctor: '[]'}
 					}
 				}
@@ -15806,14 +15831,22 @@ var _user$project$Text_Definitions_View$view_grammeme = function (_p0) {
 	} else {
 		return A2(
 			_elm_lang$html$Html$div,
-			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('grammeme'),
+				_1: {ctor: '[]'}
+			},
 			{ctor: '[]'});
 	}
 };
 var _user$project$Text_Definitions_View$view_grammemes = function (grammemes) {
 	return A2(
 		_elm_lang$html$Html$div,
-		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('grammemes'),
+			_1: {ctor: '[]'}
+		},
 		A2(
 			_elm_lang$core$List$map,
 			_user$project$Text_Definitions_View$view_grammeme,
@@ -15822,7 +15855,11 @@ var _user$project$Text_Definitions_View$view_grammemes = function (grammemes) {
 var _user$project$Text_Definitions_View$view_meaning = function (meaning) {
 	return A2(
 		_elm_lang$html$Html$div,
-		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('meaning'),
+			_1: {ctor: '[]'}
+		},
 		{
 			ctor: '::',
 			_0: A2(
@@ -15837,43 +15874,88 @@ var _user$project$Text_Definitions_View$view_meaning = function (meaning) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Text_Definitions_View$view_word_definition = function (_p3) {
-	var _p4 = _p3;
-	var _p6 = _p4._1;
+var _user$project$Text_Definitions_View$view_meanings = function (meanings) {
+	var _p6 = meanings;
+	if (_p6.ctor === 'Just') {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('meanings'),
+				_1: {ctor: '[]'}
+			},
+			A2(_elm_lang$core$List$map, _user$project$Text_Definitions_View$view_meaning, _p6._0));
+	} else {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('meanings'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('Undefined'),
+				_1: {ctor: '[]'}
+			});
+	}
+};
+var _user$project$Text_Definitions_View$view_word_definition = function (_p7) {
+	var _p8 = _p7;
+	var _p9 = _p8._1;
 	return A2(
 		_elm_lang$html$Html$div,
-		{ctor: '[]'},
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html$text(_p4._0),
-			_1: {
-				ctor: '::',
-				_0: function () {
-					var _p5 = _p6.meanings;
-					if (_p5.ctor === 'Just') {
-						return A2(
-							_elm_lang$html$Html$div,
-							{ctor: '[]'},
-							A2(_elm_lang$core$List$map, _user$project$Text_Definitions_View$view_meaning, _p5._0));
-					} else {
-						return A2(
+			_0: _elm_lang$html$Html_Attributes$class('definition'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('word'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(_p8._0),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
 							_elm_lang$html$Html$div,
 							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text('Undefined'),
+								_0: _elm_lang$html$Html$text(
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										'(',
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											_user$project$Text_Definitions_View$view_grammemes_as_string(_p9.grammemes),
+											')'))),
 								_1: {ctor: '[]'}
-							});
-					}
-				}(),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html$text('Grammemes'),
-					_1: {
-						ctor: '::',
-						_0: _user$project$Text_Definitions_View$view_grammemes(_p6.grammemes),
+							}),
 						_1: {ctor: '[]'}
 					}
+				}),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('Meanings'),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Text_Definitions_View$view_meanings(_p9.meanings),
+					_1: {ctor: '[]'}
 				}
 			}
 		});
@@ -15881,7 +15963,11 @@ var _user$project$Text_Definitions_View$view_word_definition = function (_p3) {
 var _user$project$Text_Definitions_View$view_definitions = function (words) {
 	return A2(
 		_elm_lang$html$Html$div,
-		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('definitions'),
+			_1: {ctor: '[]'}
+		},
 		A2(
 			_elm_lang$core$List$map,
 			_user$project$Text_Definitions_View$view_word_definition,

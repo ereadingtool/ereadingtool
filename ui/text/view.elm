@@ -19,7 +19,7 @@ import Text.Update
 
 import Text.Tags.View
 
-import Text.Definitions.View exposing (view_definitions)
+import Text.Definitions.View
 
 
 view_text_date : TextViewParams -> Html Msg
@@ -296,7 +296,7 @@ view_text_tab params =
 
 view_definitions_tab : TextViewParams -> Html Msg
 view_definitions_tab params =
-  view_definitions params.text.words
+  Text.Definitions.View.view_definitions params.text.words
 
 
 view_tab_contents : TextViewParams -> Html Msg
