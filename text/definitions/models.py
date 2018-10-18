@@ -38,6 +38,7 @@ class TextWord(models.Model):
 
 class TextWordMeaning(models.Model):
     word = models.ForeignKey(TextWord, related_name='meanings', on_delete=models.CASCADE)
+    correct_for_context = models.BooleanField(default=False, null=False)
 
     text = models.TextField(blank=False)
 
