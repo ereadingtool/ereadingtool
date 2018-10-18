@@ -50,7 +50,7 @@ class Student(Profile, models.Model):
     def sections_complete_for(self, text: TypeVar('Text')) -> int:
         sections_complete = 0
 
-        if self.text_readings.filter(text=text).exists():
+        if self.text_readings.exclude(state=TextReadingStateMachine.complete.name).filter(text=text).exists():
             current_text_reading = self.text_readings.exclude(
                 state=TextReadingStateMachine.complete.name).get(text=text)
 
