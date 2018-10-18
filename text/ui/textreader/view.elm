@@ -138,7 +138,8 @@ view_text_introduction text =
 
 view_text_conclusion : Text -> Html Msg
 view_text_conclusion text =
-  div [attribute "id" "text_conclusion"] (HtmlParser.Util.toVirtualDom <| HtmlParser.parse text.conclusion)
+  div [attribute "id" "text_conclusion"]
+    (HtmlParser.Util.toVirtualDom <| HtmlParser.parse (Maybe.withDefault "" text.conclusion))
 
 view_prev_btn : Html Msg
 view_prev_btn =

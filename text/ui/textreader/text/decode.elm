@@ -17,7 +17,7 @@ textDecoder =
     |> required "author" (Json.Decode.string)
     |> required "source" (Json.Decode.string)
     |> required "difficulty" (Json.Decode.string)
-    |> required "conclusion" (Json.Decode.string)
+    |> required "conclusion" (Json.Decode.nullable (Json.Decode.string))
     |> required "created_by" (Json.Decode.nullable (Json.Decode.string))
     |> required "last_modified_by" (Json.Decode.nullable (Json.Decode.string))
     |> required "tags" (Json.Decode.nullable (Json.Decode.list (Json.Decode.string)))

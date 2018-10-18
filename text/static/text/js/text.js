@@ -22371,7 +22371,7 @@ var _user$project$Views$view_header = F3(
 			});
 	});
 
-var _user$project$TextReader_Text_Model$emptyText = {id: 0, title: '', introduction: '', author: '', source: '', difficulty: '', conclusion: '', created_by: _elm_lang$core$Maybe$Nothing, last_modified_by: _elm_lang$core$Maybe$Nothing, tags: _elm_lang$core$Maybe$Nothing, created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing};
+var _user$project$TextReader_Text_Model$emptyText = {id: 0, title: '', introduction: '', author: '', source: '', difficulty: '', conclusion: _elm_lang$core$Maybe$Nothing, created_by: _elm_lang$core$Maybe$Nothing, last_modified_by: _elm_lang$core$Maybe$Nothing, tags: _elm_lang$core$Maybe$Nothing, created_dt: _elm_lang$core$Maybe$Nothing, modified_dt: _elm_lang$core$Maybe$Nothing};
 var _user$project$TextReader_Text_Model$Text = function (a) {
 	return function (b) {
 		return function (c) {
@@ -22732,7 +22732,8 @@ var _user$project$TextReader_View$view_text_conclusion = function (text) {
 			_1: {ctor: '[]'}
 		},
 		_jinjor$elm_html_parser$HtmlParser_Util$toVirtualDom(
-			_jinjor$elm_html_parser$HtmlParser$parse(text.conclusion)));
+			_jinjor$elm_html_parser$HtmlParser$parse(
+				A2(_elm_lang$core$Maybe$withDefault, '', text.conclusion))));
 };
 var _user$project$TextReader_View$view_text_complete = F2(
 	function (model, scores) {
@@ -23375,7 +23376,7 @@ var _user$project$TextReader_Text_Decode$textDecoder = A3(
 					A3(
 						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 						'conclusion',
-						_elm_lang$core$Json_Decode$string,
+						_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 						A3(
 							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 							'difficulty',
