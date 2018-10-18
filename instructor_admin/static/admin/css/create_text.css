@@ -588,12 +588,12 @@ body {
 
 .meanings {
     display: grid;
-    margin-top: 15px;
+    margin-top: 5px;
 }
 
 .definition {
     display: grid;
-    margin-top: 15px;
+    margin-top: 10px;
 }
 
 .grammemes {
@@ -614,5 +614,5 @@ body {
 .meanings {
     display: grid;
     grid-template-columns: auto;
-    padding: 10px 10px 10px 10px;
+    padding: 0 10px 10px 10px;
 }

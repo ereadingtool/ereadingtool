@@ -13,7 +13,7 @@ import Text.Model
 view_meaning : Meaning -> Html Msg
 view_meaning meaning =
   div [class "meaning"] [
-    div [] [ Html.text (" :" ++ meaning) ]
+    div [] [ Html.text meaning ]
   ]
 
 view_meanings : Maybe (List Text.Definitions.Meaning) -> Html Msg
@@ -57,7 +57,7 @@ view_word_definition (word, word_values) =
       div [] [ Html.text word ]
     , div [] [ Html.text <| "(" ++ (view_grammemes_as_string word_values.grammemes) ++ ")" ]
     ]
-  , Html.text "Meanings"
+  , Html.text ""
   , view_meanings word_values.meanings
   ]
 

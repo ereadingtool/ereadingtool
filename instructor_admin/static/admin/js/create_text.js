@@ -15867,8 +15867,7 @@ var _user$project$Text_Definitions_View$view_meaning = function (meaning) {
 				{ctor: '[]'},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text(
-						A2(_elm_lang$core$Basics_ops['++'], ' :', meaning)),
+					_0: _elm_lang$html$Html$text(meaning),
 					_1: {ctor: '[]'}
 				}),
 			_1: {ctor: '[]'}
@@ -15951,7 +15950,7 @@ var _user$project$Text_Definitions_View$view_word_definition = function (_p7) {
 				}),
 			_1: {
 				ctor: '::',
-				_0: _elm_lang$html$Html$text('Meanings'),
+				_0: _elm_lang$html$Html$text(''),
 				_1: {
 					ctor: '::',
 					_0: _user$project$Text_Definitions_View$view_meanings(_p9.meanings),

@@ -19,7 +19,8 @@ logger = logging.getLogger('django')
 
 
 class TextSectionDefinitionsMixin(models.Model):
-    definitions = models.OneToOneField(TextDefinitions, null=True, related_name='text', on_delete=models.CASCADE)
+    definitions = models.OneToOneField(TextDefinitions, null=True, related_name='text_section',
+                                       on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
