@@ -1,8 +1,7 @@
 import json
-import channels.layers
-
 from typing import Dict, AnyStr, Optional, List
 
+import channels.layers
 from asgiref.sync import async_to_sync
 from django.test import TestCase
 from django.test.client import Client
@@ -10,20 +9,14 @@ from hypothesis.strategies import just, one_of
 
 from ereadingtool.test.user import TestUser
 from ereadingtool.urls import reverse_lazy
-
 from question.models import Answer
-
 from tag.models import Tag
-
+from text.consumers.instructor import ParseTextSectionForDefinitions
+from text.glosbe.api import GlosbeAPI, GlosbeDefinitions, GlosbeDefinition
 from text.models import TextDifficulty, Text, TextSection
-
 from text_reading.base import TextReadingNotAllQuestionsAnswered
 from text_reading.models import StudentTextReading
-
 from user.student.models import Student
-
-from text.glosbe.api import GlosbeAPI, GlosbeDefinitions, GlosbeDefinition
-from text.consumers.instructor import ParseTextSectionForDefinitions
 
 
 class TestText(TestUser, TestCase):
@@ -139,6 +132,7 @@ class TestText(TestUser, TestCase):
         self.assertEquals(text_reading.current_section, text_sections[0])
 
         # answer the final question for this section
+        # last answer is always correct
         answer_two = questions[1].answers.all()[3]
 
         text_reading.answer(answer_two)
@@ -150,12 +144,24 @@ class TestText(TestUser, TestCase):
         self.assertEquals(text_reading.current_section, text_sections[1])
 
         # and complete
+        questions = text_sections[1].questions.all()
+
+        text_reading.answer(questions[0].answers.all()[2])
+
         text_reading.next()
 
         self.assertEquals(text_reading.current_state, text_reading.state_machine.complete)
         self.assertEquals(text_reading.current_section, None)
 
         self.assertTrue(text_reading.end_dt)
+
+        total_num_of_questions = sum(len(section['questions']) for section in test_data['text_sections'])
+        score = text_reading.score
+
+        self.assertDictEqual(score, {'num_of_sections': len(text_sections),
+                                     'complete_sections': len(text_sections),
+                                     'section_scores': 1,
+                                     'possible_section_scores': total_num_of_questions})
 
         return text_reading
 

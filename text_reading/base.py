@@ -77,6 +77,8 @@ class TextReading(models.Model):
         self.state_machine = self.state_machine_cls()
 
         self.state_machine.next.validators = [self.next_validator]
+        self.state_machine.completing.validators = [self.next_validator]
+
         self.state_machine.on_enter_complete = self.on_enter_complete
 
         self.state_machine.current_state = getattr(self.state_machine_cls, self.state)
@@ -102,7 +104,9 @@ class TextReading(models.Model):
 
         scores = self.text_reading_answers.values('question').annotate(
             num_answered_question=models.Count('question'),
-        ).annotate(answered_correctly=models.Subquery(answered_correctly.values('answer__correct')[:1]))
+        ).annotate(
+            answered_correctly=models.Subquery(answered_correctly.values('answer__correct')[:1])
+        )
 
         question_scores = sum([1 if answer['answered_correctly'] else 0 for answer in scores])
 
@@ -110,7 +114,7 @@ class TextReading(models.Model):
             'num_of_sections': len(self.sections),
             'complete_sections': len(self.sections),
             'section_scores': question_scores,
-            'possible_section_scores': len(self.sections) * len(scores)
+            'possible_section_scores': len(scores)
         }
 
     def to_text_reading_dict(self) -> Dict:
