@@ -12,11 +12,12 @@ import Flags exposing (CSRFToken)
 
 import Profile
 
+
 type Progress = Init | ViewIntro | ViewSection Section | Complete TextScores
 
-type alias Word = String
-
 type alias Exception = { code: String, error_msg: String }
+
+type alias Gloss = Dict String Bool
 
 type CmdReq =
     NextReq
@@ -42,6 +43,6 @@ type alias Model = {
     text : Text
   , profile : Profile.Profile
   , progress: Progress
-  , gloss : Dict String Bool
+  , gloss : Gloss
   , exception : Maybe Exception
   , flags : Flags }

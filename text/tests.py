@@ -115,7 +115,7 @@ class TestText(TestUser, TestCase):
         self.assertEquals(text_reading.current_state, text_reading.state_machine.intro)
 
         # a reading in the introduction state should have a score of 0 / 0
-        self.assertDictEqual(text_reading.score, {'num_of_sections': 2,
+        self.assertDictEqual(text_reading.score, {'num_of_sections': len(text_sections),
                                                   'complete_sections': 0,
                                                   'section_scores': 0,
                                                   'possible_section_scores': 0})

@@ -7,6 +7,11 @@ import Html.Events exposing (onClick, onDoubleClick)
 import Array exposing (Array)
 import Dict exposing (Dict)
 
+import Text.Model
+import Text.Definitions exposing (Word, Meaning)
+
+import Text.Definitions.View
+
 import TextReader.Model exposing (..)
 
 import TextReader.Text.Model exposing (Text)
@@ -19,36 +24,38 @@ import TextReader.Msg exposing (Msg(..))
 import HtmlParser
 import HtmlParser.Util
 
-import TextReader.Dictionary exposing (dictionary)
 import VirtualDom
 
 
-
-tagWord : Dict String Bool -> String -> Html Msg
-tagWord gloss word =
+tagWord : Text.Model.Words -> Gloss -> String -> Html Msg
+tagWord dictionary gloss word =
   if (Dict.member word dictionary) then
     Html.node "span" [class "defined_word", onDoubleClick (Gloss word)] [
       VirtualDom.text word
-    , view_gloss gloss word
+    , view_gloss dictionary gloss word
     ]
   else
     VirtualDom.text word
 
-tagWordAndToVDOM : Dict String Bool -> HtmlParser.Node -> Html Msg
-tagWordAndToVDOM gloss node =
+tagWordAndToVDOM : Text.Model.Words -> Gloss -> HtmlParser.Node -> Html Msg
+tagWordAndToVDOM dictionary gloss node =
   case node of
     HtmlParser.Text str ->
-      tagWord gloss str
+      let
+        _ = Debug.log "parsing one text node" str
+      in
+        tagWord dictionary gloss str
 
-    HtmlParser.Element name attrs nodes ->
-      Html.node name (List.map (\(name, value) -> attribute name value) attrs) (tagWordsAndToVDOM gloss nodes)
+    HtmlParser.Element name attrs nodes -> let _ = Debug.log "list of nodes" nodes in
+      Html.node name (List.map (\(name, value) -> attribute name value) attrs)
+        (tagWordsAndToVDOM dictionary gloss nodes)
 
     (HtmlParser.Comment str) as comment ->
         VirtualDom.text ""
 
-tagWordsAndToVDOM : Dict String Bool -> List HtmlParser.Node -> List (Html Msg)
-tagWordsAndToVDOM gloss text =
-  List.map (tagWordAndToVDOM gloss) text
+tagWordsAndToVDOM : Text.Model.Words -> Gloss -> List HtmlParser.Node -> List (Html Msg)
+tagWordsAndToVDOM dictionary gloss text =
+  List.map (tagWordAndToVDOM dictionary gloss) text
 
 view_answer : Section -> TextQuestion -> TextAnswer -> Html Msg
 view_answer text_section text_question text_answer =
@@ -88,7 +95,7 @@ view_question : Section -> TextQuestion -> Html Msg
 view_question text_section text_question =
   let
     question = TextReader.Question.Model.question text_question
-    answers = Debug.log "answers" (TextReader.Question.Model.answers text_question)
+    answers = TextReader.Question.Model.answers text_question
     text_question_id = String.join "_" ["question", toString question.order]
   in
     div [class "question", attribute "id" text_question_id] [
@@ -104,10 +111,41 @@ view_questions section =
   in
     div [class "questions"] (Array.toList <| Array.map (view_question section) text_reader_questions)
 
-view_gloss : Dict String Bool -> String -> Html Msg
-view_gloss gloss word =
+
+view_meaning : Text.Definitions.Meaning -> Html Msg
+view_meaning meaning =
+  div [class "meaning"] [ Html.text meaning ]
+
+view_meanings : Maybe (List Text.Definitions.Meaning) -> Html Msg
+view_meanings defs =
+  div [class "meanings"]
+    (case defs of
+      Just meanings ->
+        (List.map view_meaning meanings)
+
+      Nothing ->
+        [])
+
+view_word_def : Word -> Maybe Text.Model.WordValues -> Html Msg
+view_word_def word word_values =
   let
-    word_def = (flip Dict.get) dictionary >> Maybe.withDefault ""
+    def =
+      (case word_values of
+        Just values ->
+          [ Html.text <|
+             word ++ " (" ++ Text.Definitions.View.view_grammemes_as_string values.grammemes ++ ")"
+          ]
+
+        Nothing ->
+          []
+      )
+  in
+    Html.text word
+
+view_gloss : Text.Model.Words -> Gloss -> Word -> Html Msg
+view_gloss dictionary gloss word =
+  let
+    word_def = (flip Dict.get) dictionary
   in
     div []
       (List.map
@@ -115,15 +153,15 @@ view_gloss gloss word =
           div [ classList [("gloss_overlay", True), ("gloss_menu", True)
               , ("hidden", not (Dict.member word gloss))]
               , onClick (UnGloss word)] [
-            Html.text (word ++ " : " ++ word_def word)
+            view_word_def word (word_def word)
           ]
         ) (Dict.keys gloss))
 
-view_text_section : Dict String Bool -> Section -> Html Msg
-view_text_section gloss section =
+view_text_section : Text.Model.Words -> Gloss -> Section -> Html Msg
+view_text_section dictionary gloss section =
   let
     text_section = TextReader.Section.Model.text_section section
-    text_body_vdom = tagWordsAndToVDOM gloss (HtmlParser.parse text_section.body)
+    text_body_vdom = tagWordsAndToVDOM dictionary gloss (HtmlParser.parse text_section.body)
     section_title = ("Section " ++ (toString (text_section.order +1)) ++ "/" ++ (toString text_section.num_of_sections))
   in
     div [class "text_section"] <| [
@@ -193,7 +231,7 @@ view_content model =
 
     ViewSection section ->
       div [class "text"] [
-        view_text_section model.gloss section
+        view_text_section (TextReader.Section.Model.definitions section) model.gloss section
       , view_exceptions model
       , div [class "nav"] [view_prev_btn, view_next_btn]
       ]

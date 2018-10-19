@@ -2,7 +2,7 @@ module TextReader.Msg exposing (..)
 
 import Http
 
-import TextReader.Model exposing (..)
+import Text.Definitions exposing (Word)
 
 import TextReader.Section.Model exposing (Section)
 import TextReader.Question.Model exposing (TextQuestion)

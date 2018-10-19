@@ -1,6 +1,4 @@
-module Text.Decode exposing (textDecoder, textCreateRespDecoder, decodeRespErrors, TextsRespError, TextDeleteResp
-  , textUpdateRespDecoder, TextCreateResp, TextUpdateResp, TextProgressUpdateResp, textListDecoder, textLockRespDecoder
-  , TextLockResp, textDeleteRespDecoder, textDifficultyDecoder)
+module Text.Decode exposing (..)
 
 import Text.Model exposing (Text, TextDifficulty, TextListItem, WordValues, Words)
 import Text.Section.Decode

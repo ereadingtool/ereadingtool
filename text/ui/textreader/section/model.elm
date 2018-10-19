@@ -1,6 +1,10 @@
 module TextReader.Section.Model exposing (..)
 
 import Array exposing (Array)
+import Dict exposing (Dict)
+
+import Text.Model
+
 import TextReader.Question.Model exposing (TextQuestion, Question)
 
 
@@ -11,7 +15,8 @@ type alias TextSection = {
   , body : String
   , question_count : Int
   , questions : Array TextReader.Question.Model.Question
-  , num_of_sections : Int }
+  , num_of_sections : Int
+  , definitions : Text.Model.Words }
 
 emptyTextSection : TextSection
 emptyTextSection = {
@@ -20,6 +25,7 @@ emptyTextSection = {
   , question_count=0
   , questions=Array.fromList []
   , num_of_sections=0
+  , definitions=Dict.empty
   }
 
 questions : Section -> Array TextQuestion
@@ -27,6 +33,9 @@ questions (Section _ questions) = questions
 
 text_section : Section -> TextSection
 text_section (Section text_section _) = text_section
+
+definitions : Section -> Text.Model.Words
+definitions (Section text_section _) = text_section.definitions
 
 newSection : TextSection -> Section
 newSection text_section =

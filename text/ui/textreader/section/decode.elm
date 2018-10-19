@@ -3,6 +3,8 @@ module TextReader.Section.Decode exposing (..)
 import Json.Decode
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 
+import Text.Decode
+
 import TextReader.Section.Model exposing (TextSection, Section)
 
 import TextReader.Question.Decode
@@ -20,6 +22,7 @@ textSectionDecoder =
     |> required "question_count" Json.Decode.int
     |> required "questions" TextReader.Question.Decode.questionsDecoder
     |> required "num_of_sections" Json.Decode.int
+    |> required "definitions" Text.Decode.wordsDecoder
 
 textSectionsDecoder : Json.Decode.Decoder (List TextSection)
 textSectionsDecoder = Json.Decode.list textSectionDecoder
