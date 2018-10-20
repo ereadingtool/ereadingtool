@@ -113,7 +113,8 @@ INSTALLED_APPS += [
     'text',
     'text_reading',
     'tag',
-    'report'
+    'report',
+    'flashcards'
 ]
 
 AUTH_USER_MODEL = 'user.ReaderUser'

@@ -10,7 +10,10 @@ import Array exposing (Array)
 
 type alias TextDifficulty = (String, String)
 
-type alias WordValues = { grammemes: Dict String (Maybe String), meanings: Maybe (List Text.Definitions.Meaning) }
+type alias WordValues = {
+    grammemes: Dict String (Maybe String)
+  , meanings: Maybe (List Text.Definitions.Meaning)
+  , frequency: Int }
 
 type alias Words = Dict String WordValues
 

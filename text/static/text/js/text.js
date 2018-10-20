@@ -21755,9 +21755,9 @@ var _user$project$Text_Model$new_text = {
 	write_locker: _elm_lang$core$Maybe$Nothing,
 	words: _elm_lang$core$Dict$empty
 };
-var _user$project$Text_Model$WordValues = F2(
-	function (a, b) {
-		return {grammemes: a, meanings: b};
+var _user$project$Text_Model$WordValues = F3(
+	function (a, b, c) {
+		return {grammemes: a, meanings: b, frequency: c};
 	});
 var _user$project$Text_Model$Text = function (a) {
 	return function (b) {
@@ -22868,9 +22868,36 @@ var _user$project$TextReader_Section_Model$newSection = function (text_section) 
 };
 
 
+var _user$project$TextReader_Model$selected = F2(
+	function (reader_word, gloss) {
+		return A2(_elm_lang$core$Dict$member, reader_word.id, gloss);
+	});
+var _user$project$TextReader_Model$glossed = F2(
+	function (reader_word, gloss) {
+		return A2(_elm_lang$core$Dict$member, reader_word.word, gloss);
+	});
+var _user$project$TextReader_Model$ungloss = F2(
+	function (reader_word, gloss) {
+		return A2(
+			_elm_lang$core$Dict$remove,
+			reader_word.id,
+			A2(_elm_lang$core$Dict$remove, reader_word.word, gloss));
+	});
+var _user$project$TextReader_Model$gloss = F2(
+	function (reader_word, gloss) {
+		return A3(
+			_elm_lang$core$Dict$insert,
+			reader_word.id,
+			true,
+			A3(_elm_lang$core$Dict$insert, reader_word.word, true, gloss));
+	});
 var _user$project$TextReader_Model$Exception = F2(
 	function (a, b) {
 		return {code: a, error_msg: b};
+	});
+var _user$project$TextReader_Model$TextReaderWord = F2(
+	function (a, b) {
+		return {id: a, word: b};
 	});
 var _user$project$TextReader_Model$TextScores = F4(
 	function (a, b, c, d) {
@@ -25064,15 +25091,19 @@ var _user$project$Text_Decode$textListItemDecoder = A3(
 var _user$project$Text_Decode$textListDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textListItemDecoder);
 var _user$project$Text_Decode$wordValuesDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'meaning',
-	_elm_lang$core$Json_Decode$nullable(
-		_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
+	'frequency',
+	_elm_lang$core$Json_Decode$int,
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'grammemes',
-		_elm_lang$core$Json_Decode$dict(
-			_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string)),
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$WordValues)));
+		'meaning',
+		_elm_lang$core$Json_Decode$nullable(
+			_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'grammemes',
+			_elm_lang$core$Json_Decode$dict(
+				_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string)),
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$WordValues))));
 var _user$project$Text_Decode$wordsDecoder = _elm_lang$core$Json_Decode$dict(_user$project$Text_Decode$wordValuesDecoder);
 var _user$project$Text_Decode$textDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -25517,6 +25548,12 @@ var _user$project$TextReader_Msg$LogOut = function (a) {
 var _user$project$TextReader_Msg$WebSocketResp = function (a) {
 	return {ctor: 'WebSocketResp', _0: a};
 };
+var _user$project$TextReader_Msg$RemoveFromFlashcards = function (a) {
+	return {ctor: 'RemoveFromFlashcards', _0: a};
+};
+var _user$project$TextReader_Msg$AddToFlashcards = function (a) {
+	return {ctor: 'AddToFlashcards', _0: a};
+};
 var _user$project$TextReader_Msg$UnGloss = function (a) {
 	return {ctor: 'UnGloss', _0: a};
 };
@@ -25705,80 +25742,87 @@ var _user$project$TextReader_View$view_text_introduction = function (text) {
 		_jinjor$elm_html_parser$HtmlParser_Util$toVirtualDom(
 			_jinjor$elm_html_parser$HtmlParser$parse(text.introduction)));
 };
-var _user$project$TextReader_View$view_word_def = F2(
-	function (word, word_values) {
-		var def = function () {
-			var _p1 = word_values;
-			if (_p1.ctor === 'Just') {
-				return {
+var _user$project$TextReader_View$view_flashcard_options = function (reader_word) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('gloss_flashcard_options'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text(
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							word,
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								' (',
-								A2(
-									_elm_lang$core$Basics_ops['++'],
-									_user$project$Text_Definitions_View$view_grammemes_as_string(_p1._0.grammemes),
-									')')))),
+					_0: _elm_lang$html$Html$text('Flashcards'),
 					_1: {ctor: '[]'}
-				};
-			} else {
-				return {ctor: '[]'};
-			}
-		}();
-		return _elm_lang$html$Html$text(word);
-	});
-var _user$project$TextReader_View$view_gloss = F3(
-	function (dictionary, gloss, word) {
-		var word_def = A2(_elm_lang$core$Basics$flip, _elm_lang$core$Dict$get, dictionary);
-		return A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
-			A2(
-				_elm_lang$core$List$map,
-				function (word) {
-					return A2(
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('cursor'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(
+								_user$project$TextReader_Msg$AddToFlashcards(reader_word)),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Add'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
 						_elm_lang$html$Html$div,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$classList(
-								{
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'gloss_overlay', _1: true},
-									_1: {
-										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'gloss_menu', _1: true},
-										_1: {
-											ctor: '::',
-											_0: {
-												ctor: '_Tuple2',
-												_0: 'hidden',
-												_1: !A2(_elm_lang$core$Dict$member, word, gloss)
-											},
-											_1: {ctor: '[]'}
-										}
-									}
-								}),
+							_0: _elm_lang$html$Html_Attributes$class('cursor'),
 							_1: {
 								ctor: '::',
 								_0: _elm_lang$html$Html_Events$onClick(
-									_user$project$TextReader_Msg$UnGloss(word)),
+									_user$project$TextReader_Msg$RemoveFromFlashcards(reader_word)),
 								_1: {ctor: '[]'}
 							}
 						},
 						{
 							ctor: '::',
-							_0: A2(
-								_user$project$TextReader_View$view_word_def,
-								word,
-								word_def(word)),
+							_0: _elm_lang$html$Html$text('Remove'),
 							_1: {ctor: '[]'}
-						});
-				},
-				_elm_lang$core$Dict$keys(gloss)));
+						}),
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
+var _user$project$TextReader_View$view_word_and_grammemes = F2(
+	function (reader_word, values) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						reader_word.word,
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							' (',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_user$project$Text_Definitions_View$view_grammemes_as_string(values.grammemes),
+								')')))),
+				_1: {ctor: '[]'}
+			});
 	});
 var _user$project$TextReader_View$view_meaning = function (meaning) {
 	return A2(
@@ -25803,14 +25847,77 @@ var _user$project$TextReader_View$view_meanings = function (defs) {
 			_1: {ctor: '[]'}
 		},
 		function () {
-			var _p2 = defs;
-			if (_p2.ctor === 'Just') {
-				return A2(_elm_lang$core$List$map, _user$project$TextReader_View$view_meaning, _p2._0);
+			var _p1 = defs;
+			if (_p1.ctor === 'Just') {
+				return A2(_elm_lang$core$List$map, _user$project$TextReader_View$view_meaning, _p1._0);
 			} else {
 				return {ctor: '[]'};
 			}
 		}());
 };
+var _user$project$TextReader_View$view_gloss = F3(
+	function (dictionary, gloss, reader_word) {
+		var word_values = A2(_elm_lang$core$Dict$get, reader_word.word, dictionary);
+		var _p2 = word_values;
+		if (_p2.ctor === 'Just') {
+			var _p3 = _p2._0;
+			return A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$classList(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'gloss_overlay', _1: true},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'gloss_menu', _1: true},
+										_1: {ctor: '[]'}
+									}
+								}),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onMouseLeave(
+									_user$project$TextReader_Msg$UnGloss(reader_word)),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$classList(
+										{
+											ctor: '::',
+											_0: {
+												ctor: '_Tuple2',
+												_0: 'hidden',
+												_1: !A2(_user$project$TextReader_Model$selected, reader_word, gloss)
+											},
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
+							}
+						},
+						{
+							ctor: '::',
+							_0: A2(_user$project$TextReader_View$view_word_and_grammemes, reader_word, _p3),
+							_1: {
+								ctor: '::',
+								_0: _user$project$TextReader_View$view_meanings(_p3.meanings),
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {ctor: '[]'}
+				});
+		} else {
+			return A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{ctor: '[]'});
+		}
+	});
 var _user$project$TextReader_View$view_answer = F3(
 	function (text_section, text_question, text_answer) {
 		var view_feedback = _user$project$TextReader_Answer_Model$feedback_viewable(text_answer);
@@ -25974,8 +26081,25 @@ var _user$project$TextReader_View$view_questions = function (section) {
 				_user$project$TextReader_View$view_question(section),
 				text_reader_questions)));
 };
-var _user$project$TextReader_View$tagWord = F3(
-	function (dictionary, gloss, word) {
+var _user$project$TextReader_View$tagWord = F5(
+	function (i, dictionary, gloss, j, word) {
+		var id = A2(
+			_elm_lang$core$String$join,
+			'_',
+			{
+				ctor: '::',
+				_0: _elm_lang$core$Basics$toString(i),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$core$Basics$toString(j),
+					_1: {
+						ctor: '::',
+						_0: word,
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+		var reader_word = A2(_user$project$TextReader_Model$TextReaderWord, id, word);
 		return A2(_elm_lang$core$Dict$member, word, dictionary) ? A3(
 			_elm_lang$html$Html$node,
 			'span',
@@ -25984,43 +26108,70 @@ var _user$project$TextReader_View$tagWord = F3(
 				_0: _elm_lang$html$Html_Attributes$class('defined_word'),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onDoubleClick(
-						_user$project$TextReader_Msg$Gloss(word)),
+					_0: _elm_lang$html$Html_Events$onClick(
+						_user$project$TextReader_Msg$Gloss(reader_word)),
 					_1: {ctor: '[]'}
 				}
 			},
 			{
 				ctor: '::',
-				_0: _elm_lang$virtual_dom$VirtualDom$text(word),
+				_0: A2(
+					_elm_lang$html$Html$span,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$classList(
+							{
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'highlighted',
+									_1: A2(_user$project$TextReader_Model$glossed, reader_word, gloss)
+								},
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$virtual_dom$VirtualDom$text(word),
+						_1: {ctor: '[]'}
+					}),
 				_1: {
 					ctor: '::',
-					_0: A3(_user$project$TextReader_View$view_gloss, dictionary, gloss, word),
+					_0: A3(_user$project$TextReader_View$view_gloss, dictionary, gloss, reader_word),
 					_1: {ctor: '[]'}
 				}
 			}) : _elm_lang$virtual_dom$VirtualDom$text(word);
 	});
-var _user$project$TextReader_View$tagWordAndToVDOM = F3(
-	function (dictionary, gloss, node) {
-		var _p3 = node;
-		switch (_p3.ctor) {
+var _user$project$TextReader_View$tagWordAndToVDOM = F4(
+	function (dictionary, gloss, i, node) {
+		var _p4 = node;
+		switch (_p4.ctor) {
 			case 'Text':
-				var _p5 = _p3._0;
-				var _p4 = A2(_elm_lang$core$Debug$log, 'parsing one text node', _p5);
-				return A3(_user$project$TextReader_View$tagWord, dictionary, gloss, _p5);
+				var whitespace = _elm_lang$virtual_dom$VirtualDom$text(' ');
+				var words = _elm_lang$core$String$words(_p4._0);
+				return A2(
+					_elm_lang$html$Html$span,
+					{ctor: '[]'},
+					A2(
+						_elm_lang$core$List$intersperse,
+						whitespace,
+						A2(
+							_elm_lang$core$List$indexedMap,
+							A3(_user$project$TextReader_View$tagWord, i, dictionary, gloss),
+							words)));
 			case 'Element':
-				var _p9 = _p3._2;
-				var _p6 = A2(_elm_lang$core$Debug$log, 'list of nodes', _p9);
 				return A3(
 					_elm_lang$html$Html$node,
-					_p3._0,
+					_p4._0,
 					A2(
 						_elm_lang$core$List$map,
-						function (_p7) {
-							var _p8 = _p7;
-							return A2(_elm_lang$html$Html_Attributes$attribute, _p8._0, _p8._1);
+						function (_p5) {
+							var _p6 = _p5;
+							return A2(_elm_lang$html$Html_Attributes$attribute, _p6._0, _p6._1);
 						},
-						_p3._1),
-					A3(_user$project$TextReader_View$tagWordsAndToVDOM, dictionary, gloss, _p9));
+						_p4._1),
+					A3(_user$project$TextReader_View$tagWordsAndToVDOM, dictionary, gloss, _p4._2));
 			default:
 				return _elm_lang$virtual_dom$VirtualDom$text('');
 		}
@@ -26028,7 +26179,7 @@ var _user$project$TextReader_View$tagWordAndToVDOM = F3(
 var _user$project$TextReader_View$tagWordsAndToVDOM = F3(
 	function (dictionary, gloss, text) {
 		return A2(
-			_elm_lang$core$List$map,
+			_elm_lang$core$List$indexedMap,
 			A2(_user$project$TextReader_View$tagWordAndToVDOM, dictionary, gloss),
 			text);
 	});
@@ -26090,8 +26241,8 @@ var _user$project$TextReader_View$view_text_section = F3(
 			});
 	});
 var _user$project$TextReader_View$view_content = function (model) {
-	var _p10 = model.progress;
-	switch (_p10.ctor) {
+	var _p7 = model.progress;
+	switch (_p7.ctor) {
 		case 'ViewIntro':
 			return A2(
 				_elm_lang$html$Html$div,
@@ -26136,7 +26287,7 @@ var _user$project$TextReader_View$view_content = function (model) {
 					}
 				});
 		case 'ViewSection':
-			var _p11 = _p10._0;
+			var _p8 = _p7._0;
 			return A2(
 				_elm_lang$html$Html$div,
 				{
@@ -26148,9 +26299,9 @@ var _user$project$TextReader_View$view_content = function (model) {
 					ctor: '::',
 					_0: A3(
 						_user$project$TextReader_View$view_text_section,
-						_user$project$TextReader_Section_Model$definitions(_p11),
+						_user$project$TextReader_Section_Model$definitions(_p8),
 						model.gloss,
-						_p11),
+						_p8),
 					_1: {
 						ctor: '::',
 						_0: _user$project$TextReader_View$view_exceptions(model),
@@ -26177,7 +26328,7 @@ var _user$project$TextReader_View$view_content = function (model) {
 					}
 				});
 		case 'Complete':
-			return A2(_user$project$TextReader_View$view_text_complete, model, _p10._0);
+			return A2(_user$project$TextReader_View$view_text_complete, model, _p7._0);
 		default:
 			return A2(
 				_elm_lang$html$Html$div,
@@ -26489,7 +26640,7 @@ var _user$project$Main$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							gloss: A3(_elm_lang$core$Dict$insert, _p0._0, true, model.gloss)
+							gloss: A2(_user$project$TextReader_Model$gloss, _p0._0, _elm_lang$core$Dict$empty)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -26499,10 +26650,14 @@ var _user$project$Main$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							gloss: A2(_elm_lang$core$Dict$remove, _p0._0, model.gloss)
+							gloss: A2(_user$project$TextReader_Model$ungloss, _p0._0, model.gloss)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
+			case 'AddToFlashcards':
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'RemoveFromFlashcards':
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'Select':
 				return {
 					ctor: '_Tuple2',

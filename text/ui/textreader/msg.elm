@@ -2,7 +2,7 @@ module TextReader.Msg exposing (..)
 
 import Http
 
-import Text.Definitions exposing (Word)
+import TextReader.Model exposing (TextReaderWord)
 
 import TextReader.Section.Model exposing (Section)
 import TextReader.Question.Model exposing (TextQuestion)
@@ -19,8 +19,10 @@ type Msg =
   | PrevSection
   | NextSection
   | StartOver
-  | Gloss Word
-  | UnGloss Word
+  | Gloss TextReaderWord
+  | UnGloss TextReaderWord
+  | AddToFlashcards TextReaderWord
+  | RemoveFromFlashcards TextReaderWord
   | WebSocketResp String
   | LogOut MenuMsg.Msg
   | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)

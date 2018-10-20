@@ -45,11 +45,17 @@ update msg model =
         (TextReader.Encode.jsonToString <| TextReader.Encode.send_command cmd))
   in
     case msg of
-      Gloss word ->
-        ({ model | gloss = Dict.insert word True model.gloss }, Cmd.none)
+      Gloss reader_word ->
+        ({ model | gloss = TextReader.Model.gloss reader_word (Dict.empty)}, Cmd.none)
 
-      UnGloss word ->
-        ({ model | gloss = Dict.remove word model.gloss }, Cmd.none)
+      UnGloss reader_word ->
+        ({ model | gloss = TextReader.Model.ungloss reader_word model.gloss }, Cmd.none)
+
+      AddToFlashcards reader_word ->
+        (model, Cmd.none)
+
+      RemoveFromFlashcards reader_word ->
+        (model, Cmd.none)
 
       Select text_answer ->
         (model, send_command <| AnswerReq text_answer)

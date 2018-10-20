@@ -273,13 +273,16 @@ class TextSection(TextSectionDefinitionsMixin, Timestamped, models.Model):
         return schema
 
     def to_text_reading_dict(self, text_reading=None, *args, **kwargs) -> Dict:
+        questions_text_reading_dicts = [question.to_text_reading_dict(text_reading) for question in self.questions.all()]
+        questions_count = len((list(questions_text_reading_dicts)))
+
         text_section_dict = {
+            'order': self.order,
             'created_dt': self.created_dt.isoformat(),
             'modified_dt': self.modified_dt.isoformat(),
-            'question_count': self.questions.count(),
-            'order': self.order,
+            'question_count': questions_count,
+            'questions': questions_text_reading_dicts,
             'body': self.body,
-            'questions': [question.to_text_reading_dict(text_reading) for question in self.questions.all()],
             'definitions': self.definitions.to_dict()
         }
 

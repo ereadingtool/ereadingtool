@@ -162,12 +162,35 @@ span {
     position: relative;
 }
 
+.highlighted {
+    background: yellow;
+}
+
+.gloss_flashcard_options {
+    display: grid;
+
+    margin-top: 10px;
+
+    border-top: solid 0.5px lightgrey;
+
+    grid-template-columns: auto auto;
+}
+
+.gloss_flashcard_options > div:nth-child(1) {
+    margin-top: 5px;
+    grid-column: 1 / 3;
+}
+
 .gloss_overlay {
     display: grid;
     position: absolute;
 
+    grid-template-columns: auto;
+    grid-template-rows: auto auto auto;
+
+    margin-top: 5px;
+
     z-index: 2;
-    left: 140px;
     max-width: 200px;
 
     background: #FFFFFF;

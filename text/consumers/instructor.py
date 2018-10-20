@@ -2,6 +2,8 @@ import logging
 
 from typing import Dict
 
+from django.db.models import F
+
 from lxml.html import fragment_fromstring
 from lxml.html.diff import htmldiff
 
@@ -57,6 +59,8 @@ class ParseTextSectionForDefinitions(SyncConsumer):
 
             if text_word_created:
                 text_word.save()
+            else:
+                text_word.update(frequency=F('frequency') + 1)
 
             if word_defs[word] is not None:
                 for i, meaning in enumerate(word_defs[word]['meanings']):
