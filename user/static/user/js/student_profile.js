@@ -20707,9 +20707,9 @@ var _user$project$Text_Model$new_text = {
 	write_locker: _elm_lang$core$Maybe$Nothing,
 	words: _elm_lang$core$Dict$empty
 };
-var _user$project$Text_Model$WordValues = F2(
-	function (a, b) {
-		return {grammemes: a, meanings: b};
+var _user$project$Text_Model$WordValues = F3(
+	function (a, b, c) {
+		return {grammemes: a, meanings: b, frequency: c};
 	});
 var _user$project$Text_Model$Text = function (a) {
 	return function (b) {
