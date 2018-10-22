@@ -26555,7 +26555,7 @@ var _user$project$TextReader_Update$route_cmd_resp = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{text: _p0._0, progress: _user$project$TextReader_Model$ViewIntro}),
+						{text: _p0._0, exception: _elm_lang$core$Maybe$Nothing, progress: _user$project$TextReader_Model$ViewIntro}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'InProgressResp':
@@ -26564,6 +26564,7 @@ var _user$project$TextReader_Update$route_cmd_resp = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
+							exception: _elm_lang$core$Maybe$Nothing,
 							progress: _user$project$TextReader_Model$ViewSection(_p0._0)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
@@ -26574,6 +26575,7 @@ var _user$project$TextReader_Update$route_cmd_resp = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
+							exception: _elm_lang$core$Maybe$Nothing,
 							progress: _user$project$TextReader_Model$Complete(_p0._0)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none

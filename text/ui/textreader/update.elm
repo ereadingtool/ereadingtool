@@ -13,13 +13,13 @@ route_cmd_resp : Model -> CmdResp -> (Model, Cmd Msg)
 route_cmd_resp model cmd_resp =
   case cmd_resp of
     StartResp text ->
-      ({ model | text = text, progress=ViewIntro }, Cmd.none)
+      ({ model | text = text, exception=Nothing, progress=ViewIntro }, Cmd.none)
 
     InProgressResp section ->
-      ({ model | progress=ViewSection section }, Cmd.none)
+      ({ model | exception=Nothing, progress=ViewSection section }, Cmd.none)
 
     CompleteResp text_scores ->
-      ({ model | progress=Complete text_scores }, Cmd.none)
+      ({ model | exception=Nothing, progress=Complete text_scores }, Cmd.none)
 
     ExceptionResp exception ->
       ({ model | exception = Just exception }, Cmd.none)
