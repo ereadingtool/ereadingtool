@@ -34,10 +34,12 @@ init_profile flags =
   case flags.instructor_profile of
     Just instructor_profile_params ->
       Instructor (Instructor.Profile.init_profile instructor_profile_params)
+
     Nothing ->
       case flags.student_profile of
         Just student_profile_params ->
           Student (Student.Profile.Model.init_profile student_profile_params)
+
         Nothing ->
           EmptyProfile
 

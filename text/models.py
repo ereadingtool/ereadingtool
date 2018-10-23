@@ -283,7 +283,7 @@ class TextSection(TextSectionDefinitionsMixin, Timestamped, models.Model):
             'question_count': questions_count,
             'questions': questions_text_reading_dicts,
             'body': self.body,
-            'definitions': self.definitions.to_dict()
+            'definitions': self.definitions.to_dict() if self.definitions else {}
         }
 
         text_section_dict.update(**kwargs)

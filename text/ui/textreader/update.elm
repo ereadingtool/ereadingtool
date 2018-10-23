@@ -1,5 +1,6 @@
 module TextReader.Update exposing (..)
 
+import Dict exposing (Dict)
 import TextReader.Model exposing (..)
 
 import TextReader.Decode
@@ -20,6 +21,12 @@ route_cmd_resp model cmd_resp =
 
     CompleteResp text_scores ->
       ({ model | exception=Nothing, progress=Complete text_scores }, Cmd.none)
+
+    AddToFlashcardsResp word ->
+      ({ model | flashcards=Dict.insert word True model.flashcards }, Cmd.none)
+
+    RemoveFromFlashcardsResp word ->
+      ({ model | flashcards=Dict.remove word model.flashcards }, Cmd.none)
 
     ExceptionResp exception ->
       ({ model | exception = Just exception }, Cmd.none)

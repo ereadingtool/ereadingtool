@@ -1,3 +1,5 @@
+from typing import AnyStr
+
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
@@ -42,6 +44,14 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
 
     def start_reading(self):
         raise NotImplementedError
+
+    async def add_flashcard_word(self, user: ReaderUser, word: AnyStr):
+        if not user.is_authenticated:
+            raise Unauthorized
+
+    async def remove_flashcard_word(self, user: ReaderUser, word: AnyStr):
+        if not user.is_authenticated:
+            raise Unauthorized
 
     async def answer(self, user: ReaderUser, answer_id: int):
         if not user.is_authenticated:
@@ -141,6 +151,8 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             'next': 1,
             'prev': 1,
             'answer': 1,
+            'add_flashcard_word': 1,
+            'remove_flashcard_word': 1
         }
 
         try:
@@ -156,6 +168,12 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
 
                 if cmd == 'answer':
                     await self.answer(answer_id=content.get('answer_id', None), user=user)
+
+                if cmd == 'add_flashcard_word':
+                    await self.add_flashcard_word(user=user, word=content.get('word', None))
+
+                if cmd == 'remove_flashcard_word':
+                    await self.remove_flashcard_word(user=user, word=content.get('word', None))
 
             else:
                 await self.send_json({'error': f'{cmd} is not a valid command.'})

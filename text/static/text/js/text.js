@@ -22903,9 +22903,9 @@ var _user$project$TextReader_Model$TextScores = F4(
 	function (a, b, c, d) {
 		return {num_of_sections: a, complete_sections: b, section_scores: c, possible_section_scores: d};
 	});
-var _user$project$TextReader_Model$Model = F6(
-	function (a, b, c, d, e, f) {
-		return {text: a, profile: b, progress: c, gloss: d, exception: e, flags: f};
+var _user$project$TextReader_Model$Model = F7(
+	function (a, b, c, d, e, f, g) {
+		return {text: a, profile: b, progress: c, gloss: d, flashcards: e, exception: f, flags: g};
 	});
 var _user$project$TextReader_Model$Complete = function (a) {
 	return {ctor: 'Complete', _0: a};
@@ -22915,6 +22915,12 @@ var _user$project$TextReader_Model$ViewSection = function (a) {
 };
 var _user$project$TextReader_Model$ViewIntro = {ctor: 'ViewIntro'};
 var _user$project$TextReader_Model$Init = {ctor: 'Init'};
+var _user$project$TextReader_Model$RemoveFromFlashcardsReq = function (a) {
+	return {ctor: 'RemoveFromFlashcardsReq', _0: a};
+};
+var _user$project$TextReader_Model$AddToFlashcardsReq = function (a) {
+	return {ctor: 'AddToFlashcardsReq', _0: a};
+};
 var _user$project$TextReader_Model$AnswerReq = function (a) {
 	return {ctor: 'AnswerReq', _0: a};
 };
@@ -22922,6 +22928,12 @@ var _user$project$TextReader_Model$PrevReq = {ctor: 'PrevReq'};
 var _user$project$TextReader_Model$NextReq = {ctor: 'NextReq'};
 var _user$project$TextReader_Model$ExceptionResp = function (a) {
 	return {ctor: 'ExceptionResp', _0: a};
+};
+var _user$project$TextReader_Model$RemoveFromFlashcardsResp = function (a) {
+	return {ctor: 'RemoveFromFlashcardsResp', _0: a};
+};
+var _user$project$TextReader_Model$AddToFlashcardsResp = function (a) {
+	return {ctor: 'AddToFlashcardsResp', _0: a};
 };
 var _user$project$TextReader_Model$CompleteResp = function (a) {
 	return {ctor: 'CompleteResp', _0: a};
@@ -22958,7 +22970,7 @@ var _user$project$TextReader_Encode$send_command = function (cmd_req) {
 					},
 					_1: {ctor: '[]'}
 				});
-		default:
+		case 'AnswerReq':
 			var text_reader_answer = _user$project$TextReader_Answer_Model$answer(_p0._0);
 			return _elm_lang$core$Json_Encode$object(
 				{
@@ -22974,6 +22986,44 @@ var _user$project$TextReader_Encode$send_command = function (cmd_req) {
 							ctor: '_Tuple2',
 							_0: 'answer_id',
 							_1: _elm_lang$core$Json_Encode$int(text_reader_answer.id)
+						},
+						_1: {ctor: '[]'}
+					}
+				});
+		case 'AddToFlashcardsReq':
+			return _elm_lang$core$Json_Encode$object(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'command',
+						_1: _elm_lang$core$Json_Encode$string('add_flashcard_word')
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'word',
+							_1: _elm_lang$core$Json_Encode$string(_p0._0.word)
+						},
+						_1: {ctor: '[]'}
+					}
+				});
+		default:
+			return _elm_lang$core$Json_Encode$object(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'command',
+						_1: _elm_lang$core$Json_Encode$string('remove_flashcard_word')
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'word',
+							_1: _elm_lang$core$Json_Encode$string(_p0._0.word)
 						},
 						_1: {ctor: '[]'}
 					}
@@ -26082,7 +26132,8 @@ var _user$project$TextReader_View$view_questions = function (section) {
 				text_reader_questions)));
 };
 var _user$project$TextReader_View$tagWord = F5(
-	function (i, dictionary, gloss, j, word) {
+	function (i, model, section, j, word) {
+		var dictionary = _user$project$TextReader_Section_Model$definitions(section);
 		var id = A2(
 			_elm_lang$core$String$join,
 			'_',
@@ -26125,7 +26176,7 @@ var _user$project$TextReader_View$tagWord = F5(
 								_0: {
 									ctor: '_Tuple2',
 									_0: 'highlighted',
-									_1: A2(_user$project$TextReader_Model$glossed, reader_word, gloss)
+									_1: A2(_user$project$TextReader_Model$glossed, reader_word, model.gloss)
 								},
 								_1: {ctor: '[]'}
 							}),
@@ -26138,13 +26189,13 @@ var _user$project$TextReader_View$tagWord = F5(
 					}),
 				_1: {
 					ctor: '::',
-					_0: A3(_user$project$TextReader_View$view_gloss, dictionary, gloss, reader_word),
+					_0: A3(_user$project$TextReader_View$view_gloss, dictionary, model.gloss, reader_word),
 					_1: {ctor: '[]'}
 				}
 			}) : _elm_lang$virtual_dom$VirtualDom$text(word);
 	});
 var _user$project$TextReader_View$tagWordAndToVDOM = F4(
-	function (dictionary, gloss, i, node) {
+	function (model, section, i, node) {
 		var _p4 = node;
 		switch (_p4.ctor) {
 			case 'Text':
@@ -26158,7 +26209,7 @@ var _user$project$TextReader_View$tagWordAndToVDOM = F4(
 						whitespace,
 						A2(
 							_elm_lang$core$List$indexedMap,
-							A3(_user$project$TextReader_View$tagWord, i, dictionary, gloss),
+							A3(_user$project$TextReader_View$tagWord, i, model, section),
 							words)));
 			case 'Element':
 				return A3(
@@ -26171,25 +26222,25 @@ var _user$project$TextReader_View$tagWordAndToVDOM = F4(
 							return A2(_elm_lang$html$Html_Attributes$attribute, _p6._0, _p6._1);
 						},
 						_p4._1),
-					A3(_user$project$TextReader_View$tagWordsAndToVDOM, dictionary, gloss, _p4._2));
+					A3(_user$project$TextReader_View$tagWordsAndToVDOM, model, section, _p4._2));
 			default:
 				return _elm_lang$virtual_dom$VirtualDom$text('');
 		}
 	});
 var _user$project$TextReader_View$tagWordsAndToVDOM = F3(
-	function (dictionary, gloss, text) {
+	function (model, section, text) {
 		return A2(
 			_elm_lang$core$List$indexedMap,
-			A2(_user$project$TextReader_View$tagWordAndToVDOM, dictionary, gloss),
+			A2(_user$project$TextReader_View$tagWordAndToVDOM, model, section),
 			text);
 	});
-var _user$project$TextReader_View$view_text_section = F3(
-	function (dictionary, gloss, section) {
+var _user$project$TextReader_View$view_text_section = F2(
+	function (model, section) {
 		var text_section = _user$project$TextReader_Section_Model$text_section(section);
 		var text_body_vdom = A3(
 			_user$project$TextReader_View$tagWordsAndToVDOM,
-			dictionary,
-			gloss,
+			model,
+			section,
 			_jinjor$elm_html_parser$HtmlParser$parse(text_section.body));
 		var section_title = A2(
 			_elm_lang$core$Basics_ops['++'],
@@ -26287,7 +26338,6 @@ var _user$project$TextReader_View$view_content = function (model) {
 					}
 				});
 		case 'ViewSection':
-			var _p8 = _p7._0;
 			return A2(
 				_elm_lang$html$Html$div,
 				{
@@ -26297,11 +26347,7 @@ var _user$project$TextReader_View$view_content = function (model) {
 				},
 				{
 					ctor: '::',
-					_0: A3(
-						_user$project$TextReader_View$view_text_section,
-						_user$project$TextReader_Section_Model$definitions(_p8),
-						model.gloss,
-						_p8),
+					_0: A2(_user$project$TextReader_View$view_text_section, model, _p7._0),
 					_1: {
 						ctor: '::',
 						_0: _user$project$TextReader_View$view_exceptions(model),
@@ -26517,10 +26563,8 @@ var _user$project$TextReader_Decode$command_resp_decoder = function (cmd_str) {
 	var _p0 = cmd_str;
 	switch (_p0) {
 		case 'intro':
-			var _p1 = A2(_elm_lang$core$Debug$log, 'server resp', 'intro');
 			return _user$project$TextReader_Decode$startDecoder;
 		case 'in_progress':
-			var _p2 = A2(_elm_lang$core$Debug$log, 'server resp', 'in_progress');
 			return _user$project$TextReader_Decode$sectionDecoder(_user$project$TextReader_Model$InProgressResp);
 		case 'exception':
 			return A2(
@@ -26528,11 +26572,20 @@ var _user$project$TextReader_Decode$command_resp_decoder = function (cmd_str) {
 				_user$project$TextReader_Model$ExceptionResp,
 				A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$TextReader_Decode$exceptionDecoder));
 		case 'complete':
-			var _p3 = A2(_elm_lang$core$Debug$log, 'server resp', 'complete');
 			return A2(
 				_elm_lang$core$Json_Decode$map,
 				_user$project$TextReader_Model$CompleteResp,
 				A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$TextReader_Decode$textScoresDecoder));
+		case 'add_to_flashcards':
+			return A2(
+				_elm_lang$core$Json_Decode$map,
+				_user$project$TextReader_Model$AddToFlashcardsResp,
+				A2(_elm_lang$core$Json_Decode$field, 'word', _elm_lang$core$Json_Decode$string));
+		case 'remove_from_flashcards':
+			return A2(
+				_elm_lang$core$Json_Decode$map,
+				_user$project$TextReader_Model$RemoveFromFlashcardsResp,
+				A2(_elm_lang$core$Json_Decode$field, 'word', _elm_lang$core$Json_Decode$string));
 		default:
 			return _elm_lang$core$Json_Decode$fail(
 				A2(
@@ -26577,6 +26630,26 @@ var _user$project$TextReader_Update$route_cmd_resp = F2(
 						{
 							exception: _elm_lang$core$Maybe$Nothing,
 							progress: _user$project$TextReader_Model$Complete(_p0._0)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'AddToFlashcardsResp':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							flashcards: A3(_elm_lang$core$Dict$insert, _p0._0, true, model.flashcards)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'RemoveFromFlashcardsResp':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							flashcards: A2(_elm_lang$core$Dict$remove, _p0._0, model.flashcards)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -26715,7 +26788,7 @@ var _user$project$Main$init = function (flags) {
 	var profile = _user$project$Profile$init_profile(flags);
 	return {
 		ctor: '_Tuple2',
-		_0: {text: _user$project$TextReader_Text_Model$emptyText, gloss: _elm_lang$core$Dict$empty, profile: profile, progress: _user$project$TextReader_Model$Init, flags: flags, exception: _elm_lang$core$Maybe$Nothing},
+		_0: {text: _user$project$TextReader_Text_Model$emptyText, gloss: _elm_lang$core$Dict$empty, flashcards: _elm_lang$core$Dict$empty, profile: profile, progress: _user$project$TextReader_Model$Init, flags: flags, exception: _elm_lang$core$Maybe$Nothing},
 		_1: _elm_lang$core$Platform_Cmd$none
 	};
 };

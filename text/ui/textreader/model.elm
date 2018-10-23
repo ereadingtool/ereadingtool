@@ -20,6 +20,7 @@ type Progress = Init | ViewIntro | ViewSection Section | Complete TextScores
 type alias Exception = { code: String, error_msg: String }
 
 type alias Gloss = Dict String Bool
+type alias Flashcards = Dict String Bool
 
 type alias TextReaderWord = {id: String, word: Word}
 
@@ -43,11 +44,15 @@ type CmdReq =
     NextReq
   | PrevReq
   | AnswerReq TextAnswer
+  | AddToFlashcardsReq TextReaderWord
+  | RemoveFromFlashcardsReq TextReaderWord
 
 type CmdResp =
     StartResp Text
   | InProgressResp Section
   | CompleteResp TextScores
+  | AddToFlashcardsResp Word
+  | RemoveFromFlashcardsResp Word
   | ExceptionResp Exception
 
 type alias TextScores = {
@@ -57,12 +62,13 @@ type alias TextScores = {
   , possible_section_scores: Int }
 
 
-type alias Flags = Flags.Flags { text_id : Int, text_reader_ws_addr: WebSocketAddress }
+type alias Flags = Flags.Flags { text_reading_text: , text_id : Int, text_reader_ws_addr: WebSocketAddress }
 
 type alias Model = {
     text : Text
   , profile : Profile.Profile
   , progress: Progress
   , gloss : Gloss
+  , flashcards : Flashcards
   , exception : Maybe Exception
   , flags : Flags }

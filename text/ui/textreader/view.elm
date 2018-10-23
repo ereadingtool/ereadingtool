@@ -27,22 +27,23 @@ import HtmlParser.Util
 import VirtualDom
 
 
-tagWord : Int -> Text.Model.Words -> Gloss -> Int -> String -> Html Msg
-tagWord i dictionary gloss j word =
+tagWord : Int -> Model -> Section -> Int -> String -> Html Msg
+tagWord i model section j word =
   let
     id = String.join "_" [toString i, toString j, word]
     reader_word = TextReaderWord id word
+    dictionary = (TextReader.Section.Model.definitions section)
   in
     if (Dict.member word dictionary) then
       Html.node "span" [class "defined_word", onClick (Gloss reader_word)] [
-        span [classList [("highlighted", TextReader.Model.glossed reader_word gloss)] ] [ VirtualDom.text word ]
-      , view_gloss dictionary gloss reader_word
+        span [classList [("highlighted", TextReader.Model.glossed reader_word model.gloss)] ] [ VirtualDom.text word ]
+      , view_gloss dictionary model.gloss reader_word
       ]
     else
       VirtualDom.text word
 
-tagWordAndToVDOM : Text.Model.Words -> Gloss -> Int -> HtmlParser.Node -> Html Msg
-tagWordAndToVDOM dictionary gloss i node =
+tagWordAndToVDOM : Model -> Section -> Int -> HtmlParser.Node -> Html Msg
+tagWordAndToVDOM model section i node =
   case node of
     HtmlParser.Text str ->
       let
@@ -51,18 +52,18 @@ tagWordAndToVDOM dictionary gloss i node =
       in
         span []
           (  List.intersperse whitespace
-          <| List.indexedMap (tagWord i dictionary gloss) words)
+          <| List.indexedMap (tagWord i model section) words)
 
     HtmlParser.Element name attrs nodes ->
       Html.node name (List.map (\(name, value) -> attribute name value) attrs)
-        (tagWordsAndToVDOM dictionary gloss nodes)
+        (tagWordsAndToVDOM model section nodes)
 
     (HtmlParser.Comment str) as comment ->
         VirtualDom.text ""
 
-tagWordsAndToVDOM : Text.Model.Words -> Gloss -> List HtmlParser.Node -> List (Html Msg)
-tagWordsAndToVDOM dictionary gloss text =
-  List.indexedMap (tagWordAndToVDOM dictionary gloss) text
+tagWordsAndToVDOM : Model -> Section -> List HtmlParser.Node -> List (Html Msg)
+tagWordsAndToVDOM model section text =
+  List.indexedMap (tagWordAndToVDOM model section) text
 
 view_answer : Section -> TextQuestion -> TextAnswer -> Html Msg
 view_answer text_section text_question text_answer =
@@ -161,18 +162,18 @@ view_gloss dictionary gloss reader_word =
               ] [
             view_word_and_grammemes reader_word values
           , view_meanings values.meanings
-          --, view_flashcard_options reader_word
+          , view_flashcard_options reader_word
           ]
         ]
 
       Nothing ->
         div [] []
 
-view_text_section : Text.Model.Words -> Gloss -> Section -> Html Msg
-view_text_section dictionary gloss section =
+view_text_section : Model -> Section -> Html Msg
+view_text_section model section =
   let
     text_section = TextReader.Section.Model.text_section section
-    text_body_vdom = tagWordsAndToVDOM dictionary gloss (HtmlParser.parse text_section.body)
+    text_body_vdom = tagWordsAndToVDOM model section (HtmlParser.parse text_section.body)
     section_title = ("Section " ++ (toString (text_section.order +1)) ++ "/" ++ (toString text_section.num_of_sections))
   in
     div [class "text_section"] <| [
@@ -242,7 +243,7 @@ view_content model =
 
     ViewSection section ->
       div [class "text"] [
-        view_text_section (TextReader.Section.Model.definitions section) model.gloss section
+        view_text_section model section
       , view_exceptions model
       , div [class "nav"] [view_prev_btn, view_next_btn]
       ]

@@ -19,7 +19,8 @@ class Student(Profile, models.Model):
     difficulty_preference = models.ForeignKey(TextDifficulty, null=True, on_delete=models.SET_NULL,
                                               related_name='students')
 
-    flashcards = models.ForeignKey(Flashcards, null=True, blank=True, related_name='student', on_delete=models.CASCADE)
+    flashcards = models.OneToOneField(Flashcards, null=True, blank=True, related_name='student',
+                                      on_delete=models.CASCADE)
 
     login_url = reverse_lazy('student-login')
 

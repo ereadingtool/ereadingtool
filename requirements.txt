@@ -15,3 +15,4 @@ pymorphy2-dicts-ru
 channels_redis
 lxml
 pdfkit
+asynctest

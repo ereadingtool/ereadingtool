@@ -14,17 +14,23 @@ import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardc
 command_resp_decoder : String -> Json.Decode.Decoder CmdResp
 command_resp_decoder cmd_str =
   case cmd_str of
-    "intro" -> let _ = Debug.log "server resp" "intro" in
+    "intro" ->
       startDecoder
 
-    "in_progress" -> let _ = Debug.log "server resp" "in_progress" in
+    "in_progress" ->
       sectionDecoder InProgressResp
 
     "exception" ->
       Json.Decode.map ExceptionResp (Json.Decode.field "result" exceptionDecoder)
 
-    "complete" -> let _ = Debug.log "server resp" "complete" in
+    "complete" ->
       Json.Decode.map CompleteResp (Json.Decode.field "result" textScoresDecoder)
+
+    "add_flashcard_word" ->
+      Json.Decode.map AddToFlashcardsResp (Json.Decode.field "word" Json.Decode.string)
+
+    "remove_flashcard_word" ->
+      Json.Decode.map RemoveFromFlashcardsResp (Json.Decode.field "word" Json.Decode.string)
 
     _ ->
       Json.Decode.fail ("Command " ++ cmd_str ++ " not supported")
