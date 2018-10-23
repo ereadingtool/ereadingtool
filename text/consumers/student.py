@@ -17,10 +17,11 @@ class StudentTextReaderConsumer(TextReaderConsumer):
 
         self.student = None
 
+    @database_sync_to_async
     def start_reading(self):
         self.student = self.scope['user'].student
 
-        return database_sync_to_async(StudentTextReading.start_or_resume)(student=self.student, text=self.text)
+        return StudentTextReading.start_or_resume(student=self.student, text=self.text)
 
     @database_sync_to_async
     def word_exists_in_definitions(self, word: AnyStr):

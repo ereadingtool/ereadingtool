@@ -1,4 +1,5 @@
 import random
+import asyncio
 
 from typing import Dict, AnyStr, List, Tuple
 
@@ -15,7 +16,7 @@ from django.test.client import Client
 
 class TestTextReading(TestCase):
     text = None
-    student_client = None
+    student_clients = None
 
     @classmethod
     def setUpClass(cls):
@@ -36,6 +37,8 @@ class TestTextReading(TestCase):
         cls.num_of_sections = cls.text.sections.count()
 
         cls.student_clients = [test_text_suite.new_student_client(Client()) for _ in range(0, random.randint(3, 10))]
+
+        print(f'created {len(cls.student_clients)} test student clients')
 
     def not_state(self, resp: Dict, state_name: AnyStr) -> bool:
         self.assertIn('command', resp)
@@ -134,19 +137,23 @@ class TestTextReading(TestCase):
     async def test_multiple_student_clients(self):
         print(f'testing {len(self.student_clients)} student clients simultaneously')
 
-        for i, student_client in enumerate(self.student_clients):
-            headers = dict()
+        tasks = [self.run_test_student(student_client, i) for i, student_client in enumerate(self.student_clients)]
 
-            # to pass origin validation
-            headers[b'origin'] = b'https://0.0.0.0'
+        await asyncio.gather(*tasks)
 
-            # to pass authentication, copy the cookies from the test student client
-            headers[b'cookie'] = student_client.cookies.output(header='', sep='; ').encode('utf-8')
+    async def run_test_student(self, student_client: Client, student_number: int):
+        headers = dict()
 
-            communicator = WebsocketCommunicator(application, f'/student/text_read/{self.text.pk}/',
-                                                 headers=[(k, v) for k, v in headers.items()])
+        # to pass origin validation
+        headers[b'origin'] = b'https://0.0.0.0'
 
-            await self.run_text_reader_consumer(communicator, i)
+        # to pass authentication, copy the cookies from the test student client
+        headers[b'cookie'] = student_client.cookies.output(header='', sep='; ').encode('utf-8')
+
+        communicator = WebsocketCommunicator(application, f'/student/text_read/{self.text.pk}/',
+                                             headers=[(k, v) for k, v in headers.items()])
+
+        await self.run_text_reader_consumer(communicator, student_number)
 
     async def run_text_reader_consumer(self, communicator: WebsocketCommunicator, student_number: int):
         connected, subprotocol = await communicator.connect()
@@ -161,7 +168,7 @@ class TestTextReading(TestCase):
         print(f'student {student_number} going to next..')
         resp = await self.to_next(communicator)
 
-        print(f'checking questions for {student_number}..')
+        print(f'checking questions for student {student_number}..')
         self.check_questions(resp)
 
         # go back
@@ -172,7 +179,7 @@ class TestTextReading(TestCase):
         self.check_for_intro(resp)
 
         # fill out all text reading answers
-        print(f'{student_number} filled out answers..')
+        print(f'student {student_number} filled out answers..')
         resp, correct_answers = await self.complete_reading(resp, communicator)
 
         self.check_complete_scores(resp, correct_answers)
