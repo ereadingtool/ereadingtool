@@ -114,7 +114,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
                 'command': 'exception',
                 'result': {'code': e.code, 'error_msg': e.error_msg}
             })
-        except TextReadingException:
+        except TextReadingException as e:
             await self.send_json({
                 'command': 'exception',
                 'result': {'code': 'unknown', 'error_msg': 'something went wrong'}
