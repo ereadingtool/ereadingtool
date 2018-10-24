@@ -64,8 +64,10 @@ class TestText(TestUser, TestCase):
     def test_word_definition_background_job(self):
         test_data = self.get_test_data()
 
-        test_data['text_sections'][0]['body'] = 'заявление'
-        test_data['text_sections'][1]['body'] = 'заявление'
+        test_data['text_sections'][0]['body'] = 'заявление неделю'
+        test_data['text_sections'][1]['body'] = 'заявление неделю'
+
+        num_of_words = len(test_data['text_sections'][0]['body'].split())
 
         self.test_post_text(test_data=test_data)
 
@@ -84,7 +86,7 @@ class TestText(TestUser, TestCase):
 
         self.assertTrue(text_section_definitions)
 
-        self.assertEquals(text_section_definitions.words.count(), 1)
+        self.assertEquals(text_section_definitions.words.count(), num_of_words)
 
         text_section_word = text_section_definitions.words.all()[0]
 
