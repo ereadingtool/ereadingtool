@@ -38,6 +38,20 @@ class TextWord(models.Model):
     def __str__(self):
         return f'{self.normal_form} ({self.pos, self.tense, self.aspect, self.form, self.mood})'
 
+    def to_dict(self):
+        meaning = None
+
+        try:
+            meaning = self.meanings.filter(correct_for_context=True)[0]
+        except IndexError:
+            pass
+
+        return {
+            'normal_form': self.normal_form,
+            'grammemes': self.grammemes,
+            'meaning': meaning
+        }
+
 
 class TextWordMeaning(models.Model):
     word = models.ForeignKey(TextWord, related_name='meanings', on_delete=models.CASCADE)

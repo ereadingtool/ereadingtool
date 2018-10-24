@@ -10,6 +10,8 @@ import TextReader.Text.Decode
 
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 
+import Text.Definitions exposing (textWordDecoder)
+
 
 command_resp_decoder : String -> Json.Decode.Decoder CmdResp
 command_resp_decoder cmd_str =
@@ -27,10 +29,10 @@ command_resp_decoder cmd_str =
       Json.Decode.map CompleteResp (Json.Decode.field "result" textScoresDecoder)
 
     "add_flashcard_word" ->
-      Json.Decode.map AddToFlashcardsResp (Json.Decode.field "word" Json.Decode.string)
+      Json.Decode.map AddToFlashcardsResp (Json.Decode.field "word" textWordDecoder)
 
     "remove_flashcard_word" ->
-      Json.Decode.map RemoveFromFlashcardsResp (Json.Decode.field "word" Json.Decode.string)
+      Json.Decode.map RemoveFromFlashcardsResp (Json.Decode.field "word" textWordDecoder)
 
     _ ->
       Json.Decode.fail ("Command " ++ cmd_str ++ " not supported")

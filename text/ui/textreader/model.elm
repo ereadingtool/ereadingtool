@@ -2,7 +2,7 @@ module TextReader.Model exposing (..)
 
 import Dict exposing (Dict)
 
-import Text.Definitions exposing (Word, Meaning)
+import Text.Definitions exposing (TextWord, Word, Meaning)
 
 import TextReader.Text.Model exposing (Text)
 import TextReader.Section.Model exposing (Section)
@@ -51,8 +51,8 @@ type CmdResp =
     StartResp Text
   | InProgressResp Section
   | CompleteResp TextScores
-  | AddToFlashcardsResp Word
-  | RemoveFromFlashcardsResp Word
+  | AddToFlashcardsResp TextWord
+  | RemoveFromFlashcardsResp TextWord
   | ExceptionResp Exception
 
 type alias TextScores = {
@@ -62,13 +62,12 @@ type alias TextScores = {
   , possible_section_scores: Int }
 
 
-type alias Flags = Flags.Flags { text_reading_text: , text_id : Int, text_reader_ws_addr: WebSocketAddress }
+type alias Flags = Flags.Flags { text_id : Int, text_reader_ws_addr: WebSocketAddress }
 
 type alias Model = {
     text : Text
   , profile : Profile.Profile
   , progress: Progress
   , gloss : Gloss
-  , flashcards : Flashcards
   , exception : Maybe Exception
   , flags : Flags }

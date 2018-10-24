@@ -1,5 +1,7 @@
 module Profile exposing (..)
 
+import Text.Definitions exposing (TextWord, Word, Meaning)
+
 import Config exposing (student_api_endpoint)
 
 import Html exposing (Html, div)
@@ -11,6 +13,8 @@ import Instructor.View
 
 import Student.Profile.Model exposing (StudentProfile, StudentProfileParams, studentProfileDecoder)
 import Student.View
+
+import Text.Definitions exposing (Flashcards)
 
 import Menu.Msg exposing (Msg)
 
@@ -76,3 +80,31 @@ logout profile csrftoken logout_msg =
 
     EmptyProfile ->
       Cmd.none
+
+
+flashcards : Profile -> Maybe Flashcards
+flashcards profile =
+  case profile of
+    Student profile ->
+      Student.Profile.Model.studentFlashcards profile
+
+    _ ->
+      Nothing
+
+addFlashcard : Profile -> TextWord -> Profile
+addFlashcard profile text_word =
+  case profile of
+    Student profile ->
+      fromStudentProfile (Student.Profile.Model.addFlashcard profile text_word)
+
+    _ ->
+      profile
+
+removeFlashcard : Profile -> TextWord -> Profile
+removeFlashcard profile text_word =
+  case profile of
+    Student profile ->
+      fromStudentProfile (Student.Profile.Model.removeFlashcard profile text_word)
+
+    _ ->
+      profile

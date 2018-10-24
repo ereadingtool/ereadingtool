@@ -7,6 +7,8 @@ import Html.Events exposing (onClick, onDoubleClick, onMouseLeave)
 import Array exposing (Array)
 import Dict exposing (Dict)
 
+import Profile exposing (Profile)
+
 import Text.Model
 import Text.Definitions exposing (Word, Meaning)
 
@@ -35,9 +37,9 @@ tagWord i model section j word =
     dictionary = (TextReader.Section.Model.definitions section)
   in
     if (Dict.member word dictionary) then
-      Html.node "span" [class "defined_word", onClick (Gloss reader_word)] [
+      Html.node "span" [classList [("defined_word", True), ("cursor", True)], onClick (Gloss reader_word)] [
         span [classList [("highlighted", TextReader.Model.glossed reader_word model.gloss)] ] [ VirtualDom.text word ]
-      , view_gloss dictionary model.gloss reader_word
+      , view_gloss dictionary model reader_word
       ]
     else
       VirtualDom.text word
@@ -140,16 +142,22 @@ view_word_and_grammemes reader_word values =
     Html.text <| reader_word.word ++ " (" ++ Text.Definitions.View.view_grammemes_as_string values.grammemes ++ ")"
   ]
 
-view_flashcard_options : TextReaderWord -> Html Msg
-view_flashcard_options reader_word =
+view_flashcard_words : Model -> Html Msg
+view_flashcard_words model =
+  div []
+    (List.map (\(normal_form, text_word) -> div [] [ Html.text normal_form ])
+    (Dict.toList <| Maybe.withDefault Dict.empty <| Profile.flashcards model.profile))
+
+view_flashcard_options : Model -> TextReaderWord -> Html Msg
+view_flashcard_options model reader_word =
   div [class "gloss_flashcard_options"] [
     div [] [ Html.text "Flashcards" ]
   , div [class "cursor", onClick (AddToFlashcards reader_word)] [ Html.text "Add" ]
   , div [class "cursor", onClick (RemoveFromFlashcards reader_word)] [ Html.text "Remove" ]
   ]
 
-view_gloss : Text.Model.Words -> Gloss -> TextReaderWord -> Html Msg
-view_gloss dictionary gloss reader_word =
+view_gloss : Text.Model.Words -> Model -> TextReaderWord -> Html Msg
+view_gloss dictionary model reader_word =
   let
     word_values = Dict.get reader_word.word dictionary
   in
@@ -158,11 +166,11 @@ view_gloss dictionary gloss reader_word =
         div [] [
           div [ classList [("gloss_overlay", True), ("gloss_menu", True)]
               , onMouseLeave (UnGloss reader_word)
-              , classList [("hidden", not (TextReader.Model.selected reader_word gloss))]
+              , classList [("hidden", not (TextReader.Model.selected reader_word model.gloss))]
               ] [
             view_word_and_grammemes reader_word values
           , view_meanings values.meanings
-          , view_flashcard_options reader_word
+          , view_flashcard_options model reader_word
           ]
         ]
 

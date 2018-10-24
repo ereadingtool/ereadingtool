@@ -48,7 +48,8 @@ class Student(Profile, models.Model):
             if self.difficulty_preference else None,
             'difficulties': difficulties,
             'text_reading': [text_reading.to_dict() for text_reading in self.text_readings.all()],
-            'performance_report': {'html': performance_report_html, 'pdf_link': performance_report_pdf_link}
+            'performance_report': {'html': performance_report_html, 'pdf_link': performance_report_pdf_link},
+            'flashcards': self.flashcards.to_dict() if self.flashcards else None
         }
 
     def sections_complete_for(self, text: TypeVar('Text')) -> int:

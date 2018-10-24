@@ -8,3 +8,6 @@ class Flashcards(models.Model):
 
     def __str__(self):
         return f"{self.student}'s flashcards ({self.words.count()} words)"
+
+    def to_dict(self):
+        return [(word.normal_form, word.to_dict()) for word in self.words.all()]

@@ -366,9 +366,9 @@ view_flashcards model =
   div [class "profile_item"] [
     span [class "profile_item_title"] [ Html.text "Flashcards: " ]
   , span [class "profile_item_value"] [
-      div [] (List.map (\fake_name ->
-        div [] [ Html.a [attribute "href" "#"] [ Html.text fake_name ] ]
-       ) ["word", "word", "word"])
+      div [] (List.map (\(normal_form, text_word) ->
+        div [] [ span [] [ Html.text normal_form ] ]
+       ) (Dict.toList <| Maybe.withDefault Dict.empty <| Student.Profile.Model.studentFlashcards model.profile))
     ]
   ]
 

@@ -7,6 +7,11 @@ import TextReader.Decode
 
 import TextReader.Msg exposing (Msg(..))
 
+import Instructor.Profile
+import Student.Profile.Model
+
+import Profile exposing (Profile(..))
+
 import Json.Decode
 
 
@@ -22,11 +27,11 @@ route_cmd_resp model cmd_resp =
     CompleteResp text_scores ->
       ({ model | exception=Nothing, progress=Complete text_scores }, Cmd.none)
 
-    AddToFlashcardsResp word ->
-      ({ model | flashcards=Dict.insert word True model.flashcards }, Cmd.none)
+    AddToFlashcardsResp text_word ->
+      ({ model | profile = Profile.addFlashcard model.profile text_word}, Cmd.none)
 
-    RemoveFromFlashcardsResp word ->
-      ({ model | flashcards=Dict.remove word model.flashcards }, Cmd.none)
+    RemoveFromFlashcardsResp text_word ->
+      ({ model | profile = Profile.removeFlashcard model.profile text_word}, Cmd.none)
 
     ExceptionResp exception ->
       ({ model | exception = Just exception }, Cmd.none)
