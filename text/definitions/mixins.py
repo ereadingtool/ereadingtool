@@ -5,7 +5,7 @@ import pymorphy2
 
 from lxml.html import fragment_fromstring
 
-from typing import Dict, AnyStr
+from typing import Dict, AnyStr, List
 
 from django.db import models
 from django.utils.functional import cached_property
@@ -62,26 +62,32 @@ class TextSectionDefinitionsMixin(models.Model):
         except OSError:
             pass
 
-    def parse_word_definitions(self) -> [Dict, Dict]:
+    def parse_word_definitions(self) -> [Dict[AnyStr, List], Dict[AnyStr, int]]:
         words = {}
         word_freq = {}
+        definitions = {}
 
         for word in self.words:
-            definitions = []
+            defs = []
             word_freq.setdefault(word, 0)
             word_freq[word] += 1
 
             parsed_word = self.morph.parse(word)[0]
-            normalized_word = parsed_word.normal_form
 
-            try:
-                definitions = list(self.glosbe_api.translate(normalized_word).definitions.values())
-            except GlosbeThrottlingException as e:
-                logger.error(f'GlosbeThrottlingException {e.message}')
+            if word in definitions:
+                defs = definitions[word]
+            else:
+                try:
+                    defs = list(self.glosbe_api.translate(parsed_word.normal_form).definitions.values())
+                    definitions[word] = defs
+                except GlosbeThrottlingException as e:
+                    logger.error(f'GlosbeThrottlingException {e.message}')
 
-            words.setdefault(normalized_word, {})
+            words.setdefault(word, [])
 
-            words[normalized_word]['grammemes'] = {
+            word_data = dict()
+
+            word_data['grammemes'] = {
                 'pos': parsed_word.tag.POS,
                 'tense': parsed_word.tag.tense,
                 'aspect': parsed_word.tag.aspect,
@@ -89,10 +95,10 @@ class TextSectionDefinitionsMixin(models.Model):
                 'mood': parsed_word.tag.mood,
             }
 
-            words[normalized_word]['meanings'] = []
+            word_data['meanings'] = []
 
-            if definitions:
-                meanings = definitions[0].meanings
+            if defs:
+                meanings = defs[0].meanings
 
                 if meanings:
                     for i in range(0, 5):
@@ -102,8 +108,10 @@ class TextSectionDefinitionsMixin(models.Model):
                             if meaning['language'] != 'en':
                                 continue
 
-                            words[normalized_word]['meanings'].append(meaning)
+                            word_data['meanings'].append(meaning)
                         except IndexError:
                             break
+
+            words[word].append(word_data)
 
         return words, word_freq

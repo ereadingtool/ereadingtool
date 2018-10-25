@@ -1,14 +1,10 @@
 module TextReader.Update exposing (..)
 
-import Dict exposing (Dict)
 import TextReader.Model exposing (..)
 
 import TextReader.Decode
 
 import TextReader.Msg exposing (Msg(..))
-
-import Instructor.Profile
-import Student.Profile.Model
 
 import Profile exposing (Profile(..))
 

@@ -6,7 +6,7 @@ class TextDefinitions(models.Model):
         return {
             word.normal_form: {
                 'grammemes': word.grammemes,
-                'meaning': [meanings.text for meanings in word.meanings.all()],
+                'meaning': [meanings.text for meanings in word.meanings.filter(correct_for_context=True)],
                 'frequency': word.frequency
             } for word in self.words.prefetch_related('meanings').all()
         }
@@ -15,7 +15,8 @@ class TextDefinitions(models.Model):
 class TextWord(models.Model):
     definitions = models.ForeignKey(TextDefinitions, related_name='words', on_delete=models.CASCADE)
 
-    normal_form = models.CharField(max_length=128, blank=False)
+    word = models.CharField(max_length=128, blank=False)
+    instance = models.IntegerField(null=False)
 
     frequency = models.IntegerField(default=1, null=False, blank=True)
 
@@ -36,7 +37,7 @@ class TextWord(models.Model):
         }
 
     def __str__(self):
-        return f'{self.normal_form} ({self.pos, self.tense, self.aspect, self.form, self.mood})'
+        return f'{self.word} ({self.pos, self.tense, self.aspect, self.form, self.mood})'
 
     def to_dict(self):
         meaning = None
@@ -47,7 +48,7 @@ class TextWord(models.Model):
             pass
 
         return {
-            'normal_form': self.normal_form,
+            'word': self.word,
             'grammemes': self.grammemes,
             'meaning': meaning
         }

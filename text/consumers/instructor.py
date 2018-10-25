@@ -49,29 +49,30 @@ class ParseTextSectionForDefinitions(SyncConsumer):
 
         logger.info(f'Parsing definitions for text section pk={message["text_section_pk"]}')
 
-        word_defs, word_freqs = text_section.parse_word_definitions()
+        word_data, word_freqs = text_section.parse_word_definitions()
 
-        for word in word_defs:
-            text_word, text_word_created = TextWord.objects.get_or_create(
-                definitions=text_section_definitions,
-                normal_form=word,
-                **word_defs[word]['grammemes'])
+        for word in word_data:
+            for word_instance in word_data[word]:
+                text_word, text_word_created = TextWord.objects.get_or_create(
+                    definitions=text_section_definitions,
+                    word=word,
+                    **word_instance['grammemes'])
 
-            if text_word_created:
-                text_word.save()
-            else:
-                text_word.update(frequency=F('frequency') + 1)
+                if text_word_created:
+                    text_word.save()
+                else:
+                    text_word.update(frequency=F('frequency') + 1)
 
-            if word_defs[word] is not None:
-                for i, meaning in enumerate(word_defs[word]['meanings']):
-                    text_meaning, text_meaning_created = TextWordMeaning.objects.get_or_create(word=text_word,
-                                                                                               text=meaning['text'],
-                                                                                               correct_for_context=
-                                                                                               (True if i == 0
-                                                                                                else False))
+                if len(word_instance['meanings']):
+                    for i, meaning in enumerate(word_instance['meanings']):
+                        text_meaning, text_meaning_created = TextWordMeaning.objects.get_or_create(word=text_word,
+                                                                                                   text=meaning['text'],
+                                                                                                   correct_for_context=
+                                                                                                   (True if i == 0
+                                                                                                    else False))
 
-                    if text_meaning_created:
-                        text_meaning.save()
+                        if text_meaning_created:
+                            text_meaning.save()
 
         logger.info(f'Finished parsing definitions for text section pk={message["text_section_pk"]}')
 

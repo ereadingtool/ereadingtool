@@ -10,4 +10,4 @@ class Flashcards(models.Model):
         return f"{self.student}'s flashcards ({self.words.count()} words)"
 
     def to_dict(self):
-        return [(word.normal_form, word.to_dict()) for word in self.words.all()]
+        return [(word.word, word.to_dict()) for word in self.words.all()]

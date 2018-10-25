@@ -115,12 +115,12 @@ studentFlashcards (StudentProfile attrs flashcards) = flashcards
 
 addFlashcard : StudentProfile -> TextWord -> StudentProfile
 addFlashcard (StudentProfile attrs flashcards) text_word =
-  StudentProfile attrs (Just <| Dict.insert text_word.normal_form text_word (Maybe.withDefault Dict.empty flashcards))
+  StudentProfile attrs (Just <| Dict.insert text_word.word text_word (Maybe.withDefault Dict.empty flashcards))
 
 removeFlashcard : StudentProfile -> TextWord -> StudentProfile
 removeFlashcard (StudentProfile attrs flashcards) text_word =
   let
-    new_flashcards = Just <| Dict.remove text_word.normal_form (Maybe.withDefault Dict.empty flashcards)
+    new_flashcards = Just <| Dict.remove text_word.word (Maybe.withDefault Dict.empty flashcards)
   in
     StudentProfile attrs new_flashcards
 

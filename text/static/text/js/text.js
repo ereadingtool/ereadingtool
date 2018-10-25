@@ -21592,7 +21592,7 @@ var _user$project$Text_Definitions$grammemesDecoder = A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Definitions$Grammemes))))));
 var _user$project$Text_Definitions$TextWord = F3(
 	function (a, b, c) {
-		return {normal_form: a, grammemes: b, meaning: c};
+		return {word: a, grammemes: b, meaning: c};
 	});
 var _user$project$Text_Definitions$textWordDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -21604,7 +21604,7 @@ var _user$project$Text_Definitions$textWordDecoder = A3(
 		_user$project$Text_Definitions$grammemesDecoder,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'normal_form',
+			'word',
 			_elm_lang$core$Json_Decode$string,
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Definitions$TextWord))));
 
@@ -22114,7 +22114,7 @@ var _user$project$Student_Profile_Model$addFlashcard = F2(
 			_elm_lang$core$Maybe$Just(
 				A3(
 					_elm_lang$core$Dict$insert,
-					text_word.normal_form,
+					text_word.word,
 					text_word,
 					A2(_elm_lang$core$Maybe$withDefault, _elm_lang$core$Dict$empty, _p21._1))));
 	});
@@ -22124,7 +22124,7 @@ var _user$project$Student_Profile_Model$removeFlashcard = F2(
 		var new_flashcards = _elm_lang$core$Maybe$Just(
 			A2(
 				_elm_lang$core$Dict$remove,
-				text_word.normal_form,
+				text_word.word,
 				A2(_elm_lang$core$Maybe$withDefault, _elm_lang$core$Dict$empty, _p23._1)));
 		return A2(_user$project$Student_Profile_Model$StudentProfile, _p23._0, new_flashcards);
 	});
@@ -25921,6 +25921,44 @@ var _user$project$TextReader_View$view_text_introduction = function (text) {
 };
 var _user$project$TextReader_View$view_flashcard_options = F2(
 	function (model, reader_word) {
+		var remove = A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('cursor'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(
+						_user$project$TextReader_Msg$RemoveFromFlashcards(reader_word)),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('Remove from Flashcards'),
+				_1: {ctor: '[]'}
+			});
+		var add = A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('cursor'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(
+						_user$project$TextReader_Msg$AddToFlashcards(reader_word)),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('Add to Flashcards'),
+				_1: {ctor: '[]'}
+			});
+		var flashcards = A2(
+			_elm_lang$core$Maybe$withDefault,
+			_elm_lang$core$Dict$empty,
+			_user$project$Profile$flashcards(model.profile));
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -25928,57 +25966,14 @@ var _user$project$TextReader_View$view_flashcard_options = F2(
 				_0: _elm_lang$html$Html_Attributes$class('gloss_flashcard_options'),
 				_1: {ctor: '[]'}
 			},
-			{
+			A2(_elm_lang$core$Dict$member, reader_word.word, flashcards) ? {
 				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{ctor: '[]'},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('Flashcards'),
-						_1: {ctor: '[]'}
-					}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('cursor'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(
-									_user$project$TextReader_Msg$AddToFlashcards(reader_word)),
-								_1: {ctor: '[]'}
-							}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('Add'),
-							_1: {ctor: '[]'}
-						}),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('cursor'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onClick(
-										_user$project$TextReader_Msg$RemoveFromFlashcards(reader_word)),
-									_1: {ctor: '[]'}
-								}
-							},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text('Remove'),
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					}
-				}
+				_0: remove,
+				_1: {ctor: '[]'}
+			} : {
+				ctor: '::',
+				_0: add,
+				_1: {ctor: '[]'}
 			});
 	});
 var _user$project$TextReader_View$view_flashcard_words = function (model) {
@@ -26894,9 +26889,19 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'AddToFlashcards':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: send_command(
+						_user$project$TextReader_Model$AddToFlashcardsReq(_p0._0))
+				};
 			case 'RemoveFromFlashcards':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: send_command(
+						_user$project$TextReader_Model$RemoveFromFlashcardsReq(_p0._0))
+				};
 			case 'Select':
 				return {
 					ctor: '_Tuple2',
@@ -27171,11 +27176,11 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 																																							function (meaning) {
 																																								return A2(
 																																									_elm_lang$core$Json_Decode$andThen,
-																																									function (normal_form) {
+																																									function (word) {
 																																										return _elm_lang$core$Json_Decode$succeed(
-																																											{grammemes: grammemes, meaning: meaning, normal_form: normal_form});
+																																											{grammemes: grammemes, meaning: meaning, word: word});
 																																									},
-																																									A2(_elm_lang$core$Json_Decode$field, 'normal_form', _elm_lang$core$Json_Decode$string));
+																																									A2(_elm_lang$core$Json_Decode$field, 'word', _elm_lang$core$Json_Decode$string));
 																																							},
 																																							A2(
 																																								_elm_lang$core$Json_Decode$field,

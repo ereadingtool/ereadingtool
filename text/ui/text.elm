@@ -52,10 +52,10 @@ update msg model =
         ({ model | gloss = TextReader.Model.ungloss reader_word model.gloss }, Cmd.none)
 
       AddToFlashcards reader_word ->
-        (model, Cmd.none)
+        (model, send_command <| AddToFlashcardsReq reader_word)
 
       RemoveFromFlashcards reader_word ->
-        (model, Cmd.none)
+        (model, send_command <| RemoveFromFlashcardsReq reader_word)
 
       Select text_answer ->
         (model, send_command <| AnswerReq text_answer)

@@ -150,11 +150,12 @@ view_flashcard_words model =
 
 view_flashcard_options : Model -> TextReaderWord -> Html Msg
 view_flashcard_options model reader_word =
-  div [class "gloss_flashcard_options"] [
-    div [] [ Html.text "Flashcards" ]
-  , div [class "cursor", onClick (AddToFlashcards reader_word)] [ Html.text "Add" ]
-  , div [class "cursor", onClick (RemoveFromFlashcards reader_word)] [ Html.text "Remove" ]
-  ]
+  let
+    flashcards = Maybe.withDefault Dict.empty (Profile.flashcards model.profile)
+    add = div [class "cursor", onClick (AddToFlashcards reader_word)] [ Html.text "Add to Flashcards" ]
+    remove = div [class "cursor", onClick (RemoveFromFlashcards reader_word)] [ Html.text "Remove from Flashcards" ]
+  in
+    div [class "gloss_flashcard_options"] (if Dict.member reader_word.word flashcards then [remove] else [add])
 
 view_gloss : Text.Model.Words -> Model -> TextReaderWord -> Html Msg
 view_gloss dictionary model reader_word =
