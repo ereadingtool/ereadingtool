@@ -26916,7 +26916,7 @@ var _user$project$Main$update = F2(
 					ctor: '_Tuple2',
 					_0: model,
 					_1: _user$project$Ports$redirect(
-						_user$project$Config$text_page(model.text.id))
+						_user$project$Config$text_page(model.flags.text_id))
 				};
 			case 'NextSection':
 				return {

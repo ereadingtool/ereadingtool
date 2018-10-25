@@ -4,21 +4,21 @@ from django.db import models
 class TextDefinitions(models.Model):
     def to_dict(self):
         return {
-            word.normal_form: {
+            word.word: {
                 'grammemes': word.grammemes,
-                'meaning': [meanings.text for meanings in word.meanings.filter(correct_for_context=True)],
-                'frequency': word.frequency
+                'meaning': [meanings.text for meanings in word.meanings.filter(correct_for_context=True)]
             } for word in self.words.prefetch_related('meanings').all()
         }
 
 
 class TextWord(models.Model):
+    class Meta:
+        unique_together = (('instance', 'word'),)
+
     definitions = models.ForeignKey(TextDefinitions, related_name='words', on_delete=models.CASCADE)
 
+    instance = models.IntegerField(default=0, null=False)
     word = models.CharField(max_length=128, blank=False)
-    instance = models.IntegerField(null=False)
-
-    frequency = models.IntegerField(default=1, null=False, blank=True)
 
     pos = models.CharField(max_length=32, null=True, blank=True)
     tense = models.CharField(max_length=32, null=True, blank=True)

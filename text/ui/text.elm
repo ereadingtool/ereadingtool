@@ -64,7 +64,7 @@ update msg model =
         (model, Cmd.none)
 
       StartOver ->
-        (model, Ports.redirect (Config.text_page model.text.id))
+        (model, Ports.redirect (Config.text_page model.flags.text_id))
 
       NextSection ->
         (model, send_command NextReq)

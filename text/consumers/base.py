@@ -45,11 +45,11 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
     def start_reading(self):
         raise NotImplementedError
 
-    async def add_flashcard_word(self, user: ReaderUser, word: AnyStr):
+    async def add_flashcard_word(self, user: ReaderUser, word: AnyStr, instance: int):
         if not user.is_authenticated:
             raise Unauthorized
 
-    async def remove_flashcard_word(self, user: ReaderUser, word: AnyStr):
+    async def remove_flashcard_word(self, user: ReaderUser, word: AnyStr, instance: int):
         if not user.is_authenticated:
             raise Unauthorized
 
