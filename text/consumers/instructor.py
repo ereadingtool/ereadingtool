@@ -2,7 +2,7 @@ import logging
 
 from typing import Dict
 
-from django.db.models import F
+from django.db import transaction
 
 from lxml.html import fragment_fromstring
 from lxml.html.diff import htmldiff
@@ -43,36 +43,41 @@ class ParseTextSectionForDefinitions(SyncConsumer):
         text_section = TextSection.objects.get(pk=message['text_section_pk'])
         text_section_definitions = text_section.definitions
 
-        if not text_section_definitions:
-            text_section_definitions = TextDefinitions.objects.create()
-            text_section_definitions.save()
-
         logger.info(f'Parsing definitions for text section pk={message["text_section_pk"]}')
 
         word_data, word_freqs = text_section.parse_word_definitions()
 
+        if text_section_definitions is None:
+            text_section_definitions = TextDefinitions.objects.create()
+            text_section_definitions.save()
+
         for word in word_data:
-            for word_instance in word_data[word]:
-                text_word, text_word_created = TextWord.objects.get_or_create(
-                    definitions=text_section_definitions,
-                    word=word,
-                    **word_instance['grammemes'])
+            for i, word_instance in enumerate(word_data[word]):
+                with transaction.atomic():
+                    text_word, text_word_created = TextWord.objects.get_or_create(
+                        definitions=text_section_definitions,
+                        word=word,
+                        instance=i,
+                        **word_instance['grammemes'])
 
-                if text_word_created:
-                    text_word.save()
-                else:
-                    text_word.update(frequency=F('frequency') + 1)
+                    if text_word_created:
+                        # populate definitions
+                        logger.info(f'created a new word "{text_word.word}" (pk: {text_word.pk}) '
+                                    f'for section pk {text_section.pk}')
 
-                if len(word_instance['meanings']):
-                    for i, meaning in enumerate(word_instance['meanings']):
-                        text_meaning, text_meaning_created = TextWordMeaning.objects.get_or_create(word=text_word,
-                                                                                                   text=meaning['text'],
-                                                                                                   correct_for_context=
-                                                                                                   (True if i == 0
-                                                                                                    else False))
+                        text_word.save()
 
-                        if text_meaning_created:
-                            text_meaning.save()
+                        if len(word_instance['meanings']):
+                            for j, meaning in enumerate(word_instance['meanings']):
+                                text_meaning = TextWordMeaning.objects.create(
+                                    word=text_word,
+                                    text=meaning['text'],
+                                    correct_for_context=(True if j == 0 else False))
+
+                                text_meaning.save()
+
+                            logger.info(f'created '
+                                        f'{len(word_instance["meanings"])} meanings for text word pk {text_word.pk}')
 
         logger.info(f'Finished parsing definitions for text section pk={message["text_section_pk"]}')
 

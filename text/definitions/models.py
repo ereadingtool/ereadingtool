@@ -13,7 +13,7 @@ class TextDefinitions(models.Model):
 
 class TextWord(models.Model):
     class Meta:
-        unique_together = (('instance', 'word'),)
+        unique_together = (('instance', 'word', 'definitions'),)
 
     definitions = models.ForeignKey(TextDefinitions, related_name='words', on_delete=models.CASCADE)
 
