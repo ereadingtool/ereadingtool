@@ -10,6 +10,9 @@ class TextDefinitions(models.Model):
             } for word in self.words.prefetch_related('meanings').all()
         }
 
+    def __str__(self):
+        return f'{self.__class__.__name__} {self.words.count()} words for section {self.text_section}'
+
 
 class TextWord(models.Model):
     class Meta:
