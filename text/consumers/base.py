@@ -170,10 +170,12 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
                     await self.answer(answer_id=content.get('answer_id', None), user=user)
 
                 if cmd == 'add_flashcard_word':
-                    await self.add_flashcard_word(user=user, word=content.get('word', None))
+                    await self.add_flashcard_word(user=user, word=content.get('word', None),
+                                                  instance=content.get('instance', 0))
 
                 if cmd == 'remove_flashcard_word':
-                    await self.remove_flashcard_word(user=user, word=content.get('word', None))
+                    await self.remove_flashcard_word(user=user, word=content.get('word', None),
+                                                     instance=content.get('instance', 0))
 
             else:
                 await self.send_json({'error': f'{cmd} is not a valid command.'})
