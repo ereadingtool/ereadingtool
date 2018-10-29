@@ -239,6 +239,8 @@ class TextReading(models.Model):
         :param kwargs:
         :return:
         """
+        self.refresh_from_db(fields=['state', 'current_section'])
+
         next_section = None
 
         if self.current_section:
