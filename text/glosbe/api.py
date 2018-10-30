@@ -1,5 +1,6 @@
 from typing import AnyStr, Union, Dict, List
 
+import random
 import requests
 import json
 
@@ -81,7 +82,7 @@ class GlosbeAPI(object):
             while True:
                 time_diff = timezone.now() - self.last_request
 
-                if time_diff.total_seconds() >= 5:
+                if time_diff.total_seconds() >= random.randint(5, 10):
                     break
 
         resp = json.loads(requests.get(req).text)

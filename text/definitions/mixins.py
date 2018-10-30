@@ -67,7 +67,9 @@ class TextSectionDefinitionsMixin(models.Model):
         word_freq = {}
         definitions = {}
 
-        for word in self.words:
+        num_of_words = len(list(self.words))
+
+        for i, word in enumerate(self.words):
             defs = []
             word_freq.setdefault(word, 0)
             word_freq[word] += 1
@@ -80,6 +82,8 @@ class TextSectionDefinitionsMixin(models.Model):
                 try:
                     defs = list(self.glosbe_api.translate(parsed_word.normal_form).definitions.values())
                     definitions[word] = defs
+
+                    logger.info(f'Retrieved definition for word {i+1} out of {num_of_words}.')
                 except GlosbeThrottlingException as e:
                     logger.error(f'GlosbeThrottlingException {e.message}')
 
@@ -101,9 +105,9 @@ class TextSectionDefinitionsMixin(models.Model):
                 meanings = defs[0].meanings
 
                 if meanings:
-                    for i in range(0, 5):
+                    for j in range(0, 5):
                         try:
-                            meaning = meanings[i]
+                            meaning = meanings[j]
 
                             if meaning['language'] != 'en':
                                 continue

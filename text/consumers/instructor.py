@@ -43,7 +43,10 @@ class ParseTextSectionForDefinitions(SyncConsumer):
         text_section = TextSection.objects.get(pk=message['text_section_pk'])
         text_section_definitions = text_section.definitions
 
-        logger.info(f'Parsing definitions for text section pk={message["text_section_pk"]}')
+        text_section_words = list(text_section.words)
+
+        logger.info(f'Parsing {len(text_section_words)} word definitions '
+                    f'for text section pk={message["text_section_pk"]}')
 
         word_data, word_freqs = text_section.parse_word_definitions()
 
@@ -62,7 +65,8 @@ class ParseTextSectionForDefinitions(SyncConsumer):
 
                     if text_word_created:
                         # populate definitions
-                        logger.info(f'created a new word "{text_word.word}" (pk: {text_word.pk}) '
+                        logger.info(f'created a new word "{text_word.word}" '
+                                    f'(pk: {text_word.pk}, instance: {text_word.instance}) '
                                     f'for section pk {text_section.pk}')
 
                         text_word.save()

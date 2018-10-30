@@ -66,8 +66,8 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
+            'handlers': ['console', 'mail_admins'],
+            'level': 'INFO',
             'propagate': False,
         },
         'django.consumers': {
