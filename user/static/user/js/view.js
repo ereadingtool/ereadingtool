@@ -9552,23 +9552,23 @@ var _user$project$Text_Definitions$Grammemes = F5(
 var _user$project$Text_Definitions$grammemesDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'mood',
-	_elm_lang$core$Json_Decode$string,
+	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'form',
-		_elm_lang$core$Json_Decode$string,
+		_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 			'aspect',
-			_elm_lang$core$Json_Decode$string,
+			_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 				'tense',
-				_elm_lang$core$Json_Decode$string,
+				_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 					'pos',
-					_elm_lang$core$Json_Decode$string,
+					_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Definitions$Grammemes))))));
 var _user$project$Text_Definitions$TextWord = F3(
 	function (a, b, c) {
@@ -9622,9 +9622,9 @@ var _user$project$Text_Model$new_text = {
 	write_locker: _elm_lang$core$Maybe$Nothing,
 	words: _elm_lang$core$Dict$empty
 };
-var _user$project$Text_Model$WordValues = F3(
-	function (a, b, c) {
-		return {grammemes: a, meanings: b, frequency: c};
+var _user$project$Text_Model$WordValues = F2(
+	function (a, b) {
+		return {grammemes: a, meanings: b};
 	});
 var _user$project$Text_Model$Text = function (a) {
 	return function (b) {

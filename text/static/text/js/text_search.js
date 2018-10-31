@@ -9753,23 +9753,23 @@ var _user$project$Text_Definitions$Grammemes = F5(
 var _user$project$Text_Definitions$grammemesDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'mood',
-	_elm_lang$core$Json_Decode$string,
+	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'form',
-		_elm_lang$core$Json_Decode$string,
+		_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 			'aspect',
-			_elm_lang$core$Json_Decode$string,
+			_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 				'tense',
-				_elm_lang$core$Json_Decode$string,
+				_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 					'pos',
-					_elm_lang$core$Json_Decode$string,
+					_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Definitions$Grammemes))))));
 var _user$project$Text_Definitions$TextWord = F3(
 	function (a, b, c) {
@@ -9978,9 +9978,9 @@ var _user$project$Text_Model$new_text = {
 	write_locker: _elm_lang$core$Maybe$Nothing,
 	words: _elm_lang$core$Dict$empty
 };
-var _user$project$Text_Model$WordValues = F3(
-	function (a, b, c) {
-		return {grammemes: a, meanings: b, frequency: c};
+var _user$project$Text_Model$WordValues = F2(
+	function (a, b) {
+		return {grammemes: a, meanings: b};
 	});
 var _user$project$Text_Model$Text = function (a) {
 	return function (b) {
@@ -10809,19 +10809,15 @@ var _user$project$Text_Decode$textListItemDecoder = A3(
 var _user$project$Text_Decode$textListDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textListItemDecoder);
 var _user$project$Text_Decode$wordValuesDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'frequency',
-	_elm_lang$core$Json_Decode$int,
+	'meaning',
+	_elm_lang$core$Json_Decode$nullable(
+		_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'meaning',
-		_elm_lang$core$Json_Decode$nullable(
-			_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'grammemes',
-			_elm_lang$core$Json_Decode$dict(
-				_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string)),
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$WordValues))));
+		'grammemes',
+		_elm_lang$core$Json_Decode$dict(
+			_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string)),
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$WordValues)));
 var _user$project$Text_Decode$wordsDecoder = _elm_lang$core$Json_Decode$dict(_user$project$Text_Decode$wordValuesDecoder);
 var _user$project$Text_Decode$textDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -12549,15 +12545,75 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 																																																return _elm_lang$core$Json_Decode$succeed(
 																																																	{aspect: aspect, form: form, mood: mood, pos: pos, tense: tense});
 																																															},
-																																															A2(_elm_lang$core$Json_Decode$field, 'tense', _elm_lang$core$Json_Decode$string));
+																																															A2(
+																																																_elm_lang$core$Json_Decode$field,
+																																																'tense',
+																																																_elm_lang$core$Json_Decode$oneOf(
+																																																	{
+																																																		ctor: '::',
+																																																		_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																																																		_1: {
+																																																			ctor: '::',
+																																																			_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+																																																			_1: {ctor: '[]'}
+																																																		}
+																																																	})));
 																																													},
-																																													A2(_elm_lang$core$Json_Decode$field, 'pos', _elm_lang$core$Json_Decode$string));
+																																													A2(
+																																														_elm_lang$core$Json_Decode$field,
+																																														'pos',
+																																														_elm_lang$core$Json_Decode$oneOf(
+																																															{
+																																																ctor: '::',
+																																																_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																																																_1: {
+																																																	ctor: '::',
+																																																	_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+																																																	_1: {ctor: '[]'}
+																																																}
+																																															})));
 																																											},
-																																											A2(_elm_lang$core$Json_Decode$field, 'mood', _elm_lang$core$Json_Decode$string));
+																																											A2(
+																																												_elm_lang$core$Json_Decode$field,
+																																												'mood',
+																																												_elm_lang$core$Json_Decode$oneOf(
+																																													{
+																																														ctor: '::',
+																																														_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																																														_1: {
+																																															ctor: '::',
+																																															_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+																																															_1: {ctor: '[]'}
+																																														}
+																																													})));
 																																									},
-																																									A2(_elm_lang$core$Json_Decode$field, 'form', _elm_lang$core$Json_Decode$string));
+																																									A2(
+																																										_elm_lang$core$Json_Decode$field,
+																																										'form',
+																																										_elm_lang$core$Json_Decode$oneOf(
+																																											{
+																																												ctor: '::',
+																																												_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																																												_1: {
+																																													ctor: '::',
+																																													_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+																																													_1: {ctor: '[]'}
+																																												}
+																																											})));
 																																							},
-																																							A2(_elm_lang$core$Json_Decode$field, 'aspect', _elm_lang$core$Json_Decode$string))))));
+																																							A2(
+																																								_elm_lang$core$Json_Decode$field,
+																																								'aspect',
+																																								_elm_lang$core$Json_Decode$oneOf(
+																																									{
+																																										ctor: '::',
+																																										_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																																										_1: {
+																																											ctor: '::',
+																																											_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+																																											_1: {ctor: '[]'}
+																																										}
+																																									})))))));
 																																	},
 																																	A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string)))),
 																														_1: {ctor: '[]'}

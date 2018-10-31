@@ -12,8 +12,7 @@ type alias TextDifficulty = (String, String)
 
 type alias WordValues = {
     grammemes: Dict String (Maybe String)
-  , meanings: Maybe (List Text.Definitions.Meaning)
-  , frequency: Int }
+  , meanings: Maybe (List Text.Definitions.Meaning) }
 
 type alias Words = Dict String WordValues
 

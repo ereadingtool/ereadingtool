@@ -53,7 +53,7 @@ class TextWord(models.Model):
         return {
             'word': self.word,
             'grammemes': self.grammemes,
-            'meaning': meaning
+            'meaning': meaning.text if meaning else None
         }
 
 

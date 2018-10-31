@@ -364,7 +364,7 @@ view_preferred_difficulty model =
 view_flashcards : Model -> Html Msg
 view_flashcards model =
   div [class "profile_item"] [
-    span [class "profile_item_title"] [ Html.text "Flashcards: " ]
+    span [class "profile_item_title"] [ Html.text "Words in flashcard bank: " ]
   , span [class "profile_item_value"] [
       div [] (List.map (\(normal_form, text_word) ->
         div [] [ span [] [ Html.text normal_form ] ]

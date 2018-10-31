@@ -8,6 +8,7 @@ from text_reading.models import StudentTextReading
 from text.definitions.models import TextWord
 
 from user.models import ReaderUser
+from user.student.models import Student
 from flashcards.models import Flashcards
 
 
@@ -46,20 +47,45 @@ class StudentTextReaderConsumer(TextReaderConsumer):
     def remove_word_from_flashcards(self, flashcards: Flashcards, text_word: TextWord):
         flashcards.words.remove(text_word)
 
+    @database_sync_to_async
+    def get_flashcards_for_student(self, student: Student):
+        if student.flashcards is None:
+            flashcards = Flashcards.objects.create()
+            flashcards.save()
+
+            student.flashcards = flashcards
+            student.save()
+
+            return flashcards
+        else:
+            return student.flashcards
+
     async def add_flashcard_word(self, user: ReaderUser, word: AnyStr, instance: int):
-        super(StudentTextReaderConsumer, self).add_flashcard_word(user, word)
+        super(StudentTextReaderConsumer, self).add_flashcard_word(user, word, instance)
 
         if self.student and self.text_reading:
             if self.word_exists_in_definitions(word):
                 text_word = await self.get_word_in_definitions(word, instance)
 
-                self.add_word_to_flashcards(self.student.flashcards, text_word)
+                flashcards = await self.get_flashcards_for_student(self.student)
+
+                await self.add_word_to_flashcards(flashcards, text_word)
+
+                await self.send_json({
+                    'command': 'add_flashcard_word',
+                    'result': await database_sync_to_async(text_word.to_dict)()
+                })
 
     async def remove_flashcard_word(self, user: ReaderUser, word: AnyStr, instance: int):
-        super(StudentTextReaderConsumer, self).remove_flashcard_word(user, word)
+        super(StudentTextReaderConsumer, self).remove_flashcard_word(user, word, instance)
 
         if self.student and self.text_reading:
             if self.word_exists_in_flashcards(self.student.flashcards, word):
                 text_word = await self.get_word_in_definitions(word, instance)
 
-                self.remove_word_from_flashcards(self.student.flashcards, text_word)
+                await self.remove_word_from_flashcards(self.student.flashcards, text_word)
+
+                await self.send_json({
+                    'command': 'remove_flashcard_word',
+                    'result': await database_sync_to_async(text_word.to_dict)()
+                })

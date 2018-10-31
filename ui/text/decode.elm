@@ -26,7 +26,6 @@ wordValuesDecoder =
   decode WordValues
     |> required "grammemes" (Decode.dict (Decode.nullable Decode.string))
     |> required "meaning" (Decode.nullable (Decode.list Decode.string))
-    |> required "frequency" Decode.int
 
 wordsDecoder : Decode.Decoder Words
 wordsDecoder =
