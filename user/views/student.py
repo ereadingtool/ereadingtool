@@ -166,3 +166,6 @@ class StudentLoginView(TemplateView):
 class StudentProfileView(StudentView, TemplateView):
     template_name = 'student/profile.html'
 
+
+class StudentFlashcardView(StudentView, TemplateView):
+    template_name = 'student/flashcards.html'

@@ -1,7 +1,7 @@
 from django.urls import path
 from user.views.student import (StudentSignUpView, StudentSignupAPIView, StudentProfileView, StudentAPIView,
-                                StudentLoginView, StudentLoginAPIView, StudentLogoutAPIView, ElmLoadJsStudentView,
-                                ElmLoadStudentSignUpView)
+                                StudentLoginView, StudentLoginAPIView, StudentLogoutAPIView, StudentFlashcardView,
+                                ElmLoadJsStudentView, ElmLoadStudentSignUpView)
 
 from user.views.student_performance import StudentPerformancePDFView
 
@@ -23,4 +23,5 @@ urlpatterns = [
     path('signup/student/', StudentSignUpView.as_view(), name='student-signup'),
     path('login/student/', StudentLoginView.as_view(), name='student-login'),
     path('profile/student/', StudentProfileView.as_view(), name='student-profile'),
+    path('flashcards/student/', StudentFlashcardView.as_view(), name='student-flashcards'),
 ] + api_urlpatterns + elm_load_urlpatterns
