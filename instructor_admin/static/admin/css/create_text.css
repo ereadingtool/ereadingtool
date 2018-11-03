@@ -586,7 +586,7 @@ body {
     grid-template-columns: auto;
 }
 
-.meanings {
+.meaning {
     display: grid;
     margin-top: 5px;
 }

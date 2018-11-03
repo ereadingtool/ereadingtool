@@ -1,4 +1,5 @@
 import json
+from unittest import skip
 from typing import Dict, AnyStr, Optional, List
 
 import channels.layers
@@ -25,6 +26,7 @@ class TestText(TestUser, TestCase):
 
         self.text_endpoint = reverse_lazy('text-api')
 
+    @skip('IP is banned for now')
     def test_definition_objs(self):
         glosbe_api = GlosbeAPI()
 
@@ -61,6 +63,7 @@ class TestText(TestUser, TestCase):
         self.assertNotIn('2', words)
         self.assertIn('руб', words)
 
+    @skip('IP is banned for now')
     def test_word_definition_background_job(self):
         test_data = self.get_test_data()
 
@@ -288,8 +291,8 @@ class TestText(TestUser, TestCase):
 
         resp_content = json.loads(resp.content.decode('utf8'))
 
-        self.assertListEqual(resp_content, [text_one.to_summary_dict(student=student),
-                                            text_two.to_summary_dict(student=student)])
+        self.assertListEqual(resp_content, [text_one.to_student_summary_dict(student=student),
+                                            text_two.to_student_summary_dict(student=student)])
 
     def test_put_text(self):
         test_data = self.get_test_data()

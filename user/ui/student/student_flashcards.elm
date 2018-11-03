@@ -47,10 +47,6 @@ type alias Model = {
   , err_str : String
   , errors : Dict String String }
 
-username_valid_encode : String -> Json.Encode.Value
-username_valid_encode username =
-  Json.Encode.object [("username", Json.Encode.string username)]
-
 init : Flags -> (Model, Cmd Msg)
 init flags = ({
     flags = flags
@@ -79,8 +75,6 @@ update msg model = case msg of
   LoggedOut (Err err) -> let _ = Debug.log "log out error" err in
       (model, Cmd.none)
 
-
-
 main : Program Flags Model Msg
 main =
   Html.programWithFlags
@@ -90,11 +84,13 @@ main =
     , update = update
     }
 
-
 view_content : Model -> Html Msg
 view_content model =
-  div [ classList [("flashcards", True)] ] [
-  ]
+  let
+    flashcards = Student.Profile.Model.studentFlashcards model.profile
+  in
+    div [ classList [("flashcards", True)] ] [
+    ]
 
 -- VIEW
 view : Model -> Html Msg

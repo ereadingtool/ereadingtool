@@ -40,7 +40,7 @@ class TestUser(TestUserBase, TestCase):
         self.password_reset_api_endpoint = reverse('api-password-reset')
         self.password_reset_confirm_api_endpoint = reverse('api-password-reset-confirm')
 
-    def test_read(self, text: Text, text_reading: Reading, sections: SectionSpec, end_dt: dt.datetime=None) -> Reading:
+    def read_test(self, text: Text, text_reading: Reading, sections: SectionSpec, end_dt: dt.datetime=None) -> Reading:
         section_num = 0
 
         text_sections = text.sections.all()
@@ -101,7 +101,7 @@ class TestUser(TestUserBase, TestCase):
 
         # complete each section with 2, 2, and 0 correctly answered questions, respectively
         # (total answered correctly: 4)
-        student_text_reading = self.test_read(text=text, text_reading=text_reading, sections=[
+        student_text_reading = self.read_test(text=text, text_reading=text_reading, sections=[
             {'answered_correctly': 2},
             {'answered_correctly': 2},
             {'answered_correctly': 0},
@@ -112,8 +112,9 @@ class TestUser(TestUserBase, TestCase):
         performance_report = self.student_profile.performance.to_dict()
 
         # 4 / 12 = 0.33
-        self.assertEquals(performance_report['all']['cumulative'], {'percent_correct': 0.3333333333333333,
-                                                                    'texts_complete': 1})
+        self.assertEquals(performance_report['all']['categories']['cumulative'],
+                          {'metrics': {'percent_correct': 33.33, 'texts_complete': 1, 'total_texts': 1},
+                           'title': 'Cumulative'})
 
     def test_set_username(self):
         resp = self.student_client.put(self.student_api_endpoint,

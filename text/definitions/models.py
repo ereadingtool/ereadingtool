@@ -2,11 +2,16 @@ from django.db import models
 
 
 class TextDefinitions(models.Model):
-    def to_dict(self):
+    def to_dict(self, all_meanings=False):
+        meanings_filter_by = dict()
+
+        if not all_meanings:
+            meanings_filter_by['correct_for_context'] = True
+
         return {
             word.word: {
                 'grammemes': word.grammemes,
-                'meaning': [meanings.text for meanings in word.meanings.filter(correct_for_context=True)]
+                'meaning': [meanings.text for meanings in word.meanings.filter(**meanings_filter_by)]
             } for word in self.words.prefetch_related('meanings').all()
         }
 
@@ -20,7 +25,7 @@ class TextWord(models.Model):
 
     definitions = models.ForeignKey(TextDefinitions, related_name='words', on_delete=models.CASCADE)
 
-    instance = models.IntegerField(default=0, null=False)
+    instance = models.IntegerField(default=0)
     word = models.CharField(max_length=128, blank=False)
 
     pos = models.CharField(max_length=32, null=True, blank=True)
@@ -59,9 +64,9 @@ class TextWord(models.Model):
 
 class TextWordMeaning(models.Model):
     word = models.ForeignKey(TextWord, related_name='meanings', on_delete=models.CASCADE)
-    correct_for_context = models.BooleanField(default=False, null=False)
+    correct_for_context = models.BooleanField(default=False)
 
-    text = models.TextField(blank=False)
+    text = models.TextField()
 
     def __str__(self):
         return f'{self.word} - {self.text}'

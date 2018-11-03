@@ -134,13 +134,6 @@ class TestTextReading(TestCase):
 
         return resp, num_of_correct_answers
 
-    async def test_multiple_student_clients(self):
-        print(f'testing {len(self.student_clients)} student clients simultaneously')
-
-        tasks = [self.run_test_student(student_client, i) for i, student_client in enumerate(self.student_clients)]
-
-        await asyncio.gather(*tasks)
-
     async def run_test_student(self, student_client: Client, student_number: int):
         headers = dict()
 

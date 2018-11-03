@@ -7,13 +7,17 @@ import Json.Encode
 
 import Http
 
-import Text.Model exposing (Text, TextDifficulty)
+import Text.Model exposing (Text, TextDifficulty, TextWord)
+import Text.Definitions exposing (Word, Meaning)
+
 import Text.Update
 
 import Instructor.Profile
 import Flags
 
 import Text.Model
+import Text.Definitions exposing (Word, Meaning)
+
 import Text.Component exposing (TextComponent)
 import Text.Field exposing (TextIntro, TextTitle, TextTags, TextAuthor, TextSource, TextDifficulty)
 import Text.Decode
@@ -48,6 +52,7 @@ type TextField =
 
 type Msg =
     UpdateTextDifficultyOptions (Result Http.Error (List Text.Model.TextDifficulty))
+  | UpdateTextDefinitions (Result Http.Error (Dict Word Text.Model.TextWord))
   | SubmitText
   | Submitted (Result Http.Error Text.Decode.TextCreateResp)
   | Updated (Result Http.Error Text.Decode.TextUpdateResp)
@@ -79,6 +84,7 @@ type alias Model = {
   , error_msg : Maybe String
   , text_component : TextComponent
   , text_difficulties : List Text.Model.TextDifficulty
+  , text_definitions : Dict Word TextWord
   , tags: Dict String String
   , write_locked: Bool
   , selected_tab: Tab }
@@ -92,5 +98,6 @@ type alias TextViewParams = {
   , selected_tab: Tab
   , write_locked: WriteLocked
   , mode: Mode
-  , text_difficulties: List Text.Model.TextDifficulty }
+  , text_difficulties: List Text.Model.TextDifficulty
+  , text_definitions: Dict Word TextWord }
 

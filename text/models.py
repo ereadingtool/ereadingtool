@@ -54,7 +54,6 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
     last_modified_by = models.ForeignKey('user.Instructor', null=True, on_delete=models.SET_NULL,
                                          related_name='last_modified_text')
 
-    @property
     def section_definitions(self, text_sections: Optional[List]=None) -> Dict:
         text_sections = text_sections or self.sections.all()
         text_section_definitions = {}
@@ -62,7 +61,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
         for text_section in text_sections:
 
             if text_section.definitions:
-                text_section_definitions.update(text_section.definitions.to_dict())
+                text_section_definitions.update(text_section.definitions.to_dict(all_meanings=True))
 
         return text_section_definitions
 
@@ -152,7 +151,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
 
         return text
 
-    def to_summary_dict(self, student: Optional[TypeVar('Student')]=None) -> Dict:
+    def to_student_summary_dict(self, student: Optional[TypeVar('Student')]=None) -> Dict:
         return {
             'id': self.pk,
             'title': self.title,
@@ -221,7 +220,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
             'created_dt': self.created_dt.isoformat(),
             'text_sections': [text_section.to_dict() for text_section in
                               (text_sections if text_sections else self.sections.all())],
-            'words': self.section_definitions,
+            'words': self.section_definitions(),
             'write_locker': str(self.write_locker) if self.write_locker else None
         }
 
@@ -238,8 +237,8 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
 class TextSection(TextSectionDefinitionsMixin, Timestamped, models.Model):
     text = models.ForeignKey(Text, null=True, related_name='sections', on_delete=models.SET_NULL)
 
-    order = models.IntegerField(blank=False)
-    body = models.TextField(blank=False)
+    order = models.IntegerField()
+    body = models.TextField()
 
     @classmethod
     def to_json_schema(cls) -> Dict:

@@ -203,6 +203,12 @@ class TextAPIView(LoginRequiredMixin, View):
             return HttpResponse(json.dumps({'errors': 'something went wrong'}))
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        text = None
+        text_sections = None
+
+        if 'difficulties' in request.GET.keys():
+            return HttpResponse(json.dumps({d.slug: d.name for d in TextDifficulty.objects.all()}))
+
         student = request.user.student if hasattr(request.user, 'student') else None
         filter_by = {}
 
@@ -220,9 +226,6 @@ class TextAPIView(LoginRequiredMixin, View):
                 json.dumps(
                     {'errors': {'text': "something went wrong"}}), status=400)
 
-        if 'difficulties' in request.GET.keys():
-            return HttpResponse(json.dumps({d.slug: d.name for d in TextDifficulty.objects.all()}))
-
         if 'pk' in kwargs:
             try:
                 # query reverse relation to consolidate queries
@@ -232,12 +235,13 @@ class TextAPIView(LoginRequiredMixin, View):
                     raise Text.DoesNotExist()
 
                 text = text_sections[0].text
-
-                return HttpResponse(json.dumps(text.to_dict(text_sections=text_sections)))
             except Text.DoesNotExist:
                 return HttpResponseServerError(
                     json.dumps(
                         {'errors': {'text': "text with id {0} does not exist".format(kwargs['pk'])}}), status=400)
+
+        if 'text_words' in request.GET.keys() and text is not None:
+            return HttpResponse(json.dumps(text.section_definitions(text_sections=text_sections)))
 
         if 'difficulty' in request.GET.keys():
             filter_by['difficulty__slug__in'] = difficulties
@@ -245,12 +249,15 @@ class TextAPIView(LoginRequiredMixin, View):
         if 'tag' in request.GET.keys():
             filter_by['tags__name__in'] = tags
 
-        texts = [text.to_summary_dict(student=student)
-                 for text in self.model.objects.annotate(
-                num_of_readings=models.Count('studenttextreading')).order_by(
-                'num_of_readings').filter(**filter_by)]
+        if 'pk' in kwargs:
+            return HttpResponse(json.dumps(text.to_dict(text_sections=text_sections)))
+        else:
+            texts = [text.to_student_summary_dict(student=student)
+                     for text in self.model.objects.annotate(
+                    num_of_readings=models.Count('studenttextreading')).order_by(
+                    'num_of_readings').filter(**filter_by)]
 
-        return HttpResponse(json.dumps(texts))
+            return HttpResponse(json.dumps(texts))
 
     def validate_params(self, text_params: AnyStr, text: Optional[TypeVar('Text')]=None) -> (Dict, Dict, HttpResponse):
         errors = resp = text_sections_params = None

@@ -50,6 +50,7 @@ init flags = ({
       , profile=Instructor.Profile.init_profile flags.instructor_profile
       , text_component=Text.Component.emptyTextComponent
       , text_difficulties=[]
+      , text_definitions=Dict.empty
       , tags=Dict.fromList []
       , selected_tab=TextTab
       , write_locked=False
@@ -84,6 +85,15 @@ retrieveTextDifficultyOptions =
     request = Http.get (String.join "?" [text_api_endpoint, "difficulties=list"]) Text.Decode.textDifficultyDecoder
   in
     Http.send UpdateTextDifficultyOptions request
+
+retrieveTextWords : Int -> Cmd Msg
+retrieveTextWords text_id =
+  let
+    request =
+      Http.get (String.join "?" [String.join "/" [text_api_endpoint,  toString text_id], "text_words=list"])
+        Text.Decode.textDefinitionsDecoder
+  in
+    Http.send UpdateTextDefinitions request
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = case msg of
@@ -124,7 +134,10 @@ update msg model = case msg of
                        , mode=EditMode
                        , success_msg=Just <| "editing '" ++ text.title ++ "' text"
                        , write_locked=True
-                    }, Text.Component.reinitialize_ck_editors text_component)
+                    }, Cmd.batch [
+                         Text.Component.reinitialize_ck_editors text_component
+                       , retrieveTextWords (Maybe.withDefault 0 text.id)
+                       ])
               Nothing ->
                 ({ model |
                      text_component=text_component
@@ -194,6 +207,13 @@ update msg model = case msg of
 
     -- handle user-friendly msgs
     UpdateTextDifficultyOptions (Err _) ->
+      (model, Cmd.none)
+
+    UpdateTextDefinitions (Ok definitions) ->
+      ({ model | text_definitions = definitions}, Cmd.none)
+
+    -- handle user-friendly msgs
+    UpdateTextDefinitions (Err _) ->
       (model, Cmd.none)
 
     ToggleEditable text_field editable ->
@@ -465,6 +485,7 @@ view model =
     text_view_params = {
         text=Text.Component.text model.text_component
       , text_component=model.text_component
+      , text_definitions=model.text_definitions
       , text_fields=Text.Component.text_fields model.text_component
       , tags=model.tags
       , selected_tab=model.selected_tab

@@ -11169,6 +11169,14 @@ var _user$project$Text_Model$WordValues = F2(
 	function (a, b) {
 		return {grammemes: a, meanings: b};
 	});
+var _user$project$Text_Model$TextWordMeaning = F3(
+	function (a, b, c) {
+		return {id: a, correct_for_context: b, text: c};
+	});
+var _user$project$Text_Model$TextWord = F5(
+	function (a, b, c, d, e) {
+		return {id: a, instance: b, word: c, grammemes: d, meanings: e};
+	});
 var _user$project$Text_Model$Text = function (a) {
 	return function (b) {
 		return function (c) {
@@ -14658,6 +14666,19 @@ var _user$project$Text_Decode$decodeRespErrors = function (str) {
 			_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string)),
 		str);
 };
+var _user$project$Text_Decode$textWordMeaningDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'text',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'correct_for_context',
+		_elm_lang$core$Json_Decode$bool,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'id',
+			_elm_lang$core$Json_Decode$int,
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextWordMeaning))));
 var _user$project$Text_Decode$textDifficultyDecoder = _elm_lang$core$Json_Decode$keyValuePairs(_elm_lang$core$Json_Decode$string);
 var _user$project$Text_Decode$textListItemDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -14714,6 +14735,8 @@ var _user$project$Text_Decode$textListItemDecoder = A3(
 													_elm_lang$core$Json_Decode$int,
 													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextListItem))))))))))))));
 var _user$project$Text_Decode$textListDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textListItemDecoder);
+var _user$project$Text_Decode$grammemesDecoder = _elm_lang$core$Json_Decode$dict(
+	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string));
 var _user$project$Text_Decode$wordValuesDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'meaning',
@@ -14722,8 +14745,7 @@ var _user$project$Text_Decode$wordValuesDecoder = A3(
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'grammemes',
-		_elm_lang$core$Json_Decode$dict(
-			_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string)),
+		_user$project$Text_Decode$grammemesDecoder,
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$WordValues)));
 var _user$project$Text_Decode$wordsDecoder = _elm_lang$core$Json_Decode$dict(_user$project$Text_Decode$wordValuesDecoder);
 var _user$project$Text_Decode$textDecoder = A3(
@@ -14788,6 +14810,29 @@ var _user$project$Text_Decode$textDecoder = A3(
 															'id',
 															_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
 															_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$Text))))))))))))))));
+var _user$project$Text_Decode$textWordDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'meanings',
+	_elm_lang$core$Json_Decode$nullable(
+		_elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textWordMeaningDecoder)),
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'grammemes',
+		_user$project$Text_Decode$grammemesDecoder,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'word',
+			_elm_lang$core$Json_Decode$string,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'instance',
+				_elm_lang$core$Json_Decode$int,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'id',
+					_elm_lang$core$Json_Decode$int,
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextWord))))));
+var _user$project$Text_Decode$textDefinitionsDecoder = _elm_lang$core$Json_Decode$dict(_user$project$Text_Decode$textWordDecoder);
 var _user$project$Text_Decode$TextCreateResp = F2(
 	function (a, b) {
 		return {id: a, redirect: b};
@@ -14862,7 +14907,9 @@ var _user$project$Text_Create$Model = function (a) {
 							return function (h) {
 								return function (i) {
 									return function (j) {
-										return {flags: a, mode: b, profile: c, success_msg: d, error_msg: e, text_component: f, text_difficulties: g, tags: h, write_locked: i, selected_tab: j};
+										return function (k) {
+											return {flags: a, mode: b, profile: c, success_msg: d, error_msg: e, text_component: f, text_difficulties: g, text_definitions: h, tags: i, write_locked: j, selected_tab: k};
+										};
 									};
 								};
 							};
@@ -14873,10 +14920,27 @@ var _user$project$Text_Create$Model = function (a) {
 		};
 	};
 };
-var _user$project$Text_Create$TextViewParams = F9(
-	function (a, b, c, d, e, f, g, h, i) {
-		return {text: a, text_component: b, text_fields: c, profile: d, tags: e, selected_tab: f, write_locked: g, mode: h, text_difficulties: i};
-	});
+var _user$project$Text_Create$TextViewParams = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return {text: a, text_component: b, text_fields: c, profile: d, tags: e, selected_tab: f, write_locked: g, mode: h, text_difficulties: i, text_definitions: j};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
 var _user$project$Text_Create$ReadOnlyMode = function (a) {
 	return {ctor: 'ReadOnlyMode', _0: a};
 };
@@ -14966,6 +15030,9 @@ var _user$project$Text_Create$Submitted = function (a) {
 	return {ctor: 'Submitted', _0: a};
 };
 var _user$project$Text_Create$SubmitText = {ctor: 'SubmitText'};
+var _user$project$Text_Create$UpdateTextDefinitions = function (a) {
+	return {ctor: 'UpdateTextDefinitions', _0: a};
+};
 var _user$project$Text_Create$UpdateTextDifficultyOptions = function (a) {
 	return {ctor: 'UpdateTextDifficultyOptions', _0: a};
 };
@@ -15979,27 +16046,36 @@ var _user$project$Text_Definitions_View$view_grammemes = function (grammemes) {
 			_user$project$Text_Definitions_View$view_grammeme,
 			_elm_lang$core$Dict$toList(grammemes)));
 };
-var _user$project$Text_Definitions_View$view_meaning = function (meaning) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('meaning'),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{ctor: '[]'},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(meaning),
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		});
-};
+var _user$project$Text_Definitions_View$view_meaning = F2(
+	function (i, meaning) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('meaning'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$Basics$toString(i + 1),
+								'. ')),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(meaning),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			});
+	});
 var _user$project$Text_Definitions_View$view_meanings = function (meanings) {
 	var _p6 = meanings;
 	if (_p6.ctor === 'Just') {
@@ -16010,7 +16086,7 @@ var _user$project$Text_Definitions_View$view_meanings = function (meanings) {
 				_0: _elm_lang$html$Html_Attributes$class('meanings'),
 				_1: {ctor: '[]'}
 			},
-			A2(_elm_lang$core$List$map, _user$project$Text_Definitions_View$view_meaning, _p6._0));
+			A2(_elm_lang$core$List$indexedMap, _user$project$Text_Definitions_View$view_meaning, _p6._0));
 	} else {
 		return A2(
 			_elm_lang$html$Html$div,
@@ -17388,6 +17464,7 @@ var _user$project$Main$view = function (model) {
 	var text_view_params = {
 		text: _user$project$Text_Component$text(model.text_component),
 		text_component: model.text_component,
+		text_definitions: model.text_definitions,
 		text_fields: _user$project$Text_Component$text_fields(model.text_component),
 		tags: model.tags,
 		selected_tab: model.selected_tab,
@@ -17604,6 +17681,35 @@ var _user$project$Main$post_lock = F2(
 			return _elm_lang$core$Platform_Cmd$none;
 		}
 	});
+var _user$project$Main$retrieveTextWords = function (text_id) {
+	var request = A2(
+		_elm_lang$http$Http$get,
+		A2(
+			_elm_lang$core$String$join,
+			'?',
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$core$String$join,
+					'/',
+					{
+						ctor: '::',
+						_0: _user$project$Config$text_api_endpoint,
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$core$Basics$toString(text_id),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {
+					ctor: '::',
+					_0: 'text_words=list',
+					_1: {ctor: '[]'}
+				}
+			}),
+		_user$project$Text_Decode$textDefinitionsDecoder);
+	return A2(_elm_lang$http$Http$send, _user$project$Text_Create$UpdateTextDefinitions, request);
+};
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var _p6 = msg;
@@ -17682,7 +17788,17 @@ var _user$project$Main$update = F2(
 												A2(_elm_lang$core$Basics_ops['++'], text.title, '\' text'))),
 										write_locked: true
 									}),
-								_1: _user$project$Text_Component$reinitialize_ck_editors(_p12)
+								_1: _elm_lang$core$Platform_Cmd$batch(
+									{
+										ctor: '::',
+										_0: _user$project$Text_Component$reinitialize_ck_editors(_p12),
+										_1: {
+											ctor: '::',
+											_0: _user$project$Main$retrieveTextWords(
+												A2(_elm_lang$core$Maybe$withDefault, 0, text.id)),
+											_1: {ctor: '[]'}
+										}
+									})
 							};
 						}
 					} else {
@@ -17848,6 +17964,18 @@ var _user$project$Main$update = F2(
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{text_difficulties: _p6._0._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'UpdateTextDefinitions':
+				if (_p6._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{text_definitions: _p6._0._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
@@ -18216,6 +18344,7 @@ var _user$project$Main$init = function (flags) {
 			profile: _user$project$Instructor_Profile$init_profile(flags.instructor_profile),
 			text_component: _user$project$Text_Component$emptyTextComponent,
 			text_difficulties: {ctor: '[]'},
+			text_definitions: _elm_lang$core$Dict$empty,
 			tags: _elm_lang$core$Dict$fromList(
 				{ctor: '[]'}),
 			selected_tab: _user$project$Text_Create$TextTab,

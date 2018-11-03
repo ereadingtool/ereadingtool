@@ -9982,6 +9982,14 @@ var _user$project$Text_Model$WordValues = F2(
 	function (a, b) {
 		return {grammemes: a, meanings: b};
 	});
+var _user$project$Text_Model$TextWordMeaning = F3(
+	function (a, b, c) {
+		return {id: a, correct_for_context: b, text: c};
+	});
+var _user$project$Text_Model$TextWord = F5(
+	function (a, b, c, d, e) {
+		return {id: a, instance: b, word: c, grammemes: d, meanings: e};
+	});
 var _user$project$Text_Model$Text = function (a) {
 	return function (b) {
 		return function (c) {
@@ -10751,6 +10759,19 @@ var _user$project$Text_Decode$decodeRespErrors = function (str) {
 			_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string)),
 		str);
 };
+var _user$project$Text_Decode$textWordMeaningDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'text',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'correct_for_context',
+		_elm_lang$core$Json_Decode$bool,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'id',
+			_elm_lang$core$Json_Decode$int,
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextWordMeaning))));
 var _user$project$Text_Decode$textDifficultyDecoder = _elm_lang$core$Json_Decode$keyValuePairs(_elm_lang$core$Json_Decode$string);
 var _user$project$Text_Decode$textListItemDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -10807,6 +10828,8 @@ var _user$project$Text_Decode$textListItemDecoder = A3(
 													_elm_lang$core$Json_Decode$int,
 													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextListItem))))))))))))));
 var _user$project$Text_Decode$textListDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textListItemDecoder);
+var _user$project$Text_Decode$grammemesDecoder = _elm_lang$core$Json_Decode$dict(
+	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string));
 var _user$project$Text_Decode$wordValuesDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'meaning',
@@ -10815,8 +10838,7 @@ var _user$project$Text_Decode$wordValuesDecoder = A3(
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'grammemes',
-		_elm_lang$core$Json_Decode$dict(
-			_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string)),
+		_user$project$Text_Decode$grammemesDecoder,
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$WordValues)));
 var _user$project$Text_Decode$wordsDecoder = _elm_lang$core$Json_Decode$dict(_user$project$Text_Decode$wordValuesDecoder);
 var _user$project$Text_Decode$textDecoder = A3(
@@ -10881,6 +10903,29 @@ var _user$project$Text_Decode$textDecoder = A3(
 															'id',
 															_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
 															_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$Text))))))))))))))));
+var _user$project$Text_Decode$textWordDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'meanings',
+	_elm_lang$core$Json_Decode$nullable(
+		_elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textWordMeaningDecoder)),
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'grammemes',
+		_user$project$Text_Decode$grammemesDecoder,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'word',
+			_elm_lang$core$Json_Decode$string,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'instance',
+				_elm_lang$core$Json_Decode$int,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'id',
+					_elm_lang$core$Json_Decode$int,
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextWord))))));
+var _user$project$Text_Decode$textDefinitionsDecoder = _elm_lang$core$Json_Decode$dict(_user$project$Text_Decode$textWordDecoder);
 var _user$project$Text_Decode$TextCreateResp = F2(
 	function (a, b) {
 		return {id: a, redirect: b};

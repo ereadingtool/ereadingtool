@@ -1,6 +1,8 @@
 module Text.Decode exposing (..)
 
 import Text.Model exposing (Text, TextDifficulty, TextListItem, WordValues, Words)
+import Text.Definitions exposing (Word, Meaning)
+
 import Text.Section.Decode
 
 import Array exposing (Array)
@@ -21,10 +23,14 @@ type alias TextProgressUpdateResp = { updated: Bool }
 type alias TextsRespError = Dict String String
 
 
+grammemesDecoder : Decode.Decoder Text.Model.Grammemes
+grammemesDecoder =
+  Decode.dict (Decode.nullable Decode.string)
+
 wordValuesDecoder : Decode.Decoder WordValues
 wordValuesDecoder =
   decode WordValues
-    |> required "grammemes" (Decode.dict (Decode.nullable Decode.string))
+    |> required "grammemes" grammemesDecoder
     |> required "meaning" (Decode.nullable (Decode.list Decode.string))
 
 wordsDecoder : Decode.Decoder Words
@@ -97,10 +103,32 @@ textLockRespDecoder =
     |> required "locked" Decode.bool
 
 textDifficultyDecoder : Decode.Decoder (List TextDifficulty)
-textDifficultyDecoder = Decode.keyValuePairs Decode.string
+textDifficultyDecoder =
+  Decode.keyValuePairs Decode.string
+
+textDefinitionsDecoder : Decode.Decoder (Dict Word Text.Model.TextWord)
+textDefinitionsDecoder =
+  Decode.dict textWordDecoder
+
+textWordMeaningDecoder : Decode.Decoder Text.Model.TextWordMeaning
+textWordMeaningDecoder =
+  decode Text.Model.TextWordMeaning
+    |> required "id" Decode.int
+    |> required "correct_for_context" Decode.bool
+    |> required "text" Decode.string
+
+textWordDecoder : Decode.Decoder Text.Model.TextWord
+textWordDecoder =
+  decode Text.Model.TextWord
+    |> required "id" Decode.int
+    |> required "instance" Decode.int
+    |> required "word" Decode.string
+    |> required "grammemes" grammemesDecoder
+    |> required "meanings" (Decode.nullable (Decode.list textWordMeaningDecoder))
 
 decodeRespErrors : String -> Result String TextsRespError
-decodeRespErrors str = Decode.decodeString (Decode.field "errors" (Decode.dict Decode.string)) str
+decodeRespErrors str =
+  Decode.decodeString (Decode.field "errors" (Decode.dict Decode.string)) str
 
 textProgressDecoder : Decode.Decoder (TextProgressUpdateResp)
 textProgressDecoder =

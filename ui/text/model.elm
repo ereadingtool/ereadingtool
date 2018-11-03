@@ -1,4 +1,4 @@
-module Text.Model exposing (Text, TextListItem, TextDifficulty, new_text, set_sections, set_tags, WordValues, Words)
+module Text.Model exposing (..)
 
 import Text.Section.Model exposing (emptyTextSection)
 
@@ -10,11 +10,27 @@ import Array exposing (Array)
 
 type alias TextDifficulty = (String, String)
 
+type alias Grammemes = Dict String (Maybe String)
+
 type alias WordValues = {
-    grammemes: Dict String (Maybe String)
+    grammemes: Grammemes
   , meanings: Maybe (List Text.Definitions.Meaning) }
 
-type alias Words = Dict String WordValues
+type alias TextWordMeaning = {
+   id: Int
+ , correct_for_context: Bool
+ , text: String
+ }
+
+type alias TextWord = {
+   id: Int
+ , instance : Int
+ , word: Word
+ , grammemes: Grammemes
+ , meanings: Maybe (List TextWordMeaning)
+ }
+
+type alias Words = Dict Word WordValues
 
 type alias Text = {
     id: Maybe Int

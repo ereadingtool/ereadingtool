@@ -10,17 +10,17 @@ import Text.Definitions exposing (Word, Meaning)
 import Text.Create exposing (Msg)
 import Text.Model
 
-view_meaning : Meaning -> Html Msg
-view_meaning meaning =
+view_meaning : Int -> Meaning -> Html Msg
+view_meaning i meaning =
   div [class "meaning"] [
-    div [] [ Html.text meaning ]
+    div [] [ Html.text (toString (i+1) ++ ". "), Html.text meaning ]
   ]
 
 view_meanings : Maybe (List Text.Definitions.Meaning) -> Html Msg
 view_meanings meanings =
   case meanings of
     Just meanings_list ->
-      div [class "meanings"] (List.map view_meaning meanings_list)
+      div [class "meanings"] (List.indexedMap view_meaning meanings_list)
     Nothing ->
       div [class "meanings"] [Html.text "Undefined"]
 
