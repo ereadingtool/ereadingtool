@@ -126,7 +126,7 @@ view_translation : Text.Definitions.Translation -> Html Msg
 view_translation translation =
   div [class "translation"] [ Html.text translation ]
 
-view_translations : Maybe (List Text.Definitions.Meaning) -> Html Msg
+view_translations : Maybe (List Text.Definitions.Translation) -> Html Msg
 view_translations defs =
   div [class "translations"]
     (case defs of

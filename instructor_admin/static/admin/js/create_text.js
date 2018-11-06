@@ -11115,11 +11115,11 @@ var _user$project$Text_Definitions$grammemesDecoder = A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Definitions$Grammemes))))));
 var _user$project$Text_Definitions$TextWord = F3(
 	function (a, b, c) {
-		return {word: a, grammemes: b, meaning: c};
+		return {word: a, grammemes: b, translation: c};
 	});
 var _user$project$Text_Definitions$textWordDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'meaning',
+	'translation',
 	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -16047,12 +16047,12 @@ var _user$project$Text_Definitions_View$view_grammemes = function (grammemes) {
 			_elm_lang$core$Dict$toList(grammemes)));
 };
 var _user$project$Text_Definitions_View$view_translation = F2(
-	function (i, meaning) {
+	function (i, translation) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('meaning'),
+				_0: _elm_lang$html$Html_Attributes$class('translation'),
 				_1: {ctor: '[]'}
 			},
 			{
@@ -16069,7 +16069,7 @@ var _user$project$Text_Definitions_View$view_translation = F2(
 								'. ')),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html$text(meaning),
+							_0: _elm_lang$html$Html$text(translation),
 							_1: {ctor: '[]'}
 						}
 					}),

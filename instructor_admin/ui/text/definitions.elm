@@ -16,7 +16,7 @@ type alias Grammemes = {
   , form: Maybe String
   , mood: Maybe String }
 
-type alias TextWord = {word: Word, grammemes: Grammemes, meaning: Maybe Meaning}
+type alias TextWord = {word: Word, grammemes: Grammemes, translation: Maybe Translation}
 
 type alias Flashcards = Dict Word TextWord
 
@@ -34,6 +34,6 @@ textWordDecoder =
   decode TextWord
     |> required "word" Json.Decode.string
     |> required "grammemes" grammemesDecoder
-    |> required "meaning" (Json.Decode.nullable Json.Decode.string)
+    |> required "translation" (Json.Decode.nullable Json.Decode.string)
 
 

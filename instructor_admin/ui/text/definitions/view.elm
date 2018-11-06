@@ -11,9 +11,9 @@ import Text.Create exposing (Msg)
 import Text.Model
 
 view_translation : Int -> Translation -> Html Msg
-view_translation i meaning =
-  div [class "meaning"] [
-    div [] [ Html.text (toString (i+1) ++ ". "), Html.text meaning ]
+view_translation i translation =
+  div [class "translation"] [
+    div [] [ Html.text (toString (i+1) ++ ". "), Html.text translation ]
   ]
 
 view_translations : Maybe (List Text.Definitions.Translation) -> Html Msg

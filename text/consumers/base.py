@@ -134,15 +134,14 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             started, self.text_reading = await self.start_reading()
 
             if started:
-                await self.send_json({
-                    'command': self.text_reading.current_state.name,
-                    'result': await database_sync_to_async(self.text.to_text_reading_dict)()
-                })
+                result = await database_sync_to_async(self.text.to_text_reading_dict)()
             else:
-                await self.send_json({
-                    'command': self.text_reading.current_state.name,
-                    'result': await database_sync_to_async(self.text_reading.to_text_reading_dict)()
-                })
+                result = await database_sync_to_async(self.text_reading.to_text_reading_dict)()
+
+            await self.send_json({
+                'command': self.text_reading.current_state.name,
+                'result': result
+            })
 
     async def receive_json(self, content, **kwargs):
         user = self.scope['user']
