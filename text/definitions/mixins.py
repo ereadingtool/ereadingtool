@@ -106,7 +106,7 @@ class TextSectionDefinitionsMixin(models.Model):
                     try:
                         translation = translations[j]
 
-                        if not translation.phrase.is_english:
+                        if translation.phrase and not translation.phrase.is_english:
                             continue
 
                         word_data['translations'].append(translation)

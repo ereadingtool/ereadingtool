@@ -11,8 +11,8 @@ class TextDefinitions(models.Model):
         return {
             word.word: {
                 'grammemes': word.grammemes,
-                'translation': [translation.phrase for translation in
-                                word.translations.filter(**translations_filter_by)]
+                'translations': [translation.phrase for translation in
+                                 word.translations.filter(**translations_filter_by)]
             } for word in self.words.prefetch_related('translations').all()
         }
 

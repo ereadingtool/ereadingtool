@@ -73,12 +73,13 @@ class ParseTextSectionForDefinitions(SyncConsumer):
 
                         if len(word_instance['translations']):
                             for j, translation in enumerate(word_instance['translations']):
-                                text_word_definition = TextWordTranslation.objects.create(
-                                    word=text_word,
-                                    phrase=translation.phrase.text,
-                                    correct_for_context=(True if j == 0 else False))
+                                if translation.phrase:
+                                    text_word_definition = TextWordTranslation.objects.create(
+                                        word=text_word,
+                                        phrase=translation.phrase.text,
+                                        correct_for_context=(True if j == 0 else False))
 
-                                text_word_definition.save()
+                                    text_word_definition.save()
 
                             logger.info(f'created '
                                         f'{len(word_instance["translations"])} translations '

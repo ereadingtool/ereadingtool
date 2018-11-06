@@ -122,16 +122,16 @@ view_questions section =
     div [class "questions"] (Array.toList <| Array.map (view_question section) text_reader_questions)
 
 
-view_meaning : Text.Definitions.Meaning -> Html Msg
-view_meaning meaning =
-  div [class "meaning"] [ Html.text meaning ]
+view_translation : Text.Definitions.Translation -> Html Msg
+view_translation translation =
+  div [class "translation"] [ Html.text translation ]
 
-view_meanings : Maybe (List Text.Definitions.Meaning) -> Html Msg
-view_meanings defs =
-  div [class "meanings"]
+view_translations : Maybe (List Text.Definitions.Meaning) -> Html Msg
+view_translations defs =
+  div [class "translations"]
     (case defs of
-      Just meanings ->
-        (List.map view_meaning meanings)
+      Just translations ->
+        (List.map view_translation translations)
 
       Nothing ->
         [])
@@ -170,7 +170,7 @@ view_gloss dictionary model reader_word =
               , classList [("hidden", not (TextReader.Model.selected reader_word model.gloss))]
               ] [
             view_word_and_grammemes reader_word values
-          , view_meanings values.meanings
+          , view_translations values.translations
           , view_flashcard_options model reader_word
           ]
         ]

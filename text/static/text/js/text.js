@@ -21799,9 +21799,9 @@ var _user$project$Text_Model$new_text = {
 };
 var _user$project$Text_Model$WordValues = F2(
 	function (a, b) {
-		return {grammemes: a, meanings: b};
+		return {grammemes: a, translations: b};
 	});
-var _user$project$Text_Model$TextWordMeaning = F3(
+var _user$project$Text_Model$TextWordTranslation = F3(
 	function (a, b, c) {
 		return {id: a, correct_for_context: b, text: c};
 	});
@@ -25230,7 +25230,7 @@ var _user$project$Text_Decode$textWordMeaningDecoder = A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 			'id',
 			_elm_lang$core$Json_Decode$int,
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextWordMeaning))));
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextWordTranslation))));
 var _user$project$Text_Decode$textDifficultyDecoder = _elm_lang$core$Json_Decode$keyValuePairs(_elm_lang$core$Json_Decode$string);
 var _user$project$Text_Decode$textListItemDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -25291,7 +25291,7 @@ var _user$project$Text_Decode$grammemesDecoder = _elm_lang$core$Json_Decode$dict
 	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string));
 var _user$project$Text_Decode$wordValuesDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'meaning',
+	'translations',
 	_elm_lang$core$Json_Decode$nullable(
 		_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
 	A3(
@@ -25658,44 +25658,53 @@ var _user$project$Text_Definitions_View$view_grammemes = function (grammemes) {
 			_user$project$Text_Definitions_View$view_grammeme,
 			_elm_lang$core$Dict$toList(grammemes)));
 };
-var _user$project$Text_Definitions_View$view_meaning = function (meaning) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('meaning'),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{ctor: '[]'},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(meaning),
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Text_Definitions_View$view_meanings = function (meanings) {
-	var _p6 = meanings;
+var _user$project$Text_Definitions_View$view_translation = F2(
+	function (i, meaning) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('meaning'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$Basics$toString(i + 1),
+								'. ')),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(meaning),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			});
+	});
+var _user$project$Text_Definitions_View$view_translations = function (translations) {
+	var _p6 = translations;
 	if (_p6.ctor === 'Just') {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('meanings'),
+				_0: _elm_lang$html$Html_Attributes$class('translations'),
 				_1: {ctor: '[]'}
 			},
-			A2(_elm_lang$core$List$map, _user$project$Text_Definitions_View$view_meaning, _p6._0));
+			A2(_elm_lang$core$List$indexedMap, _user$project$Text_Definitions_View$view_translation, _p6._0));
 	} else {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('meanings'),
+				_0: _elm_lang$html$Html_Attributes$class('translations'),
 				_1: {ctor: '[]'}
 			},
 			{
@@ -25759,7 +25768,7 @@ var _user$project$Text_Definitions_View$view_word_definition = function (_p7) {
 				_0: _elm_lang$html$Html$text(''),
 				_1: {
 					ctor: '::',
-					_0: _user$project$Text_Definitions_View$view_meanings(_p9.meanings),
+					_0: _user$project$Text_Definitions_View$view_translations(_p9.translations),
 					_1: {ctor: '[]'}
 				}
 			}
@@ -26083,32 +26092,32 @@ var _user$project$TextReader_View$view_word_and_grammemes = F2(
 				_1: {ctor: '[]'}
 			});
 	});
-var _user$project$TextReader_View$view_meaning = function (meaning) {
+var _user$project$TextReader_View$view_translation = function (translation) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('meaning'),
+			_0: _elm_lang$html$Html_Attributes$class('translation'),
 			_1: {ctor: '[]'}
 		},
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html$text(meaning),
+			_0: _elm_lang$html$Html$text(translation),
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$TextReader_View$view_meanings = function (defs) {
+var _user$project$TextReader_View$view_translations = function (defs) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('meanings'),
+			_0: _elm_lang$html$Html_Attributes$class('translations'),
 			_1: {ctor: '[]'}
 		},
 		function () {
 			var _p3 = defs;
 			if (_p3.ctor === 'Just') {
-				return A2(_elm_lang$core$List$map, _user$project$TextReader_View$view_meaning, _p3._0);
+				return A2(_elm_lang$core$List$map, _user$project$TextReader_View$view_translation, _p3._0);
 			} else {
 				return {ctor: '[]'};
 			}
@@ -26164,7 +26173,7 @@ var _user$project$TextReader_View$view_gloss = F3(
 							_0: A2(_user$project$TextReader_View$view_word_and_grammemes, reader_word, _p5),
 							_1: {
 								ctor: '::',
-								_0: _user$project$TextReader_View$view_meanings(_p5.meanings),
+								_0: _user$project$TextReader_View$view_translations(_p5.translations),
 								_1: {
 									ctor: '::',
 									_0: A2(_user$project$TextReader_View$view_flashcard_options, model, reader_word),

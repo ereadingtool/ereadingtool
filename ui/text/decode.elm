@@ -31,7 +31,7 @@ wordValuesDecoder : Decode.Decoder WordValues
 wordValuesDecoder =
   decode WordValues
     |> required "grammemes" grammemesDecoder
-    |> required "meaning" (Decode.nullable (Decode.list Decode.string))
+    |> required "translations" (Decode.nullable (Decode.list Decode.string))
 
 wordsDecoder : Decode.Decoder Words
 wordsDecoder =
@@ -110,9 +110,9 @@ textDefinitionsDecoder : Decode.Decoder (Dict Word Text.Model.TextWord)
 textDefinitionsDecoder =
   Decode.dict textWordDecoder
 
-textWordMeaningDecoder : Decode.Decoder Text.Model.TextWordMeaning
+textWordMeaningDecoder : Decode.Decoder Text.Model.TextWordTranslation
 textWordMeaningDecoder =
-  decode Text.Model.TextWordMeaning
+  decode Text.Model.TextWordTranslation
     |> required "id" Decode.int
     |> required "correct_for_context" Decode.bool
     |> required "text" Decode.string

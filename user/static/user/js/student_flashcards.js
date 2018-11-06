@@ -20751,9 +20751,9 @@ var _user$project$Text_Model$new_text = {
 };
 var _user$project$Text_Model$WordValues = F2(
 	function (a, b) {
-		return {grammemes: a, meanings: b};
+		return {grammemes: a, translations: b};
 	});
-var _user$project$Text_Model$TextWordMeaning = F3(
+var _user$project$Text_Model$TextWordTranslation = F3(
 	function (a, b, c) {
 		return {id: a, correct_for_context: b, text: c};
 	});

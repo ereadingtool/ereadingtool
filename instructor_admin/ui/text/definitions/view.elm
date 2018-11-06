@@ -5,24 +5,24 @@ import Html.Attributes exposing (..)
 
 import Dict exposing (Dict)
 
-import Text.Definitions exposing (Word, Meaning)
+import Text.Definitions exposing (Word, Translation)
 
 import Text.Create exposing (Msg)
 import Text.Model
 
-view_meaning : Int -> Meaning -> Html Msg
-view_meaning i meaning =
+view_translation : Int -> Translation -> Html Msg
+view_translation i meaning =
   div [class "meaning"] [
     div [] [ Html.text (toString (i+1) ++ ". "), Html.text meaning ]
   ]
 
-view_meanings : Maybe (List Text.Definitions.Meaning) -> Html Msg
-view_meanings meanings =
-  case meanings of
-    Just meanings_list ->
-      div [class "meanings"] (List.indexedMap view_meaning meanings_list)
+view_translations : Maybe (List Text.Definitions.Translation) -> Html Msg
+view_translations translations =
+  case translations of
+    Just translations_list ->
+      div [class "translations"] (List.indexedMap view_translation translations_list)
     Nothing ->
-      div [class "meanings"] [Html.text "Undefined"]
+      div [class "translations"] [Html.text "Undefined"]
 
 view_grammeme : (String, Maybe String) -> Html Msg
 view_grammeme (grammeme, grammeme_value) =
@@ -58,7 +58,7 @@ view_word_definition (word, word_values) =
     , div [] [ Html.text <| "(" ++ (view_grammemes_as_string word_values.grammemes) ++ ")" ]
     ]
   , Html.text ""
-  , view_meanings word_values.meanings
+  , view_translations word_values.translations
   ]
 
 view_definitions : Text.Model.Words -> Html Msg

@@ -7,6 +7,7 @@ import Dict exposing (Dict)
 
 type alias Word = String
 type alias Meaning = String
+type alias Translation = String
 
 type alias Grammemes = {
     pos: Maybe String
