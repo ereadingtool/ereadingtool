@@ -19,28 +19,31 @@ class GlosbeThrottlingException(GlosbeException):
     pass
 
 
-class GlosbeDefinition(object):
-    def __init__(self, phrase: AnyStr, definition: Dict, *args, **kwargs):
-        self._phrase = phrase
-        self.definition = definition
+class GlosbePhrase(object):
+    def __init__(self, text: AnyStr, language: AnyStr):
+        self.text = text
+        self.language = language
 
     @property
-    def phrase(self) -> AnyStr:
-        try:
-            return self.definition['phrase']['text']
-        except KeyError:
-            return self._phrase
+    def is_english(self):
+        return self.language == 'en'
+
+
+class GlosbeTranslation(object):
+    def __init__(self, phrase: Union[GlosbePhrase, None], translation: Dict, *args, **kwargs):
+        self.phrase = phrase
+        self.translation = translation
 
     @property
     def meanings(self) -> Union[List[Dict], None]:
         try:
-            return self.definition['meanings']
+            return self.translation['meanings']
         except KeyError:
             return None
 
 
-class GlosbeDefinitions(object):
-    def __init__(self, from_lang: AnyStr, to_lang: AnyStr, phrase: AnyStr, authors: Dict, definitions: List[Dict],
+class GlosbeTranslations(object):
+    def __init__(self, from_lang: AnyStr, to_lang: AnyStr, phrase: AnyStr, authors: Dict, translations: List[Dict],
                  **kwargs):
         self.from_lang = from_lang
         self.to_long = to_lang
@@ -48,12 +51,20 @@ class GlosbeDefinitions(object):
         self.phrase = phrase
         self.authors = authors
 
-        self.definitions = dict()
+        self.translations = list()
 
-        for d in definitions:
-            definition = GlosbeDefinition(phrase=self.phrase, definition=d)
+        for d in translations:
+            glosbe_phrase = None
 
-            self.definitions[definition.phrase] = definition
+            if 'phrase' in d:
+                glosbe_phrase = GlosbePhrase(text=d['phrase']['text'], language=d['phrase']['language'])
+
+            translation = GlosbeTranslation(
+                phrase=glosbe_phrase,
+                translation=d
+            )
+
+            self.translations.append(translation)
 
 
 class GlosbeAPI(object):
@@ -66,7 +77,7 @@ class GlosbeAPI(object):
         self.tm = tm
         self.last_request = None
 
-    def translate(self, phrase: AnyStr) -> Union[GlosbeDefinitions, None]:
+    def translate(self, phrase: AnyStr) -> Union[GlosbeTranslations, None]:
         definitions = None
 
         req_params = '&'.join([
@@ -98,12 +109,12 @@ class GlosbeAPI(object):
         tuc = resp['tuc']
 
         if 'result' in resp and resp['result'] == 'ok':
-            definitions = GlosbeDefinitions(
+            definitions = GlosbeTranslations(
                 from_lang=resp.get('from'),
                 to_lang=resp['dest'],
                 phrase=resp['phrase'],
                 authors=resp['authors'],
-                definitions=tuc
+                translations=tuc
             )
 
         return definitions

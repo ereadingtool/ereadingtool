@@ -2,17 +2,18 @@ from django.db import models
 
 
 class TextDefinitions(models.Model):
-    def to_dict(self, all_meanings=False):
-        meanings_filter_by = dict()
+    def to_dict(self, all_translations=False):
+        translations_filter_by = dict()
 
-        if not all_meanings:
-            meanings_filter_by['correct_for_context'] = True
+        if not all_translations:
+            translations_filter_by['correct_for_context'] = True
 
         return {
             word.word: {
                 'grammemes': word.grammemes,
-                'meaning': [meanings.text for meanings in word.meanings.filter(**meanings_filter_by)]
-            } for word in self.words.prefetch_related('meanings').all()
+                'translation': [translation.phrase for translation in
+                                word.translations.filter(**translations_filter_by)]
+            } for word in self.words.prefetch_related('translations').all()
         }
 
     def __str__(self):
@@ -48,25 +49,25 @@ class TextWord(models.Model):
         return f'{self.word} ({self.pos, self.tense, self.aspect, self.form, self.mood})'
 
     def to_dict(self):
-        meaning = None
+        translation = None
 
         try:
-            meaning = self.meanings.filter(correct_for_context=True)[0]
+            translation = self.translations.filter(correct_for_context=True)[0]
         except IndexError:
             pass
 
         return {
             'word': self.word,
             'grammemes': self.grammemes,
-            'meaning': meaning.text if meaning else None
+            'translation': translation.phrase if translation else None
         }
 
 
-class TextWordMeaning(models.Model):
-    word = models.ForeignKey(TextWord, related_name='meanings', on_delete=models.CASCADE)
+class TextWordTranslation(models.Model):
+    word = models.ForeignKey(TextWord, related_name='translations', on_delete=models.CASCADE)
     correct_for_context = models.BooleanField(default=False)
 
-    text = models.TextField()
+    phrase = models.TextField()
 
     def __str__(self):
-        return f'{self.word} - {self.text}'
+        return f'{self.word} - {self.phrase}'

@@ -65,23 +65,23 @@ class TextSectionDefinitionsMixin(models.Model):
     def parse_word_definitions(self) -> [Dict[AnyStr, List], Dict[AnyStr, int]]:
         words = {}
         word_freq = {}
-        definitions = {}
+        seen_translations = {}
 
         num_of_words = len(list(self.words))
 
         for i, word in enumerate(self.words):
-            defs = []
+            translations = []
             word_freq.setdefault(word, 0)
             word_freq[word] += 1
 
             parsed_word = self.morph.parse(word)[0]
 
-            if word in definitions:
-                defs = definitions[word]
+            if word in seen_translations:
+                translations = seen_translations[word]
             else:
                 try:
-                    defs = list(self.glosbe_api.translate(parsed_word.normal_form).definitions.values())
-                    definitions[word] = defs
+                    translations = self.glosbe_api.translate(parsed_word.normal_form).translations
+                    seen_translations[word] = translations
 
                     logger.info(f'Retrieved definition for word {i+1} out of {num_of_words}.')
                 except GlosbeThrottlingException as e:
@@ -99,22 +99,19 @@ class TextSectionDefinitionsMixin(models.Model):
                 'mood': parsed_word.tag.mood,
             }
 
-            word_data['meanings'] = []
+            word_data['translations'] = []
 
-            if defs:
-                meanings = defs[0].meanings
+            if translations:
+                for j in range(0, 5):
+                    try:
+                        translation = translations[j]
 
-                if meanings:
-                    for j in range(0, 5):
-                        try:
-                            meaning = meanings[j]
+                        if not translation.phrase.is_english:
+                            continue
 
-                            if meaning['language'] != 'en':
-                                continue
-
-                            word_data['meanings'].append(meaning)
-                        except IndexError:
-                            break
+                        word_data['translations'].append(translation)
+                    except IndexError:
+                        break
 
             words[word].append(word_data)
 

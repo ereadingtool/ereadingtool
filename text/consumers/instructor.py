@@ -15,7 +15,7 @@ from text.consumers.base import TextReaderConsumer
 from text_reading.models import InstructorTextReading
 from text.models import TextSection
 
-from text.definitions.models import TextWordMeaning, TextDefinitions, TextWord
+from text.definitions.models import TextWordTranslation, TextDefinitions, TextWord
 
 logger = logging.getLogger('django.consumers')
 
@@ -64,26 +64,27 @@ class ParseTextSectionForDefinitions(SyncConsumer):
                         **word_instance['grammemes'])
 
                     if text_word_created:
-                        # populate definitions
+                        # populate translations
                         logger.info(f'created a new word "{text_word.word}" '
                                     f'(pk: {text_word.pk}, instance: {text_word.instance}) '
                                     f'for section pk {text_section.pk}')
 
                         text_word.save()
 
-                        if len(word_instance['meanings']):
-                            for j, meaning in enumerate(word_instance['meanings']):
-                                text_meaning = TextWordMeaning.objects.create(
+                        if len(word_instance['translations']):
+                            for j, translation in enumerate(word_instance['translations']):
+                                text_word_definition = TextWordTranslation.objects.create(
                                     word=text_word,
-                                    text=meaning['text'],
+                                    phrase=translation.phrase.text,
                                     correct_for_context=(True if j == 0 else False))
 
-                                text_meaning.save()
+                                text_word_definition.save()
 
                             logger.info(f'created '
-                                        f'{len(word_instance["meanings"])} meanings for text word pk {text_word.pk}')
+                                        f'{len(word_instance["translations"])} translations '
+                                        f'for text word pk {text_word.pk}')
 
-        logger.info(f'Finished parsing definitions for text section pk={message["text_section_pk"]}')
+        logger.info(f'Finished parsing translations for text section pk={message["text_section_pk"]}')
 
         text_section.definitions = text_section_definitions
         text_section.save()

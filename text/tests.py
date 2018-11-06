@@ -13,7 +13,7 @@ from ereadingtool.urls import reverse_lazy
 from question.models import Answer
 from tag.models import Tag
 from text.consumers.instructor import ParseTextSectionForDefinitions
-from text.glosbe.api import GlosbeAPI, GlosbeDefinitions, GlosbeDefinition
+from text.glosbe.api import GlosbeAPI, GlosbeTranslations, GlosbeTranslation
 from text.models import TextDifficulty, Text, TextSection
 from text_reading.base import TextReadingNotAllQuestionsAnswered
 from text_reading.models import StudentTextReading
@@ -32,11 +32,13 @@ class TestText(TestUser, TestCase):
 
         defs = glosbe_api.translate('заявление')
 
-        self.assertIsInstance(defs, GlosbeDefinitions)
+        self.assertIsInstance(defs, GlosbeTranslations)
 
-        definitions = list(defs.definitions.values())
+        self.assertEquals(defs.translations, 'list')
 
-        self.assertIsInstance(definitions[0], GlosbeDefinition)
+        definitions = defs.translations
+
+        self.assertIsInstance(definitions[0], GlosbeTranslation)
 
     def test_parsing_words(self):
         test_data = self.get_test_data()
@@ -63,7 +65,7 @@ class TestText(TestUser, TestCase):
         self.assertNotIn('2', words)
         self.assertIn('руб', words)
 
-    @skip('IP is banned for now')
+    # @skip('IP is banned for now')
     def test_word_definition_background_job(self):
         test_data = self.get_test_data()
 
@@ -93,11 +95,11 @@ class TestText(TestUser, TestCase):
 
         text_section_word = text_section_definitions.words.all()[0]
 
-        self.assertTrue(text_section_word.meanings.count())
+        self.assertTrue(text_section_word.translations.count())
 
-        text_section_word_meaning = text_section_word.meanings.all()[0]
+        text_section_word_translation = text_section_word.translations.all()[0]
 
-        self.assertTrue(text_section_word_meaning.text)
+        self.assertTrue(text_section_word_translation.phrase)
 
     def test_text_reading(self, student: Student=None) -> StudentTextReading:
         # add an additional question for testing

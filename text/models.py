@@ -61,7 +61,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
         for text_section in text_sections:
 
             if text_section.definitions:
-                text_section_definitions.update(text_section.definitions.to_dict(all_meanings=True))
+                text_section_definitions.update(text_section.definitions.to_dict(all_translations=True))
 
         return text_section_definitions
 
