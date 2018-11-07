@@ -23009,14 +23009,20 @@ var _user$project$TextReader_Model$selected = F2(
 	});
 var _user$project$TextReader_Model$glossed = F2(
 	function (reader_word, gloss) {
-		return A2(_elm_lang$core$Dict$member, reader_word.word, gloss);
+		return A2(
+			_elm_lang$core$Dict$member,
+			_elm_lang$core$String$toLower(reader_word.word),
+			gloss);
 	});
 var _user$project$TextReader_Model$ungloss = F2(
 	function (reader_word, gloss) {
 		return A2(
 			_elm_lang$core$Dict$remove,
 			reader_word.id,
-			A2(_elm_lang$core$Dict$remove, reader_word.word, gloss));
+			A2(
+				_elm_lang$core$Dict$remove,
+				_elm_lang$core$String$toLower(reader_word.word),
+				gloss));
 	});
 var _user$project$TextReader_Model$gloss = F2(
 	function (reader_word, gloss) {
@@ -23024,7 +23030,11 @@ var _user$project$TextReader_Model$gloss = F2(
 			_elm_lang$core$Dict$insert,
 			reader_word.id,
 			true,
-			A3(_elm_lang$core$Dict$insert, reader_word.word, true, gloss));
+			A3(
+				_elm_lang$core$Dict$insert,
+				_elm_lang$core$String$toLower(reader_word.word),
+				true,
+				gloss));
 	});
 var _user$project$TextReader_Model$Exception = F2(
 	function (a, b) {

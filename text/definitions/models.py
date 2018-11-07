@@ -7,7 +7,7 @@ class TextWord(models.Model):
     class Meta:
         unique_together = (('instance', 'word', 'text'),)
 
-    text = models.ForeignKey(Text, related_name='words', on_delete=models.CASCADE)
+    text = models.ForeignKey(Text, related_name='translated_words', on_delete=models.CASCADE)
 
     instance = models.IntegerField(default=0)
     word = models.CharField(max_length=128, blank=False)

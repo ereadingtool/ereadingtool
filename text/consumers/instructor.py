@@ -15,7 +15,7 @@ from text.consumers.base import TextReaderConsumer
 from text_reading.models import InstructorTextReading
 from text.models import TextSection
 
-from text.definitions.models import TextWordTranslation, TextDefinitions, TextWord
+from text.definitions.models import TextWordTranslation, TextWord
 
 logger = logging.getLogger('django.consumers')
 
@@ -41,7 +41,6 @@ class ParseTextSectionForDefinitions(SyncConsumer):
 
     def text_section_parse_word_definitions(self, message: Dict):
         text_section = TextSection.objects.get(pk=message['text_section_pk'])
-        text_section_definitions = text_section.definitions
 
         text_section_words = list(text_section.words)
 
@@ -50,15 +49,11 @@ class ParseTextSectionForDefinitions(SyncConsumer):
 
         word_data, word_freqs = text_section.parse_word_definitions()
 
-        if text_section_definitions is None:
-            text_section_definitions = TextDefinitions.objects.create()
-            text_section_definitions.save()
-
         for word in word_data:
             for i, word_instance in enumerate(word_data[word]):
                 with transaction.atomic():
                     text_word, text_word_created = TextWord.objects.get_or_create(
-                        definitions=text_section_definitions,
+                        text=text_section.text,
                         word=word,
                         instance=i,
                         **word_instance['grammemes'])
@@ -87,7 +82,6 @@ class ParseTextSectionForDefinitions(SyncConsumer):
 
         logger.info(f'Finished parsing translations for text section pk={message["text_section_pk"]}')
 
-        text_section.definitions = text_section_definitions
         text_section.save()
 
-        return text_section_definitions
+        return text_section

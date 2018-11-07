@@ -26,15 +26,15 @@ type alias TextReaderWord = {id: String, word: Word}
 
 gloss : TextReaderWord -> Gloss -> Gloss
 gloss reader_word gloss =
-  Dict.insert reader_word.id True (Dict.insert reader_word.word True gloss)
+  Dict.insert reader_word.id True (Dict.insert (String.toLower reader_word.word) True gloss)
 
 ungloss : TextReaderWord -> Gloss -> Gloss
 ungloss reader_word gloss =
-  Dict.remove reader_word.id (Dict.remove reader_word.word gloss)
+  Dict.remove reader_word.id (Dict.remove (String.toLower reader_word.word) gloss)
 
 glossed : TextReaderWord -> Gloss -> Bool
 glossed reader_word gloss =
-  Dict.member reader_word.word gloss
+  Dict.member (String.toLower reader_word.word) gloss
 
 selected : TextReaderWord -> Gloss -> Bool
 selected reader_word gloss =

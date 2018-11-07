@@ -86,18 +86,16 @@ class TestText(TestUser, TestCase):
         # process the message and test the output
         text_parse_consumer = ParseTextSectionForDefinitions(scope=ret)
 
-        text_section_definitions = text_parse_consumer.text_section_parse_word_definitions(
+        text_section = text_parse_consumer.text_section_parse_word_definitions(
             {'text_section_pk': ret['text_section_pk']})
 
-        self.assertTrue(text_section_definitions)
+        self.assertEquals(text_section.text.translated_words.count(), num_of_words)
 
-        self.assertEquals(text_section_definitions.words.count(), num_of_words)
+        text_word = text_section.text.translated_words.all()[0]
 
-        text_section_word = text_section_definitions.words.all()[0]
+        self.assertTrue(text_word.translations.count())
 
-        self.assertTrue(text_section_word.translations.count())
-
-        text_section_word_translation = text_section_word.translations.all()[0]
+        text_section_word_translation = text_word.translations.all()[0]
 
         self.assertTrue(text_section_word_translation.phrase)
 

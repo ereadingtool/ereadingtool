@@ -54,17 +54,6 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
     last_modified_by = models.ForeignKey('user.Instructor', null=True, on_delete=models.SET_NULL,
                                          related_name='last_modified_text')
 
-    def section_definitions(self, text_sections: Optional[List]=None) -> Dict:
-        text_sections = text_sections or self.sections.all()
-        text_section_definitions = {}
-
-        for text_section in text_sections:
-
-            if text_section.definitions:
-                text_section_definitions.update(text_section.definitions.to_dict(all_translations=True))
-
-        return text_section_definitions
-
     @classmethod
     def to_json_schema(cls) -> Dict:
         schema = {
@@ -220,7 +209,13 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
             'created_dt': self.created_dt.isoformat(),
             'text_sections': [text_section.to_dict() for text_section in
                               (text_sections if text_sections else self.sections.all())],
-            'words': self.section_definitions(),
+            'words': {
+                word.word: {
+                    'grammemes': word.grammemes,
+                    'translations': [translation.phrase for translation in
+                                     word.word_translations.filter(correct_for_context=True)]
+                } for word in self.translated_words.prefetch_related('translations').all()
+            },
             'write_locker': str(self.write_locker) if self.write_locker else None
         }
 
