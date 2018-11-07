@@ -79,7 +79,7 @@ class TextSectionDefinitionsMixin(models.Model):
                     translations = self.glosbe_api.translate(parsed_word.normal_form).translations
                     seen_translations[word] = translations
 
-                    logger.info(f'Retrieved definition for word {i+1} out of {num_of_words}.')
+                    logger.info(f'Retrieved translation for word {i+1} out of {num_of_words}.')
                 except GlosbeThrottlingException as e:
                     logger.error(f'GlosbeThrottlingException {e.message}')
 

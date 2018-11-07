@@ -53,7 +53,7 @@ class ParseTextSectionForDefinitions(SyncConsumer):
             for i, word_instance in enumerate(word_data[word]):
                 with transaction.atomic():
                     text_word, text_word_created = TextWord.objects.get_or_create(
-                        text=text_section.text,
+                        text_section=text_section,
                         word=word,
                         instance=i,
                         **word_instance['grammemes'])

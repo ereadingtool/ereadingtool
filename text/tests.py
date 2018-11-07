@@ -89,9 +89,9 @@ class TestText(TestUser, TestCase):
         text_section = text_parse_consumer.text_section_parse_word_definitions(
             {'text_section_pk': ret['text_section_pk']})
 
-        self.assertEquals(text_section.text.translated_words.count(), num_of_words)
+        self.assertEquals(text_section.translated_words.count(), num_of_words)
 
-        text_word = text_section.text.translated_words.all()[0]
+        text_word = text_section.translated_words.all()[0]
 
         self.assertTrue(text_word.translations.count())
 

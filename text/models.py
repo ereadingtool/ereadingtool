@@ -54,6 +54,18 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
     last_modified_by = models.ForeignKey('user.Instructor', null=True, on_delete=models.SET_NULL,
                                          related_name='last_modified_text')
 
+    @property
+    def words(self):
+        return {
+            word.word: {
+                'grammemes': word.grammemes,
+                'translations': [translation.phrase for translation in
+                                 word.word_translations.filter(correct_for_context=True)]
+            }
+            for section in self.sections.prefetch_related('translated_words').all()
+            for word in section.translated_words.all()
+        }
+
     @classmethod
     def to_json_schema(cls) -> Dict:
         schema = {
@@ -209,13 +221,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
             'created_dt': self.created_dt.isoformat(),
             'text_sections': [text_section.to_dict() for text_section in
                               (text_sections if text_sections else self.sections.all())],
-            'words': {
-                word.word: {
-                    'grammemes': word.grammemes,
-                    'translations': [translation.phrase for translation in
-                                     word.word_translations.filter(correct_for_context=True)]
-                } for word in self.translated_words.prefetch_related('translations').all()
-            },
+            'words': self.words,
             'write_locker': str(self.write_locker) if self.write_locker else None
         }
 
@@ -281,8 +287,8 @@ class TextSection(TextSectionDefinitionsMixin, Timestamped, models.Model):
                 word.word: {
                     'grammemes': word.grammemes,
                     'translations': [translation.phrase for translation in
-                                     word.word_translations.filter(correct_for_context=True)]
-                } for word in self.text.translated_words.prefetch_related('translations').all()
+                                     word.translations.filter(correct_for_context=True)]
+                } for word in self.translated_words.prefetch_related('translations').all()
             }
         }
 

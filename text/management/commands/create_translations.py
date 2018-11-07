@@ -5,10 +5,10 @@ from text.consumers.instructor import ParseTextSectionForDefinitions
 
 
 class Command(BaseCommand):
-    help = 'Collects definitions for a particular text section.'
+    help = 'Collects translations for a particular text section.'
 
     def add_arguments(self, parser):
-        parser.add_argument('text_section', action='store', help='Collects definitions for one text section.')
+        parser.add_argument('text_section', action='store', help='Collects translations for one text section.')
 
     def handle(self, *args, **options):
         if options['text_section']:

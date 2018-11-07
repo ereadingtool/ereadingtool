@@ -1,13 +1,13 @@
 from django.db import models
 
-from text.models import Text
+from text.models import TextSection
 
 
 class TextWord(models.Model):
     class Meta:
-        unique_together = (('instance', 'word', 'text'),)
+        unique_together = (('instance', 'word', 'text_section'),)
 
-    text = models.ForeignKey(Text, related_name='translated_words', on_delete=models.CASCADE)
+    text_section = models.ForeignKey(TextSection, related_name='translated_words', on_delete=models.CASCADE)
 
     instance = models.IntegerField(default=0)
     word = models.CharField(max_length=128, blank=False)
