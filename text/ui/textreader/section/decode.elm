@@ -22,7 +22,7 @@ textSectionDecoder =
     |> required "question_count" Json.Decode.int
     |> required "questions" TextReader.Question.Decode.questionsDecoder
     |> required "num_of_sections" Json.Decode.int
-    |> required "definitions" Text.Decode.wordsDecoder
+    |> required "translations" Text.Decode.wordsDecoder
 
 textSectionsDecoder : Json.Decode.Decoder (List TextSection)
 textSectionsDecoder = Json.Decode.list textSectionDecoder

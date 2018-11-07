@@ -277,7 +277,13 @@ class TextSection(TextSectionDefinitionsMixin, Timestamped, models.Model):
             'question_count': questions_count,
             'questions': questions_text_reading_dicts,
             'body': self.body,
-            'definitions': self.definitions.to_dict() if self.definitions else {}
+            'translations': {
+                word.word: {
+                    'grammemes': word.grammemes,
+                    'translations': [translation.phrase for translation in
+                                     word.word_translations.filter(correct_for_context=True)]
+                } for word in self.text.translated_words.prefetch_related('translations').all()
+            }
         }
 
         text_section_dict.update(**kwargs)

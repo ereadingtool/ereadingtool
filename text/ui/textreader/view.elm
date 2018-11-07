@@ -34,12 +34,12 @@ tagWord i model section j word =
   let
     id = String.join "_" [toString i, toString j, word]
     reader_word = TextReaderWord id word
-    dictionary = (TextReader.Section.Model.definitions section)
+    translations = (TextReader.Section.Model.translations section)
   in
-    if (Dict.member word dictionary) then
+    if (Dict.member word translations) then
       Html.node "span" [classList [("defined_word", True), ("cursor", True)], onClick (Gloss reader_word)] [
         span [classList [("highlighted", TextReader.Model.glossed reader_word model.gloss)] ] [ VirtualDom.text word ]
-      , view_gloss dictionary model reader_word
+      , view_gloss translations model reader_word
       ]
     else
       VirtualDom.text word

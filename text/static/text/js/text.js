@@ -22919,9 +22919,9 @@ var _user$project$TextReader_Question_Model$gen_text_question = function (questi
 		A2(_elm_lang$core$Array$map, _user$project$TextReader_Answer_Model$gen_text_answer, question.answers));
 };
 
-var _user$project$TextReader_Section_Model$definitions = function (_p0) {
+var _user$project$TextReader_Section_Model$translations = function (_p0) {
 	var _p1 = _p0;
-	return _p1._0.definitions;
+	return _p1._0.translations;
 };
 var _user$project$TextReader_Section_Model$text_section = function (_p2) {
 	var _p3 = _p2;
@@ -22985,11 +22985,11 @@ var _user$project$TextReader_Section_Model$emptyTextSection = {
 	questions: _elm_lang$core$Array$fromList(
 		{ctor: '[]'}),
 	num_of_sections: 0,
-	definitions: _elm_lang$core$Dict$empty
+	translations: _elm_lang$core$Dict$empty
 };
 var _user$project$TextReader_Section_Model$TextSection = F6(
 	function (a, b, c, d, e, f) {
-		return {order: a, body: b, question_count: c, questions: d, num_of_sections: e, definitions: f};
+		return {order: a, body: b, question_count: c, questions: d, num_of_sections: e, translations: f};
 	});
 var _user$project$TextReader_Section_Model$Section = F2(
 	function (a, b) {
@@ -26365,7 +26365,7 @@ var _user$project$TextReader_View$view_questions = function (section) {
 };
 var _user$project$TextReader_View$tagWord = F5(
 	function (i, model, section, j, word) {
-		var dictionary = _user$project$TextReader_Section_Model$definitions(section);
+		var translations = _user$project$TextReader_Section_Model$translations(section);
 		var id = A2(
 			_elm_lang$core$String$join,
 			'_',
@@ -26383,7 +26383,7 @@ var _user$project$TextReader_View$tagWord = F5(
 				}
 			});
 		var reader_word = A2(_user$project$TextReader_Model$TextReaderWord, id, word);
-		return A2(_elm_lang$core$Dict$member, word, dictionary) ? A3(
+		return A2(_elm_lang$core$Dict$member, word, translations) ? A3(
 			_elm_lang$html$Html$node,
 			'span',
 			{
@@ -26430,7 +26430,7 @@ var _user$project$TextReader_View$tagWord = F5(
 					}),
 				_1: {
 					ctor: '::',
-					_0: A3(_user$project$TextReader_View$view_gloss, dictionary, model, reader_word),
+					_0: A3(_user$project$TextReader_View$view_gloss, translations, model, reader_word),
 					_1: {ctor: '[]'}
 				}
 			}) : _elm_lang$virtual_dom$VirtualDom$text(word);
@@ -26687,7 +26687,7 @@ var _user$project$TextReader_Question_Decode$questionsDecoder = _elm_lang$core$J
 
 var _user$project$TextReader_Section_Decode$textSectionDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'definitions',
+	'translations',
 	_user$project$Text_Decode$wordsDecoder,
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,

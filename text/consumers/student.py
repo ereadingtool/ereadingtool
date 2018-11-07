@@ -26,7 +26,7 @@ class StudentTextReaderConsumer(TextReaderConsumer):
 
     @database_sync_to_async
     def word_exists_in_definitions(self, word: AnyStr):
-        return TextWord.objects.filter(definitions__text_section=self.text_reading.current_section, word=word).exists()
+        return TextWord.objects.filter(text=self.text_reading.current_section.text, word=word).exists()
 
     @database_sync_to_async
     def word_exists_in_flashcards(self, flashcards: Flashcards, text_word: TextWord):
@@ -34,7 +34,7 @@ class StudentTextReaderConsumer(TextReaderConsumer):
 
     @database_sync_to_async
     def get_word_in_definitions(self, word: AnyStr, instance: int):
-        return TextWord.objects.filter(definitions__text_section=self.text_reading.current_section,
+        return TextWord.objects.filter(text=self.text_reading.current_section.text,
                                        word=word,
                                        instance=instance).get()
 
