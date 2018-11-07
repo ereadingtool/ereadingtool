@@ -1,30 +1,13 @@
 from django.db import models
 
-
-class TextDefinitions(models.Model):
-    def to_dict(self, all_translations=False):
-        translations_filter_by = dict()
-
-        if not all_translations:
-            translations_filter_by['correct_for_context'] = True
-
-        return {
-            word.word: {
-                'grammemes': word.grammemes,
-                'translations': [translation.phrase for translation in
-                                 word.translations.filter(**translations_filter_by)]
-            } for word in self.words.prefetch_related('translations').all()
-        }
-
-    def __str__(self):
-        return f'{self.__class__.__name__} {self.words.count()} words for section {self.text_section}'
+from text.models import Text
 
 
 class TextWord(models.Model):
     class Meta:
-        unique_together = (('instance', 'word', 'definitions'),)
+        unique_together = (('instance', 'word', 'text'),)
 
-    definitions = models.ForeignKey(TextDefinitions, related_name='words', on_delete=models.CASCADE)
+    text = models.ForeignKey(Text, related_name='words', on_delete=models.CASCADE)
 
     instance = models.IntegerField(default=0)
     word = models.CharField(max_length=128, blank=False)

@@ -12,16 +12,12 @@ from django.utils.functional import cached_property
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
-from text.definitions.models import TextDefinitions
 from text.glosbe.api import GlosbeAPI, GlosbeThrottlingException
 
 logger = logging.getLogger('django')
 
 
 class TextSectionDefinitionsMixin(models.Model):
-    definitions = models.OneToOneField(TextDefinitions, null=True, related_name='text_section',
-                                       on_delete=models.SET_NULL)
-
     class Meta:
         abstract = True
 
