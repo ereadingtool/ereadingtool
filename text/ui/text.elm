@@ -98,7 +98,6 @@ main =
 view : Model -> Html Msg
 view model = div [] [
     (Views.view_header model.profile Nothing LogOut)
-  , (Views.view_filter)
   , (TextReader.View.view_content model)
   , (Views.view_footer)
   ]

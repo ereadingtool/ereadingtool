@@ -26926,15 +26926,11 @@ var _user$project$Main$view = function (model) {
 			_0: A3(_user$project$Views$view_header, model.profile, _elm_lang$core$Maybe$Nothing, _user$project$TextReader_Msg$LogOut),
 			_1: {
 				ctor: '::',
-				_0: _user$project$Views$view_filter,
+				_0: _user$project$TextReader_View$view_content(model),
 				_1: {
 					ctor: '::',
-					_0: _user$project$TextReader_View$view_content(model),
-					_1: {
-						ctor: '::',
-						_0: _user$project$Views$view_footer,
-						_1: {ctor: '[]'}
-					}
+					_0: _user$project$Views$view_footer,
+					_1: {ctor: '[]'}
 				}
 			}
 		});
