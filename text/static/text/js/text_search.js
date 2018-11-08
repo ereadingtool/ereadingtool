@@ -11542,7 +11542,7 @@ var _user$project$Views$menu_items = _user$project$Views$MenuItems(
 	_elm_lang$core$Array$fromList(
 		{
 			ctor: '::',
-			_0: A3(_user$project$Views$MenuItem, '/text/search', 'Search', false),
+			_0: A3(_user$project$Views$MenuItem, '/text/search', 'Search Texts', false),
 			_1: {ctor: '[]'}
 		}));
 var _user$project$Views$set_selected = F3(

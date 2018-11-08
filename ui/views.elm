@@ -19,7 +19,7 @@ type MenuItems = MenuItems (Array MenuItem)
 
 menu_items : MenuItems
 menu_items = MenuItems <| Array.fromList [
-    MenuItem "/text/search" "Search" False
+    MenuItem "/text/search" "Search Texts" False
   ]
 
 set_selected_menu_item : MenuItem -> Bool -> MenuItem
