@@ -10,7 +10,7 @@ import Dict exposing (Dict)
 import Profile exposing (Profile)
 
 import Text.Model
-import Text.Definitions exposing (Word, Meaning)
+import Text.Translations exposing (Word)
 
 import Text.Translations.View
 
@@ -122,11 +122,11 @@ view_questions section =
     div [class "questions"] (Array.toList <| Array.map (view_question section) text_reader_questions)
 
 
-view_translation : Text.Definitions.Translation -> Html Msg
+view_translation : Text.Translations.Translation -> Html Msg
 view_translation translation =
   div [class "translation"] [ Html.text translation ]
 
-view_translations : Maybe (List Text.Definitions.Translation) -> Html Msg
+view_translations : Maybe (List Text.Translations.Translation) -> Html Msg
 view_translations defs =
   div [class "translations"]
     (case defs of

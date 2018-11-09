@@ -2,7 +2,7 @@ module TextReader.Model exposing (..)
 
 import Dict exposing (Dict)
 
-import Text.Definitions exposing (TextWord, Word)
+import Text.Translations exposing (TextWord, Word)
 
 import TextReader.Text.Model exposing (Text)
 import TextReader.Section.Model exposing (Section)

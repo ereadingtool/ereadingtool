@@ -5,7 +5,7 @@ import Html.Attributes exposing (..)
 
 import Dict exposing (Dict)
 
-import Text.Definitions exposing (Word, Translation)
+import Text.Translations exposing (Word, Translation)
 
 import Text.Create exposing (Msg)
 import Text.Model

@@ -2,7 +2,7 @@ module Text.Model exposing (..)
 
 import Text.Section.Model exposing (emptyTextSection)
 
-import Text.Definitions exposing (Word, Meaning, Translation)
+import Text.Translations exposing (Word, Translation)
 
 import Dict exposing (Dict)
 import Date exposing (Date)
@@ -14,7 +14,7 @@ type alias Grammemes = Dict String (Maybe String)
 
 type alias WordValues = {
     grammemes: Grammemes
-  , translations: Maybe (List Text.Definitions.Translation) }
+  , translations: Maybe (List Text.Translations.Translation) }
 
 type alias TextWordTranslation = {
    id: Int

@@ -12,7 +12,7 @@ import Config exposing (student_api_endpoint, student_logout_api_endpoint)
 
 import Text.Reading.Model exposing (textReadingsDecoder)
 
-import Text.Definitions exposing (Flashcards, Word, TextWord, Grammemes, textWordDecoder)
+import Text.Translations exposing (Flashcards, Word, TextWord, Grammemes, textWordDecoder)
 import Util exposing (tupleDecoder)
 
 import HttpHelpers

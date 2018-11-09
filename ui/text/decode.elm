@@ -1,7 +1,7 @@
 module Text.Decode exposing (..)
 
 import Text.Model exposing (Text, TextDifficulty, TextListItem, WordValues, Words)
-import Text.Definitions exposing (Word, Meaning)
+import Text.Translations exposing (Word)
 
 import Text.Section.Decode
 

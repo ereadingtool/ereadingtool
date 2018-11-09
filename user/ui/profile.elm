@@ -1,6 +1,6 @@
 module Profile exposing (..)
 
-import Text.Definitions exposing (TextWord, Word, Meaning)
+import Text.Translations exposing (TextWord, Word)
 
 import Config exposing (student_api_endpoint)
 
@@ -14,7 +14,7 @@ import Instructor.View
 import Student.Profile.Model exposing (StudentProfile, StudentProfileParams, studentProfileDecoder)
 import Student.View
 
-import Text.Definitions exposing (Flashcards)
+import Text.Translations exposing (Flashcards)
 
 import Menu.Msg exposing (Msg)
 

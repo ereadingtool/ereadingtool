@@ -10,7 +10,7 @@ import TextReader.Text.Decode
 
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 
-import Text.Definitions exposing (textWordDecoder)
+import Text.Translations exposing (textWordDecoder)
 
 
 command_resp_decoder : String -> Json.Decode.Decoder CmdResp

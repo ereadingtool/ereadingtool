@@ -1,4 +1,4 @@
-module Text.Definitions exposing (..)
+module Text.Translations exposing (..)
 
 import Json.Decode
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)

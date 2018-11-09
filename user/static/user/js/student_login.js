@@ -9982,11 +9982,11 @@ var _user$project$Config$text_section_api_endpoint = '/api/section/';
 var _user$project$Config$text_api_endpoint = '/api/text/';
 var _user$project$Config$username_validation_api_endpoint = '/api/username/';
 
-var _user$project$Text_Definitions$Grammemes = F5(
+var _user$project$Text_Translations$Grammemes = F5(
 	function (a, b, c, d, e) {
 		return {pos: a, tense: b, aspect: c, form: d, mood: e};
 	});
-var _user$project$Text_Definitions$grammemesDecoder = A3(
+var _user$project$Text_Translations$grammemesDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'mood',
 	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
@@ -10006,24 +10006,24 @@ var _user$project$Text_Definitions$grammemesDecoder = A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 					'pos',
 					_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Definitions$Grammemes))))));
-var _user$project$Text_Definitions$TextWord = F3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Translations$Grammemes))))));
+var _user$project$Text_Translations$TextWord = F3(
 	function (a, b, c) {
 		return {word: a, grammemes: b, translation: c};
 	});
-var _user$project$Text_Definitions$textWordDecoder = A3(
+var _user$project$Text_Translations$textWordDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'translation',
 	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'grammemes',
-		_user$project$Text_Definitions$grammemesDecoder,
+		_user$project$Text_Translations$grammemesDecoder,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 			'word',
 			_elm_lang$core$Json_Decode$string,
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Definitions$TextWord))));
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Translations$TextWord))));
 
 var _user$project$HttpHelpers$delete_with_headers = F4(
 	function (url, headers, body, decoder) {
@@ -10438,7 +10438,7 @@ var _user$project$Student_Profile_Model$wordTextWordDecoder = A3(
 			return {ctor: '_Tuple2', _0: v0, _1: v1};
 		}),
 	A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$index, 1, _user$project$Text_Definitions$textWordDecoder));
+	A2(_elm_lang$core$Json_Decode$index, 1, _user$project$Text_Translations$textWordDecoder));
 var _user$project$Student_Profile_Model$emptyPerformanceReport = {html: '', pdf_link: ''};
 var _user$project$Student_Profile_Model$PerformanceReport = F2(
 	function (a, b) {
