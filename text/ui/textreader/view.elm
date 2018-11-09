@@ -12,7 +12,7 @@ import Profile exposing (Profile)
 import Text.Model
 import Text.Definitions exposing (Word, Meaning)
 
-import Text.Definitions.View
+import Text.Translations.View
 
 import TextReader.Model exposing (..)
 
@@ -139,7 +139,7 @@ view_translations defs =
 view_word_and_grammemes : TextReaderWord -> Text.Model.WordValues -> Html Msg
 view_word_and_grammemes reader_word values =
   div [] [
-    Html.text <| reader_word.word ++ " (" ++ Text.Definitions.View.view_grammemes_as_string values.grammemes ++ ")"
+    Html.text <| reader_word.word ++ " (" ++ Text.Translations.View.view_grammemes_as_string values.grammemes ++ ")"
   ]
 
 view_flashcard_words : Model -> Html Msg

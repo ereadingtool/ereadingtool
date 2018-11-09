@@ -54,3 +54,10 @@ class TextWordTranslation(models.Model):
 
     def __str__(self):
         return f'{self.word} - {self.phrase}'
+
+    def to_dict(self):
+        return {
+            'id': self.pk,
+            'correct_for_context': self.correct_for_context,
+            'text': self.phrase
+        }

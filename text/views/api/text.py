@@ -241,7 +241,7 @@ class TextAPIView(LoginRequiredMixin, View):
                         {'errors': {'text': "text with id {0} does not exist".format(kwargs['pk'])}}), status=400)
 
         if 'text_words' in request.GET.keys() and text is not None:
-            return HttpResponse(json.dumps(text.section_definitions(text_sections=text_sections)))
+            return HttpResponse(json.dumps(text.text_words))
 
         if 'difficulty' in request.GET.keys():
             filter_by['difficulty__slug__in'] = difficulties

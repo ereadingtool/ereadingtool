@@ -27,10 +27,11 @@ type alias TextWord = {
  , instance : Int
  , word: Word
  , grammemes: Grammemes
- , meanings: Maybe (List TextWordTranslation)
+ , translations: Maybe (List TextWordTranslation)
  }
 
 type alias Words = Dict Word WordValues
+type alias TextWords = Dict Word TextWord
 
 type alias Text = {
     id: Maybe Int

@@ -20759,7 +20759,7 @@ var _user$project$Text_Model$TextWordTranslation = F3(
 	});
 var _user$project$Text_Model$TextWord = F5(
 	function (a, b, c, d, e) {
-		return {id: a, instance: b, word: c, grammemes: d, meanings: e};
+		return {id: a, instance: b, word: c, grammemes: d, translations: e};
 	});
 var _user$project$Text_Model$Text = function (a) {
 	return function (b) {

@@ -60,7 +60,22 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
             word.word: {
                 'grammemes': word.grammemes,
                 'translations': [translation.phrase for translation in
-                                 word.word_translations.filter(correct_for_context=True)]
+                                 word.translations.all()]
+            }
+            for section in self.sections.prefetch_related('translated_words').all()
+            for word in section.translated_words.all()
+        }
+
+    @property
+    def text_words(self):
+        return {
+            word.word: {
+                'id': word.pk,
+                'instance': word.instance,
+                'word': word.word,
+                'grammemes': word.grammemes,
+                'translations': [translation.to_dict() for translation in
+                                 word.translations.all()]
             }
             for section in self.sections.prefetch_related('translated_words').all()
             for word in section.translated_words.all()

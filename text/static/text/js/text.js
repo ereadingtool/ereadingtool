@@ -21807,7 +21807,7 @@ var _user$project$Text_Model$TextWordTranslation = F3(
 	});
 var _user$project$Text_Model$TextWord = F5(
 	function (a, b, c, d, e) {
-		return {id: a, instance: b, word: c, grammemes: d, meanings: e};
+		return {id: a, instance: b, word: c, grammemes: d, translations: e};
 	});
 var _user$project$Text_Model$Text = function (a) {
 	return function (b) {
@@ -25470,7 +25470,7 @@ var _user$project$Text_Create$Model = function (a) {
 								return function (i) {
 									return function (j) {
 										return function (k) {
-											return {flags: a, mode: b, profile: c, success_msg: d, error_msg: e, text_component: f, text_difficulties: g, text_definitions: h, tags: i, write_locked: j, selected_tab: k};
+											return {flags: a, mode: b, profile: c, success_msg: d, error_msg: e, text_component: f, text_difficulties: g, text_translations: h, tags: i, write_locked: j, selected_tab: k};
 										};
 									};
 								};
@@ -25492,7 +25492,7 @@ var _user$project$Text_Create$TextViewParams = function (a) {
 							return function (h) {
 								return function (i) {
 									return function (j) {
-										return {text: a, text_component: b, text_fields: c, profile: d, tags: e, selected_tab: f, write_locked: g, mode: h, text_difficulties: i, text_definitions: j};
+										return {text: a, text_component: b, text_fields: c, profile: d, tags: e, selected_tab: f, write_locked: g, mode: h, text_difficulties: i, text_translations: j};
 									};
 								};
 							};
@@ -25508,7 +25508,7 @@ var _user$project$Text_Create$ReadOnlyMode = function (a) {
 };
 var _user$project$Text_Create$CreateMode = {ctor: 'CreateMode'};
 var _user$project$Text_Create$EditMode = {ctor: 'EditMode'};
-var _user$project$Text_Create$DefinitionsTab = {ctor: 'DefinitionsTab'};
+var _user$project$Text_Create$TranslationsTab = {ctor: 'TranslationsTab'};
 var _user$project$Text_Create$TextTab = {ctor: 'TextTab'};
 var _user$project$Text_Create$Conclusion = function (a) {
 	return {ctor: 'Conclusion', _0: a};
@@ -25592,14 +25592,14 @@ var _user$project$Text_Create$Submitted = function (a) {
 	return {ctor: 'Submitted', _0: a};
 };
 var _user$project$Text_Create$SubmitText = {ctor: 'SubmitText'};
-var _user$project$Text_Create$UpdateTextDefinitions = function (a) {
-	return {ctor: 'UpdateTextDefinitions', _0: a};
+var _user$project$Text_Create$UpdateTextTranslations = function (a) {
+	return {ctor: 'UpdateTextTranslations', _0: a};
 };
 var _user$project$Text_Create$UpdateTextDifficultyOptions = function (a) {
 	return {ctor: 'UpdateTextDifficultyOptions', _0: a};
 };
 
-var _user$project$Text_Definitions_View$view_grammeme_as_string = function (_p0) {
+var _user$project$Text_Translations_View$view_grammeme_as_string = function (_p0) {
 	var _p1 = _p0;
 	var _p2 = _p1._1;
 	if (_p2.ctor === 'Just') {
@@ -25611,16 +25611,16 @@ var _user$project$Text_Definitions_View$view_grammeme_as_string = function (_p0)
 		return '';
 	}
 };
-var _user$project$Text_Definitions_View$view_grammemes_as_string = function (grammemes) {
+var _user$project$Text_Translations_View$view_grammemes_as_string = function (grammemes) {
 	return A2(
 		_elm_lang$core$String$join,
 		', ',
 		A2(
 			_elm_lang$core$List$map,
-			_user$project$Text_Definitions_View$view_grammeme_as_string,
+			_user$project$Text_Translations_View$view_grammeme_as_string,
 			_elm_lang$core$Dict$toList(grammemes)));
 };
-var _user$project$Text_Definitions_View$view_grammeme = function (_p3) {
+var _user$project$Text_Translations_View$view_grammeme = function (_p3) {
 	var _p4 = _p3;
 	var _p5 = _p4._1;
 	if (_p5.ctor === 'Just') {
@@ -25655,7 +25655,7 @@ var _user$project$Text_Definitions_View$view_grammeme = function (_p3) {
 			{ctor: '[]'});
 	}
 };
-var _user$project$Text_Definitions_View$view_grammemes = function (grammemes) {
+var _user$project$Text_Translations_View$view_grammemes = function (grammemes) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -25665,10 +25665,10 @@ var _user$project$Text_Definitions_View$view_grammemes = function (grammemes) {
 		},
 		A2(
 			_elm_lang$core$List$map,
-			_user$project$Text_Definitions_View$view_grammeme,
+			_user$project$Text_Translations_View$view_grammeme,
 			_elm_lang$core$Dict$toList(grammemes)));
 };
-var _user$project$Text_Definitions_View$view_translation = F2(
+var _user$project$Text_Translations_View$view_text_word_translation = F2(
 	function (i, translation) {
 		return A2(
 			_elm_lang$html$Html$div,
@@ -25691,14 +25691,27 @@ var _user$project$Text_Definitions_View$view_translation = F2(
 								'. ')),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html$text(translation),
-							_1: {ctor: '[]'}
+							_0: _elm_lang$html$Html$text(translation.text),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(' '),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('correct translation :'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html$text(
+											_elm_lang$core$Basics$toString(translation.correct_for_context)),
+										_1: {ctor: '[]'}
+									}
+								}
+							}
 						}
 					}),
 				_1: {ctor: '[]'}
 			});
 	});
-var _user$project$Text_Definitions_View$view_translations = function (translations) {
+var _user$project$Text_Translations_View$view_text_word_translations = function (translations) {
 	var _p6 = translations;
 	if (_p6.ctor === 'Just') {
 		return A2(
@@ -25708,7 +25721,7 @@ var _user$project$Text_Definitions_View$view_translations = function (translatio
 				_0: _elm_lang$html$Html_Attributes$class('translations'),
 				_1: {ctor: '[]'}
 			},
-			A2(_elm_lang$core$List$indexedMap, _user$project$Text_Definitions_View$view_translation, _p6._0));
+			A2(_elm_lang$core$List$indexedMap, _user$project$Text_Translations_View$view_text_word_translation, _p6._0));
 	} else {
 		return A2(
 			_elm_lang$html$Html$div,
@@ -25724,14 +25737,14 @@ var _user$project$Text_Definitions_View$view_translations = function (translatio
 			});
 	}
 };
-var _user$project$Text_Definitions_View$view_word_definition = function (_p7) {
+var _user$project$Text_Translations_View$view_word_translation = function (_p7) {
 	var _p8 = _p7;
 	var _p9 = _p8._1;
 	return A2(
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('definition'),
+			_0: _elm_lang$html$Html_Attributes$class('translation'),
 			_1: {ctor: '[]'}
 		},
 		{
@@ -25766,7 +25779,7 @@ var _user$project$Text_Definitions_View$view_word_definition = function (_p7) {
 										'(',
 										A2(
 											_elm_lang$core$Basics_ops['++'],
-											_user$project$Text_Definitions_View$view_grammemes_as_string(_p9.grammemes),
+											_user$project$Text_Translations_View$view_grammemes_as_string(_p9.grammemes),
 											')'))),
 								_1: {ctor: '[]'}
 							}),
@@ -25778,23 +25791,23 @@ var _user$project$Text_Definitions_View$view_word_definition = function (_p7) {
 				_0: _elm_lang$html$Html$text(''),
 				_1: {
 					ctor: '::',
-					_0: _user$project$Text_Definitions_View$view_translations(_p9.translations),
+					_0: _user$project$Text_Translations_View$view_text_word_translations(_p9.translations),
 					_1: {ctor: '[]'}
 				}
 			}
 		});
 };
-var _user$project$Text_Definitions_View$view_definitions = function (words) {
+var _user$project$Text_Translations_View$view_translations = function (words) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('definitions'),
+			_0: _elm_lang$html$Html_Attributes$class('translations'),
 			_1: {ctor: '[]'}
 		},
 		A2(
 			_elm_lang$core$List$map,
-			_user$project$Text_Definitions_View$view_word_definition,
+			_user$project$Text_Translations_View$view_word_translation,
 			_elm_lang$core$Dict$toList(words)));
 };
 
@@ -26097,7 +26110,7 @@ var _user$project$TextReader_View$view_word_and_grammemes = F2(
 							' (',
 							A2(
 								_elm_lang$core$Basics_ops['++'],
-								_user$project$Text_Definitions_View$view_grammemes_as_string(values.grammemes),
+								_user$project$Text_Translations_View$view_grammemes_as_string(values.grammemes),
 								')')))),
 				_1: {ctor: '[]'}
 			});

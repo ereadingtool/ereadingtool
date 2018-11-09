@@ -19,7 +19,7 @@ import Text.Update
 
 import Text.Tags.View
 
-import Text.Definitions.View
+import Text.Translations.View
 
 
 view_text_date : TextViewParams -> Html Msg
@@ -278,8 +278,8 @@ view_tab_menu params =
      div [classList [("selected", params.selected_tab == TextTab)], onClick (ToggleTab TextTab)] [
        Html.text "Text"
      ]
-  ,  div [classList [("selected", params.selected_tab == DefinitionsTab)], onClick (ToggleTab DefinitionsTab)] [
-       Html.text "Definitions"
+  ,  div [classList [("selected", params.selected_tab == TranslationsTab)], onClick (ToggleTab TranslationsTab)] [
+       Html.text "Translations"
      ]
   ]
 
@@ -294,9 +294,9 @@ view_text_tab params =
           ReadOnlyMode write_locker -> []
           _ -> [view_submit])
 
-view_definitions_tab : TextViewParams -> Html Msg
-view_definitions_tab params =
-  Text.Definitions.View.view_definitions params.text.words
+view_translations_tab : TextViewParams -> Html Msg
+view_translations_tab params =
+  Text.Translations.View.view_translations params.text_translations
 
 
 view_tab_contents : TextViewParams -> Html Msg
@@ -305,8 +305,8 @@ view_tab_contents params =
     TextTab ->
       view_text_tab params
 
-    DefinitionsTab ->
-      view_definitions_tab params
+    TranslationsTab ->
+      view_translations_tab params
 
 view_text : TextViewParams -> Html Msg
 view_text params =

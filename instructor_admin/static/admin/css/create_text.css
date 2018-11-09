@@ -5,26 +5,6 @@ body {
     margin-left: 0;
 }
 
-.header {
-    display: grid;
-
-    grid-gap: 0;
-    grid-row-gap: 100px;
-    row-gap: 100px;
-
-    grid-template-rows: 67px;
-
-    background: #f9f9f9;
-
-    font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 18px;
-
-    align-items: center;
-    justify-items: center;
-
-    border: solid 0.5px lightgrey;
-}
-
 .preview {
     display: grid;
     grid-template-rows: 67px;
@@ -250,7 +230,7 @@ body {
     grid-column: 2;
     display: grid;
 
-    grid-template-columns: 6% 10% auto;
+    grid-template-columns: 6% 12% auto;
     text-align: center;
 }
 
@@ -579,7 +559,7 @@ body {
     font-size: 14px;
 }
 
-.definitions {
+.translations {
     display: grid;
     padding: 10px 10px 10px 10px;
 
@@ -589,11 +569,6 @@ body {
 .translation {
     display: grid;
     margin-top: 5px;
-}
-
-.definition {
-    display: grid;
-    margin-top: 10px;
 }
 
 .grammemes {

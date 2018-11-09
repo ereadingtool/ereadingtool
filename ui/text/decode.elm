@@ -106,12 +106,12 @@ textDifficultyDecoder : Decode.Decoder (List TextDifficulty)
 textDifficultyDecoder =
   Decode.keyValuePairs Decode.string
 
-textDefinitionsDecoder : Decode.Decoder (Dict Word Text.Model.TextWord)
-textDefinitionsDecoder =
+textTranslationsDecoder : Decode.Decoder (Dict Word Text.Model.TextWord)
+textTranslationsDecoder =
   Decode.dict textWordDecoder
 
-textWordMeaningDecoder : Decode.Decoder Text.Model.TextWordTranslation
-textWordMeaningDecoder =
+textWordTranslationsDecoder : Decode.Decoder Text.Model.TextWordTranslation
+textWordTranslationsDecoder =
   decode Text.Model.TextWordTranslation
     |> required "id" Decode.int
     |> required "correct_for_context" Decode.bool
@@ -124,7 +124,7 @@ textWordDecoder =
     |> required "instance" Decode.int
     |> required "word" Decode.string
     |> required "grammemes" grammemesDecoder
-    |> required "meanings" (Decode.nullable (Decode.list textWordMeaningDecoder))
+    |> required "translations" (Decode.nullable (Decode.list textWordTranslationsDecoder))
 
 decodeRespErrors : String -> Result String TextsRespError
 decodeRespErrors str =

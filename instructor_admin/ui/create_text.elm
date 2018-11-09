@@ -50,7 +50,7 @@ init flags = ({
       , profile=Instructor.Profile.init_profile flags.instructor_profile
       , text_component=Text.Component.emptyTextComponent
       , text_difficulties=[]
-      , text_definitions=Dict.empty
+      , text_translations=Dict.empty
       , tags=Dict.fromList []
       , selected_tab=TextTab
       , write_locked=False
@@ -90,10 +90,10 @@ retrieveTextWords : Int -> Cmd Msg
 retrieveTextWords text_id =
   let
     request =
-      Http.get (String.join "?" [String.join "/" [text_api_endpoint,  toString text_id], "text_words=list"])
-        Text.Decode.textDefinitionsDecoder
+      Http.get (String.join "?" [String.join "" [text_api_endpoint,  toString text_id], "text_words=list"])
+        Text.Decode.textTranslationsDecoder
   in
-    Http.send UpdateTextDefinitions request
+    Http.send UpdateTextTranslations request
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = case msg of
@@ -143,7 +143,9 @@ update msg model = case msg of
                      text_component=text_component
                    , mode=EditMode
                    , success_msg=Just <| "editing '" ++ text.title ++ "' text"
-                 }, Text.Component.reinitialize_ck_editors text_component)
+                 }, Cmd.batch [
+                      Text.Component.reinitialize_ck_editors text_component
+                    , retrieveTextWords (Maybe.withDefault 0 text.id) ])
 
         Err err -> let _ = Debug.log "text decode error" err in
           ({ model |
@@ -209,11 +211,11 @@ update msg model = case msg of
     UpdateTextDifficultyOptions (Err _) ->
       (model, Cmd.none)
 
-    UpdateTextDefinitions (Ok definitions) ->
-      ({ model | text_definitions = definitions}, Cmd.none)
+    UpdateTextTranslations (Ok translations) ->
+      ({ model | text_translations = translations}, Cmd.none)
 
     -- handle user-friendly msgs
-    UpdateTextDefinitions (Err _) ->
+    UpdateTextTranslations (Err err) -> let _ = Debug.log "error decoding text translations" err in
       (model, Cmd.none)
 
     ToggleEditable text_field editable ->
@@ -485,7 +487,7 @@ view model =
     text_view_params = {
         text=Text.Component.text model.text_component
       , text_component=model.text_component
-      , text_definitions=model.text_definitions
+      , text_translations=model.text_translations
       , text_fields=Text.Component.text_fields model.text_component
       , tags=model.tags
       , selected_tab=model.selected_tab

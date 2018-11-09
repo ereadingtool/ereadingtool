@@ -9988,7 +9988,7 @@ var _user$project$Text_Model$TextWordTranslation = F3(
 	});
 var _user$project$Text_Model$TextWord = F5(
 	function (a, b, c, d, e) {
-		return {id: a, instance: b, word: c, grammemes: d, meanings: e};
+		return {id: a, instance: b, word: c, grammemes: d, translations: e};
 	});
 var _user$project$Text_Model$Text = function (a) {
 	return function (b) {
@@ -10759,7 +10759,7 @@ var _user$project$Text_Decode$decodeRespErrors = function (str) {
 			_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string)),
 		str);
 };
-var _user$project$Text_Decode$textWordMeaningDecoder = A3(
+var _user$project$Text_Decode$textWordTranslationsDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'text',
 	_elm_lang$core$Json_Decode$string,
@@ -10905,9 +10905,9 @@ var _user$project$Text_Decode$textDecoder = A3(
 															_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$Text))))))))))))))));
 var _user$project$Text_Decode$textWordDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'meanings',
+	'translations',
 	_elm_lang$core$Json_Decode$nullable(
-		_elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textWordMeaningDecoder)),
+		_elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textWordTranslationsDecoder)),
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'grammemes',
@@ -10925,7 +10925,7 @@ var _user$project$Text_Decode$textWordDecoder = A3(
 					'id',
 					_elm_lang$core$Json_Decode$int,
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextWord))))));
-var _user$project$Text_Decode$textDefinitionsDecoder = _elm_lang$core$Json_Decode$dict(_user$project$Text_Decode$textWordDecoder);
+var _user$project$Text_Decode$textTranslationsDecoder = _elm_lang$core$Json_Decode$dict(_user$project$Text_Decode$textWordDecoder);
 var _user$project$Text_Decode$TextCreateResp = F2(
 	function (a, b) {
 		return {id: a, redirect: b};

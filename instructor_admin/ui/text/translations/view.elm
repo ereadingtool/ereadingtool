@@ -1,4 +1,4 @@
-module Text.Definitions.View exposing (..)
+module Text.Translations.View exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -10,17 +10,21 @@ import Text.Definitions exposing (Word, Translation)
 import Text.Create exposing (Msg)
 import Text.Model
 
-view_translation : Int -> Translation -> Html Msg
-view_translation i translation =
+view_text_word_translation : Int -> Text.Model.TextWordTranslation -> Html Msg
+view_text_word_translation i translation =
   div [class "translation"] [
-    div [] [ Html.text (toString (i+1) ++ ". "), Html.text translation ]
+    div [] [
+      Html.text (toString (i+1) ++ ". ")
+    , Html.text translation.text
+    ]
   ]
 
-view_translations : Maybe (List Text.Definitions.Translation) -> Html Msg
-view_translations translations =
+view_text_word_translations : Maybe (List Text.Model.TextWordTranslation) -> Html Msg
+view_text_word_translations translations =
   case translations of
     Just translations_list ->
-      div [class "translations"] (List.indexedMap view_translation translations_list)
+      div [class "translations"] (List.indexedMap view_text_word_translation translations_list)
+
     Nothing ->
       div [class "translations"] [Html.text "Undefined"]
 
@@ -50,17 +54,17 @@ view_grammemes_as_string : Dict String (Maybe String) -> String
 view_grammemes_as_string grammemes =
   String.join ", " <| List.map view_grammeme_as_string (Dict.toList grammemes)
 
-view_word_definition : (Word, Text.Model.WordValues) -> Html Msg
-view_word_definition (word, word_values) =
-  div [class "definition"] [
+view_word_translation : (Word, Text.Model.TextWord) -> Html Msg
+view_word_translation (word, text_word) =
+  div [class "translation"] [
     div [class "word"] [
       div [] [ Html.text word ]
-    , div [] [ Html.text <| "(" ++ (view_grammemes_as_string word_values.grammemes) ++ ")" ]
+    , div [] [ Html.text <| "(" ++ (view_grammemes_as_string text_word.grammemes) ++ ")" ]
     ]
   , Html.text ""
-  , view_translations word_values.translations
+  , view_text_word_translations text_word.translations
   ]
 
-view_definitions : Text.Model.Words -> Html Msg
-view_definitions words =
-  div [class "definitions"] (List.map view_word_definition (Dict.toList words))
+view_translations : Text.Model.TextWords -> Html Msg
+view_translations words =
+  div [class "translations"] (List.map view_word_translation (Dict.toList words))

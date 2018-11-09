@@ -7,8 +7,7 @@ import Json.Encode
 
 import Http
 
-import Text.Model exposing (Text, TextDifficulty, TextWord)
-import Text.Definitions exposing (Word, Meaning)
+import Text.Model exposing (Text, TextDifficulty, TextWord, TextWords)
 
 import Text.Update
 
@@ -16,7 +15,6 @@ import Instructor.Profile
 import Flags
 
 import Text.Model
-import Text.Definitions exposing (Word, Meaning)
 
 import Text.Component exposing (TextComponent)
 import Text.Field exposing (TextIntro, TextTitle, TextTags, TextAuthor, TextSource, TextDifficulty)
@@ -39,7 +37,7 @@ type alias WriteLocked = Bool
 
 type Mode = EditMode | CreateMode | ReadOnlyMode InstructorUser
 
-type Tab = TextTab | DefinitionsTab
+type Tab = TextTab | TranslationsTab
 
 type TextField =
     Title TextTitle
@@ -52,7 +50,7 @@ type TextField =
 
 type Msg =
     UpdateTextDifficultyOptions (Result Http.Error (List Text.Model.TextDifficulty))
-  | UpdateTextDefinitions (Result Http.Error (Dict Word Text.Model.TextWord))
+  | UpdateTextTranslations (Result Http.Error TextWords)
   | SubmitText
   | Submitted (Result Http.Error Text.Decode.TextCreateResp)
   | Updated (Result Http.Error Text.Decode.TextUpdateResp)
@@ -84,7 +82,7 @@ type alias Model = {
   , error_msg : Maybe String
   , text_component : TextComponent
   , text_difficulties : List Text.Model.TextDifficulty
-  , text_definitions : Dict Word TextWord
+  , text_translations : Text.Model.TextWords
   , tags: Dict String String
   , write_locked: Bool
   , selected_tab: Tab }
@@ -99,5 +97,5 @@ type alias TextViewParams = {
   , write_locked: WriteLocked
   , mode: Mode
   , text_difficulties: List Text.Model.TextDifficulty
-  , text_definitions: Dict Word TextWord }
+  , text_translations: Text.Model.TextWords }
 
