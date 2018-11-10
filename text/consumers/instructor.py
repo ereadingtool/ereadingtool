@@ -15,7 +15,7 @@ from text.consumers.base import TextReaderConsumer
 from text_reading.models import InstructorTextReading
 from text.models import TextSection
 
-from text.definitions.models import TextWordTranslation, TextWord
+from text.translations.models import TextWordTranslation, TextWord
 
 logger = logging.getLogger('django.consumers')
 

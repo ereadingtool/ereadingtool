@@ -41,6 +41,9 @@ import Ports exposing (ckEditor, ckEditorUpdate, clearInputText, confirm, confir
 
 import Text.Create exposing (..)
 
+import Text.Translations.Model
+import Text.Translations.Update
+
 init : Flags -> (Model, Cmd Msg)
 init flags = ({
         flags=flags
@@ -50,7 +53,7 @@ init flags = ({
       , profile=Instructor.Profile.init_profile flags.instructor_profile
       , text_component=Text.Component.emptyTextComponent
       , text_difficulties=[]
-      , text_translations=Dict.empty
+      , text_translations_model=Text.Translations.Model.init
       , tags=Dict.fromList []
       , selected_tab=TextTab
       , write_locked=False
@@ -86,19 +89,17 @@ retrieveTextDifficultyOptions =
   in
     Http.send UpdateTextDifficultyOptions request
 
-retrieveTextWords : Int -> Cmd Msg
-retrieveTextWords text_id =
-  let
-    request =
-      Http.get (String.join "?" [String.join "" [text_api_endpoint,  toString text_id], "text_words=list"])
-        Text.Decode.textTranslationsDecoder
-  in
-    Http.send UpdateTextTranslations request
-
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = case msg of
     TextComponentMsg msg ->
       (Text.Update.update msg model)
+
+    Text.Create.TextTranslationMsg msg ->
+      let
+        (text_translations_model, text_translation_cmd) =
+          Text.Translations.Update.update msg model.text_translations_model
+      in
+        ({ model | text_translations_model = text_translations_model }, Cmd.none)
 
     SubmitText ->
       let
@@ -128,6 +129,7 @@ update msg model = case msg of
                        , error_msg=Just <| "READONLY: text is currently being edited by " ++ write_locker
                        , write_locked=True
                      }, Text.Component.reinitialize_ck_editors text_component)
+
                   False ->
                     ({ model |
                          text_component=text_component
@@ -136,8 +138,9 @@ update msg model = case msg of
                        , write_locked=True
                     }, Cmd.batch [
                          Text.Component.reinitialize_ck_editors text_component
-                       , retrieveTextWords (Maybe.withDefault 0 text.id)
+                       , Text.Translations.Update.retrieveTextWords TextTranslationMsg (Maybe.withDefault 0 text.id)
                        ])
+
               Nothing ->
                 ({ model |
                      text_component=text_component
@@ -145,7 +148,7 @@ update msg model = case msg of
                    , success_msg=Just <| "editing '" ++ text.title ++ "' text"
                  }, Cmd.batch [
                       Text.Component.reinitialize_ck_editors text_component
-                    , retrieveTextWords (Maybe.withDefault 0 text.id) ])
+                    , Text.Translations.Update.retrieveTextWords TextTranslationMsg (Maybe.withDefault 0 text.id) ])
 
         Err err -> let _ = Debug.log "text decode error" err in
           ({ model |
@@ -209,13 +212,6 @@ update msg model = case msg of
 
     -- handle user-friendly msgs
     UpdateTextDifficultyOptions (Err _) ->
-      (model, Cmd.none)
-
-    UpdateTextTranslations (Ok translations) ->
-      ({ model | text_translations = translations}, Cmd.none)
-
-    -- handle user-friendly msgs
-    UpdateTextTranslations (Err err) -> let _ = Debug.log "error decoding text translations" err in
       (model, Cmd.none)
 
     ToggleEditable text_field editable ->
@@ -487,7 +483,8 @@ view model =
     text_view_params = {
         text=Text.Component.text model.text_component
       , text_component=model.text_component
-      , text_translations=model.text_translations
+      , text_translations_model=model.text_translations_model
+      , text_translation_msg=TextTranslationMsg
       , text_fields=Text.Component.text_fields model.text_component
       , tags=model.tags
       , selected_tab=model.selected_tab

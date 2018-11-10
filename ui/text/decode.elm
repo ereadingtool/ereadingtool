@@ -106,9 +106,9 @@ textDifficultyDecoder : Decode.Decoder (List TextDifficulty)
 textDifficultyDecoder =
   Decode.keyValuePairs Decode.string
 
-textTranslationsDecoder : Decode.Decoder (Dict Word Text.Model.TextWord)
+textTranslationsDecoder : Decode.Decoder (Dict String (Dict Word Text.Model.TextWord))
 textTranslationsDecoder =
-  Decode.dict textWordDecoder
+  Decode.dict (Decode.dict textWordDecoder)
 
 textWordTranslationsDecoder : Decode.Decoder Text.Model.TextWordTranslation
 textWordTranslationsDecoder =

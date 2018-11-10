@@ -335,6 +335,18 @@ body {
     width: 150px;
 }
 
+#word_menu {
+    padding-bottom: 10px;
+}
+
+#word_menu > span {
+    margin-right: 10px;
+}
+
+.underline {
+    border-bottom: 0.5px solid grey;
+}
+
 @media screen and (min-width:300px) and (max-width: 568px) {
     .text_items {
         margin-top: 2%;
@@ -586,7 +598,7 @@ body {
     margin-left: 10px;
 }
 
-.translations {
+.word_translations {
     display: grid;
     grid-template-columns: auto;
     padding: 0 10px 10px 10px;

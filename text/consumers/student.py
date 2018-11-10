@@ -5,7 +5,7 @@ from channels.db import database_sync_to_async
 from text.consumers.base import TextReaderConsumer
 from text_reading.models import StudentTextReading
 
-from text.definitions.models import TextWord
+from text.translations.models import TextWord
 
 from user.models import ReaderUser
 from user.student.models import Student

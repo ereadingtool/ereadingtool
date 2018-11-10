@@ -1,6 +1,6 @@
 from django.db import models
 
-from text.definitions.models import TextWord
+from text.translations.models import TextWord
 
 
 class Flashcards(models.Model):

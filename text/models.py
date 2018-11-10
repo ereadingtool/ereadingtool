@@ -5,7 +5,7 @@ from django.db import models
 from mixins.model import Timestamped, WriteLockable, WriteLocked
 from tag.models import Taggable
 
-from text.definitions.mixins import TextSectionDefinitionsMixin
+from text.translations.mixins import TextSectionDefinitionsMixin
 
 from django.urls import reverse
 
@@ -68,18 +68,22 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
 
     @property
     def text_words(self):
-        return {
-            word.word: {
-                'id': word.pk,
-                'instance': word.instance,
-                'word': word.word,
-                'grammemes': word.grammemes,
-                'translations': [translation.to_dict() for translation in
-                                 word.translations.all()]
-            }
-            for section in self.sections.prefetch_related('translated_words').all()
-            for word in section.translated_words.all()
-        }
+        words = dict()
+
+        for section in self.sections.prefetch_related('translated_words__translations').all():
+            for word in section.translated_words.all():
+                words.setdefault(word.word[0], {})
+
+                words[word.word[0]][word.word] = {
+                    'id': word.pk,
+                    'instance': word.instance,
+                    'word': word.word,
+                    'grammemes': word.grammemes,
+                    'translations': [translation.to_dict() for translation in
+                                     word.translations.all()]
+                }
+
+        return words
 
     @classmethod
     def to_json_schema(cls) -> Dict:

@@ -296,8 +296,7 @@ view_text_tab params =
 
 view_translations_tab : TextViewParams -> Html Msg
 view_translations_tab params =
-  Text.Translations.View.view_translations params.text_translations
-
+  Text.Translations.View.view_translations params.text_translation_msg params.text_translations_model
 
 view_tab_contents : TextViewParams -> Html Msg
 view_tab_contents params =

@@ -9,6 +9,9 @@ import Http
 
 import Text.Model exposing (Text, TextDifficulty, TextWord, TextWords)
 
+import Text.Translations.Model as TextTranslations
+import Text.Translations.Msg
+
 import Text.Update
 
 import Instructor.Profile
@@ -50,7 +53,7 @@ type TextField =
 
 type Msg =
     UpdateTextDifficultyOptions (Result Http.Error (List Text.Model.TextDifficulty))
-  | UpdateTextTranslations (Result Http.Error TextWords)
+  | TextTranslationMsg Text.Translations.Msg.Msg
   | SubmitText
   | Submitted (Result Http.Error Text.Decode.TextCreateResp)
   | Updated (Result Http.Error Text.Decode.TextUpdateResp)
@@ -82,7 +85,7 @@ type alias Model = {
   , error_msg : Maybe String
   , text_component : TextComponent
   , text_difficulties : List Text.Model.TextDifficulty
-  , text_translations : Text.Model.TextWords
+  , text_translations_model: TextTranslations.Model
   , tags: Dict String String
   , write_locked: Bool
   , selected_tab: Tab }
@@ -97,5 +100,6 @@ type alias TextViewParams = {
   , write_locked: WriteLocked
   , mode: Mode
   , text_difficulties: List Text.Model.TextDifficulty
-  , text_translations: Text.Model.TextWords }
+  , text_translations_model: TextTranslations.Model
+  , text_translation_msg: (Text.Translations.Msg.Msg -> Msg) }
 
