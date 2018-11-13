@@ -53,7 +53,7 @@ init flags = ({
       , profile=Instructor.Profile.init_profile flags.instructor_profile
       , text_component=Text.Component.emptyTextComponent
       , text_difficulties=[]
-      , text_translations_model=Text.Translations.Model.init
+      , text_translations_model=Text.Translations.Model.init { csrftoken=flags.csrftoken }
       , tags=Dict.fromList []
       , selected_tab=TextTab
       , write_locked=False
@@ -97,9 +97,9 @@ update msg model = case msg of
     Text.Create.TextTranslationMsg msg ->
       let
         (text_translations_model, text_translation_cmd) =
-          Text.Translations.Update.update msg model.text_translations_model
+          Text.Translations.Update.update TextTranslationMsg msg model.text_translations_model
       in
-        ({ model | text_translations_model = text_translations_model }, Cmd.none)
+        ({ model | text_translations_model = text_translations_model }, text_translation_cmd)
 
     SubmitText ->
       let

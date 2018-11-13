@@ -21276,6 +21276,12 @@ var _user$project$Config$instructor_login_api_endpoint = '/api/instructor/login/
 var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signup/';
 var _user$project$Config$question_api_endpoint = '/api/question/';
 var _user$project$Config$text_section_api_endpoint = '/api/section/';
+var _user$project$Config$text_translation_api_endpoint = function (id) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		'/api/text/translation/',
+		_elm_lang$core$Basics$toString(id));
+};
 var _user$project$Config$text_api_endpoint = '/api/text/';
 var _user$project$Config$username_validation_api_endpoint = '/api/username/';
 
@@ -22893,6 +22899,9 @@ var _user$project$TextReader_Encode$send_command = function (cmd_req) {
 };
 var _user$project$TextReader_Encode$jsonToString = _elm_lang$core$Json_Encode$encode(0);
 
+var _user$project$Text_Translations_Msg$UpdateTextTranslation = function (a) {
+	return {ctor: 'UpdateTextTranslation', _0: a};
+};
 var _user$project$Text_Translations_Msg$UpdateTextTranslations = function (a) {
 	return {ctor: 'UpdateTextTranslations', _0: a};
 };
@@ -22903,10 +22912,15 @@ var _user$project$Text_Translations_Msg$ShowLetter = function (a) {
 	return {ctor: 'ShowLetter', _0: a};
 };
 
-var _user$project$Text_Translations_Model$init = {words: _elm_lang$core$Dict$empty, current_letter: _elm_lang$core$Maybe$Nothing};
-var _user$project$Text_Translations_Model$Model = F2(
-	function (a, b) {
-		return {words: a, current_letter: b};
+var _user$project$Text_Translations_Model$init = function (flags) {
+	return {words: _elm_lang$core$Dict$empty, flags: flags, current_letter: _elm_lang$core$Maybe$Nothing};
+};
+var _user$project$Text_Translations_Model$Flags = function (a) {
+	return {csrftoken: a};
+};
+var _user$project$Text_Translations_Model$Model = F3(
+	function (a, b, c) {
+		return {words: a, flags: b, current_letter: c};
 	});
 
 var _user$project$Text_Translations_View$view_letter_menu = F2(
@@ -24121,6 +24135,14 @@ var _user$project$Text_Decode$textWordTranslationsDecoder = A3(
 			'id',
 			_elm_lang$core$Json_Decode$int,
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextWordTranslation))));
+var _user$project$Text_Decode$textTranslationUpdateRespDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	F2(
+		function (v0, v1) {
+			return {ctor: '_Tuple2', _0: v0, _1: v1};
+		}),
+	A2(_elm_lang$core$Json_Decode$field, 'word', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'translation', _user$project$Text_Decode$textWordTranslationsDecoder));
 var _user$project$Text_Decode$textDifficultyDecoder = _elm_lang$core$Json_Decode$keyValuePairs(_elm_lang$core$Json_Decode$string);
 var _user$project$Text_Decode$textListItemDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,

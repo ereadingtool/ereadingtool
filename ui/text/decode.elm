@@ -13,7 +13,6 @@ import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardc
 import Dict exposing (Dict)
 import Json.Decode.Extra exposing (date)
 
-
 type alias TextCreateResp = { id: Int, redirect: String }
 type alias TextUpdateResp = { id: Int, updated: Bool }
 type alias TextDeleteResp = { id: Int, redirect: String, deleted: Bool }
@@ -105,6 +104,10 @@ textLockRespDecoder =
 textDifficultyDecoder : Decode.Decoder (List TextDifficulty)
 textDifficultyDecoder =
   Decode.keyValuePairs Decode.string
+
+textTranslationUpdateRespDecoder : Decode.Decoder (Word, Text.Model.TextWordTranslation)
+textTranslationUpdateRespDecoder =
+  Decode.map2 (,) (Decode.field "word" Decode.string) (Decode.field "translation" textWordTranslationsDecoder)
 
 textTranslationsDecoder : Decode.Decoder (Dict String (Dict Word Text.Model.TextWord))
 textTranslationsDecoder =

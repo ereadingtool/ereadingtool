@@ -6652,6 +6652,12 @@ var _user$project$Config$instructor_login_api_endpoint = '/api/instructor/login/
 var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signup/';
 var _user$project$Config$question_api_endpoint = '/api/question/';
 var _user$project$Config$text_section_api_endpoint = '/api/section/';
+var _user$project$Config$text_translation_api_endpoint = function (id) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		'/api/text/translation/',
+		_elm_lang$core$Basics$toString(id));
+};
 var _user$project$Config$text_api_endpoint = '/api/text/';
 var _user$project$Config$username_validation_api_endpoint = '/api/username/';
 

@@ -1,4 +1,4 @@
-module Text.Encode exposing (textEncoder)
+module Text.Encode exposing (..)
 
 import Text.Model
 import Text.Section.Encode exposing (textSectionsEncoder)
@@ -27,3 +27,11 @@ textEncoder text =
             Just tags -> List.map (\tag -> Encode.string tag) tags
             _ -> []))
     ] ++ conclusion
+
+
+textTranslationEncoder : Text.Model.TextWordTranslation -> Encode.Value
+textTranslationEncoder text_translation =
+  Encode.object [
+    ("id", Encode.int text_translation.id)
+  , ("correct_for_context", Encode.bool text_translation.correct_for_context)
+  ]

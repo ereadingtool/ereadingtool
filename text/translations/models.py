@@ -1,3 +1,5 @@
+from typing import Dict
+
 from django.db import models
 
 from text.models import TextSection
@@ -61,3 +63,15 @@ class TextWordTranslation(models.Model):
             'correct_for_context': self.correct_for_context,
             'text': self.phrase
         }
+
+    @classmethod
+    def to_update_json_schema(cls) -> Dict:
+        schema = {
+            'type': 'object',
+            'properties': {
+                'correct_for_context': {'type': 'bool'},
+                'text': {'type': 'string'},
+            }
+        }
+
+        return schema

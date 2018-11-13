@@ -4,8 +4,12 @@ from text.views.template import TextLoadElm, TextView, TextSearchView, TextSearc
 from text.views.api.text import TextAPIView
 from text.views.api.tag import TextTagAPIView
 from text.views.api.lock import TextLockAPIView
+from text.views.api.translations import TextTranslationAPIView
 
 urlpatterns = [
+    path('api/text/translation/<int:tr_pk>/', TextTranslationAPIView.as_view(),
+         name='text-translation-api'),
+
     path('api/text/<int:pk>/', TextAPIView.as_view(), name='text-api'),
     path('api/text/', TextAPIView.as_view(), name='text-api'),
 
