@@ -7,6 +7,8 @@ from django.http import HttpResponseNotAllowed
 from django.urls import reverse_lazy
 from django.views.generic import View
 
+from django.db import transaction
+
 from text.models import Text
 from text.translations.models import TextWordTranslation
 
@@ -37,9 +39,9 @@ class TextTranslationAPIView(LoginRequiredMixin, View):
         try:
             text_word_translation = TextWordTranslation.objects.get(pk=kwargs['tr_pk'])
 
-            TextWordTranslation.objects.filter(word=text_word_translation.word).update(correct_for_context=False)
-
-            TextWordTranslation.objects.filter(pk=kwargs['tr_pk']).update(**text_translation_update_params)
+            with transaction.atomic():
+                TextWordTranslation.objects.filter(word=text_word_translation.word).update(correct_for_context=False)
+                TextWordTranslation.objects.filter(pk=kwargs['tr_pk']).update(**text_translation_update_params)
 
             text_word_translation.refresh_from_db()
 
