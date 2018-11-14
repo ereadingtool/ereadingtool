@@ -20,17 +20,25 @@ view_text_word_translation msg i translation =
     div [] [
       Html.text (toString (i+1) ++ ". ")
     , span [onClick (msg (MakeCorrectForContext translation))] [
-        Html.text translation.text
+        Html.text translation.text, Html.text ("(" ++ (toString translation.correct_for_context) ++ ")")
       ]
     ]
   ]
+
+sortByCorrectForContext : List Text.Model.TextWordTranslation -> List Text.Model.TextWordTranslation
+sortByCorrectForContext translations =
+  let
+    is_correct_for_context = (\tr -> tr.correct_for_context)
+  in
+    (List.filter is_correct_for_context translations) ++ (List.filter (is_correct_for_context >> not) translations)
+
 
 view_text_word_translations : (Msg -> msg) -> Maybe (List Text.Model.TextWordTranslation) -> Html msg
 view_text_word_translations msg translations =
   case translations of
     Just translations_list ->
       div [class "word_translations"]
-        (List.indexedMap (view_text_word_translation msg) translations_list)
+        (List.indexedMap (view_text_word_translation msg) (sortByCorrectForContext translations_list))
 
     Nothing ->
       div [class "word_translations"] [Html.text "Undefined"]

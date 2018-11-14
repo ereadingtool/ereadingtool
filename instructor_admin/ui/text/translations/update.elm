@@ -30,7 +30,8 @@ update parent_msg msg model =
 
     UpdateTextTranslation (Ok (word, translation)) ->
       let
-        letter_group = Maybe.withDefault Dict.empty (Dict.get (String.toLower word) model.words)
+        letter = String.left 1 (String.toUpper word)
+        letter_group = Maybe.withDefault Dict.empty (Dict.get letter model.words)
 
         update_word =
           (\value ->
@@ -46,7 +47,7 @@ update parent_msg msg model =
               -- word not found
               Nothing -> value)
 
-        new_letter_group = Dict.update word update_word letter_group
+        new_letter_group = Dict.update word update_word (setNoneCorrectForContext letter_group)
 
         update_word_group =
           (\value ->
@@ -58,7 +59,7 @@ update parent_msg msg model =
               Nothing ->
                 value)
 
-        new_words = Dict.update (String.toLower word) update_word_group model.words
+        new_words = Dict.update letter update_word_group model.words
       in
         ({ model | words = new_words }, Cmd.none)
 
@@ -73,6 +74,25 @@ update parent_msg msg model =
     UpdateTextTranslations (Err err) -> let _ = Debug.log "error decoding text translations" err in
       (model, Cmd.none)
 
+
+setNoneCorrectForContext : Text.Model.TextWords -> Text.Model.TextWords
+setNoneCorrectForContext text_words =
+  let
+    noneCorrect =
+      (\(k, v) ->
+         case v.translations of
+          Just translations ->
+            let
+              new_translations = List.map (\tr -> { tr | correct_for_context = False }) translations
+            in
+              (k, { v | translations = Just new_translations })
+
+          Nothing ->
+            (k, v))
+  in
+       Dict.fromList
+    <| List.map noneCorrect
+    <| Dict.toList text_words
 
 updateTranslation :
      List Text.Model.TextWordTranslation
@@ -89,7 +109,7 @@ updateTranslationAsCorrect msg csrftoken translation =
   let
     endpoint_uri = Config.text_translation_api_endpoint translation.id
     headers = [Http.header "X-CSRFToken" csrftoken]
-    encoded_translation = Text.Encode.textTranslationEncoder translation
+    encoded_translation = Text.Encode.textTranslationEncoder { translation | correct_for_context = True }
     body = (Http.jsonBody encoded_translation)
     request =
       HttpHelpers.put_with_headers endpoint_uri headers body Text.Decode.textTranslationUpdateRespDecoder

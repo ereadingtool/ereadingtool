@@ -18,9 +18,9 @@ class TextTranslationAPIView(LoginRequiredMixin, View):
     model = Text
 
     def put(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        text = text_word_translation = None
+        text_word_translation = None
 
-        if 'text_pk' not in kwargs and 'tr_pk' not in kwargs:
+        if 'tr_pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
 
         try:
@@ -35,14 +35,19 @@ class TextTranslationAPIView(LoginRequiredMixin, View):
             return HttpResponse(json.dumps({'errors': {'json': str(validation_error)}}), status=400)
 
         try:
-            text = Text.objects.get(pk=kwargs['text_pk'])
             text_word_translation = TextWordTranslation.objects.get(pk=kwargs['tr_pk'])
+
+            TextWordTranslation.objects.filter().update(correct_for_context=False)
+
             TextWordTranslation.objects.filter(pk=kwargs['tr_pk']).update(**text_translation_update_params)
 
-        except (TextWordTranslation.DoesNotExist, Text.DoesNotExist) as e:
+            text_word_translation.refresh_from_db()
+
+            return HttpResponse(json.dumps({
+                'word': text_word_translation.word.word,
+                'translation': text_word_translation.to_dict()
+            }))
+
+        except TextWordTranslation.DoesNotExist:
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
 
-        return HttpResponse(json.dumps({
-            'word': text_word_translation.word.word,
-            'translation': text_word_translation.to_dict()
-        }))

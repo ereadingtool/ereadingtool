@@ -69,7 +69,7 @@ class TextWordTranslation(models.Model):
         schema = {
             'type': 'object',
             'properties': {
-                'correct_for_context': {'type': 'bool'},
+                'correct_for_context': {'type': 'boolean'},
                 'text': {'type': 'string'},
             }
         }
