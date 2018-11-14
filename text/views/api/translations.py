@@ -44,7 +44,7 @@ class TextTranslationAPIView(LoginRequiredMixin, View):
             text_word_translation.refresh_from_db()
 
             return HttpResponse(json.dumps({
-                'word': text_word_translation.word.word,
+                'word': str(text_word_translation.word),
                 'translation': text_word_translation.to_dict()
             }))
 

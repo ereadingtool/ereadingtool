@@ -31,7 +31,7 @@ class TextWord(models.Model):
         }
 
     def __str__(self):
-        return f'{self.word} ({self.pos, self.tense, self.aspect, self.form, self.mood})'
+        return f'{self.word} instance {self.instance+1}'
 
     def to_dict(self):
         translation = None
