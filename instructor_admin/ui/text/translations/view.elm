@@ -20,7 +20,7 @@ view_text_word_translation msg i translation =
     div [] [
       Html.text (toString (i+1) ++ ". ")
     , span [onClick (msg (MakeCorrectForContext translation))] [
-        Html.text translation.text, Html.text ("(" ++ (toString translation.correct_for_context) ++ ")")
+        Html.text translation.text
       ]
     ]
   ]

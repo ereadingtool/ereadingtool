@@ -16218,18 +16218,7 @@ var _user$project$Text_Translations_View$view_text_word_translation = F3(
 								{
 									ctor: '::',
 									_0: _elm_lang$html$Html$text(translation.text),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html$text(
-											A2(
-												_elm_lang$core$Basics_ops['++'],
-												'(',
-												A2(
-													_elm_lang$core$Basics_ops['++'],
-													_elm_lang$core$Basics$toString(translation.correct_for_context),
-													')'))),
-										_1: {ctor: '[]'}
-									}
+									_1: {ctor: '[]'}
 								}),
 							_1: {ctor: '[]'}
 						}
@@ -17716,7 +17705,7 @@ var _user$project$Text_Translations_Update$update = F3(
 				};
 			case 'UpdateTextTranslation':
 				if (_p7._0.ctor === 'Ok') {
-					var _p14 = _p7._0._0._0;
+					var _p12 = _p7._0._0._0;
 					var update_word = function (value) {
 						var _p8 = value;
 						if (_p8.ctor === 'Just') {
@@ -17740,21 +17729,19 @@ var _user$project$Text_Translations_Update$update = F3(
 					var letter = A2(
 						_elm_lang$core$String$left,
 						1,
-						_elm_lang$core$String$toUpper(_p14));
+						_elm_lang$core$String$toUpper(_p12));
 					var letter_group = A2(
 						_elm_lang$core$Maybe$withDefault,
 						_elm_lang$core$Dict$empty,
 						A2(_elm_lang$core$Dict$get, letter, model.words));
-					var _p11 = A2(_elm_lang$core$Debug$log, 'letter group', letter_group);
 					var new_letter_group = A3(
 						_elm_lang$core$Dict$update,
-						_p14,
+						_p12,
 						update_word,
 						_user$project$Text_Translations_Update$setNoneCorrectForContext(letter_group));
-					var _p12 = A2(_elm_lang$core$Debug$log, 'new letter group', new_letter_group);
 					var update_word_group = function (value) {
-						var _p13 = value;
-						if (_p13.ctor === 'Just') {
+						var _p11 = value;
+						if (_p11.ctor === 'Just') {
 							return _elm_lang$core$Maybe$Just(new_letter_group);
 						} else {
 							return value;
@@ -17769,7 +17756,7 @@ var _user$project$Text_Translations_Update$update = F3(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p15 = A2(_elm_lang$core$Debug$log, 'error decoding text translation', _p7._0._0);
+					var _p13 = A2(_elm_lang$core$Debug$log, 'error decoding text translation', _p7._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			default:
@@ -17782,7 +17769,7 @@ var _user$project$Text_Translations_Update$update = F3(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p16 = A2(_elm_lang$core$Debug$log, 'error decoding text translations', _p7._0._0);
+					var _p14 = A2(_elm_lang$core$Debug$log, 'error decoding text translations', _p7._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 		}

@@ -21280,7 +21280,10 @@ var _user$project$Config$text_translation_api_endpoint = function (id) {
 	return A2(
 		_elm_lang$core$Basics_ops['++'],
 		'/api/text/translation/',
-		_elm_lang$core$Basics$toString(id));
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$Basics$toString(id),
+			'/'));
 };
 var _user$project$Config$text_api_endpoint = '/api/text/';
 var _user$project$Config$username_validation_api_endpoint = '/api/username/';
@@ -23051,6 +23054,20 @@ var _user$project$Text_Translations_View$view_grammemes = function (grammemes) {
 			_user$project$Text_Translations_View$view_grammeme,
 			_elm_lang$core$Dict$toList(grammemes)));
 };
+var _user$project$Text_Translations_View$sortByCorrectForContext = function (translations) {
+	var is_correct_for_context = function (tr) {
+		return tr.correct_for_context;
+	};
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		A2(_elm_lang$core$List$filter, is_correct_for_context, translations),
+		A2(
+			_elm_lang$core$List$filter,
+			function (_p6) {
+				return !is_correct_for_context(_p6);
+			},
+			translations));
+};
 var _user$project$Text_Translations_View$view_text_word_translation = F3(
 	function (msg, i, translation) {
 		return A2(
@@ -23096,8 +23113,8 @@ var _user$project$Text_Translations_View$view_text_word_translation = F3(
 	});
 var _user$project$Text_Translations_View$view_text_word_translations = F2(
 	function (msg, translations) {
-		var _p6 = translations;
-		if (_p6.ctor === 'Just') {
+		var _p7 = translations;
+		if (_p7.ctor === 'Just') {
 			return A2(
 				_elm_lang$html$Html$div,
 				{
@@ -23108,7 +23125,7 @@ var _user$project$Text_Translations_View$view_text_word_translations = F2(
 				A2(
 					_elm_lang$core$List$indexedMap,
 					_user$project$Text_Translations_View$view_text_word_translation(msg),
-					_p6._0));
+					_user$project$Text_Translations_View$sortByCorrectForContext(_p7._0)));
 		} else {
 			return A2(
 				_elm_lang$html$Html$div,
@@ -23125,9 +23142,9 @@ var _user$project$Text_Translations_View$view_text_word_translations = F2(
 		}
 	});
 var _user$project$Text_Translations_View$view_word_translation = F2(
-	function (msg, _p7) {
-		var _p8 = _p7;
-		var _p9 = _p8._1;
+	function (msg, _p8) {
+		var _p9 = _p8;
+		var _p10 = _p9._1;
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -23151,7 +23168,7 @@ var _user$project$Text_Translations_View$view_word_translation = F2(
 							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(_p8._0),
+								_0: _elm_lang$html$Html$text(_p9._0),
 								_1: {ctor: '[]'}
 							}),
 						_1: {
@@ -23167,7 +23184,7 @@ var _user$project$Text_Translations_View$view_word_translation = F2(
 											'(',
 											A2(
 												_elm_lang$core$Basics_ops['++'],
-												_user$project$Text_Translations_View$view_grammemes_as_string(_p9.grammemes),
+												_user$project$Text_Translations_View$view_grammemes_as_string(_p10.grammemes),
 												')'))),
 									_1: {ctor: '[]'}
 								}),
@@ -23179,7 +23196,7 @@ var _user$project$Text_Translations_View$view_word_translation = F2(
 					_0: _elm_lang$html$Html$text(''),
 					_1: {
 						ctor: '::',
-						_0: A2(_user$project$Text_Translations_View$view_text_word_translations, msg, _p9.translations),
+						_0: A2(_user$project$Text_Translations_View$view_text_word_translations, msg, _p10.translations),
 						_1: {ctor: '[]'}
 					}
 				}
@@ -23195,8 +23212,8 @@ var _user$project$Text_Translations_View$view_current_letter = F2(
 				_1: {ctor: '[]'}
 			},
 			function () {
-				var _p10 = model.current_letter;
-				if (_p10.ctor === 'Just') {
+				var _p11 = model.current_letter;
+				if (_p11.ctor === 'Just') {
 					return A2(
 						_elm_lang$core$List$map,
 						_user$project$Text_Translations_View$view_word_translation(msg),
@@ -23204,7 +23221,7 @@ var _user$project$Text_Translations_View$view_current_letter = F2(
 							A2(
 								_elm_lang$core$Maybe$withDefault,
 								_elm_lang$core$Dict$empty,
-								A2(_elm_lang$core$Dict$get, _p10._0, model.words))));
+								A2(_elm_lang$core$Dict$get, _p11._0, model.words))));
 				} else {
 					return {ctor: '[]'};
 				}
