@@ -37,17 +37,21 @@ update parent_msg msg model =
           (\value ->
             case value of
               Just v ->
-                case v.translations of
-                  Just translations ->
-                    Just ({ v | translations = Just (updateTranslation translations translation) })
+                let
+                  text_word = setNoTRCorrectForContext v
+                in
+                  case text_word.translations of
+                    Just translations ->
+                      Just
+                        { text_word | translations = Just (updateTranslation translations translation) }
 
-                  -- word has no translations
-                  Nothing -> value
+                    -- word has no translations
+                    Nothing -> value
 
               -- word not found
               Nothing -> value)
 
-        new_letter_group = Dict.update word update_word (setNoneCorrectForContext letter_group)
+        new_letter_group = Dict.update word update_word letter_group
 
         update_word_group =
           (\value ->
@@ -75,24 +79,17 @@ update parent_msg msg model =
       (model, Cmd.none)
 
 
-setNoneCorrectForContext : Text.Model.TextWords -> Text.Model.TextWords
-setNoneCorrectForContext text_words =
-  let
-    noneCorrect =
-      (\(k, v) ->
-         case v.translations of
-          Just translations ->
-            let
-              new_translations = List.map (\tr -> { tr | correct_for_context = False }) translations
-            in
-              (k, { v | translations = Just new_translations })
+setNoTRCorrectForContext : Text.Model.TextWord -> Text.Model.TextWord
+setNoTRCorrectForContext text_word =
+  case text_word.translations of
+    Just translations ->
+      let
+        new_translations = List.map (\tr -> { tr | correct_for_context = False }) translations
+      in
+        { text_word | translations = Just new_translations }
 
-          Nothing ->
-            (k, v))
-  in
-       Dict.fromList
-    <| List.map noneCorrect
-    <| Dict.toList text_words
+    Nothing ->
+      text_word
 
 updateTranslation :
      List Text.Model.TextWordTranslation

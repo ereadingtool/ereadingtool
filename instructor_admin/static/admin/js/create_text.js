@@ -17649,51 +17649,37 @@ var _user$project$Text_Translations_Update$updateTranslation = F2(
 		};
 		return A2(_elm_lang$core$List$map, update, translations);
 	});
-var _user$project$Text_Translations_Update$setNoneCorrectForContext = function (text_words) {
-	var noneCorrect = function (_p2) {
-		var _p3 = _p2;
-		var _p6 = _p3._1;
-		var _p5 = _p3._0;
-		var _p4 = _p6.translations;
-		if (_p4.ctor === 'Just') {
-			var new_translations = A2(
-				_elm_lang$core$List$map,
-				function (tr) {
-					return _elm_lang$core$Native_Utils.update(
-						tr,
-						{correct_for_context: false});
-				},
-				_p4._0);
-			return {
-				ctor: '_Tuple2',
-				_0: _p5,
-				_1: _elm_lang$core$Native_Utils.update(
-					_p6,
-					{
-						translations: _elm_lang$core$Maybe$Just(new_translations)
-					})
-			};
-		} else {
-			return {ctor: '_Tuple2', _0: _p5, _1: _p6};
-		}
-	};
-	return _elm_lang$core$Dict$fromList(
-		A2(
+var _user$project$Text_Translations_Update$setNoTRCorrectForContext = function (text_word) {
+	var _p2 = text_word.translations;
+	if (_p2.ctor === 'Just') {
+		var new_translations = A2(
 			_elm_lang$core$List$map,
-			noneCorrect,
-			_elm_lang$core$Dict$toList(text_words)));
+			function (tr) {
+				return _elm_lang$core$Native_Utils.update(
+					tr,
+					{correct_for_context: false});
+			},
+			_p2._0);
+		return _elm_lang$core$Native_Utils.update(
+			text_word,
+			{
+				translations: _elm_lang$core$Maybe$Just(new_translations)
+			});
+	} else {
+		return text_word;
+	}
 };
 var _user$project$Text_Translations_Update$update = F3(
 	function (parent_msg, msg, model) {
-		var _p7 = msg;
-		switch (_p7.ctor) {
+		var _p3 = msg;
+		switch (_p3.ctor) {
 			case 'ShowLetter':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							current_letter: _elm_lang$core$Maybe$Just(_p7._0)
+							current_letter: _elm_lang$core$Maybe$Just(_p3._0)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -17701,23 +17687,23 @@ var _user$project$Text_Translations_Update$update = F3(
 				return {
 					ctor: '_Tuple2',
 					_0: model,
-					_1: A3(_user$project$Text_Translations_Update$updateTranslationAsCorrect, parent_msg, model.flags.csrftoken, _p7._0)
+					_1: A3(_user$project$Text_Translations_Update$updateTranslationAsCorrect, parent_msg, model.flags.csrftoken, _p3._0)
 				};
 			case 'UpdateTextTranslation':
-				if (_p7._0.ctor === 'Ok') {
-					var _p12 = _p7._0._0._0;
+				if (_p3._0.ctor === 'Ok') {
+					var _p7 = _p3._0._0._0;
 					var update_word = function (value) {
-						var _p8 = value;
-						if (_p8.ctor === 'Just') {
-							var _p10 = _p8._0;
-							var _p9 = _p10.translations;
-							if (_p9.ctor === 'Just') {
+						var _p4 = value;
+						if (_p4.ctor === 'Just') {
+							var text_word = _user$project$Text_Translations_Update$setNoTRCorrectForContext(_p4._0);
+							var _p5 = text_word.translations;
+							if (_p5.ctor === 'Just') {
 								return _elm_lang$core$Maybe$Just(
 									_elm_lang$core$Native_Utils.update(
-										_p10,
+										text_word,
 										{
 											translations: _elm_lang$core$Maybe$Just(
-												A2(_user$project$Text_Translations_Update$updateTranslation, _p9._0, _p7._0._0._1))
+												A2(_user$project$Text_Translations_Update$updateTranslation, _p5._0, _p3._0._0._1))
 										}));
 							} else {
 								return value;
@@ -17729,19 +17715,15 @@ var _user$project$Text_Translations_Update$update = F3(
 					var letter = A2(
 						_elm_lang$core$String$left,
 						1,
-						_elm_lang$core$String$toUpper(_p12));
+						_elm_lang$core$String$toUpper(_p7));
 					var letter_group = A2(
 						_elm_lang$core$Maybe$withDefault,
 						_elm_lang$core$Dict$empty,
 						A2(_elm_lang$core$Dict$get, letter, model.words));
-					var new_letter_group = A3(
-						_elm_lang$core$Dict$update,
-						_p12,
-						update_word,
-						_user$project$Text_Translations_Update$setNoneCorrectForContext(letter_group));
+					var new_letter_group = A3(_elm_lang$core$Dict$update, _p7, update_word, letter_group);
 					var update_word_group = function (value) {
-						var _p11 = value;
-						if (_p11.ctor === 'Just') {
+						var _p6 = value;
+						if (_p6.ctor === 'Just') {
 							return _elm_lang$core$Maybe$Just(new_letter_group);
 						} else {
 							return value;
@@ -17756,20 +17738,20 @@ var _user$project$Text_Translations_Update$update = F3(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p13 = A2(_elm_lang$core$Debug$log, 'error decoding text translation', _p7._0._0);
+					var _p8 = A2(_elm_lang$core$Debug$log, 'error decoding text translation', _p3._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			default:
-				if (_p7._0.ctor === 'Ok') {
+				if (_p3._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{words: _p7._0._0}),
+							{words: _p3._0._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p14 = A2(_elm_lang$core$Debug$log, 'error decoding text translations', _p7._0._0);
+					var _p9 = A2(_elm_lang$core$Debug$log, 'error decoding text translations', _p3._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 		}

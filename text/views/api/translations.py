@@ -37,7 +37,7 @@ class TextTranslationAPIView(LoginRequiredMixin, View):
         try:
             text_word_translation = TextWordTranslation.objects.get(pk=kwargs['tr_pk'])
 
-            TextWordTranslation.objects.filter().update(correct_for_context=False)
+            TextWordTranslation.objects.filter(word=text_word_translation.word).update(correct_for_context=False)
 
             TextWordTranslation.objects.filter(pk=kwargs['tr_pk']).update(**text_translation_update_params)
 
