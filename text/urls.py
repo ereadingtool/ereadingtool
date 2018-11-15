@@ -5,13 +5,13 @@ from text.views.api.text import TextAPIView
 from text.views.api.tag import TextTagAPIView
 from text.views.api.lock import TextLockAPIView
 from text.views.api.translations import TextTranslationAPIView
-from text.views.api.text_word import TextWordAPIView
+from text.views.api.text_word import TextWordTranslationsAPIView
 
 urlpatterns = [
     path('api/text/translation/<int:tr_pk>/', TextTranslationAPIView.as_view(),
          name='text-translation-api'),
 
-    path('api/text/word/<int:pk>/', TextWordAPIView.as_view(),
+    path('api/text/word/<int:pk>/translation/', TextWordTranslationsAPIView.as_view(),
          name='text-word-api'),
 
     path('api/text/<int:pk>/', TextAPIView.as_view(), name='text-api'),

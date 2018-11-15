@@ -11,7 +11,7 @@ text_translation_api_endpoint : Int -> String
 text_translation_api_endpoint id = "/api/text/translation/" ++ toString id ++ "/"
 
 text_word_api_endpoint : Int -> String
-text_word_api_endpoint id = "/api/text/word/" ++ toString id ++ "/"
+text_word_api_endpoint id = "/api/text/word/" ++ toString id ++ "/translation/"
 
 text_section_api_endpoint : String
 text_section_api_endpoint = "/api/section/"

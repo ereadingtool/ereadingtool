@@ -33,21 +33,39 @@ view_correct_for_context correct =
 
 view_add_translation : (Msg -> msg) -> Text.Model.TextWord -> Html msg
 view_add_translation msg text_word =
-  div [] [
-    Html.input [attribute "type" "text", onInput (UpdateNewTranslationForTextWord text_word >> msg)] []
-  , Html.img [
-      attribute "src" "/static/img/add.svg"
-    , attribute "height" "17px"
-    , attribute "width" "17px"
-    , attribute "title" "Add a new translation."
-    , onClick (msg (AddNewTranslationForTextWord text_word))] []
+  div [class "add_translation"] [
+    div [] [
+      Html.input [
+        attribute "type" "text"
+      , placeholder "Add a translation"
+      , onInput (UpdateNewTranslationForTextWord text_word >> msg) ] []
+    ]
+  , div [] [
+      Html.img [
+        attribute "src" "/static/img/add.svg"
+      , attribute "height" "17px"
+      , attribute "width" "17px"
+      , attribute "title" "Add a new translation."
+      , onClick (msg (AddNewTranslationForTextWord text_word))] []
+    ]
   ]
 
-view_text_word_translation : (Msg -> msg) -> Text.Model.TextWordTranslation -> Html msg
-view_text_word_translation msg translation =
-  div [class "translation"] [
+view_translation_delete : (Msg -> msg) -> Text.Model.TextWord -> Text.Model.TextWordTranslation -> Html msg
+view_translation_delete msg text_word translation =
+  div [] [
+      Html.img [
+        attribute "src" "/static/img/delete.svg"
+      , attribute "height" "17px"
+      , attribute "width" "17px"
+      , attribute "title" "Delete this translation."
+      , onClick (msg (DeleteTranslation text_word translation))] []
+    ]
+
+view_text_word_translation : (Msg -> msg) -> Text.Model.TextWord -> Text.Model.TextWordTranslation -> Html msg
+view_text_word_translation msg text_word translation =
+  div [classList [("translation", True), ("editable", True)], onClick (msg (MakeCorrectForContext translation))] [
     div [] [
-      span [onClick (msg (MakeCorrectForContext translation))] <| [
+      div [] <| [
         Html.text translation.text
       ] ++ (view_correct_for_context translation.correct_for_context)
     ]
@@ -58,7 +76,7 @@ view_text_word_translations msg text_word =
   case text_word.translations of
     Just translations_list ->
       div [class "word_translations"] <|
-        (List.map (view_text_word_translation msg) translations_list) ++
+        (List.map (view_text_word_translation msg text_word) translations_list) ++
         [view_add_translation msg text_word]
 
     Nothing ->

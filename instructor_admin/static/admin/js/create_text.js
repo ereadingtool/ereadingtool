@@ -12843,7 +12843,7 @@ var _user$project$Config$text_word_api_endpoint = function (id) {
 		A2(
 			_elm_lang$core$Basics_ops['++'],
 			_elm_lang$core$Basics$toString(id),
-			'/'));
+			'/translation/'));
 };
 var _user$project$Config$text_translation_api_endpoint = function (id) {
 	return A2(
@@ -14661,6 +14661,13 @@ var _user$project$Text_Translations_Model$Model = F4(
 		return {words: a, new_translations: b, flags: c, current_letter: d};
 	});
 
+var _user$project$Text_Translations_Msg$DeletedTranslation = function (a) {
+	return {ctor: 'DeletedTranslation', _0: a};
+};
+var _user$project$Text_Translations_Msg$DeleteTranslation = F2(
+	function (a, b) {
+		return {ctor: 'DeleteTranslation', _0: a, _1: b};
+	});
 var _user$project$Text_Translations_Msg$AddedTextTranslation = function (a) {
 	return {ctor: 'AddedTextTranslation', _0: a};
 };
@@ -16229,57 +16236,115 @@ var _user$project$Text_Translations_View$view_grammemes = function (grammemes) {
 			_user$project$Text_Translations_View$view_grammeme,
 			_elm_lang$core$Dict$toList(grammemes)));
 };
-var _user$project$Text_Translations_View$view_add_translation = F2(
-	function (msg, text_word) {
+var _user$project$Text_Translations_View$view_translation_delete = F3(
+	function (msg, text_word, translation) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{ctor: '[]'},
 			{
 				ctor: '::',
 				_0: A2(
-					_elm_lang$html$Html$input,
+					_elm_lang$html$Html$img,
 					{
 						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/delete.svg'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onInput(
-								function (_p8) {
-									return msg(
-										A2(_user$project$Text_Translations_Msg$UpdateNewTranslationForTextWord, text_word, _p8));
-								}),
-							_1: {ctor: '[]'}
-						}
-					},
-					{ctor: '[]'}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$img,
-						{
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/add.svg'),
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '17px'),
 							_1: {
 								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '17px'),
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '17px'),
 								_1: {
 									ctor: '::',
-									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '17px'),
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'title', 'Delete this translation.'),
 									_1: {
 										ctor: '::',
-										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'title', 'Add a new translation.'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onClick(
-												msg(
-													_user$project$Text_Translations_Msg$AddNewTranslationForTextWord(text_word))),
-											_1: {ctor: '[]'}
-										}
+										_0: _elm_lang$html$Html_Events$onClick(
+											msg(
+												A2(_user$project$Text_Translations_Msg$DeleteTranslation, text_word, translation))),
+										_1: {ctor: '[]'}
 									}
 								}
 							}
-						},
-						{ctor: '[]'}),
+						}
+					},
+					{ctor: '[]'}),
+				_1: {ctor: '[]'}
+			});
+	});
+var _user$project$Text_Translations_View$view_add_translation = F2(
+	function (msg, text_word) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('add_translation'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$input,
+							{
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$placeholder('Add a translation'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onInput(
+											function (_p8) {
+												return msg(
+													A2(_user$project$Text_Translations_Msg$UpdateNewTranslationForTextWord, text_word, _p8));
+											}),
+										_1: {ctor: '[]'}
+									}
+								}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$img,
+								{
+									ctor: '::',
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/add.svg'),
+									_1: {
+										ctor: '::',
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '17px'),
+										_1: {
+											ctor: '::',
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '17px'),
+											_1: {
+												ctor: '::',
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'title', 'Add a new translation.'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Events$onClick(
+														msg(
+															_user$project$Text_Translations_Msg$AddNewTranslationForTextWord(text_word))),
+													_1: {ctor: '[]'}
+												}
+											}
+										}
+									}
+								},
+								{ctor: '[]'}),
+							_1: {ctor: '[]'}
+						}),
 					_1: {ctor: '[]'}
 				}
 			});
@@ -16326,14 +16391,29 @@ var _user$project$Text_Translations_View$view_correct_for_context = function (co
 		return {ctor: '[]'};
 	}
 };
-var _user$project$Text_Translations_View$view_text_word_translation = F2(
-	function (msg, translation) {
+var _user$project$Text_Translations_View$view_text_word_translation = F3(
+	function (msg, text_word, translation) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('translation'),
-				_1: {ctor: '[]'}
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'translation', _1: true},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'editable', _1: true},
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(
+						msg(
+							_user$project$Text_Translations_Msg$MakeCorrectForContext(translation))),
+					_1: {ctor: '[]'}
+				}
 			},
 			{
 				ctor: '::',
@@ -16343,14 +16423,8 @@ var _user$project$Text_Translations_View$view_text_word_translation = F2(
 					{
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$span,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(
-									msg(
-										_user$project$Text_Translations_Msg$MakeCorrectForContext(translation))),
-								_1: {ctor: '[]'}
-							},
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
 							A2(
 								_elm_lang$core$Basics_ops['++'],
 								{
@@ -16379,7 +16453,7 @@ var _user$project$Text_Translations_View$view_text_word_translations = F2(
 					_elm_lang$core$Basics_ops['++'],
 					A2(
 						_elm_lang$core$List$map,
-						_user$project$Text_Translations_View$view_text_word_translation(msg),
+						A2(_user$project$Text_Translations_View$view_text_word_translation, msg, text_word),
 						_p10._0),
 					{
 						ctor: '::',
@@ -17962,7 +18036,7 @@ var _user$project$Text_Translations_Update$update = F3(
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
-			default:
+			case 'AddedTextTranslation':
 				if (_p5._0.ctor === 'Ok') {
 					var _p15 = _p5._0._0._0;
 					var letter = A2(
@@ -17990,6 +18064,15 @@ var _user$project$Text_Translations_Update$update = F3(
 					}
 				} else {
 					var _p16 = A2(_elm_lang$core$Debug$log, 'error decoding adding text translations', _p5._0._0);
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'DeleteTranslation':
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			default:
+				if (_p5._0.ctor === 'Ok') {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					var _p17 = A2(_elm_lang$core$Debug$log, 'error decoding deleting text translations', _p5._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 		}

@@ -14,3 +14,5 @@ type Msg =
   | UpdateNewTranslationForTextWord Text.Model.TextWord String
   | AddNewTranslationForTextWord Text.Model.TextWord
   | AddedTextTranslation (Result Http.Error (Text.Translations.Word, Text.Model.TextWordTranslation))
+  | DeleteTranslation Text.Model.TextWord Text.Model.TextWordTranslation
+  | DeletedTranslation (Result Http.Error (Text.Translations.Word, Text.Model.TextWordTranslation))

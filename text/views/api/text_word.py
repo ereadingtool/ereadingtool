@@ -10,18 +10,41 @@ from django.views.generic import View
 
 from django.db import DatabaseError
 
-from django.db import transaction
-
 from text.translations.models import TextWord, TextWordTranslation
 
 
-class TextWordAPIView(LoginRequiredMixin, View):
+class TextWordTranslationsAPIView(LoginRequiredMixin, View):
     login_url = reverse_lazy('instructor-login')
-    allowed_methods = ['post']
+    allowed_methods = ['post', 'delete']
+
+    def delete(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        if 'pk' not in kwargs:
+            return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
+
+        try:
+            text_word_delete_translation_params = json.loads(request.body.decode('utf8'))
+
+            if 'id' not in text_word_delete_translation_params:
+                return HttpResponse(json.dumps({'errors': {'json': 'id param required.'}}), status=400)
+
+        except json.JSONDecodeError as decode_error:
+            return HttpResponse(json.dumps({'errors': {'json': str(decode_error)}}), status=400)
+
+        try:
+            text_word_translation = TextWordTranslation.objects.get(pk=text_word_delete_translation_params['id'])
+
+            deleted, deleted_objs = text_word_translation.delete()
+
+            return HttpResponse(json.dumps({
+                'word': str(text_word_translation.word),
+                'translation': text_word_translation.to_dict(),
+                'deleted': deleted >= 1
+            }))
+
+        except (TextWord.DoesNotExist, DatabaseError):
+            return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        text_word = None
-
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
 

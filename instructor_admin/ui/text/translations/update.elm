@@ -110,6 +110,17 @@ update parent_msg msg model =
     AddedTextTranslation (Err err) -> let _ = Debug.log "error decoding adding text translations" err in
       (model, Cmd.none)
 
+    DeleteTranslation text_word text_translation ->
+      (model, Cmd.none)
+
+    DeletedTranslation (Ok (word, translation)) ->
+      (model, Cmd.none)
+
+    -- handle user-friendly msgs
+    DeletedTranslation (Err err) -> let _ = Debug.log "error decoding deleting text translations" err in
+      (model, Cmd.none)
+
+
 
 addTranslation : Text.Model.TextWord -> Text.Model.TextWordTranslation -> Text.Model.TextWord
 addTranslation text_word translation =

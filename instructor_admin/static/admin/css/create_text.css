@@ -605,6 +605,18 @@ body {
 
 .word_translations {
     display: grid;
-    grid-template-columns: auto;
+    grid-template-columns: min-content;
     padding: 0 0 10px 10px;
+}
+
+.add_translation {
+    margin-top: 5px;
+}
+
+.translation_delete {
+    visibility: hidden;
+}
+
+.translation:hover > .translation_delete {
+    visibility: visible;
 }
