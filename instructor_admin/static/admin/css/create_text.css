@@ -335,11 +335,11 @@ body {
     width: 150px;
 }
 
-#word_menu {
+#letter_menu {
     padding-bottom: 10px;
 }
 
-#word_menu > span {
+#letter_menu > span {
     margin-right: 10px;
 }
 
@@ -575,11 +575,14 @@ body {
     display: grid;
     padding: 10px 10px 10px 10px;
 
-    grid-template-columns: auto;
+    grid-template-columns: min-content;
 }
 
 .translation {
     display: grid;
+
+    grid-template-columns: 1fr min-content;
+
     margin-top: 5px;
     cursor: pointer;
 }
@@ -592,24 +595,25 @@ body {
     margin-top: 15px;
 }
 
-.word > div:nth-child(1) {
+.phrase {
     display: inline-block;
     font-weight: bolder;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
 }
 
-.word > div:nth-child(2) {
+.word > .grammemes {
     display: inline-block;
     margin-left: 10px;
 }
 
-.word_translations {
+#translations_tab {
     display: grid;
-    grid-template-columns: min-content;
-    padding: 0 0 10px 10px;
+    margin: 15px 15px 15px 15px;
 }
 
 .add_translation {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     margin-top: 5px;
 }
 
@@ -617,6 +621,15 @@ body {
     visibility: hidden;
 }
 
-.translation:hover > .translation_delete {
+.translation .icons {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 5px;
+
+    align-items: center;
+}
+
+.translation:hover > div > .translation_delete {
     visibility: visible;
 }

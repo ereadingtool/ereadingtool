@@ -6,6 +6,9 @@ import Dict exposing (Dict)
 import Text.Model
 import Text.Translations
 
+import Text.Decode
+
+
 type Msg =
     ShowLetter String
   | MakeCorrectForContext Text.Model.TextWordTranslation
@@ -15,4 +18,4 @@ type Msg =
   | AddNewTranslationForTextWord Text.Model.TextWord
   | AddedTextTranslation (Result Http.Error (Text.Translations.Word, Text.Model.TextWordTranslation))
   | DeleteTranslation Text.Model.TextWord Text.Model.TextWordTranslation
-  | DeletedTranslation (Result Http.Error (Text.Translations.Word, Text.Model.TextWordTranslation))
+  | DeletedTranslation (Result Http.Error Text.Decode.TextWordTranslationDeleteResp)

@@ -111,10 +111,14 @@ update parent_msg msg model =
       (model, Cmd.none)
 
     DeleteTranslation text_word text_translation ->
-      (model, Cmd.none)
+      (model, deleteTranslation parent_msg model.flags.csrftoken text_word text_translation)
 
-    DeletedTranslation (Ok (word, translation)) ->
-      (model, Cmd.none)
+    DeletedTranslation (Ok translation_deleted_resp) ->
+      let
+        word = translation_deleted_resp.word
+        translation = translation_deleted_resp.translation
+      in
+        (model, Cmd.none)
 
     -- handle user-friendly msgs
     DeletedTranslation (Err err) -> let _ = Debug.log "error decoding deleting text translations" err in
@@ -156,6 +160,18 @@ updateTranslation translations translation =
     update = (\tr -> if tr.id == translation.id then translation else tr)
   in
     List.map update translations
+
+deleteTranslation : (Msg -> msg) -> Flags.CSRFToken -> Text.Model.TextWord -> Text.Model.TextWordTranslation -> Cmd msg
+deleteTranslation msg csrftoken text_word translation =
+  let
+    endpoint_uri = Config.text_word_api_endpoint text_word.id
+    headers = [Http.header "X-CSRFToken" csrftoken]
+    encoded_translation = Text.Encode.deleteTextTranslationEncode translation.id
+    body = (Http.jsonBody encoded_translation)
+    request =
+      HttpHelpers.post_with_headers endpoint_uri headers body Text.Decode.textTranslationRemoveRespDecoder
+  in
+    Http.send (msg << DeletedTranslation) request
 
 postTranslation : (Msg -> msg) -> Flags.CSRFToken -> Text.Model.TextWord -> String -> Cmd msg
 postTranslation msg csrftoken text_word translation_text =

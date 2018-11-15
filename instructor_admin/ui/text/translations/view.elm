@@ -20,7 +20,7 @@ view_correct_for_context correct =
   case correct of
     True ->
       [
-        span [class "correct_checkmark", attribute "title" "Correct for the context."] [
+        div [class "correct_checkmark", attribute "title" "Correct for the context."] [
           Html.img [
             attribute "src" "/static/img/circle_check.svg"
           , attribute "height" "12px"
@@ -52,7 +52,7 @@ view_add_translation msg text_word =
 
 view_translation_delete : (Msg -> msg) -> Text.Model.TextWord -> Text.Model.TextWordTranslation -> Html msg
 view_translation_delete msg text_word translation =
-  div [] [
+  div [class "translation_delete"] [
       Html.img [
         attribute "src" "/static/img/delete.svg"
       , attribute "height" "17px"
@@ -63,24 +63,23 @@ view_translation_delete msg text_word translation =
 
 view_text_word_translation : (Msg -> msg) -> Text.Model.TextWord -> Text.Model.TextWordTranslation -> Html msg
 view_text_word_translation msg text_word translation =
-  div [classList [("translation", True), ("editable", True)], onClick (msg (MakeCorrectForContext translation))] [
-    div [] [
-      div [] <| [
-        Html.text translation.text
-      ] ++ (view_correct_for_context translation.correct_for_context)
-    ]
+  div [classList [("translation", True)]] [
+    div [ classList [("editable", True), ("phrase", True)]
+        , onClick (msg (MakeCorrectForContext translation))] [ Html.text translation.text ]
+  , div [class "icons"] <|
+      (view_correct_for_context translation.correct_for_context) ++ [view_translation_delete msg text_word translation]
   ]
 
 view_text_word_translations : (Msg -> msg) -> Text.Model.TextWord -> Html msg
 view_text_word_translations msg text_word =
   case text_word.translations of
     Just translations_list ->
-      div [class "word_translations"] <|
+      div [class "translations"] <|
         (List.map (view_text_word_translation msg text_word) translations_list) ++
         [view_add_translation msg text_word]
 
     Nothing ->
-      div [class "word_translations"] [Html.text "Undefined"]
+      div [class "translations"] [Html.text "Undefined"]
 
 view_grammeme : (String, Maybe String) -> Html Msg
 view_grammeme (grammeme, grammeme_value) =
@@ -119,18 +118,15 @@ view_grammemes_as_string grammemes =
 
 view_word_translation : (Msg -> msg) -> (Word, Text.Model.TextWord) -> Html msg
 view_word_translation msg (word, text_word) =
-  div [class "translation"] [
-    div [class "word"] [
-      div [] [ Html.text word ]
-    , div [] [ Html.text <| "(" ++ (view_grammemes_as_string text_word.grammemes) ++ ")" ]
-    ]
-  , Html.text ""
+  div [class "word"] [
+    div [class "phrase"] [ Html.text word ]
+  , div [class "grammemes"] [ Html.text <| "(" ++ (view_grammemes_as_string text_word.grammemes) ++ ")" ]
   , view_text_word_translations msg text_word
   ]
 
 view_current_letter : (Msg -> msg) -> Model -> Html msg
 view_current_letter msg model =
-  div [id "words"]
+  div [id "letter"]
     (case model.current_letter of
       Just letter ->
         List.map (view_word_translation msg) (Dict.toList <| Maybe.withDefault Dict.empty (Dict.get letter model.words))
@@ -143,7 +139,7 @@ view_letter_menu msg model =
   let
     underlined letter = letter == Maybe.withDefault "" model.current_letter
   in
-    div [id "word_menu"]
+    div [id "letter_menu"]
       (List.map (\letter ->
         span [] [
           span [classList [("cursor", True), ("underline", underlined letter)], onClick (msg (ShowLetter letter))] [
@@ -153,7 +149,7 @@ view_letter_menu msg model =
 
 view_translations : (Msg -> msg) -> Model -> Html msg
 view_translations msg model =
-  div [class "translations"] [
+  div [id "translations_tab"] [
     view_letter_menu msg model
   , view_current_letter msg model
   ]

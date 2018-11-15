@@ -21,6 +21,7 @@ type alias TextProgressUpdateResp = { updated: Bool }
 
 type alias TextsRespError = Dict String String
 
+type alias TextWordTranslationDeleteResp = { id: Int, translation: Text.Model.TextWordTranslation, deleted: Bool }
 
 grammemesDecoder : Decode.Decoder Text.Model.Grammemes
 grammemesDecoder =
@@ -112,6 +113,13 @@ textTranslationUpdateRespDecoder =
 textTranslationAddRespDecoder : Decode.Decoder (Word, Text.Model.TextWordTranslation)
 textTranslationAddRespDecoder =
   Decode.map2 (,) (Decode.field "word" Decode.string) (Decode.field "translation" textWordTranslationsDecoder)
+
+textTranslationRemoveRespDecoder : Decode.Decoder TextWordTranslationDeleteResp
+textTranslationRemoveRespDecoder =
+  decode TextWordTranslationDeleteResp
+    |> required "id" Decode.int
+    |> required "translation" textWordTranslationsDecoder
+    |> required "deleted" Decode.bool
 
 textTranslationsDecoder : Decode.Decoder (Dict String (Dict Word Text.Model.TextWord))
 textTranslationsDecoder =

@@ -16098,7 +16098,7 @@ var _user$project$Text_Translations_View$view_letter_menu = F2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$id('word_menu'),
+				_0: _elm_lang$html$Html_Attributes$id('letter_menu'),
 				_1: {ctor: '[]'}
 			},
 			A2(
@@ -16240,7 +16240,11 @@ var _user$project$Text_Translations_View$view_translation_delete = F3(
 	function (msg, text_word, translation) {
 		return A2(
 			_elm_lang$html$Html$div,
-			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('translation_delete'),
+				_1: {ctor: '[]'}
+			},
 			{
 				ctor: '::',
 				_0: A2(
@@ -16355,7 +16359,7 @@ var _user$project$Text_Translations_View$view_correct_for_context = function (co
 		return {
 			ctor: '::',
 			_0: A2(
-				_elm_lang$html$Html$span,
+				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
 					_0: _elm_lang$html$Html_Attributes$class('correct_checkmark'),
@@ -16401,41 +16405,58 @@ var _user$project$Text_Translations_View$view_text_word_translation = F3(
 					{
 						ctor: '::',
 						_0: {ctor: '_Tuple2', _0: 'translation', _1: true},
-						_1: {
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'editable', _1: true},
-							_1: {ctor: '[]'}
-						}
+						_1: {ctor: '[]'}
 					}),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onClick(
-						msg(
-							_user$project$Text_Translations_Msg$MakeCorrectForContext(translation))),
-					_1: {ctor: '[]'}
-				}
+				_1: {ctor: '[]'}
 			},
 			{
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$div,
-					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{ctor: '[]'},
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								{
+						_0: _elm_lang$html$Html_Attributes$classList(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'editable', _1: true},
+								_1: {
 									ctor: '::',
-									_0: _elm_lang$html$Html$text(translation.text),
+									_0: {ctor: '_Tuple2', _0: 'phrase', _1: true},
 									_1: {ctor: '[]'}
-								},
-								_user$project$Text_Translations_View$view_correct_for_context(translation.correct_for_context))),
+								}
+							}),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(
+								msg(
+									_user$project$Text_Translations_Msg$MakeCorrectForContext(translation))),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(translation.text),
 						_1: {ctor: '[]'}
 					}),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('icons'),
+							_1: {ctor: '[]'}
+						},
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							_user$project$Text_Translations_View$view_correct_for_context(translation.correct_for_context),
+							{
+								ctor: '::',
+								_0: A3(_user$project$Text_Translations_View$view_translation_delete, msg, text_word, translation),
+								_1: {ctor: '[]'}
+							})),
+					_1: {ctor: '[]'}
+				}
 			});
 	});
 var _user$project$Text_Translations_View$view_text_word_translations = F2(
@@ -16446,7 +16467,7 @@ var _user$project$Text_Translations_View$view_text_word_translations = F2(
 				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('word_translations'),
+					_0: _elm_lang$html$Html_Attributes$class('translations'),
 					_1: {ctor: '[]'}
 				},
 				A2(
@@ -16465,7 +16486,7 @@ var _user$project$Text_Translations_View$view_text_word_translations = F2(
 				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('word_translations'),
+					_0: _elm_lang$html$Html_Attributes$class('translations'),
 					_1: {ctor: '[]'}
 				},
 				{
@@ -16483,7 +16504,7 @@ var _user$project$Text_Translations_View$view_word_translation = F2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('translation'),
+				_0: _elm_lang$html$Html_Attributes$class('word'),
 				_1: {ctor: '[]'}
 			},
 			{
@@ -16492,42 +16513,35 @@ var _user$project$Text_Translations_View$view_word_translation = F2(
 					_elm_lang$html$Html$div,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('word'),
+						_0: _elm_lang$html$Html_Attributes$class('phrase'),
 						_1: {ctor: '[]'}
 					},
 					{
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{ctor: '[]'},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text(_p12._0),
-								_1: {ctor: '[]'}
-							}),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{ctor: '[]'},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text(
-										A2(
-											_elm_lang$core$Basics_ops['++'],
-											'(',
-											A2(
-												_elm_lang$core$Basics_ops['++'],
-												_user$project$Text_Translations_View$view_grammemes_as_string(_p13.grammemes),
-												')'))),
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}
+						_0: _elm_lang$html$Html$text(_p12._0),
+						_1: {ctor: '[]'}
 					}),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html$text(''),
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('grammemes'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									'(',
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										_user$project$Text_Translations_View$view_grammemes_as_string(_p13.grammemes),
+										')'))),
+							_1: {ctor: '[]'}
+						}),
 					_1: {
 						ctor: '::',
 						_0: A2(_user$project$Text_Translations_View$view_text_word_translations, msg, _p13),
@@ -16542,7 +16556,7 @@ var _user$project$Text_Translations_View$view_current_letter = F2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$id('words'),
+				_0: _elm_lang$html$Html_Attributes$id('letter'),
 				_1: {ctor: '[]'}
 			},
 			function () {
@@ -16567,7 +16581,7 @@ var _user$project$Text_Translations_View$view_translations = F2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('translations'),
+				_0: _elm_lang$html$Html_Attributes$id('translations_tab'),
 				_1: {ctor: '[]'}
 			},
 			{

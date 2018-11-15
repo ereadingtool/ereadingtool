@@ -41,3 +41,9 @@ newTextTranslationEncoder translation =
   Encode.object [
     ("phrase", Encode.string translation)
   ]
+
+deleteTextTranslationEncode : Int -> Encode.Value
+deleteTextTranslationEncode translation_id =
+  Encode.object [
+    ("id", Encode.int translation_id)
+  ]
