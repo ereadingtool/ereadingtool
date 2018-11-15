@@ -14,31 +14,52 @@ import Text.Translations exposing (Word, Translation)
 
 import Text.Model
 
-view_text_word_translation : (Msg -> msg) -> Int -> Text.Model.TextWordTranslation -> Html msg
-view_text_word_translation msg i translation =
+
+view_correct_for_context : Bool -> List (Html msg)
+view_correct_for_context correct =
+  case correct of
+    True ->
+      [
+        span [class "correct_checkmark", attribute "title" "Correct for the context."] [
+          Html.img [
+            attribute "src" "/static/img/circle_check.svg"
+          , attribute "height" "12px"
+          , attribute "width" "12px"] []
+        ]
+      ]
+
+    False ->
+      []
+
+view_add_translation : (Msg -> msg) -> Text.Model.TextWord -> Html msg
+view_add_translation msg text_word =
+  div [] [
+    Html.input [attribute "type" "text", onInput (UpdateNewTranslationForTextWord text_word >> msg)] []
+  , Html.img [
+      attribute "src" "/static/img/add.svg"
+    , attribute "height" "17px"
+    , attribute "width" "17px"
+    , attribute "title" "Add a new translation."
+    , onClick (msg (AddNewTranslationForTextWord text_word))] []
+  ]
+
+view_text_word_translation : (Msg -> msg) -> Text.Model.TextWordTranslation -> Html msg
+view_text_word_translation msg translation =
   div [class "translation"] [
     div [] [
-      Html.text (toString (i+1) ++ ". ")
-    , span [onClick (msg (MakeCorrectForContext translation))] [
+      span [onClick (msg (MakeCorrectForContext translation))] <| [
         Html.text translation.text
-      ]
+      ] ++ (view_correct_for_context translation.correct_for_context)
     ]
   ]
 
-sortByCorrectForContext : List Text.Model.TextWordTranslation -> List Text.Model.TextWordTranslation
-sortByCorrectForContext translations =
-  let
-    is_correct_for_context = (\tr -> tr.correct_for_context)
-  in
-    (List.filter is_correct_for_context translations) ++ (List.filter (is_correct_for_context >> not) translations)
-
-
-view_text_word_translations : (Msg -> msg) -> Maybe (List Text.Model.TextWordTranslation) -> Html msg
-view_text_word_translations msg translations =
-  case translations of
+view_text_word_translations : (Msg -> msg) -> Text.Model.TextWord -> Html msg
+view_text_word_translations msg text_word =
+  case text_word.translations of
     Just translations_list ->
-      div [class "word_translations"]
-        (List.indexedMap (view_text_word_translation msg) (sortByCorrectForContext translations_list))
+      div [class "word_translations"] <|
+        (List.map (view_text_word_translation msg) translations_list) ++
+        [view_add_translation msg text_word]
 
     Nothing ->
       div [class "word_translations"] [Html.text "Undefined"]
@@ -52,14 +73,14 @@ view_grammeme (grammeme, grammeme_value) =
     Nothing ->
       div [class "grammeme"] []
 
-view_grammeme_as_string : (String, Maybe String) -> String
+view_grammeme_as_string : (String, Maybe String) -> Maybe String
 view_grammeme_as_string (grammeme, grammeme_value) =
   case grammeme_value of
     Just value ->
-      grammeme ++ ": " ++ value
+      Just (grammeme ++ ": " ++ value)
 
     _ ->
-      ""
+      Nothing
 
 view_grammemes : Dict String (Maybe String) -> Html Msg
 view_grammemes grammemes =
@@ -67,7 +88,16 @@ view_grammemes grammemes =
 
 view_grammemes_as_string : Dict String (Maybe String) -> String
 view_grammemes_as_string grammemes =
-  String.join ", " <| List.map view_grammeme_as_string (Dict.toList grammemes)
+     String.join ", "
+  <| List.map
+       (\str -> case str of
+         Just s -> s
+         Nothing -> "")
+  <| List.filter
+       (\str -> case str of
+         Just str -> True
+         Nothing -> False)
+  <| List.map view_grammeme_as_string (Dict.toList grammemes)
 
 view_word_translation : (Msg -> msg) -> (Word, Text.Model.TextWord) -> Html msg
 view_word_translation msg (word, text_word) =
@@ -77,7 +107,7 @@ view_word_translation msg (word, text_word) =
     , div [] [ Html.text <| "(" ++ (view_grammemes_as_string text_word.grammemes) ++ ")" ]
     ]
   , Html.text ""
-  , view_text_word_translations msg text_word.translations
+  , view_text_word_translations msg text_word
   ]
 
 view_current_letter : (Msg -> msg) -> Model -> Html msg

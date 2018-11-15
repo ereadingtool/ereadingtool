@@ -35,3 +35,9 @@ textTranslationEncoder text_translation =
     ("id", Encode.int text_translation.id)
   , ("correct_for_context", Encode.bool text_translation.correct_for_context)
   ]
+
+newTextTranslationEncoder : String -> Encode.Value
+newTextTranslationEncoder translation =
+  Encode.object [
+    ("phrase", Encode.string translation)
+  ]

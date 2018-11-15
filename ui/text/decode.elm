@@ -109,6 +109,10 @@ textTranslationUpdateRespDecoder : Decode.Decoder (Word, Text.Model.TextWordTran
 textTranslationUpdateRespDecoder =
   Decode.map2 (,) (Decode.field "word" Decode.string) (Decode.field "translation" textWordTranslationsDecoder)
 
+textTranslationAddRespDecoder : Decode.Decoder (Word, Text.Model.TextWordTranslation)
+textTranslationAddRespDecoder =
+  Decode.map2 (,) (Decode.field "word" Decode.string) (Decode.field "translation" textWordTranslationsDecoder)
+
 textTranslationsDecoder : Decode.Decoder (Dict String (Dict Word Text.Model.TextWord))
 textTranslationsDecoder =
   Decode.dict (Decode.dict textWordDecoder)

@@ -21276,6 +21276,15 @@ var _user$project$Config$instructor_login_api_endpoint = '/api/instructor/login/
 var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signup/';
 var _user$project$Config$question_api_endpoint = '/api/question/';
 var _user$project$Config$text_section_api_endpoint = '/api/section/';
+var _user$project$Config$text_word_api_endpoint = function (id) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		'/api/text/word/',
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$Basics$toString(id),
+			'/'));
+};
 var _user$project$Config$text_translation_api_endpoint = function (id) {
 	return A2(
 		_elm_lang$core$Basics_ops['++'],
@@ -22902,6 +22911,16 @@ var _user$project$TextReader_Encode$send_command = function (cmd_req) {
 };
 var _user$project$TextReader_Encode$jsonToString = _elm_lang$core$Json_Encode$encode(0);
 
+var _user$project$Text_Translations_Msg$AddedTextTranslation = function (a) {
+	return {ctor: 'AddedTextTranslation', _0: a};
+};
+var _user$project$Text_Translations_Msg$AddNewTranslationForTextWord = function (a) {
+	return {ctor: 'AddNewTranslationForTextWord', _0: a};
+};
+var _user$project$Text_Translations_Msg$UpdateNewTranslationForTextWord = F2(
+	function (a, b) {
+		return {ctor: 'UpdateNewTranslationForTextWord', _0: a, _1: b};
+	});
 var _user$project$Text_Translations_Msg$UpdateTextTranslation = function (a) {
 	return {ctor: 'UpdateTextTranslation', _0: a};
 };
@@ -22916,14 +22935,14 @@ var _user$project$Text_Translations_Msg$ShowLetter = function (a) {
 };
 
 var _user$project$Text_Translations_Model$init = function (flags) {
-	return {words: _elm_lang$core$Dict$empty, flags: flags, current_letter: _elm_lang$core$Maybe$Nothing};
+	return {words: _elm_lang$core$Dict$empty, new_translations: _elm_lang$core$Dict$empty, flags: flags, current_letter: _elm_lang$core$Maybe$Nothing};
 };
 var _user$project$Text_Translations_Model$Flags = function (a) {
 	return {csrftoken: a};
 };
-var _user$project$Text_Translations_Model$Model = F3(
-	function (a, b, c) {
-		return {words: a, flags: b, current_letter: c};
+var _user$project$Text_Translations_Model$Model = F4(
+	function (a, b, c, d) {
+		return {words: a, new_translations: b, flags: c, current_letter: d};
 	});
 
 var _user$project$Text_Translations_View$view_letter_menu = F2(
@@ -22989,12 +23008,13 @@ var _user$project$Text_Translations_View$view_grammeme_as_string = function (_p0
 	var _p1 = _p0;
 	var _p2 = _p1._1;
 	if (_p2.ctor === 'Just') {
-		return A2(
-			_elm_lang$core$Basics_ops['++'],
-			_p1._0,
-			A2(_elm_lang$core$Basics_ops['++'], ': ', _p2._0));
+		return _elm_lang$core$Maybe$Just(
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_p1._0,
+				A2(_elm_lang$core$Basics_ops['++'], ': ', _p2._0)));
 	} else {
-		return '';
+		return _elm_lang$core$Maybe$Nothing;
 	}
 };
 var _user$project$Text_Translations_View$view_grammemes_as_string = function (grammemes) {
@@ -23003,13 +23023,33 @@ var _user$project$Text_Translations_View$view_grammemes_as_string = function (gr
 		', ',
 		A2(
 			_elm_lang$core$List$map,
-			_user$project$Text_Translations_View$view_grammeme_as_string,
-			_elm_lang$core$Dict$toList(grammemes)));
+			function (str) {
+				var _p3 = str;
+				if (_p3.ctor === 'Just') {
+					return _p3._0;
+				} else {
+					return '';
+				}
+			},
+			A2(
+				_elm_lang$core$List$filter,
+				function (str) {
+					var _p4 = str;
+					if (_p4.ctor === 'Just') {
+						return true;
+					} else {
+						return false;
+					}
+				},
+				A2(
+					_elm_lang$core$List$map,
+					_user$project$Text_Translations_View$view_grammeme_as_string,
+					_elm_lang$core$Dict$toList(grammemes)))));
 };
-var _user$project$Text_Translations_View$view_grammeme = function (_p3) {
-	var _p4 = _p3;
-	var _p5 = _p4._1;
-	if (_p5.ctor === 'Just') {
+var _user$project$Text_Translations_View$view_grammeme = function (_p5) {
+	var _p6 = _p5;
+	var _p7 = _p6._1;
+	if (_p7.ctor === 'Just') {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -23019,13 +23059,13 @@ var _user$project$Text_Translations_View$view_grammeme = function (_p3) {
 			},
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html$text(_p4._0),
+				_0: _elm_lang$html$Html$text(_p6._0),
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html$text(' : '),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(_p5._0),
+						_0: _elm_lang$html$Html$text(_p7._0),
 						_1: {ctor: '[]'}
 					}
 				}
@@ -23054,22 +23094,105 @@ var _user$project$Text_Translations_View$view_grammemes = function (grammemes) {
 			_user$project$Text_Translations_View$view_grammeme,
 			_elm_lang$core$Dict$toList(grammemes)));
 };
-var _user$project$Text_Translations_View$sortByCorrectForContext = function (translations) {
-	var is_correct_for_context = function (tr) {
-		return tr.correct_for_context;
-	};
-	return A2(
-		_elm_lang$core$Basics_ops['++'],
-		A2(_elm_lang$core$List$filter, is_correct_for_context, translations),
-		A2(
-			_elm_lang$core$List$filter,
-			function (_p6) {
-				return !is_correct_for_context(_p6);
-			},
-			translations));
+var _user$project$Text_Translations_View$view_add_translation = F2(
+	function (msg, text_word) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$input,
+					{
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onInput(
+								function (_p8) {
+									return msg(
+										A2(_user$project$Text_Translations_Msg$UpdateNewTranslationForTextWord, text_word, _p8));
+								}),
+							_1: {ctor: '[]'}
+						}
+					},
+					{ctor: '[]'}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$img,
+						{
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/add.svg'),
+							_1: {
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '17px'),
+								_1: {
+									ctor: '::',
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '17px'),
+									_1: {
+										ctor: '::',
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'title', 'Add a new translation.'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onClick(
+												msg(
+													_user$project$Text_Translations_Msg$AddNewTranslationForTextWord(text_word))),
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}
+						},
+						{ctor: '[]'}),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$Text_Translations_View$view_correct_for_context = function (correct) {
+	var _p9 = correct;
+	if (_p9 === true) {
+		return {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$span,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('correct_checkmark'),
+					_1: {
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'title', 'Correct for the context.'),
+						_1: {ctor: '[]'}
+					}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$img,
+						{
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/circle_check.svg'),
+							_1: {
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '12px'),
+								_1: {
+									ctor: '::',
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '12px'),
+									_1: {ctor: '[]'}
+								}
+							}
+						},
+						{ctor: '[]'}),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		};
+	} else {
+		return {ctor: '[]'};
+	}
 };
-var _user$project$Text_Translations_View$view_text_word_translation = F3(
-	function (msg, i, translation) {
+var _user$project$Text_Translations_View$view_text_word_translation = F2(
+	function (msg, translation) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -23084,37 +23207,32 @@ var _user$project$Text_Translations_View$view_text_word_translation = F3(
 					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(
+						_0: A2(
+							_elm_lang$html$Html$span,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(
+									msg(
+										_user$project$Text_Translations_Msg$MakeCorrectForContext(translation))),
+								_1: {ctor: '[]'}
+							},
 							A2(
 								_elm_lang$core$Basics_ops['++'],
-								_elm_lang$core$Basics$toString(i + 1),
-								'. ')),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$span,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onClick(
-										msg(
-											_user$project$Text_Translations_Msg$MakeCorrectForContext(translation))),
-									_1: {ctor: '[]'}
-								},
 								{
 									ctor: '::',
 									_0: _elm_lang$html$Html$text(translation.text),
 									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}
+								},
+								_user$project$Text_Translations_View$view_correct_for_context(translation.correct_for_context))),
+						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
 			});
 	});
 var _user$project$Text_Translations_View$view_text_word_translations = F2(
-	function (msg, translations) {
-		var _p7 = translations;
-		if (_p7.ctor === 'Just') {
+	function (msg, text_word) {
+		var _p10 = text_word.translations;
+		if (_p10.ctor === 'Just') {
 			return A2(
 				_elm_lang$html$Html$div,
 				{
@@ -23123,9 +23241,16 @@ var _user$project$Text_Translations_View$view_text_word_translations = F2(
 					_1: {ctor: '[]'}
 				},
 				A2(
-					_elm_lang$core$List$indexedMap,
-					_user$project$Text_Translations_View$view_text_word_translation(msg),
-					_user$project$Text_Translations_View$sortByCorrectForContext(_p7._0)));
+					_elm_lang$core$Basics_ops['++'],
+					A2(
+						_elm_lang$core$List$map,
+						_user$project$Text_Translations_View$view_text_word_translation(msg),
+						_p10._0),
+					{
+						ctor: '::',
+						_0: A2(_user$project$Text_Translations_View$view_add_translation, msg, text_word),
+						_1: {ctor: '[]'}
+					}));
 		} else {
 			return A2(
 				_elm_lang$html$Html$div,
@@ -23142,9 +23267,9 @@ var _user$project$Text_Translations_View$view_text_word_translations = F2(
 		}
 	});
 var _user$project$Text_Translations_View$view_word_translation = F2(
-	function (msg, _p8) {
-		var _p9 = _p8;
-		var _p10 = _p9._1;
+	function (msg, _p11) {
+		var _p12 = _p11;
+		var _p13 = _p12._1;
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -23168,7 +23293,7 @@ var _user$project$Text_Translations_View$view_word_translation = F2(
 							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(_p9._0),
+								_0: _elm_lang$html$Html$text(_p12._0),
 								_1: {ctor: '[]'}
 							}),
 						_1: {
@@ -23184,7 +23309,7 @@ var _user$project$Text_Translations_View$view_word_translation = F2(
 											'(',
 											A2(
 												_elm_lang$core$Basics_ops['++'],
-												_user$project$Text_Translations_View$view_grammemes_as_string(_p10.grammemes),
+												_user$project$Text_Translations_View$view_grammemes_as_string(_p13.grammemes),
 												')'))),
 									_1: {ctor: '[]'}
 								}),
@@ -23196,7 +23321,7 @@ var _user$project$Text_Translations_View$view_word_translation = F2(
 					_0: _elm_lang$html$Html$text(''),
 					_1: {
 						ctor: '::',
-						_0: A2(_user$project$Text_Translations_View$view_text_word_translations, msg, _p10.translations),
+						_0: A2(_user$project$Text_Translations_View$view_text_word_translations, msg, _p13),
 						_1: {ctor: '[]'}
 					}
 				}
@@ -23212,8 +23337,8 @@ var _user$project$Text_Translations_View$view_current_letter = F2(
 				_1: {ctor: '[]'}
 			},
 			function () {
-				var _p11 = model.current_letter;
-				if (_p11.ctor === 'Just') {
+				var _p14 = model.current_letter;
+				if (_p14.ctor === 'Just') {
 					return A2(
 						_elm_lang$core$List$map,
 						_user$project$Text_Translations_View$view_word_translation(msg),
@@ -23221,7 +23346,7 @@ var _user$project$Text_Translations_View$view_current_letter = F2(
 							A2(
 								_elm_lang$core$Maybe$withDefault,
 								_elm_lang$core$Dict$empty,
-								A2(_elm_lang$core$Dict$get, _p11._0, model.words))));
+								A2(_elm_lang$core$Dict$get, _p14._0, model.words))));
 				} else {
 					return {ctor: '[]'};
 				}
@@ -24152,6 +24277,14 @@ var _user$project$Text_Decode$textWordTranslationsDecoder = A3(
 			'id',
 			_elm_lang$core$Json_Decode$int,
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextWordTranslation))));
+var _user$project$Text_Decode$textTranslationAddRespDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	F2(
+		function (v0, v1) {
+			return {ctor: '_Tuple2', _0: v0, _1: v1};
+		}),
+	A2(_elm_lang$core$Json_Decode$field, 'word', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'translation', _user$project$Text_Decode$textWordTranslationsDecoder));
 var _user$project$Text_Decode$textTranslationUpdateRespDecoder = A3(
 	_elm_lang$core$Json_Decode$map2,
 	F2(

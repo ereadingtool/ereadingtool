@@ -12,6 +12,7 @@ type alias Flags = { csrftoken : Flags.CSRFToken }
 
 type alias Model = {
    words: Dict String Text.Model.TextWords
+ , new_translations: Dict String String
  , flags: Flags
  , current_letter: Maybe String }
 
@@ -19,5 +20,6 @@ type alias Model = {
 init : Flags -> Model
 init flags = {
    words=Dict.empty
+ , new_translations=Dict.empty
  , flags=flags
  , current_letter=Nothing }

@@ -584,6 +584,10 @@ body {
     cursor: pointer;
 }
 
+.correct_checkmark {
+    margin-left: 5px;
+}
+
 .grammemes {
     margin-top: 15px;
 }
@@ -602,5 +606,5 @@ body {
 .word_translations {
     display: grid;
     grid-template-columns: auto;
-    padding: 0 10px 10px 10px;
+    padding: 0 0 10px 10px;
 }

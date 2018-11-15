@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, AnyStr, TypeVar
 
 from django.db import models
 
@@ -65,6 +65,17 @@ class TextWordTranslation(models.Model):
         }
 
     @classmethod
+    def to_add_json_schema(cls) -> Dict:
+        schema = {
+            'type': 'object',
+            'properties': {
+                'phrase': {'type': 'string'},
+            }
+        }
+
+        return schema
+
+    @classmethod
     def to_update_json_schema(cls) -> Dict:
         schema = {
             'type': 'object',
@@ -75,3 +86,9 @@ class TextWordTranslation(models.Model):
         }
 
         return schema
+
+    @classmethod
+    def create(cls, word: TextWord, phrase: AnyStr) -> TypeVar('TextWordTranslation'):
+        text_word_translation = cls.objects.create(word=word, phrase=phrase)
+
+        return text_word_translation
