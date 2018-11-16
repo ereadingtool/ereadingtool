@@ -120,11 +120,18 @@ update parent_msg msg model =
 
         letter = String.left 1 (String.toUpper word)
         letter_group = Maybe.withDefault Dict.empty (Dict.get letter model.words)
-
-        new_letter_group = Dict.remove word letter_group
-        new_words = Dict.insert letter new_letter_group model.words
       in
-        ({ model | words = new_words }, Cmd.none)
+        case Dict.get word letter_group of
+          Just text_word ->
+            let
+              new_text_word = removeTranslation text_word translation
+              new_letter_group = Dict.insert word new_text_word letter_group
+              new_words = Dict.insert letter new_letter_group model.words
+            in
+              ({ model | words = new_words }, Cmd.none)
+
+          Nothing ->
+            (model, Cmd.none)
 
     -- handle user-friendly msgs
     DeletedTranslation (Err err) -> let _ = Debug.log "error decoding deleting text translations" err in
@@ -144,6 +151,19 @@ addTranslation text_word translation =
           Nothing)
   in
     { text_word | translations = new_translations }
+
+removeTranslation : Text.Model.TextWord -> Text.Model.TextWordTranslation -> Text.Model.TextWord
+removeTranslation text_word translation =
+  case text_word.translations of
+    Just translations ->
+      let
+        new_translations = List.filter (\tr -> tr.id /= translation.id) translations
+      in
+        { text_word | translations = Just new_translations }
+
+    Nothing ->
+      text_word
+
 
 setNoTRCorrectForContext : Text.Model.TextWord -> Text.Model.TextWord
 setNoTRCorrectForContext text_word =
@@ -175,7 +195,7 @@ deleteTranslation msg csrftoken text_word translation =
     encoded_translation = Text.Encode.deleteTextTranslationEncode translation.id
     body = (Http.jsonBody encoded_translation)
     request =
-      HttpHelpers.post_with_headers endpoint_uri headers body Text.Decode.textTranslationRemoveRespDecoder
+      HttpHelpers.delete_with_headers endpoint_uri headers body Text.Decode.textTranslationRemoveRespDecoder
   in
     Http.send (msg << DeletedTranslation) request
 

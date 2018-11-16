@@ -33,11 +33,13 @@ class TextWordTranslationsAPIView(LoginRequiredMixin, View):
         try:
             text_word_translation = TextWordTranslation.objects.get(pk=text_word_delete_translation_params['id'])
 
+            text_word_translation_dict = text_word_translation.to_dict()
+
             deleted, deleted_objs = text_word_translation.delete()
 
             return HttpResponse(json.dumps({
                 'word': str(text_word_translation.word),
-                'translation': text_word_translation.to_dict(),
+                'translation': text_word_translation_dict,
                 'deleted': deleted >= 1
             }))
 

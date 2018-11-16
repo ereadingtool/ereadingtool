@@ -119,7 +119,7 @@ view_grammemes_as_string grammemes =
 view_word_translation : (Msg -> msg) -> (Word, Text.Model.TextWord) -> Html msg
 view_word_translation msg (word, text_word) =
   div [class "word"] [
-    div [class "phrase"] [ Html.text word ]
+    div [class "word_phrase"] [ Html.text word ]
   , div [class "grammemes"] [ Html.text <| "(" ++ (view_grammemes_as_string text_word.grammemes) ++ ")" ]
   , view_text_word_translations msg text_word
   ]
