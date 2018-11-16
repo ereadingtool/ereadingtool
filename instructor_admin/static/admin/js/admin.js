@@ -11022,7 +11022,7 @@ var _user$project$Text_Decode$textProgressDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextProgressUpdateResp));
 var _user$project$Text_Decode$TextWordTranslationDeleteResp = F3(
 	function (a, b, c) {
-		return {id: a, translation: b, deleted: c};
+		return {word: a, translation: b, deleted: c};
 	});
 var _user$project$Text_Decode$textTranslationRemoveRespDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -11034,8 +11034,8 @@ var _user$project$Text_Decode$textTranslationRemoveRespDecoder = A3(
 		_user$project$Text_Decode$textWordTranslationsDecoder,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'id',
-			_elm_lang$core$Json_Decode$int,
+			'word',
+			_elm_lang$core$Json_Decode$string,
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextWordTranslationDeleteResp))));
 
 var _user$project$Views$view_preview = A2(

@@ -117,8 +117,14 @@ update parent_msg msg model =
       let
         word = translation_deleted_resp.word
         translation = translation_deleted_resp.translation
+
+        letter = String.left 1 (String.toUpper word)
+        letter_group = Maybe.withDefault Dict.empty (Dict.get letter model.words)
+
+        new_letter_group = Dict.remove word letter_group
+        new_words = Dict.insert letter new_letter_group model.words
       in
-        (model, Cmd.none)
+        ({ model | words = new_words }, Cmd.none)
 
     -- handle user-friendly msgs
     DeletedTranslation (Err err) -> let _ = Debug.log "error decoding deleting text translations" err in
