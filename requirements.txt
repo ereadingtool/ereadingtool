@@ -16,3 +16,4 @@ channels_redis
 lxml
 pdfkit
 asynctest
+Twisted[tls,http2]

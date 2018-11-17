@@ -1,3 +1,5 @@
+import random
+
 from typing import Dict
 
 from django.db import models
@@ -30,7 +32,9 @@ class Question(Timestamped, models.Model):
             'modified_dt': self.modified_dt.isoformat(),
             'body': self.body,
             'order': self.order,
-            'answers': [answer.to_text_reading_dict(text_reading=text_reading) for answer in self.answers.all()],
+            'answers':
+                random.shuffle([answer.to_text_reading_dict(text_reading=text_reading)
+                                for answer in self.answers.all()]),
             'question_type': self.type
         }
 
