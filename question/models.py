@@ -11,7 +11,7 @@ from text.models import TextSection
 class Question(Timestamped, models.Model):
     text_section = models.ForeignKey(TextSection, blank=False, related_name='questions', on_delete=models.CASCADE)
 
-    body = models.TextField(blank=False)
+    body = models.TextField()
     order = models.PositiveIntegerField(default=0, editable=False)
 
     TYPE_CHOICES = (
@@ -32,9 +32,7 @@ class Question(Timestamped, models.Model):
             'modified_dt': self.modified_dt.isoformat(),
             'body': self.body,
             'order': self.order,
-            'answers':
-                random.shuffle([answer.to_text_reading_dict(text_reading=text_reading)
-                                for answer in self.answers.all()]),
+            'answers': [answer.to_text_reading_dict(text_reading=text_reading) for answer in self.answers.all()],
             'question_type': self.type
         }
 

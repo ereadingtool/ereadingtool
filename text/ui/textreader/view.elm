@@ -22,6 +22,7 @@ import TextReader.Question.Model exposing (TextQuestion)
 import TextReader.Answer.Model exposing (TextAnswer)
 import TextReader.Msg exposing (Msg(..))
 
+import Regex
 
 import HtmlParser
 import HtmlParser.Util
@@ -49,7 +50,13 @@ tagWordAndToVDOM model section i node =
   case node of
     HtmlParser.Text str ->
       let
-        words = String.words str
+        punctuation_re = Regex.regex "[?!.]"
+        has_punctuation = Regex.contains punctuation_re
+
+        maybe_split_on_punctuation =
+          (\word -> if has_punctuation word then Regex.split (Regex.AtMost 1) punctuation_re word else [word])
+
+        words = List.concat <| List.map (\word -> maybe_split_on_punctuation word) (String.words str)
         whitespace = VirtualDom.text " "
       in
         span []

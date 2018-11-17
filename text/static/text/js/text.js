@@ -21283,7 +21283,7 @@ var _user$project$Config$text_word_api_endpoint = function (id) {
 		A2(
 			_elm_lang$core$Basics_ops['++'],
 			_elm_lang$core$Basics$toString(id),
-			'/'));
+			'/translation/'));
 };
 var _user$project$Config$text_translation_api_endpoint = function (id) {
 	return A2(
@@ -22911,6 +22911,340 @@ var _user$project$TextReader_Encode$send_command = function (cmd_req) {
 };
 var _user$project$TextReader_Encode$jsonToString = _elm_lang$core$Json_Encode$encode(0);
 
+var _user$project$Question_Decode$questionDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'question_type',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'answers',
+		_user$project$Answer_Decode$answersDecoder,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'order',
+			_elm_lang$core$Json_Decode$int,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'body',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'modified_dt',
+					_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'created_dt',
+						_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+						A3(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+							'text_section_id',
+							_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+							A3(
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+								'id',
+								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Question_Model$Question)))))))));
+var _user$project$Question_Decode$questionsDecoder = _elm_lang$core$Json_Decode$array(_user$project$Question_Decode$questionDecoder);
+
+var _user$project$Text_Section_Decode$textSectionDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'questions',
+	_user$project$Question_Decode$questionsDecoder,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'question_count',
+		_elm_lang$core$Json_Decode$int,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'body',
+			_elm_lang$core$Json_Decode$string,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'order',
+				_elm_lang$core$Json_Decode$int,
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Section_Model$TextSection)))));
+var _user$project$Text_Section_Decode$textSectionsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Section_Decode$textSectionDecoder);
+var _user$project$Text_Section_Decode$TextCreateResp = function (a) {
+	return {id: a};
+};
+
+var _user$project$Text_Decode$decodeRespErrors = function (str) {
+	return A2(
+		_elm_lang$core$Json_Decode$decodeString,
+		A2(
+			_elm_lang$core$Json_Decode$field,
+			'errors',
+			_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string)),
+		str);
+};
+var _user$project$Text_Decode$textWordTranslationsDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'text',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'correct_for_context',
+		_elm_lang$core$Json_Decode$bool,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'id',
+			_elm_lang$core$Json_Decode$int,
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextWordTranslation))));
+var _user$project$Text_Decode$textTranslationAddRespDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	F2(
+		function (v0, v1) {
+			return {ctor: '_Tuple2', _0: v0, _1: v1};
+		}),
+	A2(_elm_lang$core$Json_Decode$field, 'word', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'translation', _user$project$Text_Decode$textWordTranslationsDecoder));
+var _user$project$Text_Decode$textTranslationUpdateRespDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	F2(
+		function (v0, v1) {
+			return {ctor: '_Tuple2', _0: v0, _1: v1};
+		}),
+	A2(_elm_lang$core$Json_Decode$field, 'word', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'translation', _user$project$Text_Decode$textWordTranslationsDecoder));
+var _user$project$Text_Decode$textDifficultyDecoder = _elm_lang$core$Json_Decode$keyValuePairs(_elm_lang$core$Json_Decode$string);
+var _user$project$Text_Decode$textListItemDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'write_locker',
+	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'uri',
+		_elm_lang$core$Json_Decode$string,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'text_sections_complete',
+			_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'text_section_count',
+				_elm_lang$core$Json_Decode$int,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'modified_dt',
+					_elm_community$json_extra$Json_Decode_Extra$date,
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'created_dt',
+						_elm_community$json_extra$Json_Decode_Extra$date,
+						A3(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+							'tags',
+							_elm_lang$core$Json_Decode$nullable(
+								_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
+							A3(
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+								'last_modified_by',
+								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+								A3(
+									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+									'created_by',
+									_elm_lang$core$Json_Decode$string,
+									A3(
+										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+										'difficulty',
+										_elm_lang$core$Json_Decode$string,
+										A3(
+											_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+											'author',
+											_elm_lang$core$Json_Decode$string,
+											A3(
+												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+												'title',
+												_elm_lang$core$Json_Decode$string,
+												A3(
+													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+													'id',
+													_elm_lang$core$Json_Decode$int,
+													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextListItem))))))))))))));
+var _user$project$Text_Decode$textListDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textListItemDecoder);
+var _user$project$Text_Decode$grammemesDecoder = _elm_lang$core$Json_Decode$dict(
+	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string));
+var _user$project$Text_Decode$wordValuesDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'translations',
+	_elm_lang$core$Json_Decode$nullable(
+		_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'grammemes',
+		_user$project$Text_Decode$grammemesDecoder,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$WordValues)));
+var _user$project$Text_Decode$wordsDecoder = _elm_lang$core$Json_Decode$dict(_user$project$Text_Decode$wordValuesDecoder);
+var _user$project$Text_Decode$textDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'words',
+	_user$project$Text_Decode$wordsDecoder,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'write_locker',
+		_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'text_sections',
+			A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Array$fromList, _user$project$Text_Section_Decode$textSectionsDecoder),
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'modified_dt',
+				_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'created_dt',
+					_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'tags',
+						_elm_lang$core$Json_Decode$nullable(
+							_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
+						A3(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+							'last_modified_by',
+							_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+							A3(
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+								'created_by',
+								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+								A3(
+									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+									'conclusion',
+									_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+									A3(
+										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+										'difficulty',
+										_elm_lang$core$Json_Decode$string,
+										A3(
+											_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+											'source',
+											_elm_lang$core$Json_Decode$string,
+											A3(
+												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+												'author',
+												_elm_lang$core$Json_Decode$string,
+												A3(
+													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+													'introduction',
+													_elm_lang$core$Json_Decode$string,
+													A3(
+														_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+														'title',
+														_elm_lang$core$Json_Decode$string,
+														A3(
+															_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+															'id',
+															_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
+															_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$Text))))))))))))))));
+var _user$project$Text_Decode$textWordDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'translations',
+	_elm_lang$core$Json_Decode$nullable(
+		_elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textWordTranslationsDecoder)),
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'grammemes',
+		_user$project$Text_Decode$grammemesDecoder,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'word',
+			_elm_lang$core$Json_Decode$string,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'instance',
+				_elm_lang$core$Json_Decode$int,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'id',
+					_elm_lang$core$Json_Decode$int,
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextWord))))));
+var _user$project$Text_Decode$textTranslationsDecoder = _elm_lang$core$Json_Decode$dict(
+	_elm_lang$core$Json_Decode$dict(_user$project$Text_Decode$textWordDecoder));
+var _user$project$Text_Decode$TextCreateResp = F2(
+	function (a, b) {
+		return {id: a, redirect: b};
+	});
+var _user$project$Text_Decode$textCreateRespDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'redirect',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'id',
+		_elm_lang$core$Json_Decode$int,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextCreateResp)));
+var _user$project$Text_Decode$TextUpdateResp = F2(
+	function (a, b) {
+		return {id: a, updated: b};
+	});
+var _user$project$Text_Decode$textUpdateRespDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'updated',
+	_elm_lang$core$Json_Decode$bool,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'id',
+		_elm_lang$core$Json_Decode$int,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextUpdateResp)));
+var _user$project$Text_Decode$TextDeleteResp = F3(
+	function (a, b, c) {
+		return {id: a, redirect: b, deleted: c};
+	});
+var _user$project$Text_Decode$textDeleteRespDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'deleted',
+	_elm_lang$core$Json_Decode$bool,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'redirect',
+		_elm_lang$core$Json_Decode$string,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'id',
+			_elm_lang$core$Json_Decode$int,
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextDeleteResp))));
+var _user$project$Text_Decode$TextLockResp = function (a) {
+	return {locked: a};
+};
+var _user$project$Text_Decode$textLockRespDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'locked',
+	_elm_lang$core$Json_Decode$bool,
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextLockResp));
+var _user$project$Text_Decode$TextProgressUpdateResp = function (a) {
+	return {updated: a};
+};
+var _user$project$Text_Decode$textProgressDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'updated',
+	_elm_lang$core$Json_Decode$bool,
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextProgressUpdateResp));
+var _user$project$Text_Decode$TextWordTranslationDeleteResp = F3(
+	function (a, b, c) {
+		return {word: a, translation: b, deleted: c};
+	});
+var _user$project$Text_Decode$textTranslationRemoveRespDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'deleted',
+	_elm_lang$core$Json_Decode$bool,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'translation',
+		_user$project$Text_Decode$textWordTranslationsDecoder,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'word',
+			_elm_lang$core$Json_Decode$string,
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextWordTranslationDeleteResp))));
+
+var _user$project$Text_Translations_Msg$DeletedTranslation = function (a) {
+	return {ctor: 'DeletedTranslation', _0: a};
+};
+var _user$project$Text_Translations_Msg$DeleteTranslation = F2(
+	function (a, b) {
+		return {ctor: 'DeleteTranslation', _0: a, _1: b};
+	});
 var _user$project$Text_Translations_Msg$AddedTextTranslation = function (a) {
 	return {ctor: 'AddedTextTranslation', _0: a};
 };
@@ -22956,7 +23290,7 @@ var _user$project$Text_Translations_View$view_letter_menu = F2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$id('word_menu'),
+				_0: _elm_lang$html$Html_Attributes$id('letter_menu'),
 				_1: {ctor: '[]'}
 			},
 			A2(
@@ -23094,57 +23428,119 @@ var _user$project$Text_Translations_View$view_grammemes = function (grammemes) {
 			_user$project$Text_Translations_View$view_grammeme,
 			_elm_lang$core$Dict$toList(grammemes)));
 };
+var _user$project$Text_Translations_View$view_translation_delete = F3(
+	function (msg, text_word, translation) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('translation_delete'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$img,
+					{
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/delete.svg'),
+						_1: {
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '17px'),
+							_1: {
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '17px'),
+								_1: {
+									ctor: '::',
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'title', 'Delete this translation.'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onClick(
+											msg(
+												A2(_user$project$Text_Translations_Msg$DeleteTranslation, text_word, translation))),
+										_1: {ctor: '[]'}
+									}
+								}
+							}
+						}
+					},
+					{ctor: '[]'}),
+				_1: {ctor: '[]'}
+			});
+	});
 var _user$project$Text_Translations_View$view_add_translation = F2(
 	function (msg, text_word) {
 		return A2(
 			_elm_lang$html$Html$div,
-			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('add_translation'),
+				_1: {ctor: '[]'}
+			},
 			{
 				ctor: '::',
 				_0: A2(
-					_elm_lang$html$Html$input,
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onInput(
-								function (_p8) {
-									return msg(
-										A2(_user$project$Text_Translations_Msg$UpdateNewTranslationForTextWord, text_word, _p8));
-								}),
-							_1: {ctor: '[]'}
-						}
-					},
-					{ctor: '[]'}),
+						_0: A2(
+							_elm_lang$html$Html$input,
+							{
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$placeholder('Add a translation'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onInput(
+											function (_p8) {
+												return msg(
+													A2(_user$project$Text_Translations_Msg$UpdateNewTranslationForTextWord, text_word, _p8));
+											}),
+										_1: {ctor: '[]'}
+									}
+								}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
+					}),
 				_1: {
 					ctor: '::',
 					_0: A2(
-						_elm_lang$html$Html$img,
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
 						{
 							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/add.svg'),
-							_1: {
-								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '17px'),
-								_1: {
+							_0: A2(
+								_elm_lang$html$Html$img,
+								{
 									ctor: '::',
-									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '17px'),
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/add.svg'),
 									_1: {
 										ctor: '::',
-										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'title', 'Add a new translation.'),
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '17px'),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onClick(
-												msg(
-													_user$project$Text_Translations_Msg$AddNewTranslationForTextWord(text_word))),
-											_1: {ctor: '[]'}
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '17px'),
+											_1: {
+												ctor: '::',
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'title', 'Add a new translation.'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Events$onClick(
+														msg(
+															_user$project$Text_Translations_Msg$AddNewTranslationForTextWord(text_word))),
+													_1: {ctor: '[]'}
+												}
+											}
 										}
 									}
-								}
-							}
-						},
-						{ctor: '[]'}),
+								},
+								{ctor: '[]'}),
+							_1: {ctor: '[]'}
+						}),
 					_1: {ctor: '[]'}
 				}
 			});
@@ -23155,7 +23551,7 @@ var _user$project$Text_Translations_View$view_correct_for_context = function (co
 		return {
 			ctor: '::',
 			_0: A2(
-				_elm_lang$html$Html$span,
+				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
 					_0: _elm_lang$html$Html_Attributes$class('correct_checkmark'),
@@ -23191,42 +23587,68 @@ var _user$project$Text_Translations_View$view_correct_for_context = function (co
 		return {ctor: '[]'};
 	}
 };
-var _user$project$Text_Translations_View$view_text_word_translation = F2(
-	function (msg, translation) {
+var _user$project$Text_Translations_View$view_text_word_translation = F3(
+	function (msg, text_word, translation) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('translation'),
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'translation', _1: true},
+						_1: {ctor: '[]'}
+					}),
 				_1: {ctor: '[]'}
 			},
 			{
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$div,
-					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$span,
+						_0: _elm_lang$html$Html_Attributes$classList(
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(
-									msg(
-										_user$project$Text_Translations_Msg$MakeCorrectForContext(translation))),
-								_1: {ctor: '[]'}
-							},
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								{
+								_0: {ctor: '_Tuple2', _0: 'editable', _1: true},
+								_1: {
 									ctor: '::',
-									_0: _elm_lang$html$Html$text(translation.text),
+									_0: {ctor: '_Tuple2', _0: 'phrase', _1: true},
 									_1: {ctor: '[]'}
-								},
-								_user$project$Text_Translations_View$view_correct_for_context(translation.correct_for_context))),
+								}
+							}),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(
+								msg(
+									_user$project$Text_Translations_Msg$MakeCorrectForContext(translation))),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(translation.text),
 						_1: {ctor: '[]'}
 					}),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('icons'),
+							_1: {ctor: '[]'}
+						},
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							_user$project$Text_Translations_View$view_correct_for_context(translation.correct_for_context),
+							{
+								ctor: '::',
+								_0: A3(_user$project$Text_Translations_View$view_translation_delete, msg, text_word, translation),
+								_1: {ctor: '[]'}
+							})),
+					_1: {ctor: '[]'}
+				}
 			});
 	});
 var _user$project$Text_Translations_View$view_text_word_translations = F2(
@@ -23237,14 +23659,14 @@ var _user$project$Text_Translations_View$view_text_word_translations = F2(
 				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('word_translations'),
+					_0: _elm_lang$html$Html_Attributes$class('translations'),
 					_1: {ctor: '[]'}
 				},
 				A2(
 					_elm_lang$core$Basics_ops['++'],
 					A2(
 						_elm_lang$core$List$map,
-						_user$project$Text_Translations_View$view_text_word_translation(msg),
+						A2(_user$project$Text_Translations_View$view_text_word_translation, msg, text_word),
 						_p10._0),
 					{
 						ctor: '::',
@@ -23256,7 +23678,7 @@ var _user$project$Text_Translations_View$view_text_word_translations = F2(
 				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('word_translations'),
+					_0: _elm_lang$html$Html_Attributes$class('translations'),
 					_1: {ctor: '[]'}
 				},
 				{
@@ -23274,7 +23696,7 @@ var _user$project$Text_Translations_View$view_word_translation = F2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('translation'),
+				_0: _elm_lang$html$Html_Attributes$class('word'),
 				_1: {ctor: '[]'}
 			},
 			{
@@ -23283,42 +23705,35 @@ var _user$project$Text_Translations_View$view_word_translation = F2(
 					_elm_lang$html$Html$div,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('word'),
+						_0: _elm_lang$html$Html_Attributes$class('word_phrase'),
 						_1: {ctor: '[]'}
 					},
 					{
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{ctor: '[]'},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text(_p12._0),
-								_1: {ctor: '[]'}
-							}),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{ctor: '[]'},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text(
-										A2(
-											_elm_lang$core$Basics_ops['++'],
-											'(',
-											A2(
-												_elm_lang$core$Basics_ops['++'],
-												_user$project$Text_Translations_View$view_grammemes_as_string(_p13.grammemes),
-												')'))),
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}
+						_0: _elm_lang$html$Html$text(_p12._0),
+						_1: {ctor: '[]'}
 					}),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html$text(''),
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('grammemes'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									'(',
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										_user$project$Text_Translations_View$view_grammemes_as_string(_p13.grammemes),
+										')'))),
+							_1: {ctor: '[]'}
+						}),
 					_1: {
 						ctor: '::',
 						_0: A2(_user$project$Text_Translations_View$view_text_word_translations, msg, _p13),
@@ -23333,7 +23748,7 @@ var _user$project$Text_Translations_View$view_current_letter = F2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$id('words'),
+				_0: _elm_lang$html$Html_Attributes$id('letter'),
 				_1: {ctor: '[]'}
 			},
 			function () {
@@ -23358,7 +23773,7 @@ var _user$project$Text_Translations_View$view_translations = F2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('translations'),
+				_0: _elm_lang$html$Html_Attributes$id('translations_tab'),
 				_1: {ctor: '[]'}
 			},
 			{
@@ -24015,7 +24430,26 @@ var _user$project$TextReader_View$tagWordAndToVDOM = F4(
 		switch (_p6.ctor) {
 			case 'Text':
 				var whitespace = _elm_lang$virtual_dom$VirtualDom$text(' ');
-				var words = _elm_lang$core$String$words(_p6._0);
+				var punctuation_re = _elm_lang$core$Regex$regex('[?!.]');
+				var has_punctuation = _elm_lang$core$Regex$contains(punctuation_re);
+				var maybe_split_on_punctuation = function (word) {
+					return has_punctuation(word) ? A3(
+						_elm_lang$core$Regex$split,
+						_elm_lang$core$Regex$AtMost(1),
+						punctuation_re,
+						word) : {
+						ctor: '::',
+						_0: word,
+						_1: {ctor: '[]'}
+					};
+				};
+				var words = _elm_lang$core$List$concat(
+					A2(
+						_elm_lang$core$List$map,
+						function (word) {
+							return maybe_split_on_punctuation(word);
+						},
+						_elm_lang$core$String$words(_p6._0)));
 				return A2(
 					_elm_lang$html$Html$span,
 					{ctor: '[]'},
@@ -24197,316 +24631,6 @@ var _user$project$TextReader_View$view_content = function (model) {
 				{ctor: '[]'});
 	}
 };
-
-var _user$project$Question_Decode$questionDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'question_type',
-	_elm_lang$core$Json_Decode$string,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'answers',
-		_user$project$Answer_Decode$answersDecoder,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'order',
-			_elm_lang$core$Json_Decode$int,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'body',
-				_elm_lang$core$Json_Decode$string,
-				A3(
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'modified_dt',
-					_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
-					A3(
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'created_dt',
-						_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
-						A3(
-							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'text_section_id',
-							_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-							A3(
-								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'id',
-								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Question_Model$Question)))))))));
-var _user$project$Question_Decode$questionsDecoder = _elm_lang$core$Json_Decode$array(_user$project$Question_Decode$questionDecoder);
-
-var _user$project$Text_Section_Decode$textSectionDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'questions',
-	_user$project$Question_Decode$questionsDecoder,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'question_count',
-		_elm_lang$core$Json_Decode$int,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'body',
-			_elm_lang$core$Json_Decode$string,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'order',
-				_elm_lang$core$Json_Decode$int,
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Section_Model$TextSection)))));
-var _user$project$Text_Section_Decode$textSectionsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Section_Decode$textSectionDecoder);
-var _user$project$Text_Section_Decode$TextCreateResp = function (a) {
-	return {id: a};
-};
-
-var _user$project$Text_Decode$decodeRespErrors = function (str) {
-	return A2(
-		_elm_lang$core$Json_Decode$decodeString,
-		A2(
-			_elm_lang$core$Json_Decode$field,
-			'errors',
-			_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string)),
-		str);
-};
-var _user$project$Text_Decode$textWordTranslationsDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'text',
-	_elm_lang$core$Json_Decode$string,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'correct_for_context',
-		_elm_lang$core$Json_Decode$bool,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'id',
-			_elm_lang$core$Json_Decode$int,
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextWordTranslation))));
-var _user$project$Text_Decode$textTranslationAddRespDecoder = A3(
-	_elm_lang$core$Json_Decode$map2,
-	F2(
-		function (v0, v1) {
-			return {ctor: '_Tuple2', _0: v0, _1: v1};
-		}),
-	A2(_elm_lang$core$Json_Decode$field, 'word', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$field, 'translation', _user$project$Text_Decode$textWordTranslationsDecoder));
-var _user$project$Text_Decode$textTranslationUpdateRespDecoder = A3(
-	_elm_lang$core$Json_Decode$map2,
-	F2(
-		function (v0, v1) {
-			return {ctor: '_Tuple2', _0: v0, _1: v1};
-		}),
-	A2(_elm_lang$core$Json_Decode$field, 'word', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$field, 'translation', _user$project$Text_Decode$textWordTranslationsDecoder));
-var _user$project$Text_Decode$textDifficultyDecoder = _elm_lang$core$Json_Decode$keyValuePairs(_elm_lang$core$Json_Decode$string);
-var _user$project$Text_Decode$textListItemDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'write_locker',
-	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'uri',
-		_elm_lang$core$Json_Decode$string,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'text_sections_complete',
-			_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'text_section_count',
-				_elm_lang$core$Json_Decode$int,
-				A3(
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'modified_dt',
-					_elm_community$json_extra$Json_Decode_Extra$date,
-					A3(
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'created_dt',
-						_elm_community$json_extra$Json_Decode_Extra$date,
-						A3(
-							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'tags',
-							_elm_lang$core$Json_Decode$nullable(
-								_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
-							A3(
-								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'last_modified_by',
-								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
-								A3(
-									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-									'created_by',
-									_elm_lang$core$Json_Decode$string,
-									A3(
-										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-										'difficulty',
-										_elm_lang$core$Json_Decode$string,
-										A3(
-											_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-											'author',
-											_elm_lang$core$Json_Decode$string,
-											A3(
-												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-												'title',
-												_elm_lang$core$Json_Decode$string,
-												A3(
-													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-													'id',
-													_elm_lang$core$Json_Decode$int,
-													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextListItem))))))))))))));
-var _user$project$Text_Decode$textListDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textListItemDecoder);
-var _user$project$Text_Decode$grammemesDecoder = _elm_lang$core$Json_Decode$dict(
-	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string));
-var _user$project$Text_Decode$wordValuesDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'translations',
-	_elm_lang$core$Json_Decode$nullable(
-		_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'grammemes',
-		_user$project$Text_Decode$grammemesDecoder,
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$WordValues)));
-var _user$project$Text_Decode$wordsDecoder = _elm_lang$core$Json_Decode$dict(_user$project$Text_Decode$wordValuesDecoder);
-var _user$project$Text_Decode$textDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'words',
-	_user$project$Text_Decode$wordsDecoder,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'write_locker',
-		_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'text_sections',
-			A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Array$fromList, _user$project$Text_Section_Decode$textSectionsDecoder),
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'modified_dt',
-				_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
-				A3(
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'created_dt',
-					_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
-					A3(
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'tags',
-						_elm_lang$core$Json_Decode$nullable(
-							_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
-						A3(
-							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'last_modified_by',
-							_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
-							A3(
-								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'created_by',
-								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
-								A3(
-									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-									'conclusion',
-									_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
-									A3(
-										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-										'difficulty',
-										_elm_lang$core$Json_Decode$string,
-										A3(
-											_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-											'source',
-											_elm_lang$core$Json_Decode$string,
-											A3(
-												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-												'author',
-												_elm_lang$core$Json_Decode$string,
-												A3(
-													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-													'introduction',
-													_elm_lang$core$Json_Decode$string,
-													A3(
-														_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-														'title',
-														_elm_lang$core$Json_Decode$string,
-														A3(
-															_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-															'id',
-															_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-															_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$Text))))))))))))))));
-var _user$project$Text_Decode$textWordDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'translations',
-	_elm_lang$core$Json_Decode$nullable(
-		_elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textWordTranslationsDecoder)),
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'grammemes',
-		_user$project$Text_Decode$grammemesDecoder,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'word',
-			_elm_lang$core$Json_Decode$string,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'instance',
-				_elm_lang$core$Json_Decode$int,
-				A3(
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'id',
-					_elm_lang$core$Json_Decode$int,
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextWord))))));
-var _user$project$Text_Decode$textTranslationsDecoder = _elm_lang$core$Json_Decode$dict(
-	_elm_lang$core$Json_Decode$dict(_user$project$Text_Decode$textWordDecoder));
-var _user$project$Text_Decode$TextCreateResp = F2(
-	function (a, b) {
-		return {id: a, redirect: b};
-	});
-var _user$project$Text_Decode$textCreateRespDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'redirect',
-	_elm_lang$core$Json_Decode$string,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'id',
-		_elm_lang$core$Json_Decode$int,
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextCreateResp)));
-var _user$project$Text_Decode$TextUpdateResp = F2(
-	function (a, b) {
-		return {id: a, updated: b};
-	});
-var _user$project$Text_Decode$textUpdateRespDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'updated',
-	_elm_lang$core$Json_Decode$bool,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'id',
-		_elm_lang$core$Json_Decode$int,
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextUpdateResp)));
-var _user$project$Text_Decode$TextDeleteResp = F3(
-	function (a, b, c) {
-		return {id: a, redirect: b, deleted: c};
-	});
-var _user$project$Text_Decode$textDeleteRespDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'deleted',
-	_elm_lang$core$Json_Decode$bool,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'redirect',
-		_elm_lang$core$Json_Decode$string,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'id',
-			_elm_lang$core$Json_Decode$int,
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextDeleteResp))));
-var _user$project$Text_Decode$TextLockResp = function (a) {
-	return {locked: a};
-};
-var _user$project$Text_Decode$textLockRespDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'locked',
-	_elm_lang$core$Json_Decode$bool,
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextLockResp));
-var _user$project$Text_Decode$TextProgressUpdateResp = function (a) {
-	return {updated: a};
-};
-var _user$project$Text_Decode$textProgressDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'updated',
-	_elm_lang$core$Json_Decode$bool,
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextProgressUpdateResp));
 
 var _user$project$TextReader_Question_Decode$answerDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
