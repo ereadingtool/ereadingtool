@@ -24430,7 +24430,7 @@ var _user$project$TextReader_View$tagWordAndToVDOM = F4(
 		switch (_p6.ctor) {
 			case 'Text':
 				var whitespace = _elm_lang$virtual_dom$VirtualDom$text(' ');
-				var punctuation_re = _elm_lang$core$Regex$regex('[?!.]');
+				var punctuation_re = _elm_lang$core$Regex$regex('[?!.,]');
 				var has_punctuation = _elm_lang$core$Regex$contains(punctuation_re);
 				var maybe_split_on_punctuation = function (word) {
 					return has_punctuation(word) ? A3(

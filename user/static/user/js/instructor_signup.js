@@ -9986,7 +9986,7 @@ var _user$project$Config$text_word_api_endpoint = function (id) {
 		A2(
 			_elm_lang$core$Basics_ops['++'],
 			_elm_lang$core$Basics$toString(id),
-			'/'));
+			'/translation/'));
 };
 var _user$project$Config$text_translation_api_endpoint = function (id) {
 	return A2(

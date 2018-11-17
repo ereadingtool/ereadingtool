@@ -50,7 +50,7 @@ tagWordAndToVDOM model section i node =
   case node of
     HtmlParser.Text str ->
       let
-        punctuation_re = Regex.regex "[?!.]"
+        punctuation_re = Regex.regex "[?!.,]"
         has_punctuation = Regex.contains punctuation_re
 
         maybe_split_on_punctuation =
