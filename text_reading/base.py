@@ -136,10 +136,11 @@ class TextReading(models.Model):
             'possible_section_scores': len(scores)
         }
 
-    def to_text_reading_dict(self) -> Dict:
+    def to_text_reading_dict(self, random_state, **kwargs) -> Dict:
         if self.state_machine.is_in_progress:
             return self.get_current_section().to_text_reading_dict(text_reading=self,
-                                                                   num_of_sections=self.number_of_sections)
+                                                                   num_of_sections=self.number_of_sections,
+                                                                   random_state=random_state)
 
         elif self.state_machine.is_intro:
             return self.text.to_text_reading_dict()

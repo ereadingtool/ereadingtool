@@ -1,3 +1,5 @@
+import random
+
 from typing import AnyStr
 
 from channels.db import database_sync_to_async
@@ -53,6 +55,10 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
         if not user.is_authenticated:
             raise Unauthorized
 
+    @database_sync_to_async
+    def get_current_text_reading_dict(self, random_state):
+        return self.text_reading.to_text_reading_dict(random_state=random_state)
+
     async def answer(self, user: ReaderUser, answer_id: int):
         if not user.is_authenticated:
             raise Unauthorized
@@ -64,7 +70,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
 
             await self.send_json({
                 'command': self.text_reading.current_state.name,
-                'result': await database_sync_to_async(self.text_reading.to_text_reading_dict)()
+                'result': await self.get_current_text_reading_dict(random_state=self.scope['random_state'])
             })
 
         except TextReadingQuestionNotInSection:
@@ -88,7 +94,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
 
             await self.send_json({
                 'command': self.text_reading.current_state.name,
-                'result': await database_sync_to_async(self.text_reading.to_text_reading_dict)()
+                'result': await self.get_current_text_reading_dict(random_state=self.scope['random_state'])
             })
 
         except TextReadingException as e:
@@ -106,7 +112,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
 
             await self.send_json({
                 'command': self.text_reading.current_state.name,
-                'result': await database_sync_to_async(self.text_reading.to_text_reading_dict)()
+                'result': await self.get_current_text_reading_dict(random_state=self.scope['random_state'])
             })
 
         except TextReadingNotAllQuestionsAnswered as e:
@@ -129,6 +135,8 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             text_id = self.scope['url_route']['kwargs']['text_id']
             user = self.scope['user']
 
+            self.scope['random_state'] = random.getstate()
+
             self.text = await get_text_or_error(text_id=text_id, user=user)
 
             started, self.text_reading = await self.start_reading()
@@ -136,7 +144,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             if started:
                 result = await database_sync_to_async(self.text.to_text_reading_dict)()
             else:
-                result = await database_sync_to_async(self.text_reading.to_text_reading_dict)()
+                result = await self.get_current_text_reading_dict(random_state=self.scope['random_state'])
 
             await self.send_json({
                 'command': self.text_reading.current_state.name,
