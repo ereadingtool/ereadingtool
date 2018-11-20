@@ -41,6 +41,18 @@
     row-gap: 20px;
 }
 
+#text_search_help_msg {
+    display: grid;
+
+    grid-column: 2;
+
+    align-content: center;
+
+    margin-bottom: 15px;
+    font-style: italic;
+    font-weight: bold;
+}
+
 .search_filter {
     display: inline-block;
     padding: 15px 15px 15px 15px;

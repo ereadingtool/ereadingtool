@@ -11665,6 +11665,20 @@ var _user$project$Views$view_header = F3(
 			});
 	});
 
+var _user$project$Main$view_help_msg = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('text_search_help_msg'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text('TIP: Use this page to find texts for your proficiency level and on topics that are of interest to you.'),
+			_1: {ctor: '[]'}
+		});
+};
 var _user$project$Main$view_search_footer = function (model) {
 	var results_length = _elm_lang$core$List$length(model.results);
 	var entries = _elm_lang$core$Native_Utils.eq(results_length, 1) ? 'entry' : 'entries';
@@ -11672,7 +11686,7 @@ var _user$project$Main$view_search_footer = function (model) {
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'footer_items'),
+			_0: _elm_lang$html$Html_Attributes$id('footer_items'),
 			_1: {ctor: '[]'}
 		},
 		{
@@ -11681,7 +11695,7 @@ var _user$project$Main$view_search_footer = function (model) {
 				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'footer'),
+					_0: _elm_lang$html$Html_Attributes$id('footer'),
 					_1: {
 						ctor: '::',
 						_0: _elm_lang$html$Html_Attributes$class('message'),
@@ -11968,7 +11982,7 @@ var _user$project$Main$view_search_results = function (text_list_items) {
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_search_results'),
+			_0: _elm_lang$html$Html_Attributes$id('text_search_results'),
 			_1: {ctor: '[]'}
 		},
 		A2(_elm_lang$core$List$map, view_search_result, text_list_items));
@@ -12170,7 +12184,7 @@ var _user$project$Main$view_tags = function (tag_search) {
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_tags'),
+			_0: _elm_lang$html$Html_Attributes$id('text_tags'),
 			_1: {ctor: '[]'}
 		},
 		{
@@ -12246,7 +12260,7 @@ var _user$project$Main$view_search_filters = function (model) {
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_search_filters'),
+			_0: _elm_lang$html$Html_Attributes$id('text_search_filters'),
 			_1: {ctor: '[]'}
 		},
 		{
@@ -12255,7 +12269,7 @@ var _user$project$Main$view_search_filters = function (model) {
 				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_search_filters_label'),
+					_0: _elm_lang$html$Html_Attributes$id('text_search_filters_label'),
 					_1: {ctor: '[]'}
 				},
 				{
@@ -12343,7 +12357,7 @@ var _user$project$Main$view_content = function (model) {
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_search'),
+			_0: _elm_lang$html$Html_Attributes$id('text_search'),
 			_1: {ctor: '[]'}
 		},
 		{
@@ -12351,11 +12365,15 @@ var _user$project$Main$view_content = function (model) {
 			_0: _user$project$Main$view_search_filters(model),
 			_1: {
 				ctor: '::',
-				_0: _user$project$Main$view_search_results(model.results),
+				_0: _user$project$Main$view_help_msg(model),
 				_1: {
 					ctor: '::',
-					_0: _user$project$Main$view_search_footer(model),
-					_1: {ctor: '[]'}
+					_0: _user$project$Main$view_search_results(model.results),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Main$view_search_footer(model),
+						_1: {ctor: '[]'}
+					}
 				}
 			}
 		});
@@ -12373,15 +12391,11 @@ var _user$project$Main$view = function (model) {
 				_user$project$Main$LogOut),
 			_1: {
 				ctor: '::',
-				_0: _user$project$Views$view_filter,
+				_0: _user$project$Main$view_content(model),
 				_1: {
 					ctor: '::',
-					_0: _user$project$Main$view_content(model),
-					_1: {
-						ctor: '::',
-						_0: _user$project$Views$view_footer,
-						_1: {ctor: '[]'}
-					}
+					_0: _user$project$Views$view_footer,
+					_1: {ctor: '[]'}
 				}
 			}
 		});

@@ -1,4 +1,4 @@
-module Login exposing (init, view, subscriptions, update, Model, Msg, student_login, instructor_login)
+module Login exposing (..)
 
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (class, classList, attribute)

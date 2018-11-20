@@ -16,7 +16,6 @@ table td {
     display: grid;
 
     grid-template-columns: 4% 10% auto 15% 4%;
-    grid-auto-rows: 750px;
 }
 
 .profile_items {
@@ -26,14 +25,20 @@ table td {
     padding: 25px;
     margin-top: 100px;
 
-    overflow: auto;
-
     grid-template-columns: 35% 35% 25%;
 
     border: solid 0.5px lightgrey;
 
     grid-row-gap: 25px;
     grid-column-gap: 10px;
+}
+
+.welcome_msg {
+    display: grid;
+
+    grid-column: 1 / 4;
+
+    grid-template-rows: 25px auto;
 }
 
 .text_readings {
@@ -51,9 +56,33 @@ table td {
     display: grid;
 
     grid-column: 1 / 4;
-    grid-row: 3;
+    grid-row: 4;
+
+    margin-top: 10px;
 
     grid-template-rows: 25px auto;
+}
+
+.preferred_difficulty {
+    display: grid;
+    grid-column: 1 / 4;
+    grid-row: 2;
+
+    margin-top: 10px;
+
+    grid-template-rows: 25px auto;
+}
+
+.difficulty_desc {
+    margin-top: 10px;
+}
+
+.flashcards {
+    display: grid;
+    grid-row: 5;
+
+    grid-template-columns: auto;
+    grid-template-rows: 25px 35px;
 }
 
 .performance_report {

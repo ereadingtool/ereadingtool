@@ -11939,10 +11939,111 @@ var _user$project$Login$student_login = F3(
 		return A3(_user$project$Login$StudentLogin, signup_uri, login_uri, menu_index);
 	});
 
+var _user$project$Main$view_help_msgs = F2(
+	function (login, model) {
+		return {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('help_msgs'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('When signing in, please note that this website is not connected to your university’s user account.\n    If this is your first time using this website, please create a new account.'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		};
+	});
+var _user$project$Main$view_content = F2(
+	function (login, model) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'login', _1: true},
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('login_type'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(
+							_user$project$Login$label(login)),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$classList(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'login_box', _1: true},
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						},
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							_user$project$Login$view_email_input(model),
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_user$project$Login$view_password_input(model),
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									_user$project$Login$view_login(login),
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										_user$project$Login$view_submit(model),
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											A2(_user$project$Main$view_help_msgs, login, model),
+											_user$project$Login$view_errors(model))))))),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$Main$view = F2(
+	function (login, model) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: _user$project$Views$view_unauthed_header,
+				_1: {
+					ctor: '::',
+					_0: A2(_user$project$Main$view_content, login, model),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Views$view_footer,
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+	});
 var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 	{
 		init: _user$project$Login$init,
-		view: _user$project$Login$view(
+		view: _user$project$Main$view(
 			A3(_user$project$Login$student_login, _user$project$Config$student_signup_page, _user$project$Config$student_login_page, 2)),
 		subscriptions: _user$project$Login$subscriptions,
 		update: _user$project$Login$update(_user$project$Config$student_login_api_endpoint)

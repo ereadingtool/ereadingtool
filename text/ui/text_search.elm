@@ -1,5 +1,5 @@
 import Html exposing (Html, div, span, option)
-import Html.Attributes exposing (classList, class, attribute)
+import Html.Attributes exposing (classList, class, attribute, id)
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
 
 import Http exposing (..)
@@ -65,8 +65,10 @@ init flags =
           case Student.Profile.Model.studentDifficultyPreference student_profile of
             Just difficulty ->
               Text.Search.add_difficulty_to_search default_search (Tuple.first difficulty) True
+
             _ ->
               default_search
+
         _ ->
           default_search)
   in
@@ -155,7 +157,7 @@ view_tags tag_search =
           Html.text tag_label
         ]
   in
-    div [attribute "id" "text_tags"] [
+    div [id "text_tags"] [
       div [class "text_tags"] (List.map view_tag (Dict.values tags))
     ]
 
@@ -177,8 +179,8 @@ view_difficulties difficulty_search =
 
 view_search_filters : Model -> Html Msg
 view_search_filters model =
-  div [attribute "id" "text_search_filters"] [
-    div [attribute "id" "text_search_filters_label"] [ Html.text "Filters" ]
+  div [id "text_search_filters"] [
+    div [id "text_search_filters_label"] [ Html.text "Filters" ]
   , div [class "search_filter"] [
       div [class "search_filter_title"] [ Html.text "Difficulty" ]
     , div [] (view_difficulties (Text.Search.difficulty_search model.text_search))
@@ -228,7 +230,7 @@ view_search_results text_list_items =
           ]
         ]
   in
-    div [attribute "id" "text_search_results"] (List.map view_search_result text_list_items)
+    div [id "text_search_results"] (List.map view_search_result text_list_items)
 
 view_search_footer : Model -> Html Msg
 view_search_footer model =
@@ -236,16 +238,23 @@ view_search_footer model =
     results_length = List.length model.results
     entries = if results_length == 1 then "entry" else "entries"
   in
-    div [attribute "id" "footer_items"] [
-      div [attribute "id" "footer", class "message"] [
+    div [id "footer_items"] [
+      div [id "footer", class "message"] [
           Html.text <| String.join " " ["Showing", toString results_length, entries]
       ]
     ]
 
+view_help_msg : Model -> Html Msg
+view_help_msg model =
+  div [id "text_search_help_msg"] [
+    Html.text """TIP: Use this page to find texts for your proficiency level and on topics that are of interest to you."""
+  ]
+
 view_content : Model -> Html Msg
 view_content model =
-  div [attribute "id" "text_search"] [
+  div [id "text_search"] [
     view_search_filters model
+  , view_help_msg model
   , view_search_results model.results
   , view_search_footer model
   ]
@@ -254,7 +263,6 @@ view_content model =
 view : Model -> Html Msg
 view model = div [] [
     Views.view_header model.profile (Just 0) LogOut
-  , Views.view_filter
   , view_content model
   , Views.view_footer
   ]
