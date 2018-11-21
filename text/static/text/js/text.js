@@ -24454,7 +24454,7 @@ var _user$project$TextReader_View$intersperseWords = F2(
 				});
 		}
 	});
-var _user$project$TextReader_View$parseWordWithPunctuation = function (str) {
+var _user$project$TextReader_View$maybeParseWordWithPunctuation = function (str) {
 	var matches = A3(
 		_elm_lang$core$Regex$find,
 		_elm_lang$core$Regex$AtMost(1),
@@ -24487,13 +24487,6 @@ var _user$project$TextReader_View$tagWordAndToVDOM = F4(
 		var _p9 = node;
 		switch (_p9.ctor) {
 			case 'Text':
-				var maybe_split_on_punctuation = function (word) {
-					return _user$project$TextReader_View$has_punctuation(word) ? _user$project$TextReader_View$parseWordWithPunctuation(word) : {
-						ctor: '::',
-						_0: word,
-						_1: {ctor: '[]'}
-					};
-				};
 				var words = A3(
 					_elm_lang$core$List$foldl,
 					_user$project$TextReader_View$intersperseWords,
@@ -24501,7 +24494,7 @@ var _user$project$TextReader_View$tagWordAndToVDOM = F4(
 					_elm_lang$core$List$concat(
 						A2(
 							_elm_lang$core$List$map,
-							maybe_split_on_punctuation,
+							_user$project$TextReader_View$maybeParseWordWithPunctuation,
 							_elm_lang$core$String$words(_p9._0))));
 				return A2(
 					_elm_lang$html$Html$span,

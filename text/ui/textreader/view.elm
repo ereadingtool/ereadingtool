@@ -54,8 +54,8 @@ tagWord i model section j word =
     else
       VirtualDom.text word
 
-parseWordWithPunctuation : String -> List String
-parseWordWithPunctuation str =
+maybeParseWordWithPunctuation : String -> List String
+maybeParseWordWithPunctuation str =
   let
     matches = Regex.find (Regex.AtMost 1) punctuation_re str
   in
@@ -87,13 +87,10 @@ tagWordAndToVDOM model section i node =
   case node of
     HtmlParser.Text str ->
       let
-        maybe_split_on_punctuation =
-          (\word -> if has_punctuation word then parseWordWithPunctuation word else [word])
-
         words =
              List.foldl intersperseWords []
           <| List.concat
-          <| List.map maybe_split_on_punctuation (String.words str)
+          <| List.map maybeParseWordWithPunctuation (String.words str)
       in
         span [] (List.indexedMap (tagWord i model section) words)
 
