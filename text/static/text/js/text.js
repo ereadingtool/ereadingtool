@@ -24424,54 +24424,105 @@ var _user$project$TextReader_View$tagWord = F5(
 				}
 			}) : _elm_lang$virtual_dom$VirtualDom$text(word);
 	});
+var _user$project$TextReader_View$punctuation_re = _elm_lang$core$Regex$regex('[?!.,]');
+var _user$project$TextReader_View$has_punctuation = _elm_lang$core$Regex$contains(_user$project$TextReader_View$punctuation_re);
+var _user$project$TextReader_View$intersperseWords = F2(
+	function (token, tokens) {
+		var whitespace = '  ';
+		var _p6 = _user$project$TextReader_View$has_punctuation(token);
+		if (_p6 === true) {
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				tokens,
+				{
+					ctor: '::',
+					_0: token,
+					_1: {ctor: '[]'}
+				});
+		} else {
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				tokens,
+				{
+					ctor: '::',
+					_0: whitespace,
+					_1: {
+						ctor: '::',
+						_0: token,
+						_1: {ctor: '[]'}
+					}
+				});
+		}
+	});
+var _user$project$TextReader_View$parseWordWithPunctuation = function (str) {
+	var matches = A3(
+		_elm_lang$core$Regex$find,
+		_elm_lang$core$Regex$AtMost(1),
+		_user$project$TextReader_View$punctuation_re,
+		str);
+	var _p7 = matches;
+	if ((_p7.ctor === '::') && (_p7._1.ctor === '[]')) {
+		var _p8 = _p7._0;
+		var word = A3(_elm_lang$core$String$slice, 0, _p8.index, str);
+		var punctuation_char = A3(_elm_lang$core$String$slice, _p8.index, _p8.index + 1, str);
+		return {
+			ctor: '::',
+			_0: word,
+			_1: {
+				ctor: '::',
+				_0: punctuation_char,
+				_1: {ctor: '[]'}
+			}
+		};
+	} else {
+		return {
+			ctor: '::',
+			_0: str,
+			_1: {ctor: '[]'}
+		};
+	}
+};
 var _user$project$TextReader_View$tagWordAndToVDOM = F4(
 	function (model, section, i, node) {
-		var _p6 = node;
-		switch (_p6.ctor) {
+		var _p9 = node;
+		switch (_p9.ctor) {
 			case 'Text':
-				var whitespace = _elm_lang$virtual_dom$VirtualDom$text(' ');
-				var punctuation_re = _elm_lang$core$Regex$regex('[?!.,]');
-				var has_punctuation = _elm_lang$core$Regex$contains(punctuation_re);
 				var maybe_split_on_punctuation = function (word) {
-					return has_punctuation(word) ? A3(
-						_elm_lang$core$Regex$split,
-						_elm_lang$core$Regex$AtMost(1),
-						punctuation_re,
-						word) : {
+					return _user$project$TextReader_View$has_punctuation(word) ? _user$project$TextReader_View$parseWordWithPunctuation(word) : {
 						ctor: '::',
 						_0: word,
 						_1: {ctor: '[]'}
 					};
 				};
-				var words = _elm_lang$core$List$concat(
-					A2(
-						_elm_lang$core$List$map,
-						function (word) {
-							return maybe_split_on_punctuation(word);
-						},
-						_elm_lang$core$String$words(_p6._0)));
+				var words = A3(
+					_elm_lang$core$List$foldl,
+					_user$project$TextReader_View$intersperseWords,
+					{ctor: '[]'},
+					_elm_lang$core$List$concat(
+						A2(
+							_elm_lang$core$List$map,
+							maybe_split_on_punctuation,
+							_elm_lang$core$String$words(_p9._0))));
+				var _p10 = A2(_elm_lang$core$Debug$log, 'parsed words', words);
 				return A2(
 					_elm_lang$html$Html$span,
 					{ctor: '[]'},
 					A2(
-						_elm_lang$core$List$intersperse,
-						whitespace,
-						A2(
-							_elm_lang$core$List$indexedMap,
-							A3(_user$project$TextReader_View$tagWord, i, model, section),
-							words)));
+						_elm_lang$core$List$indexedMap,
+						A3(_user$project$TextReader_View$tagWord, i, model, section),
+						words));
 			case 'Element':
 				return A3(
 					_elm_lang$html$Html$node,
-					_p6._0,
+					_p9._0,
 					A2(
 						_elm_lang$core$List$map,
-						function (_p7) {
-							var _p8 = _p7;
-							return A2(_elm_lang$html$Html_Attributes$attribute, _p8._0, _p8._1);
+						function (_p11) {
+							var _p12 = _p11;
+							return A2(_elm_lang$html$Html_Attributes$attribute, _p12._0, _p12._1);
 						},
-						_p6._1),
-					A3(_user$project$TextReader_View$tagWordsAndToVDOM, model, section, _p6._2));
+						_p9._1),
+					A3(_user$project$TextReader_View$tagWordsAndToVDOM, model, section, _p9._2));
 			default:
 				return _elm_lang$virtual_dom$VirtualDom$text('');
 		}
@@ -24541,8 +24592,8 @@ var _user$project$TextReader_View$view_text_section = F2(
 			});
 	});
 var _user$project$TextReader_View$view_content = function (model) {
-	var _p9 = model.progress;
-	switch (_p9.ctor) {
+	var _p13 = model.progress;
+	switch (_p13.ctor) {
 		case 'ViewIntro':
 			return A2(
 				_elm_lang$html$Html$div,
@@ -24596,7 +24647,7 @@ var _user$project$TextReader_View$view_content = function (model) {
 				},
 				{
 					ctor: '::',
-					_0: A2(_user$project$TextReader_View$view_text_section, model, _p9._0),
+					_0: A2(_user$project$TextReader_View$view_text_section, model, _p13._0),
 					_1: {
 						ctor: '::',
 						_0: _user$project$TextReader_View$view_exceptions(model),
@@ -24623,7 +24674,7 @@ var _user$project$TextReader_View$view_content = function (model) {
 					}
 				});
 		case 'Complete':
-			return A2(_user$project$TextReader_View$view_text_complete, model, _p9._0);
+			return A2(_user$project$TextReader_View$view_text_complete, model, _p13._0);
 		default:
 			return A2(
 				_elm_lang$html$Html$div,

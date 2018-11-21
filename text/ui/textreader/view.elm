@@ -30,6 +30,15 @@ import HtmlParser.Util
 import VirtualDom
 
 
+punctuation_re : Regex.Regex
+punctuation_re =
+  Regex.regex "[?!.,]"
+
+has_punctuation : String -> Bool
+has_punctuation =
+  Regex.contains punctuation_re
+
+
 tagWord : Int -> Model -> Section -> Int -> String -> Html Msg
 tagWord i model section j word =
   let
@@ -45,23 +54,49 @@ tagWord i model section j word =
     else
       VirtualDom.text word
 
+parseWordWithPunctuation : String -> List String
+parseWordWithPunctuation str =
+  let
+    matches = Regex.find (Regex.AtMost 1) punctuation_re str
+  in
+    case matches of
+      match :: [] ->
+        let
+          punctuation_char = String.slice match.index (match.index + 1) str
+          word = String.slice 0 match.index str
+        in
+          [word, punctuation_char]
+
+      _ ->
+        [str]
+
+intersperseWords : String -> List String -> List String
+intersperseWords token tokens =
+  let
+    whitespace = "  "
+  in
+    case has_punctuation token of
+      True ->
+        tokens ++ [token]
+
+      False ->
+        tokens ++ [whitespace, token]
+
 tagWordAndToVDOM : Model -> Section -> Int -> HtmlParser.Node -> Html Msg
 tagWordAndToVDOM model section i node =
   case node of
     HtmlParser.Text str ->
       let
-        punctuation_re = Regex.regex "[?!.,]"
-        has_punctuation = Regex.contains punctuation_re
-
         maybe_split_on_punctuation =
-          (\word -> if has_punctuation word then Regex.split (Regex.AtMost 1) punctuation_re word else [word])
+          (\word -> if has_punctuation word then parseWordWithPunctuation word else [word])
 
-        words = List.concat <| List.map (\word -> maybe_split_on_punctuation word) (String.words str)
-        whitespace = VirtualDom.text " "
+        words =
+             List.foldl intersperseWords []
+          <| List.concat
+          <| List.map maybe_split_on_punctuation (String.words str)
+        _ = Debug.log "parsed words" words
       in
-        span []
-          (  List.intersperse whitespace
-          <| List.indexedMap (tagWord i model section) words)
+        span [] (List.indexedMap (tagWord i model section) words)
 
     HtmlParser.Element name attrs nodes ->
       Html.node name (List.map (\(name, value) -> attribute name value) attrs)

@@ -58,12 +58,6 @@ span {
     grid-column: 1 / 3;
 }
 
-#startover {
-}
-
-#goback {
-}
-
 #text_score {
     display: grid;
     grid-column: 2;
