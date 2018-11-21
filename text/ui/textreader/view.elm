@@ -52,7 +52,11 @@ tagWord i model section j word =
       , view_gloss translations model reader_word
       ]
     else
-      VirtualDom.text word
+      case word == " " of
+        True ->
+          span [class "space"] []
+        False ->
+          VirtualDom.text word
 
 maybeParseWordWithPunctuation : String -> List String
 maybeParseWordWithPunctuation str =
@@ -73,7 +77,7 @@ maybeParseWordWithPunctuation str =
 intersperseWords : String -> List String -> List String
 intersperseWords token tokens =
   let
-    whitespace = "  "
+    whitespace = " "
   in
     case has_punctuation token of
       True ->
