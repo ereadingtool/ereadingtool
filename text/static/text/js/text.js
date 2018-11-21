@@ -24503,7 +24503,6 @@ var _user$project$TextReader_View$tagWordAndToVDOM = F4(
 							_elm_lang$core$List$map,
 							maybe_split_on_punctuation,
 							_elm_lang$core$String$words(_p9._0))));
-				var _p10 = A2(_elm_lang$core$Debug$log, 'parsed words', words);
 				return A2(
 					_elm_lang$html$Html$span,
 					{ctor: '[]'},
@@ -24517,9 +24516,9 @@ var _user$project$TextReader_View$tagWordAndToVDOM = F4(
 					_p9._0,
 					A2(
 						_elm_lang$core$List$map,
-						function (_p11) {
-							var _p12 = _p11;
-							return A2(_elm_lang$html$Html_Attributes$attribute, _p12._0, _p12._1);
+						function (_p10) {
+							var _p11 = _p10;
+							return A2(_elm_lang$html$Html_Attributes$attribute, _p11._0, _p11._1);
 						},
 						_p9._1),
 					A3(_user$project$TextReader_View$tagWordsAndToVDOM, model, section, _p9._2));
@@ -24592,8 +24591,8 @@ var _user$project$TextReader_View$view_text_section = F2(
 			});
 	});
 var _user$project$TextReader_View$view_content = function (model) {
-	var _p13 = model.progress;
-	switch (_p13.ctor) {
+	var _p12 = model.progress;
+	switch (_p12.ctor) {
 		case 'ViewIntro':
 			return A2(
 				_elm_lang$html$Html$div,
@@ -24647,7 +24646,7 @@ var _user$project$TextReader_View$view_content = function (model) {
 				},
 				{
 					ctor: '::',
-					_0: A2(_user$project$TextReader_View$view_text_section, model, _p13._0),
+					_0: A2(_user$project$TextReader_View$view_text_section, model, _p12._0),
 					_1: {
 						ctor: '::',
 						_0: _user$project$TextReader_View$view_exceptions(model),
@@ -24674,7 +24673,7 @@ var _user$project$TextReader_View$view_content = function (model) {
 					}
 				});
 		case 'Complete':
-			return A2(_user$project$TextReader_View$view_text_complete, model, _p13._0);
+			return A2(_user$project$TextReader_View$view_text_complete, model, _p12._0);
 		default:
 			return A2(
 				_elm_lang$html$Html$div,

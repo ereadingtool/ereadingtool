@@ -94,7 +94,6 @@ tagWordAndToVDOM model section i node =
              List.foldl intersperseWords []
           <| List.concat
           <| List.map maybe_split_on_punctuation (String.words str)
-        _ = Debug.log "parsed words" words
       in
         span [] (List.indexedMap (tagWord i model section) words)
 
