@@ -49,6 +49,8 @@ type Msg =
   | CancelUsernameUpdate
   -- profile update submission
   | Submitted (Result Error StudentProfile)
+  -- help messages
+  | CloseHelp String
   -- site-wide messages
   | Logout MenuMsg.Msg
   | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
@@ -196,6 +198,9 @@ update msg model = case msg of
 
       _ ->
         (model, Cmd.none)
+
+  CloseHelp str ->
+    (model, Cmd.none)
 
   Logout msg ->
     (model, Student.Profile.Model.logout model.profile model.flags.csrftoken LoggedOut)
@@ -363,10 +368,33 @@ view_username_submit username =
       Nothing ->
         [cancel_btn]
 
+view_cancel_btn : Html.Attribute Msg -> Html Msg
+view_cancel_btn event_attr =
+  Html.img [
+      attribute "src" "/static/img/cancel.svg"
+    , attribute "height" "13px"
+    , attribute "width" "13px"
+    , class "cursor"
+    , event_attr
+    ] []
+
+view_hint_overlay : Html.Attribute Msg -> String -> Html Msg
+view_hint_overlay event_attr hint_msg =
+  span [class "hint_overlay"] [
+    span [class "hint"] [
+      span [class "msg"] [ Html.text hint_msg ]
+    , span [class "exit"] [ view_cancel_btn event_attr ]
+    , span [class "nav"] [
+        Html.text "prev | next"
+      ]
+    ]
+  ]
+
 view_username : Model -> Html Msg
 view_username model =
   let
     username = Student.Profile.Model.studentUserName model.profile
+
     username_valid_attrs =
       (case model.username_update.valid of
         Just valid ->
@@ -377,21 +405,29 @@ view_username model =
               [class "invalid_username"]
         Nothing ->
           [])
+
     username_msgs =
       (case model.username_update.msg of
         Just msg ->
           [div [] [ Html.text msg ]]
         Nothing ->
           [])
+
+    username_hint =
+      """You can create a new username that is distinct from your email address if you choose.
+      Your username will be visible to instructors and other students if you comment on any texts."""
+
   in
     div [class "profile_item"] [
-      span [class "profile_item_title"] [ Html.text "Username" ]
+      view_hint_overlay (onClick (CloseHelp "user")) username_hint
+    , span [class "profile_item_title"] [ Html.text "Username" ]
     , case Dict.member "username" model.editing of
         False ->
           span [class "profile_item_value"] [
             Html.text (Student.Profile.Model.studentUserName model.profile)
           , div [class "update_username", class "cursor", onClick ToggleUsernameUpdate] [ Html.text "Update" ]
           ]
+
         True ->
           span [class "profile_item_value"] <| [
             Html.input [
@@ -401,7 +437,7 @@ view_username model =
             , attribute "maxlength" "150"
             , attribute "minlength" "8"
             , onInput UpdateUsername] []
-          , span ([] ++ username_valid_attrs) []
+          , span username_valid_attrs []
           , div [class "username_msg"] username_msgs
           ] ++ view_username_submit model.username_update
     ]

@@ -22187,6 +22187,99 @@ var _user$project$Main$view_user_email = function (model) {
 			}
 		});
 };
+var _user$project$Main$view_cancel_btn = function (event_attr) {
+	return A2(
+		_elm_lang$html$Html$img,
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/cancel.svg'),
+			_1: {
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '13px'),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '13px'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('cursor'),
+						_1: {
+							ctor: '::',
+							_0: event_attr,
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			}
+		},
+		{ctor: '[]'});
+};
+var _user$project$Main$view_hint_overlay = F2(
+	function (event_attr, hint_msg) {
+		return A2(
+			_elm_lang$html$Html$span,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('hint_overlay'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$span,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('hint'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$span,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('msg'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(hint_msg),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$span,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('exit'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _user$project$Main$view_cancel_btn(event_attr),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$span,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('nav'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('prev | next'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}
+					}),
+				_1: {ctor: '[]'}
+			});
+	});
 var _user$project$Main$view_help_text_for_difficulty = function (text_difficulty) {
 	var difficulty_msgs = _elm_lang$core$Dict$fromList(
 		{
@@ -22478,6 +22571,9 @@ var _user$project$Main$LoggedOut = function (a) {
 var _user$project$Main$Logout = function (a) {
 	return {ctor: 'Logout', _0: a};
 };
+var _user$project$Main$CloseHelp = function (a) {
+	return {ctor: 'CloseHelp', _0: a};
+};
 var _user$project$Main$Submitted = function (a) {
 	return {ctor: 'Submitted', _0: a};
 };
@@ -22740,6 +22836,8 @@ var _user$project$Main$update = F2(
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 					}
 				}
+			case 'CloseHelp':
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'Logout':
 				return {
 					ctor: '_Tuple2',
@@ -22761,6 +22859,7 @@ var _user$project$Main$update = F2(
 	});
 var _user$project$Main$ToggleUsernameUpdate = {ctor: 'ToggleUsernameUpdate'};
 var _user$project$Main$view_username = function (model) {
+	var username_hint = 'You can create a new username that is distinct from your email address if you choose.\n      Your username will be visible to instructors and other students if you comment on any texts.';
 	var username_msgs = function () {
 		var _p22 = model.username_update.msg;
 		if (_p22.ctor === 'Just') {
@@ -22812,125 +22911,130 @@ var _user$project$Main$view_username = function (model) {
 		{
 			ctor: '::',
 			_0: A2(
-				_elm_lang$html$Html$span,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('profile_item_title'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text('Username'),
-					_1: {ctor: '[]'}
-				}),
+				_user$project$Main$view_hint_overlay,
+				_elm_lang$html$Html_Events$onClick(
+					_user$project$Main$CloseHelp('user')),
+				username_hint),
 			_1: {
 				ctor: '::',
-				_0: function () {
-					var _p25 = A2(_elm_lang$core$Dict$member, 'username', model.editing);
-					if (_p25 === false) {
-						return A2(
-							_elm_lang$html$Html$span,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('profile_item_value'),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text(
-									_user$project$Student_Profile_Model$studentUserName(model.profile)),
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$div,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('update_username'),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('cursor'),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$ToggleUsernameUpdate),
-													_1: {ctor: '[]'}
-												}
-											}
-										},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text('Update'),
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								}
-							});
-					} else {
-						return A2(
-							_elm_lang$html$Html$span,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('profile_item_value'),
-								_1: {ctor: '[]'}
-							},
-							A2(
-								_elm_lang$core$Basics_ops['++'],
+				_0: A2(
+					_elm_lang$html$Html$span,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('profile_item_title'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Username'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: function () {
+						var _p25 = A2(_elm_lang$core$Dict$member, 'username', model.editing);
+						if (_p25 === false) {
+							return A2(
+								_elm_lang$html$Html$span,
 								{
 									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$input,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('username_input'),
-											_1: {
+									_0: _elm_lang$html$Html_Attributes$class('profile_item_value'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(
+										_user$project$Student_Profile_Model$studentUserName(model.profile)),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$div,
+											{
 												ctor: '::',
-												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Username'),
+												_0: _elm_lang$html$Html_Attributes$class('update_username'),
 												_1: {
 													ctor: '::',
-													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', username),
+													_0: _elm_lang$html$Html_Attributes$class('cursor'),
 													_1: {
 														ctor: '::',
-														_0: A2(_elm_lang$html$Html_Attributes$attribute, 'maxlength', '150'),
+														_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$ToggleUsernameUpdate),
+														_1: {ctor: '[]'}
+													}
+												}
+											},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text('Update'),
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}
+								});
+						} else {
+							return A2(
+								_elm_lang$html$Html$span,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('profile_item_value'),
+									_1: {ctor: '[]'}
+								},
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									{
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$input,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('username_input'),
+												_1: {
+													ctor: '::',
+													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Username'),
+													_1: {
+														ctor: '::',
+														_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', username),
 														_1: {
 															ctor: '::',
-															_0: A2(_elm_lang$html$Html_Attributes$attribute, 'minlength', '8'),
+															_0: A2(_elm_lang$html$Html_Attributes$attribute, 'maxlength', '150'),
 															_1: {
 																ctor: '::',
-																_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateUsername),
-																_1: {ctor: '[]'}
+																_0: A2(_elm_lang$html$Html_Attributes$attribute, 'minlength', '8'),
+																_1: {
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateUsername),
+																	_1: {ctor: '[]'}
+																}
 															}
 														}
 													}
 												}
-											}
-										},
-										{ctor: '[]'}),
-									_1: {
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$span,
-											A2(
-												_elm_lang$core$Basics_ops['++'],
-												{ctor: '[]'},
-												username_valid_attrs),
+											},
 											{ctor: '[]'}),
 										_1: {
 											ctor: '::',
 											_0: A2(
-												_elm_lang$html$Html$div,
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class('username_msg'),
-													_1: {ctor: '[]'}
-												},
-												username_msgs),
-											_1: {ctor: '[]'}
+												_elm_lang$html$Html$span,
+												username_valid_attrs,
+												{ctor: '[]'}),
+											_1: {
+												ctor: '::',
+												_0: A2(
+													_elm_lang$html$Html$div,
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$class('username_msg'),
+														_1: {ctor: '[]'}
+													},
+													username_msgs),
+												_1: {ctor: '[]'}
+											}
 										}
-									}
-								},
-								_user$project$Main$view_username_submit(model.username_update)));
-					}
-				}(),
-				_1: {ctor: '[]'}
+									},
+									_user$project$Main$view_username_submit(model.username_update)));
+						}
+					}(),
+					_1: {ctor: '[]'}
+				}
 			}
 		});
 };
