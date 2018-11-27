@@ -186,6 +186,10 @@ table td {
     position: absolute;
 }
 
+.invisible {
+    visibility: hidden;
+}
+
 .hint {
     display: grid;
     position: relative;

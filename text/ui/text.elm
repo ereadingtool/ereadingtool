@@ -3,7 +3,7 @@ import Html exposing (Html, div)
 import Dict exposing (Dict)
 
 import Views
-import Profile
+import User.Profile
 
 import WebSocket
 
@@ -22,7 +22,7 @@ import Config
 init : Flags -> (Model, Cmd Msg)
 init flags =
   let
-    profile = Profile.init_profile flags
+    profile = User.Profile.init_profile flags
   in
     ({ text=TextReader.Text.Model.emptyText
      , gloss=Dict.empty
@@ -76,7 +76,7 @@ update msg model =
         TextReader.Update.handle_ws_resp model str
 
       LogOut msg ->
-        (model, Profile.logout model.profile model.flags.csrftoken LoggedOut)
+        (model, User.Profile.logout model.profile model.flags.csrftoken LoggedOut)
 
       LoggedOut (Ok logout_resp) ->
         (model, Ports.redirect logout_resp.redirect)

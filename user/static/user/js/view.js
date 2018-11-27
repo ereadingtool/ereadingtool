@@ -3168,143 +3168,6 @@ var _elm_lang$core$Platform$Task = {ctor: 'Task'};
 var _elm_lang$core$Platform$ProcessId = {ctor: 'ProcessId'};
 var _elm_lang$core$Platform$Router = {ctor: 'Router'};
 
-//import Maybe, Native.List //
-
-var _elm_lang$core$Native_Regex = function() {
-
-function escape(str)
-{
-	return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-}
-function caseInsensitive(re)
-{
-	return new RegExp(re.source, 'gi');
-}
-function regex(raw)
-{
-	return new RegExp(raw, 'g');
-}
-
-function contains(re, string)
-{
-	return string.match(re) !== null;
-}
-
-function find(n, re, str)
-{
-	n = n.ctor === 'All' ? Infinity : n._0;
-	var out = [];
-	var number = 0;
-	var string = str;
-	var lastIndex = re.lastIndex;
-	var prevLastIndex = -1;
-	var result;
-	while (number++ < n && (result = re.exec(string)))
-	{
-		if (prevLastIndex === re.lastIndex) break;
-		var i = result.length - 1;
-		var subs = new Array(i);
-		while (i > 0)
-		{
-			var submatch = result[i];
-			subs[--i] = submatch === undefined
-				? _elm_lang$core$Maybe$Nothing
-				: _elm_lang$core$Maybe$Just(submatch);
-		}
-		out.push({
-			match: result[0],
-			submatches: _elm_lang$core$Native_List.fromArray(subs),
-			index: result.index,
-			number: number
-		});
-		prevLastIndex = re.lastIndex;
-	}
-	re.lastIndex = lastIndex;
-	return _elm_lang$core$Native_List.fromArray(out);
-}
-
-function replace(n, re, replacer, string)
-{
-	n = n.ctor === 'All' ? Infinity : n._0;
-	var count = 0;
-	function jsReplacer(match)
-	{
-		if (count++ >= n)
-		{
-			return match;
-		}
-		var i = arguments.length - 3;
-		var submatches = new Array(i);
-		while (i > 0)
-		{
-			var submatch = arguments[i];
-			submatches[--i] = submatch === undefined
-				? _elm_lang$core$Maybe$Nothing
-				: _elm_lang$core$Maybe$Just(submatch);
-		}
-		return replacer({
-			match: match,
-			submatches: _elm_lang$core$Native_List.fromArray(submatches),
-			index: arguments[arguments.length - 2],
-			number: count
-		});
-	}
-	return string.replace(re, jsReplacer);
-}
-
-function split(n, re, str)
-{
-	n = n.ctor === 'All' ? Infinity : n._0;
-	if (n === Infinity)
-	{
-		return _elm_lang$core$Native_List.fromArray(str.split(re));
-	}
-	var string = str;
-	var result;
-	var out = [];
-	var start = re.lastIndex;
-	var restoreLastIndex = re.lastIndex;
-	while (n--)
-	{
-		if (!(result = re.exec(string))) break;
-		out.push(string.slice(start, result.index));
-		start = re.lastIndex;
-	}
-	out.push(string.slice(start));
-	re.lastIndex = restoreLastIndex;
-	return _elm_lang$core$Native_List.fromArray(out);
-}
-
-return {
-	regex: regex,
-	caseInsensitive: caseInsensitive,
-	escape: escape,
-
-	contains: F2(contains),
-	find: F3(find),
-	replace: F4(replace),
-	split: F3(split)
-};
-
-}();
-
-var _elm_lang$core$Regex$split = _elm_lang$core$Native_Regex.split;
-var _elm_lang$core$Regex$replace = _elm_lang$core$Native_Regex.replace;
-var _elm_lang$core$Regex$find = _elm_lang$core$Native_Regex.find;
-var _elm_lang$core$Regex$contains = _elm_lang$core$Native_Regex.contains;
-var _elm_lang$core$Regex$caseInsensitive = _elm_lang$core$Native_Regex.caseInsensitive;
-var _elm_lang$core$Regex$regex = _elm_lang$core$Native_Regex.regex;
-var _elm_lang$core$Regex$escape = _elm_lang$core$Native_Regex.escape;
-var _elm_lang$core$Regex$Match = F4(
-	function (a, b, c, d) {
-		return {match: a, submatches: b, index: c, number: d};
-	});
-var _elm_lang$core$Regex$Regex = {ctor: 'Regex'};
-var _elm_lang$core$Regex$AtMost = function (a) {
-	return {ctor: 'AtMost', _0: a};
-};
-var _elm_lang$core$Regex$All = {ctor: 'All'};
-
 //import Native.List //
 
 var _elm_lang$core$Native_Array = function() {
@@ -9711,89 +9574,7 @@ var _user$project$Text_Model$TextListItem = function (a) {
 	};
 };
 
-var _user$project$Text_Reading_Model$TextReadingScore = F4(
-	function (a, b, c, d) {
-		return {num_of_sections: a, complete_sections: b, section_scores: c, possible_section_scores: d};
-	});
-var _user$project$Text_Reading_Model$textReadingScoreDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'possible_section_scores',
-	_elm_lang$core$Json_Decode$int,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'section_scores',
-		_elm_lang$core$Json_Decode$int,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'complete_sections',
-			_elm_lang$core$Json_Decode$int,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'num_of_sections',
-				_elm_lang$core$Json_Decode$int,
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Reading_Model$TextReadingScore)))));
-var _user$project$Text_Reading_Model$TextReading = F6(
-	function (a, b, c, d, e, f) {
-		return {id: a, text_id: b, text: c, current_section: d, status: e, score: f};
-	});
-var _user$project$Text_Reading_Model$textReadingDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'score',
-	_user$project$Text_Reading_Model$textReadingScoreDecoder,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'status',
-		_elm_lang$core$Json_Decode$string,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'current_section',
-			_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'text',
-				_elm_lang$core$Json_Decode$string,
-				A3(
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'text_id',
-					_elm_lang$core$Json_Decode$int,
-					A3(
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'id',
-						_elm_lang$core$Json_Decode$int,
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Reading_Model$TextReading)))))));
-var _user$project$Text_Reading_Model$textReadingsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Reading_Model$textReadingDecoder);
-
-var _user$project$Util$onEnterUp = function (msg) {
-	return A2(
-		_elm_lang$html$Html_Events$on,
-		'keyup',
-		A2(
-			_elm_lang$core$Json_Decode$andThen,
-			function (key) {
-				var _p0 = key;
-				if (_p0 === 13) {
-					return _elm_lang$core$Json_Decode$succeed(msg);
-				} else {
-					return _elm_lang$core$Json_Decode$fail('not enter key');
-				}
-			},
-			_elm_lang$html$Html_Events$keyCode));
-};
-var _user$project$Util$tupleDecoder = A3(
-	_elm_lang$core$Json_Decode$map2,
-	F2(
-		function (v0, v1) {
-			return {ctor: '_Tuple2', _0: v0, _1: v1};
-		}),
-	A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
-var _user$project$Util$valid_email_regex = _elm_lang$core$Regex$caseInsensitive(
-	_elm_lang$core$Regex$regex('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$'));
-var _user$project$Util$is_valid_email = function (addr) {
-	return A2(_elm_lang$core$Regex$contains, _user$project$Util$valid_email_regex, addr);
-};
-
-var _user$project$Student_Profile_Model$logout = F3(
+var _user$project$Student_Profile$logout = F3(
 	function (student_profile, csrftoken, logout_msg) {
 		var request = A4(
 			_user$project$HttpHelpers$post_with_headers,
@@ -9807,31 +9588,27 @@ var _user$project$Student_Profile_Model$logout = F3(
 			_user$project$Menu_Logout$logoutRespDecoder);
 		return A2(_elm_lang$http$Http$send, logout_msg, request);
 	});
-var _user$project$Student_Profile_Model$studentFlashcards = function (_p0) {
+var _user$project$Student_Profile$studentFlashcards = function (_p0) {
 	var _p1 = _p0;
 	return _p1._1;
 };
-var _user$project$Student_Profile_Model$studentPerformanceReport = function (_p2) {
+var _user$project$Student_Profile$studentPerformanceReport = function (_p2) {
 	var _p3 = _p2;
 	return _p3._0.performance_report;
 };
-var _user$project$Student_Profile_Model$studentEmail = function (_p4) {
+var _user$project$Student_Profile$studentEmail = function (_p4) {
 	var _p5 = _p4;
 	return _p5._0.email;
 };
-var _user$project$Student_Profile_Model$studentUserName = function (_p6) {
+var _user$project$Student_Profile$studentUserName = function (_p6) {
 	var _p7 = _p6;
 	return _p7._0.username;
 };
-var _user$project$Student_Profile_Model$studentTextReading = function (_p8) {
+var _user$project$Student_Profile$studentDifficulties = function (_p8) {
 	var _p9 = _p8;
-	return _p9._0.text_reading;
+	return _p9._0.difficulties;
 };
-var _user$project$Student_Profile_Model$studentDifficulties = function (_p10) {
-	var _p11 = _p10;
-	return _p11._0.difficulties;
-};
-var _user$project$Student_Profile_Model$studentUpdateURI = function (id) {
+var _user$project$Student_Profile$studentUpdateURI = function (id) {
 	return A2(
 		_elm_lang$core$String$join,
 		'',
@@ -9849,139 +9626,87 @@ var _user$project$Student_Profile_Model$studentUpdateURI = function (id) {
 			}
 		});
 };
-var _user$project$Student_Profile_Model$studentID = function (_p12) {
+var _user$project$Student_Profile$studentID = function (_p10) {
+	var _p11 = _p10;
+	return _p11._0.id;
+};
+var _user$project$Student_Profile$studentDifficultyPreference = function (_p12) {
 	var _p13 = _p12;
-	return _p13._0.id;
+	return _p13._0.difficulty_preference;
 };
-var _user$project$Student_Profile_Model$studentDifficultyPreference = function (_p14) {
-	var _p15 = _p14;
-	return _p15._0.difficulty_preference;
-};
-var _user$project$Student_Profile_Model$wordTextWordDecoder = A3(
-	_elm_lang$core$Json_Decode$map2,
-	F2(
-		function (v0, v1) {
-			return {ctor: '_Tuple2', _0: v0, _1: v1};
-		}),
-	A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$index, 1, _user$project$Text_Translations$textWordDecoder));
-var _user$project$Student_Profile_Model$emptyPerformanceReport = {html: '', pdf_link: ''};
-var _user$project$Student_Profile_Model$PerformanceReport = F2(
+var _user$project$Student_Profile$emptyPerformanceReport = {html: '', pdf_link: ''};
+var _user$project$Student_Profile$PerformanceReport = F2(
 	function (a, b) {
 		return {html: a, pdf_link: b};
 	});
-var _user$project$Student_Profile_Model$performanceReportDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'pdf_link',
-	_elm_lang$core$Json_Decode$string,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'html',
-		_elm_lang$core$Json_Decode$string,
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Student_Profile_Model$PerformanceReport)));
-var _user$project$Student_Profile_Model$StudentProfileParams = F8(
-	function (a, b, c, d, e, f, g, h) {
-		return {id: a, username: b, email: c, difficulty_preference: d, difficulties: e, text_reading: f, performance_report: g, flashcards: h};
+var _user$project$Student_Profile$StudentProfileParams = F7(
+	function (a, b, c, d, e, f, g) {
+		return {id: a, username: b, email: c, difficulty_preference: d, difficulties: e, performance_report: f, flashcards: g};
 	});
-var _user$project$Student_Profile_Model$studentProfileParamsDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'flashcards',
-	_elm_lang$core$Json_Decode$nullable(
-		_elm_lang$core$Json_Decode$list(_user$project$Student_Profile_Model$wordTextWordDecoder)),
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'performance_report',
-		_user$project$Student_Profile_Model$performanceReportDecoder,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'text_reading',
-			_elm_lang$core$Json_Decode$nullable(_user$project$Text_Reading_Model$textReadingsDecoder),
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'difficulties',
-				_elm_lang$core$Json_Decode$list(_user$project$Util$tupleDecoder),
-				A3(
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'difficulty_preference',
-					_elm_lang$core$Json_Decode$nullable(_user$project$Util$tupleDecoder),
-					A3(
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'email',
-						_elm_lang$core$Json_Decode$string,
-						A3(
-							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'username',
-							_elm_lang$core$Json_Decode$string,
-							A3(
-								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'id',
-								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
-								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Student_Profile_Model$StudentProfileParams)))))))));
-var _user$project$Student_Profile_Model$StudentProfile = F2(
+var _user$project$Student_Profile$StudentProfile = F2(
 	function (a, b) {
 		return {ctor: 'StudentProfile', _0: a, _1: b};
 	});
-var _user$project$Student_Profile_Model$emptyStudentProfile = A2(
-	_user$project$Student_Profile_Model$StudentProfile,
+var _user$project$Student_Profile$emptyStudentProfile = A2(
+	_user$project$Student_Profile$StudentProfile,
 	{
 		id: _elm_lang$core$Maybe$Nothing,
 		username: '',
 		email: '',
 		difficulty_preference: _elm_lang$core$Maybe$Nothing,
 		difficulties: {ctor: '[]'},
-		text_reading: _elm_lang$core$Maybe$Nothing,
-		performance_report: _user$project$Student_Profile_Model$emptyPerformanceReport,
+		performance_report: _user$project$Student_Profile$emptyPerformanceReport,
 		flashcards: _elm_lang$core$Maybe$Nothing
 	},
 	_elm_lang$core$Maybe$Nothing);
-var _user$project$Student_Profile_Model$setStudentDifficultyPreference = F2(
-	function (_p16, preference) {
-		var _p17 = _p16;
+var _user$project$Student_Profile$setStudentDifficultyPreference = F2(
+	function (_p14, preference) {
+		var _p15 = _p14;
 		return A2(
-			_user$project$Student_Profile_Model$StudentProfile,
+			_user$project$Student_Profile$StudentProfile,
 			_elm_lang$core$Native_Utils.update(
-				_p17._0,
+				_p15._0,
 				{
 					difficulty_preference: _elm_lang$core$Maybe$Just(preference)
 				}),
+			_p15._1);
+	});
+var _user$project$Student_Profile$setUserName = F2(
+	function (_p16, new_username) {
+		var _p17 = _p16;
+		return A2(
+			_user$project$Student_Profile$StudentProfile,
+			_elm_lang$core$Native_Utils.update(
+				_p17._0,
+				{username: new_username}),
 			_p17._1);
 	});
-var _user$project$Student_Profile_Model$setUserName = F2(
-	function (_p18, new_username) {
+var _user$project$Student_Profile$addFlashcard = F2(
+	function (_p18, text_word) {
 		var _p19 = _p18;
 		return A2(
-			_user$project$Student_Profile_Model$StudentProfile,
-			_elm_lang$core$Native_Utils.update(
-				_p19._0,
-				{username: new_username}),
-			_p19._1);
-	});
-var _user$project$Student_Profile_Model$addFlashcard = F2(
-	function (_p20, text_word) {
-		var _p21 = _p20;
-		return A2(
-			_user$project$Student_Profile_Model$StudentProfile,
-			_p21._0,
+			_user$project$Student_Profile$StudentProfile,
+			_p19._0,
 			_elm_lang$core$Maybe$Just(
 				A3(
 					_elm_lang$core$Dict$insert,
 					text_word.word,
 					text_word,
-					A2(_elm_lang$core$Maybe$withDefault, _elm_lang$core$Dict$empty, _p21._1))));
+					A2(_elm_lang$core$Maybe$withDefault, _elm_lang$core$Dict$empty, _p19._1))));
 	});
-var _user$project$Student_Profile_Model$removeFlashcard = F2(
-	function (_p22, text_word) {
-		var _p23 = _p22;
+var _user$project$Student_Profile$removeFlashcard = F2(
+	function (_p20, text_word) {
+		var _p21 = _p20;
 		var new_flashcards = _elm_lang$core$Maybe$Just(
 			A2(
 				_elm_lang$core$Dict$remove,
 				text_word.word,
-				A2(_elm_lang$core$Maybe$withDefault, _elm_lang$core$Dict$empty, _p23._1)));
-		return A2(_user$project$Student_Profile_Model$StudentProfile, _p23._0, new_flashcards);
+				A2(_elm_lang$core$Maybe$withDefault, _elm_lang$core$Dict$empty, _p21._1)));
+		return A2(_user$project$Student_Profile$StudentProfile, _p21._0, new_flashcards);
 	});
-var _user$project$Student_Profile_Model$init_profile = function (params) {
+var _user$project$Student_Profile$init_profile = function (params) {
 	return A2(
-		_user$project$Student_Profile_Model$StudentProfile,
+		_user$project$Student_Profile$StudentProfile,
 		params,
 		_elm_lang$core$Maybe$Just(
 			_elm_lang$core$Dict$fromList(
@@ -9990,7 +9715,6 @@ var _user$project$Student_Profile_Model$init_profile = function (params) {
 					{ctor: '[]'},
 					params.flashcards))));
 };
-var _user$project$Student_Profile_Model$studentProfileDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Student_Profile_Model$init_profile, _user$project$Student_Profile_Model$studentProfileParamsDecoder);
 
 var _user$project$Menu_Msg$StudentLogout = function (a) {
 	return {ctor: 'StudentLogout', _0: a};
@@ -10071,7 +9795,7 @@ var _user$project$Student_View$view_student_profile_header = F2(
 											{
 												ctor: '::',
 												_0: _elm_lang$html$Html$text(
-													_user$project$Student_Profile_Model$studentUserName(student_profile)),
+													_user$project$Student_Profile$studentUserName(student_profile)),
 												_1: {ctor: '[]'}
 											}),
 										_1: {ctor: '[]'}

@@ -6,7 +6,7 @@ import TextReader.Decode
 
 import TextReader.Msg exposing (Msg(..))
 
-import Profile exposing (Profile(..))
+import User.Profile exposing (Profile(..))
 
 import Json.Decode
 
@@ -24,10 +24,10 @@ route_cmd_resp model cmd_resp =
       ({ model | exception=Nothing, progress=Complete text_scores }, Cmd.none)
 
     AddToFlashcardsResp text_word ->
-      ({ model | profile = Profile.addFlashcard model.profile text_word}, Cmd.none)
+      ({ model | profile = User.Profile.addFlashcard model.profile text_word}, Cmd.none)
 
     RemoveFromFlashcardsResp text_word ->
-      ({ model | profile = Profile.removeFlashcard model.profile text_word}, Cmd.none)
+      ({ model | profile = User.Profile.removeFlashcard model.profile text_word}, Cmd.none)
 
     ExceptionResp exception ->
       ({ model | exception = Just exception }, Cmd.none)

@@ -13,7 +13,7 @@ api_urlpatterns = [
 ]
 
 elm_load_urlpatterns = [
-    path('load_elm.js', ElmLoadJsStudentView.as_view(), name='load-elm-student'),
+    path('load_elm_student.js', ElmLoadJsStudentView.as_view(), name='load-elm-student'),
     path('load_elm_unauth_student.js', ElmLoadStudentSignUpView.as_view(), name='load-elm-unauth-student-signup'),
 ]
 

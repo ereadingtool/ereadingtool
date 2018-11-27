@@ -8,10 +8,10 @@ import Text.Model exposing (TextListItem)
 import Text.Decode
 
 import Config exposing (..)
-import Flags
+import Profile.Flags
 
 import Views
-import Profile
+import User.Profile
 
 import Ports
 
@@ -24,11 +24,11 @@ type Msg =
   | LogOut MenuMsg.Msg
   | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
 
-type alias Flags = Flags.Flags {}
+type alias Flags = Profile.Flags.Flags {}
 
 type alias Model = {
     texts : List TextListItem
-  , profile : Profile.Profile
+  , profile : User.Profile.Profile
   , flags : Flags
   }
 
@@ -37,7 +37,7 @@ type alias Filter = List String
 init : Flags -> (Model, Cmd Msg)
 init flags = ({
       texts=[]
-    , profile=Profile.init_profile flags
+    , profile=User.Profile.init_profile flags
     , flags=flags
   }, updateTexts [])
 
@@ -65,7 +65,7 @@ update msg model =
       (model, Cmd.none)
 
     LogOut msg ->
-      (model, Profile.logout model.profile model.flags.csrftoken LoggedOut)
+      (model, User.Profile.logout model.profile model.flags.csrftoken LoggedOut)
 
     LoggedOut (Ok logout_resp) ->
       (model, Ports.redirect logout_resp.redirect)

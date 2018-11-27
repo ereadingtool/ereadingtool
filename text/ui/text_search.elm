@@ -19,11 +19,12 @@ import Dict exposing (Dict)
 
 import Views
 
-import Student.Profile.Model
-import Profile
+import Student.Profile
+import User.Profile
 
 import Config exposing (..)
-import Flags exposing (CSRFToken)
+
+import Profile.Flags as Flags
 
 import Menu.Msg as MenuMsg
 import Menu.Logout
@@ -41,7 +42,7 @@ type alias Flags = Flags.Flags { text_difficulties: List Text.Model.TextDifficul
 
 type alias Model = {
     results : List Text.Model.TextListItem
-  , profile : Profile.Profile
+  , profile : User.Profile.Profile
   , text_search : TextSearch
   , flags : Flags }
 
@@ -55,14 +56,14 @@ init flags =
     difficulty_search =
       Text.Search.Difficulty.new "text_difficulty_search" (Text.Search.Option.new_options flags.text_difficulties)
 
-    profile=Profile.init_profile flags
+    profile=User.Profile.init_profile flags
 
     default_search = Text.Search.new text_api_endpoint tag_search difficulty_search
 
     text_search =
       (case profile of
-        Profile.Student student_profile ->
-          case Student.Profile.Model.studentDifficultyPreference student_profile of
+        User.Profile.Student student_profile ->
+          case Student.Profile.studentDifficultyPreference student_profile of
             Just difficulty ->
               Text.Search.add_difficulty_to_search default_search (Tuple.first difficulty) True
 
@@ -123,7 +124,7 @@ update msg model =
           (model, Cmd.none)
 
     LogOut msg ->
-        (model, Profile.logout model.profile model.flags.csrftoken LoggedOut)
+        (model, User.Profile.logout model.profile model.flags.csrftoken LoggedOut)
 
     LoggedOut (Ok logout_resp) ->
       (model, Ports.redirect logout_resp.redirect)

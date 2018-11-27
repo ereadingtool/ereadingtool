@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (class, classList, attribute)
 import Array exposing (Array)
 
-import Profile
+import User.Profile
 
 import Menu.Msg exposing (Msg)
 
@@ -48,10 +48,10 @@ view_user_profile_menu_items view =
     _ ->
       []
 
-view_menu : MenuItems -> Profile.Profile -> (Msg -> msg) -> List (Html msg)
+view_menu : MenuItems -> User.Profile.Profile -> (Msg -> msg) -> List (Html msg)
 view_menu (MenuItems menu_items) profile top_level_msg =
   (Array.toList <| Array.map view_menu_item menu_items) ++
-  (view_user_profile_menu_items (Profile.view_profile_header profile top_level_msg ))
+  (view_user_profile_menu_items (User.Profile.view_profile_header profile top_level_msg ))
 
 view_unauthed_header : Html msg
 view_unauthed_header =
@@ -59,7 +59,7 @@ view_unauthed_header =
     div [] [ Html.text "E-Reader" ]
   ]
 
-view_header : Profile.Profile -> Maybe SelectedMenuItem -> (Msg -> msg) -> Html msg
+view_header : User.Profile.Profile -> Maybe SelectedMenuItem -> (Msg -> msg) -> Html msg
 view_header profile selected_menu_item top_level_msg =
   let
     m_items =

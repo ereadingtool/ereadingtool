@@ -9,3 +9,8 @@
 {% block scripts %}
     <script src="{% static "user/js/student_profile.js" %}"></script>
 {% endblock %}
+
+
+{% block body %}
+    <script src="{% url "load-elm-student" %}"></script>
+{% endblock %}

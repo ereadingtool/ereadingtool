@@ -29,7 +29,13 @@ class ElmLoadJsStudentView(LoginRequiredMixin, ElmLoadJsBaseView):
         except Student.DoesNotExist:
             pass
 
-        context['elm']['student_profile'] = {'quote': False, 'safe': True, 'value': profile or 'null'}
+        context['elm']['profile_id'] = {'quote': False, 'safe': True, 'value': profile.id or 'null'}
+
+        context['elm']['welcome'] = {
+            'quote': False,
+            'safe': True,
+            'value': json.dumps(self.request.session.get('welcome', False))
+        }
 
         return context
 
@@ -119,6 +125,8 @@ class StudentSignupAPIView(APIView):
 
     def post_success(self, request: HttpRequest, student_signup_form: TypeVar('forms.Form')) -> HttpResponse:
         student = student_signup_form.save()
+
+        self.request.session['welcome'] = True
 
         return HttpResponse(json.dumps({'id': student.pk, 'redirect': reverse('student-login')}))
 

@@ -7,7 +7,7 @@ import Html.Events exposing (onClick, onDoubleClick, onMouseLeave)
 import Array exposing (Array)
 import Dict exposing (Dict)
 
-import Profile exposing (Profile)
+import User.Profile exposing (Profile)
 
 import Text.Model
 import Text.Translations exposing (Word)
@@ -188,12 +188,12 @@ view_flashcard_words : Model -> Html Msg
 view_flashcard_words model =
   div []
     (List.map (\(normal_form, text_word) -> div [] [ Html.text normal_form ])
-    (Dict.toList <| Maybe.withDefault Dict.empty <| Profile.flashcards model.profile))
+    (Dict.toList <| Maybe.withDefault Dict.empty <| User.Profile.flashcards model.profile))
 
 view_flashcard_options : Model -> TextReaderWord -> Html Msg
 view_flashcard_options model reader_word =
   let
-    flashcards = Maybe.withDefault Dict.empty (Profile.flashcards model.profile)
+    flashcards = Maybe.withDefault Dict.empty (User.Profile.flashcards model.profile)
     add = div [class "cursor", onClick (AddToFlashcards reader_word)] [ Html.text "Add to Flashcards" ]
     remove = div [class "cursor", onClick (RemoveFromFlashcards reader_word)] [ Html.text "Remove from Flashcards" ]
   in

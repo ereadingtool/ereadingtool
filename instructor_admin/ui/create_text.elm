@@ -15,7 +15,7 @@ import Text.Encode
 import Views
 import Navigation
 
-import Profile
+import User.Profile
 import Instructor.Profile
 
 import Debug
@@ -494,7 +494,7 @@ view model =
       , text_difficulties=model.text_difficulties }
   in
     div [] [
-        Views.view_header (Profile.fromInstructorProfile model.profile) Nothing Text.Create.LogOut
+        Views.view_header (User.Profile.fromInstructorProfile model.profile) Nothing Text.Create.LogOut
       , view_msgs model
       , Text.View.view_text text_view_params
     ]

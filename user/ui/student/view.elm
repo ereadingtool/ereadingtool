@@ -4,13 +4,13 @@ import Html exposing (Html, div)
 import Html.Attributes exposing (class, classList, attribute)
 import Html.Events exposing (onClick)
 
-import Student.Profile.Model exposing (StudentProfile)
+import Student.Profile
 import Menu.Msg exposing (Msg(..))
 
 import Config
 
 
-view_student_profile_header : StudentProfile -> (Msg -> msg) -> List (Html msg)
+view_student_profile_header : Student.Profile.StudentProfile -> (Msg -> msg) -> List (Html msg)
 view_student_profile_header student_profile top_level_msg =
   [
     div [classList [("menu_item", True)]] [
@@ -19,7 +19,7 @@ view_student_profile_header student_profile top_level_msg =
   , div [classList [("menu_item", True)]] [
       div [class "profile_dropdown_menu"] [
         div [] [ Html.a [attribute "href" Config.student_profile_page] [
-            Html.text (Student.Profile.Model.studentUserName student_profile)
+            Html.text (Student.Profile.studentUserName student_profile)
           ]
         ]
       , div [classList [("profile_dropdown_menu_overlay", True)]] [

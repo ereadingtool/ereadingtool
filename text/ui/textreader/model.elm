@@ -11,8 +11,9 @@ import TextReader.Answer.Model exposing (TextAnswer, Answer, AnswerCorrect)
 import TextReader exposing (TextItemAttributes, WebSocketAddress)
 
 import Flags exposing (CSRFToken)
+import Profile.Flags as Flags
 
-import Profile
+import User.Profile
 
 
 type Progress = Init | ViewIntro | ViewSection Section | Complete TextScores
@@ -66,7 +67,7 @@ type alias Flags = Flags.Flags { text_id : Int, text_reader_ws_addr: WebSocketAd
 
 type alias Model = {
     text : Text
-  , profile : Profile.Profile
+  , profile : User.Profile.Profile
   , progress: Progress
   , gloss : Gloss
   , exception : Maybe Exception

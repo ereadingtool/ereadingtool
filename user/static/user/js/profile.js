@@ -6263,6 +6263,72 @@ var _elm_lang$core$Time$subMap = F2(
 	});
 _elm_lang$core$Native_Platform.effectManagers['Time'] = {pkg: 'elm-lang/core', init: _elm_lang$core$Time$init, onEffects: _elm_lang$core$Time$onEffects, onSelfMsg: _elm_lang$core$Time$onSelfMsg, tag: 'sub', subMap: _elm_lang$core$Time$subMap};
 
+//import Result //
+
+var _elm_lang$core$Native_Date = function() {
+
+function fromString(str)
+{
+	var date = new Date(str);
+	return isNaN(date.getTime())
+		? _elm_lang$core$Result$Err('Unable to parse \'' + str + '\' as a date. Dates must be in the ISO 8601 format.')
+		: _elm_lang$core$Result$Ok(date);
+}
+
+var dayTable = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+var monthTable =
+	['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+	 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+
+return {
+	fromString: fromString,
+	year: function(d) { return d.getFullYear(); },
+	month: function(d) { return { ctor: monthTable[d.getMonth()] }; },
+	day: function(d) { return d.getDate(); },
+	hour: function(d) { return d.getHours(); },
+	minute: function(d) { return d.getMinutes(); },
+	second: function(d) { return d.getSeconds(); },
+	millisecond: function(d) { return d.getMilliseconds(); },
+	toTime: function(d) { return d.getTime(); },
+	fromTime: function(t) { return new Date(t); },
+	dayOfWeek: function(d) { return { ctor: dayTable[d.getDay()] }; }
+};
+
+}();
+var _elm_lang$core$Date$millisecond = _elm_lang$core$Native_Date.millisecond;
+var _elm_lang$core$Date$second = _elm_lang$core$Native_Date.second;
+var _elm_lang$core$Date$minute = _elm_lang$core$Native_Date.minute;
+var _elm_lang$core$Date$hour = _elm_lang$core$Native_Date.hour;
+var _elm_lang$core$Date$dayOfWeek = _elm_lang$core$Native_Date.dayOfWeek;
+var _elm_lang$core$Date$day = _elm_lang$core$Native_Date.day;
+var _elm_lang$core$Date$month = _elm_lang$core$Native_Date.month;
+var _elm_lang$core$Date$year = _elm_lang$core$Native_Date.year;
+var _elm_lang$core$Date$fromTime = _elm_lang$core$Native_Date.fromTime;
+var _elm_lang$core$Date$toTime = _elm_lang$core$Native_Date.toTime;
+var _elm_lang$core$Date$fromString = _elm_lang$core$Native_Date.fromString;
+var _elm_lang$core$Date$now = A2(_elm_lang$core$Task$map, _elm_lang$core$Date$fromTime, _elm_lang$core$Time$now);
+var _elm_lang$core$Date$Date = {ctor: 'Date'};
+var _elm_lang$core$Date$Sun = {ctor: 'Sun'};
+var _elm_lang$core$Date$Sat = {ctor: 'Sat'};
+var _elm_lang$core$Date$Fri = {ctor: 'Fri'};
+var _elm_lang$core$Date$Thu = {ctor: 'Thu'};
+var _elm_lang$core$Date$Wed = {ctor: 'Wed'};
+var _elm_lang$core$Date$Tue = {ctor: 'Tue'};
+var _elm_lang$core$Date$Mon = {ctor: 'Mon'};
+var _elm_lang$core$Date$Dec = {ctor: 'Dec'};
+var _elm_lang$core$Date$Nov = {ctor: 'Nov'};
+var _elm_lang$core$Date$Oct = {ctor: 'Oct'};
+var _elm_lang$core$Date$Sep = {ctor: 'Sep'};
+var _elm_lang$core$Date$Aug = {ctor: 'Aug'};
+var _elm_lang$core$Date$Jul = {ctor: 'Jul'};
+var _elm_lang$core$Date$Jun = {ctor: 'Jun'};
+var _elm_lang$core$Date$May = {ctor: 'May'};
+var _elm_lang$core$Date$Apr = {ctor: 'Apr'};
+var _elm_lang$core$Date$Mar = {ctor: 'Mar'};
+var _elm_lang$core$Date$Feb = {ctor: 'Feb'};
+var _elm_lang$core$Date$Jan = {ctor: 'Jan'};
+
 var _elm_lang$http$Native_Http = function() {
 
 
@@ -6624,6 +6690,35 @@ var _elm_lang$http$Http$StringPart = F2(
 	});
 var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
 
+var _user$project$Answer_Model$generate_answer = function (i) {
+	return {id: _elm_lang$core$Maybe$Nothing, question_id: _elm_lang$core$Maybe$Nothing, text: '', correct: false, order: i, feedback: ''};
+};
+var _user$project$Answer_Model$generate_answers = function (n) {
+	return _elm_lang$core$Array$fromList(
+		A2(
+			_elm_lang$core$List$map,
+			_user$project$Answer_Model$generate_answer,
+			A2(_elm_lang$core$List$range, 0, n - 1)));
+};
+var _user$project$Answer_Model$default_answer_text = function (answer) {
+	return A2(
+		_elm_lang$core$String$join,
+		' ',
+		{
+			ctor: '::',
+			_0: 'Click to write choice',
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$core$Basics$toString(answer.order + 1),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Answer_Model$Answer = F6(
+	function (a, b, c, d, e, f) {
+		return {id: a, question_id: b, text: c, correct: d, order: e, feedback: f};
+	});
+
 var _user$project$Config$answer_feedback_limit = 2048;
 var _user$project$Config$text_page = function (text_id) {
 	return A2(
@@ -6722,32 +6817,133 @@ var _user$project$Menu_Logout$logoutRespDecoder = A3(
 	_elm_lang$core$Json_Decode$string,
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Menu_Logout$LogOutResp));
 
-var _user$project$Instructor_Profile$logout = F3(
-	function (instructor_profile, csrftoken, logout_msg) {
-		var request = A4(
-			_user$project$HttpHelpers$post_with_headers,
-			_user$project$Config$instructor_logout_api_endpoint,
-			{
-				ctor: '::',
-				_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
-				_1: {ctor: '[]'}
-			},
-			_elm_lang$http$Http$emptyBody,
-			_user$project$Menu_Logout$logoutRespDecoder);
-		return A2(_elm_lang$http$Http$send, logout_msg, request);
+var _user$project$Question_Model$new_question = function (i) {
+	return {
+		id: _elm_lang$core$Maybe$Nothing,
+		text_id: _elm_lang$core$Maybe$Nothing,
+		created_dt: _elm_lang$core$Maybe$Nothing,
+		modified_dt: _elm_lang$core$Maybe$Nothing,
+		body: '',
+		order: i,
+		answers: _user$project$Answer_Model$generate_answers(4),
+		question_type: 'main_idea'
+	};
+};
+var _user$project$Question_Model$initial_questions = _elm_lang$core$Array$fromList(
+	{
+		ctor: '::',
+		_0: _user$project$Question_Model$new_question(0),
+		_1: {ctor: '[]'}
 	});
-var _user$project$Instructor_Profile$attrs = function (_p0) {
-	var _p1 = _p0;
-	return _p1._0;
+var _user$project$Question_Model$Question = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {id: a, text_id: b, created_dt: c, modified_dt: d, body: e, order: f, answers: g, question_type: h};
+	});
+
+var _user$project$Text_Section_Model$emptyTextSection = function (i) {
+	var initial_questions = _user$project$Question_Model$initial_questions;
+	return {
+		order: i,
+		question_count: _elm_lang$core$Array$length(initial_questions),
+		questions: initial_questions,
+		body: ''
+	};
 };
-var _user$project$Instructor_Profile$texts = function (instructor_profile) {
-	return _user$project$Instructor_Profile$attrs(instructor_profile).texts;
+var _user$project$Text_Section_Model$TextSection = F4(
+	function (a, b, c, d) {
+		return {order: a, body: b, question_count: c, questions: d};
+	});
+
+var _user$project$Text_Translations$Grammemes = F5(
+	function (a, b, c, d, e) {
+		return {pos: a, tense: b, aspect: c, form: d, mood: e};
+	});
+var _user$project$Text_Translations$grammemesDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'mood',
+	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'form',
+		_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'aspect',
+			_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'tense',
+				_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'pos',
+					_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Translations$Grammemes))))));
+var _user$project$Text_Translations$TextWord = F3(
+	function (a, b, c) {
+		return {word: a, grammemes: b, translation: c};
+	});
+var _user$project$Text_Translations$textWordDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'translation',
+	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'grammemes',
+		_user$project$Text_Translations$grammemesDecoder,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'word',
+			_elm_lang$core$Json_Decode$string,
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Translations$TextWord))));
+
+var _user$project$Text_Model$set_tags = F2(
+	function (text, tags) {
+		return _elm_lang$core$Native_Utils.update(
+			text,
+			{tags: tags});
+	});
+var _user$project$Text_Model$set_sections = F2(
+	function (text, text_sections) {
+		return _elm_lang$core$Native_Utils.update(
+			text,
+			{sections: text_sections});
+	});
+var _user$project$Text_Model$new_text = {
+	id: _elm_lang$core$Maybe$Nothing,
+	title: '',
+	author: '',
+	source: '',
+	difficulty: '',
+	introduction: '',
+	conclusion: _elm_lang$core$Maybe$Nothing,
+	tags: _elm_lang$core$Maybe$Nothing,
+	created_by: _elm_lang$core$Maybe$Nothing,
+	last_modified_by: _elm_lang$core$Maybe$Nothing,
+	created_dt: _elm_lang$core$Maybe$Nothing,
+	modified_dt: _elm_lang$core$Maybe$Nothing,
+	sections: _elm_lang$core$Array$fromList(
+		{
+			ctor: '::',
+			_0: _user$project$Text_Section_Model$emptyTextSection(0),
+			_1: {ctor: '[]'}
+		}),
+	write_locker: _elm_lang$core$Maybe$Nothing,
+	words: _elm_lang$core$Dict$empty
 };
-var _user$project$Instructor_Profile$username = function (_p2) {
-	var _p3 = _p2;
-	return _p3._0.username;
-};
-var _user$project$Instructor_Profile$Text = function (a) {
+var _user$project$Text_Model$WordValues = F2(
+	function (a, b) {
+		return {grammemes: a, translations: b};
+	});
+var _user$project$Text_Model$TextWordTranslation = F3(
+	function (a, b, c) {
+		return {id: a, correct_for_context: b, text: c};
+	});
+var _user$project$Text_Model$TextWord = F5(
+	function (a, b, c, d, e) {
+		return {id: a, instance: b, word: c, grammemes: d, translations: e};
+	});
+var _user$project$Text_Model$Text = function (a) {
 	return function (b) {
 		return function (c) {
 			return function (d) {
@@ -6762,9 +6958,7 @@ var _user$project$Instructor_Profile$Text = function (a) {
 												return function (m) {
 													return function (n) {
 														return function (o) {
-															return function (p) {
-																return {id: a, title: b, introduction: c, author: d, source: e, difficulty: f, conclusion: g, created_by: h, last_modified_by: i, tags: j, created_dt: k, modified_dt: l, write_locker: m, tags: n, text_section_count: o, edit_uri: p};
-															};
+															return {id: a, title: b, introduction: c, author: d, source: e, difficulty: f, conclusion: g, created_by: h, last_modified_by: i, tags: j, created_dt: k, modified_dt: l, sections: m, write_locker: n, words: o};
 														};
 													};
 												};
@@ -6780,22 +6974,181 @@ var _user$project$Instructor_Profile$Text = function (a) {
 		};
 	};
 };
-var _user$project$Instructor_Profile$InstructorProfileParams = F3(
-	function (a, b, c) {
-		return {id: a, texts: b, username: c};
-	});
-var _user$project$Instructor_Profile$InstructorProfile = function (a) {
-	return {ctor: 'InstructorProfile', _0: a};
+var _user$project$Text_Model$TextListItem = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return function (k) {
+											return function (l) {
+												return function (m) {
+													return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, text_section_count: j, text_sections_complete: k, uri: l, write_locker: m};
+												};
+											};
+										};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
 };
-var _user$project$Instructor_Profile$init_profile = function (params) {
-	return _user$project$Instructor_Profile$InstructorProfile(params);
+
+var _user$project$Student_Profile$logout = F3(
+	function (student_profile, csrftoken, logout_msg) {
+		var request = A4(
+			_user$project$HttpHelpers$post_with_headers,
+			_user$project$Config$student_logout_api_endpoint,
+			{
+				ctor: '::',
+				_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
+				_1: {ctor: '[]'}
+			},
+			_elm_lang$http$Http$emptyBody,
+			_user$project$Menu_Logout$logoutRespDecoder);
+		return A2(_elm_lang$http$Http$send, logout_msg, request);
+	});
+var _user$project$Student_Profile$studentFlashcards = function (_p0) {
+	var _p1 = _p0;
+	return _p1._1;
+};
+var _user$project$Student_Profile$studentPerformanceReport = function (_p2) {
+	var _p3 = _p2;
+	return _p3._0.performance_report;
+};
+var _user$project$Student_Profile$studentEmail = function (_p4) {
+	var _p5 = _p4;
+	return _p5._0.email;
+};
+var _user$project$Student_Profile$studentUserName = function (_p6) {
+	var _p7 = _p6;
+	return _p7._0.username;
+};
+var _user$project$Student_Profile$studentDifficulties = function (_p8) {
+	var _p9 = _p8;
+	return _p9._0.difficulties;
+};
+var _user$project$Student_Profile$studentUpdateURI = function (id) {
+	return A2(
+		_elm_lang$core$String$join,
+		'',
+		{
+			ctor: '::',
+			_0: _user$project$Config$student_api_endpoint,
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$core$Basics$toString(id),
+				_1: {
+					ctor: '::',
+					_0: '/',
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
+var _user$project$Student_Profile$studentID = function (_p10) {
+	var _p11 = _p10;
+	return _p11._0.id;
+};
+var _user$project$Student_Profile$studentDifficultyPreference = function (_p12) {
+	var _p13 = _p12;
+	return _p13._0.difficulty_preference;
+};
+var _user$project$Student_Profile$emptyPerformanceReport = {html: '', pdf_link: ''};
+var _user$project$Student_Profile$PerformanceReport = F2(
+	function (a, b) {
+		return {html: a, pdf_link: b};
+	});
+var _user$project$Student_Profile$StudentProfileParams = F7(
+	function (a, b, c, d, e, f, g) {
+		return {id: a, username: b, email: c, difficulty_preference: d, difficulties: e, performance_report: f, flashcards: g};
+	});
+var _user$project$Student_Profile$StudentProfile = F2(
+	function (a, b) {
+		return {ctor: 'StudentProfile', _0: a, _1: b};
+	});
+var _user$project$Student_Profile$emptyStudentProfile = A2(
+	_user$project$Student_Profile$StudentProfile,
+	{
+		id: _elm_lang$core$Maybe$Nothing,
+		username: '',
+		email: '',
+		difficulty_preference: _elm_lang$core$Maybe$Nothing,
+		difficulties: {ctor: '[]'},
+		performance_report: _user$project$Student_Profile$emptyPerformanceReport,
+		flashcards: _elm_lang$core$Maybe$Nothing
+	},
+	_elm_lang$core$Maybe$Nothing);
+var _user$project$Student_Profile$setStudentDifficultyPreference = F2(
+	function (_p14, preference) {
+		var _p15 = _p14;
+		return A2(
+			_user$project$Student_Profile$StudentProfile,
+			_elm_lang$core$Native_Utils.update(
+				_p15._0,
+				{
+					difficulty_preference: _elm_lang$core$Maybe$Just(preference)
+				}),
+			_p15._1);
+	});
+var _user$project$Student_Profile$setUserName = F2(
+	function (_p16, new_username) {
+		var _p17 = _p16;
+		return A2(
+			_user$project$Student_Profile$StudentProfile,
+			_elm_lang$core$Native_Utils.update(
+				_p17._0,
+				{username: new_username}),
+			_p17._1);
+	});
+var _user$project$Student_Profile$addFlashcard = F2(
+	function (_p18, text_word) {
+		var _p19 = _p18;
+		return A2(
+			_user$project$Student_Profile$StudentProfile,
+			_p19._0,
+			_elm_lang$core$Maybe$Just(
+				A3(
+					_elm_lang$core$Dict$insert,
+					text_word.word,
+					text_word,
+					A2(_elm_lang$core$Maybe$withDefault, _elm_lang$core$Dict$empty, _p19._1))));
+	});
+var _user$project$Student_Profile$removeFlashcard = F2(
+	function (_p20, text_word) {
+		var _p21 = _p20;
+		var new_flashcards = _elm_lang$core$Maybe$Just(
+			A2(
+				_elm_lang$core$Dict$remove,
+				text_word.word,
+				A2(_elm_lang$core$Maybe$withDefault, _elm_lang$core$Dict$empty, _p21._1)));
+		return A2(_user$project$Student_Profile$StudentProfile, _p21._0, new_flashcards);
+	});
+var _user$project$Student_Profile$init_profile = function (params) {
+	return A2(
+		_user$project$Student_Profile$StudentProfile,
+		params,
+		_elm_lang$core$Maybe$Just(
+			_elm_lang$core$Dict$fromList(
+				A2(
+					_elm_lang$core$Maybe$withDefault,
+					{ctor: '[]'},
+					params.flashcards))));
 };
 
 var Elm = {};
-Elm['Instructor'] = Elm['Instructor'] || {};
-Elm['Instructor']['Profile'] = Elm['Instructor']['Profile'] || {};
-if (typeof _user$project$Instructor_Profile$main !== 'undefined') {
-    _user$project$Instructor_Profile$main(Elm['Instructor']['Profile'], 'Instructor.Profile', undefined);
+Elm['Student'] = Elm['Student'] || {};
+Elm['Student']['Profile'] = Elm['Student']['Profile'] || {};
+if (typeof _user$project$Student_Profile$main !== 'undefined') {
+    _user$project$Student_Profile$main(Elm['Student']['Profile'], 'Student.Profile', undefined);
 }
 
 if (typeof define === "function" && define['amd'])

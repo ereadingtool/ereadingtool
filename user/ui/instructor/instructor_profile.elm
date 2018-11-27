@@ -6,7 +6,7 @@ import Http
 import Views
 import Flags
 
-import Profile
+import User.Profile
 import Instructor.Profile
 
 import Menu.Msg as MenuMsg
@@ -124,7 +124,7 @@ view_content model =
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    (Views.view_header (Profile.fromInstructorProfile model.profile) Nothing LogOut)
+    (Views.view_header (User.Profile.fromInstructorProfile model.profile) Nothing LogOut)
   , (Views.view_filter)
   , (view_content model)
   , (Views.view_footer)
