@@ -18,13 +18,22 @@ import Student.Profile.Help
 
 
 init : Flags -> (Model, Cmd Msg)
-init flags = ({
-    flags = { flags | welcome = True }
-  , profile = Student.Profile.emptyStudentProfile
-  , editing = Dict.empty
-  , username_update = {username = "", valid = Nothing, msg = Nothing}
-  , help = Student.Profile.Help.init
-  , err_str = "", errors = Dict.empty }, User.Profile.retrieve_student_profile RetrieveStudentProfile flags.profile_id)
+init flags =
+  let
+    student_help = Student.Profile.Help.init
+  in
+    ({
+      flags = { flags | welcome = True }
+    , profile = Student.Profile.emptyStudentProfile
+    , editing = Dict.empty
+    , username_update = {username = "", valid = Nothing, msg = Nothing}
+    , help = student_help
+    , err_str = "", errors = Dict.empty
+    }
+    , Cmd.batch [
+        User.Profile.retrieve_student_profile RetrieveStudentProfile flags.profile_id
+      , Student.Profile.Help.scrollToFirstMsg student_help
+      ])
 
 subscriptions : Model -> Sub Msg
 subscriptions model =

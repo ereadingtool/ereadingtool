@@ -188,9 +188,10 @@ view_cancel_btn event_attr =
 view_hint_overlay : Model -> HintAttributes -> Html Msg
 view_hint_overlay model {cancel_event, next_event, prev_event, addl_attributes, help_msg} =
   let
-    visible = Student.Profile.Help.is_visible model.help help_msg
+    visible = Student.Profile.Help.isVisible model.help help_msg
+    msg_id = Student.Profile.Help.msgToId help_msg
   in
-    span [ id (Student.Profile.Help.msgToId help_msg)
+    span [ id msg_id
          , classList [("hint_overlay", True)
          , ("invisible", not visible)]] [
       span ([class "hint"] ++ addl_attributes) [

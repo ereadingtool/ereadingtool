@@ -3,6 +3,8 @@ module Student.Profile.Help exposing (..)
 import Array exposing (Array)
 import OrderedDict exposing (OrderedDict)
 
+import Ports
+
 import HelpMsg exposing (HelpMsgID, HelpMsgStr, HelpMsgVisible, CurrentHelpMsgIndex)
 
 
@@ -57,12 +59,42 @@ help_msgs = [
  , search_menu_item_help
  ]
 
+scrollToFirstMsg : StudentProfileHelp -> Cmd msg
+scrollToFirstMsg student_profile_help =
+  case getMsg student_profile_help 0 of
+    Just first_msg ->
+      Ports.scrollTo (msgToId first_msg)
+
+    -- no first msg
+    Nothing ->
+      Cmd.none
+
+scrollToNextMsg : StudentProfileHelp -> Cmd msg
+scrollToNextMsg student_profile_help =
+  case nextMsg student_profile_help of
+    Just next_msg ->
+      Ports.scrollTo (msgToId next_msg)
+
+    -- no messages
+    Nothing ->
+      Cmd.none
+
+scrollToPrevMsg : StudentProfileHelp -> Cmd msg
+scrollToPrevMsg student_profile_help =
+  case prevMsg student_profile_help of
+    Just prev_msg ->
+      Ports.scrollTo (msgToId prev_msg)
+
+    -- no messages
+    Nothing ->
+      Cmd.none
+
 toArray : HelpMsgs -> Array (HelpMsgID, (HelpMsg, HelpMsgVisible))
 toArray help_msgs =
   Array.fromList <| OrderedDict.toList help_msgs
 
-is_visible : StudentProfileHelp -> HelpMsg -> HelpMsgVisible
-is_visible student_profile_help msg =
+isVisible : StudentProfileHelp -> HelpMsg -> HelpMsgVisible
+isVisible student_profile_help msg =
   case OrderedDict.get (msgToId msg) (msgs student_profile_help) of
     Just (help_msg, help_msg_visible) ->
       help_msg_visible
@@ -116,6 +148,67 @@ currentMsgIndex : StudentProfileHelp -> Int
 currentMsgIndex (StudentProfileHelp _ i) = i
 
 
+currentMsg : StudentProfileHelp -> Maybe HelpMsg
+currentMsg student_profile_help =
+  let
+    current_msg_index = currentMsgIndex student_profile_help
+  in
+    getMsg student_profile_help current_msg_index
+
+
+nextMsg : StudentProfileHelp -> Maybe HelpMsg
+nextMsg student_profile_help =
+  let
+    current_msg_index = currentMsgIndex student_profile_help
+  in
+    case getMsg student_profile_help current_msg_index of
+      Just current_msg ->
+        case getMsg student_profile_help (current_msg_index+1) of
+          Just next_msg ->
+            Just next_msg
+
+          -- loop back
+          Nothing ->
+            case getMsg student_profile_help 0 of
+              Just first_msg ->
+                Just first_msg
+
+              -- no first msg
+              Nothing ->
+                Nothing
+
+      -- no current message
+      Nothing ->
+         Nothing
+
+prevMsg : StudentProfileHelp -> Maybe HelpMsg
+prevMsg student_profile_help =
+  let
+    current_msg_index = currentMsgIndex student_profile_help
+  in
+    case getMsg student_profile_help current_msg_index of
+      Just current_msg ->
+        case getMsg student_profile_help (current_msg_index-1) of
+          Just prev_msg ->
+            Just prev_msg
+
+          -- go to end
+          Nothing ->
+            let
+              last_msg_index = (Array.length (msgs student_profile_help |> toArray)) - 1
+            in
+              case getMsg student_profile_help last_msg_index of
+                Just last_msg ->
+                  Just last_msg
+
+                -- no last index
+                Nothing ->
+                  Nothing
+
+      -- no current msg
+      Nothing ->
+        Nothing
+
 getMsg : StudentProfileHelp -> Int -> Maybe HelpMsg
 getMsg student_profile_help index =
   let
@@ -137,18 +230,13 @@ next : StudentProfileHelp -> StudentProfileHelp
 next student_profile_help =
   let
     current_msg_index = currentMsgIndex student_profile_help
+    next_msg_index = current_msg_index + 1
   in
-    case getMsg student_profile_help current_msg_index of
-      Just current_msg ->
-        case getMsg student_profile_help (current_msg_index+1) of
-          Just next_msg ->
-            setCurrentMsgIndex (setVisible student_profile_help next_msg True) (current_msg_index+1)
+    case nextMsg student_profile_help of
+      Just next_msg ->
+        setCurrentMsgIndex (setVisible student_profile_help next_msg True) next_msg_index
 
-          -- loop back
-          Nothing ->
-            setCurrentMsgIndex student_profile_help 0
-
-      -- no current msg
+      -- no messages
       Nothing ->
         student_profile_help
 
@@ -157,29 +245,16 @@ prev : StudentProfileHelp -> StudentProfileHelp
 prev student_profile_help =
   let
     current_msg_index = currentMsgIndex student_profile_help
+    prev_msg_index = current_msg_index - 1
   in
-    case getMsg student_profile_help current_msg_index of
-      Just current_msg ->
-        case getMsg student_profile_help (current_msg_index-1) of
-          Just prev_msg ->
-            setCurrentMsgIndex (setVisible student_profile_help prev_msg True) (current_msg_index-1)
+    case prevMsg student_profile_help of
+      Just prev_msg ->
+        setCurrentMsgIndex (setVisible student_profile_help prev_msg True) prev_msg_index
 
-          -- go to end
-          Nothing ->
-            let
-              last_msg_index = (Array.length (msgs student_profile_help |> toArray)) - 1
-            in
-              case getMsg student_profile_help last_msg_index of
-                Just last_msg ->
-                  setCurrentMsgIndex (setVisible student_profile_help last_msg True) last_msg_index
-
-                -- no last index
-                Nothing ->
-                  student_profile_help
-
-      -- no current msg
+      -- no messages
       Nothing ->
         student_profile_help
+
 
 setAllInvisible : HelpMsgs -> HelpMsgs
 setAllInvisible msgs =

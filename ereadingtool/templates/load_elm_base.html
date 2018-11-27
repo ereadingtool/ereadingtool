@@ -34,6 +34,14 @@
             }
        }
 
+       function scrollTo(elem_id) {
+            var input = document.getElementById(elem_id);
+
+            if (input) {
+                input.scrollTop = input.offsetTop;
+            }
+       }
+
        app.ports.redirect.subscribe(function redirect(url) {
             // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
             window.requestAnimationFrame(function (timestamp) {
@@ -45,6 +53,13 @@
             // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
             window.requestAnimationFrame(function (timestamp) {
                 clearInputText(elem_id);
+            });
+       });
+
+       app.ports.scrollTo.subscribe(function (elem_id) {
+            // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
+            window.requestAnimationFrame(function (timestamp) {
+                scrollTo(elem_id);
             });
        });
    {% endblock %}

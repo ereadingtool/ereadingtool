@@ -18,3 +18,5 @@ port confirm : String -> Cmd msg
 port confirmation : (Bool -> msg) -> Sub msg
 
 port redirect : String -> Cmd msg
+
+port scrollTo : String -> Cmd msg

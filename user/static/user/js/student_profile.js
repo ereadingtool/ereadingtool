@@ -21464,6 +21464,62 @@ var _user$project$Student_Profile_Flags$Flags = F3(
 		return {csrftoken: a, profile_id: b, welcome: c};
 	});
 
+var _user$project$Ports$selectAllInputText = _elm_lang$core$Native_Platform.outgoingPort(
+	'selectAllInputText',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$clearInputText = _elm_lang$core$Native_Platform.outgoingPort(
+	'clearInputText',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$ckEditor = _elm_lang$core$Native_Platform.outgoingPort(
+	'ckEditor',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$ckEditorUpdate = _elm_lang$core$Native_Platform.incomingPort(
+	'ckEditorUpdate',
+	A2(
+		_elm_lang$core$Json_Decode$andThen,
+		function (x0) {
+			return A2(
+				_elm_lang$core$Json_Decode$andThen,
+				function (x1) {
+					return _elm_lang$core$Json_Decode$succeed(
+						{ctor: '_Tuple2', _0: x0, _1: x1});
+				},
+				A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
+		},
+		A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string)));
+var _user$project$Ports$ckEditorSetHtml = _elm_lang$core$Native_Platform.outgoingPort(
+	'ckEditorSetHtml',
+	function (v) {
+		return [v._0, v._1];
+	});
+var _user$project$Ports$addClassToCKEditor = _elm_lang$core$Native_Platform.outgoingPort(
+	'addClassToCKEditor',
+	function (v) {
+		return [v._0, v._1];
+	});
+var _user$project$Ports$confirm = _elm_lang$core$Native_Platform.outgoingPort(
+	'confirm',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$confirmation = _elm_lang$core$Native_Platform.incomingPort('confirmation', _elm_lang$core$Json_Decode$bool);
+var _user$project$Ports$redirect = _elm_lang$core$Native_Platform.outgoingPort(
+	'redirect',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$scrollTo = _elm_lang$core$Native_Platform.outgoingPort(
+	'scrollTo',
+	function (v) {
+		return v;
+	});
+
 var _user$project$Student_Profile_Help$setAllInvisible = function (msgs) {
 	return _rnons$ordered_containers$OrderedDict$fromList(
 		A2(
@@ -21516,7 +21572,7 @@ var _user$project$Student_Profile_Help$helpMsg = function (help_msg) {
 			return _p7._0;
 	}
 };
-var _user$project$Student_Profile_Help$is_visible = F2(
+var _user$project$Student_Profile_Help$isVisible = F2(
 	function (student_profile_help, msg) {
 		var _p8 = A2(
 			_rnons$ordered_containers$OrderedDict$get,
@@ -21543,6 +21599,78 @@ var _user$project$Student_Profile_Help$getMsg = F2(
 			return _elm_lang$core$Maybe$Nothing;
 		}
 	});
+var _user$project$Student_Profile_Help$currentMsg = function (student_profile_help) {
+	var current_msg_index = _user$project$Student_Profile_Help$currentMsgIndex(student_profile_help);
+	return A2(_user$project$Student_Profile_Help$getMsg, student_profile_help, current_msg_index);
+};
+var _user$project$Student_Profile_Help$nextMsg = function (student_profile_help) {
+	var current_msg_index = _user$project$Student_Profile_Help$currentMsgIndex(student_profile_help);
+	var _p10 = A2(_user$project$Student_Profile_Help$getMsg, student_profile_help, current_msg_index);
+	if (_p10.ctor === 'Just') {
+		var _p11 = A2(_user$project$Student_Profile_Help$getMsg, student_profile_help, current_msg_index + 1);
+		if (_p11.ctor === 'Just') {
+			return _elm_lang$core$Maybe$Just(_p11._0);
+		} else {
+			var _p12 = A2(_user$project$Student_Profile_Help$getMsg, student_profile_help, 0);
+			if (_p12.ctor === 'Just') {
+				return _elm_lang$core$Maybe$Just(_p12._0);
+			} else {
+				return _elm_lang$core$Maybe$Nothing;
+			}
+		}
+	} else {
+		return _elm_lang$core$Maybe$Nothing;
+	}
+};
+var _user$project$Student_Profile_Help$prevMsg = function (student_profile_help) {
+	var current_msg_index = _user$project$Student_Profile_Help$currentMsgIndex(student_profile_help);
+	var _p13 = A2(_user$project$Student_Profile_Help$getMsg, student_profile_help, current_msg_index);
+	if (_p13.ctor === 'Just') {
+		var _p14 = A2(_user$project$Student_Profile_Help$getMsg, student_profile_help, current_msg_index - 1);
+		if (_p14.ctor === 'Just') {
+			return _elm_lang$core$Maybe$Just(_p14._0);
+		} else {
+			var last_msg_index = _elm_lang$core$Array$length(
+				_user$project$Student_Profile_Help$toArray(
+					_user$project$Student_Profile_Help$msgs(student_profile_help))) - 1;
+			var _p15 = A2(_user$project$Student_Profile_Help$getMsg, student_profile_help, last_msg_index);
+			if (_p15.ctor === 'Just') {
+				return _elm_lang$core$Maybe$Just(_p15._0);
+			} else {
+				return _elm_lang$core$Maybe$Nothing;
+			}
+		}
+	} else {
+		return _elm_lang$core$Maybe$Nothing;
+	}
+};
+var _user$project$Student_Profile_Help$scrollToPrevMsg = function (student_profile_help) {
+	var _p16 = _user$project$Student_Profile_Help$prevMsg(student_profile_help);
+	if (_p16.ctor === 'Just') {
+		return _user$project$Ports$scrollTo(
+			_user$project$Student_Profile_Help$msgToId(_p16._0));
+	} else {
+		return _elm_lang$core$Platform_Cmd$none;
+	}
+};
+var _user$project$Student_Profile_Help$scrollToNextMsg = function (student_profile_help) {
+	var _p17 = _user$project$Student_Profile_Help$nextMsg(student_profile_help);
+	if (_p17.ctor === 'Just') {
+		return _user$project$Ports$scrollTo(
+			_user$project$Student_Profile_Help$msgToId(_p17._0));
+	} else {
+		return _elm_lang$core$Platform_Cmd$none;
+	}
+};
+var _user$project$Student_Profile_Help$scrollToFirstMsg = function (student_profile_help) {
+	var _p18 = A2(_user$project$Student_Profile_Help$getMsg, student_profile_help, 0);
+	if (_p18.ctor === 'Just') {
+		return _user$project$Ports$scrollTo(
+			_user$project$Student_Profile_Help$msgToId(_p18._0));
+	} else {
+		return _elm_lang$core$Platform_Cmd$none;
+	}
+};
 var _user$project$Student_Profile_Help$SearchTextsMenuItemHelp = function (a) {
 	return {ctor: 'SearchTextsMenuItemHelp', _0: a};
 };
@@ -21589,9 +21717,9 @@ var _user$project$Student_Profile_Help$StudentProfileHelp = F2(
 		return {ctor: 'StudentProfileHelp', _0: a, _1: b};
 	});
 var _user$project$Student_Profile_Help$setCurrentMsgIndex = F2(
-	function (_p10, new_index) {
-		var _p11 = _p10;
-		return A2(_user$project$Student_Profile_Help$StudentProfileHelp, _p11._0, new_index);
+	function (_p19, new_index) {
+		var _p20 = _p19;
+		return A2(_user$project$Student_Profile_Help$StudentProfileHelp, _p20._0, new_index);
 	});
 var _user$project$Student_Profile_Help$setVisible = F3(
 	function (student_profile_help, help_msg, visible) {
@@ -21608,45 +21736,26 @@ var _user$project$Student_Profile_Help$setVisible = F3(
 	});
 var _user$project$Student_Profile_Help$next = function (student_profile_help) {
 	var current_msg_index = _user$project$Student_Profile_Help$currentMsgIndex(student_profile_help);
-	var _p12 = A2(_user$project$Student_Profile_Help$getMsg, student_profile_help, current_msg_index);
-	if (_p12.ctor === 'Just') {
-		var _p13 = A2(_user$project$Student_Profile_Help$getMsg, student_profile_help, current_msg_index + 1);
-		if (_p13.ctor === 'Just') {
-			return A2(
-				_user$project$Student_Profile_Help$setCurrentMsgIndex,
-				A3(_user$project$Student_Profile_Help$setVisible, student_profile_help, _p13._0, true),
-				current_msg_index + 1);
-		} else {
-			return A2(_user$project$Student_Profile_Help$setCurrentMsgIndex, student_profile_help, 0);
-		}
+	var next_msg_index = current_msg_index + 1;
+	var _p21 = _user$project$Student_Profile_Help$nextMsg(student_profile_help);
+	if (_p21.ctor === 'Just') {
+		return A2(
+			_user$project$Student_Profile_Help$setCurrentMsgIndex,
+			A3(_user$project$Student_Profile_Help$setVisible, student_profile_help, _p21._0, true),
+			next_msg_index);
 	} else {
 		return student_profile_help;
 	}
 };
 var _user$project$Student_Profile_Help$prev = function (student_profile_help) {
 	var current_msg_index = _user$project$Student_Profile_Help$currentMsgIndex(student_profile_help);
-	var _p14 = A2(_user$project$Student_Profile_Help$getMsg, student_profile_help, current_msg_index);
-	if (_p14.ctor === 'Just') {
-		var _p15 = A2(_user$project$Student_Profile_Help$getMsg, student_profile_help, current_msg_index - 1);
-		if (_p15.ctor === 'Just') {
-			return A2(
-				_user$project$Student_Profile_Help$setCurrentMsgIndex,
-				A3(_user$project$Student_Profile_Help$setVisible, student_profile_help, _p15._0, true),
-				current_msg_index - 1);
-		} else {
-			var last_msg_index = _elm_lang$core$Array$length(
-				_user$project$Student_Profile_Help$toArray(
-					_user$project$Student_Profile_Help$msgs(student_profile_help))) - 1;
-			var _p16 = A2(_user$project$Student_Profile_Help$getMsg, student_profile_help, last_msg_index);
-			if (_p16.ctor === 'Just') {
-				return A2(
-					_user$project$Student_Profile_Help$setCurrentMsgIndex,
-					A3(_user$project$Student_Profile_Help$setVisible, student_profile_help, _p16._0, true),
-					last_msg_index);
-			} else {
-				return student_profile_help;
-			}
-		}
+	var prev_msg_index = current_msg_index - 1;
+	var _p22 = _user$project$Student_Profile_Help$prevMsg(student_profile_help);
+	if (_p22.ctor === 'Just') {
+		return A2(
+			_user$project$Student_Profile_Help$setCurrentMsgIndex,
+			A3(_user$project$Student_Profile_Help$setVisible, student_profile_help, _p22._0, true),
+			prev_msg_index);
 	} else {
 		return student_profile_help;
 	}
@@ -21663,12 +21772,12 @@ var _user$project$Student_Profile_Help$init = function () {
 				};
 			},
 			_user$project$Student_Profile_Help$help_msgs));
-	var _p17 = _elm_lang$core$List$head(_user$project$Student_Profile_Help$help_msgs);
-	if (_p17.ctor === 'Just') {
+	var _p23 = _elm_lang$core$List$head(_user$project$Student_Profile_Help$help_msgs);
+	if (_p23.ctor === 'Just') {
 		return A3(
 			_user$project$Student_Profile_Help$setVisible,
 			A2(_user$project$Student_Profile_Help$StudentProfileHelp, initial_msgs, 0),
-			_p17._0,
+			_p23._0,
 			true);
 	} else {
 		return A2(_user$project$Student_Profile_Help$StudentProfileHelp, initial_msgs, 0);
@@ -22378,57 +22487,6 @@ var _user$project$Student_Profile_Encode$profileEncoder = function (student) {
 		});
 };
 
-var _user$project$Ports$selectAllInputText = _elm_lang$core$Native_Platform.outgoingPort(
-	'selectAllInputText',
-	function (v) {
-		return v;
-	});
-var _user$project$Ports$clearInputText = _elm_lang$core$Native_Platform.outgoingPort(
-	'clearInputText',
-	function (v) {
-		return v;
-	});
-var _user$project$Ports$ckEditor = _elm_lang$core$Native_Platform.outgoingPort(
-	'ckEditor',
-	function (v) {
-		return v;
-	});
-var _user$project$Ports$ckEditorUpdate = _elm_lang$core$Native_Platform.incomingPort(
-	'ckEditorUpdate',
-	A2(
-		_elm_lang$core$Json_Decode$andThen,
-		function (x0) {
-			return A2(
-				_elm_lang$core$Json_Decode$andThen,
-				function (x1) {
-					return _elm_lang$core$Json_Decode$succeed(
-						{ctor: '_Tuple2', _0: x0, _1: x1});
-				},
-				A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
-		},
-		A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string)));
-var _user$project$Ports$ckEditorSetHtml = _elm_lang$core$Native_Platform.outgoingPort(
-	'ckEditorSetHtml',
-	function (v) {
-		return [v._0, v._1];
-	});
-var _user$project$Ports$addClassToCKEditor = _elm_lang$core$Native_Platform.outgoingPort(
-	'addClassToCKEditor',
-	function (v) {
-		return [v._0, v._1];
-	});
-var _user$project$Ports$confirm = _elm_lang$core$Native_Platform.outgoingPort(
-	'confirm',
-	function (v) {
-		return v;
-	});
-var _user$project$Ports$confirmation = _elm_lang$core$Native_Platform.incomingPort('confirmation', _elm_lang$core$Json_Decode$bool);
-var _user$project$Ports$redirect = _elm_lang$core$Native_Platform.outgoingPort(
-	'redirect',
-	function (v) {
-		return v;
-	});
-
 var _user$project$Student_Profile_Update$toggle_username_update = function (model) {
 	return _elm_lang$core$Native_Utils.update(
 		model,
@@ -22638,7 +22696,7 @@ var _user$project$Student_Profile_Update$update = F2(
 						{
 							help: _user$project$Student_Profile_Help$prev(model.help)
 						}),
-					_1: _elm_lang$core$Platform_Cmd$none
+					_1: _user$project$Student_Profile_Help$scrollToPrevMsg(model.help)
 				};
 			case 'NextHelp':
 				return {
@@ -22648,7 +22706,7 @@ var _user$project$Student_Profile_Update$update = F2(
 						{
 							help: _user$project$Student_Profile_Help$next(model.help)
 						}),
-					_1: _elm_lang$core$Platform_Cmd$none
+					_1: _user$project$Student_Profile_Help$scrollToNextMsg(model.help)
 				};
 			case 'Logout':
 				return {
@@ -22860,13 +22918,13 @@ var _user$project$Student_Profile_View$view_hint_overlay = F2(
 	function (model, _p2) {
 		var _p3 = _p2;
 		var _p4 = _p3.help_msg;
-		var visible = A2(_user$project$Student_Profile_Help$is_visible, model.help, _p4);
+		var msg_id = _user$project$Student_Profile_Help$msgToId(_p4);
+		var visible = A2(_user$project$Student_Profile_Help$isVisible, model.help, _p4);
 		return A2(
 			_elm_lang$html$Html$span,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$id(
-					_user$project$Student_Profile_Help$msgToId(_p4)),
+				_0: _elm_lang$html$Html_Attributes$id(msg_id),
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html_Attributes$classList(
@@ -23815,6 +23873,7 @@ var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
 var _user$project$Main$init = function (flags) {
+	var student_help = _user$project$Student_Profile_Help$init;
 	return {
 		ctor: '_Tuple2',
 		_0: {
@@ -23824,11 +23883,20 @@ var _user$project$Main$init = function (flags) {
 			profile: _user$project$Student_Profile$emptyStudentProfile,
 			editing: _elm_lang$core$Dict$empty,
 			username_update: {username: '', valid: _elm_lang$core$Maybe$Nothing, msg: _elm_lang$core$Maybe$Nothing},
-			help: _user$project$Student_Profile_Help$init,
+			help: student_help,
 			err_str: '',
 			errors: _elm_lang$core$Dict$empty
 		},
-		_1: A2(_user$project$User_Profile$retrieve_student_profile, _user$project$Student_Profile_Msg$RetrieveStudentProfile, flags.profile_id)
+		_1: _elm_lang$core$Platform_Cmd$batch(
+			{
+				ctor: '::',
+				_0: A2(_user$project$User_Profile$retrieve_student_profile, _user$project$Student_Profile_Msg$RetrieveStudentProfile, flags.profile_id),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Student_Profile_Help$scrollToFirstMsg(student_help),
+					_1: {ctor: '[]'}
+				}
+			})
 	};
 };
 var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(

@@ -139,10 +139,10 @@ update msg model = case msg of
     ({ model | help = (Student.Profile.Help.setVisible model.help help_msg False) }, Cmd.none)
 
   PrevHelp ->
-    ({ model | help = (Student.Profile.Help.prev model.help) }, Cmd.none)
+    ({ model | help = (Student.Profile.Help.prev model.help) }, Student.Profile.Help.scrollToPrevMsg model.help)
 
   NextHelp ->
-    ({ model | help = (Student.Profile.Help.next model.help) }, Cmd.none)
+    ({ model | help = (Student.Profile.Help.next model.help) }, Student.Profile.Help.scrollToNextMsg model.help)
 
   Logout msg ->
     (model, Student.Profile.logout model.profile model.flags.csrftoken LoggedOut)
