@@ -22,6 +22,15 @@ import Text.Model as Text
 import Config
 
 
+type alias HintAttributes = {
+   cancel_event : Html.Attribute Msg
+ , next_event : Html.Attribute Msg
+ , prev_event : Html.Attribute Msg
+ , help_msg : HelpMsg
+ , addl_attributes : List (Html.Attribute Msg)
+ }
+
+
 view_difficulty : Model -> Html Msg
 view_difficulty model =
   let
@@ -176,17 +185,21 @@ view_cancel_btn event_attr =
     , event_attr
     ] []
 
-view_hint_overlay : Model -> Html.Attribute Msg -> HelpMsg -> Html Msg
-view_hint_overlay model event_attr help_msg =
+view_hint_overlay : Model -> HintAttributes -> Html Msg
+view_hint_overlay model {cancel_event, next_event, prev_event, addl_attributes, help_msg} =
   let
     visible = Student.Profile.Help.is_visible model.help help_msg
   in
-    span [id (Student.Profile.Help.msgToId help_msg), classList [("hint_overlay", True), ("invisible", not visible)]] [
-      span [class "hint"] [
+    span [ id (Student.Profile.Help.msgToId help_msg)
+         , classList [("hint_overlay", True)
+         , ("invisible", not visible)]] [
+      span ([class "hint"] ++ addl_attributes) [
         span [class "msg"] [ Html.text (Student.Profile.Help.helpMsg help_msg) ]
-      , span [class "exit"] [ view_cancel_btn event_attr ]
+      , span [class "exit"] [ view_cancel_btn cancel_event ]
       , span [class "nav"] [
-          Html.text "prev | next"
+          span [classList [("prev", False), ("cursor", True)], prev_event] [ Html.text "prev" ]
+        , span [] [ Html.text " | " ]
+        , span [classList [("next", False), ("cursor", True)], next_event] [ Html.text "next" ]
         ]
       ]
     ]
@@ -195,10 +208,18 @@ view_username_hint : Model -> List (Html Msg)
 view_username_hint model =
   let
     username_help = Student.Profile.Help.username_help
+
+    hint_attributes = {
+       cancel_event = onClick (CloseHelp username_help)
+     , next_event = onClick NextHelp
+     , prev_event = onClick PrevHelp
+     , addl_attributes = [class "username_hint"]
+     , help_msg = username_help
+     }
   in
     if model.flags.welcome then
       [
-        view_hint_overlay model (onClick (CloseHelp username_help)) username_help
+        view_hint_overlay model hint_attributes
       ]
     else
       []
@@ -279,12 +300,32 @@ view_flashcards model =
     ]
   ]
 
+view_my_performance_hint : Model -> List (Html Msg)
+view_my_performance_hint model =
+  let
+    performance_help = Student.Profile.Help.my_performance_help
+
+    hint_attributes = {
+       cancel_event = onClick (CloseHelp performance_help)
+     , next_event = onClick NextHelp
+     , prev_event = onClick PrevHelp
+     , addl_attributes = [class "performance_hint"]
+     , help_msg = performance_help
+     }
+  in
+    if model.flags.welcome then
+      [
+        view_hint_overlay model hint_attributes
+      ]
+    else
+      []
+
 view_student_performance : Model -> Html Msg
 view_student_performance model =
   let
     performance_report_attrs = Student.Profile.studentPerformanceReport model.profile
   in
-    div [class "performance"] [
+    div [class "performance"] <| (view_my_performance_hint model) ++ [
       span [class "profile_item_title"] [ Html.text "My Performance: " ]
     , span [class "profile_item_value"] [
         div [class "performance_report"]

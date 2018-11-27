@@ -17,4 +17,3 @@ type alias Model = {
   , help : Student.Profile.Help.StudentProfileHelp
   , username_update : UsernameUpdate
   , errors : Dict String String }
-

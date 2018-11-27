@@ -1,9 +1,9 @@
 module Student.Profile.Help exposing (..)
 
 import Array exposing (Array)
-import Dict exposing (Dict)
+import OrderedDict exposing (OrderedDict)
 
-import HelpMsg exposing (HelpMsgID, HelpMsgStr, HelpMsgVisible)
+import HelpMsg exposing (HelpMsgID, HelpMsgStr, HelpMsgVisible, CurrentHelpMsgIndex)
 
 
 type HelpMsg =
@@ -13,7 +13,9 @@ type HelpMsg =
   | UsernameMenuItemHelp HelpMsgStr
   | SearchTextsMenuItemHelp HelpMsgStr
 
-type StudentProfileHelp = StudentProfileHelp (Dict HelpMsgID (HelpMsg, HelpMsgVisible))
+type alias HelpMsgs = OrderedDict HelpMsgID (HelpMsg, HelpMsgVisible)
+
+type StudentProfileHelp = StudentProfileHelp HelpMsgs CurrentHelpMsgIndex
 
 username_help : HelpMsg
 username_help =
@@ -55,9 +57,13 @@ help_msgs = [
  , search_menu_item_help
  ]
 
+toArray : HelpMsgs -> Array (HelpMsgID, (HelpMsg, HelpMsgVisible))
+toArray help_msgs =
+  Array.fromList <| OrderedDict.toList help_msgs
+
 is_visible : StudentProfileHelp -> HelpMsg -> HelpMsgVisible
 is_visible student_profile_help msg =
-  case Dict.get (msgToId msg) (msgs student_profile_help) of
+  case OrderedDict.get (msgToId msg) (msgs student_profile_help) of
     Just (help_msg, help_msg_visible) ->
       help_msg_visible
 
@@ -102,24 +108,106 @@ msgToId help_msg =
       "search_text_menu_item_hint"
 
 
-msgs : StudentProfileHelp -> Dict HelpMsgID (HelpMsg, HelpMsgVisible)
-msgs (StudentProfileHelp help_msgs) =
+msgs : StudentProfileHelp -> OrderedDict HelpMsgID (HelpMsg, HelpMsgVisible)
+msgs (StudentProfileHelp help_msgs _) =
   help_msgs
 
+currentMsgIndex : StudentProfileHelp -> Int
+currentMsgIndex (StudentProfileHelp _ i) = i
 
-set_visible : HelpMsg -> HelpMsgVisible -> StudentProfileHelp -> StudentProfileHelp
-set_visible help_msg visible student_profile_help =
+
+getMsg : StudentProfileHelp -> Int -> Maybe HelpMsg
+getMsg student_profile_help index =
+  let
+    ordered_msgs = toArray (msgs student_profile_help)
+  in
+    case Array.get index ordered_msgs of
+      Just (_, (msg, _)) ->
+        Just msg
+
+      Nothing ->
+        Nothing
+
+
+setCurrentMsgIndex : StudentProfileHelp -> Int -> StudentProfileHelp
+setCurrentMsgIndex (StudentProfileHelp msgs _) new_index =
+  StudentProfileHelp msgs new_index
+
+next : StudentProfileHelp -> StudentProfileHelp
+next student_profile_help =
+  let
+    current_msg_index = currentMsgIndex student_profile_help
+  in
+    case getMsg student_profile_help current_msg_index of
+      Just current_msg ->
+        case getMsg student_profile_help (current_msg_index+1) of
+          Just next_msg ->
+            setCurrentMsgIndex (setVisible student_profile_help next_msg True) (current_msg_index+1)
+
+          -- loop back
+          Nothing ->
+            setCurrentMsgIndex student_profile_help 0
+
+      -- no current msg
+      Nothing ->
+        student_profile_help
+
+
+prev : StudentProfileHelp -> StudentProfileHelp
+prev student_profile_help =
+  let
+    current_msg_index = currentMsgIndex student_profile_help
+  in
+    case getMsg student_profile_help current_msg_index of
+      Just current_msg ->
+        case getMsg student_profile_help (current_msg_index-1) of
+          Just prev_msg ->
+            setCurrentMsgIndex (setVisible student_profile_help prev_msg True) (current_msg_index-1)
+
+          -- go to end
+          Nothing ->
+            let
+              last_msg_index = (Array.length (msgs student_profile_help |> toArray)) - 1
+            in
+              case getMsg student_profile_help last_msg_index of
+                Just last_msg ->
+                  setCurrentMsgIndex (setVisible student_profile_help last_msg True) last_msg_index
+
+                -- no last index
+                Nothing ->
+                  student_profile_help
+
+      -- no current msg
+      Nothing ->
+        student_profile_help
+
+setAllInvisible : HelpMsgs -> HelpMsgs
+setAllInvisible msgs =
+  OrderedDict.fromList <| List.map
+  (\(id, (help_msg, _)) -> (id, (help_msg, False)))
+  (OrderedDict.toList <| msgs)
+
+
+setVisible : StudentProfileHelp -> HelpMsg -> HelpMsgVisible -> StudentProfileHelp
+setVisible student_profile_help help_msg visible =
   let
     help_msg_id = msgToId help_msg
-    new_msgs = Dict.insert help_msg_id (help_msg, visible) (msgs student_profile_help)
+    help_msgs = setAllInvisible (msgs student_profile_help)
+    new_msgs = OrderedDict.insert help_msg_id (help_msg, visible) help_msgs
+    current_msg_index = currentMsgIndex student_profile_help
   in
-    StudentProfileHelp new_msgs
+    StudentProfileHelp new_msgs current_msg_index
 
 
 init : StudentProfileHelp
 init =
   let
-    initial_msgs = Dict.fromList <| List.map (\help_msg -> (msgToId help_msg, (help_msg, False))) help_msgs
-    profile_help = set_visible username_help True (StudentProfileHelp initial_msgs)
+    initial_msgs = OrderedDict.fromList <| List.map (\help_msg -> (msgToId help_msg, (help_msg, False))) help_msgs
   in
-    StudentProfileHelp initial_msgs
+    case List.head help_msgs of
+      Just first_msg ->
+        setVisible (StudentProfileHelp initial_msgs 0) first_msg True
+
+      -- empty list of msgs
+      Nothing ->
+        (StudentProfileHelp initial_msgs 0)

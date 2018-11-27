@@ -25,6 +25,8 @@ type Msg =
   | Submitted (Result Error Student.Profile.StudentProfile)
   -- help messages
   | CloseHelp Student.Profile.Help.HelpMsg
+  | PrevHelp
+  | NextHelp
   -- site-wide messages
   | Logout MenuMsg.Msg
   | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)

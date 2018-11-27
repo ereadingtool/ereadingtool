@@ -197,8 +197,6 @@ table td {
     grid-template-columns: 1fr 80% 1fr;
     grid-template-rows:  15px auto 35px;
 
-    top: -200px;
-
     width: 250px;
 
     padding-top: 5px;
@@ -246,6 +244,14 @@ table td {
 .hint > .exit {
     grid-column: 3;
     grid-row: 1;
+}
+
+.username_hint {
+    bottom: 200px;
+}
+
+.performance_hint {
+    bottom: 220px;
 }
 
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
