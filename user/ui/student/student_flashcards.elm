@@ -81,7 +81,7 @@ view_content model =
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    Views.view_header (User.Profile.fromStudentProfile model.profile) Nothing Logout
+    Views.view_authed_header (User.Profile.fromStudentProfile model.profile) Nothing Logout
   , view_content model
   , Views.view_footer
   ]

@@ -53,26 +53,29 @@ view_menu (MenuItems menu_items) profile top_level_msg =
   (Array.toList <| Array.map view_menu_item menu_items) ++
   (view_user_profile_menu_items (User.Profile.view_profile_header profile top_level_msg ))
 
-view_unauthed_header : Html msg
-view_unauthed_header =
+view_header : List (Html msg) -> Html msg
+view_header menu_items =
   div [class "header"] [
-    div [] [ Html.text "E-Reader" ]
+    div [] [Html.text "E-Reader"]
+  , div [class "menu"] menu_items
   ]
 
-view_header : User.Profile.Profile -> Maybe SelectedMenuItem -> (Msg -> msg) -> Html msg
-view_header profile selected_menu_item top_level_msg =
+view_unauthed_header : Html msg
+view_unauthed_header =
+  view_header []
+
+view_authed_header : User.Profile.Profile -> Maybe SelectedMenuItem -> (Msg -> msg) -> Html msg
+view_authed_header profile selected_menu_item top_level_msg =
   let
     m_items =
       case selected_menu_item of
         Just selected_index ->
           (set_selected menu_items selected_index True)
+
         _ ->
           menu_items
   in
-    div [classList [("header", True)]] [
-      div [] [ Html.text "E-Reader" ]
-    , div [classList [("menu", True)]] (view_menu m_items profile top_level_msg)
-    ]
+    view_header (view_menu m_items profile top_level_msg)
 
 view_filter : Html msg
 view_filter = div [classList [("filter_items", True)] ] [

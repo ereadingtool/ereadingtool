@@ -10,7 +10,6 @@ import TextReader.Answer.Model exposing (TextAnswer, Answer, AnswerCorrect)
 
 import TextReader exposing (TextItemAttributes, WebSocketAddress)
 
-import Flags exposing (CSRFToken)
 import Profile.Flags as Flags
 
 import User.Profile
