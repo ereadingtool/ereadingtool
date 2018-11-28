@@ -71,7 +71,7 @@ view_content model =
 view : Model -> Html Msg
 view model =
   div [] [
-    Student.Profile.View.view_header model.profile Logout
+    Student.Profile.View.view_header model Logout
   , view_content model
   , Views.view_footer
   ]

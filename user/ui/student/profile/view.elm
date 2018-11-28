@@ -365,32 +365,52 @@ view_student_performance model =
       ]
     ]
 
-view_student_profile_page_link : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> Html msg
-view_student_profile_page_link student_profile top_level_msg =
+view_username_menu_item_hint : Model -> List (Html Msg)
+view_username_menu_item_hint model =
+  let
+    username_menu_item_help = Student.Profile.Help.username_menu_item_help
+
+    hint_attributes = {
+       cancel_event = onClick (CloseHelp username_menu_item_help)
+     , next_event = onClick NextHelp
+     , prev_event = onClick PrevHelp
+     , addl_attributes = [class "username_menu_item_hint"]
+     , help_msg = username_menu_item_help
+     }
+  in
+    if model.flags.welcome then
+      [
+        view_hint_overlay model hint_attributes
+      ]
+    else
+      []
+
+view_student_profile_page_link : Model -> Html msg
+view_student_profile_page_link model =
   div [] [
     Html.a [attribute "href" Config.student_profile_page] [
-      Html.text (Student.Profile.studentUserName student_profile)
+      Html.text (Student.Profile.studentUserName model.profile)
     ]
   ]
 
-view_student_profile_header : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> List (Html msg)
-view_student_profile_header student_profile top_level_msg = [
-    Student.View.view_flashcard_menu_item student_profile top_level_msg
-  , Student.View.view_profile_dropdown_menu student_profile top_level_msg [
-      view_student_profile_page_link student_profile top_level_msg
-    , Student.View.view_student_profile_logout_link student_profile top_level_msg
+view_student_profile_header : Model -> (Menu.Msg.Msg -> msg) -> List (Html msg)
+view_student_profile_header model top_level_msg = [
+    Student.View.view_flashcard_menu_item model.profile top_level_msg
+  , Student.View.view_profile_dropdown_menu model.profile top_level_msg [
+      view_student_profile_page_link model
+    , Student.View.view_student_profile_logout_link model.profile top_level_msg
     ]
   ]
 
-view_profile_header : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> Maybe (List (Html msg))
-view_profile_header student_profile top_level_msg =
-  Just (view_student_profile_header student_profile top_level_msg)
+view_profile_header : Model -> (Menu.Msg.Msg -> msg) -> Maybe (List (Html msg))
+view_profile_header model top_level_msg =
+  Just (view_student_profile_header model top_level_msg)
 
-view_menu : Views.MenuItems -> Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> List (Html msg)
-view_menu (Views.MenuItems menu_items) profile top_level_msg =
+view_menu : Model -> Views.MenuItems -> (Menu.Msg.Msg -> msg) -> List (Html msg)
+view_menu model (Views.MenuItems menu_items) top_level_msg =
   (Array.toList <| Array.map Views.view_menu_item menu_items) ++
-  (Views.view_user_profile_menu_items (view_profile_header profile top_level_msg))
+  (Views.view_user_profile_menu_items (view_profile_header model top_level_msg))
 
-view_header : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> Html msg
-view_header student_profile top_level_msg =
-  Views.view_header (view_menu Views.menu_items student_profile top_level_msg)
+view_header : Model -> (Menu.Msg.Msg -> msg) -> Html msg
+view_header model top_level_msg =
+  Views.view_header (view_menu model Views.menu_items top_level_msg)

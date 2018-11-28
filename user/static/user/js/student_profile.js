@@ -22774,46 +22774,45 @@ var _user$project$Text_Reading_Model$textReadingDecoder = A3(
 						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Reading_Model$TextReading)))))));
 var _user$project$Text_Reading_Model$textReadingsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Reading_Model$textReadingDecoder);
 
-var _user$project$Student_Profile_View$view_student_profile_page_link = F2(
-	function (student_profile, top_level_msg) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$a,
-					{
-						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', _user$project$Config$student_profile_page),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text(
-							_user$project$Student_Profile$studentUserName(student_profile)),
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			});
-	});
+var _user$project$Student_Profile_View$view_student_profile_page_link = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$a,
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', _user$project$Config$student_profile_page),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(
+						_user$project$Student_Profile$studentUserName(model.profile)),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		});
+};
 var _user$project$Student_Profile_View$view_student_profile_header = F2(
-	function (student_profile, top_level_msg) {
+	function (model, top_level_msg) {
 		return {
 			ctor: '::',
-			_0: A2(_user$project$Student_View$view_flashcard_menu_item, student_profile, top_level_msg),
+			_0: A2(_user$project$Student_View$view_flashcard_menu_item, model.profile, top_level_msg),
 			_1: {
 				ctor: '::',
 				_0: A3(
 					_user$project$Student_View$view_profile_dropdown_menu,
-					student_profile,
+					model.profile,
 					top_level_msg,
 					{
 						ctor: '::',
-						_0: A2(_user$project$Student_Profile_View$view_student_profile_page_link, student_profile, top_level_msg),
+						_0: _user$project$Student_Profile_View$view_student_profile_page_link(model),
 						_1: {
 							ctor: '::',
-							_0: A2(_user$project$Student_View$view_student_profile_logout_link, student_profile, top_level_msg),
+							_0: A2(_user$project$Student_View$view_student_profile_logout_link, model.profile, top_level_msg),
 							_1: {ctor: '[]'}
 						}
 					}),
@@ -22822,24 +22821,24 @@ var _user$project$Student_Profile_View$view_student_profile_header = F2(
 		};
 	});
 var _user$project$Student_Profile_View$view_profile_header = F2(
-	function (student_profile, top_level_msg) {
+	function (model, top_level_msg) {
 		return _elm_lang$core$Maybe$Just(
-			A2(_user$project$Student_Profile_View$view_student_profile_header, student_profile, top_level_msg));
+			A2(_user$project$Student_Profile_View$view_student_profile_header, model, top_level_msg));
 	});
 var _user$project$Student_Profile_View$view_menu = F3(
-	function (_p0, profile, top_level_msg) {
+	function (model, _p0, top_level_msg) {
 		var _p1 = _p0;
 		return A2(
 			_elm_lang$core$Basics_ops['++'],
 			_elm_lang$core$Array$toList(
 				A2(_elm_lang$core$Array$map, _user$project$Views$view_menu_item, _p1._0)),
 			_user$project$Views$view_user_profile_menu_items(
-				A2(_user$project$Student_Profile_View$view_profile_header, profile, top_level_msg)));
+				A2(_user$project$Student_Profile_View$view_profile_header, model, top_level_msg)));
 	});
 var _user$project$Student_Profile_View$view_header = F2(
-	function (student_profile, top_level_msg) {
+	function (model, top_level_msg) {
 		return _user$project$Views$view_header(
-			A3(_user$project$Student_Profile_View$view_menu, _user$project$Views$menu_items, student_profile, top_level_msg));
+			A3(_user$project$Student_Profile_View$view_menu, model, _user$project$Views$menu_items, top_level_msg));
 	});
 var _user$project$Student_Profile_View$view_flashcards = function (model) {
 	return A2(
@@ -23263,6 +23262,26 @@ var _user$project$Student_Profile_View$view_student_performance = function (mode
 					}
 				}
 			}));
+};
+var _user$project$Student_Profile_View$view_username_menu_item_hint = function (model) {
+	var username_menu_item_help = _user$project$Student_Profile_Help$username_menu_item_help;
+	var hint_attributes = {
+		cancel_event: _elm_lang$html$Html_Events$onClick(
+			_user$project$Student_Profile_Msg$CloseHelp(username_menu_item_help)),
+		next_event: _elm_lang$html$Html_Events$onClick(_user$project$Student_Profile_Msg$NextHelp),
+		prev_event: _elm_lang$html$Html_Events$onClick(_user$project$Student_Profile_Msg$PrevHelp),
+		addl_attributes: {
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('username_menu_item_hint'),
+			_1: {ctor: '[]'}
+		},
+		help_msg: username_menu_item_help
+	};
+	return model.flags.welcome ? {
+		ctor: '::',
+		_0: A2(_user$project$Student_Profile_View$view_hint_overlay, model, hint_attributes),
+		_1: {ctor: '[]'}
+	} : {ctor: '[]'};
 };
 var _user$project$Student_Profile_View$view_username_submit = function (username) {
 	var cancel_btn = A2(
@@ -23937,7 +23956,7 @@ var _user$project$Main$view = function (model) {
 		{ctor: '[]'},
 		{
 			ctor: '::',
-			_0: A2(_user$project$Student_Profile_View$view_header, model.profile, _user$project$Student_Profile_Msg$Logout),
+			_0: A2(_user$project$Student_Profile_View$view_header, model, _user$project$Student_Profile_Msg$Logout),
 			_1: {
 				ctor: '::',
 				_0: _user$project$Main$view_content(model),
