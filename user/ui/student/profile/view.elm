@@ -1,5 +1,6 @@
 module Student.Profile.View exposing (..)
 
+import Array exposing (Array)
 import Dict exposing (Dict)
 import Markdown
 
@@ -10,6 +11,9 @@ import Html exposing (Html, div, span)
 import Html.Attributes exposing (id, class, classList, attribute)
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
 
+import Views
+import Student.View
+
 import Student.Profile
 import Student.Profile.Msg exposing (Msg(..))
 import Student.Profile.Model exposing (UsernameUpdate, Model)
@@ -18,6 +22,8 @@ import Student.Profile.Help exposing (HelpMsg(..))
 
 import Text.Reading.Model exposing (TextReading, TextReadingScore)
 import Text.Model as Text
+
+import Menu.Msg
 
 import Config
 
@@ -358,3 +364,33 @@ view_student_performance model =
         ]
       ]
     ]
+
+view_student_profile_page_link : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> Html msg
+view_student_profile_page_link student_profile top_level_msg =
+  div [] [
+    Html.a [attribute "href" Config.student_profile_page] [
+      Html.text (Student.Profile.studentUserName student_profile)
+    ]
+  ]
+
+view_student_profile_header : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> List (Html msg)
+view_student_profile_header student_profile top_level_msg = [
+    Student.View.view_flashcard_menu_item student_profile top_level_msg
+  , Student.View.view_profile_dropdown_menu student_profile top_level_msg [
+      view_student_profile_page_link student_profile top_level_msg
+    , Student.View.view_student_profile_logout_link student_profile top_level_msg
+    ]
+  ]
+
+view_profile_header : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> Maybe (List (Html msg))
+view_profile_header student_profile top_level_msg =
+  Just (view_student_profile_header student_profile top_level_msg)
+
+view_menu : Views.MenuItems -> Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> List (Html msg)
+view_menu (Views.MenuItems menu_items) profile top_level_msg =
+  (Array.toList <| Array.map Views.view_menu_item menu_items) ++
+  (Views.view_user_profile_menu_items (view_profile_header profile top_level_msg))
+
+view_header : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> Html msg
+view_header student_profile top_level_msg =
+  Views.view_header (view_menu Views.menu_items student_profile top_level_msg)

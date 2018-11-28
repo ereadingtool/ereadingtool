@@ -22774,6 +22774,73 @@ var _user$project$Text_Reading_Model$textReadingDecoder = A3(
 						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Reading_Model$TextReading)))))));
 var _user$project$Text_Reading_Model$textReadingsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Reading_Model$textReadingDecoder);
 
+var _user$project$Student_Profile_View$view_student_profile_page_link = F2(
+	function (student_profile, top_level_msg) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$a,
+					{
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', _user$project$Config$student_profile_page),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(
+							_user$project$Student_Profile$studentUserName(student_profile)),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			});
+	});
+var _user$project$Student_Profile_View$view_student_profile_header = F2(
+	function (student_profile, top_level_msg) {
+		return {
+			ctor: '::',
+			_0: A2(_user$project$Student_View$view_flashcard_menu_item, student_profile, top_level_msg),
+			_1: {
+				ctor: '::',
+				_0: A3(
+					_user$project$Student_View$view_profile_dropdown_menu,
+					student_profile,
+					top_level_msg,
+					{
+						ctor: '::',
+						_0: A2(_user$project$Student_Profile_View$view_student_profile_page_link, student_profile, top_level_msg),
+						_1: {
+							ctor: '::',
+							_0: A2(_user$project$Student_View$view_student_profile_logout_link, student_profile, top_level_msg),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			}
+		};
+	});
+var _user$project$Student_Profile_View$view_profile_header = F2(
+	function (student_profile, top_level_msg) {
+		return _elm_lang$core$Maybe$Just(
+			A2(_user$project$Student_Profile_View$view_student_profile_header, student_profile, top_level_msg));
+	});
+var _user$project$Student_Profile_View$view_menu = F3(
+	function (_p0, profile, top_level_msg) {
+		var _p1 = _p0;
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$Array$toList(
+				A2(_elm_lang$core$Array$map, _user$project$Views$view_menu_item, _p1._0)),
+			_user$project$Views$view_user_profile_menu_items(
+				A2(_user$project$Student_Profile_View$view_profile_header, profile, top_level_msg)));
+	});
+var _user$project$Student_Profile_View$view_header = F2(
+	function (student_profile, top_level_msg) {
+		return _user$project$Views$view_header(
+			A3(_user$project$Student_Profile_View$view_menu, _user$project$Views$menu_items, student_profile, top_level_msg));
+	});
 var _user$project$Student_Profile_View$view_flashcards = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -22812,8 +22879,8 @@ var _user$project$Student_Profile_View$view_flashcards = function (model) {
 							{ctor: '[]'},
 							A2(
 								_elm_lang$core$List$map,
-								function (_p0) {
-									var _p1 = _p0;
+								function (_p2) {
+									var _p3 = _p2;
 									return A2(
 										_elm_lang$html$Html$div,
 										{ctor: '[]'},
@@ -22824,7 +22891,7 @@ var _user$project$Student_Profile_View$view_flashcards = function (model) {
 												{ctor: '[]'},
 												{
 													ctor: '::',
-													_0: _elm_lang$html$Html$text(_p1._0),
+													_0: _elm_lang$html$Html$text(_p3._0),
 													_1: {ctor: '[]'}
 												}),
 											_1: {ctor: '[]'}
@@ -22909,11 +22976,11 @@ var _user$project$Student_Profile_View$view_cancel_btn = function (event_attr) {
 		{ctor: '[]'});
 };
 var _user$project$Student_Profile_View$view_hint_overlay = F2(
-	function (model, _p2) {
-		var _p3 = _p2;
-		var _p4 = _p3.help_msg;
-		var msg_id = _user$project$Student_Profile_Help$msgToId(_p4);
-		var visible = A2(_user$project$Student_Profile_Help$isVisible, model.help, _p4);
+	function (model, _p4) {
+		var _p5 = _p4;
+		var _p6 = _p5.help_msg;
+		var msg_id = _user$project$Student_Profile_Help$msgToId(_p6);
+		var visible = A2(_user$project$Student_Profile_Help$isVisible, model.help, _p6);
 		return A2(
 			_elm_lang$html$Html$span,
 			{
@@ -22945,7 +23012,7 @@ var _user$project$Student_Profile_View$view_hint_overlay = F2(
 							_0: _elm_lang$html$Html_Attributes$class('hint'),
 							_1: {ctor: '[]'}
 						},
-						_p3.addl_attributes),
+						_p5.addl_attributes),
 					{
 						ctor: '::',
 						_0: A2(
@@ -22958,7 +23025,7 @@ var _user$project$Student_Profile_View$view_hint_overlay = F2(
 							{
 								ctor: '::',
 								_0: _elm_lang$html$Html$text(
-									_user$project$Student_Profile_Help$helpMsg(_p4)),
+									_user$project$Student_Profile_Help$helpMsg(_p6)),
 								_1: {ctor: '[]'}
 							}),
 						_1: {
@@ -22972,7 +23039,7 @@ var _user$project$Student_Profile_View$view_hint_overlay = F2(
 								},
 								{
 									ctor: '::',
-									_0: _user$project$Student_Profile_View$view_cancel_btn(_p3.cancel_event),
+									_0: _user$project$Student_Profile_View$view_cancel_btn(_p5.cancel_event),
 									_1: {ctor: '[]'}
 								}),
 							_1: {
@@ -23002,7 +23069,7 @@ var _user$project$Student_Profile_View$view_hint_overlay = F2(
 													}),
 												_1: {
 													ctor: '::',
-													_0: _p3.prev_event,
+													_0: _p5.prev_event,
 													_1: {ctor: '[]'}
 												}
 											},
@@ -23039,7 +23106,7 @@ var _user$project$Student_Profile_View$view_hint_overlay = F2(
 															}),
 														_1: {
 															ctor: '::',
-															_0: _p3.next_event,
+															_0: _p5.next_event,
 															_1: {ctor: '[]'}
 														}
 													},
@@ -23214,10 +23281,10 @@ var _user$project$Student_Profile_View$view_username_submit = function (username
 			_0: _elm_lang$html$Html$text('Cancel'),
 			_1: {ctor: '[]'}
 		});
-	var _p5 = username.valid;
-	if (_p5.ctor === 'Just') {
-		var _p6 = _p5._0;
-		if (_p6 === false) {
+	var _p7 = username.valid;
+	if (_p7.ctor === 'Just') {
+		var _p8 = _p7._0;
+		if (_p8 === false) {
 			return {ctor: '[]'};
 		} else {
 			return {
@@ -23266,8 +23333,8 @@ var _user$project$Student_Profile_View$view_username_submit = function (username
 };
 var _user$project$Student_Profile_View$view_username = function (model) {
 	var username_msgs = function () {
-		var _p7 = model.username_update.msg;
-		if (_p7.ctor === 'Just') {
+		var _p9 = model.username_update.msg;
+		if (_p9.ctor === 'Just') {
 			return {
 				ctor: '::',
 				_0: A2(
@@ -23275,7 +23342,7 @@ var _user$project$Student_Profile_View$view_username = function (model) {
 					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(_p7._0),
+						_0: _elm_lang$html$Html$text(_p9._0),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
@@ -23285,10 +23352,10 @@ var _user$project$Student_Profile_View$view_username = function (model) {
 		}
 	}();
 	var username_valid_attrs = function () {
-		var _p8 = model.username_update.valid;
-		if (_p8.ctor === 'Just') {
-			var _p9 = _p8._0;
-			if (_p9 === true) {
+		var _p10 = model.username_update.valid;
+		if (_p10.ctor === 'Just') {
+			var _p11 = _p10._0;
+			if (_p11 === true) {
 				return {
 					ctor: '::',
 					_0: _elm_lang$html$Html_Attributes$class('valid_username'),
@@ -23333,8 +23400,8 @@ var _user$project$Student_Profile_View$view_username = function (model) {
 				_1: {
 					ctor: '::',
 					_0: function () {
-						var _p10 = A2(_elm_lang$core$Dict$member, 'username', model.editing);
-						if (_p10 === false) {
+						var _p12 = A2(_elm_lang$core$Dict$member, 'username', model.editing);
+						if (_p12 === false) {
 							return A2(
 								_elm_lang$html$Html$span,
 								{
@@ -23487,8 +23554,8 @@ var _user$project$Student_Profile_View$view_help_text_for_difficulty = function 
 		});
 	var default_list = A2(
 		_elm_lang$core$List$map,
-		function (_p11) {
-			var _p12 = _p11;
+		function (_p13) {
+			var _p14 = _p13;
 			return A2(
 				_elm_lang$html$Html$div,
 				{
@@ -23498,26 +23565,26 @@ var _user$project$Student_Profile_View$view_help_text_for_difficulty = function 
 				},
 				{
 					ctor: '::',
-					_0: _p12._1,
+					_0: _p14._1,
 					_1: {ctor: '[]'}
 				});
 		},
 		_elm_lang$core$Dict$toList(difficulty_msgs));
 	var default_msg = '\n      Strategy: Select a reading level that matches your current comfort level.  Read broadly in those texts.\n      If you find that they are not particularly challenging after the 5-6th text, go back to your reader profile and\n      select the next higher proficiency level. Once you find a level that is challenging, but not impossible, read all\n      the texts on all the related topics for that level.  You will not need to select a difficulty level every time you\n      log in, but you can choose to change your difficulty level at any time.\n      ';
 	var help_msg = function () {
-		var _p13 = text_difficulty;
-		if (_p13.ctor === 'Just') {
-			var _p14 = A2(
+		var _p15 = text_difficulty;
+		if (_p15.ctor === 'Just') {
+			var _p16 = A2(
 				_elm_lang$core$Dict$get,
-				_elm_lang$core$Tuple$first(_p13._0),
+				_elm_lang$core$Tuple$first(_p15._0),
 				difficulty_msgs);
-			if (_p14.ctor === 'Just') {
+			if (_p16.ctor === 'Just') {
 				return A2(
 					_elm_lang$html$Html$div,
 					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _p14._0,
+						_0: _p16._0,
 						_1: {ctor: '[]'}
 					});
 			} else {
@@ -23615,8 +23682,8 @@ var _user$project$Student_Profile_View$view_student_welcome_msg = function (stud
 };
 var _user$project$Student_Profile_View$view_text_reading_actions = function (text_reading) {
 	var action_label = function () {
-		var _p15 = text_reading.status;
-		if (_p15 === 'complete') {
+		var _p17 = text_reading.status;
+		if (_p17 === 'complete') {
 			return 'Start Over';
 		} else {
 			return 'Resume';
@@ -23705,26 +23772,26 @@ var _user$project$Student_Profile_View$view_difficulty = function (model) {
 						{ctor: '[]'},
 						A2(
 							_elm_lang$core$List$map,
-							function (_p16) {
-								var _p17 = _p16;
-								var _p18 = _p17._0;
+							function (_p18) {
+								var _p19 = _p18;
+								var _p20 = _p19._0;
 								return A2(
 									_elm_lang$html$Html$option,
 									A2(
 										_elm_lang$core$Basics_ops['++'],
 										{
 											ctor: '::',
-											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', _p18),
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', _p20),
 											_1: {ctor: '[]'}
 										},
-										_elm_lang$core$Native_Utils.eq(_p18, pref) ? {
+										_elm_lang$core$Native_Utils.eq(_p20, pref) ? {
 											ctor: '::',
 											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'selected', ''),
 											_1: {ctor: '[]'}
 										} : {ctor: '[]'}),
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text(_p17._1),
+										_0: _elm_lang$html$Html$text(_p19._1),
 										_1: {ctor: '[]'}
 									});
 							},
@@ -23787,73 +23854,6 @@ var _user$project$Student_Profile_View$HintAttributes = F5(
 		return {cancel_event: a, next_event: b, prev_event: c, help_msg: d, addl_attributes: e};
 	});
 
-var _user$project$Main$view_student_profile_page_link = F2(
-	function (student_profile, top_level_msg) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$a,
-					{
-						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', _user$project$Config$student_profile_page),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text(
-							_user$project$Student_Profile$studentUserName(student_profile)),
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			});
-	});
-var _user$project$Main$view_student_profile_header = F2(
-	function (student_profile, top_level_msg) {
-		return {
-			ctor: '::',
-			_0: A2(_user$project$Student_View$view_flashcard_menu_item, student_profile, top_level_msg),
-			_1: {
-				ctor: '::',
-				_0: A3(
-					_user$project$Student_View$view_profile_dropdown_menu,
-					student_profile,
-					top_level_msg,
-					{
-						ctor: '::',
-						_0: A2(_user$project$Main$view_student_profile_page_link, student_profile, top_level_msg),
-						_1: {
-							ctor: '::',
-							_0: A2(_user$project$Student_View$view_student_profile_logout_link, student_profile, top_level_msg),
-							_1: {ctor: '[]'}
-						}
-					}),
-				_1: {ctor: '[]'}
-			}
-		};
-	});
-var _user$project$Main$view_profile_header = F2(
-	function (student_profile, top_level_msg) {
-		return _elm_lang$core$Maybe$Just(
-			A2(_user$project$Main$view_student_profile_header, student_profile, top_level_msg));
-	});
-var _user$project$Main$view_menu = F3(
-	function (_p0, profile, top_level_msg) {
-		var _p1 = _p0;
-		return A2(
-			_elm_lang$core$Basics_ops['++'],
-			_elm_lang$core$Array$toList(
-				A2(_elm_lang$core$Array$map, _user$project$Views$view_menu_item, _p1._0)),
-			_user$project$Views$view_user_profile_menu_items(
-				A2(_user$project$Main$view_profile_header, profile, top_level_msg)));
-	});
-var _user$project$Main$view_header = F2(
-	function (student_profile, top_level_msg) {
-		return _user$project$Views$view_header(
-			A3(_user$project$Main$view_menu, _user$project$Views$menu_items, student_profile, top_level_msg));
-	});
 var _user$project$Main$view_content = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -23937,7 +23937,7 @@ var _user$project$Main$view = function (model) {
 		{ctor: '[]'},
 		{
 			ctor: '::',
-			_0: A2(_user$project$Main$view_header, model.profile, _user$project$Student_Profile_Msg$Logout),
+			_0: A2(_user$project$Student_Profile_View$view_header, model.profile, _user$project$Student_Profile_Msg$Logout),
 			_1: {
 				ctor: '::',
 				_0: _user$project$Main$view_content(model),
