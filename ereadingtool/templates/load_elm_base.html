@@ -35,10 +35,10 @@
        }
 
        function scrollTo(elem_id) {
-            var input = document.getElementById(elem_id);
+            var elem = document.getElementById(elem_id);
 
-            if (input) {
-                input.scrollTop = input.offsetTop;
+            if (elem) {
+                elem.scrollIntoView(false);
             }
        }
 

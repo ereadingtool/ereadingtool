@@ -280,9 +280,29 @@ view_user_email model =
     ]
   ]
 
+view_difficulty_hint : Model -> List (Html Msg)
+view_difficulty_hint model =
+  let
+    difficulty_help = Student.Profile.Help.preferred_difficulty_help
+
+    hint_attributes = {
+       cancel_event = onClick (CloseHelp difficulty_help)
+     , next_event = onClick NextHelp
+     , prev_event = onClick PrevHelp
+     , addl_attributes = [class "difficulty_hint"]
+     , help_msg = difficulty_help
+     }
+  in
+    if model.flags.welcome then
+      [
+        view_hint_overlay model hint_attributes
+      ]
+    else
+      []
+
 view_preferred_difficulty : Model -> Html Msg
 view_preferred_difficulty model =
-  div [class "preferred_difficulty"] [
+  div [class "preferred_difficulty"] <| (view_difficulty_hint model) ++ [
     span [class "profile_item_title"] [ Html.text "Preferred Difficulty" ]
   , span [class "profile_item_value"] [
       view_difficulty model

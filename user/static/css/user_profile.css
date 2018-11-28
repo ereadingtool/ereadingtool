@@ -254,6 +254,10 @@ table td {
     bottom: 220px;
 }
 
+.difficulty_hint {
+    bottom: 280px;
+}
+
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
     .header {
         display: flex;

@@ -23085,6 +23085,26 @@ var _user$project$Student_Profile_View$view_username_hint = function (model) {
 		_1: {ctor: '[]'}
 	} : {ctor: '[]'};
 };
+var _user$project$Student_Profile_View$view_difficulty_hint = function (model) {
+	var difficulty_help = _user$project$Student_Profile_Help$preferred_difficulty_help;
+	var hint_attributes = {
+		cancel_event: _elm_lang$html$Html_Events$onClick(
+			_user$project$Student_Profile_Msg$CloseHelp(difficulty_help)),
+		next_event: _elm_lang$html$Html_Events$onClick(_user$project$Student_Profile_Msg$NextHelp),
+		prev_event: _elm_lang$html$Html_Events$onClick(_user$project$Student_Profile_Msg$PrevHelp),
+		addl_attributes: {
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('difficulty_hint'),
+			_1: {ctor: '[]'}
+		},
+		help_msg: difficulty_help
+	};
+	return model.flags.welcome ? {
+		ctor: '::',
+		_0: A2(_user$project$Student_Profile_View$view_hint_overlay, model, hint_attributes),
+		_1: {ctor: '[]'}
+	} : {ctor: '[]'};
+};
 var _user$project$Student_Profile_View$view_my_performance_hint = function (model) {
 	var performance_help = _user$project$Student_Profile_Help$my_performance_help;
 	var hint_attributes = {
@@ -23728,42 +23748,45 @@ var _user$project$Student_Profile_View$view_preferred_difficulty = function (mod
 			_0: _elm_lang$html$Html_Attributes$class('preferred_difficulty'),
 			_1: {ctor: '[]'}
 		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$span,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('profile_item_title'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text('Preferred Difficulty'),
-					_1: {ctor: '[]'}
-				}),
-			_1: {
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_user$project$Student_Profile_View$view_difficulty_hint(model),
+			{
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$span,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('profile_item_value'),
+						_0: _elm_lang$html$Html_Attributes$class('profile_item_title'),
 						_1: {ctor: '[]'}
 					},
 					{
 						ctor: '::',
-						_0: _user$project$Student_Profile_View$view_difficulty(model),
-						_1: {
-							ctor: '::',
-							_0: _user$project$Student_Profile_View$view_help_text_for_difficulty(
-								_user$project$Student_Profile$studentDifficultyPreference(model.profile)),
-							_1: {ctor: '[]'}
-						}
+						_0: _elm_lang$html$Html$text('Preferred Difficulty'),
+						_1: {ctor: '[]'}
 					}),
-				_1: {ctor: '[]'}
-			}
-		});
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$span,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('profile_item_value'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _user$project$Student_Profile_View$view_difficulty(model),
+							_1: {
+								ctor: '::',
+								_0: _user$project$Student_Profile_View$view_help_text_for_difficulty(
+									_user$project$Student_Profile$studentDifficultyPreference(model.profile)),
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {ctor: '[]'}
+				}
+			}));
 };
 var _user$project$Student_Profile_View$HintAttributes = F5(
 	function (a, b, c, d, e) {
