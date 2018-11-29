@@ -228,7 +228,25 @@ table td {
     margin-left: -20px;
 }
 
-.hint_up:before {
+.hint > .msg {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.hint > .nav {
+    grid-column: 2;
+    grid-row: 3;
+    margin-top: 10px;
+
+    font-size: 13px;
+}
+
+.hint > .exit {
+    grid-column: 3;
+    grid-row: 1;
+}
+
+.hint_up {
     display: grid;
     position: relative;
 
@@ -251,7 +269,7 @@ table td {
     box-shadow: 0 1px 16px rgba(0,0,0,.1);
 }
 
-.hint_up:before {
+.hint_up:after {
     content: '';
     position: absolute;
     display: block;
@@ -260,18 +278,18 @@ table td {
 
     border-style: solid;
     border-color: #f2efef transparent;
-    border-width: 20px 20px 0;
+    border-width: 0 20px 20px;
     top: -15px;
     right: 15%;
-    margin-right: -20px;
+    margin-left: -20px;
 }
 
-.hint > .msg {
+.hint_up > .msg {
     grid-column: 2;
     grid-row: 2;
 }
 
-.hint > .nav {
+.hint_up > .nav {
     grid-column: 2;
     grid-row: 3;
     margin-top: 10px;
@@ -279,7 +297,7 @@ table td {
     font-size: 13px;
 }
 
-.hint > .exit {
+.hint_up > .exit {
     grid-column: 3;
     grid-row: 1;
 }
@@ -294,6 +312,11 @@ table td {
 
 .difficulty_hint {
     bottom: 280px;
+}
+
+.username_menu_item_hint {
+    left: 400px;
+    top: 130px;
 }
 
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {

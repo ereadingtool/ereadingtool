@@ -62,7 +62,7 @@ view_content model =
     , Student.Profile.View.view_student_performance model
     , Student.Profile.View.view_flashcards model
     , (if not (String.isEmpty model.err_str) then
-        span [attribute "class" "error"] [ Html.text "error", Html.text model.err_str ]
+        span [attribute "class" "error"] [ Html.text "error: ", Html.text model.err_str ]
        else Html.text "")
     ]
   ]
@@ -71,7 +71,7 @@ view_content model =
 view : Model -> Html Msg
 view model =
   div [] [
-    Student.Profile.View.view_header model Logout
+    Student.Profile.View.view_header model Logout {next=NextHelp, prev=PrevHelp, close=CloseHelp}
   , view_content model
   , Views.view_footer
   ]

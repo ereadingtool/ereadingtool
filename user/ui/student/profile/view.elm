@@ -15,26 +15,19 @@ import Views
 import Student.View
 
 import Student.Profile
-import Student.Profile.Msg exposing (Msg(..))
+import Student.Profile.Msg exposing (Msg(..), HelpMsgs)
 import Student.Profile.Model exposing (UsernameUpdate, Model)
 
-import Student.Profile.Help exposing (HelpMsg(..))
+import Student.Profile.Help exposing (HelpPopup(..))
 
 import Text.Reading.Model exposing (TextReading, TextReadingScore)
 import Text.Model as Text
 
 import Menu.Msg
 
+import Hints.View exposing (ArrowDirection(..), view_hint_overlay)
+
 import Config
-
-
-type alias HintAttributes = {
-   cancel_event : Html.Attribute Msg
- , next_event : Html.Attribute Msg
- , prev_event : Html.Attribute Msg
- , help_msg : HelpMsg
- , addl_attributes : List (Html.Attribute Msg)
- }
 
 
 view_difficulty : Model -> Html Msg
@@ -191,42 +184,25 @@ view_cancel_btn event_attr =
     , event_attr
     ] []
 
-view_hint_overlay : Model -> HintAttributes -> Html Msg
-view_hint_overlay model {cancel_event, next_event, prev_event, addl_attributes, help_msg} =
-  let
-    visible = Student.Profile.Help.isVisible model.help help_msg
-    msg_id = Student.Profile.Help.msgToId help_msg
-  in
-    span [ id msg_id
-         , classList [("hint_overlay", True)
-         , ("invisible", not visible)]] [
-      span ([class "hint"] ++ addl_attributes) [
-        span [class "msg"] [ Html.text (Student.Profile.Help.helpMsg help_msg) ]
-      , span [class "exit"] [ view_cancel_btn cancel_event ]
-      , span [class "nav"] [
-          span [classList [("prev", False), ("cursor", True)], prev_event] [ Html.text "prev" ]
-        , span [] [ Html.text " | " ]
-        , span [classList [("next", False), ("cursor", True)], next_event] [ Html.text "next" ]
-        ]
-      ]
-    ]
-
 view_username_hint : Model -> List (Html Msg)
 view_username_hint model =
   let
     username_help = Student.Profile.Help.username_help
 
     hint_attributes = {
-       cancel_event = onClick (CloseHelp username_help)
+       id = Student.Profile.Help.popupToID username_help
+     , visible = Student.Profile.Help.isVisible model.help username_help
+     , text = Student.Profile.Help.helpMsg username_help
+     , cancel_event = onClick (CloseHelp username_help)
      , next_event = onClick NextHelp
      , prev_event = onClick PrevHelp
      , addl_attributes = [class "username_hint"]
-     , help_msg = username_help
+     , arrow_direction = ArrowDown
      }
   in
     if model.flags.welcome then
       [
-        view_hint_overlay model hint_attributes
+        Hints.View.view_hint_overlay hint_attributes
       ]
     else
       []
@@ -292,16 +268,19 @@ view_difficulty_hint model =
     difficulty_help = Student.Profile.Help.preferred_difficulty_help
 
     hint_attributes = {
-       cancel_event = onClick (CloseHelp difficulty_help)
+       id = Student.Profile.Help.popupToID difficulty_help
+     , visible = Student.Profile.Help.isVisible model.help difficulty_help
+     , text = Student.Profile.Help.helpMsg difficulty_help
+     , cancel_event = onClick (CloseHelp difficulty_help)
      , next_event = onClick NextHelp
      , prev_event = onClick PrevHelp
      , addl_attributes = [class "difficulty_hint"]
-     , help_msg = difficulty_help
+     , arrow_direction = ArrowDown
      }
   in
     if model.flags.welcome then
       [
-        view_hint_overlay model hint_attributes
+        Hints.View.view_hint_overlay hint_attributes
       ]
     else
       []
@@ -333,16 +312,19 @@ view_my_performance_hint model =
     performance_help = Student.Profile.Help.my_performance_help
 
     hint_attributes = {
-       cancel_event = onClick (CloseHelp performance_help)
+       id = Student.Profile.Help.popupToID performance_help
+     , visible = Student.Profile.Help.isVisible model.help performance_help
+     , text = Student.Profile.Help.helpMsg performance_help
+     , cancel_event = onClick (CloseHelp performance_help)
      , next_event = onClick NextHelp
      , prev_event = onClick PrevHelp
      , addl_attributes = [class "performance_hint"]
-     , help_msg = performance_help
+     , arrow_direction = ArrowDown
      }
   in
     if model.flags.welcome then
       [
-        view_hint_overlay model hint_attributes
+        Hints.View.view_hint_overlay hint_attributes
       ]
     else
       []
@@ -365,52 +347,52 @@ view_student_performance model =
       ]
     ]
 
-view_username_menu_item_hint : Model -> List (Html Msg)
-view_username_menu_item_hint model =
+view_username_menu_item_hint : Model -> HelpMsgs msg -> List (Html msg)
+view_username_menu_item_hint model help_msgs =
   let
     username_menu_item_help = Student.Profile.Help.username_menu_item_help
 
     hint_attributes = {
-       cancel_event = onClick (CloseHelp username_menu_item_help)
-     , next_event = onClick NextHelp
-     , prev_event = onClick PrevHelp
+       id = Student.Profile.Help.popupToID username_menu_item_help
+     , visible = Student.Profile.Help.isVisible model.help username_menu_item_help
+     , text = Student.Profile.Help.helpMsg username_menu_item_help
+     , cancel_event = onClick (help_msgs.close username_menu_item_help)
+     , next_event = onClick help_msgs.next
+     , prev_event = onClick help_msgs.prev
      , addl_attributes = [class "username_menu_item_hint"]
-     , help_msg = username_menu_item_help
+     , arrow_direction = ArrowUp
      }
   in
     if model.flags.welcome then
       [
-        view_hint_overlay model hint_attributes
+        Hints.View.view_hint_overlay hint_attributes
       ]
     else
       []
 
-view_student_profile_page_link : Model -> Html msg
-view_student_profile_page_link model =
+view_student_profile_page_link : Model -> HelpMsgs msg -> Html msg
+view_student_profile_page_link model help_msgs =
   div [] [
     Html.a [attribute "href" Config.student_profile_page] [
       Html.text (Student.Profile.studentUserName model.profile)
     ]
   ]
 
-view_student_profile_header : Model -> (Menu.Msg.Msg -> msg) -> List (Html msg)
-view_student_profile_header model top_level_msg = [
-    Student.View.view_flashcard_menu_item model.profile top_level_msg
-  , Student.View.view_profile_dropdown_menu model.profile top_level_msg [
-      view_student_profile_page_link model
-    , Student.View.view_student_profile_logout_link model.profile top_level_msg
+view_student_profile_header : Model -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> List (Html msg)
+view_student_profile_header model top_level_menu_msg help_msgs =
+  [
+    Student.View.view_flashcard_menu_item model.profile top_level_menu_msg
+  , Student.View.view_profile_dropdown_menu model.profile top_level_menu_msg [
+      view_student_profile_page_link model help_msgs
+    , Student.View.view_student_profile_logout_link model.profile top_level_menu_msg
     ]
-  ]
+  ] ++ (view_username_menu_item_hint model help_msgs)
 
-view_profile_header : Model -> (Menu.Msg.Msg -> msg) -> Maybe (List (Html msg))
-view_profile_header model top_level_msg =
-  Just (view_student_profile_header model top_level_msg)
-
-view_menu : Model -> Views.MenuItems -> (Menu.Msg.Msg -> msg) -> List (Html msg)
-view_menu model (Views.MenuItems menu_items) top_level_msg =
+view_menu : Model -> Views.MenuItems -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> List (Html msg)
+view_menu model (Views.MenuItems menu_items) top_level_menu_msg help_msgs =
   (Array.toList <| Array.map Views.view_menu_item menu_items) ++
-  (Views.view_user_profile_menu_items (view_profile_header model top_level_msg))
+  (view_student_profile_header model top_level_menu_msg help_msgs)
 
-view_header : Model -> (Menu.Msg.Msg -> msg) -> Html msg
-view_header model top_level_msg =
-  Views.view_header (view_menu model Views.menu_items top_level_msg)
+view_header : Model -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> Html msg
+view_header model top_level_menu_msg help_msgs =
+  Views.view_header (view_menu model Views.menu_items top_level_menu_msg help_msgs)

@@ -9751,7 +9751,7 @@ var _user$project$Student_View$view_profile_dropdown_menu = F3(
 			});
 	});
 var _user$project$Student_View$view_student_profile_logout_link = F2(
-	function (student_profile, top_level_msg) {
+	function (student_profile, top_level_menu_msg) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -9774,7 +9774,7 @@ var _user$project$Student_View$view_student_profile_logout_link = F2(
 						_1: {
 							ctor: '::',
 							_0: _elm_lang$html$Html_Events$onClick(
-								top_level_msg(
+								top_level_menu_msg(
 									_user$project$Menu_Msg$StudentLogout(student_profile))),
 							_1: {ctor: '[]'}
 						}
@@ -9788,7 +9788,7 @@ var _user$project$Student_View$view_student_profile_logout_link = F2(
 			});
 	});
 var _user$project$Student_View$view_student_profile_page_link = F2(
-	function (student_profile, top_level_msg) {
+	function (student_profile, top_level_menu_msg) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{ctor: '[]'},
@@ -9811,7 +9811,7 @@ var _user$project$Student_View$view_student_profile_page_link = F2(
 			});
 	});
 var _user$project$Student_View$view_flashcard_menu_item = F2(
-	function (student_profile, top_level_msg) {
+	function (student_profile, top_level_menu_msg) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -9842,22 +9842,22 @@ var _user$project$Student_View$view_flashcard_menu_item = F2(
 			});
 	});
 var _user$project$Student_View$view_student_profile_header = F2(
-	function (student_profile, top_level_msg) {
+	function (student_profile, top_level_menu_msg) {
 		var items = {
 			ctor: '::',
-			_0: A2(_user$project$Student_View$view_student_profile_page_link, student_profile, top_level_msg),
+			_0: A2(_user$project$Student_View$view_student_profile_page_link, student_profile, top_level_menu_msg),
 			_1: {
 				ctor: '::',
-				_0: A2(_user$project$Student_View$view_student_profile_logout_link, student_profile, top_level_msg),
+				_0: A2(_user$project$Student_View$view_student_profile_logout_link, student_profile, top_level_menu_msg),
 				_1: {ctor: '[]'}
 			}
 		};
 		return {
 			ctor: '::',
-			_0: A2(_user$project$Student_View$view_flashcard_menu_item, student_profile, top_level_msg),
+			_0: A2(_user$project$Student_View$view_flashcard_menu_item, student_profile, top_level_menu_msg),
 			_1: {
 				ctor: '::',
-				_0: A3(_user$project$Student_View$view_profile_dropdown_menu, student_profile, top_level_msg, items),
+				_0: A3(_user$project$Student_View$view_profile_dropdown_menu, student_profile, top_level_menu_msg, items),
 				_1: {ctor: '[]'}
 			}
 		};

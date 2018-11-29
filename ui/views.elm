@@ -6,7 +6,7 @@ import Array exposing (Array)
 
 import User.Profile
 
-import Menu.Msg exposing (Msg)
+import Menu.Msg
 
 type alias Selected = Bool
 type alias URI = String
@@ -48,10 +48,10 @@ view_user_profile_menu_items view =
     _ ->
       []
 
-view_menu : MenuItems -> User.Profile.Profile -> (Msg -> msg) -> List (Html msg)
-view_menu (MenuItems menu_items) profile top_level_msg =
+view_menu : MenuItems -> User.Profile.Profile -> (Menu.Msg.Msg -> msg) -> List (Html msg)
+view_menu (MenuItems menu_items) profile top_level_menu_msg =
   (Array.toList <| Array.map view_menu_item menu_items) ++
-  (view_user_profile_menu_items (User.Profile.view_profile_header profile top_level_msg ))
+  (view_user_profile_menu_items (User.Profile.view_profile_header profile top_level_menu_msg ))
 
 view_header : List (Html msg) -> Html msg
 view_header menu_items =
@@ -64,8 +64,8 @@ view_unauthed_header : Html msg
 view_unauthed_header =
   view_header []
 
-view_authed_header : User.Profile.Profile -> Maybe SelectedMenuItem -> (Msg -> msg) -> Html msg
-view_authed_header profile selected_menu_item top_level_msg =
+view_authed_header : User.Profile.Profile -> Maybe SelectedMenuItem -> (Menu.Msg.Msg -> msg) -> Html msg
+view_authed_header profile selected_menu_item top_level_menu_msg =
   let
     m_items =
       case selected_menu_item of
@@ -75,7 +75,7 @@ view_authed_header profile selected_menu_item top_level_msg =
         _ ->
           menu_items
   in
-    view_header (view_menu m_items profile top_level_msg)
+    view_header (view_menu m_items profile top_level_menu_msg)
 
 view_filter : Html msg
 view_filter = div [classList [("filter_items", True)] ] [

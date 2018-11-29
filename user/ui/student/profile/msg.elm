@@ -1,4 +1,4 @@
-module Student.Profile.Msg exposing (Msg, Msg(..))
+module Student.Profile.Msg exposing (Msg, Msg(..), HelpMsgs)
 
 import Http exposing (..)
 
@@ -10,7 +10,13 @@ import Menu.Msg as MenuMsg
 import Menu.Logout
 
 
+type alias HelpMsgs msg = {
+   next: msg
+ , prev: msg
+ , close: (Student.Profile.Help.HelpPopup -> msg) }
+
 -- UPDATE
+
 type Msg =
     RetrieveStudentProfile (Result Error Student.Profile.StudentProfile)
   -- preferred difficulty
@@ -24,7 +30,7 @@ type Msg =
   -- profile update submission
   | Submitted (Result Error Student.Profile.StudentProfile)
   -- help messages
-  | CloseHelp Student.Profile.Help.HelpMsg
+  | CloseHelp Student.Profile.Help.HelpPopup
   | PrevHelp
   | NextHelp
   -- site-wide messages
