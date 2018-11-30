@@ -13,7 +13,7 @@ import Menu.Logout
 type alias HelpMsgs msg = {
    next: msg
  , prev: msg
- , close: (Student.Profile.Help.HelpPopup -> msg) }
+ , close: (Student.Profile.Help.StudentHelp -> msg) }
 
 -- UPDATE
 
@@ -30,7 +30,7 @@ type Msg =
   -- profile update submission
   | Submitted (Result Error Student.Profile.StudentProfile)
   -- help messages
-  | CloseHelp Student.Profile.Help.HelpPopup
+  | CloseHelp Student.Profile.Help.StudentHelp
   | PrevHelp
   | NextHelp
   -- site-wide messages

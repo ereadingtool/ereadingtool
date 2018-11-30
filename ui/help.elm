@@ -1,4 +1,4 @@
-module HelpMsg exposing (..)
+module Help exposing (..)
 
 import Dict exposing (Dict)
 

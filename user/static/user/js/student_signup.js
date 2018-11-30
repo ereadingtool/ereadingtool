@@ -10208,6 +10208,452 @@ var _user$project$Flags$UnAuthedFlags = function (a) {
 };
 
 
+var _user$project$Ports$selectAllInputText = _elm_lang$core$Native_Platform.outgoingPort(
+	'selectAllInputText',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$clearInputText = _elm_lang$core$Native_Platform.outgoingPort(
+	'clearInputText',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$ckEditor = _elm_lang$core$Native_Platform.outgoingPort(
+	'ckEditor',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$ckEditorUpdate = _elm_lang$core$Native_Platform.incomingPort(
+	'ckEditorUpdate',
+	A2(
+		_elm_lang$core$Json_Decode$andThen,
+		function (x0) {
+			return A2(
+				_elm_lang$core$Json_Decode$andThen,
+				function (x1) {
+					return _elm_lang$core$Json_Decode$succeed(
+						{ctor: '_Tuple2', _0: x0, _1: x1});
+				},
+				A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
+		},
+		A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string)));
+var _user$project$Ports$ckEditorSetHtml = _elm_lang$core$Native_Platform.outgoingPort(
+	'ckEditorSetHtml',
+	function (v) {
+		return [v._0, v._1];
+	});
+var _user$project$Ports$addClassToCKEditor = _elm_lang$core$Native_Platform.outgoingPort(
+	'addClassToCKEditor',
+	function (v) {
+		return [v._0, v._1];
+	});
+var _user$project$Ports$confirm = _elm_lang$core$Native_Platform.outgoingPort(
+	'confirm',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$confirmation = _elm_lang$core$Native_Platform.incomingPort('confirmation', _elm_lang$core$Json_Decode$bool);
+var _user$project$Ports$redirect = _elm_lang$core$Native_Platform.outgoingPort(
+	'redirect',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$scrollTo = _elm_lang$core$Native_Platform.outgoingPort(
+	'scrollTo',
+	function (v) {
+		return v;
+	});
+
+var _user$project$Help_PopUp$setAllInvisible = function (msgs) {
+	return _rnons$ordered_containers$OrderedDict$fromList(
+		A2(
+			_elm_lang$core$List$map,
+			function (_p0) {
+				var _p1 = _p0;
+				return {
+					ctor: '_Tuple2',
+					_0: _p1._0,
+					_1: {ctor: '_Tuple2', _0: _p1._1._0, _1: false}
+				};
+			},
+			_rnons$ordered_containers$OrderedDict$toList(msgs)));
+};
+var _user$project$Help_PopUp$currentMsgIndex = function (_p2) {
+	var _p3 = _p2;
+	return _p3._2;
+};
+var _user$project$Help_PopUp$msgs = function (_p4) {
+	var _p5 = _p4;
+	return _p5._0;
+};
+var _user$project$Help_PopUp$toArray = function (help_msgs) {
+	return _elm_lang$core$Array$fromList(
+		_rnons$ordered_containers$OrderedDict$toList(help_msgs));
+};
+var _user$project$Help_PopUp$getMsg = F2(
+	function (help, index) {
+		var ordered_msgs = _user$project$Help_PopUp$toArray(
+			_user$project$Help_PopUp$msgs(help));
+		var _p6 = A2(_elm_lang$core$Array$get, index, ordered_msgs);
+		if (_p6.ctor === 'Just') {
+			return _elm_lang$core$Maybe$Just(_p6._0._1._0);
+		} else {
+			return _elm_lang$core$Maybe$Nothing;
+		}
+	});
+var _user$project$Help_PopUp$currentMsg = function (help) {
+	var current_msg_index = _user$project$Help_PopUp$currentMsgIndex(help);
+	return A2(_user$project$Help_PopUp$getMsg, help, current_msg_index);
+};
+var _user$project$Help_PopUp$nextMsg = function (help) {
+	var current_msg_index = _user$project$Help_PopUp$currentMsgIndex(help);
+	var _p7 = A2(_user$project$Help_PopUp$getMsg, help, current_msg_index);
+	if (_p7.ctor === 'Just') {
+		var _p8 = A2(_user$project$Help_PopUp$getMsg, help, current_msg_index + 1);
+		if (_p8.ctor === 'Just') {
+			return _elm_lang$core$Maybe$Just(_p8._0);
+		} else {
+			var _p9 = A2(_user$project$Help_PopUp$getMsg, help, 0);
+			if (_p9.ctor === 'Just') {
+				return _elm_lang$core$Maybe$Just(_p9._0);
+			} else {
+				return _elm_lang$core$Maybe$Nothing;
+			}
+		}
+	} else {
+		return _elm_lang$core$Maybe$Nothing;
+	}
+};
+var _user$project$Help_PopUp$prevMsg = function (help) {
+	var current_msg_index = _user$project$Help_PopUp$currentMsgIndex(help);
+	var _p10 = A2(_user$project$Help_PopUp$getMsg, help, current_msg_index);
+	if (_p10.ctor === 'Just') {
+		var _p11 = A2(_user$project$Help_PopUp$getMsg, help, current_msg_index - 1);
+		if (_p11.ctor === 'Just') {
+			return _elm_lang$core$Maybe$Just(_p11._0);
+		} else {
+			var last_msg_index = _elm_lang$core$Array$length(
+				_user$project$Help_PopUp$toArray(
+					_user$project$Help_PopUp$msgs(help))) - 1;
+			var _p12 = A2(_user$project$Help_PopUp$getMsg, help, last_msg_index);
+			if (_p12.ctor === 'Just') {
+				return _elm_lang$core$Maybe$Just(_p12._0);
+			} else {
+				return _elm_lang$core$Maybe$Nothing;
+			}
+		}
+	} else {
+		return _elm_lang$core$Maybe$Nothing;
+	}
+};
+var _user$project$Help_PopUp$popupToID = F2(
+	function (_p13, help_msg) {
+		var _p14 = _p13;
+		return _p14._1(help_msg);
+	});
+var _user$project$Help_PopUp$scrollToFirstMsg = function (help) {
+	var _p15 = A2(_user$project$Help_PopUp$getMsg, help, 0);
+	if (_p15.ctor === 'Just') {
+		return _user$project$Ports$scrollTo(
+			A2(_user$project$Help_PopUp$popupToID, help, _p15._0));
+	} else {
+		return _elm_lang$core$Platform_Cmd$none;
+	}
+};
+var _user$project$Help_PopUp$scrollToNextMsg = function (help) {
+	var _p16 = _user$project$Help_PopUp$nextMsg(help);
+	if (_p16.ctor === 'Just') {
+		return _user$project$Ports$scrollTo(
+			A2(_user$project$Help_PopUp$popupToID, help, _p16._0));
+	} else {
+		return _elm_lang$core$Platform_Cmd$none;
+	}
+};
+var _user$project$Help_PopUp$scrollToPrevMsg = function (help) {
+	var _p17 = _user$project$Help_PopUp$prevMsg(help);
+	if (_p17.ctor === 'Just') {
+		return _user$project$Ports$scrollTo(
+			A2(_user$project$Help_PopUp$popupToID, help, _p17._0));
+	} else {
+		return _elm_lang$core$Platform_Cmd$none;
+	}
+};
+var _user$project$Help_PopUp$isVisible = F2(
+	function (help, msg) {
+		var _p18 = A2(
+			_rnons$ordered_containers$OrderedDict$get,
+			A2(_user$project$Help_PopUp$popupToID, help, msg),
+			_user$project$Help_PopUp$msgs(help));
+		if (_p18.ctor === 'Just') {
+			return _p18._0._1;
+		} else {
+			return false;
+		}
+	});
+var _user$project$Help_PopUp$Help = F3(
+	function (a, b, c) {
+		return {ctor: 'Help', _0: a, _1: b, _2: c};
+	});
+var _user$project$Help_PopUp$setMsgs = F2(
+	function (_p19, new_msgs) {
+		var _p20 = _p19;
+		return A3(_user$project$Help_PopUp$Help, new_msgs, _p20._1, _p20._2);
+	});
+var _user$project$Help_PopUp$setVisible = F3(
+	function (help, help_msg, visible) {
+		var help_msgs = _user$project$Help_PopUp$setAllInvisible(
+			_user$project$Help_PopUp$msgs(help));
+		var help_msg_id = A2(_user$project$Help_PopUp$popupToID, help, help_msg);
+		var new_msgs = A3(
+			_rnons$ordered_containers$OrderedDict$insert,
+			help_msg_id,
+			{ctor: '_Tuple2', _0: help_msg, _1: visible},
+			help_msgs);
+		return A2(_user$project$Help_PopUp$setMsgs, help, new_msgs);
+	});
+var _user$project$Help_PopUp$setCurrentMsgIndex = F2(
+	function (_p21, new_index) {
+		var _p22 = _p21;
+		return A3(_user$project$Help_PopUp$Help, _p22._0, _p22._1, new_index);
+	});
+var _user$project$Help_PopUp$next = function (help) {
+	var current_msg_index = _user$project$Help_PopUp$currentMsgIndex(help);
+	var next_msg_index = current_msg_index + 1;
+	var _p23 = _user$project$Help_PopUp$nextMsg(help);
+	if (_p23.ctor === 'Just') {
+		return A2(
+			_user$project$Help_PopUp$setCurrentMsgIndex,
+			A3(_user$project$Help_PopUp$setVisible, help, _p23._0, true),
+			next_msg_index);
+	} else {
+		return help;
+	}
+};
+var _user$project$Help_PopUp$prev = function (help) {
+	var current_msg_index = _user$project$Help_PopUp$currentMsgIndex(help);
+	var prev_msg_index = current_msg_index - 1;
+	var _p24 = _user$project$Help_PopUp$prevMsg(help);
+	if (_p24.ctor === 'Just') {
+		return A2(
+			_user$project$Help_PopUp$setCurrentMsgIndex,
+			A3(_user$project$Help_PopUp$setVisible, help, _p24._0, true),
+			prev_msg_index);
+	} else {
+		return help;
+	}
+};
+var _user$project$Help_PopUp$init = F2(
+	function (help_msgs, popup_to_id) {
+		var initial_msgs = _rnons$ordered_containers$OrderedDict$fromList(
+			A2(
+				_elm_lang$core$List$map,
+				function (help_msg) {
+					return {
+						ctor: '_Tuple2',
+						_0: popup_to_id(help_msg),
+						_1: {ctor: '_Tuple2', _0: help_msg, _1: false}
+					};
+				},
+				help_msgs));
+		var _p25 = _elm_lang$core$List$head(help_msgs);
+		if (_p25.ctor === 'Just') {
+			return A3(
+				_user$project$Help_PopUp$setVisible,
+				A3(_user$project$Help_PopUp$Help, initial_msgs, popup_to_id, 0),
+				_p25._0,
+				true);
+		} else {
+			return A3(_user$project$Help_PopUp$Help, initial_msgs, popup_to_id, 0);
+		}
+	});
+
+var _user$project$Help_View$view_cancel_btn = function (event_attr) {
+	return A2(
+		_elm_lang$html$Html$img,
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/cancel.svg'),
+			_1: {
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '13px'),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '13px'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('cursor'),
+						_1: {
+							ctor: '::',
+							_0: event_attr,
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			}
+		},
+		{ctor: '[]'});
+};
+var _user$project$Help_View$view_hint_overlay = function (_p0) {
+	var _p1 = _p0;
+	var hint_class = function () {
+		var _p2 = _p1.arrow_direction;
+		if (_p2.ctor === 'ArrowUp') {
+			return 'hint_up';
+		} else {
+			return 'hint';
+		}
+	}();
+	return A2(
+		_elm_lang$html$Html$span,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id(_p1.id),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'hint_overlay', _1: true},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'invisible', _1: !_p1.visible},
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$span,
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class(hint_class),
+						_1: {ctor: '[]'}
+					},
+					_p1.addl_attributes),
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$span,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('msg'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(_p1.text),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$span,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('exit'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _user$project$Help_View$view_cancel_btn(_p1.cancel_event),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$span,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('nav'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$span,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$classList(
+												{
+													ctor: '::',
+													_0: {ctor: '_Tuple2', _0: 'prev', _1: false},
+													_1: {
+														ctor: '::',
+														_0: {ctor: '_Tuple2', _0: 'cursor', _1: true},
+														_1: {ctor: '[]'}
+													}
+												}),
+											_1: {
+												ctor: '::',
+												_0: _p1.prev_event,
+												_1: {ctor: '[]'}
+											}
+										},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text('prev'),
+											_1: {ctor: '[]'}
+										}),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$span,
+											{ctor: '[]'},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text(' | '),
+												_1: {ctor: '[]'}
+											}),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$span,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$classList(
+														{
+															ctor: '::',
+															_0: {ctor: '_Tuple2', _0: 'next', _1: false},
+															_1: {
+																ctor: '::',
+																_0: {ctor: '_Tuple2', _0: 'cursor', _1: true},
+																_1: {ctor: '[]'}
+															}
+														}),
+													_1: {
+														ctor: '::',
+														_0: _p1.next_event,
+														_1: {ctor: '[]'}
+													}
+												},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text('next'),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}
+									}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}
+				}),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Help_View$HelpMsgAttributes = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {id: a, visible: b, text: c, cancel_event: d, next_event: e, prev_event: f, addl_attributes: g, arrow_direction: h};
+	});
+var _user$project$Help_View$ArrowDown = {ctor: 'ArrowDown'};
+var _user$project$Help_View$ArrowUp = {ctor: 'ArrowUp'};
+
 var _user$project$HttpHelpers$delete_with_headers = F4(
 	function (url, headers, body, decoder) {
 		return _elm_lang$http$Http$request(
@@ -10814,92 +11260,9 @@ var _user$project$Util$is_valid_email = function (addr) {
 };
 
 
-var _user$project$Student_Profile_Flags$Flags = F3(
-	function (a, b, c) {
-		return {csrftoken: a, profile_id: b, welcome: c};
-	});
-
-var _user$project$Ports$selectAllInputText = _elm_lang$core$Native_Platform.outgoingPort(
-	'selectAllInputText',
-	function (v) {
-		return v;
-	});
-var _user$project$Ports$clearInputText = _elm_lang$core$Native_Platform.outgoingPort(
-	'clearInputText',
-	function (v) {
-		return v;
-	});
-var _user$project$Ports$ckEditor = _elm_lang$core$Native_Platform.outgoingPort(
-	'ckEditor',
-	function (v) {
-		return v;
-	});
-var _user$project$Ports$ckEditorUpdate = _elm_lang$core$Native_Platform.incomingPort(
-	'ckEditorUpdate',
-	A2(
-		_elm_lang$core$Json_Decode$andThen,
-		function (x0) {
-			return A2(
-				_elm_lang$core$Json_Decode$andThen,
-				function (x1) {
-					return _elm_lang$core$Json_Decode$succeed(
-						{ctor: '_Tuple2', _0: x0, _1: x1});
-				},
-				A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
-		},
-		A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string)));
-var _user$project$Ports$ckEditorSetHtml = _elm_lang$core$Native_Platform.outgoingPort(
-	'ckEditorSetHtml',
-	function (v) {
-		return [v._0, v._1];
-	});
-var _user$project$Ports$addClassToCKEditor = _elm_lang$core$Native_Platform.outgoingPort(
-	'addClassToCKEditor',
-	function (v) {
-		return [v._0, v._1];
-	});
-var _user$project$Ports$confirm = _elm_lang$core$Native_Platform.outgoingPort(
-	'confirm',
-	function (v) {
-		return v;
-	});
-var _user$project$Ports$confirmation = _elm_lang$core$Native_Platform.incomingPort('confirmation', _elm_lang$core$Json_Decode$bool);
-var _user$project$Ports$redirect = _elm_lang$core$Native_Platform.outgoingPort(
-	'redirect',
-	function (v) {
-		return v;
-	});
-var _user$project$Ports$scrollTo = _elm_lang$core$Native_Platform.outgoingPort(
-	'scrollTo',
-	function (v) {
-		return v;
-	});
-
-var _user$project$Student_Profile_Help$setAllInvisible = function (msgs) {
-	return _rnons$ordered_containers$OrderedDict$fromList(
-		A2(
-			_elm_lang$core$List$map,
-			function (_p0) {
-				var _p1 = _p0;
-				return {
-					ctor: '_Tuple2',
-					_0: _p1._0,
-					_1: {ctor: '_Tuple2', _0: _p1._1._0, _1: false}
-				};
-			},
-			_rnons$ordered_containers$OrderedDict$toList(msgs)));
-};
-var _user$project$Student_Profile_Help$currentMsgIndex = function (_p2) {
-	var _p3 = _p2;
-	return _p3._1;
-};
-var _user$project$Student_Profile_Help$msgs = function (_p4) {
-	var _p5 = _p4;
-	return _p5._0;
-};
 var _user$project$Student_Profile_Help$popupToID = function (help_popup) {
-	var _p6 = help_popup;
-	switch (_p6.ctor) {
+	var _p0 = help_popup;
+	switch (_p0.ctor) {
 		case 'UsernameHelp':
 			return 'username_hint';
 		case 'MyPerformanceHelp':
@@ -10913,118 +11276,23 @@ var _user$project$Student_Profile_Help$popupToID = function (help_popup) {
 	}
 };
 var _user$project$Student_Profile_Help$helpMsg = function (help_msg) {
-	var _p7 = help_msg;
-	switch (_p7.ctor) {
+	var _p1 = help_msg;
+	switch (_p1.ctor) {
 		case 'UsernameHelp':
-			return _p7._0;
+			return _p1._0;
 		case 'MyPerformanceHelp':
-			return _p7._0;
+			return _p1._0;
 		case 'PreferredDifficultyHelp':
-			return _p7._0;
+			return _p1._0;
 		case 'UsernameMenuItemHelp':
-			return _p7._0;
+			return _p1._0;
 		default:
-			return _p7._0;
+			return _p1._0;
 	}
 };
-var _user$project$Student_Profile_Help$isVisible = F2(
-	function (student_profile_help, msg) {
-		var _p8 = A2(
-			_rnons$ordered_containers$OrderedDict$get,
-			_user$project$Student_Profile_Help$popupToID(msg),
-			_user$project$Student_Profile_Help$msgs(student_profile_help));
-		if (_p8.ctor === 'Just') {
-			return _p8._0._1;
-		} else {
-			return false;
-		}
-	});
-var _user$project$Student_Profile_Help$toArray = function (help_msgs) {
-	return _elm_lang$core$Array$fromList(
-		_rnons$ordered_containers$OrderedDict$toList(help_msgs));
-};
-var _user$project$Student_Profile_Help$getMsg = F2(
-	function (student_profile_help, index) {
-		var ordered_msgs = _user$project$Student_Profile_Help$toArray(
-			_user$project$Student_Profile_Help$msgs(student_profile_help));
-		var _p9 = A2(_elm_lang$core$Array$get, index, ordered_msgs);
-		if (_p9.ctor === 'Just') {
-			return _elm_lang$core$Maybe$Just(_p9._0._1._0);
-		} else {
-			return _elm_lang$core$Maybe$Nothing;
-		}
-	});
-var _user$project$Student_Profile_Help$currentMsg = function (student_profile_help) {
-	var current_msg_index = _user$project$Student_Profile_Help$currentMsgIndex(student_profile_help);
-	return A2(_user$project$Student_Profile_Help$getMsg, student_profile_help, current_msg_index);
-};
-var _user$project$Student_Profile_Help$nextMsg = function (student_profile_help) {
-	var current_msg_index = _user$project$Student_Profile_Help$currentMsgIndex(student_profile_help);
-	var _p10 = A2(_user$project$Student_Profile_Help$getMsg, student_profile_help, current_msg_index);
-	if (_p10.ctor === 'Just') {
-		var _p11 = A2(_user$project$Student_Profile_Help$getMsg, student_profile_help, current_msg_index + 1);
-		if (_p11.ctor === 'Just') {
-			return _elm_lang$core$Maybe$Just(_p11._0);
-		} else {
-			var _p12 = A2(_user$project$Student_Profile_Help$getMsg, student_profile_help, 0);
-			if (_p12.ctor === 'Just') {
-				return _elm_lang$core$Maybe$Just(_p12._0);
-			} else {
-				return _elm_lang$core$Maybe$Nothing;
-			}
-		}
-	} else {
-		return _elm_lang$core$Maybe$Nothing;
-	}
-};
-var _user$project$Student_Profile_Help$prevMsg = function (student_profile_help) {
-	var current_msg_index = _user$project$Student_Profile_Help$currentMsgIndex(student_profile_help);
-	var _p13 = A2(_user$project$Student_Profile_Help$getMsg, student_profile_help, current_msg_index);
-	if (_p13.ctor === 'Just') {
-		var _p14 = A2(_user$project$Student_Profile_Help$getMsg, student_profile_help, current_msg_index - 1);
-		if (_p14.ctor === 'Just') {
-			return _elm_lang$core$Maybe$Just(_p14._0);
-		} else {
-			var last_msg_index = _elm_lang$core$Array$length(
-				_user$project$Student_Profile_Help$toArray(
-					_user$project$Student_Profile_Help$msgs(student_profile_help))) - 1;
-			var _p15 = A2(_user$project$Student_Profile_Help$getMsg, student_profile_help, last_msg_index);
-			if (_p15.ctor === 'Just') {
-				return _elm_lang$core$Maybe$Just(_p15._0);
-			} else {
-				return _elm_lang$core$Maybe$Nothing;
-			}
-		}
-	} else {
-		return _elm_lang$core$Maybe$Nothing;
-	}
-};
-var _user$project$Student_Profile_Help$scrollToPrevMsg = function (student_profile_help) {
-	var _p16 = _user$project$Student_Profile_Help$prevMsg(student_profile_help);
-	if (_p16.ctor === 'Just') {
-		return _user$project$Ports$scrollTo(
-			_user$project$Student_Profile_Help$popupToID(_p16._0));
-	} else {
-		return _elm_lang$core$Platform_Cmd$none;
-	}
-};
-var _user$project$Student_Profile_Help$scrollToNextMsg = function (student_profile_help) {
-	var _p17 = _user$project$Student_Profile_Help$nextMsg(student_profile_help);
-	if (_p17.ctor === 'Just') {
-		return _user$project$Ports$scrollTo(
-			_user$project$Student_Profile_Help$popupToID(_p17._0));
-	} else {
-		return _elm_lang$core$Platform_Cmd$none;
-	}
-};
-var _user$project$Student_Profile_Help$scrollToFirstMsg = function (student_profile_help) {
-	var _p18 = A2(_user$project$Student_Profile_Help$getMsg, student_profile_help, 0);
-	if (_p18.ctor === 'Just') {
-		return _user$project$Ports$scrollTo(
-			_user$project$Student_Profile_Help$popupToID(_p18._0));
-	} else {
-		return _elm_lang$core$Platform_Cmd$none;
-	}
+var _user$project$Student_Profile_Help$help = function (_p2) {
+	var _p3 = _p2;
+	return _p3._0;
 };
 var _user$project$Student_Profile_Help$SearchTextsMenuItemHelp = function (a) {
 	return {ctor: 'SearchTextsMenuItemHelp', _0: a};
@@ -11067,77 +11335,104 @@ var _user$project$Student_Profile_Help$help_msgs = {
 		}
 	}
 };
-var _user$project$Student_Profile_Help$StudentProfileHelp = F2(
-	function (a, b) {
-		return {ctor: 'StudentProfileHelp', _0: a, _1: b};
-	});
-var _user$project$Student_Profile_Help$setCurrentMsgIndex = F2(
-	function (_p19, new_index) {
-		var _p20 = _p19;
-		return A2(_user$project$Student_Profile_Help$StudentProfileHelp, _p20._0, new_index);
-	});
+var _user$project$Student_Profile_Help$StudentProfileHelp = function (a) {
+	return {ctor: 'StudentProfileHelp', _0: a};
+};
+var _user$project$Student_Profile_Help$init = _user$project$Student_Profile_Help$StudentProfileHelp(
+	A2(_user$project$Help_PopUp$init, _user$project$Student_Profile_Help$help_msgs, _user$project$Student_Profile_Help$popupToID));
 var _user$project$Student_Profile_Help$setVisible = F3(
 	function (student_profile_help, help_msg, visible) {
-		var current_msg_index = _user$project$Student_Profile_Help$currentMsgIndex(student_profile_help);
-		var help_msgs = _user$project$Student_Profile_Help$setAllInvisible(
-			_user$project$Student_Profile_Help$msgs(student_profile_help));
-		var help_msg_id = _user$project$Student_Profile_Help$popupToID(help_msg);
-		var new_msgs = A3(
-			_rnons$ordered_containers$OrderedDict$insert,
-			help_msg_id,
-			{ctor: '_Tuple2', _0: help_msg, _1: visible},
-			help_msgs);
-		return A2(_user$project$Student_Profile_Help$StudentProfileHelp, new_msgs, current_msg_index);
+		return _user$project$Student_Profile_Help$StudentProfileHelp(
+			A3(
+				_user$project$Help_PopUp$setVisible,
+				_user$project$Student_Profile_Help$help(student_profile_help),
+				help_msg,
+				visible));
 	});
-var _user$project$Student_Profile_Help$next = function (student_profile_help) {
-	var current_msg_index = _user$project$Student_Profile_Help$currentMsgIndex(student_profile_help);
-	var next_msg_index = current_msg_index + 1;
-	var _p21 = _user$project$Student_Profile_Help$nextMsg(student_profile_help);
-	if (_p21.ctor === 'Just') {
-		return A2(
-			_user$project$Student_Profile_Help$setCurrentMsgIndex,
-			A3(_user$project$Student_Profile_Help$setVisible, student_profile_help, _p21._0, true),
-			next_msg_index);
-	} else {
-		return student_profile_help;
-	}
+
+var _user$project$Menu_Item$helpPopUp = function (_p0) {
+	var _p1 = _p0;
+	return _p1._3;
 };
-var _user$project$Student_Profile_Help$prev = function (student_profile_help) {
-	var current_msg_index = _user$project$Student_Profile_Help$currentMsgIndex(student_profile_help);
-	var prev_msg_index = current_msg_index - 1;
-	var _p22 = _user$project$Student_Profile_Help$prevMsg(student_profile_help);
-	if (_p22.ctor === 'Just') {
-		return A2(
-			_user$project$Student_Profile_Help$setCurrentMsgIndex,
-			A3(_user$project$Student_Profile_Help$setVisible, student_profile_help, _p22._0, true),
-			prev_msg_index);
-	} else {
-		return student_profile_help;
-	}
+var _user$project$Menu_Item$linkText = function (_p2) {
+	var _p3 = _p2;
+	return _p3._1;
 };
-var _user$project$Student_Profile_Help$init = function () {
-	var initial_msgs = _rnons$ordered_containers$OrderedDict$fromList(
-		A2(
-			_elm_lang$core$List$map,
-			function (help_msg) {
-				return {
-					ctor: '_Tuple2',
-					_0: _user$project$Student_Profile_Help$popupToID(help_msg),
-					_1: {ctor: '_Tuple2', _0: help_msg, _1: false}
-				};
-			},
-			_user$project$Student_Profile_Help$help_msgs));
-	var _p23 = _elm_lang$core$List$head(_user$project$Student_Profile_Help$help_msgs);
-	if (_p23.ctor === 'Just') {
-		return A3(
-			_user$project$Student_Profile_Help$setVisible,
-			A2(_user$project$Student_Profile_Help$StudentProfileHelp, initial_msgs, 0),
-			_p23._0,
-			true);
-	} else {
-		return A2(_user$project$Student_Profile_Help$StudentProfileHelp, initial_msgs, 0);
-	}
-}();
+var _user$project$Menu_Item$uri = function (_p4) {
+	var _p5 = _p4;
+	return _p5._0;
+};
+var _user$project$Menu_Item$selected = function (_p6) {
+	var _p7 = _p6;
+	return _p7._2;
+};
+var _user$project$Menu_Item$MenuItem = F4(
+	function (a, b, c, d) {
+		return {ctor: 'MenuItem', _0: a, _1: b, _2: c, _3: d};
+	});
+var _user$project$Menu_Item$setHelpPopUp = F2(
+	function (_p8, help_popup) {
+		var _p9 = _p8;
+		return A4(
+			_user$project$Menu_Item$MenuItem,
+			_p9._0,
+			_p9._1,
+			_p9._2,
+			_elm_lang$core$Maybe$Just(help_popup));
+	});
+var _user$project$Menu_Item$setSelected = F2(
+	function (_p10, selected) {
+		var _p11 = _p10;
+		return A4(_user$project$Menu_Item$MenuItem, _p11._0, _p11._1, selected, _p11._3);
+	});
+
+var _user$project$Menu_Items$getItem = F2(
+	function (_p0, index) {
+		var _p1 = _p0;
+		return A2(_elm_lang$core$Array$get, index, _p1._0);
+	});
+var _user$project$Menu_Items$items = function (_p2) {
+	var _p3 = _p2;
+	return _p3._0;
+};
+var _user$project$Menu_Items$MenuItems = function (a) {
+	return {ctor: 'MenuItems', _0: a};
+};
+var _user$project$Menu_Items$menu_items = _user$project$Menu_Items$MenuItems(
+	_elm_lang$core$Array$fromList(
+		{
+			ctor: '::',
+			_0: A4(_user$project$Menu_Item$MenuItem, '/text/search', 'Search Texts', false, _elm_lang$core$Maybe$Nothing),
+			_1: {ctor: '[]'}
+		}));
+var _user$project$Menu_Items$setItem = F3(
+	function (_p4, item, index) {
+		var _p5 = _p4;
+		return _user$project$Menu_Items$MenuItems(
+			A3(_elm_lang$core$Array$set, index, item, _p5._0));
+	});
+var _user$project$Menu_Items$setSelected = F3(
+	function (_p6, index, select) {
+		var _p7 = _p6;
+		var _p9 = _p7._0;
+		var _p8 = A2(_elm_lang$core$Array$get, index, _p9);
+		if (_p8.ctor === 'Just') {
+			return _user$project$Menu_Items$MenuItems(
+				A3(
+					_elm_lang$core$Array$set,
+					index,
+					A2(_user$project$Menu_Item$setSelected, _p8._0, select),
+					_p9));
+		} else {
+			return _user$project$Menu_Items$MenuItems(_p9);
+		}
+	});
+
+
+var _user$project$Student_Profile_Flags$Flags = F3(
+	function (a, b, c) {
+		return {csrftoken: a, profile_id: b, welcome: c};
+	});
 
 var _user$project$Student_Profile_Model$UsernameUpdate = F3(
 	function (a, b, c) {
@@ -11456,6 +11751,67 @@ var _user$project$User_Profile$init_profile = function (flags) {
 	}
 };
 
+var _user$project$Menu_View$view_user_profile_menu_items = function (view) {
+	var _p0 = view;
+	if (_p0.ctor === 'Just') {
+		return _p0._0;
+	} else {
+		return {ctor: '[]'};
+	}
+};
+var _user$project$Menu_View$view_menu_item = function (menu_item) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$classList(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'menu_item_selected',
+							_1: _user$project$Menu_Item$selected(menu_item)
+						},
+						_1: {ctor: '[]'}
+					}
+				}),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$a,
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html_Attributes$attribute,
+						'href',
+						_user$project$Menu_Item$uri(menu_item)),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(
+						_user$project$Menu_Item$linkText(menu_item)),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Menu_View$view_menu = F3(
+	function (_p1, profile, top_level_menu_msg) {
+		var _p2 = _p1;
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$Array$toList(
+				A2(_elm_lang$core$Array$map, _user$project$Menu_View$view_menu_item, _p2._0)),
+			_user$project$Menu_View$view_user_profile_menu_items(
+				A2(_user$project$User_Profile$view_profile_header, profile, top_level_menu_msg)));
+	});
+
 var _user$project$Views$view_preview = A2(
 	_elm_lang$html$Html$div,
 	{
@@ -11638,106 +11994,18 @@ var _user$project$Views$view_header = function (menu_items) {
 };
 var _user$project$Views$view_unauthed_header = _user$project$Views$view_header(
 	{ctor: '[]'});
-var _user$project$Views$view_user_profile_menu_items = function (view) {
-	var _p0 = view;
-	if (_p0.ctor === 'Just') {
-		return _p0._0;
-	} else {
-		return {ctor: '[]'};
-	}
-};
-var _user$project$Views$view_menu_item = function (_p1) {
-	var _p2 = _p1;
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$classList(
-				{
-					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
-					_1: {
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'menu_item_selected', _1: _p2._2},
-						_1: {ctor: '[]'}
-					}
-				}),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$a,
-				{
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', _p2._0),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(_p2._1),
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Views$view_menu = F3(
-	function (_p3, profile, top_level_menu_msg) {
-		var _p4 = _p3;
-		return A2(
-			_elm_lang$core$Basics_ops['++'],
-			_elm_lang$core$Array$toList(
-				A2(_elm_lang$core$Array$map, _user$project$Views$view_menu_item, _p4._0)),
-			_user$project$Views$view_user_profile_menu_items(
-				A2(_user$project$User_Profile$view_profile_header, profile, top_level_menu_msg)));
-	});
-var _user$project$Views$MenuItem = F3(
-	function (a, b, c) {
-		return {ctor: 'MenuItem', _0: a, _1: b, _2: c};
-	});
-var _user$project$Views$set_selected_menu_item = F2(
-	function (_p5, select) {
-		var _p6 = _p5;
-		return A3(_user$project$Views$MenuItem, _p6._0, _p6._1, select);
-	});
-var _user$project$Views$MenuItems = function (a) {
-	return {ctor: 'MenuItems', _0: a};
-};
-var _user$project$Views$menu_items = _user$project$Views$MenuItems(
-	_elm_lang$core$Array$fromList(
-		{
-			ctor: '::',
-			_0: A3(_user$project$Views$MenuItem, '/text/search', 'Search Texts', false),
-			_1: {ctor: '[]'}
-		}));
-var _user$project$Views$set_selected = F3(
-	function (_p7, index, select) {
-		var _p8 = _p7;
-		var _p10 = _p8._0;
-		var _p9 = A2(_elm_lang$core$Array$get, index, _p10);
-		if (_p9.ctor === 'Just') {
-			return _user$project$Views$MenuItems(
-				A3(
-					_elm_lang$core$Array$set,
-					index,
-					A2(_user$project$Views$set_selected_menu_item, _p9._0, select),
-					_p10));
-		} else {
-			return _user$project$Views$MenuItems(_p10);
-		}
-	});
 var _user$project$Views$view_authed_header = F3(
 	function (profile, selected_menu_item, top_level_menu_msg) {
 		var m_items = function () {
-			var _p11 = selected_menu_item;
-			if (_p11.ctor === 'Just') {
-				return A3(_user$project$Views$set_selected, _user$project$Views$menu_items, _p11._0, true);
+			var _p0 = selected_menu_item;
+			if (_p0.ctor === 'Just') {
+				return A3(_user$project$Menu_Items$setSelected, _user$project$Menu_Items$menu_items, _p0._0, true);
 			} else {
-				return _user$project$Views$menu_items;
+				return _user$project$Menu_Items$menu_items;
 			}
 		}();
 		return _user$project$Views$view_header(
-			A3(_user$project$Views$view_menu, m_items, profile, top_level_menu_msg));
+			A3(_user$project$Menu_View$view_menu, m_items, profile, top_level_menu_msg));
 	});
 
 var _user$project$SignUp$toggle_show_password = function (model) {

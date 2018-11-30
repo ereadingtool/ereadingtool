@@ -4,6 +4,8 @@ import Array exposing (Array)
 import Dict exposing (Dict)
 import Markdown
 
+import OrderedDict exposing (OrderedDict)
+
 import HtmlParser
 import HtmlParser.Util
 
@@ -18,14 +20,18 @@ import Student.Profile
 import Student.Profile.Msg exposing (Msg(..), HelpMsgs)
 import Student.Profile.Model exposing (UsernameUpdate, Model)
 
-import Student.Profile.Help exposing (HelpPopup(..))
+import Student.Profile.Help exposing (StudentHelp(..))
 
 import Text.Reading.Model exposing (TextReading, TextReadingScore)
 import Text.Model as Text
 
+import Menu.Item
+import Menu.Items
+
+import Menu.View
 import Menu.Msg
 
-import Hints.View exposing (ArrowDirection(..), view_hint_overlay)
+import Help.View exposing (ArrowDirection(..), view_hint_overlay)
 
 import Config
 
@@ -100,7 +106,7 @@ view_help_text_for_difficulty text_difficulty =
       """
 
     difficulty_msgs =
-      Dict.fromList [
+      OrderedDict.fromList [
         ("intermediate_mid"
         , Markdown.toHtml [] """**Texts at the Intermediate Mid level** tend to be short public announcements,
         selections from personal correspondence, clearly organized texts in very recognizable genres with clear
@@ -133,12 +139,12 @@ view_help_text_for_difficulty text_difficulty =
         4th year Russian or in 5th year Russian can attempt texts at this level. """)
       ]
 
-    default_list = (List.map (\(k, v) -> div [class "difficulty_desc"] [ v ]) (Dict.toList difficulty_msgs))
+    default_list = (List.map (\(k, v) -> div [class "difficulty_desc"] [ v ]) (OrderedDict.toList difficulty_msgs))
 
     help_msg =
       (case text_difficulty of
         Just difficulty ->
-          case Dict.get (Tuple.first difficulty) difficulty_msgs of
+          case OrderedDict.get (Tuple.first difficulty) difficulty_msgs of
             Just difficulty_msg ->
               div [] [ difficulty_msg ]
 
@@ -370,6 +376,24 @@ view_username_menu_item_hint model help_msgs =
     else
       []
 
+menu_items : Menu.Items.MenuItems
+menu_items =
+  case Menu.Items.getItem Menu.Items.menu_items 0 of
+    Just search_text_menu_item ->
+      case Menu.Item.linkText search_text_menu_item == "Search Texts" of
+        True ->
+          let
+            item_with_popup = Menu.Item.setHelpPopUp search_text_menu_item Student.Profile.Help.search_menu_item_help
+          in
+            Menu.Items.setItem Menu.Items.menu_items item_with_popup 0
+
+        False ->
+          Menu.Items.menu_items
+
+    Nothing ->
+      Menu.Items.menu_items
+
+
 view_student_profile_page_link : Model -> HelpMsgs msg -> Html msg
 view_student_profile_page_link model help_msgs =
   div [] [
@@ -388,11 +412,12 @@ view_student_profile_header model top_level_menu_msg help_msgs =
     ]
   ] ++ (view_username_menu_item_hint model help_msgs)
 
-view_menu : Model -> Views.MenuItems -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> List (Html msg)
-view_menu model (Views.MenuItems menu_items) top_level_menu_msg help_msgs =
-  (Array.toList <| Array.map Views.view_menu_item menu_items) ++
+view_menu : Model -> Menu.Items.MenuItems -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> List (Html msg)
+view_menu model menu_items top_level_menu_msg help_msgs =
+  (  Array.toList
+  <| Array.map Menu.View.view_menu_item (Menu.Items.items menu_items)) ++
   (view_student_profile_header model top_level_menu_msg help_msgs)
 
 view_header : Model -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> Html msg
 view_header model top_level_menu_msg help_msgs =
-  Views.view_header (view_menu model Views.menu_items top_level_menu_msg help_msgs)
+  Views.view_header (view_menu model menu_items top_level_menu_msg help_msgs)

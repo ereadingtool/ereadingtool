@@ -5,52 +5,57 @@ import OrderedDict exposing (OrderedDict)
 
 import Ports
 
-import HelpMsg exposing (HelpMsgID, HelpMsgStr, HelpMsgVisible, CurrentHelpMsgIndex)
+import Help exposing (HelpMsgID, HelpMsgStr, HelpMsgVisible, CurrentHelpMsgIndex)
 
+import Help.PopUp exposing (Help)
 
-type HelpPopup =
+type StudentHelp =
     UsernameHelp HelpMsgStr
   | MyPerformanceHelp HelpMsgStr
   | PreferredDifficultyHelp HelpMsgStr
   | UsernameMenuItemHelp HelpMsgStr
   | SearchTextsMenuItemHelp HelpMsgStr
 
-type alias HelpMsgs = OrderedDict HelpMsgID (HelpPopup, HelpMsgVisible)
+-- type alias HelpMsgs help_popup = OrderedDict HelpMsgID (help_popup, HelpMsgVisible)
+-- type alias HelpMsgs = OrderedDict HelpMsgID (StudentHelp, HelpMsgVisible)
 
-type StudentProfileHelp = StudentProfileHelp HelpMsgs CurrentHelpMsgIndex
+-- type Help help_popup = Help (HelpMsgs help_popup) CurrentHelpMsgIndex
+-- type StudentProfileHelp = StudentProfileHelp HelpMsgs CurrentHelpMsgIndex
+type StudentProfileHelp = StudentProfileHelp (Help StudentHelp)
 
-username_help : HelpPopup
+
+username_help : StudentHelp
 username_help =
   UsernameHelp
      """You can create a new username that is distinct from your email address if you choose.
      Your username will be visible to instructors and other students if you comment on any texts."""
 
-my_performance_help : HelpPopup
+my_performance_help : StudentHelp
 my_performance_help =
   MyPerformanceHelp
      """As you use the website, make sure to check back here from time to time.
      You will be able to see the percentage of questions that you have answered correctly over varying time periods
      and difficulties."""
 
-preferred_difficulty_help : HelpPopup
+preferred_difficulty_help : StudentHelp
 preferred_difficulty_help =
   PreferredDifficultyHelp
      """Please choose a difficulty level. If you have taken proficiency tests, it would be advisable to start out
      reading texts at your current proficiency level.  If you’ve not taken a Flagship Proficiency test yet,
      then you can use these brief descriptions to pick the level that is closest to your current abilities."""
 
-username_menu_item_help : HelpPopup
+username_menu_item_help : StudentHelp
 username_menu_item_help =
   UsernameMenuItemHelp
     """You can return to this profile page at any time, by clicking on your username in the top right corner of the
     screen. Hovering over your username, you can see the option to log out."""
 
-search_menu_item_help : HelpPopup
+search_menu_item_help : StudentHelp
 search_menu_item_help =
   SearchTextsMenuItemHelp
     """To select a text to read, go to the Search Texts option that is in the menu bar on each page of the website."""
 
-help_msgs : List HelpPopup
+help_msgs : List StudentHelp
 help_msgs = [
    username_help
  , my_performance_help
@@ -59,7 +64,19 @@ help_msgs = [
  , search_menu_item_help
  ]
 
-scrollToFirstMsg : StudentProfileHelp -> Cmd msg
+init : StudentProfileHelp
+init =
+  StudentProfileHelp (Help.PopUp.init help_msgs popupToID)
+
+help : StudentProfileHelp -> Help StudentHelp
+help (StudentProfileHelp student_help) =
+  student_help
+
+setVisible : StudentProfileHelp -> StudentHelp -> HelpMsgVisible -> StudentProfileHelp
+setVisible student_profile_help help_msg visible =
+  StudentProfileHelp (Help.PopUp.setVisible (help student_profile_help) help_msg visible)
+
+{-scrollToFirstMsg : StudentProfileHelp -> Cmd msg
 scrollToFirstMsg student_profile_help =
   case getMsg student_profile_help 0 of
     Just first_msg ->
@@ -89,20 +106,20 @@ scrollToPrevMsg student_profile_help =
     Nothing ->
       Cmd.none
 
-toArray : HelpMsgs -> Array (HelpMsgID, (HelpPopup, HelpMsgVisible))
+toArray : HelpMsgs -> Array (HelpMsgID, (StudentHelp, HelpMsgVisible))
 toArray help_msgs =
   Array.fromList <| OrderedDict.toList help_msgs
 
-isVisible : StudentProfileHelp -> HelpPopup -> HelpMsgVisible
+isVisible : StudentProfileHelp -> StudentHelp -> HelpMsgVisible
 isVisible student_profile_help msg =
   case OrderedDict.get (popupToID msg) (msgs student_profile_help) of
     Just (help_msg, help_msg_visible) ->
       help_msg_visible
 
     Nothing ->
-      False
+      False-}
 
-helpMsg : HelpPopup -> HelpMsgStr
+helpMsg : StudentHelp -> HelpMsgStr
 helpMsg help_msg =
   case help_msg of
     UsernameHelp help ->
@@ -121,7 +138,7 @@ helpMsg help_msg =
       help
 
 
-popupToID : HelpPopup -> HelpMsgID
+popupToID : StudentHelp -> HelpMsgID
 popupToID help_popup =
   case help_popup of
     UsernameHelp _ ->
@@ -140,7 +157,7 @@ popupToID help_popup =
       "search_text_menu_item_hint"
 
 
-msgs : StudentProfileHelp -> OrderedDict HelpMsgID (HelpPopup, HelpMsgVisible)
+{-msgs : StudentProfileHelp -> OrderedDict HelpMsgID (StudentHelp, HelpMsgVisible)
 msgs (StudentProfileHelp help_msgs _) =
   help_msgs
 
@@ -148,7 +165,7 @@ currentMsgIndex : StudentProfileHelp -> Int
 currentMsgIndex (StudentProfileHelp _ i) = i
 
 
-currentMsg : StudentProfileHelp -> Maybe HelpPopup
+currentMsg : StudentProfileHelp -> Maybe StudentHelp
 currentMsg student_profile_help =
   let
     current_msg_index = currentMsgIndex student_profile_help
@@ -156,7 +173,7 @@ currentMsg student_profile_help =
     getMsg student_profile_help current_msg_index
 
 
-nextMsg : StudentProfileHelp -> Maybe HelpPopup
+nextMsg : StudentProfileHelp -> Maybe StudentHelp
 nextMsg student_profile_help =
   let
     current_msg_index = currentMsgIndex student_profile_help
@@ -181,7 +198,7 @@ nextMsg student_profile_help =
       Nothing ->
          Nothing
 
-prevMsg : StudentProfileHelp -> Maybe HelpPopup
+prevMsg : StudentProfileHelp -> Maybe StudentHelp
 prevMsg student_profile_help =
   let
     current_msg_index = currentMsgIndex student_profile_help
@@ -209,7 +226,7 @@ prevMsg student_profile_help =
       Nothing ->
         Nothing
 
-getMsg : StudentProfileHelp -> Int -> Maybe HelpPopup
+getMsg : StudentProfileHelp -> Int -> Maybe StudentHelp
 getMsg student_profile_help index =
   let
     ordered_msgs = toArray (msgs student_profile_help)
@@ -263,17 +280,6 @@ setAllInvisible msgs =
   (OrderedDict.toList <| msgs)
 
 
-setVisible : StudentProfileHelp -> HelpPopup -> HelpMsgVisible -> StudentProfileHelp
-setVisible student_profile_help help_msg visible =
-  let
-    help_msg_id = popupToID help_msg
-    help_msgs = setAllInvisible (msgs student_profile_help)
-    new_msgs = OrderedDict.insert help_msg_id (help_msg, visible) help_msgs
-    current_msg_index = currentMsgIndex student_profile_help
-  in
-    StudentProfileHelp new_msgs current_msg_index
-
-
 init : StudentProfileHelp
 init =
   let
@@ -285,4 +291,4 @@ init =
 
       -- empty list of msgs
       Nothing ->
-        (StudentProfileHelp initial_msgs 0)
+        (StudentProfileHelp initial_msgs 0)-}

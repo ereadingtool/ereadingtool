@@ -1,4 +1,4 @@
-module Hints.View exposing (ArrowDirection(..), view_hint_overlay)
+module Help.View exposing (ArrowDirection(..), view_hint_overlay)
 
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (id, class, classList, attribute)
@@ -7,7 +7,7 @@ import Html.Attributes exposing (id, class, classList, attribute)
 
 type ArrowDirection = ArrowUp | ArrowDown
 
-type alias HintAttributes msg = {
+type alias HelpMsgAttributes msg = {
    id: String
  , visible: Bool
  , text: String
@@ -29,7 +29,7 @@ view_cancel_btn event_attr =
     , event_attr
     ] []
 
-view_hint_overlay : HintAttributes msg -> Html msg
+view_hint_overlay : HelpMsgAttributes msg -> Html msg
 view_hint_overlay {id, visible, text, cancel_event, next_event, prev_event, addl_attributes, arrow_direction} =
   let
     hint_class =
