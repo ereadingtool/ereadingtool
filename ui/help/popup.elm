@@ -12,12 +12,6 @@ type alias HelpMsgs help_msg = OrderedDict HelpMsgID (help_msg, HelpMsgVisible)
 
 type Help help_msg = Help (HelpMsgs help_msg) (help_msg -> HelpMsgID) CurrentHelpMsgIndex
 
--- student_help : Help StudentHelp ===
--- student_help : Help (HelpMsgs StudentHelp) (StudentHelp -> HelpMsgID) CurrentHelpMsgIndex
--- HelpMsgs : OrderedDict HelpMsgID (StudentHelp, HelpMsgVisible)
---
--- ex: scrollToFirstMsg student_help
-
 
 popupToID : Help help_msg -> help_msg -> HelpMsgID
 popupToID (Help _ popup_to_id _) help_msg =
