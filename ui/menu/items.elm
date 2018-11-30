@@ -2,9 +2,6 @@ module Menu.Items exposing (..)
 
 import Array exposing (Array)
 
-import Student.Profile.Help exposing (StudentHelp)
-
-import Menu exposing (..)
 import Menu.Item exposing (MenuItem(..))
 
 
@@ -13,7 +10,7 @@ type MenuItems = MenuItems (Array MenuItem)
 menu_items : MenuItems
 menu_items =
   MenuItems <| Array.fromList [
-    MenuItem "/text/search" "Search Texts" False Nothing
+    MenuItem "/text/search" "Search Texts" False
   ]
 
 items : MenuItems -> Array MenuItem

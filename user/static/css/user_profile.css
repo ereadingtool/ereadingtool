@@ -182,126 +182,6 @@ table td {
     text-decoration: underline;
 }
 
-.hint_overlay {
-    position: absolute;
-}
-
-.invisible {
-    visibility: hidden;
-}
-
-.hint {
-    display: grid;
-    position: relative;
-
-    grid-template-columns: 1fr 80% 1fr;
-    grid-template-rows:  15px auto 35px;
-
-    width: 250px;
-
-    padding-top: 5px;
-
-    background: #f2efef;
-
-    z-index: 2;
-
-    font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 15px;
-
-    border: solid 0.5px lightgrey;
-    border-radius: 25px;
-    box-shadow: 0 1px 16px rgba(0,0,0,.1);
-}
-
-.hint:after {
-    content: '';
-    position: absolute;
-    display: block;
-    width: 0;
-    z-index: 2;
-
-    border-style: solid;
-    border-color: #f2efef transparent;
-    border-width: 20px 20px 0;
-    bottom: -15px;
-    left: 15%;
-    margin-left: -20px;
-}
-
-.hint > .msg {
-    grid-column: 2;
-    grid-row: 2;
-}
-
-.hint > .nav {
-    grid-column: 2;
-    grid-row: 3;
-    margin-top: 10px;
-
-    font-size: 13px;
-}
-
-.hint > .exit {
-    grid-column: 3;
-    grid-row: 1;
-}
-
-.hint_up {
-    display: grid;
-    position: relative;
-
-    grid-template-columns: 1fr 80% 1fr;
-    grid-template-rows:  15px auto 35px;
-
-    width: 250px;
-
-    padding-top: 5px;
-
-    background: #f2efef;
-
-    z-index: 2;
-
-    font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 15px;
-
-    border: solid 0.5px lightgrey;
-    border-radius: 25px;
-    box-shadow: 0 1px 16px rgba(0,0,0,.1);
-}
-
-.hint_up:after {
-    content: '';
-    position: absolute;
-    display: block;
-    width: 0;
-    z-index: 2;
-
-    border-style: solid;
-    border-color: #f2efef transparent;
-    border-width: 0 20px 20px;
-    top: -15px;
-    right: 15%;
-    margin-left: -20px;
-}
-
-.hint_up > .msg {
-    grid-column: 2;
-    grid-row: 2;
-}
-
-.hint_up > .nav {
-    grid-column: 2;
-    grid-row: 3;
-    margin-top: 10px;
-
-    font-size: 13px;
-}
-
-.hint_up > .exit {
-    grid-column: 3;
-    grid-row: 1;
-}
-
 .username_hint {
     bottom: 200px;
 }
@@ -317,6 +197,10 @@ table td {
 .username_menu_item_hint {
     left: 400px;
     top: 130px;
+}
+
+.search_menu_item_hint {
+    top: 50px;
 }
 
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {

@@ -7,8 +7,7 @@ import Html.Attributes exposing (class, classList, attribute)
 
 import User.Profile
 
-import Help.PopUp exposing (Help)
-import Help.View
+import Menu
 
 import Menu.Items
 import Menu.Item
@@ -16,11 +15,19 @@ import Menu.Item
 import Menu.Msg
 
 
-view_menu_item : Menu.Item.MenuItem -> Html msg
-view_menu_item menu_item =
-  div [ classList [("menu_item", True), ("menu_item_selected", Menu.Item.selected menu_item)] ] [
-    Html.a [attribute "href" (Menu.Item.uri menu_item)] [ Html.text (Menu.Item.linkText menu_item) ]
+
+view_menu_item : Menu.Selected -> Menu.URI -> Menu.LinkText -> Maybe (List (Html msg)) -> Html msg
+view_menu_item selected uri link_text addl_view =
+  div [ classList [("menu_item", True), ("menu_item_selected", selected)] ] <|
+  (case addl_view of
+          Just view ->
+            view
+
+          Nothing ->
+            []) ++ [
+    Html.a [attribute "href" uri] [ Html.text link_text ]
   ]
+
 
 view_user_profile_menu_items : Maybe (List (Html msg)) -> List (Html msg)
 view_user_profile_menu_items view =
@@ -33,5 +40,8 @@ view_user_profile_menu_items view =
 
 view_menu : Menu.Items.MenuItems -> User.Profile.Profile -> (Menu.Msg.Msg -> msg) -> List (Html msg)
 view_menu (Menu.Items.MenuItems menu_items) profile top_level_menu_msg =
-  (Array.toList <| Array.map view_menu_item menu_items) ++
-  (view_user_profile_menu_items (User.Profile.view_profile_header profile top_level_menu_msg ))
+     (Array.toList
+  <| Array.map (\item ->
+       view_menu_item (Menu.Item.selected item) (Menu.Item.uri item) (Menu.Item.linkText item) Nothing
+     ) menu_items) ++
+     (view_user_profile_menu_items (User.Profile.view_profile_header profile top_level_menu_msg))

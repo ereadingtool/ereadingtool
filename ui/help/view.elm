@@ -1,11 +1,12 @@
-module Help.View exposing (ArrowDirection(..), view_hint_overlay)
+module Help.View exposing (ArrowPlacement(..), ArrowPosition(..), view_hint_overlay)
 
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (id, class, classList, attribute)
 
 
+type ArrowPosition = ArrowLeft | ArrowRight
 
-type ArrowDirection = ArrowUp | ArrowDown
+type ArrowPlacement = ArrowUp ArrowPosition | ArrowDown ArrowPosition
 
 type alias HelpMsgAttributes msg = {
    id: String
@@ -15,7 +16,7 @@ type alias HelpMsgAttributes msg = {
  , next_event : Html.Attribute msg
  , prev_event : Html.Attribute msg
  , addl_attributes : List (Html.Attribute msg)
- , arrow_direction: ArrowDirection
+ , arrow_placement: ArrowPlacement
  }
 
 
@@ -29,13 +30,30 @@ view_cancel_btn event_attr =
     , event_attr
     ] []
 
+arrowPlacementToClass : ArrowPlacement -> String
+arrowPlacementToClass arrow_placement =
+  case arrow_placement of
+    ArrowUp pos ->
+      case pos of
+        ArrowLeft ->
+          "hint-up-left"
+
+        ArrowRight ->
+          "hint-up-right"
+
+    ArrowDown pos ->
+      case pos of
+        ArrowLeft ->
+          "hint-down-left"
+
+        ArrowRight ->
+          "hint-down-right"
+
+
 view_hint_overlay : HelpMsgAttributes msg -> Html msg
-view_hint_overlay {id, visible, text, cancel_event, next_event, prev_event, addl_attributes, arrow_direction} =
+view_hint_overlay {id, visible, text, cancel_event, next_event, prev_event, addl_attributes, arrow_placement} =
   let
-    hint_class =
-      (case arrow_direction of
-        ArrowUp -> "hint_up"
-        ArrowDown -> "hint")
+    hint_class = arrowPlacementToClass arrow_placement
   in
     span [ Html.Attributes.id id
          , classList [("hint_overlay", True)

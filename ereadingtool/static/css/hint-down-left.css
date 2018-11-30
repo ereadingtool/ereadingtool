@@ -1,0 +1,37 @@
+.hint-down-left {
+    display: grid;
+    position: relative;
+
+    grid-template-columns: 1fr 80% 1fr;
+    grid-template-rows:  15px auto 35px;
+
+    width: 250px;
+
+    padding-top: 5px;
+
+    background: #f2efef;
+
+    z-index: 2;
+
+    font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 15px;
+
+    border: solid 0.5px lightgrey;
+    border-radius: 25px;
+    box-shadow: 0 1px 16px rgba(0,0,0,.1);
+}
+
+.hint-down-left:after {
+    content: '';
+    position: absolute;
+    display: block;
+    width: 0;
+    z-index: 2;
+
+    border-style: solid;
+    border-color: #f2efef transparent;
+    border-width: 20px 20px 0;
+    bottom: -15px;
+    left: 15%;
+    margin-left: -20px;
+}

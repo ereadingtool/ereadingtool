@@ -31,7 +31,7 @@ import Menu.Items
 import Menu.View
 import Menu.Msg
 
-import Help.View exposing (ArrowDirection(..), view_hint_overlay)
+import Help.View exposing (ArrowPlacement(..), ArrowPosition(..), view_hint_overlay)
 
 import Config
 
@@ -203,12 +203,12 @@ view_username_hint model =
      , next_event = onClick NextHelp
      , prev_event = onClick PrevHelp
      , addl_attributes = [class "username_hint"]
-     , arrow_direction = ArrowDown
+     , arrow_placement = ArrowDown ArrowLeft
      }
   in
     if model.flags.welcome then
       [
-        Hints.View.view_hint_overlay hint_attributes
+        Help.View.view_hint_overlay hint_attributes
       ]
     else
       []
@@ -281,12 +281,12 @@ view_difficulty_hint model =
      , next_event = onClick NextHelp
      , prev_event = onClick PrevHelp
      , addl_attributes = [class "difficulty_hint"]
-     , arrow_direction = ArrowDown
+     , arrow_placement = ArrowDown ArrowLeft
      }
   in
     if model.flags.welcome then
       [
-        Hints.View.view_hint_overlay hint_attributes
+        Help.View.view_hint_overlay hint_attributes
       ]
     else
       []
@@ -325,12 +325,12 @@ view_my_performance_hint model =
      , next_event = onClick NextHelp
      , prev_event = onClick PrevHelp
      , addl_attributes = [class "performance_hint"]
-     , arrow_direction = ArrowDown
+     , arrow_placement = ArrowDown ArrowLeft
      }
   in
     if model.flags.welcome then
       [
-        Hints.View.view_hint_overlay hint_attributes
+        Help.View.view_hint_overlay hint_attributes
       ]
     else
       []
@@ -366,32 +366,56 @@ view_username_menu_item_hint model help_msgs =
      , next_event = onClick help_msgs.next
      , prev_event = onClick help_msgs.prev
      , addl_attributes = [class "username_menu_item_hint"]
-     , arrow_direction = ArrowUp
+     , arrow_placement = ArrowUp ArrowRight
      }
   in
     if model.flags.welcome then
       [
-        Hints.View.view_hint_overlay hint_attributes
+        Help.View.view_hint_overlay hint_attributes
       ]
     else
       []
 
-menu_items : Menu.Items.MenuItems
-menu_items =
-  case Menu.Items.getItem Menu.Items.menu_items 0 of
-    Just search_text_menu_item ->
-      case Menu.Item.linkText search_text_menu_item == "Search Texts" of
-        True ->
-          let
-            item_with_popup = Menu.Item.setHelpPopUp search_text_menu_item Student.Profile.Help.search_menu_item_help
-          in
-            Menu.Items.setItem Menu.Items.menu_items item_with_popup 0
 
-        False ->
-          Menu.Items.menu_items
+view_search_menu_item_hint : Model -> HelpMsgs msg -> List (Html msg)
+view_search_menu_item_hint model help_msgs =
+  let
+    search_menu_item_help = Student.Profile.Help.search_menu_item_help
 
-    Nothing ->
-      Menu.Items.menu_items
+    hint_attributes = {
+       id = Student.Profile.Help.popupToID search_menu_item_help
+     , visible = Student.Profile.Help.isVisible model.help search_menu_item_help
+     , text = Student.Profile.Help.helpMsg search_menu_item_help
+     , cancel_event = onClick (help_msgs.close search_menu_item_help)
+     , next_event = onClick help_msgs.next
+     , prev_event = onClick help_msgs.prev
+     , addl_attributes = [class "search_menu_item_hint"]
+     , arrow_placement = ArrowUp ArrowLeft
+     }
+  in
+    if model.flags.welcome then
+      [
+        Help.View.view_hint_overlay hint_attributes
+      ]
+    else
+      []
+
+
+view_menu_item : Model -> HelpMsgs msg -> Menu.Item.MenuItem -> Html msg
+view_menu_item model help_msgs menu_item =
+  let
+    selected = Menu.Item.selected menu_item
+    uri = Menu.Item.uri menu_item
+    link_text = Menu.Item.linkText menu_item
+    addl_view =
+      (case link_text == "Search Texts" of
+      True ->
+        Just (view_search_menu_item_hint model help_msgs)
+
+      False ->
+        Nothing)
+  in
+    Menu.View.view_menu_item selected uri link_text addl_view
 
 
 view_student_profile_page_link : Model -> HelpMsgs msg -> Html msg
@@ -414,10 +438,10 @@ view_student_profile_header model top_level_menu_msg help_msgs =
 
 view_menu : Model -> Menu.Items.MenuItems -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> List (Html msg)
 view_menu model menu_items top_level_menu_msg help_msgs =
-  (  Array.toList
-  <| Array.map Menu.View.view_menu_item (Menu.Items.items menu_items)) ++
-  (view_student_profile_header model top_level_menu_msg help_msgs)
+     (Array.toList
+  <| Array.map (view_menu_item model help_msgs) (Menu.Items.items menu_items)) ++
+     (view_student_profile_header model top_level_menu_msg help_msgs)
 
 view_header : Model -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> Html msg
 view_header model top_level_menu_msg help_msgs =
-  Views.view_header (view_menu model menu_items top_level_menu_msg help_msgs)
+  Views.view_header (view_menu model Menu.Items.menu_items top_level_menu_msg help_msgs)

@@ -5,7 +5,6 @@ import Html.Attributes exposing (class, classList, attribute)
 
 import Menu
 import Menu.Items
-import Menu.Item
 
 import Menu.View
 

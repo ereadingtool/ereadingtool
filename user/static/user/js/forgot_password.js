@@ -9921,193 +9921,6 @@ var _user$project$Help_PopUp$init = F2(
 		}
 	});
 
-var _user$project$Help_View$view_cancel_btn = function (event_attr) {
-	return A2(
-		_elm_lang$html$Html$img,
-		{
-			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/cancel.svg'),
-			_1: {
-				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '13px'),
-				_1: {
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '13px'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('cursor'),
-						_1: {
-							ctor: '::',
-							_0: event_attr,
-							_1: {ctor: '[]'}
-						}
-					}
-				}
-			}
-		},
-		{ctor: '[]'});
-};
-var _user$project$Help_View$view_hint_overlay = function (_p0) {
-	var _p1 = _p0;
-	var hint_class = function () {
-		var _p2 = _p1.arrow_direction;
-		if (_p2.ctor === 'ArrowUp') {
-			return 'hint_up';
-		} else {
-			return 'hint';
-		}
-	}();
-	return A2(
-		_elm_lang$html$Html$span,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$id(_p1.id),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$classList(
-					{
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'hint_overlay', _1: true},
-						_1: {
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'invisible', _1: !_p1.visible},
-							_1: {ctor: '[]'}
-						}
-					}),
-				_1: {ctor: '[]'}
-			}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$span,
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class(hint_class),
-						_1: {ctor: '[]'}
-					},
-					_p1.addl_attributes),
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$span,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('msg'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(_p1.text),
-							_1: {ctor: '[]'}
-						}),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$span,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('exit'),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: _user$project$Help_View$view_cancel_btn(_p1.cancel_event),
-								_1: {ctor: '[]'}
-							}),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$span,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('nav'),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$span,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$classList(
-												{
-													ctor: '::',
-													_0: {ctor: '_Tuple2', _0: 'prev', _1: false},
-													_1: {
-														ctor: '::',
-														_0: {ctor: '_Tuple2', _0: 'cursor', _1: true},
-														_1: {ctor: '[]'}
-													}
-												}),
-											_1: {
-												ctor: '::',
-												_0: _p1.prev_event,
-												_1: {ctor: '[]'}
-											}
-										},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text('prev'),
-											_1: {ctor: '[]'}
-										}),
-									_1: {
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$span,
-											{ctor: '[]'},
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text(' | '),
-												_1: {ctor: '[]'}
-											}),
-										_1: {
-											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$span,
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$classList(
-														{
-															ctor: '::',
-															_0: {ctor: '_Tuple2', _0: 'next', _1: false},
-															_1: {
-																ctor: '::',
-																_0: {ctor: '_Tuple2', _0: 'cursor', _1: true},
-																_1: {ctor: '[]'}
-															}
-														}),
-													_1: {
-														ctor: '::',
-														_0: _p1.next_event,
-														_1: {ctor: '[]'}
-													}
-												},
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html$text('next'),
-													_1: {ctor: '[]'}
-												}),
-											_1: {ctor: '[]'}
-										}
-									}
-								}),
-							_1: {ctor: '[]'}
-						}
-					}
-				}),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Help_View$HelpMsgAttributes = F8(
-	function (a, b, c, d, e, f, g, h) {
-		return {id: a, visible: b, text: c, cancel_event: d, next_event: e, prev_event: f, addl_attributes: g, arrow_direction: h};
-	});
-var _user$project$Help_View$ArrowDown = {ctor: 'ArrowDown'};
-var _user$project$Help_View$ArrowUp = {ctor: 'ArrowUp'};
-
 var _user$project$HttpHelpers$delete_with_headers = F4(
 	function (url, headers, body, decoder) {
 		return _elm_lang$http$Http$request(
@@ -10714,6 +10527,76 @@ var _user$project$Util$is_valid_email = function (addr) {
 };
 
 
+var _user$project$Menu_Item$linkText = function (_p0) {
+	var _p1 = _p0;
+	return _p1._1;
+};
+var _user$project$Menu_Item$uri = function (_p2) {
+	var _p3 = _p2;
+	return _p3._0;
+};
+var _user$project$Menu_Item$selected = function (_p4) {
+	var _p5 = _p4;
+	return _p5._2;
+};
+var _user$project$Menu_Item$MenuItem = F3(
+	function (a, b, c) {
+		return {ctor: 'MenuItem', _0: a, _1: b, _2: c};
+	});
+var _user$project$Menu_Item$setSelected = F2(
+	function (_p6, selected) {
+		var _p7 = _p6;
+		return A3(_user$project$Menu_Item$MenuItem, _p7._0, _p7._1, selected);
+	});
+
+var _user$project$Menu_Items$getItem = F2(
+	function (_p0, index) {
+		var _p1 = _p0;
+		return A2(_elm_lang$core$Array$get, index, _p1._0);
+	});
+var _user$project$Menu_Items$items = function (_p2) {
+	var _p3 = _p2;
+	return _p3._0;
+};
+var _user$project$Menu_Items$MenuItems = function (a) {
+	return {ctor: 'MenuItems', _0: a};
+};
+var _user$project$Menu_Items$menu_items = _user$project$Menu_Items$MenuItems(
+	_elm_lang$core$Array$fromList(
+		{
+			ctor: '::',
+			_0: A3(_user$project$Menu_Item$MenuItem, '/text/search', 'Search Texts', false),
+			_1: {ctor: '[]'}
+		}));
+var _user$project$Menu_Items$setItem = F3(
+	function (_p4, item, index) {
+		var _p5 = _p4;
+		return _user$project$Menu_Items$MenuItems(
+			A3(_elm_lang$core$Array$set, index, item, _p5._0));
+	});
+var _user$project$Menu_Items$setSelected = F3(
+	function (_p6, index, select) {
+		var _p7 = _p6;
+		var _p9 = _p7._0;
+		var _p8 = A2(_elm_lang$core$Array$get, index, _p9);
+		if (_p8.ctor === 'Just') {
+			return _user$project$Menu_Items$MenuItems(
+				A3(
+					_elm_lang$core$Array$set,
+					index,
+					A2(_user$project$Menu_Item$setSelected, _p8._0, select),
+					_p9));
+		} else {
+			return _user$project$Menu_Items$MenuItems(_p9);
+		}
+	});
+
+
+var _user$project$Student_Profile_Flags$Flags = F3(
+	function (a, b, c) {
+		return {csrftoken: a, profile_id: b, welcome: c};
+	});
+
 var _user$project$Student_Profile_Help$popupToID = function (help_popup) {
 	var _p0 = help_popup;
 	switch (_p0.ctor) {
@@ -10747,6 +10630,25 @@ var _user$project$Student_Profile_Help$helpMsg = function (help_msg) {
 var _user$project$Student_Profile_Help$help = function (_p2) {
 	var _p3 = _p2;
 	return _p3._0;
+};
+var _user$project$Student_Profile_Help$isVisible = F2(
+	function (student_profile_help, msg) {
+		return A2(
+			_user$project$Help_PopUp$isVisible,
+			_user$project$Student_Profile_Help$help(student_profile_help),
+			msg);
+	});
+var _user$project$Student_Profile_Help$scrollToNextMsg = function (student_profile_help) {
+	return _user$project$Help_PopUp$scrollToNextMsg(
+		_user$project$Student_Profile_Help$help(student_profile_help));
+};
+var _user$project$Student_Profile_Help$scrollToPrevMsg = function (student_profile_help) {
+	return _user$project$Help_PopUp$scrollToPrevMsg(
+		_user$project$Student_Profile_Help$help(student_profile_help));
+};
+var _user$project$Student_Profile_Help$scrollToFirstMsg = function (student_profile_help) {
+	return _user$project$Help_PopUp$scrollToFirstMsg(
+		_user$project$Student_Profile_Help$help(student_profile_help));
 };
 var _user$project$Student_Profile_Help$SearchTextsMenuItemHelp = function (a) {
 	return {ctor: 'SearchTextsMenuItemHelp', _0: a};
@@ -10803,90 +10705,16 @@ var _user$project$Student_Profile_Help$setVisible = F3(
 				help_msg,
 				visible));
 	});
-
-var _user$project$Menu_Item$helpPopUp = function (_p0) {
-	var _p1 = _p0;
-	return _p1._3;
+var _user$project$Student_Profile_Help$next = function (student_profile_help) {
+	return _user$project$Student_Profile_Help$StudentProfileHelp(
+		_user$project$Help_PopUp$next(
+			_user$project$Student_Profile_Help$help(student_profile_help)));
 };
-var _user$project$Menu_Item$linkText = function (_p2) {
-	var _p3 = _p2;
-	return _p3._1;
+var _user$project$Student_Profile_Help$prev = function (student_profile_help) {
+	return _user$project$Student_Profile_Help$StudentProfileHelp(
+		_user$project$Help_PopUp$prev(
+			_user$project$Student_Profile_Help$help(student_profile_help)));
 };
-var _user$project$Menu_Item$uri = function (_p4) {
-	var _p5 = _p4;
-	return _p5._0;
-};
-var _user$project$Menu_Item$selected = function (_p6) {
-	var _p7 = _p6;
-	return _p7._2;
-};
-var _user$project$Menu_Item$MenuItem = F4(
-	function (a, b, c, d) {
-		return {ctor: 'MenuItem', _0: a, _1: b, _2: c, _3: d};
-	});
-var _user$project$Menu_Item$setHelpPopUp = F2(
-	function (_p8, help_popup) {
-		var _p9 = _p8;
-		return A4(
-			_user$project$Menu_Item$MenuItem,
-			_p9._0,
-			_p9._1,
-			_p9._2,
-			_elm_lang$core$Maybe$Just(help_popup));
-	});
-var _user$project$Menu_Item$setSelected = F2(
-	function (_p10, selected) {
-		var _p11 = _p10;
-		return A4(_user$project$Menu_Item$MenuItem, _p11._0, _p11._1, selected, _p11._3);
-	});
-
-var _user$project$Menu_Items$getItem = F2(
-	function (_p0, index) {
-		var _p1 = _p0;
-		return A2(_elm_lang$core$Array$get, index, _p1._0);
-	});
-var _user$project$Menu_Items$items = function (_p2) {
-	var _p3 = _p2;
-	return _p3._0;
-};
-var _user$project$Menu_Items$MenuItems = function (a) {
-	return {ctor: 'MenuItems', _0: a};
-};
-var _user$project$Menu_Items$menu_items = _user$project$Menu_Items$MenuItems(
-	_elm_lang$core$Array$fromList(
-		{
-			ctor: '::',
-			_0: A4(_user$project$Menu_Item$MenuItem, '/text/search', 'Search Texts', false, _elm_lang$core$Maybe$Nothing),
-			_1: {ctor: '[]'}
-		}));
-var _user$project$Menu_Items$setItem = F3(
-	function (_p4, item, index) {
-		var _p5 = _p4;
-		return _user$project$Menu_Items$MenuItems(
-			A3(_elm_lang$core$Array$set, index, item, _p5._0));
-	});
-var _user$project$Menu_Items$setSelected = F3(
-	function (_p6, index, select) {
-		var _p7 = _p6;
-		var _p9 = _p7._0;
-		var _p8 = A2(_elm_lang$core$Array$get, index, _p9);
-		if (_p8.ctor === 'Just') {
-			return _user$project$Menu_Items$MenuItems(
-				A3(
-					_elm_lang$core$Array$set,
-					index,
-					A2(_user$project$Menu_Item$setSelected, _p8._0, select),
-					_p9));
-		} else {
-			return _user$project$Menu_Items$MenuItems(_p9);
-		}
-	});
-
-
-var _user$project$Student_Profile_Flags$Flags = F3(
-	function (a, b, c) {
-		return {csrftoken: a, profile_id: b, welcome: c};
-	});
 
 var _user$project$Student_Profile_Model$UsernameUpdate = F3(
 	function (a, b, c) {
@@ -11213,55 +11041,68 @@ var _user$project$Menu_View$view_user_profile_menu_items = function (view) {
 		return {ctor: '[]'};
 	}
 };
-var _user$project$Menu_View$view_menu_item = function (menu_item) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$classList(
-				{
-					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
-					_1: {
+var _user$project$Menu_View$view_menu_item = F4(
+	function (selected, uri, link_text, addl_view) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
 						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'menu_item_selected',
-							_1: _user$project$Menu_Item$selected(menu_item)
-						},
-						_1: {ctor: '[]'}
+						_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'menu_item_selected', _1: selected},
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			},
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				function () {
+					var _p1 = addl_view;
+					if (_p1.ctor === 'Just') {
+						return _p1._0;
+					} else {
+						return {ctor: '[]'};
 					}
-				}),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$a,
+				}(),
 				{
 					ctor: '::',
 					_0: A2(
-						_elm_lang$html$Html_Attributes$attribute,
-						'href',
-						_user$project$Menu_Item$uri(menu_item)),
+						_elm_lang$html$Html$a,
+						{
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', uri),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(link_text),
+							_1: {ctor: '[]'}
+						}),
 					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(
-						_user$project$Menu_Item$linkText(menu_item)),
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		});
-};
+				}));
+	});
 var _user$project$Menu_View$view_menu = F3(
-	function (_p1, profile, top_level_menu_msg) {
-		var _p2 = _p1;
+	function (_p2, profile, top_level_menu_msg) {
+		var _p3 = _p2;
 		return A2(
 			_elm_lang$core$Basics_ops['++'],
 			_elm_lang$core$Array$toList(
-				A2(_elm_lang$core$Array$map, _user$project$Menu_View$view_menu_item, _p2._0)),
+				A2(
+					_elm_lang$core$Array$map,
+					function (item) {
+						return A4(
+							_user$project$Menu_View$view_menu_item,
+							_user$project$Menu_Item$selected(item),
+							_user$project$Menu_Item$uri(item),
+							_user$project$Menu_Item$linkText(item),
+							_elm_lang$core$Maybe$Nothing);
+					},
+					_p3._0)),
 			_user$project$Menu_View$view_user_profile_menu_items(
 				A2(_user$project$User_Profile$view_profile_header, profile, top_level_menu_msg)));
 	});
