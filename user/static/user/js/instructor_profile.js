@@ -9715,15 +9715,18 @@ var _user$project$Help_PopUp$currentMsg = function (help) {
 };
 var _user$project$Help_PopUp$nextMsg = function (help) {
 	var current_msg_index = _user$project$Help_PopUp$currentMsgIndex(help);
+	var next_msg_index = current_msg_index + 1;
 	var _p7 = A2(_user$project$Help_PopUp$getMsg, help, current_msg_index);
 	if (_p7.ctor === 'Just') {
-		var _p8 = A2(_user$project$Help_PopUp$getMsg, help, current_msg_index + 1);
+		var _p8 = A2(_user$project$Help_PopUp$getMsg, help, next_msg_index);
 		if (_p8.ctor === 'Just') {
-			return _elm_lang$core$Maybe$Just(_p8._0);
+			return _elm_lang$core$Maybe$Just(
+				{ctor: '_Tuple2', _0: _p8._0, _1: next_msg_index});
 		} else {
 			var _p9 = A2(_user$project$Help_PopUp$getMsg, help, 0);
 			if (_p9.ctor === 'Just') {
-				return _elm_lang$core$Maybe$Just(_p9._0);
+				return _elm_lang$core$Maybe$Just(
+					{ctor: '_Tuple2', _0: _p9._0, _1: 0});
 			} else {
 				return _elm_lang$core$Maybe$Nothing;
 			}
@@ -9734,18 +9737,21 @@ var _user$project$Help_PopUp$nextMsg = function (help) {
 };
 var _user$project$Help_PopUp$prevMsg = function (help) {
 	var current_msg_index = _user$project$Help_PopUp$currentMsgIndex(help);
+	var prev_msg_index = current_msg_index - 1;
 	var _p10 = A2(_user$project$Help_PopUp$getMsg, help, current_msg_index);
 	if (_p10.ctor === 'Just') {
-		var _p11 = A2(_user$project$Help_PopUp$getMsg, help, current_msg_index - 1);
+		var _p11 = A2(_user$project$Help_PopUp$getMsg, help, prev_msg_index);
 		if (_p11.ctor === 'Just') {
-			return _elm_lang$core$Maybe$Just(_p11._0);
+			return _elm_lang$core$Maybe$Just(
+				{ctor: '_Tuple2', _0: _p11._0, _1: prev_msg_index});
 		} else {
 			var last_msg_index = _elm_lang$core$Array$length(
 				_user$project$Help_PopUp$toArray(
 					_user$project$Help_PopUp$msgs(help))) - 1;
 			var _p12 = A2(_user$project$Help_PopUp$getMsg, help, last_msg_index);
 			if (_p12.ctor === 'Just') {
-				return _elm_lang$core$Maybe$Just(_p12._0);
+				return _elm_lang$core$Maybe$Just(
+					{ctor: '_Tuple2', _0: _p12._0, _1: last_msg_index});
 			} else {
 				return _elm_lang$core$Maybe$Nothing;
 			}
@@ -9772,7 +9778,7 @@ var _user$project$Help_PopUp$scrollToNextMsg = function (help) {
 	var _p16 = _user$project$Help_PopUp$nextMsg(help);
 	if (_p16.ctor === 'Just') {
 		return _user$project$Ports$scrollTo(
-			A2(_user$project$Help_PopUp$popupToID, help, _p16._0));
+			A2(_user$project$Help_PopUp$popupToID, help, _p16._0._0));
 	} else {
 		return _elm_lang$core$Platform_Cmd$none;
 	}
@@ -9781,7 +9787,7 @@ var _user$project$Help_PopUp$scrollToPrevMsg = function (help) {
 	var _p17 = _user$project$Help_PopUp$prevMsg(help);
 	if (_p17.ctor === 'Just') {
 		return _user$project$Ports$scrollTo(
-			A2(_user$project$Help_PopUp$popupToID, help, _p17._0));
+			A2(_user$project$Help_PopUp$popupToID, help, _p17._0._0));
 	} else {
 		return _elm_lang$core$Platform_Cmd$none;
 	}
@@ -9826,26 +9832,24 @@ var _user$project$Help_PopUp$setCurrentMsgIndex = F2(
 	});
 var _user$project$Help_PopUp$next = function (help) {
 	var current_msg_index = _user$project$Help_PopUp$currentMsgIndex(help);
-	var next_msg_index = current_msg_index + 1;
 	var _p23 = _user$project$Help_PopUp$nextMsg(help);
 	if (_p23.ctor === 'Just') {
 		return A2(
 			_user$project$Help_PopUp$setCurrentMsgIndex,
-			A3(_user$project$Help_PopUp$setVisible, help, _p23._0, true),
-			next_msg_index);
+			A3(_user$project$Help_PopUp$setVisible, help, _p23._0._0, true),
+			_p23._0._1);
 	} else {
 		return help;
 	}
 };
 var _user$project$Help_PopUp$prev = function (help) {
 	var current_msg_index = _user$project$Help_PopUp$currentMsgIndex(help);
-	var prev_msg_index = current_msg_index - 1;
 	var _p24 = _user$project$Help_PopUp$prevMsg(help);
 	if (_p24.ctor === 'Just') {
 		return A2(
 			_user$project$Help_PopUp$setCurrentMsgIndex,
-			A3(_user$project$Help_PopUp$setVisible, help, _p24._0, true),
-			prev_msg_index);
+			A3(_user$project$Help_PopUp$setVisible, help, _p24._0._0, true),
+			_p24._0._1);
 	} else {
 		return help;
 	}

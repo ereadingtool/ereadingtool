@@ -17,7 +17,6 @@ popupToID : Help help_msg -> help_msg -> HelpMsgID
 popupToID (Help _ popup_to_id _) help_msg =
   popup_to_id help_msg
 
-
 scrollToFirstMsg : Help help_msg -> Cmd msg
 scrollToFirstMsg help =
   case getMsg help 0 of
@@ -31,7 +30,7 @@ scrollToFirstMsg help =
 scrollToNextMsg : Help help_msg -> Cmd msg
 scrollToNextMsg help =
   case nextMsg help of
-    Just next_msg ->
+    Just (next_msg, _) ->
       Ports.scrollTo (popupToID help next_msg)
 
     -- no messages
@@ -41,7 +40,7 @@ scrollToNextMsg help =
 scrollToPrevMsg : Help help_msg -> Cmd msg
 scrollToPrevMsg help =
   case prevMsg help of
-    Just prev_msg ->
+    Just (prev_msg, _) ->
       Ports.scrollTo (popupToID help prev_msg)
 
     -- no messages
@@ -72,7 +71,6 @@ msgs (Help help_msgs _ _) =
 currentMsgIndex : Help help_msg -> Int
 currentMsgIndex (Help help_msg _ i) = i
 
-
 currentMsg : Help help_msg -> Maybe help_msg
 currentMsg help =
   let
@@ -80,23 +78,23 @@ currentMsg help =
   in
     getMsg help current_msg_index
 
-
-nextMsg : Help help_msg -> Maybe help_msg
+nextMsg : Help help_msg -> Maybe (help_msg, Int)
 nextMsg help =
   let
     current_msg_index = currentMsgIndex help
+    next_msg_index = current_msg_index + 1
   in
     case getMsg help current_msg_index of
       Just current_msg ->
-        case getMsg help (current_msg_index+1) of
+        case getMsg help next_msg_index of
           Just next_msg ->
-            Just next_msg
+            Just (next_msg, next_msg_index)
 
           -- loop back
           Nothing ->
             case getMsg help 0 of
               Just first_msg ->
-                Just first_msg
+                Just (first_msg, 0)
 
               -- no first msg
               Nothing ->
@@ -106,16 +104,17 @@ nextMsg help =
       Nothing ->
          Nothing
 
-prevMsg : Help help_msg -> Maybe help_msg
+prevMsg : Help help_msg -> Maybe (help_msg, Int)
 prevMsg help =
   let
     current_msg_index = currentMsgIndex help
+    prev_msg_index = current_msg_index - 1
   in
     case getMsg help current_msg_index of
       Just current_msg ->
-        case getMsg help (current_msg_index-1) of
+        case getMsg help prev_msg_index of
           Just prev_msg ->
-            Just prev_msg
+            Just (prev_msg, prev_msg_index)
 
           -- go to end
           Nothing ->
@@ -124,7 +123,7 @@ prevMsg help =
             in
               case getMsg help last_msg_index of
                 Just last_msg ->
-                  Just last_msg
+                  Just (last_msg, last_msg_index)
 
                 -- no last index
                 Nothing ->
@@ -146,7 +145,6 @@ getMsg help index =
       Nothing ->
         Nothing
 
-
 setCurrentMsgIndex : Help help_msg -> Int -> Help help_msg
 setCurrentMsgIndex (Help help_msg msgs _) new_index =
   Help help_msg msgs new_index
@@ -155,38 +153,33 @@ next : Help help_msg -> Help help_msg
 next help =
   let
     current_msg_index = currentMsgIndex help
-    next_msg_index = current_msg_index + 1
   in
     case nextMsg help of
-      Just next_msg ->
+      Just (next_msg, next_msg_index) ->
         setCurrentMsgIndex (setVisible help next_msg True) next_msg_index
 
       -- no messages
       Nothing ->
         help
 
-
 prev : Help help_msg -> Help help_msg
 prev help =
   let
     current_msg_index = currentMsgIndex help
-    prev_msg_index = current_msg_index - 1
   in
     case prevMsg help of
-      Just prev_msg ->
+      Just (prev_msg, prev_msg_index) ->
         setCurrentMsgIndex (setVisible help prev_msg True) prev_msg_index
 
       -- no messages
       Nothing ->
         help
 
-
 setAllInvisible : HelpMsgs help_msg -> HelpMsgs help_msg
 setAllInvisible msgs =
   OrderedDict.fromList <| List.map
   (\(id, (help_msg, _)) -> (id, (help_msg, False)))
   (OrderedDict.toList <| msgs)
-
 
 setVisible : Help help_msg -> help_msg -> HelpMsgVisible -> Help help_msg
 setVisible help help_msg visible =
@@ -197,8 +190,6 @@ setVisible help help_msg visible =
   in
     setMsgs help new_msgs
 
--- HelpMsgs : OrderedDict HelpMsgID (StudentHelp, HelpMsgVisible)
--- type Help help_msg = Help (HelpMsgs help_msg) (help_msg -> HelpMsgID) CurrentHelpMsgIndex
 init : List help_msg -> (help_msg -> HelpMsgID) -> Help help_msg
 init help_msgs popup_to_id =
   let
