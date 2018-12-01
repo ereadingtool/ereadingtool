@@ -275,11 +275,11 @@ view_help_msg model =
   div [id "text_search_help_msg"] [
     div [] [
       Html.text
-        """TIP: Use this page to find texts for your proficiency level and on topics that are of interest to you."""
+        """Use this page to find texts for your proficiency level and on topics that are of interest to you."""
     ]
   , div [] [
       Html.text
-       """TIP: To walk through a demonstration of how the text and questions appear, please select Intermediate-Mid
+       """To walk through a demonstration of how the text and questions appear, please select Intermediate-Mid
        from the Difficulty tags and then Other from the the Topic tags, and Unread from the Status Filters.
        A text entitled Demo Text should appear at the top of the list.  Click on the title to go to this text."""
     ]
@@ -334,9 +334,8 @@ view_difficulty_filter_hint model =
 
 view_content : Model -> Html Msg
 view_content model =
-  div [id "text_search"] [
+  div [id "text_search"] <| (if model.flags.welcome then [view_help_msg model] else [] ) ++ [
     view_search_filters model
-  , view_help_msg model
   , view_search_results model.results
   , view_search_footer model
   ]

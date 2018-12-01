@@ -12538,7 +12538,7 @@ var _user$project$Main$view_help_msg = function (model) {
 				{ctor: '[]'},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text('TIP: Use this page to find texts for your proficiency level and on topics that are of interest to you.'),
+					_0: _elm_lang$html$Html$text('Use this page to find texts for your proficiency level and on topics that are of interest to you.'),
 					_1: {ctor: '[]'}
 				}),
 			_1: {
@@ -12548,7 +12548,7 @@ var _user$project$Main$view_help_msg = function (model) {
 					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text('TIP: To walk through a demonstration of how the text and questions appear, please select Intermediate-Mid\n       from the Difficulty tags and then Other from the the Topic tags, and Unread from the Status Filters.\n       A text entitled Demo Text should appear at the top of the list.  Click on the title to go to this text.'),
+						_0: _elm_lang$html$Html$text('To walk through a demonstration of how the text and questions appear, please select Intermediate-Mid\n       from the Difficulty tags and then Other from the the Topic tags, and Unread from the Status Filters.\n       A text entitled Demo Text should appear at the top of the list.  Click on the title to go to this text.'),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
@@ -13327,12 +13327,16 @@ var _user$project$Main$view_content = function (model) {
 			_0: _elm_lang$html$Html_Attributes$id('text_search'),
 			_1: {ctor: '[]'}
 		},
-		{
-			ctor: '::',
-			_0: _user$project$Main$view_search_filters(model),
-			_1: {
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			model.flags.welcome ? {
 				ctor: '::',
 				_0: _user$project$Main$view_help_msg(model),
+				_1: {ctor: '[]'}
+			} : {ctor: '[]'},
+			{
+				ctor: '::',
+				_0: _user$project$Main$view_search_filters(model),
 				_1: {
 					ctor: '::',
 					_0: _user$project$Main$view_search_results(model.results),
@@ -13342,8 +13346,7 @@ var _user$project$Main$view_content = function (model) {
 						_1: {ctor: '[]'}
 					}
 				}
-			}
-		});
+			}));
 };
 var _user$project$Main$view = function (model) {
 	return A2(
