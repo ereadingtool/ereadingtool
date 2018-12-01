@@ -52,8 +52,14 @@ class StudentPerformanceReport(object):
 
     @property
     def first_of_next_month(self):
-        return self.today_dt.replace(day=1, hour=0, minute=0, second=0, microsecond=0).replace(
-            month=self.today_dt.month+1)
+        first_of_this_month = self.today_dt.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+        if first_of_this_month.month == 12:
+            next_first_of_the_month = first_of_this_month.replace(year=first_of_this_month.year+1, month=1)
+        else:
+            next_first_of_the_month = first_of_this_month.replace(month=first_of_this_month.month+1)
+
+        return next_first_of_the_month
 
     @property
     def first_of_last_month(self):

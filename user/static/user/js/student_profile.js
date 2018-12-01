@@ -22624,7 +22624,18 @@ var _user$project$Views$view_footer = A2(
 			},
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html$text(''),
+				_0: A2(
+					_elm_lang$html$Html$a,
+					{
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', 'https://goo.gl/forms/Wn5wWVHdmBKOxsFt2'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Please give us feedback!'),
+						_1: {ctor: '[]'}
+					}),
 				_1: {ctor: '[]'}
 			}),
 		_1: {ctor: '[]'}

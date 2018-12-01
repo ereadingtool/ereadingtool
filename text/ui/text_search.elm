@@ -26,6 +26,10 @@ import Config exposing (..)
 
 import Profile.Flags as Flags
 
+import Help.View exposing (ArrowPlacement(..), ArrowPosition(..), view_hint_overlay)
+
+import TextSearch.Help exposing (TextSearchHelp)
+
 import Menu.Msg as MenuMsg
 import Menu.Logout
 
@@ -35,15 +39,24 @@ type Msg =
    AddDifficulty String Bool
  | SelectTag String Bool
  | TextSearch (Result Http.Error (List Text.Model.TextListItem))
+  -- help messages
+ | CloseHelp TextSearch.Help.TextHelp
+ | PrevHelp
+ | NextHelp
  | LogOut MenuMsg.Msg
  | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
 
-type alias Flags = Flags.Flags { text_difficulties: List Text.Model.TextDifficulty, text_tags: List String }
+
+type alias Flags = Flags.Flags {
+    text_difficulties: List Text.Model.TextDifficulty
+  , welcome: Bool
+  , text_tags: List String }
 
 type alias Model = {
     results : List Text.Model.TextListItem
   , profile : User.Profile.Profile
   , text_search : TextSearch
+  , help : TextSearch.Help.TextSearchHelp
   , flags : Flags }
 
 init : Flags -> (Model, Cmd Msg)
@@ -72,12 +85,15 @@ init flags =
 
         _ ->
           default_search)
+
+    text_search_help = TextSearch.Help.init
   in
     ({
       results=[]
     , profile=profile
     , text_search=text_search
-    , flags=flags
+    , help=text_search_help
+    , flags={ flags | welcome = True }
     }
     , update_results text_search)
 
@@ -122,6 +138,15 @@ update msg model =
           ({ model | results = texts }, Cmd.none)
         Err err -> let _ = Debug.log "error retrieving results" err in
           (model, Cmd.none)
+
+    CloseHelp help_msg ->
+      ({ model | help = (TextSearch.Help.setVisible model.help help_msg False) }, Cmd.none)
+
+    PrevHelp ->
+      ({ model | help = (TextSearch.Help.prev model.help) }, TextSearch.Help.scrollToPrevMsg model.help)
+
+    NextHelp ->
+      ({ model | help = (TextSearch.Help.next model.help) }, TextSearch.Help.scrollToNextMsg model.help)
 
     LogOut msg ->
         (model, User.Profile.logout model.profile model.flags.csrftoken LoggedOut)
@@ -182,13 +207,13 @@ view_search_filters : Model -> Html Msg
 view_search_filters model =
   div [id "text_search_filters"] [
     div [id "text_search_filters_label"] [ Html.text "Filters" ]
-  , div [class "search_filter"] [
+  , div [class "search_filter"] <| [
       div [class "search_filter_title"] [ Html.text "Difficulty" ]
     , div [] (view_difficulties (Text.Search.difficulty_search model.text_search))
-    ]
+    ] ++ view_difficulty_filter_hint model
   , div [class "search_filter"] [
       div [class "search_filter_title"] [ Html.text "Tags" ]
-    , div [] [view_tags (Text.Search.tag_search model.text_search)]
+    , div [] <| [view_tags (Text.Search.tag_search model.text_search)] ++ (view_topic_filter_hint model)
     ]
   ]
 
@@ -248,8 +273,64 @@ view_search_footer model =
 view_help_msg : Model -> Html Msg
 view_help_msg model =
   div [id "text_search_help_msg"] [
-    Html.text """TIP: Use this page to find texts for your proficiency level and on topics that are of interest to you."""
+    div [] [
+      Html.text
+        """TIP: Use this page to find texts for your proficiency level and on topics that are of interest to you."""
+    ]
+  , div [] [
+      Html.text
+       """TIP: To walk through a demonstration of how the text and questions appear, please select Intermediate-Mid
+       from the Difficulty tags and then Other from the the Topic tags, and Unread from the Status Filters.
+       A text entitled Demo Text should appear at the top of the list.  Click on the title to go to this text."""
+    ]
   ]
+
+
+view_topic_filter_hint : Model -> List (Html Msg)
+view_topic_filter_hint model =
+  let
+    topic_filter_help = TextSearch.Help.topic_filter_help
+
+    hint_attributes = {
+       id = TextSearch.Help.popupToID topic_filter_help
+     , visible = TextSearch.Help.isVisible model.help topic_filter_help
+     , text = TextSearch.Help.helpMsg topic_filter_help
+     , cancel_event = onClick (CloseHelp topic_filter_help)
+     , next_event = onClick NextHelp
+     , prev_event = onClick PrevHelp
+     , addl_attributes = [class "difficulty_filter_hint"]
+     , arrow_placement = ArrowUp ArrowLeft
+     }
+  in
+    if model.flags.welcome then
+      [
+        Help.View.view_hint_overlay hint_attributes
+      ]
+    else
+      []
+
+view_difficulty_filter_hint : Model -> List (Html Msg)
+view_difficulty_filter_hint model =
+  let
+    difficulty_filter_help = TextSearch.Help.difficulty_filter_help
+
+    hint_attributes = {
+       id = TextSearch.Help.popupToID difficulty_filter_help
+     , visible = TextSearch.Help.isVisible model.help difficulty_filter_help
+     , text = TextSearch.Help.helpMsg difficulty_filter_help
+     , cancel_event = onClick (CloseHelp difficulty_filter_help)
+     , next_event = onClick NextHelp
+     , prev_event = onClick PrevHelp
+     , addl_attributes = [class "difficulty_filter_hint"]
+     , arrow_placement = ArrowUp ArrowLeft
+     }
+  in
+    if model.flags.welcome then
+      [
+        Help.View.view_hint_overlay hint_attributes
+      ]
+    else
+      []
 
 view_content : Model -> Html Msg
 view_content model =

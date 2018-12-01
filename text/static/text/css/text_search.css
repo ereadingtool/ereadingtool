@@ -11,7 +11,7 @@
     font-size: 18px;
     font-weight: 200;
 
-    margin-top: 15px;
+    margin-top: 60px;
 
     grid-template-columns: 4% auto 4%;
 }
@@ -165,6 +165,10 @@
     display: grid;
 
     grid-template-rows: auto auto;
+}
+
+#text_search_help_msg > div {
+    margin-top: 5px;
 }
 
 

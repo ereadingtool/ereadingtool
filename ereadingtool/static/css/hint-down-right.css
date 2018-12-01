@@ -1,4 +1,4 @@
-.hint-down-left {
+.hint-down-right {
     display: grid;
     position: relative;
 
@@ -15,13 +15,14 @@
 
     font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 15px;
+    font-weight: 400;
 
     border: solid 0.5px lightgrey;
     border-radius: 25px;
     box-shadow: 0 1px 16px rgba(0,0,0,.1);
 }
 
-.hint-down-left:after {
+.hint-down-right:after {
     content: '';
     position: absolute;
     display: block;

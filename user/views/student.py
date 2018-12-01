@@ -31,11 +31,6 @@ class ElmLoadJsStudentView(LoginRequiredMixin, ElmLoadJsBaseView):
 
         context['elm']['profile_id'] = {'quote': False, 'safe': True, 'value': profile.id or 'null'}
 
-        context['elm']['welcome'] = {
-            'quote': False,
-            'safe': True,
-            'value': json.dumps(self.request.session.get('welcome', False))
-        }
 
         return context
 

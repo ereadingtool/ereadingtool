@@ -48,7 +48,9 @@ view_filter = div [classList [("filter_items", True)] ] [
 view_footer : Html msg
 view_footer = div [classList [("footer_items", True)] ] [
     div [classList [("footer", True), ("message", True)] ] [
-        Html.text ""
+        Html.a [attribute "href" "https://goo.gl/forms/Wn5wWVHdmBKOxsFt2"] [
+          Html.text "Please give us feedback!"
+        ]
     ]
  ]
 

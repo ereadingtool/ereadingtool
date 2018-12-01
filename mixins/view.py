@@ -31,6 +31,12 @@ class ElmLoadJsBaseView(TemplateView):
 
         context.setdefault('elm', {})
 
+        context['elm']['welcome'] = {
+            'quote': False,
+            'safe': True,
+            'value': json.dumps(self.request.session.get('welcome', False))
+        }
+
         return context
 
 
