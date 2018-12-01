@@ -274,6 +274,14 @@ view_help_msg : Model -> Html Msg
 view_help_msg model =
   div [id "text_search_help_msg"] [
     div [] [
+      Html.text "Welcome."
+    ]
+  , div [] [
+      Html.text """As you use this site, texts will be sorted into three categories:
+      Unread (ones that you’ve not yet read), In Progress (those that you started but haven’t finished),
+      and Previously Read (ones that you’ve read before). You can access and (re)read any of these texts at any time."""
+    ]
+  , div [] [
       Html.text
         """Use this page to find texts for your proficiency level and on topics that are of interest to you."""
     ]

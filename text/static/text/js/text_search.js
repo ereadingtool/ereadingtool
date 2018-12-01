@@ -12538,7 +12538,7 @@ var _user$project$Main$view_help_msg = function (model) {
 				{ctor: '[]'},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text('Use this page to find texts for your proficiency level and on topics that are of interest to you.'),
+					_0: _elm_lang$html$Html$text('Welcome.'),
 					_1: {ctor: '[]'}
 				}),
 			_1: {
@@ -12548,10 +12548,32 @@ var _user$project$Main$view_help_msg = function (model) {
 					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text('To walk through a demonstration of how the text and questions appear, please select Intermediate-Mid\n       from the Difficulty tags and then Other from the the Topic tags, and Unread from the Status Filters.\n       A text entitled Demo Text should appear at the top of the list.  Click on the title to go to this text.'),
+						_0: _elm_lang$html$Html$text('As you use this site, texts will be sorted into three categories:\n      Unread (ones that you’ve not yet read), In Progress (those that you started but haven’t finished),\n      and Previously Read (ones that you’ve read before). You can access and (re)read any of these texts at any time.'),
 						_1: {ctor: '[]'}
 					}),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Use this page to find texts for your proficiency level and on topics that are of interest to you.'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('To walk through a demonstration of how the text and questions appear, please select Intermediate-Mid\n       from the Difficulty tags and then Other from the the Topic tags, and Unread from the Status Filters.\n       A text entitled Demo Text should appear at the top of the list.  Click on the title to go to this text.'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}
 			}
 		});
 };
