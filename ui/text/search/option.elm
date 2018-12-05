@@ -1,5 +1,5 @@
-module Text.Search.Option exposing (SearchOption, SearchOptions, new_options, new_option, optionsToDict, dictToOptions
-  , selected, set_selected, label, options, value, selected_options, listToOptions)
+module Text.Search.Option exposing (SearchOption, SearchOptions, newOptions, newOption, optionsToDict, dictToOptions
+  , selected, setSelected, label, options, value, selectedOptions, listToOptions)
 
 import Dict exposing (Dict)
 
@@ -15,25 +15,25 @@ options : SearchOptions -> List SearchOption
 options (SearchOptions options) =
   options
 
-selected_options : SearchOptions -> List SearchOption
-selected_options search_options =
+selectedOptions : SearchOptions -> List SearchOption
+selectedOptions search_options =
   List.filter selected (options search_options)
 
-new_option : (Value, Label) -> Selected -> SearchOption
-new_option (value, label) selected =
+newOption : (Value, Label) -> Selected -> SearchOption
+newOption (value, label) selected =
   SearchOption value label selected
 
 value : SearchOption -> Value
 value (SearchOption value _ _) =
   value
 
-new_options : List (Value, Label) -> SearchOptions
-new_options options =
+newOptions : List (Value, Label) -> SearchOptions
+newOptions options =
   SearchOptions
-    (List.map (\(value, label) -> new_option (value, label) False) options)
+    (List.map (\(value, label) -> newOption (value, label) False) options)
 
-add_option : SearchOptions -> (Value, Label) -> SearchOptions
-add_option (SearchOptions options) (value, label) =
+addOption : SearchOptions -> (Value, Label) -> SearchOptions
+addOption (SearchOptions options) (value, label) =
   SearchOptions ((SearchOption value label False) :: options)
 
 optionsToDict : SearchOptions -> Dict String SearchOption
@@ -48,8 +48,8 @@ dictToOptions : Dict String SearchOption -> SearchOptions
 dictToOptions options =
   SearchOptions (Dict.values options)
 
-set_selected : SearchOption -> Bool -> SearchOption
-set_selected (SearchOption value label selected) new_selected =
+setSelected : SearchOption -> Bool -> SearchOption
+setSelected (SearchOption value label selected) new_selected =
   SearchOption value label new_selected
 
 selected : SearchOption -> Bool

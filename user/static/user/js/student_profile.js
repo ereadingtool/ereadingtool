@@ -22622,20 +22622,43 @@ var _user$project$Views$view_footer = A2(
 					}),
 				_1: {ctor: '[]'}
 			},
+			{ctor: '[]'}),
+		_1: {ctor: '[]'}
+	});
+var _user$project$Views$view_report_problem = A2(
+	_elm_lang$html$Html$div,
+	{ctor: '[]'},
+	{
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$a,
 			{
 				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$a,
-					{
-						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', 'https://goo.gl/forms/Wn5wWVHdmBKOxsFt2'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('Please give us feedback!'),
-						_1: {ctor: '[]'}
-					}),
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', 'https://goo.gl/forms/Wn5wWVHdmBKOxsFt2'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('Report a problem'),
+				_1: {ctor: '[]'}
+			}),
+		_1: {ctor: '[]'}
+	});
+var _user$project$Views$view_give_feedback = A2(
+	_elm_lang$html$Html$div,
+	{ctor: '[]'},
+	{
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$a,
+			{
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', 'https://goo.gl/forms/z5BKx36xBJR7XqQY2'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('Please give us feedback!'),
 				_1: {ctor: '[]'}
 			}),
 		_1: {ctor: '[]'}
@@ -23236,6 +23259,50 @@ var _user$project$Student_Profile_View$view_header = F3(
 		return _user$project$Views$view_header(
 			A4(_user$project$Student_Profile_View$view_menu, model, _user$project$Menu_Items$menu_items, top_level_menu_msg, help_msgs));
 	});
+var _user$project$Student_Profile_View$view_feedback_links = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('feedback'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$span,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('profile_item_title'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Contact'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$span,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('profile_item_value'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _user$project$Views$view_report_problem,
+						_1: {
+							ctor: '::',
+							_0: _user$project$Views$view_give_feedback,
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
 var _user$project$Student_Profile_View$view_my_performance_hint = function (model) {
 	var performance_help = _user$project$Student_Profile_Help$my_performance_help;
 	var hint_attributes = {
@@ -24151,26 +24218,30 @@ var _user$project$Main$view_content = function (model) {
 									_0: _user$project$Student_Profile_View$view_student_performance(model),
 									_1: {
 										ctor: '::',
-										_0: _user$project$Student_Profile_View$view_flashcards(model),
+										_0: _user$project$Student_Profile_View$view_feedback_links(model),
 										_1: {
 											ctor: '::',
-											_0: (!_elm_lang$core$String$isEmpty(model.err_str)) ? A2(
-												_elm_lang$html$Html$span,
-												{
-													ctor: '::',
-													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'error'),
-													_1: {ctor: '[]'}
-												},
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html$text('error: '),
-													_1: {
+											_0: _user$project$Student_Profile_View$view_flashcards(model),
+											_1: {
+												ctor: '::',
+												_0: (!_elm_lang$core$String$isEmpty(model.err_str)) ? A2(
+													_elm_lang$html$Html$span,
+													{
 														ctor: '::',
-														_0: _elm_lang$html$Html$text(model.err_str),
+														_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'error'),
 														_1: {ctor: '[]'}
-													}
-												}) : _elm_lang$html$Html$text(''),
-											_1: {ctor: '[]'}
+													},
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html$text('error: '),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html$text(model.err_str),
+															_1: {ctor: '[]'}
+														}
+													}) : _elm_lang$html$Html$text(''),
+												_1: {ctor: '[]'}
+											}
 										}
 									}
 								}

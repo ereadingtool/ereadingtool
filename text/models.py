@@ -9,6 +9,13 @@ from text.translations.mixins import TextSectionDefinitionsMixin
 
 from django.urls import reverse
 
+text_statuses = [
+    ('read', 'Read'),
+    ('unread', 'Unread'),
+    ('in_progress', 'In Progress'),
+    ('complete', 'Complete'),
+]
+
 
 class TextDifficulty(models.Model):
     class Meta:

@@ -335,6 +335,16 @@ view_my_performance_hint model =
     else
       []
 
+view_feedback_links : Model -> Html Msg
+view_feedback_links model =
+  div [class "feedback"] [
+    span [class "profile_item_title"] [ Html.text "Contact" ]
+  , span [class "profile_item_value"] [
+      Views.view_report_problem
+    , Views.view_give_feedback
+    ]
+  ]
+
 view_student_performance : Model -> Html Msg
 view_student_performance model =
   let

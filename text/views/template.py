@@ -7,7 +7,7 @@ from django.http import HttpResponse, HttpRequest
 from django.views.generic import TemplateView
 
 from mixins.view import ElmLoadJsView
-from text.models import Text, TextDifficulty
+from text.models import Text, TextDifficulty, text_statuses
 
 from user.instructor.models import Instructor
 
@@ -32,6 +32,12 @@ class TextSearchLoadElm(ElmLoadJsView):
             'quote': False,
             'safe': True,
             'value': json.dumps([tag.name for tag in Text.tag_choices()])
+        }
+
+        context['elm']['text_statuses'] = {
+            'quote': False,
+            'safe': True,
+            'value': json.dumps(text_statuses)
         }
 
         return context

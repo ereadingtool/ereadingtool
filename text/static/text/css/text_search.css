@@ -137,6 +137,29 @@
     filter: brightness(85%);
 }
 
+.text_status {
+    display: grid;
+    cursor: pointer;
+
+    border: solid 1px black;
+
+    margin-top: 2px;
+    padding: 5px 5px 5px 5px;
+
+    align-content: center;
+    justify-content: center;
+}
+
+.text_status_selected {
+    background-color: #f6f6f6;
+    filter: brightness(85%);
+}
+
+.text_status:hover {
+    background-color: #f6f6f6;
+    filter: brightness(85%);
+}
+
 .text_tag {
     cursor: pointer;
     margin: 5px 5px 5px 5px;

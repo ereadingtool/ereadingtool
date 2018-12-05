@@ -77,12 +77,17 @@ table td {
     margin-top: 10px;
 }
 
-.flashcards {
+.feedback {
     display: grid;
     grid-row: 5;
 
+    font-size: larger;
+
     grid-template-columns: auto;
     grid-template-rows: 25px 35px;
+}
+
+.flashcards {
 }
 
 .performance_report {

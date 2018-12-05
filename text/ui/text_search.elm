@@ -12,6 +12,7 @@ import Text.Search.Option
 
 import Text.Search.Tag exposing (TagSearch)
 import Text.Search.Difficulty exposing (DifficultySearch)
+import Text.Search.ReadingStatus exposing (TextReadStatusSearch)
 
 import Ports exposing (clearInputText)
 
@@ -30,6 +31,8 @@ import Help.View exposing (ArrowPlacement(..), ArrowPosition(..), view_hint_over
 
 import TextSearch.Help exposing (TextSearchHelp)
 
+import Text.Search.ReadingStatus exposing (TextReadStatus)
+
 import Menu.Msg as MenuMsg
 import Menu.Logout
 
@@ -38,17 +41,20 @@ import Menu.Logout
 type Msg =
    AddDifficulty String Bool
  | SelectTag String Bool
+ | SelectStatus TextReadStatus Bool
  | TextSearch (Result Http.Error (List Text.Model.TextListItem))
   -- help messages
  | CloseHelp TextSearch.Help.TextHelp
  | PrevHelp
  | NextHelp
+ -- site-wide messages
  | LogOut MenuMsg.Msg
  | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
 
 
 type alias Flags = Flags.Flags {
     text_difficulties: List Text.Model.TextDifficulty
+  , text_statuses: List (String, String)
   , welcome: Bool
   , text_tags: List String }
 
@@ -64,21 +70,24 @@ init flags =
   let
     tag_search =
       Text.Search.Tag.new "text_tag_search"
-        (Text.Search.Option.new_options (List.map (\tag -> (tag, tag)) flags.text_tags))
+        (Text.Search.Option.newOptions (List.map (\tag -> (tag, tag)) flags.text_tags))
 
     difficulty_search =
-      Text.Search.Difficulty.new "text_difficulty_search" (Text.Search.Option.new_options flags.text_difficulties)
+      Text.Search.Difficulty.new "text_difficulty_search" (Text.Search.Option.newOptions flags.text_difficulties)
 
     profile=User.Profile.init_profile flags
 
-    default_search = Text.Search.new text_api_endpoint tag_search difficulty_search
+    status_search =
+      Text.Search.ReadingStatus.new "text_status_search" (Text.Search.Option.newOptions flags.text_statuses)
+
+    default_search = Text.Search.new text_api_endpoint tag_search difficulty_search status_search
 
     text_search =
       (case profile of
         User.Profile.Student student_profile ->
           case Student.Profile.studentDifficultyPreference student_profile of
             Just difficulty ->
-              Text.Search.add_difficulty_to_search default_search (Tuple.first difficulty) True
+              Text.Search.addDifficultyToSearch default_search (Tuple.first difficulty) True
 
             _ ->
               default_search
@@ -104,7 +113,7 @@ subscriptions model =
 update_results : TextSearch -> Cmd Msg
 update_results text_search =
   let
-    filter_params = Text.Search.filter_params text_search
+    filter_params = Text.Search.filterParams text_search
     query_string = String.join "" [text_api_endpoint, "?"] ++ (String.join "&" filter_params)
     request = Http.get query_string Text.Decode.textListDecoder
   in
@@ -118,16 +127,19 @@ update msg model =
   case msg of
     AddDifficulty difficulty select ->
       let
-        new_text_search = Text.Search.add_difficulty_to_search model.text_search difficulty select
+        new_text_search = Text.Search.addDifficultyToSearch model.text_search difficulty select
       in
         ({ model | text_search = new_text_search, results = [] }, update_results new_text_search)
 
+    SelectStatus status selected ->
+      (model, Cmd.none)
+
     SelectTag tag_name selected ->
       let
-        tag_search = Text.Search.tag_search model.text_search
+        tag_search = Text.Search.tagSearch model.text_search
         tag_search_input_id = Text.Search.Tag.input_id tag_search
         new_tag_search = Text.Search.Tag.select_tag tag_search tag_name selected
-        new_text_search = Text.Search.set_tag_search model.text_search new_tag_search
+        new_text_search = Text.Search.setTagSearch model.text_search new_tag_search
       in
         ({ model | text_search = new_text_search, results = [] }
         , Cmd.batch [clearInputText tag_search_input_id, update_results new_text_search])
@@ -136,6 +148,7 @@ update msg model =
       case result of
         Ok texts ->
           ({ model | results = texts }, Cmd.none)
+
         Err err -> let _ = Debug.log "error retrieving results" err in
           (model, Cmd.none)
 
@@ -203,17 +216,38 @@ view_difficulties difficulty_search =
   in
     List.map view_difficulty <| List.map (\option -> (Text.Search.Option.value option, option)) difficulties
 
+view_statuses : TextReadStatusSearch -> List (Html Msg)
+view_statuses status_search =
+  let
+    statuses = Text.Search.ReadingStatus.options status_search
+    view_status (value, status_option) =
+      let
+        selected = Text.Search.Option.selected status_option
+        label = Text.Search.Option.label status_option
+        status = Text.Search.ReadingStatus.valueToStatus value
+      in
+        div [classList [("text_status", True), ("text_status_option_selected", selected)]
+            , onClick (SelectStatus status (not selected))] [
+          Html.text label
+        ]
+  in
+    List.map view_status <| List.map (\option -> (Text.Search.Option.value option, option)) statuses
+
 view_search_filters : Model -> Html Msg
 view_search_filters model =
   div [id "text_search_filters"] [
     div [id "text_search_filters_label"] [ Html.text "Filters" ]
   , div [class "search_filter"] <| [
       div [class "search_filter_title"] [ Html.text "Difficulty" ]
-    , div [] (view_difficulties (Text.Search.difficulty_search model.text_search))
+    , div [] (view_difficulties (Text.Search.difficultySearch model.text_search))
     ] ++ view_difficulty_filter_hint model
   , div [class "search_filter"] [
       div [class "search_filter_title"] [ Html.text "Tags" ]
-    , div [] <| [view_tags (Text.Search.tag_search model.text_search)] ++ (view_topic_filter_hint model)
+    , div [] <| [view_tags (Text.Search.tagSearch model.text_search)] ++ (view_topic_filter_hint model)
+    ]
+  , div [class "search_filter"] <| [
+      div [class "search_filter_title"] [ Html.text "Read Status" ]
+    , div [] (view_statuses (Text.Search.statusSearch model.text_search))
     ]
   ]
 

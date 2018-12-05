@@ -45,13 +45,25 @@ view_filter = div [classList [("filter_items", True)] ] [
      ]
  ]
 
+view_give_feedback : Html msg
+view_give_feedback =
+  div [] [
+    Html.a [attribute "href" "https://goo.gl/forms/z5BKx36xBJR7XqQY2"] [
+      Html.text "Please give us feedback!"
+    ]
+  ]
+
+view_report_problem : Html msg
+view_report_problem =
+  div [] [
+    Html.a [attribute "href" "https://goo.gl/forms/Wn5wWVHdmBKOxsFt2"] [
+      Html.text "Report a problem"
+    ]
+  ]
+
 view_footer : Html msg
 view_footer = div [classList [("footer_items", True)] ] [
-    div [classList [("footer", True), ("message", True)] ] [
-        Html.a [attribute "href" "https://goo.gl/forms/Wn5wWVHdmBKOxsFt2"] [
-          Html.text "Please give us feedback!"
-        ]
-    ]
+    div [classList [("footer", True), ("message", True)] ] []
  ]
 
 view_preview : Html msg

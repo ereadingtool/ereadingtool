@@ -17,7 +17,7 @@ new id options =
 
 selected_options : TagSearch -> List SearchOption
 selected_options (TagSearch _ options _) =
-  Text.Search.Option.selected_options options
+  Text.Search.Option.selectedOptions options
 
 optionsToDict : TagSearch -> Dict String SearchOption
 optionsToDict (TagSearch _ options _) =
@@ -30,7 +30,7 @@ select_tag ((TagSearch id options err) as tag_search) tag selected =
       Dict.update tag
       (\v -> case v of
         Just option ->
-          Just <| Text.Search.Option.set_selected option selected
+          Just <| Text.Search.Option.setSelected option selected
         Nothing -> Nothing) (optionsToDict tag_search)) err
 
 input_id : TagSearch -> String
