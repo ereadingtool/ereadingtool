@@ -13,7 +13,6 @@ text_statuses = [
     ('read', 'Read'),
     ('unread', 'Unread'),
     ('in_progress', 'In Progress'),
-    ('complete', 'Complete'),
 ]
 
 
