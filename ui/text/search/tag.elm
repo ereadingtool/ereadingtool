@@ -1,4 +1,4 @@
-module Text.Search.Tag exposing (TagSearch, new, optionsToDict, select_tag, input_id, filter_params)
+module Text.Search.Tag exposing (TagSearch, new, optionsToDict, select_tag, inputID, filterParams)
 
 import Search exposing (..)
 
@@ -33,9 +33,9 @@ select_tag ((TagSearch id options err) as tag_search) tag selected =
           Just <| Text.Search.Option.setSelected option selected
         Nothing -> Nothing) (optionsToDict tag_search)) err
 
-input_id : TagSearch -> String
-input_id (TagSearch id _ _) = id
+inputID : TagSearch -> String
+inputID (TagSearch id _ _) = id
 
-filter_params : TagSearch -> List String
-filter_params tag_search =
+filterParams : TagSearch -> List String
+filterParams tag_search =
   List.map (\opt -> String.join "" ["tag", "=", Text.Search.Option.value opt]) (selected_options tag_search)

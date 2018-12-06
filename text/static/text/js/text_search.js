@@ -11432,7 +11432,7 @@ var _user$project$Text_Search_Option$dictToOptions = function (options) {
 		_elm_lang$core$Dict$values(options));
 };
 
-var _user$project$Text_Search_Tag$input_id = function (_p0) {
+var _user$project$Text_Search_Tag$inputID = function (_p0) {
 	var _p1 = _p0;
 	return _p1._0;
 };
@@ -11444,7 +11444,7 @@ var _user$project$Text_Search_Tag$selected_options = function (_p4) {
 	var _p5 = _p4;
 	return _user$project$Text_Search_Option$selectedOptions(_p5._1);
 };
-var _user$project$Text_Search_Tag$filter_params = function (tag_search) {
+var _user$project$Text_Search_Tag$filterParams = function (tag_search) {
 	return A2(
 		_elm_lang$core$List$map,
 		function (opt) {
@@ -11660,11 +11660,16 @@ var _user$project$Text_Search$tagSearch = function (_p4) {
 	return _p5._1;
 };
 var _user$project$Text_Search$filterParams = function (text_search) {
-	var tag_filter_params = _user$project$Text_Search_Tag$filter_params(
+	var status_filter_params = _user$project$Text_Search_ReadingStatus$filterParams(
+		_user$project$Text_Search$statusSearch(text_search));
+	var tag_filter_params = _user$project$Text_Search_Tag$filterParams(
 		_user$project$Text_Search$tagSearch(text_search));
 	var difficulty_filter_params = _user$project$Text_Search_Difficulty$filterParams(
 		_user$project$Text_Search$difficultySearch(text_search));
-	return A2(_elm_lang$core$Basics_ops['++'], difficulty_filter_params, tag_filter_params);
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		difficulty_filter_params,
+		A2(_elm_lang$core$Basics_ops['++'], tag_filter_params, status_filter_params));
 };
 var _user$project$Text_Search$difficultyOptionsToDict = function (text_search) {
 	return _user$project$Text_Search_Difficulty$optionsToDict(
@@ -11682,10 +11687,15 @@ var _user$project$Text_Search$new = F4(
 	function (endpoint, tag_search, difficulty_search, status_search) {
 		return A4(_user$project$Text_Search$TextSearch, endpoint, tag_search, difficulty_search, status_search);
 	});
-var _user$project$Text_Search$setDifficultySearch = F2(
-	function (_p6, difficulty_search) {
+var _user$project$Text_Search$setStatusSearch = F2(
+	function (_p6, status_search) {
 		var _p7 = _p6;
-		return A4(_user$project$Text_Search$TextSearch, _p7._0, _p7._1, difficulty_search, _p7._3);
+		return A4(_user$project$Text_Search$TextSearch, _p7._0, _p7._1, _p7._2, status_search);
+	});
+var _user$project$Text_Search$setDifficultySearch = F2(
+	function (_p8, difficulty_search) {
+		var _p9 = _p8;
+		return A4(_user$project$Text_Search$TextSearch, _p9._0, _p9._1, difficulty_search, _p9._3);
 	});
 var _user$project$Text_Search$addDifficultyToSearch = F3(
 	function (text_search, difficulty, selected) {
@@ -11697,9 +11707,9 @@ var _user$project$Text_Search$addDifficultyToSearch = F3(
 		return A2(_user$project$Text_Search$setDifficultySearch, text_search, new_difficulty_search);
 	});
 var _user$project$Text_Search$setTagSearch = F2(
-	function (_p8, tag_search) {
-		var _p9 = _p8;
-		return A4(_user$project$Text_Search$TextSearch, _p9._0, tag_search, _p9._2, _p9._3);
+	function (_p10, tag_search) {
+		var _p11 = _p10;
+		return A4(_user$project$Text_Search$TextSearch, _p11._0, tag_search, _p11._2, _p11._3);
 	});
 
 
@@ -13067,7 +13077,7 @@ var _user$project$Main$view_difficulty_filter_hint = function (model) {
 var _user$project$Main$TextSearch = function (a) {
 	return {ctor: 'TextSearch', _0: a};
 };
-var _user$project$Main$update_results = function (text_search) {
+var _user$project$Main$updateResults = function (text_search) {
 	var filter_params = _user$project$Text_Search$filterParams(text_search);
 	var query_string = A2(
 		_elm_lang$core$Basics_ops['++'],
@@ -13139,7 +13149,7 @@ var _user$project$Main$init = function (flags) {
 				flags,
 				{welcome: true})
 		},
-		_1: _user$project$Main$update_results(text_search)
+		_1: _user$project$Main$updateResults(text_search)
 	};
 };
 var _user$project$Main$update = F2(
@@ -13156,13 +13166,25 @@ var _user$project$Main$update = F2(
 							text_search: new_text_search,
 							results: {ctor: '[]'}
 						}),
-					_1: _user$project$Main$update_results(new_text_search)
+					_1: _user$project$Main$updateResults(new_text_search)
 				};
 			case 'SelectStatus':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				var status_search = _user$project$Text_Search$statusSearch(model.text_search);
+				var new_status_search = A3(_user$project$Text_Search_ReadingStatus$selectStatus, status_search, _p4._0, _p4._1);
+				var new_text_search = A2(_user$project$Text_Search$setStatusSearch, model.text_search, new_status_search);
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							text_search: new_text_search,
+							results: {ctor: '[]'}
+						}),
+					_1: _user$project$Main$updateResults(new_text_search)
+				};
 			case 'SelectTag':
 				var tag_search = _user$project$Text_Search$tagSearch(model.text_search);
-				var tag_search_input_id = _user$project$Text_Search_Tag$input_id(tag_search);
+				var tag_search_input_id = _user$project$Text_Search_Tag$inputID(tag_search);
 				var new_tag_search = A3(_user$project$Text_Search_Tag$select_tag, tag_search, _p4._0, _p4._1);
 				var new_text_search = A2(_user$project$Text_Search$setTagSearch, model.text_search, new_tag_search);
 				return {
@@ -13179,7 +13201,7 @@ var _user$project$Main$update = F2(
 							_0: _user$project$Ports$clearInputText(tag_search_input_id),
 							_1: {
 								ctor: '::',
-								_0: _user$project$Main$update_results(new_text_search),
+								_0: _user$project$Main$updateResults(new_text_search),
 								_1: {ctor: '[]'}
 							}
 						})
@@ -13335,7 +13357,7 @@ var _user$project$Main$view_tags = function (tag_search) {
 				_1: {ctor: '[]'}
 			});
 	};
-	var tag_search_id = _user$project$Text_Search_Tag$input_id(tag_search);
+	var tag_search_id = _user$project$Text_Search_Tag$inputID(tag_search);
 	var tags = _user$project$Text_Search_Tag$optionsToDict(tag_search);
 	return A2(
 		_elm_lang$html$Html$div,

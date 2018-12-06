@@ -1,4 +1,4 @@
-from typing import TypeVar
+from typing import TypeVar, Dict
 
 from django.db import models
 from django.urls import reverse_lazy, reverse
@@ -20,7 +20,7 @@ class Student(Profile, models.Model):
                                               related_name='students')
 
     flashcards = models.OneToOneField(Flashcards, null=True, blank=True, related_name='student',
-                                      on_delete=models.CASCADE)
+                                      on_delete=models.SET_NULL)
 
     login_url = reverse_lazy('student-login')
 
@@ -51,7 +51,14 @@ class Student(Profile, models.Model):
             'flashcards': self.flashcards.to_dict() if self.flashcards else None
         }
 
-    def sections_complete_for(self, text: TypeVar('Text')) -> int:
+    def to_text_summary_dict(self, text: Text) -> Dict:
+        text_student_summary = text.to_student_summary_dict()
+
+        text_student_summary['text_sections_complete'] = self.sections_complete_for(text)
+
+        return text_student_summary
+
+    def sections_complete_for(self, text: Text) -> int:
         sections_complete = 0
 
         if self.text_readings.exclude(state=TextReadingStateMachine.complete.name).filter(text=text).exists():

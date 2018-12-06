@@ -150,7 +150,7 @@
     justify-content: center;
 }
 
-.text_status_selected {
+.text_status_option_selected {
     background-color: #f6f6f6;
     filter: brightness(85%);
 }

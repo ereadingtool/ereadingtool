@@ -104,14 +104,14 @@ init flags =
     , help=text_search_help
     , flags={ flags | welcome = True }
     }
-    , update_results text_search)
+    , updateResults text_search)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
-update_results : TextSearch -> Cmd Msg
-update_results text_search =
+updateResults : TextSearch -> Cmd Msg
+updateResults text_search =
   let
     filter_params = Text.Search.filterParams text_search
     query_string = String.join "" [text_api_endpoint, "?"] ++ (String.join "&" filter_params)
@@ -129,20 +129,25 @@ update msg model =
       let
         new_text_search = Text.Search.addDifficultyToSearch model.text_search difficulty select
       in
-        ({ model | text_search = new_text_search, results = [] }, update_results new_text_search)
+        ({ model | text_search = new_text_search, results = [] }, updateResults new_text_search)
 
     SelectStatus status selected ->
-      (model, Cmd.none)
+      let
+        status_search = Text.Search.statusSearch model.text_search
+        new_status_search = Text.Search.ReadingStatus.selectStatus status_search status selected
+        new_text_search = Text.Search.setStatusSearch model.text_search new_status_search
+      in
+        ({ model | text_search = new_text_search, results = [] }, updateResults new_text_search)
 
     SelectTag tag_name selected ->
       let
         tag_search = Text.Search.tagSearch model.text_search
-        tag_search_input_id = Text.Search.Tag.input_id tag_search
+        tag_search_input_id = Text.Search.Tag.inputID tag_search
         new_tag_search = Text.Search.Tag.select_tag tag_search tag_name selected
         new_text_search = Text.Search.setTagSearch model.text_search new_tag_search
       in
         ({ model | text_search = new_text_search, results = [] }
-        , Cmd.batch [clearInputText tag_search_input_id, update_results new_text_search])
+        , Cmd.batch [clearInputText tag_search_input_id, updateResults new_text_search])
 
     TextSearch result ->
       case result of
@@ -183,7 +188,7 @@ view_tags : TagSearch -> Html Msg
 view_tags tag_search =
   let
     tags = Text.Search.Tag.optionsToDict tag_search
-    tag_search_id = Text.Search.Tag.input_id tag_search
+    tag_search_id = Text.Search.Tag.inputID tag_search
     view_tag tag_search_option =
       let
         selected = Text.Search.Option.selected tag_search_option

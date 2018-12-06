@@ -6,6 +6,7 @@ from mixins.model import Timestamped, WriteLockable, WriteLocked
 from tag.models import Taggable
 
 from text.translations.mixins import TextSectionDefinitionsMixin
+from text.managers import TextWithReadingsManager
 
 from django.urls import reverse
 
@@ -46,6 +47,9 @@ class TextDifficulty(models.Model):
 
 
 class Text(Taggable, WriteLockable, Timestamped, models.Model):
+    objects = models.Manager()
+    objects_with_readings = TextWithReadingsManager()
+
     introduction = models.CharField(max_length=512, null=False, blank=False)
 
     title = models.CharField(max_length=255, null=False, blank=False)
@@ -179,58 +183,39 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
 
         return text
 
-    def to_student_summary_dict(self, student: Optional[TypeVar('Student')]=None) -> Dict:
-        return {
-            'id': self.pk,
-            'title': self.title,
-            'author': self.author,
-            'modified_dt': self.modified_dt.isoformat(),
-            'created_dt': self.created_dt.isoformat(),
-            'created_by': str(self.created_by),
-            'last_modified_by': str(self.last_modified_by) if self.last_modified_by else None,
-            'tags': [tag.name for tag in self.tags.all()],
-            'text_section_count': self.sections.count(),
-            'text_sections_complete': student.sections_complete_for(self) if student else None,
-            'uri': reverse('text', kwargs={'pk': self.pk}),
-            'difficulty': self.difficulty.name,
-            'write_locker': str(self.write_locker) if self.write_locker else None
-        }
+    def to_summary_dict(self) -> Dict:
+        text_dict = self.to_dict()
+
+        del text_dict['text_sections']
+        del text_dict['words']
+
+        text_dict['text_section_count'] = self.sections.count()
+
+        return text_dict
+
+    def to_student_summary_dict(self) -> Dict:
+        text_summary_dict = self.to_summary_dict()
+
+        text_summary_dict['uri'] = reverse('text', kwargs={'pk': self.pk})
+
+        return text_summary_dict
 
     def to_instructor_summary_dict(self) -> Dict:
-        return {
-            'id': self.pk,
-            'introduction': self.introduction,
-            'title': self.title,
-            'author': self.author,
-            'source': self.source,
-            'difficulty': self.difficulty.name,
-            'conclusion': self.conclusion,
-            'created_by': str(self.created_by),
-            'last_modified_by': str(self.last_modified_by) if self.last_modified_by else None,
-            'modified_dt': str(self.modified_dt),
-            'write_locker': str(self.write_locker) if self.write_locker else None,
-            'created_dt': str(self.created_dt.isoformat()),
-            'tags': [tag.name for tag in self.tags.all()],
-            'text_section_count': self.sections.count(),
-            'edit_uri': reverse('text-edit', kwargs={'pk': self.pk})
-        }
+        text_summary_dict = self.to_summary_dict()
+
+        text_summary_dict['edit_uri'] = reverse('text-edit', kwargs={'pk': self.pk})
+
+        return text_summary_dict
 
     def to_text_reading_dict(self) -> Dict:
-        return {
-            'id': self.pk,
-            'title': self.title,
-            'introduction': self.introduction,
-            'conclusion': self.conclusion,
-            'author': self.author,
-            'source': self.source,
-            'difficulty': self.difficulty.slug,
-            'created_by': str(self.created_by),
-            'last_modified_by': str(self.last_modified_by) if self.last_modified_by else None,
-            'tags': [tag.name for tag in self.tags.all()],
-            'modified_dt': self.modified_dt.isoformat(),
-            'created_dt': self.created_dt.isoformat(),
-            'text_sections': list(map(lambda section: section.to_text_reading_dict(), self.sections.all())),
-        }
+        text_dict = self.to_dict()
+
+        del text_dict['words']
+        del text_dict['write_locker']
+
+        text_dict['text_sections'] = list(map(lambda section: section.to_text_reading_dict(), self.sections.all()))
+
+        return text_dict
 
     def to_dict(self, text_sections: Optional[List]=None) -> Dict:
         return {

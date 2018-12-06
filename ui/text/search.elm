@@ -33,6 +33,10 @@ statusSearch : TextSearch -> TextReadStatusSearch
 statusSearch (TextSearch _ _ _ status_search) =
   status_search
 
+setStatusSearch : TextSearch -> TextReadStatusSearch -> TextSearch
+setStatusSearch (TextSearch endpoint tag_search difficulty_search _) status_search =
+  TextSearch endpoint tag_search difficulty_search status_search
+
 setDifficultySearch : TextSearch -> DifficultySearch -> TextSearch
 setDifficultySearch (TextSearch endpoint tag_search _ status_search) difficulty_search =
   TextSearch endpoint tag_search difficulty_search status_search
@@ -56,6 +60,7 @@ filterParams : TextSearch -> List String
 filterParams text_search =
   let
     difficulty_filter_params = Text.Search.Difficulty.filterParams (difficultySearch text_search)
-    tag_filter_params = Text.Search.Tag.filter_params (tagSearch text_search)
+    tag_filter_params = Text.Search.Tag.filterParams (tagSearch text_search)
+    status_filter_params = Text.Search.ReadingStatus.filterParams (statusSearch text_search)
   in
-    difficulty_filter_params ++ tag_filter_params
+    difficulty_filter_params ++ tag_filter_params ++ status_filter_params

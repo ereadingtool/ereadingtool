@@ -10,14 +10,13 @@ from django.http import HttpResponseNotAllowed
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.views.generic import View
-from django.db import models
 
 from mixins.model import WriteLocked
 from question.forms import QuestionForm, AnswerForm
 from question.models import Question
 
 from text.forms import TextForm, TextSectionForm, ModelForm
-from text.models import TextDifficulty, Text, TextSection
+from text.models import TextDifficulty, Text, TextSection, text_statuses
 
 
 class TextAPIView(LoginRequiredMixin, View):
@@ -205,23 +204,27 @@ class TextAPIView(LoginRequiredMixin, View):
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         text = None
         text_sections = None
+        filter_by = {}
+
+        student = request.user.student if hasattr(request.user, 'student') else None
+        instructor = request.user.instructor if hasattr(request.user, 'instructor') else None
+
+        all_difficulties = {difficulty: 1 for difficulty in TextDifficulty.difficulty_keys()}
+        all_tags = {tag.name: 1 for tag in Text.tag_choices()}
+        all_statuses = dict(text_statuses)
+
+        difficulties = request.GET.getlist('difficulty')
+        tags = request.GET.getlist('tag')
+        statuses = request.GET.getlist('status')
 
         if 'difficulties' in request.GET.keys():
             return HttpResponse(json.dumps({d.slug: d.name for d in TextDifficulty.objects.all()}))
 
-        student = request.user.student if hasattr(request.user, 'student') else None
-        filter_by = {}
-
-        all_difficulties = {difficulty: 1 for difficulty in TextDifficulty.difficulty_keys()}
-        all_tags = {tag.name: 1 for tag in Text.tag_choices()}
-
-        difficulties = request.GET.getlist('difficulty')
-        tags = request.GET.getlist('tag')
-
         valid_difficulties = all(list(map(lambda difficulty: difficulty in all_difficulties, difficulties)))
         valid_tags = all(list(map(lambda tag: tag in all_tags, tags)))
+        valid_statuses = all(list(map(lambda status: status in all_statuses, statuses)))
 
-        if not (valid_difficulties or valid_tags):
+        if not (valid_difficulties or valid_tags or valid_statuses):
             return HttpResponseServerError(
                 json.dumps(
                     {'errors': {'text': "something went wrong"}}), status=400)
@@ -243,19 +246,31 @@ class TextAPIView(LoginRequiredMixin, View):
         if 'text_words' in request.GET.keys() and text is not None:
             return HttpResponse(json.dumps(text.text_words))
 
-        if 'difficulty' in request.GET.keys():
+        if difficulties:
             filter_by['difficulty__slug__in'] = difficulties
 
-        if 'tag' in request.GET.keys():
+        if tags:
             filter_by['tags__name__in'] = tags
 
         if 'pk' in kwargs:
             return HttpResponse(json.dumps(text.to_dict(text_sections=text_sections)))
         else:
-            texts = [text.to_student_summary_dict(student=student)
-                     for text in self.model.objects.annotate(
-                    num_of_readings=models.Count('studenttextreading')).order_by(
-                    'num_of_readings').filter(**filter_by)]
+            queryset = self.model.objects.filter(**filter_by)
+            statuses_set = set(statuses)
+
+            if statuses and not statuses_set == set(all_statuses):
+                if 'read' in statuses_set:
+                    filter_by['num_of_complete__gte'] = 1
+
+                if 'unread' in statuses_set:
+                    filter_by['num_of_readings'] = 0
+
+                if 'in_progress' in statuses_set:
+                    filter_by['num_of_in_progress__gte'] = 1
+
+                queryset = self.model.objects_with_readings.where_student(student).filter(**filter_by)
+
+            texts = [student.to_text_summary_dict(text=txt) for txt in queryset]
 
             return HttpResponse(json.dumps(texts))
 
