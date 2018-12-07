@@ -191,6 +191,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
         del text_dict['words']
 
         text_dict['text_section_count'] = self.sections.count()
+        text_dict['difficulty'] = self.difficulty.name
 
         return text_dict
 
