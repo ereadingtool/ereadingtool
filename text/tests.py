@@ -1,7 +1,7 @@
 import json
 import collections
 from unittest import skip
-from typing import Dict, AnyStr, Optional, List
+from typing import Dict, AnyStr, Optional, List, Tuple
 
 import channels.layers
 from asgiref.sync import async_to_sync
@@ -296,17 +296,32 @@ class TestText(TestUser, TestCase):
 
         text['unread'] = self.create_text(diff_data={'title': 'unread', 'tags': ['Science/Technology']})
 
-        def test_status(statuses, expected_texts):
+        def test_status(statuses, expected_texts: List, addl_filters: List[Tuple]=None):
+            if addl_filters is None:
+                addl_filters = list()
+
             status_search = '&'.join([f'status={status}' for status in statuses])
 
-            resp = self.student.get(f'/api/text/?{status_search}')
+            addl_search = '&'.join([f'{k}={v}' for (k, v) in addl_filters])
+
+            resp = self.student.get(f'/api/text/?{status_search}&{addl_search}')
 
             self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
             resp_content = json.loads(resp.content.decode('utf8'))
 
-            self.assertSetEqual(set([txt['title'] for txt in resp_content]),
-                                set([txt.title for txt in expected_texts]))
+            if not expected_texts:
+                self.assertEquals(resp_content, expected_texts)
+            else:
+                self.assertSetEqual(set([txt['title'] for txt in resp_content]),
+                                    set([txt.title for txt in expected_texts]))
+
+        # test other filters will work with a status filter
+        test_status({'unread'}, [
+            text['unread']
+        ], addl_filters=[('tag', 'Science/Technology'), ('difficulty', 'intermediate_mid')])
+
+        test_status({'read'}, [], addl_filters=[('tag', 'Science/Technology'), ('difficulty', 'intermediate_mid')])
 
         # enumerate these combinations for now but we can break out hypothesis if it becomes unmanageable
 
@@ -648,6 +663,7 @@ class TestText(TestUser, TestCase):
         return {
             'title': 'text title',
             'introduction': 'an introduction to the text',
+            'difficulty': 'intermediate_mid',
             'conclusion': 'a conclusion to the text',
             'tags': ['Sports', 'Science/Technology', 'Other'],
             'author': 'author',
