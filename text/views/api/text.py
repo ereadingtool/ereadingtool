@@ -1,6 +1,6 @@
 import json
 import jsonschema
-from typing import TypeVar, Optional, List, Dict, AnyStr
+from typing import TypeVar, Optional, List, Dict, AnyStr, Union, Set
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
@@ -17,6 +17,23 @@ from question.models import Question
 
 from text.forms import TextForm, TextSectionForm, ModelForm
 from text.models import TextDifficulty, Text, TextSection, text_statuses
+
+
+Student = TypeVar('Student')
+Instructor = TypeVar('Instructor')
+
+
+def or_filters(filters):
+    status_filter = None
+
+    # OR our Q() objects
+    for f in filters:
+        if status_filter:
+            status_filter |= f
+        else:
+            status_filter = f
+
+    return status_filter
 
 
 class TextAPIView(LoginRequiredMixin, View):
@@ -206,8 +223,7 @@ class TextAPIView(LoginRequiredMixin, View):
         text_sections = None
         filter_by = {}
 
-        student = request.user.student if hasattr(request.user, 'student') else None
-        instructor = request.user.instructor if hasattr(request.user, 'instructor') else None
+        user = request.user.student if hasattr(request.user, 'student') else request.user.instructor
 
         all_difficulties = {difficulty: 1 for difficulty in TextDifficulty.difficulty_keys()}
         all_tags = {tag.name: 1 for tag in Text.tag_choices()}
@@ -255,51 +271,43 @@ class TextAPIView(LoginRequiredMixin, View):
         if 'pk' in kwargs:
             return HttpResponse(json.dumps(text.to_dict(text_sections=text_sections)))
         else:
-            def or_filters(filters):
-                status_filter = None
-
-                # OR our Q() objects
-                for f in filters:
-                    if status_filter:
-                        status_filter |= f
-                    else:
-                        status_filter = f
-
-                return status_filter
-
-            def get_queryset(status_set):
-                text_queryset = self.model.objects_with_readings.filter(**filter_by)
-                text_queryset_for_student = text_queryset.where_student(student).filter(**filter_by)
-                # (set of all texts) - (set of texts student has read)
-                unread_text_queryset_for_student = text_queryset.difference(text_queryset_for_student)
-
-                status_filters = []
-
-                # filter doesn't apply
-                if status_set == set(all_statuses):
-                    return text_queryset.filter(**filter_by)
-
-                if status_set == {'unread'}:
-                    return unread_text_queryset_for_student.filter(**filter_by)
-
-                if 'read' in status_set:
-                    status_filters.append(models.Q(num_of_complete__gte=1))
-
-                if 'in_progress' in status_set:
-                    status_filters.append(models.Q(num_of_in_progress__gte=1))
-
-                if 'unread' in status_set:
-                    # (set of unread texts by student) | (set of texts read by student that are in_progress or read)
-                    return unread_text_queryset_for_student.filter(**filter_by).union(
-                        text_queryset_for_student.filter(**filter_by).filter(or_filters(status_filters))
-                    )
-                else:
-                    # set of texts read by student that are in_progress or read
-                    return text_queryset_for_student.filter(or_filters(status_filters))
-
-            texts = [student.to_text_summary_dict(text=txt) for txt in get_queryset(set(statuses))]
+            texts = [user.to_text_summary_dict(text=txt) for txt in
+                     self.get_text_queryset(user, set(statuses), filter_by)]
 
             return HttpResponse(json.dumps(texts))
+
+    def get_text_queryset(self, user: Union[Student, Instructor], statuses: Set, filter_by: Dict):
+        all_statuses = dict(text_statuses)
+
+        text_queryset = user.text_search_queryset.filter(**filter_by)
+        text_queryset_for_user = user.text_search_queryset_for_user.filter(**filter_by)
+
+        # (set of all texts) - (set of texts user has read)
+        unread_text_queryset_for_user = text_queryset.difference(text_queryset_for_user)
+
+        status_filters = []
+
+        # filter doesn't apply
+        if statuses == set(all_statuses):
+            return text_queryset.filter(**filter_by)
+
+        if statuses == {'unread'}:
+            return unread_text_queryset_for_user.filter(**filter_by)
+
+        if 'read' in statuses:
+            status_filters.append(models.Q(num_of_complete__gte=1))
+
+        if 'in_progress' in statuses:
+            status_filters.append(models.Q(num_of_in_progress__gte=1))
+
+        if 'unread' in statuses:
+            # (set of unread texts by user) | (set of texts read by user that are in_progress or read)
+            return unread_text_queryset_for_user.filter(**filter_by).union(
+                text_queryset_for_user.filter(**filter_by).filter(or_filters(status_filters))
+            )
+        else:
+            # set of texts read by user that are in_progress or read
+            return text_queryset_for_user.filter(or_filters(status_filters))
 
     def validate_params(self, text_params: AnyStr, text: Optional[TypeVar('Text')]=None) -> (Dict, Dict, HttpResponse):
         errors = resp = text_sections_params = None

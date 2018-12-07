@@ -1,17 +1,15 @@
-from typing import TypeVar, Dict
+from typing import Dict
 
 from django.db import models
+from django.template import loader
 from django.urls import reverse_lazy, reverse
 
-from django.template import loader
-
+from flashcards.models import Flashcards
+from report.models import StudentPerformanceReport
 from text.models import TextDifficulty, Text
 from text_reading.base import TextReadingStateMachine
 from user.mixins.models import Profile
 from user.models import ReaderUser
-
-from report.models import StudentPerformanceReport
-from flashcards.models import Flashcards
 
 
 class Student(Profile, models.Model):
@@ -23,6 +21,14 @@ class Student(Profile, models.Model):
                                       on_delete=models.SET_NULL)
 
     login_url = reverse_lazy('student-login')
+
+    @property
+    def text_search_queryset(self):
+        return Text.objects_with_student_readings
+
+    @property
+    def text_search_queryset_for_user(self):
+        return self.text_search_queryset.where_student(self)
 
     @property
     def performance(self):

@@ -6,7 +6,7 @@ from mixins.model import Timestamped, WriteLockable, WriteLocked
 from tag.models import Taggable
 
 from text.translations.mixins import TextSectionDefinitionsMixin
-from text.managers import TextWithReadingsManager
+from text.managers import TextWithStudentReadingsManager, TextWithInstructorReadingsManager
 
 from django.urls import reverse
 
@@ -48,7 +48,8 @@ class TextDifficulty(models.Model):
 
 class Text(Taggable, WriteLockable, Timestamped, models.Model):
     objects = models.Manager()
-    objects_with_readings = TextWithReadingsManager()
+    objects_with_student_readings = TextWithStudentReadingsManager()
+    objects_with_instructor_readings = TextWithInstructorReadingsManager()
 
     introduction = models.CharField(max_length=512, null=False, blank=False)
 
