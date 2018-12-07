@@ -300,14 +300,20 @@ class TextAPIView(LoginRequiredMixin, View):
         if 'in_progress' in statuses:
             status_filters.append(models.Q(num_of_in_progress__gte=1))
 
+        status_filter = or_filters(status_filters)
+        text_queryset_for_user = text_queryset_for_user.filter(**filter_by)
+
+        if status_filter:
+            text_queryset_for_user = text_queryset_for_user.filter(status_filter)
+
         if 'unread' in statuses:
             # (set of unread texts by user) | (set of texts read by user that are in_progress or read)
             return unread_text_queryset_for_user.filter(**filter_by).union(
-                text_queryset_for_user.filter(**filter_by).filter(or_filters(status_filters))
+                text_queryset_for_user
             )
         else:
             # set of texts read by user that are in_progress or read
-            return text_queryset_for_user.filter(or_filters(status_filters))
+            return text_queryset_for_user
 
     def validate_params(self, text_params: AnyStr, text: Optional[TypeVar('Text')]=None) -> (Dict, Dict, HttpResponse):
         errors = resp = text_sections_params = None

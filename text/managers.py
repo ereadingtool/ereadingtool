@@ -59,4 +59,4 @@ class TextWithStudentReadingsManager(models.Manager):
         return queryset
 
     def where_student(self, student: Student):
-        return self.get_queryset().where_instructor(student)
+        return self.get_queryset().where_student(student)

@@ -27,6 +27,9 @@ value : SearchOption -> Value
 value (SearchOption value _ _) =
   value
 
+label : SearchOption -> Label
+label (SearchOption _ label _) = label
+
 newOptions : List (Value, Label) -> SearchOptions
 newOptions options =
   SearchOptions
@@ -54,6 +57,3 @@ setSelected (SearchOption value label selected) new_selected =
 
 selected : SearchOption -> Bool
 selected (SearchOption _ _ selected) = selected
-
-label : SearchOption -> String
-label (SearchOption _ label _) = label

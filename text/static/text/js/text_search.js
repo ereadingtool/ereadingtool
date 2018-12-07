@@ -11347,13 +11347,13 @@ var _user$project$Search$Error = F2(
 	});
 var _user$project$Search$emptyError = A2(_user$project$Search$Error, false, '');
 
-var _user$project$Text_Search_Option$label = function (_p0) {
+var _user$project$Text_Search_Option$selected = function (_p0) {
 	var _p1 = _p0;
-	return _p1._1;
+	return _p1._2;
 };
-var _user$project$Text_Search_Option$selected = function (_p2) {
+var _user$project$Text_Search_Option$label = function (_p2) {
 	var _p3 = _p2;
-	return _p3._2;
+	return _p3._1;
 };
 var _user$project$Text_Search_Option$value = function (_p4) {
 	var _p5 = _p4;
@@ -13420,11 +13420,10 @@ var _user$project$Main$AddDifficulty = F2(
 		return {ctor: 'AddDifficulty', _0: a, _1: b};
 	});
 var _user$project$Main$view_difficulties = function (difficulty_search) {
-	var view_difficulty = function (_p11) {
-		var _p12 = _p11;
-		var _p13 = _p12._1;
-		var label = _user$project$Text_Search_Option$label(_p13);
-		var selected = _user$project$Text_Search_Option$selected(_p13);
+	var view_difficulty = function (difficulty_search_option) {
+		var label = _user$project$Text_Search_Option$label(difficulty_search_option);
+		var value = _user$project$Text_Search_Option$value(difficulty_search_option);
+		var selected = _user$project$Text_Search_Option$selected(difficulty_search_option);
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -13442,7 +13441,7 @@ var _user$project$Main$view_difficulties = function (difficulty_search) {
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html_Events$onClick(
-						A2(_user$project$Main$AddDifficulty, _p12._0, !selected)),
+						A2(_user$project$Main$AddDifficulty, value, !selected)),
 					_1: {ctor: '[]'}
 				}
 			},
@@ -13453,19 +13452,7 @@ var _user$project$Main$view_difficulties = function (difficulty_search) {
 			});
 	};
 	var difficulties = _user$project$Text_Search_Difficulty$options(difficulty_search);
-	return A2(
-		_elm_lang$core$List$map,
-		view_difficulty,
-		A2(
-			_elm_lang$core$List$map,
-			function (option) {
-				return {
-					ctor: '_Tuple2',
-					_0: _user$project$Text_Search_Option$value(option),
-					_1: option
-				};
-			},
-			difficulties));
+	return A2(_elm_lang$core$List$map, view_difficulty, difficulties);
 };
 var _user$project$Main$view_search_filters = function (model) {
 	return A2(

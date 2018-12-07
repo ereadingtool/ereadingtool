@@ -211,9 +211,10 @@ view_difficulties : DifficultySearch -> List (Html Msg)
 view_difficulties difficulty_search =
   let
     difficulties = Text.Search.Difficulty.options difficulty_search
-    view_difficulty (value, difficulty_search_option) =
+    view_difficulty difficulty_search_option =
       let
         selected = Text.Search.Option.selected difficulty_search_option
+        value = Text.Search.Option.value difficulty_search_option
         label = Text.Search.Option.label difficulty_search_option
       in
         div [classList [("difficulty_option", True), ("difficulty_option_selected", selected)]
@@ -221,7 +222,7 @@ view_difficulties difficulty_search =
           Html.text label
         ]
   in
-    List.map view_difficulty <| List.map (\option -> (Text.Search.Option.value option, option)) difficulties
+    List.map view_difficulty difficulties
 
 view_statuses : TextReadStatusSearch -> List (Html Msg)
 view_statuses status_search =
