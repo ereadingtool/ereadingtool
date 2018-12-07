@@ -7,7 +7,7 @@ Student = TypeVar('Student')
 
 
 class TextWithReadingsQuerySet(models.QuerySet):
-    def where_student(self, student: Student):
+    def where_student(self, student: Student) -> models.QuerySet:
         return self.filter(studenttextreading__student=student)
 
 

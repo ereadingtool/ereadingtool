@@ -1,4 +1,5 @@
 import json
+import collections
 from unittest import skip
 from typing import Dict, AnyStr, Optional, List
 
@@ -18,6 +19,8 @@ from text.models import TextDifficulty, Text, TextSection
 from text_reading.base import TextReadingNotAllQuestionsAnswered
 from text_reading.models import StudentTextReading
 from user.student.models import Student
+
+from statemachine import State
 
 
 class TestText(TestUser, TestCase):
@@ -65,7 +68,7 @@ class TestText(TestUser, TestCase):
         self.assertNotIn('2', words)
         self.assertIn('руб', words)
 
-    # @skip('IP is banned for now')
+    @skip('IP is banned for now')
     def test_word_definition_background_job(self):
         test_data = self.get_test_data()
 
@@ -99,21 +102,15 @@ class TestText(TestUser, TestCase):
 
         self.assertTrue(text_section_word_translation.phrase)
 
-    def test_text_reading(self, student: Student=None) -> StudentTextReading:
-        # add an additional question for testing
+    def test_text_reading(self, text: Text=None, student: Student=None, final_state: State=None) -> StudentTextReading:
         test_data = self.get_test_data()
-
-        test_data['text_sections'][0]['questions'].append(self.gen_text_section_question_params(order=1))
-        num_of_questions = len(test_data['text_sections'][0]['questions'])
 
         if not student:
             _, _, student = self.new_student()
 
-        text_obj = self.create_text(diff_data=test_data)
+        text_obj = text or self.create_text(diff_data=test_data)
 
         text_sections = text_obj.sections.all()
-
-        self.assertEquals(text_sections[0].questions.count(), num_of_questions)
 
         text_reading = StudentTextReading.start(student=student, text=text_obj)
 
@@ -124,6 +121,9 @@ class TestText(TestUser, TestCase):
                                                   'complete_sections': 0,
                                                   'section_scores': 0,
                                                   'possible_section_scores': 0})
+
+        if final_state == text_reading.state_machine.intro:
+            return text_reading
 
         text_reading.next()
 
@@ -154,10 +154,14 @@ class TestText(TestUser, TestCase):
         self.assertEquals(text_reading.current_state, text_reading.state_machine.in_progress)
         self.assertEquals(text_reading.current_section, text_sections[1])
 
+        if final_state == text_reading.state_machine.in_progress:
+            return text_reading
+
         # and complete
         questions = text_sections[1].questions.all()
 
         text_reading.answer(questions[0].answers.all()[2])
+        text_reading.answer(questions[1].answers.all()[1])
 
         text_reading.next()
 
@@ -173,6 +177,8 @@ class TestText(TestUser, TestCase):
                                      'complete_sections': len(text_sections),
                                      'section_scores': 1,
                                      'possible_section_scores': total_num_of_questions})
+
+        self.assertEquals(text_reading.current_state, final_state)
 
         return text_reading
 
@@ -270,6 +276,68 @@ class TestText(TestUser, TestCase):
         text = Text.objects.get(pk=text_id)
 
         self.assertEquals(3, text.sections.count())
+
+    def test_get_text_by_status(self):
+        student = Student.objects.get()
+        reading_state_cls = StudentTextReading.state_machine_cls
+
+        text = collections.OrderedDict()
+
+        text['intro'] = self.create_text(diff_data={'title': 'stopped at intro',
+                                                    'tags': ['Other']})
+        text_one_reading = self.test_text_reading(text['intro'], student, reading_state_cls.intro)
+
+        text['in_progress'] = self.create_text(diff_data={'title': 'stopped at in_progress',
+                                                          'tags': ['Economics/Business', 'Medicine/Health Care']})
+        text_two_reading = self.test_text_reading(text['in_progress'], student, reading_state_cls.in_progress)
+
+        text['read'] = self.create_text(diff_data={'title': 'stopped at complete', 'tags': ['Sports']})
+        text_three_reading = self.test_text_reading(text['read'], student, reading_state_cls.complete)
+
+        text['unread'] = self.create_text(diff_data={'title': 'unread', 'tags': ['Science/Technology']})
+
+        def test_status(statuses, expected_texts):
+            status_search = '&'.join([f'status={status}' for status in statuses])
+
+            resp = self.student.get(f'/api/text/?{status_search}')
+
+            self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+            resp_content = json.loads(resp.content.decode('utf8'))
+
+            self.assertSetEqual(set([txt['title'] for txt in resp_content]),
+                                set([txt.title for txt in expected_texts]))
+
+        # enumerate these combinations for now but we can break out hypothesis if it becomes unmanageable
+
+        # set of all texts
+        test_status({'unread', 'read', 'in_progress'}, [
+            text for text in text.values()
+        ])
+
+        # unread
+        test_status({'unread'}, [
+            text['unread']
+        ])
+
+        # unread and in_progress
+        test_status({'unread', 'in_progress'},
+                    [text['intro'],
+                     text['in_progress'],
+                     text['unread']])
+
+        # read and in_progress
+        test_status({'read', 'in_progress'}, [
+            text['read'],
+            text['intro'],
+            text['in_progress']
+        ])
+
+        # read and unread
+        test_status({'read', 'unread'}, [
+            text['read'],
+            text['unread']
+        ])
 
     def test_get_text_by_tag_or(self):
         student = Student.objects.get()
@@ -559,11 +627,21 @@ class TestText(TestUser, TestCase):
                    'order': 3, 'feedback': 'Answer 4 Feedback.'}
                   ], 'question_type': self.gen_question_type()}
 
+    def add_questions_to_test_data(self, test_data: Dict, section: int, num_of_questions: int) -> Dict:
+        first_question = test_data['text_sections'][section]['questions'][0]
+        end_index = first_question['order'] + 1 + num_of_questions
+
+        for i in range(first_question['order']+1, end_index):
+            test_data['text_sections'][section]['questions'].append(self.gen_text_section_question_params(order=i))
+
+        return test_data
+
     def gen_text_section_params(self, order: int, question_params: Optional[List[Dict]]=None) -> Dict:
         return {
             'order': order,
             'body': f'<p style="text-align:center">section {order}</p>\n',
-            'questions': question_params or [self.gen_text_section_question_params(order=0)]
+            'questions': question_params or [self.gen_text_section_question_params(order=0),
+                                             self.gen_text_section_question_params(order=1)]
          }
 
     def get_test_data(self, section_params: Optional[List[Dict]]=None) -> Dict:
