@@ -63,6 +63,7 @@ type alias Model = {
   , profile : User.Profile.Profile
   , text_search : TextSearch
   , help : TextSearch.Help.TextSearchHelp
+  , error_msg : Maybe String
   , flags : Flags }
 
 init : Flags -> (Model, Cmd Msg)
@@ -102,6 +103,7 @@ init flags =
     , profile=profile
     , text_search=text_search
     , help=text_search_help
+    , error_msg=Nothing
     , flags={ flags | welcome = True }
     }
     , updateResults text_search)
@@ -155,7 +157,7 @@ update msg model =
           ({ model | results = texts }, Cmd.none)
 
         Err err -> let _ = Debug.log "error retrieving results" err in
-          (model, Cmd.none)
+          ({ model | error_msg = Just "An error occurred.  Please contact an administrator." }, Cmd.none)
 
     CloseHelp help_msg ->
       ({ model | help = (TextSearch.Help.setVisible model.help help_msg False) }, Cmd.none)
@@ -302,10 +304,17 @@ view_search_footer model =
   let
     results_length = List.length model.results
     entries = if results_length == 1 then "entry" else "entries"
+    success_txt = String.join " " ["Showing", toString results_length, entries]
+    txt = (case model.error_msg of
+             Just msg ->
+               msg
+
+             Nothing ->
+               success_txt)
   in
     div [id "footer_items"] [
       div [id "footer", class "message"] [
-          Html.text <| String.join " " ["Showing", toString results_length, entries]
+          Html.text txt
       ]
     ]
 
@@ -399,7 +408,7 @@ view_status_filter_hint model =
 
 view_content : Model -> Html Msg
 view_content model =
-  div [id "text_search"] <| (if model.flags.welcome then [view_help_msg model] else [] ) ++ [
+  div [id "text_search"] <| (if model.flags.welcome then [view_help_msg model] else []) ++ [
     view_search_filters model
   , view_search_results model.results
   , view_search_footer model

@@ -12698,6 +12698,30 @@ var _user$project$Main$view_help_msg = function (model) {
 var _user$project$Main$view_search_footer = function (model) {
 	var results_length = _elm_lang$core$List$length(model.results);
 	var entries = _elm_lang$core$Native_Utils.eq(results_length, 1) ? 'entry' : 'entries';
+	var success_txt = A2(
+		_elm_lang$core$String$join,
+		' ',
+		{
+			ctor: '::',
+			_0: 'Showing',
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$core$Basics$toString(results_length),
+				_1: {
+					ctor: '::',
+					_0: entries,
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+	var txt = function () {
+		var _p0 = model.error_msg;
+		if (_p0.ctor === 'Just') {
+			return _p0._0;
+		} else {
+			return success_txt;
+		}
+	}();
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -12720,23 +12744,7 @@ var _user$project$Main$view_search_footer = function (model) {
 				},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text(
-						A2(
-							_elm_lang$core$String$join,
-							' ',
-							{
-								ctor: '::',
-								_0: 'Showing',
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$core$Basics$toString(results_length),
-									_1: {
-										ctor: '::',
-										_0: entries,
-										_1: {ctor: '[]'}
-									}
-								}
-							})),
+					_0: _elm_lang$html$Html$text(txt),
 					_1: {ctor: '[]'}
 				}),
 			_1: {ctor: '[]'}
@@ -12745,11 +12753,11 @@ var _user$project$Main$view_search_footer = function (model) {
 var _user$project$Main$view_search_results = function (text_list_items) {
 	var view_search_result = function (text_item) {
 		var sections_complete = function () {
-			var _p0 = text_item.text_sections_complete;
-			if (_p0.ctor === 'Just') {
+			var _p1 = text_item.text_sections_complete;
+			if (_p1.ctor === 'Just') {
 				return A2(
 					_elm_lang$core$Basics_ops['++'],
-					_elm_lang$core$Basics$toString(_p0._0),
+					_elm_lang$core$Basics$toString(_p1._0),
 					A2(
 						_elm_lang$core$Basics_ops['++'],
 						' / ',
@@ -12762,9 +12770,9 @@ var _user$project$Main$view_search_results = function (text_list_items) {
 			}
 		}();
 		var tags = function () {
-			var _p1 = text_item.tags;
-			if (_p1.ctor === 'Just') {
-				return A2(_elm_lang$core$String$join, ', ', _p1._0);
+			var _p2 = text_item.tags;
+			if (_p2.ctor === 'Just') {
+				return A2(_elm_lang$core$String$join, ', ', _p2._0);
 			} else {
 				return '';
 			}
@@ -13006,9 +13014,9 @@ var _user$project$Main$view_search_results = function (text_list_items) {
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
-var _user$project$Main$Model = F5(
-	function (a, b, c, d, e) {
-		return {results: a, profile: b, text_search: c, help: d, flags: e};
+var _user$project$Main$Model = F6(
+	function (a, b, c, d, e, f) {
+		return {results: a, profile: b, text_search: c, help: d, error_msg: e, flags: f};
 	});
 var _user$project$Main$LoggedOut = function (a) {
 	return {ctor: 'LoggedOut', _0: a};
@@ -13138,14 +13146,14 @@ var _user$project$Main$init = function (flags) {
 				flags.text_tags)));
 	var default_search = A4(_user$project$Text_Search$new, _user$project$Config$text_api_endpoint, tag_search, difficulty_search, status_search);
 	var text_search = function () {
-		var _p2 = profile;
-		if (_p2.ctor === 'Student') {
-			var _p3 = _user$project$Student_Profile$studentDifficultyPreference(_p2._0);
-			if (_p3.ctor === 'Just') {
+		var _p3 = profile;
+		if (_p3.ctor === 'Student') {
+			var _p4 = _user$project$Student_Profile$studentDifficultyPreference(_p3._0);
+			if (_p4.ctor === 'Just') {
 				return A3(
 					_user$project$Text_Search$addDifficultyToSearch,
 					default_search,
-					_elm_lang$core$Tuple$first(_p3._0),
+					_elm_lang$core$Tuple$first(_p4._0),
 					true);
 			} else {
 				return default_search;
@@ -13161,6 +13169,7 @@ var _user$project$Main$init = function (flags) {
 			profile: profile,
 			text_search: text_search,
 			help: text_search_help,
+			error_msg: _elm_lang$core$Maybe$Nothing,
 			flags: _elm_lang$core$Native_Utils.update(
 				flags,
 				{welcome: true})
@@ -13170,10 +13179,10 @@ var _user$project$Main$init = function (flags) {
 };
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p4 = msg;
-		switch (_p4.ctor) {
+		var _p5 = msg;
+		switch (_p5.ctor) {
 			case 'AddDifficulty':
-				var new_text_search = A3(_user$project$Text_Search$addDifficultyToSearch, model.text_search, _p4._0, _p4._1);
+				var new_text_search = A3(_user$project$Text_Search$addDifficultyToSearch, model.text_search, _p5._0, _p5._1);
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -13186,7 +13195,7 @@ var _user$project$Main$update = F2(
 				};
 			case 'SelectStatus':
 				var status_search = _user$project$Text_Search$statusSearch(model.text_search);
-				var new_status_search = A3(_user$project$Text_Search_ReadingStatus$selectStatus, status_search, _p4._0, _p4._1);
+				var new_status_search = A3(_user$project$Text_Search_ReadingStatus$selectStatus, status_search, _p5._0, _p5._1);
 				var new_text_search = A2(_user$project$Text_Search$setStatusSearch, model.text_search, new_status_search);
 				return {
 					ctor: '_Tuple2',
@@ -13201,7 +13210,7 @@ var _user$project$Main$update = F2(
 			case 'SelectTag':
 				var tag_search = _user$project$Text_Search$tagSearch(model.text_search);
 				var tag_search_input_id = _user$project$Text_Search_Tag$inputID(tag_search);
-				var new_tag_search = A3(_user$project$Text_Search_Tag$select_tag, tag_search, _p4._0, _p4._1);
+				var new_tag_search = A3(_user$project$Text_Search_Tag$select_tag, tag_search, _p5._0, _p5._1);
 				var new_text_search = A2(_user$project$Text_Search$setTagSearch, model.text_search, new_tag_search);
 				return {
 					ctor: '_Tuple2',
@@ -13223,18 +13232,26 @@ var _user$project$Main$update = F2(
 						})
 				};
 			case 'TextSearch':
-				var _p5 = _p4._0;
-				if (_p5.ctor === 'Ok') {
+				var _p6 = _p5._0;
+				if (_p6.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{results: _p5._0}),
+							{results: _p6._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p6 = A2(_elm_lang$core$Debug$log, 'error retrieving results', _p5._0);
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					var _p7 = A2(_elm_lang$core$Debug$log, 'error retrieving results', _p6._0);
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								error_msg: _elm_lang$core$Maybe$Just('An error occurred.  Please contact an administrator.')
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
 				}
 			case 'CloseHelp':
 				return {
@@ -13242,7 +13259,7 @@ var _user$project$Main$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							help: A3(_user$project$TextSearch_Help$setVisible, model.help, _p4._0, false)
+							help: A3(_user$project$TextSearch_Help$setVisible, model.help, _p5._0, false)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -13273,11 +13290,11 @@ var _user$project$Main$update = F2(
 					_1: A3(_user$project$User_Profile$logout, model.profile, model.flags.csrftoken, _user$project$Main$LoggedOut)
 				};
 			default:
-				if (_p4._0.ctor === 'Ok') {
+				if (_p5._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: model,
-						_1: _user$project$Ports$redirect(_p4._0._0.redirect)
+						_1: _user$project$Ports$redirect(_p5._0._0.redirect)
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
@@ -13289,12 +13306,12 @@ var _user$project$Main$SelectStatus = F2(
 		return {ctor: 'SelectStatus', _0: a, _1: b};
 	});
 var _user$project$Main$view_statuses = function (status_search) {
-	var view_status = function (_p7) {
-		var _p8 = _p7;
-		var _p9 = _p8._1;
-		var status = _user$project$Text_Search_ReadingStatus$valueToStatus(_p8._0);
-		var label = _user$project$Text_Search_Option$label(_p9);
-		var selected = _user$project$Text_Search_Option$selected(_p9);
+	var view_status = function (_p8) {
+		var _p9 = _p8;
+		var _p10 = _p9._1;
+		var status = _user$project$Text_Search_ReadingStatus$valueToStatus(_p9._0);
+		var label = _user$project$Text_Search_Option$label(_p10);
+		var selected = _user$project$Text_Search_Option$selected(_p10);
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -13403,11 +13420,11 @@ var _user$project$Main$AddDifficulty = F2(
 		return {ctor: 'AddDifficulty', _0: a, _1: b};
 	});
 var _user$project$Main$view_difficulties = function (difficulty_search) {
-	var view_difficulty = function (_p10) {
-		var _p11 = _p10;
-		var _p12 = _p11._1;
-		var label = _user$project$Text_Search_Option$label(_p12);
-		var selected = _user$project$Text_Search_Option$selected(_p12);
+	var view_difficulty = function (_p11) {
+		var _p12 = _p11;
+		var _p13 = _p12._1;
+		var label = _user$project$Text_Search_Option$label(_p13);
+		var selected = _user$project$Text_Search_Option$selected(_p13);
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -13425,7 +13442,7 @@ var _user$project$Main$view_difficulties = function (difficulty_search) {
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html_Events$onClick(
-						A2(_user$project$Main$AddDifficulty, _p11._0, !selected)),
+						A2(_user$project$Main$AddDifficulty, _p12._0, !selected)),
 					_1: {ctor: '[]'}
 				}
 			},
