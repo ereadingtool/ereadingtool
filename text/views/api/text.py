@@ -289,7 +289,7 @@ class TextAPIView(LoginRequiredMixin, View):
 
         # filter doesn't apply
         if statuses == set(all_statuses):
-            return text_queryset.filter(**filter_by)
+            return text_queryset
 
         if statuses == {'unread'}:
             return unread_text_queryset_for_user.filter(**filter_by)
@@ -301,7 +301,6 @@ class TextAPIView(LoginRequiredMixin, View):
             status_filters.append(models.Q(num_of_in_progress__gte=1))
 
         status_filter = or_filters(status_filters)
-        text_queryset_for_user = text_queryset_for_user.filter(**filter_by)
 
         if status_filter:
             text_queryset_for_user = text_queryset_for_user.filter(status_filter)
@@ -312,8 +311,10 @@ class TextAPIView(LoginRequiredMixin, View):
                 text_queryset_for_user
             )
         else:
-            # set of texts read by user that are in_progress or read
-            return text_queryset_for_user
+            if statuses:
+                return text_queryset_for_user
+            else:
+                return text_queryset
 
     def validate_params(self, text_params: AnyStr, text: Optional[TypeVar('Text')]=None) -> (Dict, Dict, HttpResponse):
         errors = resp = text_sections_params = None

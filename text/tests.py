@@ -178,7 +178,8 @@ class TestText(TestUser, TestCase):
                                      'section_scores': 1,
                                      'possible_section_scores': total_num_of_questions})
 
-        self.assertEquals(text_reading.current_state, final_state)
+        if final_state:
+            self.assertEquals(text_reading.current_state, final_state)
 
         return text_reading
 
@@ -311,7 +312,7 @@ class TestText(TestUser, TestCase):
             resp_content = json.loads(resp.content.decode('utf8'))
 
             if not expected_texts:
-                self.assertEquals(resp_content, expected_texts)
+                self.assertEquals(set([txt['title'] for txt in resp_content]), set(expected_texts))
             else:
                 self.assertSetEqual(set([txt['title'] for txt in resp_content]),
                                     set([txt.title for txt in expected_texts]))
@@ -374,8 +375,8 @@ class TestText(TestUser, TestCase):
 
         resp_content = json.loads(resp.content.decode('utf8'))
 
-        self.assertListEqual(resp_content, [text_one.to_student_summary_dict(student=student),
-                                            text_two.to_student_summary_dict(student=student)])
+        self.assertListEqual(resp_content, [student.to_text_summary_dict(text_one),
+                                            student.to_text_summary_dict(text_two)])
 
     def test_put_text(self):
         test_data = self.get_test_data()
