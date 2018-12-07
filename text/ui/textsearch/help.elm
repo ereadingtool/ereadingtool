@@ -61,6 +61,7 @@ help_msgs : List TextHelp
 help_msgs = [
    difficulty_filter_help
  , topic_filter_help
+ , status_filter_help
  ]
 
 init : TextSearchHelp

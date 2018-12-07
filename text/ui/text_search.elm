@@ -253,7 +253,7 @@ view_search_filters model =
   , div [class "search_filter"] <| [
       div [class "search_filter_title"] [ Html.text "Read Status" ]
     , div [] (view_statuses (Text.Search.statusSearch model.text_search))
-    ]
+    ] ++ view_status_filter_hint model
   ]
 
 view_search_results : List Text.Model.TextListItem  -> Html Msg
@@ -316,11 +316,6 @@ view_help_msg model =
       Html.text "Welcome."
     ]
   , div [] [
-      Html.text """As you use this site, texts will be sorted into three categories:
-      Unread (ones that you’ve not yet read), In Progress (those that you started but haven’t finished),
-      and Previously Read (ones that you’ve read before). You can access and (re)read any of these texts at any time."""
-    ]
-  , div [] [
       Html.text
         """Use this page to find texts for your proficiency level and on topics that are of interest to you."""
     ]
@@ -369,6 +364,29 @@ view_difficulty_filter_hint model =
      , next_event = onClick NextHelp
      , prev_event = onClick PrevHelp
      , addl_attributes = [class "difficulty_filter_hint"]
+     , arrow_placement = ArrowUp ArrowLeft
+     }
+  in
+    if model.flags.welcome then
+      [
+        Help.View.view_hint_overlay hint_attributes
+      ]
+    else
+      []
+
+view_status_filter_hint : Model -> List (Html Msg)
+view_status_filter_hint model =
+  let
+    status_filter_help = TextSearch.Help.status_filter_help
+
+    hint_attributes = {
+       id = TextSearch.Help.popupToID status_filter_help
+     , visible = TextSearch.Help.isVisible model.help status_filter_help
+     , text = TextSearch.Help.helpMsg status_filter_help
+     , cancel_event = onClick (CloseHelp status_filter_help)
+     , next_event = onClick NextHelp
+     , prev_event = onClick PrevHelp
+     , addl_attributes = [class "status_filter_hint"]
      , arrow_placement = ArrowUp ArrowLeft
      }
   in
