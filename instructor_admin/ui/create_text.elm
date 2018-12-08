@@ -53,7 +53,7 @@ init flags = ({
       , profile=Instructor.Profile.init_profile flags.instructor_profile
       , text_component=Text.Component.emptyTextComponent
       , text_difficulties=[]
-      , text_translations_model=Text.Translations.Model.init { csrftoken=flags.csrftoken }
+      , text_translations_model=Nothing
       , tags=Dict.fromList []
       , selected_tab=TextTab
       , write_locked=False
@@ -75,6 +75,7 @@ textJSONtoComponent text =
       Task.attempt TextJSONDecode (case (Decode.decodeValue Text.Decode.textDecoder json) of
           Ok text ->
             Task.succeed (Text.Component.init text)
+
           Err err ->
             Task.fail err)
 
@@ -95,11 +96,16 @@ update msg model = case msg of
       (Text.Update.update msg model)
 
     Text.Create.TextTranslationMsg msg ->
-      let
-        (text_translations_model, text_translation_cmd) =
-          Text.Translations.Update.update TextTranslationMsg msg model.text_translations_model
-      in
-        ({ model | text_translations_model = text_translations_model }, text_translation_cmd)
+      case model.text_translations_model of
+        Just translation_model ->
+          let
+            (text_translations_model, text_translation_cmd) =
+              Text.Translations.Update.update TextTranslationMsg msg translation_model
+          in
+            ({ model | text_translations_model = Just text_translations_model }, text_translation_cmd)
+
+        Nothing ->
+          (model, Cmd.none)
 
     SubmitText ->
       let
@@ -145,6 +151,7 @@ update msg model = case msg of
                 ({ model |
                      text_component=text_component
                    , mode=EditMode
+                   , text_translations_model=Just (Text.Translations.Model.init {csrftoken=model.flags.csrftoken} text)
                    , success_msg=Just <| "editing '" ++ text.title ++ "' text"
                  }, Cmd.batch [
                       Text.Component.reinitialize_ck_editors text_component

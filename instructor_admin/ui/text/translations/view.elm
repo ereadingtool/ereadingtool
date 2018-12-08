@@ -1,5 +1,7 @@
 module Text.Translations.View exposing (..)
 
+import Array exposing (Array)
+
 import Text.Translations.Msg exposing (..)
 
 import Text.Translations.Model exposing (..)
@@ -13,6 +15,10 @@ import Dict exposing (Dict)
 import Text.Translations exposing (Word, Translation)
 
 import Text.Model
+import Text.Section.Model
+
+import HtmlParser
+import HtmlParser.Util
 
 
 view_correct_for_context : Bool -> List (Html msg)
@@ -147,9 +153,28 @@ view_letter_menu msg model =
           ]
         ]) (Dict.keys model.words))
 
-view_translations : (Msg -> msg) -> Model -> Html msg
-view_translations msg model =
-  div [id "translations_tab"] [
-    view_letter_menu msg model
-  , view_current_letter msg model
+view_section : (Msg -> msg) -> Model -> Text.Section.Model.TextSection -> Html msg
+view_section parent_msg model section =
+  div [class "text_section"] [
+    div [class "title"] [
+      Html.text ("Section " ++ (toString (section.order+1)))
+    ]
+  , div [class "body"] [
+      div [] (HtmlParser.Util.toVirtualDom <| HtmlParser.parse section.body)
+    ]
   ]
+
+
+view_translations : (Msg -> msg) -> Maybe Model -> Html msg
+view_translations msg translation_model =
+  case translation_model of
+    Just model ->
+      let
+        sections = Array.toList model.text.sections
+      in
+        div [id "translations_tab"] (List.map (view_section msg model) sections)
+
+    Nothing ->
+      div [id "translations_tab"] [
+        Html.text "No translations available"
+      ]

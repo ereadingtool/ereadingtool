@@ -85,7 +85,7 @@ type alias Model = {
   , error_msg : Maybe String
   , text_component : TextComponent
   , text_difficulties : List Text.Model.TextDifficulty
-  , text_translations_model: TextTranslations.Model
+  , text_translations_model: Maybe TextTranslations.Model
   , tags: Dict String String
   , write_locked: Bool
   , selected_tab: Tab }
@@ -100,6 +100,6 @@ type alias TextViewParams = {
   , write_locked: WriteLocked
   , mode: Mode
   , text_difficulties: List Text.Model.TextDifficulty
-  , text_translations_model: TextTranslations.Model
+  , text_translations_model: Maybe TextTranslations.Model
   , text_translation_msg: (Text.Translations.Msg.Msg -> Msg) }
 
