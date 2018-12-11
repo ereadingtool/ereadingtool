@@ -112,14 +112,11 @@ view_grammemes grammemes =
 view_grammemes_as_string : Dict String (Maybe String) -> String
 view_grammemes_as_string grammemes =
      String.join ", "
-  <| List.map
-       (\str -> case str of
-         Just s -> s
-         Nothing -> "")
+  <| List.map (Maybe.withDefault "")
   <| List.filter
        (\str -> case str of
-         Just str -> True
-         Nothing -> False)
+        Just _ -> True
+        Nothing -> False)
   <| List.map view_grammeme_as_string (Dict.toList grammemes)
 
 view_word_translation : (Msg -> msg) -> (Word, Text.Model.TextWord) -> Html msg

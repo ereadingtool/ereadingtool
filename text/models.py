@@ -11,9 +11,9 @@ from text.managers import TextWithStudentReadingsManager, TextWithInstructorRead
 from django.urls import reverse
 
 text_statuses = [
-    ('read', 'Read'),
     ('unread', 'Unread'),
     ('in_progress', 'In Progress'),
+    ('read', 'Read'),
 ]
 
 

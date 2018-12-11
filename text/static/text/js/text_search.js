@@ -13421,10 +13421,7 @@ var _user$project$Main$AddDifficulty = F2(
 	});
 var _user$project$Main$view_difficulties = function (difficulty_search) {
 	var view_difficulty = function (difficulty_search_option) {
-		var label = A2(
-			_elm_lang$core$Debug$log,
-			'label',
-			_user$project$Text_Search_Option$label(difficulty_search_option));
+		var label = _user$project$Text_Search_Option$label(difficulty_search_option);
 		var value = _user$project$Text_Search_Option$value(difficulty_search_option);
 		var selected = _user$project$Text_Search_Option$selected(difficulty_search_option);
 		return A2(
@@ -13455,7 +13452,6 @@ var _user$project$Main$view_difficulties = function (difficulty_search) {
 			});
 	};
 	var difficulties = _user$project$Text_Search_Difficulty$options(difficulty_search);
-	var _p11 = A2(_elm_lang$core$Debug$log, 'difficulty options', difficulties);
 	return A2(_elm_lang$core$List$map, view_difficulty, difficulties);
 };
 var _user$project$Main$view_search_filters = function (model) {

@@ -26,7 +26,6 @@ Instructor = TypeVar('Instructor')
 def or_filters(filters):
     status_filter = None
 
-    # OR our Q() objects
     for f in filters:
         if status_filter:
             status_filter |= f
@@ -57,9 +56,7 @@ class TextAPIView(LoginRequiredMixin, View):
         for i, text_section_param in enumerate(text_section_params):
             try:
                 text_section_instance = text_sections[i]
-            except IndexError:
-                text_section_instance = None
-            except TypeError:
+            except (IndexError, TypeError):
                 text_section_instance = None
 
             new_text_params, errors = TextAPIView.validate_text_section_param(
@@ -272,11 +269,11 @@ class TextAPIView(LoginRequiredMixin, View):
             return HttpResponse(json.dumps(text.to_dict(text_sections=text_sections)))
         else:
             texts = [user.to_text_summary_dict(text=txt) for txt in
-                     self.get_text_queryset(user, set(statuses), filter_by)]
+                     self.get_texts_queryset(user, set(statuses), filter_by)]
 
             return HttpResponse(json.dumps(texts))
 
-    def get_text_queryset(self, user: Union[Student, Instructor], statuses: Set, filter_by: Dict):
+    def get_texts_queryset(self, user: Union[Student, Instructor], statuses: Set, filter_by: Dict):
         all_statuses = dict(text_statuses)
 
         text_queryset = user.text_search_queryset.filter(**filter_by)
