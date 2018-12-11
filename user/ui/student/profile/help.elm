@@ -1,6 +1,6 @@
 module Student.Profile.Help exposing (..)
 
-import Help exposing (HelpMsgID, HelpMsgStr, HelpMsgVisible, CurrentHelpMsgIndex)
+import Help exposing (HelpMsgOverlayID, HelpMsgID, HelpMsgStr, HelpMsgVisible, CurrentHelpMsgIndex)
 
 import Help.PopUp exposing (Help)
 
@@ -56,11 +56,15 @@ help_msgs = [
 
 init : StudentProfileHelp
 init =
-  StudentProfileHelp (Help.PopUp.init help_msgs popupToID)
+  StudentProfileHelp (Help.PopUp.init help_msgs popupToOverlayID popupToID)
 
 help : StudentProfileHelp -> Help StudentHelp
 help (StudentProfileHelp student_help) =
   student_help
+
+helpID : StudentProfileHelp -> StudentHelp -> String
+helpID student_help help_msg =
+  Help.PopUp.helpID (help student_help) help_msg
 
 setVisible : StudentProfileHelp -> StudentHelp -> HelpMsgVisible -> StudentProfileHelp
 setVisible student_profile_help help_msg visible =
@@ -109,8 +113,8 @@ helpMsg help_msg =
       help
 
 popupToID : StudentHelp -> HelpMsgID
-popupToID help_popup =
-  case help_popup of
+popupToID help =
+  case help of
     UsernameHelp _ ->
       "username_hint"
 
@@ -125,3 +129,8 @@ popupToID help_popup =
 
     SearchTextsMenuItemHelp _ ->
       "search_text_menu_item_hint"
+
+
+popupToOverlayID : StudentHelp -> HelpMsgOverlayID
+popupToOverlayID help_popup =
+  (popupToID help_popup) ++ "_overlay"

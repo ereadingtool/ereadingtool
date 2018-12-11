@@ -5,16 +5,25 @@ import OrderedDict exposing (OrderedDict)
 
 import Ports
 
-import Help exposing (HelpMsgID, HelpMsgStr, HelpMsgVisible, CurrentHelpMsgIndex)
+import Help exposing (HelpMsgOverlayID, HelpMsgStr, HelpMsgID, HelpMsgVisible, CurrentHelpMsgIndex)
 
 
-type alias HelpMsgs help_msg = OrderedDict HelpMsgID (help_msg, HelpMsgVisible)
+type alias HelpMsgs help_msg = OrderedDict HelpMsgOverlayID (help_msg, HelpMsgVisible)
 
-type Help help_msg = Help (HelpMsgs help_msg) (help_msg -> HelpMsgID) CurrentHelpMsgIndex
+type Help help_msg =
+  Help (HelpMsgs help_msg) (help_msg -> HelpMsgOverlayID) (help_msg -> HelpMsgID) CurrentHelpMsgIndex
 
+
+helpID : Help help_msg -> help_msg -> HelpMsgID
+helpID (Help _ _ popup_to_id _) help_msg =
+  popup_to_id help_msg
+
+popupToOverlayID : Help help_msg -> help_msg -> HelpMsgOverlayID
+popupToOverlayID (Help _ popup_to_overlay_id _ _) help_msg =
+  popup_to_overlay_id help_msg
 
 popupToID : Help help_msg -> help_msg -> HelpMsgID
-popupToID (Help _ popup_to_id _) help_msg =
+popupToID (Help _ _ popup_to_id _) help_msg =
   popup_to_id help_msg
 
 scrollToFirstMsg : Help help_msg -> Cmd msg
@@ -47,13 +56,13 @@ scrollToPrevMsg help =
     Nothing ->
       Cmd.none
 
-toArray : HelpMsgs help_msg -> Array (HelpMsgID, (help_msg, HelpMsgVisible))
+toArray : HelpMsgs help_msg -> Array (HelpMsgOverlayID, (help_msg, HelpMsgVisible))
 toArray help_msgs =
   Array.fromList <| OrderedDict.toList help_msgs
 
 isVisible : Help help_msg -> help_msg -> HelpMsgVisible
 isVisible help msg =
-  case OrderedDict.get (popupToID help msg) (msgs help) of
+  case OrderedDict.get (popupToOverlayID help msg) (msgs help) of
     Just (help_msg, help_msg_visible) ->
       help_msg_visible
 
@@ -61,15 +70,15 @@ isVisible help msg =
       False
 
 setMsgs : Help help_msg -> HelpMsgs help_msg -> Help help_msg
-setMsgs (Help _ msg_to_id current_index) new_msgs =
-  Help new_msgs msg_to_id current_index
+setMsgs (Help _ msg_to_overlay_id msg_to_id current_index) new_msgs =
+  Help new_msgs msg_to_overlay_id msg_to_id current_index
 
-msgs : Help help_msg -> OrderedDict HelpMsgID (help_msg, HelpMsgVisible)
-msgs (Help help_msgs _ _) =
+msgs : Help help_msg -> OrderedDict HelpMsgOverlayID (help_msg, HelpMsgVisible)
+msgs (Help help_msgs _ _ _) =
   help_msgs
 
 currentMsgIndex : Help help_msg -> Int
-currentMsgIndex (Help help_msg _ i) = i
+currentMsgIndex (Help help_msg _ _ i) = i
 
 currentMsg : Help help_msg -> Maybe help_msg
 currentMsg help =
@@ -146,8 +155,8 @@ getMsg help index =
         Nothing
 
 setCurrentMsgIndex : Help help_msg -> Int -> Help help_msg
-setCurrentMsgIndex (Help help_msg msgs _) new_index =
-  Help help_msg msgs new_index
+setCurrentMsgIndex (Help help_msg popup_to_overlay_id popup_to_id _) new_index =
+  Help help_msg popup_to_overlay_id popup_to_id new_index
 
 next : Help help_msg -> Help help_msg
 next help =
@@ -184,24 +193,24 @@ setAllInvisible msgs =
 setVisible : Help help_msg -> help_msg -> HelpMsgVisible -> Help help_msg
 setVisible help help_msg visible =
   let
-    help_msg_id = popupToID help help_msg
+    help_msg_id = popupToOverlayID help help_msg
     help_msgs = setAllInvisible (msgs help)
     new_msgs = OrderedDict.insert help_msg_id (help_msg, visible) help_msgs
   in
     setMsgs help new_msgs
 
-init : List help_msg -> (help_msg -> HelpMsgID) -> Help help_msg
-init help_msgs popup_to_id =
+init : List help_msg -> (help_msg -> HelpMsgOverlayID) -> (help_msg -> HelpMsgID)-> Help help_msg
+init help_msgs popup_to_overlay_id popup_to_id =
   let
     initial_msgs =
          OrderedDict.fromList
-      <| List.map (\help_msg -> (popup_to_id help_msg, (help_msg, False)))
+      <| List.map (\help_msg -> (popup_to_overlay_id help_msg, (help_msg, False)))
          help_msgs
   in
     case List.head help_msgs of
       Just first_msg ->
-        setVisible (Help initial_msgs popup_to_id 0) first_msg True
+        setVisible (Help initial_msgs popup_to_overlay_id popup_to_id 0) first_msg True
 
       -- empty list of msgs
       Nothing ->
-        (Help initial_msgs popup_to_id 0)
+        (Help initial_msgs popup_to_overlay_id popup_to_id 0)

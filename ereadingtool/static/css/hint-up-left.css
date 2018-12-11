@@ -1,6 +1,7 @@
 .hint-up-left {
     display: grid;
     position: relative;
+    pointer-events: auto;
 
     grid-template-columns: 1fr 80% 1fr;
     grid-template-rows:  15px auto 35px;

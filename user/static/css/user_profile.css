@@ -187,24 +187,24 @@ table td {
     text-decoration: underline;
 }
 
-.username_hint {
+#username_hint {
     bottom: 200px;
 }
 
-.performance_hint {
+#my_performance_hint {
     bottom: 220px;
 }
 
-.difficulty_hint {
+#preferred_difficulty_hint {
     bottom: 280px;
 }
 
-.username_menu_item_hint {
+#username_menu_item_hint {
     left: 400px;
     top: 130px;
 }
 
-.search_menu_item_hint {
+#search_text_menu_item_hint {
     top: 50px;
 }
 

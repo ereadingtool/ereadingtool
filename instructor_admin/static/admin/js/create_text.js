@@ -24603,7 +24603,7 @@ var _user$project$Help_PopUp$setAllInvisible = function (msgs) {
 };
 var _user$project$Help_PopUp$currentMsgIndex = function (_p2) {
 	var _p3 = _p2;
-	return _p3._2;
+	return _p3._3;
 };
 var _user$project$Help_PopUp$msgs = function (_p4) {
 	var _p5 = _p4;
@@ -24678,7 +24678,7 @@ var _user$project$Help_PopUp$prevMsg = function (help) {
 var _user$project$Help_PopUp$popupToID = F2(
 	function (_p13, help_msg) {
 		var _p14 = _p13;
-		return _p14._1(help_msg);
+		return _p14._2(help_msg);
 	});
 var _user$project$Help_PopUp$scrollToFirstMsg = function (help) {
 	var _p15 = A2(_user$project$Help_PopUp$getMsg, help, 0);
@@ -24707,32 +24707,42 @@ var _user$project$Help_PopUp$scrollToPrevMsg = function (help) {
 		return _elm_lang$core$Platform_Cmd$none;
 	}
 };
+var _user$project$Help_PopUp$popupToOverlayID = F2(
+	function (_p18, help_msg) {
+		var _p19 = _p18;
+		return _p19._1(help_msg);
+	});
 var _user$project$Help_PopUp$isVisible = F2(
 	function (help, msg) {
-		var _p18 = A2(
+		var _p20 = A2(
 			_rnons$ordered_containers$OrderedDict$get,
-			A2(_user$project$Help_PopUp$popupToID, help, msg),
+			A2(_user$project$Help_PopUp$popupToOverlayID, help, msg),
 			_user$project$Help_PopUp$msgs(help));
-		if (_p18.ctor === 'Just') {
-			return _p18._0._1;
+		if (_p20.ctor === 'Just') {
+			return _p20._0._1;
 		} else {
 			return false;
 		}
 	});
-var _user$project$Help_PopUp$Help = F3(
-	function (a, b, c) {
-		return {ctor: 'Help', _0: a, _1: b, _2: c};
+var _user$project$Help_PopUp$helpID = F2(
+	function (_p21, help_msg) {
+		var _p22 = _p21;
+		return _p22._2(help_msg);
+	});
+var _user$project$Help_PopUp$Help = F4(
+	function (a, b, c, d) {
+		return {ctor: 'Help', _0: a, _1: b, _2: c, _3: d};
 	});
 var _user$project$Help_PopUp$setMsgs = F2(
-	function (_p19, new_msgs) {
-		var _p20 = _p19;
-		return A3(_user$project$Help_PopUp$Help, new_msgs, _p20._1, _p20._2);
+	function (_p23, new_msgs) {
+		var _p24 = _p23;
+		return A4(_user$project$Help_PopUp$Help, new_msgs, _p24._1, _p24._2, _p24._3);
 	});
 var _user$project$Help_PopUp$setVisible = F3(
 	function (help, help_msg, visible) {
 		var help_msgs = _user$project$Help_PopUp$setAllInvisible(
 			_user$project$Help_PopUp$msgs(help));
-		var help_msg_id = A2(_user$project$Help_PopUp$popupToID, help, help_msg);
+		var help_msg_id = A2(_user$project$Help_PopUp$popupToOverlayID, help, help_msg);
 		var new_msgs = A3(
 			_rnons$ordered_containers$OrderedDict$insert,
 			help_msg_id,
@@ -24741,56 +24751,56 @@ var _user$project$Help_PopUp$setVisible = F3(
 		return A2(_user$project$Help_PopUp$setMsgs, help, new_msgs);
 	});
 var _user$project$Help_PopUp$setCurrentMsgIndex = F2(
-	function (_p21, new_index) {
-		var _p22 = _p21;
-		return A3(_user$project$Help_PopUp$Help, _p22._0, _p22._1, new_index);
+	function (_p25, new_index) {
+		var _p26 = _p25;
+		return A4(_user$project$Help_PopUp$Help, _p26._0, _p26._1, _p26._2, new_index);
 	});
 var _user$project$Help_PopUp$next = function (help) {
 	var current_msg_index = _user$project$Help_PopUp$currentMsgIndex(help);
-	var _p23 = _user$project$Help_PopUp$nextMsg(help);
-	if (_p23.ctor === 'Just') {
+	var _p27 = _user$project$Help_PopUp$nextMsg(help);
+	if (_p27.ctor === 'Just') {
 		return A2(
 			_user$project$Help_PopUp$setCurrentMsgIndex,
-			A3(_user$project$Help_PopUp$setVisible, help, _p23._0._0, true),
-			_p23._0._1);
+			A3(_user$project$Help_PopUp$setVisible, help, _p27._0._0, true),
+			_p27._0._1);
 	} else {
 		return help;
 	}
 };
 var _user$project$Help_PopUp$prev = function (help) {
 	var current_msg_index = _user$project$Help_PopUp$currentMsgIndex(help);
-	var _p24 = _user$project$Help_PopUp$prevMsg(help);
-	if (_p24.ctor === 'Just') {
+	var _p28 = _user$project$Help_PopUp$prevMsg(help);
+	if (_p28.ctor === 'Just') {
 		return A2(
 			_user$project$Help_PopUp$setCurrentMsgIndex,
-			A3(_user$project$Help_PopUp$setVisible, help, _p24._0._0, true),
-			_p24._0._1);
+			A3(_user$project$Help_PopUp$setVisible, help, _p28._0._0, true),
+			_p28._0._1);
 	} else {
 		return help;
 	}
 };
-var _user$project$Help_PopUp$init = F2(
-	function (help_msgs, popup_to_id) {
+var _user$project$Help_PopUp$init = F3(
+	function (help_msgs, popup_to_overlay_id, popup_to_id) {
 		var initial_msgs = _rnons$ordered_containers$OrderedDict$fromList(
 			A2(
 				_elm_lang$core$List$map,
 				function (help_msg) {
 					return {
 						ctor: '_Tuple2',
-						_0: popup_to_id(help_msg),
+						_0: popup_to_overlay_id(help_msg),
 						_1: {ctor: '_Tuple2', _0: help_msg, _1: false}
 					};
 				},
 				help_msgs));
-		var _p25 = _elm_lang$core$List$head(help_msgs);
-		if (_p25.ctor === 'Just') {
+		var _p29 = _elm_lang$core$List$head(help_msgs);
+		if (_p29.ctor === 'Just') {
 			return A3(
 				_user$project$Help_PopUp$setVisible,
-				A3(_user$project$Help_PopUp$Help, initial_msgs, popup_to_id, 0),
-				_p25._0,
+				A4(_user$project$Help_PopUp$Help, initial_msgs, popup_to_overlay_id, popup_to_id, 0),
+				_p29._0,
 				true);
 		} else {
-			return A3(_user$project$Help_PopUp$Help, initial_msgs, popup_to_id, 0);
+			return A4(_user$project$Help_PopUp$Help, initial_msgs, popup_to_overlay_id, popup_to_id, 0);
 		}
 	});
 
@@ -25470,8 +25480,8 @@ var _user$project$Student_Profile_Flags$Flags = F3(
 		return {csrftoken: a, profile_id: b, welcome: c};
 	});
 
-var _user$project$Student_Profile_Help$popupToID = function (help_popup) {
-	var _p0 = help_popup;
+var _user$project$Student_Profile_Help$popupToID = function (help) {
+	var _p0 = help;
 	switch (_p0.ctor) {
 		case 'UsernameHelp':
 			return 'username_hint';
@@ -25484,6 +25494,12 @@ var _user$project$Student_Profile_Help$popupToID = function (help_popup) {
 		default:
 			return 'search_text_menu_item_hint';
 	}
+};
+var _user$project$Student_Profile_Help$popupToOverlayID = function (help_popup) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		_user$project$Student_Profile_Help$popupToID(help_popup),
+		'_overlay');
 };
 var _user$project$Student_Profile_Help$helpMsg = function (help_msg) {
 	var _p1 = help_msg;
@@ -25504,6 +25520,13 @@ var _user$project$Student_Profile_Help$help = function (_p2) {
 	var _p3 = _p2;
 	return _p3._0;
 };
+var _user$project$Student_Profile_Help$helpID = F2(
+	function (student_help, help_msg) {
+		return A2(
+			_user$project$Help_PopUp$helpID,
+			_user$project$Student_Profile_Help$help(student_help),
+			help_msg);
+	});
 var _user$project$Student_Profile_Help$isVisible = F2(
 	function (student_profile_help, msg) {
 		return A2(
@@ -25568,7 +25591,7 @@ var _user$project$Student_Profile_Help$StudentProfileHelp = function (a) {
 	return {ctor: 'StudentProfileHelp', _0: a};
 };
 var _user$project$Student_Profile_Help$init = _user$project$Student_Profile_Help$StudentProfileHelp(
-	A2(_user$project$Help_PopUp$init, _user$project$Student_Profile_Help$help_msgs, _user$project$Student_Profile_Help$popupToID));
+	A3(_user$project$Help_PopUp$init, _user$project$Student_Profile_Help$help_msgs, _user$project$Student_Profile_Help$popupToOverlayID, _user$project$Student_Profile_Help$popupToID));
 var _user$project$Student_Profile_Help$setVisible = F3(
 	function (student_profile_help, help_msg, visible) {
 		return _user$project$Student_Profile_Help$StudentProfileHelp(
@@ -27854,19 +27877,12 @@ var _user$project$Text_Translations_View$view_grammemes_as_string = function (gr
 		', ',
 		A2(
 			_elm_lang$core$List$map,
-			function (str) {
-				var _p5 = str;
-				if (_p5.ctor === 'Just') {
-					return _p5._0;
-				} else {
-					return '';
-				}
-			},
+			_elm_lang$core$Maybe$withDefault(''),
 			A2(
 				_elm_lang$core$List$filter,
 				function (str) {
-					var _p6 = str;
-					if (_p6.ctor === 'Just') {
+					var _p5 = str;
+					if (_p5.ctor === 'Just') {
 						return true;
 					} else {
 						return false;
@@ -27877,10 +27893,10 @@ var _user$project$Text_Translations_View$view_grammemes_as_string = function (gr
 					_user$project$Text_Translations_View$view_grammeme_as_string,
 					_elm_lang$core$Dict$toList(grammemes)))));
 };
-var _user$project$Text_Translations_View$view_grammeme = function (_p7) {
-	var _p8 = _p7;
-	var _p9 = _p8._1;
-	if (_p9.ctor === 'Just') {
+var _user$project$Text_Translations_View$view_grammeme = function (_p6) {
+	var _p7 = _p6;
+	var _p8 = _p7._1;
+	if (_p8.ctor === 'Just') {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -27890,13 +27906,13 @@ var _user$project$Text_Translations_View$view_grammeme = function (_p7) {
 			},
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html$text(_p8._0),
+				_0: _elm_lang$html$Html$text(_p7._0),
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html$text(' : '),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(_p9._0),
+						_0: _elm_lang$html$Html$text(_p8._0),
 						_1: {ctor: '[]'}
 					}
 				}
@@ -27992,9 +28008,9 @@ var _user$project$Text_Translations_View$view_add_translation = F2(
 									_1: {
 										ctor: '::',
 										_0: _elm_lang$html$Html_Events$onInput(
-											function (_p10) {
+											function (_p9) {
 												return msg(
-													A2(_user$project$Text_Translations_Msg$UpdateNewTranslationForTextWord, text_word, _p10));
+													A2(_user$project$Text_Translations_Msg$UpdateNewTranslationForTextWord, text_word, _p9));
 											}),
 										_1: {ctor: '[]'}
 									}
@@ -28043,8 +28059,8 @@ var _user$project$Text_Translations_View$view_add_translation = F2(
 			});
 	});
 var _user$project$Text_Translations_View$view_correct_for_context = function (correct) {
-	var _p11 = correct;
-	if (_p11 === true) {
+	var _p10 = correct;
+	if (_p10 === true) {
 		return {
 			ctor: '::',
 			_0: A2(
@@ -28150,8 +28166,8 @@ var _user$project$Text_Translations_View$view_text_word_translation = F3(
 	});
 var _user$project$Text_Translations_View$view_text_word_translations = F2(
 	function (msg, text_word) {
-		var _p12 = text_word.translations;
-		if (_p12.ctor === 'Just') {
+		var _p11 = text_word.translations;
+		if (_p11.ctor === 'Just') {
 			return A2(
 				_elm_lang$html$Html$div,
 				{
@@ -28164,7 +28180,7 @@ var _user$project$Text_Translations_View$view_text_word_translations = F2(
 					A2(
 						_elm_lang$core$List$map,
 						A2(_user$project$Text_Translations_View$view_text_word_translation, msg, text_word),
-						_p12._0),
+						_p11._0),
 					{
 						ctor: '::',
 						_0: A2(_user$project$Text_Translations_View$view_add_translation, msg, text_word),
@@ -28186,9 +28202,9 @@ var _user$project$Text_Translations_View$view_text_word_translations = F2(
 		}
 	});
 var _user$project$Text_Translations_View$view_word_translation = F2(
-	function (msg, _p13) {
-		var _p14 = _p13;
-		var _p15 = _p14._1;
+	function (msg, _p12) {
+		var _p13 = _p12;
+		var _p14 = _p13._1;
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -28207,7 +28223,7 @@ var _user$project$Text_Translations_View$view_word_translation = F2(
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(_p14._0),
+						_0: _elm_lang$html$Html$text(_p13._0),
 						_1: {ctor: '[]'}
 					}),
 				_1: {
@@ -28227,13 +28243,13 @@ var _user$project$Text_Translations_View$view_word_translation = F2(
 									'(',
 									A2(
 										_elm_lang$core$Basics_ops['++'],
-										_user$project$Text_Translations_View$view_grammemes_as_string(_p15.grammemes),
+										_user$project$Text_Translations_View$view_grammemes_as_string(_p14.grammemes),
 										')'))),
 							_1: {ctor: '[]'}
 						}),
 					_1: {
 						ctor: '::',
-						_0: A2(_user$project$Text_Translations_View$view_text_word_translations, msg, _p15),
+						_0: A2(_user$project$Text_Translations_View$view_text_word_translations, msg, _p14),
 						_1: {ctor: '[]'}
 					}
 				}
@@ -28249,8 +28265,8 @@ var _user$project$Text_Translations_View$view_current_letter = F2(
 				_1: {ctor: '[]'}
 			},
 			function () {
-				var _p16 = model.current_letter;
-				if (_p16.ctor === 'Just') {
+				var _p15 = model.current_letter;
+				if (_p15.ctor === 'Just') {
 					return A2(
 						_elm_lang$core$List$map,
 						_user$project$Text_Translations_View$view_word_translation(msg),
@@ -28258,7 +28274,7 @@ var _user$project$Text_Translations_View$view_current_letter = F2(
 							A2(
 								_elm_lang$core$Maybe$withDefault,
 								_elm_lang$core$Dict$empty,
-								A2(_elm_lang$core$Dict$get, _p16._0, model.words))));
+								A2(_elm_lang$core$Dict$get, _p15._0, model.words))));
 				} else {
 					return {ctor: '[]'};
 				}

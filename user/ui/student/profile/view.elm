@@ -196,13 +196,13 @@ view_username_hint model =
     username_help = Student.Profile.Help.username_help
 
     hint_attributes = {
-       id = Student.Profile.Help.popupToID username_help
+       id = Student.Profile.Help.popupToOverlayID username_help
      , visible = Student.Profile.Help.isVisible model.help username_help
      , text = Student.Profile.Help.helpMsg username_help
      , cancel_event = onClick (CloseHelp username_help)
      , next_event = onClick NextHelp
      , prev_event = onClick PrevHelp
-     , addl_attributes = [class "username_hint"]
+     , addl_attributes = [id (Student.Profile.Help.helpID model.help username_help)]
      , arrow_placement = ArrowDown ArrowLeft
      }
   in
@@ -274,13 +274,13 @@ view_difficulty_hint model =
     difficulty_help = Student.Profile.Help.preferred_difficulty_help
 
     hint_attributes = {
-       id = Student.Profile.Help.popupToID difficulty_help
+       id = Student.Profile.Help.popupToOverlayID difficulty_help
      , visible = Student.Profile.Help.isVisible model.help difficulty_help
      , text = Student.Profile.Help.helpMsg difficulty_help
      , cancel_event = onClick (CloseHelp difficulty_help)
      , next_event = onClick NextHelp
      , prev_event = onClick PrevHelp
-     , addl_attributes = [class "difficulty_hint"]
+     , addl_attributes = [id (Student.Profile.Help.helpID model.help difficulty_help)]
      , arrow_placement = ArrowDown ArrowLeft
      }
   in
@@ -318,13 +318,13 @@ view_my_performance_hint model =
     performance_help = Student.Profile.Help.my_performance_help
 
     hint_attributes = {
-       id = Student.Profile.Help.popupToID performance_help
+       id = Student.Profile.Help.popupToOverlayID performance_help
      , visible = Student.Profile.Help.isVisible model.help performance_help
      , text = Student.Profile.Help.helpMsg performance_help
      , cancel_event = onClick (CloseHelp performance_help)
      , next_event = onClick NextHelp
      , prev_event = onClick PrevHelp
-     , addl_attributes = [class "performance_hint"]
+     , addl_attributes = [id (Student.Profile.Help.helpID model.help performance_help)]
      , arrow_placement = ArrowDown ArrowLeft
      }
   in
@@ -369,13 +369,13 @@ view_username_menu_item_hint model help_msgs =
     username_menu_item_help = Student.Profile.Help.username_menu_item_help
 
     hint_attributes = {
-       id = Student.Profile.Help.popupToID username_menu_item_help
+       id = Student.Profile.Help.popupToOverlayID username_menu_item_help
      , visible = Student.Profile.Help.isVisible model.help username_menu_item_help
      , text = Student.Profile.Help.helpMsg username_menu_item_help
      , cancel_event = onClick (help_msgs.close username_menu_item_help)
      , next_event = onClick help_msgs.next
      , prev_event = onClick help_msgs.prev
-     , addl_attributes = [class "username_menu_item_hint"]
+     , addl_attributes = [id (Student.Profile.Help.helpID model.help username_menu_item_help)]
      , arrow_placement = ArrowUp ArrowRight
      }
   in
@@ -393,13 +393,13 @@ view_search_menu_item_hint model help_msgs =
     search_menu_item_help = Student.Profile.Help.search_menu_item_help
 
     hint_attributes = {
-       id = Student.Profile.Help.popupToID search_menu_item_help
+       id = Student.Profile.Help.popupToOverlayID search_menu_item_help
      , visible = Student.Profile.Help.isVisible model.help search_menu_item_help
      , text = Student.Profile.Help.helpMsg search_menu_item_help
      , cancel_event = onClick (help_msgs.close search_menu_item_help)
      , next_event = onClick help_msgs.next
      , prev_event = onClick help_msgs.prev
-     , addl_attributes = [class "search_menu_item_hint"]
+     , addl_attributes = [id (Student.Profile.Help.helpID model.help search_menu_item_help)]
      , arrow_placement = ArrowUp ArrowLeft
      }
   in

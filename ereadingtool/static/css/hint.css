@@ -1,5 +1,6 @@
 .hint_overlay {
     position: absolute;
+    pointer-events: none;
 }
 
 .invisible {

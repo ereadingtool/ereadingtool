@@ -1,6 +1,6 @@
 module TextSearch.Help exposing (..)
 
-import Help exposing (HelpMsgID, HelpMsgStr, HelpMsgVisible, CurrentHelpMsgIndex)
+import Help exposing (HelpMsgOverlayID, HelpMsgID, HelpMsgStr, HelpMsgVisible, CurrentHelpMsgIndex)
 
 import Help.PopUp exposing (Help)
 
@@ -44,6 +44,10 @@ helpMsg help_msg =
       help
 
 
+popupToOverlayID : TextHelp -> HelpMsgOverlayID
+popupToOverlayID help_popup =
+  (popupToID help_popup) ++ "_overlay"
+
 popupToID : TextHelp -> HelpMsgID
 popupToID help_popup =
   case help_popup of
@@ -66,7 +70,7 @@ help_msgs = [
 
 init : TextSearchHelp
 init =
-  TextSearchHelp (Help.PopUp.init help_msgs popupToID)
+  TextSearchHelp (Help.PopUp.init help_msgs popupToOverlayID popupToID)
 
 help : TextSearchHelp -> Help TextHelp
 help (TextSearchHelp student_help) =
