@@ -67,9 +67,6 @@ body {
     grid-column-gap: 0;
 
     padding: 10px 0 10px 0;
-
-    background: #f9f9f9;
-    border: solid 0.5px lightgrey;
 }
 
 .lower-menu-item {
@@ -86,7 +83,6 @@ body {
     color: #333333;
     text-decoration: none;
 }
-
 
 #lower-menu-items {
     grid-column: 2;
