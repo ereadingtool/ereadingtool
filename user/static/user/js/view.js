@@ -9729,13 +9729,17 @@ var _user$project$Student_View$view_profile_dropdown_menu = F3(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$classList(
-					{
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
+				_0: _elm_lang$html$Html_Attributes$id('profile-link'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$classList(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
 			},
 			{
 				ctor: '::',
@@ -9810,6 +9814,27 @@ var _user$project$Student_View$view_student_profile_page_link = F2(
 				_1: {ctor: '[]'}
 			});
 	});
+var _user$project$Student_View$view_profile_link = F2(
+	function (student_profile, top_level_msg) {
+		var items = {
+			ctor: '::',
+			_0: A2(_user$project$Student_View$view_student_profile_page_link, student_profile, top_level_msg),
+			_1: {
+				ctor: '::',
+				_0: A2(_user$project$Student_View$view_student_profile_logout_link, student_profile, top_level_msg),
+				_1: {ctor: '[]'}
+			}
+		};
+		return A3(_user$project$Student_View$view_profile_dropdown_menu, student_profile, top_level_msg, items);
+	});
+var _user$project$Student_View$view_student_profile_header = F2(
+	function (student_profile, top_level_menu_msg) {
+		return {
+			ctor: '::',
+			_0: A2(_user$project$Student_View$view_profile_link, student_profile, top_level_menu_msg),
+			_1: {ctor: '[]'}
+		};
+	});
 var _user$project$Student_View$view_flashcard_menu_item = F2(
 	function (student_profile, top_level_menu_msg) {
 		return A2(
@@ -9819,7 +9844,7 @@ var _user$project$Student_View$view_flashcard_menu_item = F2(
 				_0: _elm_lang$html$Html_Attributes$classList(
 					{
 						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
+						_0: {ctor: '_Tuple2', _0: 'lower-menu-item', _1: true},
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
@@ -9841,25 +9866,12 @@ var _user$project$Student_View$view_flashcard_menu_item = F2(
 				_1: {ctor: '[]'}
 			});
 	});
-var _user$project$Student_View$view_student_profile_header = F2(
+var _user$project$Student_View$view_student_profile_menu_items = F2(
 	function (student_profile, top_level_menu_msg) {
-		var items = {
-			ctor: '::',
-			_0: A2(_user$project$Student_View$view_student_profile_page_link, student_profile, top_level_menu_msg),
-			_1: {
-				ctor: '::',
-				_0: A2(_user$project$Student_View$view_student_profile_logout_link, student_profile, top_level_menu_msg),
-				_1: {ctor: '[]'}
-			}
-		};
 		return {
 			ctor: '::',
 			_0: A2(_user$project$Student_View$view_flashcard_menu_item, student_profile, top_level_menu_msg),
-			_1: {
-				ctor: '::',
-				_0: A3(_user$project$Student_View$view_profile_dropdown_menu, student_profile, top_level_menu_msg, items),
-				_1: {ctor: '[]'}
-			}
+			_1: {ctor: '[]'}
 		};
 	});
 

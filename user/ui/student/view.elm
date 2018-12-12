@@ -1,7 +1,7 @@
 module Student.View exposing (..)
 
 import Html exposing (Html, div)
-import Html.Attributes exposing (class, classList, attribute)
+import Html.Attributes exposing (id, class, classList, attribute)
 import Html.Events exposing (onClick)
 
 import Student.Profile
@@ -12,7 +12,7 @@ import Config
 
 view_flashcard_menu_item : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> Html msg
 view_flashcard_menu_item student_profile top_level_menu_msg =
-  div [classList [("menu_item", True)]] [
+  div [classList [("lower-menu-item", True)]] [
       Html.a [attribute "href" ""] [ Html.text "Flashcards" ]
   ]
 
@@ -34,18 +34,29 @@ view_student_profile_logout_link student_profile top_level_menu_msg =
 
 view_profile_dropdown_menu : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> List (Html msg) -> Html msg
 view_profile_dropdown_menu student_profile top_level_msg items =
-  div [classList [("menu_item", True)]] [
+  div [id "profile-link", classList [("menu_item", True)]] [
     div [class "profile_dropdown_menu"] items
+  ]
+
+view_profile_link : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> Html msg
+view_profile_link student_profile top_level_msg =
+  let
+    items = [
+      view_student_profile_page_link student_profile top_level_msg
+     , view_student_profile_logout_link student_profile top_level_msg
+     ]
+  in
+    view_profile_dropdown_menu student_profile top_level_msg items
+
+
+view_student_profile_menu_items : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> List (Html msg)
+view_student_profile_menu_items student_profile top_level_menu_msg =
+  [
+    view_flashcard_menu_item student_profile top_level_menu_msg
   ]
 
 view_student_profile_header : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> List (Html msg)
 view_student_profile_header student_profile top_level_menu_msg =
-  let
-    items = [
-      view_student_profile_page_link student_profile top_level_menu_msg
-     , view_student_profile_logout_link student_profile top_level_menu_msg
-     ]
-  in [
-    view_flashcard_menu_item student_profile top_level_menu_msg
-  , view_profile_dropdown_menu student_profile top_level_menu_msg items
+  [
+    view_profile_link student_profile top_level_menu_msg
   ]

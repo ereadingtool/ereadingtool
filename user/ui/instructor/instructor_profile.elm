@@ -125,7 +125,6 @@ view_content model =
 view : Model -> Html Msg
 view model = div [] [
     (Views.view_authed_header (User.Profile.fromInstructorProfile model.profile) Nothing LogOut)
-  , (Views.view_filter)
   , (view_content model)
   , (Views.view_footer)
   ]

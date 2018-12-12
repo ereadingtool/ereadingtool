@@ -430,4 +430,4 @@ view_menu model menu_items top_level_menu_msg help_msgs =
 
 view_header : Model -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> Html msg
 view_header model top_level_menu_msg help_msgs =
-  Views.view_header (view_menu model Menu.Items.menu_items top_level_menu_msg help_msgs)
+  Views.view_header (view_menu model Menu.Items.menu_items top_level_menu_msg help_msgs) []

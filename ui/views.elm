@@ -1,7 +1,7 @@
 module Views exposing (..)
 
 import Html exposing (..)
-import Html.Attributes exposing (class, classList, attribute)
+import Html.Attributes exposing (id, class, classList, attribute)
 
 import Menu
 import Menu.Items
@@ -13,16 +13,27 @@ import User.Profile
 import Menu.Msg
 
 
-view_header : List (Html msg) -> Html msg
-view_header menu_items =
-  div [class "header"] [
-    div [] [Html.text "E-Reader"]
-  , div [class "menu"] menu_items
+view_logo : List (Html.Attribute msg) -> Html msg
+view_logo event_attr =
+  Html.img ([
+      attribute "src" "/static/img/star_logo.png"
+    ] ++ event_attr) []
+
+view_header : List (Html msg) -> List (Html msg) -> Html msg
+view_header top_menu_items bottom_menu_items =
+  div [] [
+    div [id "header"] [
+      view_logo []
+    , div [class "menu"] top_menu_items
+    ]
+  , div [id "lower-menu"] [
+      div [id "lower-menu-items"] bottom_menu_items
+    ]
   ]
 
 view_unauthed_header : Html msg
 view_unauthed_header =
-  view_header []
+  view_header [] []
 
 view_authed_header : User.Profile.Profile -> Maybe Menu.SelectedMenuItem -> (Menu.Msg.Msg -> msg) -> Html msg
 view_authed_header profile selected_menu_item top_level_menu_msg =
@@ -35,15 +46,9 @@ view_authed_header profile selected_menu_item top_level_menu_msg =
         _ ->
           Menu.Items.menu_items
   in
-    view_header (Menu.View.view_menu m_items profile top_level_menu_msg)
-
-view_filter : Html msg
-view_filter = div [classList [("filter_items", True)] ] [
-     div [classList [("filter", True)] ] [
-         Html.input [attribute "placeholder" "Search texts.."] []
-       , Html.a [attribute "href" "/admin/text/"] [Html.text "Create A Text"]
-     ]
- ]
+    view_header
+      (Menu.View.view_top_menu m_items profile top_level_menu_msg)
+      (Menu.View.view_lower_menu m_items profile top_level_menu_msg)
 
 view_give_feedback : Html msg
 view_give_feedback =
