@@ -415,19 +415,23 @@ view_student_profile_page_link model help_msgs =
 view_student_profile_header : Model -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> List (Html msg)
 view_student_profile_header model top_level_menu_msg help_msgs =
   [
-    Student.View.view_flashcard_menu_item model.profile top_level_menu_msg
-  , Student.View.view_profile_dropdown_menu model.profile top_level_menu_msg [
+    Student.View.view_profile_dropdown_menu model.profile top_level_menu_msg [
       view_student_profile_page_link model help_msgs
     , Student.View.view_student_profile_logout_link model.profile top_level_menu_msg
     ]
   ] ++ (view_username_menu_item_hint model help_msgs)
 
-view_menu : Model -> Menu.Items.MenuItems -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> List (Html msg)
-view_menu model menu_items top_level_menu_msg help_msgs =
-     (Array.toList
-  <| Array.map (view_menu_item model help_msgs) (Menu.Items.items menu_items)) ++
-     (view_student_profile_header model top_level_menu_msg help_msgs)
+view_top_level_menu : Model -> Menu.Items.MenuItems -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> List (Html msg)
+view_top_level_menu model menu_items top_level_menu_msg help_msgs =
+  view_student_profile_header model top_level_menu_msg help_msgs
+
+view_bottom_level_menu : Model -> Menu.Items.MenuItems -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> List (Html msg)
+view_bottom_level_menu model menu_items top_level_menu_msg help_msgs =
+  (Array.toList <| Array.map (view_menu_item model help_msgs) (Menu.Items.items menu_items))
+
 
 view_header : Model -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> Html msg
 view_header model top_level_menu_msg help_msgs =
-  Views.view_header (view_menu model Menu.Items.menu_items top_level_menu_msg help_msgs) []
+  Views.view_header
+    (view_top_level_menu model Menu.Items.menu_items top_level_menu_msg help_msgs)
+    (view_bottom_level_menu model Menu.Items.menu_items top_level_menu_msg help_msgs)
