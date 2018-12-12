@@ -53,9 +53,7 @@ main =
 view_content : Model -> Html Msg
 view_content model =
   div [ classList [("profile", True)] ] [
-    div [classList [("profile_items", True)] ] <|
-      (if model.flags.welcome then [Student.Profile.View.view_student_welcome_msg model.profile] else []) ++
-    [
+    div [classList [("profile_items", True)] ] [
       Student.Profile.View.view_preferred_difficulty model
     , Student.Profile.View.view_username model
     , Student.Profile.View.view_user_email model

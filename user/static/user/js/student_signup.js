@@ -12267,6 +12267,48 @@ var _user$project$SignUp$view = F6(
 			});
 	});
 
+var _user$project$Main$view_student_welcome_msg = function () {
+	var welcome_msg = '\n     The purpose of this site is to help students improve their reading proficiency in Flagship language that they\n     are studying. This site includes a wide range of texts at different proficiency levels.\n     You will select texts to read by proficiency level and by topic.\n     Before reading the Russian texts, you will get a brief contextualizing message in English.\n     Then you will see the first part of the text followed by comprehension questions.\n     Once you’ve read the text and selected the best answer, you will get feedback telling you if your choice is\n     correct, and why or why not. The format of this site resembles the Flagship proficiency tests, and our goal is to\n      help you build your reading skills for those tests. Any particular reading should take you between 5-15 minutes\n      to complete, and we envision that you can use these texts on the go, when commuting, when waiting for a bus, etc.\n      You can come back to texts at any time.  If this is your first time using the website, pop-up boxes will help\n      you learn how to use the site.';
+	var welcome_title = 'Welcome to The Language Flagship’s Steps To Advanced Reading (STAR) website.';
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('welcome_msg'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$span,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('headline'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(welcome_title),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('msg'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(welcome_msg),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+}();
 var _user$project$Main$init = function (flags) {
 	return {
 		ctor: '_Tuple2',
@@ -12363,7 +12405,7 @@ var _user$project$Main$Submit = {ctor: 'Submit'};
 var _user$project$Main$Submitted = function (a) {
 	return {ctor: 'Submitted', _0: a};
 };
-var _user$project$Main$post_signup = F2(
+var _user$project$Main$postSignup = F2(
 	function (csrftoken, signup_params) {
 		var encoded_signup_params = _user$project$Main$signUpEncoder(signup_params);
 		var req = A4(
@@ -12423,7 +12465,7 @@ var _user$project$Main$update = F2(
 				return {
 					ctor: '_Tuple2',
 					_0: _user$project$SignUp$submit(model),
-					_1: A2(_user$project$Main$post_signup, model.flags.csrftoken, model.signup_params)
+					_1: A2(_user$project$Main$postSignup, model.flags.csrftoken, model.signup_params)
 				};
 			case 'Submitted':
 				if (_p1._0.ctor === 'Ok') {
@@ -12554,32 +12596,36 @@ var _user$project$Main$view_content = function (model) {
 				}),
 			_1: {
 				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$classList(
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'signup_box', _1: true},
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					},
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						A2(_user$project$SignUp$view_email_input, _user$project$Main$UpdateEmail, model),
+				_0: _user$project$Main$view_student_welcome_msg,
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$classList(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'signup_box', _1: true},
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						},
 						A2(
 							_elm_lang$core$Basics_ops['++'],
-							A2(
-								_user$project$SignUp$view_password_input,
-								{ctor: '_Tuple3', _0: _user$project$Main$ToggleShowPassword, _1: _user$project$Main$UpdatePassword, _2: _user$project$Main$UpdateConfirmPassword},
-								model),
+							A2(_user$project$SignUp$view_email_input, _user$project$Main$UpdateEmail, model),
 							A2(
 								_elm_lang$core$Basics_ops['++'],
-								_user$project$Main$view_difficulty_choices(model),
-								A2(_user$project$SignUp$view_submit, _user$project$Main$Submit, model))))),
-				_1: {ctor: '[]'}
+								A2(
+									_user$project$SignUp$view_password_input,
+									{ctor: '_Tuple3', _0: _user$project$Main$ToggleShowPassword, _1: _user$project$Main$UpdatePassword, _2: _user$project$Main$UpdateConfirmPassword},
+									model),
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									_user$project$Main$view_difficulty_choices(model),
+									A2(_user$project$SignUp$view_submit, _user$project$Main$Submit, model))))),
+					_1: {ctor: '[]'}
+				}
 			}
 		});
 };

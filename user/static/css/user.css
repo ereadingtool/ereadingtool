@@ -5,7 +5,7 @@
 
     margin-top: 50px;
     margin-bottom: 0;
-    grid-template-columns: 4% 15% 10% auto 10% 15% 4%;
+    grid-template-columns: 4% 13% 10% auto 10% 13% 4%;
 }
 
 .login_box, .signup_box {
@@ -69,6 +69,16 @@ select {
     font-size: larger;
 }
 
+.welcome_msg {
+    grid-column: 4;
+    display: grid;
+    margin-bottom: 10px;
+    font-size: larger;
+}
+
+.welcome_msg > .headline {
+    padding-bottom: 15px;
+}
 
 @media only screen and (max-width:480px) {
     .header {

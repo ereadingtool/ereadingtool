@@ -23986,48 +23986,6 @@ var _user$project$Student_Profile_View$view_help_text_for_difficulty = function 
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Student_Profile_View$view_student_welcome_msg = function (student_profile) {
-	var welcome_msg = '\n     The purpose of this site is to help students improve their reading proficiency in Flagship language that they\n     are studying. This site includes a wide range of texts at different proficiency levels.\n     You will select texts to read by proficiency level and by topic.\n     Before reading the Russian texts, you will get a brief contextualizing message in English.\n     Then you will see the first part of the text followed by comprehension questions.\n     Once you’ve read the text and selected the best answer, you will get feedback telling you if your choice is\n     correct, and why or why not. The format of this site resembles the Flagship proficiency tests, and our goal is to\n      help you build your reading skills for those tests. Any particular reading should take you between 5-15 minutes\n      to complete, and we envision that you can use these texts on the go, when commuting, when waiting for a bus, etc.\n      You can come back to texts at any time.  If this is your first time using the website, pop-up boxes will help\n      you learn how to use the site.';
-	var welcome_title = 'Welcome to The Language Flagship’s Steps To Advanced Reading (STAR) website.';
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('welcome_msg'),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$span,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('profile_item_title'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(welcome_title),
-					_1: {ctor: '[]'}
-				}),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('profile_item_value'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text(welcome_msg),
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			}
-		});
-};
 var _user$project$Student_Profile_View$view_text_reading_actions = function (text_reading) {
 	var action_label = function () {
 		var _p13 = text_reading.status;
@@ -24225,57 +24183,50 @@ var _user$project$Main$view_content = function (model) {
 						}),
 					_1: {ctor: '[]'}
 				},
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					model.flags.welcome ? {
+				{
+					ctor: '::',
+					_0: _user$project$Student_Profile_View$view_preferred_difficulty(model),
+					_1: {
 						ctor: '::',
-						_0: _user$project$Student_Profile_View$view_student_welcome_msg(model.profile),
-						_1: {ctor: '[]'}
-					} : {ctor: '[]'},
-					{
-						ctor: '::',
-						_0: _user$project$Student_Profile_View$view_preferred_difficulty(model),
+						_0: _user$project$Student_Profile_View$view_username(model),
 						_1: {
 							ctor: '::',
-							_0: _user$project$Student_Profile_View$view_username(model),
+							_0: _user$project$Student_Profile_View$view_user_email(model),
 							_1: {
 								ctor: '::',
-								_0: _user$project$Student_Profile_View$view_user_email(model),
+								_0: _user$project$Student_Profile_View$view_student_performance(model),
 								_1: {
 									ctor: '::',
-									_0: _user$project$Student_Profile_View$view_student_performance(model),
+									_0: _user$project$Student_Profile_View$view_feedback_links(model),
 									_1: {
 										ctor: '::',
-										_0: _user$project$Student_Profile_View$view_feedback_links(model),
+										_0: _user$project$Student_Profile_View$view_flashcards(model),
 										_1: {
 											ctor: '::',
-											_0: _user$project$Student_Profile_View$view_flashcards(model),
-											_1: {
-												ctor: '::',
-												_0: (!_elm_lang$core$String$isEmpty(model.err_str)) ? A2(
-													_elm_lang$html$Html$span,
-													{
+											_0: (!_elm_lang$core$String$isEmpty(model.err_str)) ? A2(
+												_elm_lang$html$Html$span,
+												{
+													ctor: '::',
+													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'error'),
+													_1: {ctor: '[]'}
+												},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text('error: '),
+													_1: {
 														ctor: '::',
-														_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'error'),
+														_0: _elm_lang$html$Html$text(model.err_str),
 														_1: {ctor: '[]'}
-													},
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html$text('error: '),
-														_1: {
-															ctor: '::',
-															_0: _elm_lang$html$Html$text(model.err_str),
-															_1: {ctor: '[]'}
-														}
-													}) : _elm_lang$html$Html$text(''),
-												_1: {ctor: '[]'}
-											}
+													}
+												}) : _elm_lang$html$Html$text(''),
+											_1: {ctor: '[]'}
 										}
 									}
 								}
 							}
 						}
-					})),
+					}
+				}),
 			_1: {ctor: '[]'}
 		});
 };

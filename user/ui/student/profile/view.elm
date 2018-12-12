@@ -69,30 +69,6 @@ view_text_reading_actions text_reading =
       ]
     ]
 
-view_student_welcome_msg : Student.Profile.StudentProfile -> Html Msg
-view_student_welcome_msg student_profile =
-  let
-    welcome_title =
-      """Welcome to The Language Flagship’s Steps To Advanced Reading (STAR) website."""
-    welcome_msg =
-     """
-     The purpose of this site is to help students improve their reading proficiency in Flagship language that they
-     are studying. This site includes a wide range of texts at different proficiency levels.
-     You will select texts to read by proficiency level and by topic.
-     Before reading the Russian texts, you will get a brief contextualizing message in English.
-     Then you will see the first part of the text followed by comprehension questions.
-     Once you’ve read the text and selected the best answer, you will get feedback telling you if your choice is
-     correct, and why or why not. The format of this site resembles the Flagship proficiency tests, and our goal is to
-      help you build your reading skills for those tests. Any particular reading should take you between 5-15 minutes
-      to complete, and we envision that you can use these texts on the go, when commuting, when waiting for a bus, etc.
-      You can come back to texts at any time.  If this is your first time using the website, pop-up boxes will help
-      you learn how to use the site."""
-  in
-    div [class "welcome_msg"] [
-      span [class "profile_item_title"] [ Html.text welcome_title ]
-    , div [class "profile_item_value"] [Html.text welcome_msg]
-    ]
-
 view_help_text_for_difficulty : Maybe Text.TextDifficulty -> Html Msg
 view_help_text_for_difficulty text_difficulty =
   let

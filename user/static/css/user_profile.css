@@ -33,14 +33,6 @@ table td {
     grid-column-gap: 10px;
 }
 
-.welcome_msg {
-    display: grid;
-
-    grid-column: 1 / 4;
-
-    grid-template-rows: 25px auto;
-}
-
 .text_readings {
     display: grid;
 
