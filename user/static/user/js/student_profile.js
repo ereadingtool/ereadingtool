@@ -23285,15 +23285,18 @@ var _user$project$Student_Profile_View$view_menu_item = F3(
 		}();
 		var uri = _user$project$Menu_Item$uri(menu_item);
 		var selected = _user$project$Menu_Item$selected(menu_item);
-		return A4(_user$project$Menu_View$view_menu_item, selected, uri, link_text, addl_view);
+		return A4(_user$project$Menu_View$view_lower_menu_item, selected, uri, link_text, addl_view);
 	});
-var _user$project$Student_Profile_View$view_bottom_level_menu = F4(
+var _user$project$Student_Profile_View$view_lower_level_menu = F4(
 	function (model, menu_items, top_level_menu_msg, help_msgs) {
-		return _elm_lang$core$Array$toList(
-			A2(
-				_elm_lang$core$Array$map,
-				A2(_user$project$Student_Profile_View$view_menu_item, model, help_msgs),
-				_user$project$Menu_Items$items(menu_items)));
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$Array$toList(
+				A2(
+					_elm_lang$core$Array$map,
+					A2(_user$project$Student_Profile_View$view_menu_item, model, help_msgs),
+					_user$project$Menu_Items$items(menu_items))),
+			A2(_user$project$Student_View$view_student_profile_menu_items, model.profile, top_level_menu_msg));
 	});
 var _user$project$Student_Profile_View$view_username_menu_item_hint = F2(
 	function (model, help_msgs) {
@@ -23352,7 +23355,7 @@ var _user$project$Student_Profile_View$view_header = F3(
 		return A2(
 			_user$project$Views$view_header,
 			A4(_user$project$Student_Profile_View$view_top_level_menu, model, _user$project$Menu_Items$menu_items, top_level_menu_msg, help_msgs),
-			A4(_user$project$Student_Profile_View$view_bottom_level_menu, model, _user$project$Menu_Items$menu_items, top_level_menu_msg, help_msgs));
+			A4(_user$project$Student_Profile_View$view_lower_level_menu, model, _user$project$Menu_Items$menu_items, top_level_menu_msg, help_msgs));
 	});
 var _user$project$Student_Profile_View$view_feedback_links = function (model) {
 	return A2(

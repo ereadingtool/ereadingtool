@@ -401,7 +401,7 @@ view_menu_item model help_msgs menu_item =
       False ->
         Nothing)
   in
-    Menu.View.view_menu_item selected uri link_text addl_view
+    Menu.View.view_lower_menu_item selected uri link_text addl_view
 
 
 view_student_profile_page_link : Model -> HelpMsgs msg -> Html msg
@@ -425,13 +425,15 @@ view_top_level_menu : Model -> Menu.Items.MenuItems -> (Menu.Msg.Msg -> msg) -> 
 view_top_level_menu model menu_items top_level_menu_msg help_msgs =
   view_student_profile_header model top_level_menu_msg help_msgs
 
-view_bottom_level_menu : Model -> Menu.Items.MenuItems -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> List (Html msg)
-view_bottom_level_menu model menu_items top_level_menu_msg help_msgs =
-  (Array.toList <| Array.map (view_menu_item model help_msgs) (Menu.Items.items menu_items))
-
+view_lower_level_menu : Model -> Menu.Items.MenuItems -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> List (Html msg)
+view_lower_level_menu model menu_items top_level_menu_msg help_msgs =
+     (Array.toList
+  <| Array.map (view_menu_item model help_msgs)
+  <| (Menu.Items.items menu_items)) ++
+     (Student.View.view_student_profile_menu_items model.profile top_level_menu_msg)
 
 view_header : Model -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> Html msg
 view_header model top_level_menu_msg help_msgs =
   Views.view_header
     (view_top_level_menu model Menu.Items.menu_items top_level_menu_msg help_msgs)
-    (view_bottom_level_menu model Menu.Items.menu_items top_level_menu_msg help_msgs)
+    (view_lower_level_menu model Menu.Items.menu_items top_level_menu_msg help_msgs)
