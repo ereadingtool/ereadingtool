@@ -9,6 +9,9 @@ from text.models import TextDifficulty, Text, TextSection
 from django.utils import timezone
 
 
+Student = TypeVar('Student')
+
+
 class StudentPerformance(models.Model):
     id = models.BigIntegerField(primary_key=True)
     student = models.ForeignKey('user.Student', on_delete=models.DO_NOTHING)
@@ -38,7 +41,7 @@ class StudentPerformance(models.Model):
 
 
 class StudentPerformanceReport(object):
-    def __init__(self, student: TypeVar('Student'), *args, **kwargs):
+    def __init__(self, student: Student, *args, **kwargs):
         self.student = student
         self.queryset = StudentPerformance.objects.filter(student=self.student)
 
@@ -52,18 +55,17 @@ class StudentPerformanceReport(object):
 
     @property
     def first_of_next_month(self):
-        first_of_this_month = self.today_dt.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-
-        if first_of_this_month.month == 12:
-            next_first_of_the_month = first_of_this_month.replace(year=first_of_this_month.year+1, month=1)
+        if self.first_of_current_month.month == 12:
+            return self.first_of_current_month.replace(year=self.first_of_current_month.year+1, month=1)
         else:
-            next_first_of_the_month = first_of_this_month.replace(month=first_of_this_month.month+1)
-
-        return next_first_of_the_month
+            return self.first_of_current_month.replace(month=self.first_of_current_month.month+1)
 
     @property
     def first_of_last_month(self):
-        return self.today_dt.replace(day=1, month=self.today_dt.month-1)
+        if self.first_of_current_month == 1:
+            return self.first_of_current_month.replace(year=self.today_dt.year-1, month=self.today_dt.month-1)
+        else:
+            return self.first_of_current_month.replace(month=self.today_dt.month-1)
 
     @property
     def cumulative(self):

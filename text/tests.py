@@ -192,7 +192,7 @@ class TestText(TestUser, TestCase):
         self.instructor = self.new_instructor_client(Client())
         self.student = self.new_student_client(Client())
 
-    def create_text(self, test_data: Dict=None, diff_data: Dict=None) -> Text:
+    def create_text(self, test_data: Dict = None, diff_data: Dict = None) -> Text:
         text_data = test_data or self.get_test_data()
 
         if diff_data:

@@ -40,7 +40,7 @@ class TestUser(TestUserBase, TestCase):
         self.password_reset_api_endpoint = reverse('api-password-reset')
         self.password_reset_confirm_api_endpoint = reverse('api-password-reset-confirm')
 
-    def read_test(self, text: Text, text_reading: Reading, sections: SectionSpec, end_dt: dt.datetime=None) -> Reading:
+    def read_test(self, text: Text, text_reading: Reading, sections: SectionSpec, end_dt: dt.datetime = None) -> Reading:
         section_num = 0
 
         text_sections = text.sections.all()
@@ -92,6 +92,11 @@ class TestUser(TestUserBase, TestCase):
 
         today_dt = dt.now()
 
+        if today_dt.month == 1:
+            last_month_dt = today_dt.replace(month=12)
+        else:
+            last_month_dt = today_dt.replace(month=today_dt.month-1)
+
         # 3 sections, with 7, 2, and 3 questions, respectively (total questions: 12)
         text_params = test_text.generate_text_params(
             sections=[{'num_of_questions': 7}, {'num_of_questions': 2}, {'num_of_questions': 3}])
@@ -99,22 +104,54 @@ class TestUser(TestUserBase, TestCase):
         text = test_text.test_post_text(test_data=text_params)
         text_reading = StudentTextReading.start(student=self.student_profile, text=text)
 
+        # complete each section with 0, 1, and 1 correctly answered questions, respectively
+        # (total answered correctly: 2) first of last month
+        student_text_reading = self.read_test(text=text, text_reading=text_reading, sections=[
+            {'answered_correctly': 0},
+            {'answered_correctly': 1},
+            {'answered_correctly': 1},
+        ], end_dt=last_month_dt.replace(day=1))
+
+        self.assertEquals(student_text_reading.current_state, student_text_reading.state_machine.complete)
+
+        text_reading_two = StudentTextReading.start(student=self.student_profile, text=text)
+
         # complete each section with 2, 2, and 0 correctly answered questions, respectively
         # (total answered correctly: 4)
-        student_text_reading = self.read_test(text=text, text_reading=text_reading, sections=[
+        student_text_reading_two = self.read_test(text=text, text_reading=text_reading_two, sections=[
             {'answered_correctly': 2},
             {'answered_correctly': 2},
             {'answered_correctly': 0},
         ], end_dt=today_dt)
 
-        self.assertEquals(student_text_reading.current_state, student_text_reading.state_machine.complete)
+        self.assertEquals(student_text_reading_two.current_state,
+                          student_text_reading_two.state_machine.complete)
 
         performance_report = self.student_profile.performance.to_dict()
 
-        # 4 / 12 = 0.33
-        self.assertEquals(performance_report['all']['categories']['cumulative'],
-                          {'metrics': {'percent_correct': 33.33, 'texts_complete': 1, 'total_texts': 1},
-                           'title': 'Cumulative'})
+        # current month 4 / 12 ~= 33.33%
+        self.assertEquals(performance_report['all']['categories']['current_month'], {
+            'metrics': {'percent_correct': 33.33, 'texts_complete': 1, 'total_texts': 1},
+            'title': 'Current Month'
+        })
+
+        self.assertEquals(performance_report[text.difficulty.slug]['categories'], {
+            # cumulative (2 + 4 correct total out of 24 attempts) ~= 25.0%
+            'cumulative': {
+                'metrics': {'percent_correct': 25.0, 'texts_complete': 1, 'total_texts': 1},
+                'title': 'Cumulative'
+            },
+            # current month 4 / 12 ~= 33.33%
+            'current_month': {
+                'metrics': {'percent_correct': 33.33, 'texts_complete': 1, 'total_texts': 1},
+                'title': 'Current Month'
+            },
+            # 2 / 12 ~= 16.67%
+            'past_month': {
+                'metrics': {'percent_correct': 16.67, 'texts_complete': 1, 'total_texts': 1},
+                'title': 'Past Month'
+            }
+        })
 
     def test_set_username(self):
         resp = self.student_client.put(self.student_api_endpoint,
