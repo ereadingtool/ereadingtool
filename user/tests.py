@@ -129,6 +129,26 @@ class TestUser(TestUserBase, TestCase):
 
         performance_report = self.student_profile.performance.to_dict()
 
+        # for all categories except 'all' and text.difficulty.slug should be blank
+        report_minus_other_categories = performance_report.copy()
+
+        report_minus_other_categories.pop('all')
+        report_minus_other_categories.pop(text.difficulty.slug)
+
+        for difficulty in report_minus_other_categories:
+            self.assertEquals(report_minus_other_categories[difficulty]['categories'], {
+                'cumulative': {
+                    'metrics': {'percent_correct': None, 'texts_complete': 0, 'total_texts': 0},
+                    'title': 'Cumulative'},
+                'current_month': {
+                    'metrics': {'percent_correct': None, 'texts_complete': 0, 'total_texts': 0},
+                    'title': 'Current Month'},
+                'past_month': {
+                    'metrics': {'percent_correct': None, 'texts_complete': 0, 'total_texts': 0},
+                    'title': 'Past Month'
+                }
+            }, f'{difficulty} should be empty for the report.')
+
         # current month 4 / 12 ~= 33.33%
         self.assertEquals(performance_report['all']['categories']['current_month'], {
             'metrics': {'percent_correct': 33.33, 'texts_complete': 1, 'total_texts': 1},

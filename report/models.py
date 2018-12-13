@@ -86,6 +86,9 @@ class StudentPerformanceReport(object):
         )
 
     def to_dict(self) -> Dict:
+        # TODO(andrew): text counts per date range need to be taken into account
+        total_num_of_texts = Text.objects.count()
+
         categories = {
             'cumulative': {'metrics': {}, 'title': 'Cumulative'},
             'current_month': {'metrics': {}, 'title': 'Current Month'},
@@ -107,14 +110,43 @@ class StudentPerformanceReport(object):
         performance['all']['categories']['past_month']['metrics'] = self.past_month.aggregate(**aggregates)
         performance['all']['categories']['current_month']['metrics'] = self.current_month.aggregate(**aggregates)
 
+        for category in ('cumulative', 'past_month', 'current_month',):
+            try:
+                performance['all']['categories'][category]['metrics']['percent_correct'] = round(
+                    performance['all']['categories'][category]['metrics']['percent_correct'], 2)
+            except TypeError:
+                pass
+
+            performance['all']['categories'][category]['metrics']['total_texts'] = total_num_of_texts
+
         performance['all']['title'] = 'All Levels'
 
         for difficulty in TextDifficulty.objects.annotate(total_texts=models.Count('texts')).all():
-            performance[difficulty.slug] = copy.copy(difficulty_dict)
+            performance[difficulty.slug] = {
+                'title': '',
+                'categories': {
+                    'cumulative': {
+                        'metrics': {
+                            'percent_correct': None, 'texts_complete': None},
+                        'title': 'Cumulative'
+                    },
+                    'current_month': {
+                        'metrics': {
+                            'percent_correct': None, 'texts_complete': None},
+                        'title': 'Current Month'
+                    },
+                    'past_month': {
+                        'metrics': {
+                            'percent_correct': None, 'texts_complete': None},
+                        'title': 'Past Month'}
+                }
+            }
+
             performance[difficulty.slug]['title'] = difficulty.name
 
             performance[difficulty.slug]['categories']['cumulative']['metrics'] = self.cumulative.filter(
                 text_difficulty_slug=difficulty.slug).aggregate(**aggregates)
+
             performance[difficulty.slug]['categories']['cumulative']['metrics']['total_texts'] = difficulty.total_texts
 
             try:
@@ -125,6 +157,7 @@ class StudentPerformanceReport(object):
 
             performance[difficulty.slug]['categories']['past_month']['metrics'] = self.past_month.filter(
                 text_difficulty_slug=difficulty.slug).aggregate(**aggregates)
+
             performance[difficulty.slug]['categories']['past_month']['metrics']['total_texts'] = difficulty.total_texts
 
             try:
@@ -135,6 +168,7 @@ class StudentPerformanceReport(object):
 
             performance[difficulty.slug]['categories']['current_month']['metrics'] = self.current_month.filter(
                 text_difficulty_slug=difficulty.slug).aggregate(**aggregates)
+
             performance[difficulty.slug]['categories']['current_month']['metrics']['total_texts'] = difficulty.total_texts
 
             try:
