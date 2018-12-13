@@ -86,7 +86,6 @@ class StudentPerformanceReport(object):
         )
 
     def to_dict(self) -> Dict:
-        # TODO(andrew): text counts per date range need to be taken into account
         total_num_of_texts = Text.objects.count()
 
         categories = {
