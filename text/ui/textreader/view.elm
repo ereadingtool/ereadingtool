@@ -29,12 +29,12 @@ import HtmlParser.Util
 import VirtualDom
 
 
-tagWord : Model -> Int -> Section -> Int -> String -> Html Msg
-tagWord model i section j word =
+tagWord : Model -> Section -> Int -> Int -> String -> Html Msg
+tagWord model text_reader_section node_index word_instance word =
   let
-    id = String.join "_" [toString i, toString j, word]
+    id = String.join "_" [toString node_index, toString word_instance, word]
     reader_word = TextReaderWord id word
-    translations = (TextReader.Section.Model.translations section)
+    translations = (TextReader.Section.Model.translations text_reader_section)
   in
     if (Dict.member word translations) then
       Html.node "span" [classList [("defined_word", True), ("cursor", True)], onClick (Gloss reader_word)] [
@@ -45,6 +45,7 @@ tagWord model i section j word =
       case word == " " of
         True ->
           span [class "space"] []
+
         False ->
           VirtualDom.text word
 
@@ -160,16 +161,17 @@ view_gloss dictionary model reader_word =
         div [] []
 
 view_text_section : Model -> Section -> Html Msg
-view_text_section model section =
+view_text_section model text_reader_section =
   let
-    text_section = TextReader.Section.Model.textSection section
-    text_body_vdom = Text.Section.Words.Tag.tagWordsAndToVDOM section (tagWord model)
+    text_section = TextReader.Section.Model.textSection text_reader_section
+    text_body_vdom =
+      Text.Section.Words.Tag.tagWordsAndToVDOM (tagWord model text_reader_section) (HtmlParser.parse text_section.body)
     section_title = ("Section " ++ (toString (text_section.order +1)) ++ "/" ++ (toString text_section.num_of_sections))
   in
     div [class "text_section"] <| [
         div [class "section_title"] [ Html.text section_title ]
       , div [class "text_body"] text_body_vdom
-      , view_questions section
+      , view_questions text_reader_section
     ]
 
 view_text_introduction : Text -> Html Msg

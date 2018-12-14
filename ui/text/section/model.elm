@@ -11,6 +11,8 @@ type alias TextSection = {
   , questions : Array Question.Model.Question
   }
 
+type Section = Section TextSection
+
 emptyTextSection : Int -> TextSection
 emptyTextSection i =
   let

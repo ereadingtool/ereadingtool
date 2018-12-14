@@ -10399,6 +10399,9 @@ var _user$project$Text_Section_Model$TextSection = F4(
 	function (a, b, c, d) {
 		return {order: a, body: b, question_count: c, questions: d};
 	});
+var _user$project$Text_Section_Model$Section = function (a) {
+	return {ctor: 'Section', _0: a};
+};
 
 var _user$project$Text_Translations$Grammemes = F5(
 	function (a, b, c, d, e) {

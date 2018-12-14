@@ -3,7 +3,6 @@ module Text.Translations.View exposing (..)
 import Array exposing (Array)
 
 import Text.Translations.Msg exposing (..)
-
 import Text.Translations.Model exposing (..)
 
 import Html exposing (..)
@@ -12,14 +11,28 @@ import Html.Attributes exposing (..)
 
 import Dict exposing (Dict)
 
+import Text.Section.Words.Tag
+
 import Text.Translations exposing (Word, Translation)
 
 import Text.Model
 import Text.Section.Model
 
+import VirtualDom
 import HtmlParser
-import HtmlParser.Util
 
+
+tagWord : Model -> Int -> Int -> String -> Html msg
+tagWord model node_index word_index word =
+  let
+    id = String.join "_" [toString node_index, toString word_index, word]
+  in
+    case word == " " of
+      True ->
+        span [class "space"] []
+
+      False ->
+        VirtualDom.text word
 
 view_correct_for_context : Bool -> List (Html msg)
 view_correct_for_context correct =
@@ -152,15 +165,17 @@ view_letter_menu msg model =
 
 view_section : (Msg -> msg) -> Model -> Text.Section.Model.TextSection -> Html msg
 view_section parent_msg model section =
-  div [class "text_section"] [
-    div [class "title"] [
-      Html.text ("Section " ++ (toString (section.order+1)))
+  let
+    text_body_vdom = Text.Section.Words.Tag.tagWordsAndToVDOM (tagWord model) (HtmlParser.parse section.body)
+  in
+    div [class "text_section"] [
+      div [class "title"] [
+        Html.text ("Section " ++ (toString (section.order+1)))
+      ]
+    , div [class "body"] [
+        div [] text_body_vdom
+      ]
     ]
-  , div [class "body"] [
-      div [] (HtmlParser.Util.toVirtualDom <| HtmlParser.parse section.body)
-    ]
-  ]
-
 
 view_translations : (Msg -> msg) -> Maybe Model -> Html msg
 view_translations msg translation_model =

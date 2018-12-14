@@ -3,16 +3,12 @@ module Text.Section.Words.Tag exposing (tagWordsAndToVDOM)
 import Regex
 
 import HtmlParser
-import HtmlParser.Util
 
 import Html.Attributes
 
 import VirtualDom
 
 import Html exposing (Html, div, span)
-
-import TextReader.Section.Model exposing (Section)
-
 
 
 punctuation_re : Regex.Regex
@@ -22,7 +18,6 @@ punctuation_re =
 has_punctuation : String -> Bool
 has_punctuation =
   Regex.contains punctuation_re
-
 
 maybeParseWordWithPunctuation : String -> List String
 maybeParseWordWithPunctuation str =
@@ -52,8 +47,8 @@ intersperseWords token tokens =
       False ->
         tokens ++ [whitespace, token]
 
-tagWordAndToVDOM : Section -> (Int -> Section -> Int -> String -> Html msg) -> Int -> HtmlParser.Node -> Html msg
-tagWordAndToVDOM section tag_word i node =
+tagWordAndToVDOM : (Int -> Int -> String -> Html msg) -> Int -> HtmlParser.Node -> Html msg
+tagWordAndToVDOM tag_word i node =
   case node of
     HtmlParser.Text str ->
       let
@@ -62,7 +57,7 @@ tagWordAndToVDOM section tag_word i node =
           <| List.concat
           <| List.map maybeParseWordWithPunctuation (String.words str)
       in
-        span [] (List.indexedMap (tag_word i section) words)
+        span [] (List.indexedMap (tag_word i) words)
 
     HtmlParser.Element name attrs nodes ->
       Html.node
@@ -70,15 +65,11 @@ tagWordAndToVDOM section tag_word i node =
         (List.map (\(name, value) ->
           Html.Attributes.attribute name value) attrs
         )
-        (tagWordsAndToVDOM section tag_word)
+        (tagWordsAndToVDOM tag_word nodes)
 
     (HtmlParser.Comment str) as comment ->
         VirtualDom.text ""
 
-tagWordsAndToVDOM : Section -> (Int -> Section -> Int -> String -> Html msg) -> List (Html msg)
-tagWordsAndToVDOM section tag_word =
-  let
-    text_section = TextReader.Section.Model.textSection section
-    nodes = HtmlParser.parse text_section.body
-  in
-    List.indexedMap (tagWordAndToVDOM section tag_word) nodes
+tagWordsAndToVDOM : (Int -> Int -> String -> Html msg) -> List HtmlParser.Node -> List (Html msg)
+tagWordsAndToVDOM tag_word nodes =
+  List.indexedMap (tagWordAndToVDOM tag_word) nodes
