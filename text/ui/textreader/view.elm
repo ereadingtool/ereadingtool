@@ -13,6 +13,7 @@ import Text.Model
 import Text.Translations exposing (Word)
 
 import Text.Translations.View
+import Text.Section.Words.Tag
 
 import TextReader.Model exposing (..)
 
@@ -22,25 +23,14 @@ import TextReader.Question.Model exposing (TextQuestion)
 import TextReader.Answer.Model exposing (TextAnswer)
 import TextReader.Msg exposing (Msg(..))
 
-import Regex
-
 import HtmlParser
 import HtmlParser.Util
 
 import VirtualDom
 
 
-punctuation_re : Regex.Regex
-punctuation_re =
-  Regex.regex "[?!.,]"
-
-has_punctuation : String -> Bool
-has_punctuation =
-  Regex.contains punctuation_re
-
-
-tagWord : Int -> Model -> Section -> Int -> String -> Html Msg
-tagWord i model section j word =
+tagWord : Model -> Int -> Section -> Int -> String -> Html Msg
+tagWord model i section j word =
   let
     id = String.join "_" [toString i, toString j, word]
     reader_word = TextReaderWord id word
@@ -57,57 +47,6 @@ tagWord i model section j word =
           span [class "space"] []
         False ->
           VirtualDom.text word
-
-maybeParseWordWithPunctuation : String -> List String
-maybeParseWordWithPunctuation str =
-  let
-    matches = Regex.find (Regex.AtMost 1) punctuation_re str
-  in
-    case matches of
-      match :: [] ->
-        let
-          punctuation_char = String.slice match.index (match.index + 1) str
-          word = String.slice 0 match.index str
-        in
-          [word, punctuation_char]
-
-      _ ->
-        [str]
-
-intersperseWords : String -> List String -> List String
-intersperseWords token tokens =
-  let
-    whitespace = " "
-  in
-    case has_punctuation token of
-      True ->
-        tokens ++ [token]
-
-      False ->
-        tokens ++ [whitespace, token]
-
-tagWordAndToVDOM : Model -> Section -> Int -> HtmlParser.Node -> Html Msg
-tagWordAndToVDOM model section i node =
-  case node of
-    HtmlParser.Text str ->
-      let
-        words =
-             List.foldl intersperseWords []
-          <| List.concat
-          <| List.map maybeParseWordWithPunctuation (String.words str)
-      in
-        span [] (List.indexedMap (tagWord i model section) words)
-
-    HtmlParser.Element name attrs nodes ->
-      Html.node name (List.map (\(name, value) -> attribute name value) attrs)
-        (tagWordsAndToVDOM model section nodes)
-
-    (HtmlParser.Comment str) as comment ->
-        VirtualDom.text ""
-
-tagWordsAndToVDOM : Model -> Section -> List HtmlParser.Node -> List (Html Msg)
-tagWordsAndToVDOM model section text =
-  List.indexedMap (tagWordAndToVDOM model section) text
 
 view_answer : Section -> TextQuestion -> TextAnswer -> Html Msg
 view_answer text_section text_question text_answer =
@@ -223,8 +162,8 @@ view_gloss dictionary model reader_word =
 view_text_section : Model -> Section -> Html Msg
 view_text_section model section =
   let
-    text_section = TextReader.Section.Model.text_section section
-    text_body_vdom = tagWordsAndToVDOM model section (HtmlParser.parse text_section.body)
+    text_section = TextReader.Section.Model.textSection section
+    text_body_vdom = Text.Section.Words.Tag.tagWordsAndToVDOM section (tagWord model)
     section_title = ("Section " ++ (toString (text_section.order +1)) ++ "/" ++ (toString text_section.num_of_sections))
   in
     div [class "text_section"] <| [

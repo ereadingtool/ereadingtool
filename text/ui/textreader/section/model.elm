@@ -31,8 +31,8 @@ emptyTextSection = {
 questions : Section -> Array TextQuestion
 questions (Section _ questions) = questions
 
-text_section : Section -> TextSection
-text_section (Section text_section _) = text_section
+textSection : Section -> TextSection
+textSection (Section text_section _) = text_section
 
 translations : Section -> Text.Model.Words
 translations (Section text_section _) = text_section.translations
@@ -47,14 +47,14 @@ complete section =
   <| Array.toList
   <| Array.map (\question -> TextReader.Question.Model.answered question) (questions section)
 
-completed_sections : Array Section -> Int
-completed_sections sections =
+completedSections : Array Section -> Int
+completedSections sections =
      List.sum
   <| Array.toList
   <| Array.map (\section -> if (complete section) then 1 else 0) sections
 
-max_score : Section -> Int
-max_score section =
+maxScore : Section -> Int
+maxScore section =
      List.sum
   <| Array.toList
   <| Array.map (\question -> 1) (questions section)

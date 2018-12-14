@@ -23384,7 +23384,7 @@ var _user$project$TextReader_Section_Model$translations = function (_p0) {
 	var _p1 = _p0;
 	return _p1._0.translations;
 };
-var _user$project$TextReader_Section_Model$text_section = function (_p2) {
+var _user$project$TextReader_Section_Model$textSection = function (_p2) {
 	var _p3 = _p2;
 	return _p3._0;
 };
@@ -23406,7 +23406,7 @@ var _user$project$TextReader_Section_Model$complete = function (section) {
 				},
 				_user$project$TextReader_Section_Model$questions(section))));
 };
-var _user$project$TextReader_Section_Model$completed_sections = function (sections) {
+var _user$project$TextReader_Section_Model$completedSections = function (sections) {
 	return _elm_lang$core$List$sum(
 		_elm_lang$core$Array$toList(
 			A2(
@@ -23416,7 +23416,7 @@ var _user$project$TextReader_Section_Model$completed_sections = function (sectio
 				},
 				sections)));
 };
-var _user$project$TextReader_Section_Model$max_score = function (section) {
+var _user$project$TextReader_Section_Model$maxScore = function (section) {
 	return _elm_lang$core$List$sum(
 		_elm_lang$core$Array$toList(
 			A2(
@@ -24574,6 +24574,111 @@ var _user$project$Text_Translations_View$view_current_letter = F2(
 			}());
 	});
 
+var _user$project$Text_Section_Words_Tag$punctuation_re = _elm_lang$core$Regex$regex('[?!.,]');
+var _user$project$Text_Section_Words_Tag$has_punctuation = _elm_lang$core$Regex$contains(_user$project$Text_Section_Words_Tag$punctuation_re);
+var _user$project$Text_Section_Words_Tag$intersperseWords = F2(
+	function (token, tokens) {
+		var whitespace = ' ';
+		var _p0 = _user$project$Text_Section_Words_Tag$has_punctuation(token);
+		if (_p0 === true) {
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				tokens,
+				{
+					ctor: '::',
+					_0: token,
+					_1: {ctor: '[]'}
+				});
+		} else {
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				tokens,
+				{
+					ctor: '::',
+					_0: whitespace,
+					_1: {
+						ctor: '::',
+						_0: token,
+						_1: {ctor: '[]'}
+					}
+				});
+		}
+	});
+var _user$project$Text_Section_Words_Tag$maybeParseWordWithPunctuation = function (str) {
+	var matches = A3(
+		_elm_lang$core$Regex$find,
+		_elm_lang$core$Regex$AtMost(1),
+		_user$project$Text_Section_Words_Tag$punctuation_re,
+		str);
+	var _p1 = matches;
+	if ((_p1.ctor === '::') && (_p1._1.ctor === '[]')) {
+		var _p2 = _p1._0;
+		var word = A3(_elm_lang$core$String$slice, 0, _p2.index, str);
+		var punctuation_char = A3(_elm_lang$core$String$slice, _p2.index, _p2.index + 1, str);
+		return {
+			ctor: '::',
+			_0: word,
+			_1: {
+				ctor: '::',
+				_0: punctuation_char,
+				_1: {ctor: '[]'}
+			}
+		};
+	} else {
+		return {
+			ctor: '::',
+			_0: str,
+			_1: {ctor: '[]'}
+		};
+	}
+};
+var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F4(
+	function (section, tag_word, i, node) {
+		var _p3 = node;
+		switch (_p3.ctor) {
+			case 'Text':
+				var words = A3(
+					_elm_lang$core$List$foldl,
+					_user$project$Text_Section_Words_Tag$intersperseWords,
+					{ctor: '[]'},
+					_elm_lang$core$List$concat(
+						A2(
+							_elm_lang$core$List$map,
+							_user$project$Text_Section_Words_Tag$maybeParseWordWithPunctuation,
+							_elm_lang$core$String$words(_p3._0))));
+				return A2(
+					_elm_lang$html$Html$span,
+					{ctor: '[]'},
+					A2(
+						_elm_lang$core$List$indexedMap,
+						A2(tag_word, i, section),
+						words));
+			case 'Element':
+				return A3(
+					_elm_lang$html$Html$node,
+					_p3._0,
+					A2(
+						_elm_lang$core$List$map,
+						function (_p4) {
+							var _p5 = _p4;
+							return A2(_elm_lang$html$Html_Attributes$attribute, _p5._0, _p5._1);
+						},
+						_p3._1),
+					A2(_user$project$Text_Section_Words_Tag$tagWordsAndToVDOM, section, tag_word));
+			default:
+				return _elm_lang$virtual_dom$VirtualDom$text('');
+		}
+	});
+var _user$project$Text_Section_Words_Tag$tagWordsAndToVDOM = F2(
+	function (section, tag_word) {
+		var text_section = _user$project$TextReader_Section_Model$textSection(section);
+		var nodes = _jinjor$elm_html_parser$HtmlParser$parse(text_section.body);
+		return A2(
+			_elm_lang$core$List$indexedMap,
+			A2(_user$project$Text_Section_Words_Tag$tagWordAndToVDOM, section, tag_word),
+			nodes);
+	});
+
 var _user$project$TextReader_Msg$LoggedOut = function (a) {
 	return {ctor: 'LoggedOut', _0: a};
 };
@@ -25140,7 +25245,7 @@ var _user$project$TextReader_View$view_questions = function (section) {
 				text_reader_questions)));
 };
 var _user$project$TextReader_View$tagWord = F5(
-	function (i, model, section, j, word) {
+	function (model, i, section, j, word) {
 		var translations = _user$project$TextReader_Section_Model$translations(section);
 		var id = A2(
 			_elm_lang$core$String$join,
@@ -25227,116 +25332,13 @@ var _user$project$TextReader_View$tagWord = F5(
 			}
 		}
 	});
-var _user$project$TextReader_View$punctuation_re = _elm_lang$core$Regex$regex('[?!.,]');
-var _user$project$TextReader_View$has_punctuation = _elm_lang$core$Regex$contains(_user$project$TextReader_View$punctuation_re);
-var _user$project$TextReader_View$intersperseWords = F2(
-	function (token, tokens) {
-		var whitespace = ' ';
-		var _p7 = _user$project$TextReader_View$has_punctuation(token);
-		if (_p7 === true) {
-			return A2(
-				_elm_lang$core$Basics_ops['++'],
-				tokens,
-				{
-					ctor: '::',
-					_0: token,
-					_1: {ctor: '[]'}
-				});
-		} else {
-			return A2(
-				_elm_lang$core$Basics_ops['++'],
-				tokens,
-				{
-					ctor: '::',
-					_0: whitespace,
-					_1: {
-						ctor: '::',
-						_0: token,
-						_1: {ctor: '[]'}
-					}
-				});
-		}
-	});
-var _user$project$TextReader_View$maybeParseWordWithPunctuation = function (str) {
-	var matches = A3(
-		_elm_lang$core$Regex$find,
-		_elm_lang$core$Regex$AtMost(1),
-		_user$project$TextReader_View$punctuation_re,
-		str);
-	var _p8 = matches;
-	if ((_p8.ctor === '::') && (_p8._1.ctor === '[]')) {
-		var _p9 = _p8._0;
-		var word = A3(_elm_lang$core$String$slice, 0, _p9.index, str);
-		var punctuation_char = A3(_elm_lang$core$String$slice, _p9.index, _p9.index + 1, str);
-		return {
-			ctor: '::',
-			_0: word,
-			_1: {
-				ctor: '::',
-				_0: punctuation_char,
-				_1: {ctor: '[]'}
-			}
-		};
-	} else {
-		return {
-			ctor: '::',
-			_0: str,
-			_1: {ctor: '[]'}
-		};
-	}
-};
-var _user$project$TextReader_View$tagWordAndToVDOM = F4(
-	function (model, section, i, node) {
-		var _p10 = node;
-		switch (_p10.ctor) {
-			case 'Text':
-				var words = A3(
-					_elm_lang$core$List$foldl,
-					_user$project$TextReader_View$intersperseWords,
-					{ctor: '[]'},
-					_elm_lang$core$List$concat(
-						A2(
-							_elm_lang$core$List$map,
-							_user$project$TextReader_View$maybeParseWordWithPunctuation,
-							_elm_lang$core$String$words(_p10._0))));
-				return A2(
-					_elm_lang$html$Html$span,
-					{ctor: '[]'},
-					A2(
-						_elm_lang$core$List$indexedMap,
-						A3(_user$project$TextReader_View$tagWord, i, model, section),
-						words));
-			case 'Element':
-				return A3(
-					_elm_lang$html$Html$node,
-					_p10._0,
-					A2(
-						_elm_lang$core$List$map,
-						function (_p11) {
-							var _p12 = _p11;
-							return A2(_elm_lang$html$Html_Attributes$attribute, _p12._0, _p12._1);
-						},
-						_p10._1),
-					A3(_user$project$TextReader_View$tagWordsAndToVDOM, model, section, _p10._2));
-			default:
-				return _elm_lang$virtual_dom$VirtualDom$text('');
-		}
-	});
-var _user$project$TextReader_View$tagWordsAndToVDOM = F3(
-	function (model, section, text) {
-		return A2(
-			_elm_lang$core$List$indexedMap,
-			A2(_user$project$TextReader_View$tagWordAndToVDOM, model, section),
-			text);
-	});
 var _user$project$TextReader_View$view_text_section = F2(
 	function (model, section) {
-		var text_section = _user$project$TextReader_Section_Model$text_section(section);
-		var text_body_vdom = A3(
-			_user$project$TextReader_View$tagWordsAndToVDOM,
-			model,
+		var text_body_vdom = A2(
+			_user$project$Text_Section_Words_Tag$tagWordsAndToVDOM,
 			section,
-			_jinjor$elm_html_parser$HtmlParser$parse(text_section.body));
+			_user$project$TextReader_View$tagWord(model));
+		var text_section = _user$project$TextReader_Section_Model$textSection(section);
 		var section_title = A2(
 			_elm_lang$core$Basics_ops['++'],
 			'Section ',
@@ -25387,8 +25389,8 @@ var _user$project$TextReader_View$view_text_section = F2(
 			});
 	});
 var _user$project$TextReader_View$view_content = function (model) {
-	var _p13 = model.progress;
-	switch (_p13.ctor) {
+	var _p7 = model.progress;
+	switch (_p7.ctor) {
 		case 'ViewIntro':
 			return A2(
 				_elm_lang$html$Html$div,
@@ -25442,7 +25444,7 @@ var _user$project$TextReader_View$view_content = function (model) {
 				},
 				{
 					ctor: '::',
-					_0: A2(_user$project$TextReader_View$view_text_section, model, _p13._0),
+					_0: A2(_user$project$TextReader_View$view_text_section, model, _p7._0),
 					_1: {
 						ctor: '::',
 						_0: _user$project$TextReader_View$view_exceptions(model),
@@ -25469,7 +25471,7 @@ var _user$project$TextReader_View$view_content = function (model) {
 					}
 				});
 		case 'Complete':
-			return A2(_user$project$TextReader_View$view_text_complete, model, _p13._0);
+			return A2(_user$project$TextReader_View$view_text_complete, model, _p7._0);
 		default:
 			return A2(
 				_elm_lang$html$Html$div,
