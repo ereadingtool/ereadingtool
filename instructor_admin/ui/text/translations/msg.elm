@@ -10,12 +10,15 @@ import Text.Decode
 
 
 type Msg =
-    ShowLetter String
+  -- action msgs
+    EditWord Text.Model.WordInstance
+  | CloseEditWord Text.Model.WordInstance
   | MakeCorrectForContext Text.Model.TextWordTranslation
-  | UpdateTextTranslations (Result Http.Error (Dict String Text.Model.TextWords))
-  | UpdateTextTranslation (Result Http.Error (Text.Translations.Word, Text.Model.TextWordTranslation))
   | UpdateNewTranslationForTextWord Text.Model.TextWord String
   | AddNewTranslationForTextWord Text.Model.TextWord
-  | AddedTextTranslation (Result Http.Error (Text.Translations.Word, Text.Model.TextWordTranslation))
   | DeleteTranslation Text.Model.TextWord Text.Model.TextWordTranslation
+  -- result msgs
+  | UpdateTextTranslations (Result Http.Error (Dict Text.Translations.Word Text.Model.TextWord))
+  | UpdateTextTranslation (Result Http.Error (Text.Translations.Word, Text.Model.TextWordTranslation))
+  | AddedTextTranslation (Result Http.Error (Text.Translations.Word, Text.Model.TextWordTranslation))
   | DeletedTranslation (Result Http.Error Text.Decode.TextWordTranslationDeleteResp)

@@ -25,10 +25,6 @@ span {
     letter-spacing: 0;
 }
 
-.space {
-    margin-left: 6px;
-}
-
 .nav {
     grid-column: 2;
     display: grid;
@@ -161,10 +157,6 @@ span {
 
 .gloss_menu {
     position: relative;
-}
-
-.highlighted {
-    background: yellow;
 }
 
 .translations {

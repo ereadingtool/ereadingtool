@@ -608,6 +608,7 @@ body {
 
 #translations_tab {
     display: grid;
+    grid-template-columns: 15px auto 15px;
     margin: 15px 15px 15px 15px;
 }
 
@@ -632,4 +633,8 @@ body {
 
 .translation:hover > div > .translation_delete {
     visibility: visible;
+}
+
+.text_section {
+    grid-column: 2;
 }

@@ -22,17 +22,17 @@ import Flags
 update : (Msg -> msg) -> Msg -> Model -> (Model, Cmd msg)
 update parent_msg msg model =
   case msg of
-    ShowLetter letter ->
-      ({ model | current_letter = Just letter }, Cmd.none)
+    EditWord text_word ->
+      (model, Cmd.none)
+
+    CloseEditWord text_word ->
+      (model, Cmd.none)
 
     MakeCorrectForContext translation ->
       (model, updateTranslationAsCorrect parent_msg model.flags.csrftoken translation)
 
     UpdateTextTranslation (Ok (word, translation)) ->
       let
-        letter = String.left 1 (String.toUpper word)
-        letter_group = Maybe.withDefault Dict.empty (Dict.get letter model.words)
-
         update_word =
           (\value ->
             case value of
@@ -51,28 +51,15 @@ update parent_msg msg model =
               -- word not found
               Nothing -> value)
 
-        new_letter_group = Dict.update word update_word letter_group
-
-        update_word_group =
-          (\value ->
-            case value of
-              Just v ->
-                Just new_letter_group
-
-              -- word group not found
-              Nothing ->
-                value)
-
-        new_words = Dict.update letter update_word_group model.words
       in
-        ({ model | words = new_words }, Cmd.none)
+        ({ model | words = Dict.update word update_word model.words }, Cmd.none)
 
     -- handle user-friendly msgs
     UpdateTextTranslation (Err err) -> let _ = Debug.log "error decoding text translation" err in
       (model, Cmd.none)
 
-    UpdateTextTranslations (Ok translations) ->
-      ({ model | words = translations}, Cmd.none)
+    UpdateTextTranslations (Ok words) ->
+      ({ model | words = words }, Cmd.none)
 
     -- handle user-friendly msgs
     UpdateTextTranslations (Err err) -> let _ = Debug.log "error decoding text translations" err in
@@ -90,21 +77,16 @@ update parent_msg msg model =
           (model, Cmd.none)
 
     AddedTextTranslation (Ok (word, translation)) ->
-      let
-        letter = String.left 1 (String.toUpper word)
-        letter_group = Maybe.withDefault Dict.empty (Dict.get letter model.words)
-      in
-        case Dict.get word letter_group of
-          Just text_word ->
-            let
-              new_text_word = addTranslation text_word translation
-              new_letter_group = Dict.insert word new_text_word letter_group
-              new_words = Dict.insert letter new_letter_group model.words
-            in
-              ({ model | words = new_words }, Cmd.none)
+      case Dict.get word model.words of
+        Just text_word ->
+          let
+            new_text_word = addTranslation text_word translation
+            new_words = Dict.insert word new_text_word model.words
+          in
+            ({ model | words = new_words }, Cmd.none)
 
-          Nothing ->
-            (model, Cmd.none)
+        Nothing ->
+          (model, Cmd.none)
 
     -- handle user-friendly msgs
     AddedTextTranslation (Err err) -> let _ = Debug.log "error decoding adding text translations" err in
@@ -117,16 +99,12 @@ update parent_msg msg model =
       let
         word = translation_deleted_resp.word
         translation = translation_deleted_resp.translation
-
-        letter = String.left 1 (String.toUpper word)
-        letter_group = Maybe.withDefault Dict.empty (Dict.get letter model.words)
       in
-        case Dict.get word letter_group of
+        case Dict.get word model.words of
           Just text_word ->
             let
               new_text_word = removeTranslation text_word translation
-              new_letter_group = Dict.insert word new_text_word letter_group
-              new_words = Dict.insert letter new_letter_group model.words
+              new_words = Dict.insert word new_text_word model.words
             in
               ({ model | words = new_words }, Cmd.none)
 

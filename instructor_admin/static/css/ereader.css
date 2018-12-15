@@ -294,3 +294,11 @@ body {
     grid-column: 3;
     text-align: center;
 }
+
+.space {
+    margin-left: 6px;
+}
+
+.highlighted {
+    background: yellow;
+}

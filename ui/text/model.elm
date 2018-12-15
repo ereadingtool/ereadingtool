@@ -30,6 +30,7 @@ type alias TextWord = {
  , translations: Maybe (List TextWordTranslation)
  }
 
+type alias WordInstance = {id: String, text_word: TextWord}
 type alias Words = Dict Word WordValues
 type alias TextWords = Dict Word TextWord
 

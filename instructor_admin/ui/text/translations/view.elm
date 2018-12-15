@@ -13,7 +13,7 @@ import Dict exposing (Dict)
 
 import Text.Section.Words.Tag
 
-import Text.Translations exposing (Word, Translation)
+import Text.Translations exposing (Word, Translation, TextWord)
 
 import Text.Model
 import Text.Section.Model
@@ -22,17 +22,41 @@ import VirtualDom
 import HtmlParser
 
 
-tagWord : Model -> Int -> Int -> String -> Html msg
-tagWord model node_index word_index word =
+tagWord : Model -> (Msg -> msg) -> Int -> Int -> String -> Html msg
+tagWord model parent_msg node_index word_index word =
   let
     id = String.join "_" [toString node_index, toString word_index, word]
   in
-    case word == " " of
-      True ->
-        span [class "space"] []
+    case Dict.get word model.words of
+      Just text_word ->
+        let
+          word_instance = {id=id, text_word=text_word}
+        in
+          Html.node "span" [
+            classList [("defined_word", True), ("cursor", True)]
+          , onClick (parent_msg (EditWord word_instance))
+          ] [
+            span [classList [("highlighted", Text.Translations.Model.editingWord model word)]] [ VirtualDom.text word ]
+          , view_edit model parent_msg word_instance
+          ]
 
-      False ->
-        VirtualDom.text word
+      Nothing ->
+        case word == " " of
+          True ->
+            span [class "space"] []
+
+          False ->
+            VirtualDom.text word
+
+view_edit : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html msg
+view_edit model parent_msg word_instance =
+  div [] [
+    div [ classList [("gloss_overlay", True), ("gloss_menu", True)]
+        , classList [("hidden", not (Text.Translations.Model.editingWord model word_instance.text_word.word))]
+        ] [
+      view_text_word_translations parent_msg word_instance.text_word
+    ]
+  ]
 
 view_correct_for_context : Bool -> List (Html msg)
 view_correct_for_context correct =
@@ -140,33 +164,10 @@ view_word_translation msg (word, text_word) =
   , view_text_word_translations msg text_word
   ]
 
-view_current_letter : (Msg -> msg) -> Model -> Html msg
-view_current_letter msg model =
-  div [id "letter"]
-    (case model.current_letter of
-      Just letter ->
-        List.map (view_word_translation msg) (Dict.toList <| Maybe.withDefault Dict.empty (Dict.get letter model.words))
-
-      Nothing ->
-        [])
-
-view_letter_menu : (Msg -> msg) -> Model -> Html msg
-view_letter_menu msg model =
-  let
-    underlined letter = letter == Maybe.withDefault "" model.current_letter
-  in
-    div [id "letter_menu"]
-      (List.map (\letter ->
-        span [] [
-          span [classList [("cursor", True), ("underline", underlined letter)], onClick (msg (ShowLetter letter))] [
-            Html.text (String.toUpper letter)
-          ]
-        ]) (Dict.keys model.words))
-
 view_section : (Msg -> msg) -> Model -> Text.Section.Model.TextSection -> Html msg
 view_section parent_msg model section =
   let
-    text_body_vdom = Text.Section.Words.Tag.tagWordsAndToVDOM (tagWord model) (HtmlParser.parse section.body)
+    text_body_vdom = Text.Section.Words.Tag.tagWordsAndToVDOM (tagWord model parent_msg) (HtmlParser.parse section.body)
   in
     div [class "text_section"] [
       div [class "title"] [

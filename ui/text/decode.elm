@@ -124,9 +124,9 @@ textTranslationRemoveRespDecoder =
     |> required "translation" textWordTranslationsDecoder
     |> required "deleted" Decode.bool
 
-textTranslationsDecoder : Decode.Decoder (Dict String (Dict Word Text.Model.TextWord))
+textTranslationsDecoder : Decode.Decoder (Dict Word Text.Model.TextWord)
 textTranslationsDecoder =
-  Decode.dict (Decode.dict textWordDecoder)
+  Decode.dict textWordDecoder
 
 textWordTranslationsDecoder : Decode.Decoder Text.Model.TextWordTranslation
 textWordTranslationsDecoder =
