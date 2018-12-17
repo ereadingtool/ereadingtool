@@ -31,6 +31,9 @@ view_instructor_profile_menu_items instructor_profile top_level_msg =
    div [classList [("lower-menu-item", True)]] [
       Html.a [attribute "href" "/admin/texts/"] [ Html.text "Texts" ]
    ]
+ , div [classList [("lower-menu-item", True)]] [
+      Html.a [attribute "href" "/admin/text/"] [ Html.text "Create A Text" ]
+   ]
  ]
 
 view_instructor_profile_header : InstructorProfile -> (Msg -> msg) -> List (Html msg)

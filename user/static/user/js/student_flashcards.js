@@ -10380,7 +10380,38 @@ var _user$project$Instructor_View$view_instructor_profile_menu_items = F2(
 						}),
 					_1: {ctor: '[]'}
 				}),
-			_1: {ctor: '[]'}
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$classList(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'lower-menu-item', _1: true},
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$a,
+							{
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/admin/text/'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('Create A Text'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
 		};
 	});
 var _user$project$Instructor_View$view_instructor_profile_link = F2(
