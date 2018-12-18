@@ -1,7 +1,5 @@
 module Text.Translations.Update exposing (..)
 
-import Dict exposing (Dict)
-
 import Text.Model
 
 import Text.Translations.Model exposing (..)
@@ -23,36 +21,16 @@ update : (Msg -> msg) -> Msg -> Model -> (Model, Cmd msg)
 update parent_msg msg model =
   case msg of
     EditWord text_word ->
-      (model, Cmd.none)
+      (Text.Translations.Model.editWord model text_word, Cmd.none)
 
     CloseEditWord text_word ->
-      (model, Cmd.none)
+      (Text.Translations.Model.uneditWord model text_word, Cmd.none)
 
     MakeCorrectForContext translation ->
       (model, updateTranslationAsCorrect parent_msg model.flags.csrftoken translation)
 
     UpdateTextTranslation (Ok (word, translation)) ->
-      let
-        update_word =
-          (\value ->
-            case value of
-              Just v ->
-                let
-                  text_word = setNoTRCorrectForContext v
-                in
-                  case text_word.translations of
-                    Just translations ->
-                      Just
-                        { text_word | translations = Just (updateTranslation translations translation) }
-
-                    -- word has no translations
-                    Nothing -> value
-
-              -- word not found
-              Nothing -> value)
-
-      in
-        ({ model | words = Dict.update word update_word model.words }, Cmd.none)
+      (Text.Translations.Model.updateTextTranslation model word translation, Cmd.none)
 
     -- handle user-friendly msgs
     UpdateTextTranslation (Err err) -> let _ = Debug.log "error decoding text translation" err in
@@ -66,30 +44,21 @@ update parent_msg msg model =
       (model, Cmd.none)
 
     UpdateNewTranslationForTextWord text_word translation_text ->
-      ({ model | new_translations = Dict.insert text_word.word translation_text model.new_translations}, Cmd.none)
+      (Text.Translations.Model.updateTranslationsForWord model text_word translation_text, Cmd.none)
 
-    AddNewTranslationForTextWord text_word ->
-      case Dict.get text_word.word model.new_translations of
+    SubmitNewTranslationForTextWord text_word ->
+      case Text.Translations.Model.getNewTranslationForWord model text_word of
         Just translation_text ->
           (model, postTranslation parent_msg model.flags.csrftoken text_word translation_text)
 
         Nothing ->
           (model, Cmd.none)
 
-    AddedTextTranslation (Ok (word, translation)) ->
-      case Dict.get word model.words of
-        Just text_word ->
-          let
-            new_text_word = addTranslation text_word translation
-            new_words = Dict.insert word new_text_word model.words
-          in
-            ({ model | words = new_words }, Cmd.none)
-
-        Nothing ->
-          (model, Cmd.none)
+    SubmittedTextTranslation (Ok (word, translation)) ->
+      (Text.Translations.Model.addTextTranslation model word translation, Cmd.none)
 
     -- handle user-friendly msgs
-    AddedTextTranslation (Err err) -> let _ = Debug.log "error decoding adding text translations" err in
+    SubmittedTextTranslation (Err err) -> let _ = Debug.log "error decoding adding text translations" err in
       (model, Cmd.none)
 
     DeleteTranslation text_word text_translation ->
@@ -97,73 +66,16 @@ update parent_msg msg model =
 
     DeletedTranslation (Ok translation_deleted_resp) ->
       let
+        _ = Debug.log "translation_deleted_resp" translation_deleted_resp
+        _ = Debug.log "model words" model.words
         word = translation_deleted_resp.word
         translation = translation_deleted_resp.translation
       in
-        case Dict.get word model.words of
-          Just text_word ->
-            let
-              new_text_word = removeTranslation text_word translation
-              new_words = Dict.insert word new_text_word model.words
-            in
-              ({ model | words = new_words }, Cmd.none)
-
-          Nothing ->
-            (model, Cmd.none)
+        (Text.Translations.Model.removeTextTranslation model word translation, Cmd.none)
 
     -- handle user-friendly msgs
     DeletedTranslation (Err err) -> let _ = Debug.log "error decoding deleting text translations" err in
       (model, Cmd.none)
-
-
-
-addTranslation : Text.Model.TextWord -> Text.Model.TextWordTranslation -> Text.Model.TextWord
-addTranslation text_word translation =
-  let
-    new_translations =
-      (case text_word.translations of
-        Just translations ->
-          Just (translations ++ [translation])
-
-        Nothing ->
-          Nothing)
-  in
-    { text_word | translations = new_translations }
-
-removeTranslation : Text.Model.TextWord -> Text.Model.TextWordTranslation -> Text.Model.TextWord
-removeTranslation text_word translation =
-  case text_word.translations of
-    Just translations ->
-      let
-        new_translations = List.filter (\tr -> tr.id /= translation.id) translations
-      in
-        { text_word | translations = Just new_translations }
-
-    Nothing ->
-      text_word
-
-
-setNoTRCorrectForContext : Text.Model.TextWord -> Text.Model.TextWord
-setNoTRCorrectForContext text_word =
-  case text_word.translations of
-    Just translations ->
-      let
-        new_translations = List.map (\tr -> { tr | correct_for_context = False }) translations
-      in
-        { text_word | translations = Just new_translations }
-
-    Nothing ->
-      text_word
-
-updateTranslation :
-     List Text.Model.TextWordTranslation
-  -> Text.Model.TextWordTranslation
-  -> List Text.Model.TextWordTranslation
-updateTranslation translations translation =
-  let
-    update = (\tr -> if tr.id == translation.id then translation else tr)
-  in
-    List.map update translations
 
 deleteTranslation : (Msg -> msg) -> Flags.CSRFToken -> Text.Model.TextWord -> Text.Model.TextWordTranslation -> Cmd msg
 deleteTranslation msg csrftoken text_word translation =
@@ -187,7 +99,7 @@ postTranslation msg csrftoken text_word translation_text =
     request =
       HttpHelpers.post_with_headers endpoint_uri headers body Text.Decode.textTranslationAddRespDecoder
   in
-    Http.send (msg << AddedTextTranslation) request
+    Http.send (msg << SubmittedTextTranslation) request
 
 updateTranslationAsCorrect : (Msg -> msg) -> Flags.CSRFToken -> Text.Model.TextWordTranslation -> Cmd msg
 updateTranslationAsCorrect msg csrftoken translation =

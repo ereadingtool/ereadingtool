@@ -50,12 +50,11 @@ tagWord model parent_msg node_index word_index word =
 
 view_edit : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html msg
 view_edit model parent_msg word_instance =
-  div [] [
-    div [ classList [("gloss_overlay", True), ("gloss_menu", True)]
-        , classList [("hidden", not (Text.Translations.Model.editingWord model word_instance.text_word.word))]
-        ] [
-      view_text_word_translations parent_msg word_instance.text_word
-    ]
+  div [ classList [("edit_overlay", True), ("edit_menu", True)]
+      , onMouseLeave (parent_msg (CloseEditWord word_instance))
+      , classList [("hidden", not (Text.Translations.Model.editingWordInstance model word_instance))]
+      ] [
+    view_text_word_translations parent_msg word_instance.text_word
   ]
 
 view_correct_for_context : Bool -> List (Html msg)
@@ -89,7 +88,7 @@ view_add_translation msg text_word =
       , attribute "height" "17px"
       , attribute "width" "17px"
       , attribute "title" "Add a new translation."
-      , onClick (msg (AddNewTranslationForTextWord text_word))] []
+      , onClick (msg (SubmitNewTranslationForTextWord text_word))] []
     ]
   ]
 
@@ -122,7 +121,7 @@ view_text_word_translations msg text_word =
         [view_add_translation msg text_word]
 
     Nothing ->
-      div [class "translations"] [Html.text "Undefined"]
+      div [class "translations"] [view_add_translation msg text_word]
 
 view_grammeme : (String, Maybe String) -> Html Msg
 view_grammeme (grammeme, grammeme_value) =

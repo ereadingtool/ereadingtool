@@ -83,17 +83,13 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
 
         for section in self.sections.prefetch_related('translated_words__translations').all():
             for word in section.translated_words.all():
-                letter = word.word[0].upper()
-
-                words.setdefault(letter, {})
-
-                words[letter][str(word)] = {
+                words[str(word)][word.instance] = {
                     'id': word.pk,
                     'instance': word.instance,
                     'word': word.word,
                     'grammemes': word.grammemes,
                     'translations': [translation.to_dict() for translation in
-                                     word.translations.all()]
+                                     word.translations.all()] or None
                 }
 
         return words
