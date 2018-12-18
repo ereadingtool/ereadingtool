@@ -29,10 +29,10 @@ import HtmlParser.Util
 import VirtualDom
 
 
-tagWord : Model -> Section -> Int -> Int -> String -> Html Msg
-tagWord model text_reader_section node_index word_instance word =
+tagWord : Model -> Section -> Int -> String -> Html Msg
+tagWord model text_reader_section word_instance word =
   let
-    id = String.join "_" [toString node_index, toString word_instance, word]
+    id = String.join "_" [toString word_instance, word]
     reader_word = TextReaderWord id word
     translations = (TextReader.Section.Model.translations text_reader_section)
   in

@@ -1,6 +1,7 @@
 module Text.Section.Words.Tag exposing (tagWordsAndToVDOM)
 
 import Regex
+import Dict exposing (Dict)
 
 import HtmlParser
 
@@ -47,17 +48,30 @@ intersperseWords token tokens =
       False ->
         tokens ++ [whitespace, token]
 
-tagWordAndToVDOM : (Int -> Int -> String -> Html msg) -> Int -> HtmlParser.Node -> Html msg
-tagWordAndToVDOM tag_word i node =
+countOccurrences : String -> (List (String, Int), Dict String Int) -> (List (String, Int), Dict String Int)
+countOccurrences token (tokens, occurrences) =
+  let
+    num_of_prev_occurrences = Maybe.withDefault 0 (Dict.get token occurrences)
+    instance = num_of_prev_occurrences + 1
+    new_occurrences = Dict.insert token instance occurrences
+    new_tokens = tokens ++ [(token, instance)]
+  in
+    (new_tokens, new_occurrences)
+
+tagWordAndToVDOM : (Int -> String -> Html msg) -> HtmlParser.Node -> Html msg
+tagWordAndToVDOM tag_word node =
   case node of
     HtmlParser.Text str ->
       let
-        words =
-             List.foldl intersperseWords []
-          <| List.concat
+        word_tokens =
+             List.concat
           <| List.map maybeParseWordWithPunctuation (String.words str)
+
+        tokenized_text = List.foldl intersperseWords [] word_tokens
+
+        (items, _) = List.foldl countOccurrences ([], Dict.empty) tokenized_text
       in
-        span [] (List.indexedMap (tag_word i) words)
+        span [] (List.map (\(token, instance) -> tag_word instance token) items)
 
     HtmlParser.Element name attrs nodes ->
       Html.node
@@ -70,6 +84,6 @@ tagWordAndToVDOM tag_word i node =
     (HtmlParser.Comment str) as comment ->
         VirtualDom.text ""
 
-tagWordsAndToVDOM : (Int -> Int -> String -> Html msg) -> List HtmlParser.Node -> List (Html msg)
+tagWordsAndToVDOM : (Int -> String -> Html msg) -> List HtmlParser.Node -> List (Html msg)
 tagWordsAndToVDOM tag_word nodes =
-  List.indexedMap (tagWordAndToVDOM tag_word) nodes
+  List.map (tagWordAndToVDOM tag_word) nodes

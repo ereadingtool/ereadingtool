@@ -22,12 +22,12 @@ import VirtualDom
 import HtmlParser
 
 
-tagWord : Model -> (Msg -> msg) -> Int -> Int -> String -> Html msg
-tagWord model parent_msg node_index word_index word =
+tagWord : Model -> (Msg -> msg) -> Int -> String -> Html msg
+tagWord model parent_msg instance token =
   let
-    id = String.join "_" [toString node_index, toString word_index, word]
+    id = String.join "_" [toString instance, token]
   in
-    case Dict.get word model.words of
+    case Dict.get (token ++ " instance " ++ toString instance) model.words of
       Just text_word ->
         let
           word_instance = {id=id, text_word=text_word}
@@ -36,17 +36,19 @@ tagWord model parent_msg node_index word_index word =
             classList [("defined_word", True), ("cursor", True)]
           , onClick (parent_msg (EditWord word_instance))
           ] [
-            span [classList [("highlighted", Text.Translations.Model.editingWord model word)]] [ VirtualDom.text word ]
+            span [classList [("highlighted", Text.Translations.Model.editingWord model token)]] [
+              VirtualDom.text token
+            ]
           , view_edit model parent_msg word_instance
           ]
 
       Nothing ->
-        case word == " " of
+        case token == " " of
           True ->
             span [class "space"] []
 
           False ->
-            VirtualDom.text word
+            VirtualDom.text token
 
 view_edit : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html msg
 view_edit model parent_msg word_instance =

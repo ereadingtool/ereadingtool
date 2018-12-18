@@ -27277,13 +27277,33 @@ var _user$project$Text_Tags_View$view_tags = F5(
 			});
 	});
 
+var _user$project$Text_Section_Words_Tag$countOccurrences = F2(
+	function (token, _p0) {
+		var _p1 = _p0;
+		var _p2 = _p1._1;
+		var num_of_prev_occurrences = A2(
+			_elm_lang$core$Maybe$withDefault,
+			0,
+			A2(_elm_lang$core$Dict$get, token, _p2));
+		var instance = num_of_prev_occurrences + 1;
+		var new_occurrences = A3(_elm_lang$core$Dict$insert, token, instance, _p2);
+		var new_tokens = A2(
+			_elm_lang$core$Basics_ops['++'],
+			_p1._0,
+			{
+				ctor: '::',
+				_0: {ctor: '_Tuple2', _0: token, _1: instance},
+				_1: {ctor: '[]'}
+			});
+		return {ctor: '_Tuple2', _0: new_tokens, _1: new_occurrences};
+	});
 var _user$project$Text_Section_Words_Tag$punctuation_re = _elm_lang$core$Regex$regex('[?!.,]');
 var _user$project$Text_Section_Words_Tag$has_punctuation = _elm_lang$core$Regex$contains(_user$project$Text_Section_Words_Tag$punctuation_re);
 var _user$project$Text_Section_Words_Tag$intersperseWords = F2(
 	function (token, tokens) {
 		var whitespace = ' ';
-		var _p0 = _user$project$Text_Section_Words_Tag$has_punctuation(token);
-		if (_p0 === true) {
+		var _p3 = _user$project$Text_Section_Words_Tag$has_punctuation(token);
+		if (_p3 === true) {
 			return A2(
 				_elm_lang$core$Basics_ops['++'],
 				tokens,
@@ -27313,11 +27333,11 @@ var _user$project$Text_Section_Words_Tag$maybeParseWordWithPunctuation = functio
 		_elm_lang$core$Regex$AtMost(1),
 		_user$project$Text_Section_Words_Tag$punctuation_re,
 		str);
-	var _p1 = matches;
-	if ((_p1.ctor === '::') && (_p1._1.ctor === '[]')) {
-		var _p2 = _p1._0;
-		var word = A3(_elm_lang$core$String$slice, 0, _p2.index, str);
-		var punctuation_char = A3(_elm_lang$core$String$slice, _p2.index, _p2.index + 1, str);
+	var _p4 = matches;
+	if ((_p4.ctor === '::') && (_p4._1.ctor === '[]')) {
+		var _p5 = _p4._0;
+		var word = A3(_elm_lang$core$String$slice, 0, _p5.index, str);
+		var punctuation_char = A3(_elm_lang$core$String$slice, _p5.index, _p5.index + 1, str);
 		return {
 			ctor: '::',
 			_0: word,
@@ -27335,39 +27355,53 @@ var _user$project$Text_Section_Words_Tag$maybeParseWordWithPunctuation = functio
 		};
 	}
 };
-var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F3(
-	function (tag_word, i, node) {
-		var _p3 = node;
-		switch (_p3.ctor) {
+var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F2(
+	function (tag_word, node) {
+		var _p6 = node;
+		switch (_p6.ctor) {
 			case 'Text':
-				var words = A3(
+				var word_tokens = _elm_lang$core$List$concat(
+					A2(
+						_elm_lang$core$List$map,
+						_user$project$Text_Section_Words_Tag$maybeParseWordWithPunctuation,
+						_elm_lang$core$String$words(_p6._0)));
+				var tokenized_text = A3(
 					_elm_lang$core$List$foldl,
 					_user$project$Text_Section_Words_Tag$intersperseWords,
 					{ctor: '[]'},
-					_elm_lang$core$List$concat(
-						A2(
-							_elm_lang$core$List$map,
-							_user$project$Text_Section_Words_Tag$maybeParseWordWithPunctuation,
-							_elm_lang$core$String$words(_p3._0))));
+					word_tokens);
+				var _p7 = A3(
+					_elm_lang$core$List$foldl,
+					_user$project$Text_Section_Words_Tag$countOccurrences,
+					{
+						ctor: '_Tuple2',
+						_0: {ctor: '[]'},
+						_1: _elm_lang$core$Dict$empty
+					},
+					tokenized_text);
+				var items = _p7._0;
 				return A2(
 					_elm_lang$html$Html$span,
 					{ctor: '[]'},
 					A2(
-						_elm_lang$core$List$indexedMap,
-						tag_word(i),
-						words));
+						_elm_lang$core$List$map,
+						function (_p8) {
+							var _p9 = _p8;
+							return A2(tag_word, _p9._1, _p9._0);
+						},
+						items));
 			case 'Element':
 				return A3(
 					_elm_lang$html$Html$node,
-					_p3._0,
+					_p6._0,
 					A2(
 						_elm_lang$core$List$map,
-						function (_p4) {
-							var _p5 = _p4;
-							return A2(_elm_lang$html$Html_Attributes$attribute, _p5._0, _p5._1);
+						function (_p10) {
+							var _p11 = _p10;
+							return A2(_elm_lang$html$Html_Attributes$attribute, _p11._0, _p11._1);
 						},
-						_p3._1),
-					A2(_user$project$Text_Section_Words_Tag$tagWordsAndToVDOM, tag_word, _p3._2));
+						_p6._1),
+					A2(_user$project$Text_Section_Words_Tag$tagWordsAndToVDOM, tag_word, _p6._2));
 			default:
 				return _elm_lang$virtual_dom$VirtualDom$text('');
 		}
@@ -27375,7 +27409,7 @@ var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F3(
 var _user$project$Text_Section_Words_Tag$tagWordsAndToVDOM = F2(
 	function (tag_word, nodes) {
 		return A2(
-			_elm_lang$core$List$indexedMap,
+			_elm_lang$core$List$map,
 			_user$project$Text_Section_Words_Tag$tagWordAndToVDOM(tag_word),
 			nodes);
 	});
@@ -27820,25 +27854,30 @@ var _user$project$Text_Translations_View$view_edit = F3(
 				_1: {ctor: '[]'}
 			});
 	});
-var _user$project$Text_Translations_View$tagWord = F5(
-	function (model, parent_msg, node_index, word_index, word) {
+var _user$project$Text_Translations_View$tagWord = F4(
+	function (model, parent_msg, instance, token) {
 		var id = A2(
 			_elm_lang$core$String$join,
 			'_',
 			{
 				ctor: '::',
-				_0: _elm_lang$core$Basics$toString(node_index),
+				_0: _elm_lang$core$Basics$toString(instance),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$core$Basics$toString(word_index),
-					_1: {
-						ctor: '::',
-						_0: word,
-						_1: {ctor: '[]'}
-					}
+					_0: token,
+					_1: {ctor: '[]'}
 				}
 			});
-		var _p13 = A2(_elm_lang$core$Dict$get, word, model.words);
+		var _p13 = A2(
+			_elm_lang$core$Dict$get,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				token,
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					' instance ',
+					_elm_lang$core$Basics$toString(instance))),
+			model.words);
 		if (_p13.ctor === 'Just') {
 			var word_instance = {id: id, text_word: _p13._0};
 			return A3(
@@ -27876,7 +27915,7 @@ var _user$project$Text_Translations_View$tagWord = F5(
 									_0: {
 										ctor: '_Tuple2',
 										_0: 'highlighted',
-										_1: A2(_user$project$Text_Translations_Model$editingWord, model, word)
+										_1: A2(_user$project$Text_Translations_Model$editingWord, model, token)
 									},
 									_1: {ctor: '[]'}
 								}),
@@ -27884,7 +27923,7 @@ var _user$project$Text_Translations_View$tagWord = F5(
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$virtual_dom$VirtualDom$text(word),
+							_0: _elm_lang$virtual_dom$VirtualDom$text(token),
 							_1: {ctor: '[]'}
 						}),
 					_1: {
@@ -27894,7 +27933,7 @@ var _user$project$Text_Translations_View$tagWord = F5(
 					}
 				});
 		} else {
-			var _p14 = _elm_lang$core$Native_Utils.eq(word, ' ');
+			var _p14 = _elm_lang$core$Native_Utils.eq(token, ' ');
 			if (_p14 === true) {
 				return A2(
 					_elm_lang$html$Html$span,
@@ -27905,7 +27944,7 @@ var _user$project$Text_Translations_View$tagWord = F5(
 					},
 					{ctor: '[]'});
 			} else {
-				return _elm_lang$virtual_dom$VirtualDom$text(word);
+				return _elm_lang$virtual_dom$VirtualDom$text(token);
 			}
 		}
 	});
