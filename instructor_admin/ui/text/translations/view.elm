@@ -33,7 +33,8 @@ tagWord model parent_msg instance token =
           word_instance = {id=id, text_word=text_word}
         in
           Html.node "span" [
-            classList [("defined_word", True), ("cursor", True)]
+            Html.Attributes.id id
+          , classList [("defined_word", True), ("cursor", True)]
           , onClick (parent_msg (EditWord word_instance))
           ] [
             span [classList [("highlighted", Text.Translations.Model.editingWord model token)]] [

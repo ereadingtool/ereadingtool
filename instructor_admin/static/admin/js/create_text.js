@@ -25781,7 +25781,7 @@ var _user$project$Text_Translations_Model$updateTextTranslation = F3(
 	});
 var _user$project$Text_Translations_Model$editingWordInstance = F2(
 	function (model, word) {
-		return A2(_elm_lang$core$Dict$member, word.id, model.words);
+		return A2(_elm_lang$core$Dict$member, word.id, model.editing_words);
 	});
 var _user$project$Text_Translations_Model$uneditWord = F2(
 	function (model, word) {
@@ -25818,7 +25818,7 @@ var _user$project$Text_Translations_Model$editingWord = F2(
 		return A2(
 			_elm_lang$core$Dict$member,
 			_elm_lang$core$String$toLower(word),
-			model.words);
+			model.editing_words);
 	});
 var _user$project$Text_Translations_Model$init = F2(
 	function (flags, text) {
@@ -27885,22 +27885,26 @@ var _user$project$Text_Translations_View$tagWord = F4(
 				'span',
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$classList(
-						{
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'defined_word', _1: true},
-							_1: {
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'cursor', _1: true},
-								_1: {ctor: '[]'}
-							}
-						}),
+					_0: _elm_lang$html$Html_Attributes$id(id),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onClick(
-							parent_msg(
-								_user$project$Text_Translations_Msg$EditWord(word_instance))),
-						_1: {ctor: '[]'}
+						_0: _elm_lang$html$Html_Attributes$classList(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'defined_word', _1: true},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'cursor', _1: true},
+									_1: {ctor: '[]'}
+								}
+							}),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(
+								parent_msg(
+									_user$project$Text_Translations_Msg$EditWord(word_instance))),
+							_1: {ctor: '[]'}
+						}
 					}
 				},
 				{

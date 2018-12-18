@@ -28,7 +28,7 @@ init flags text = {
 
 editingWord : Model -> String -> Bool
 editingWord model word =
-  Dict.member (String.toLower word) model.words
+  Dict.member (String.toLower word) model.editing_words
 
 editWord : Model -> Text.Model.WordInstance -> Model
 editWord model word =
@@ -42,7 +42,7 @@ uneditWord model word =
 
 editingWordInstance : Model -> Text.Model.WordInstance -> Bool
 editingWordInstance model word =
-  Dict.member word.id model.words
+  Dict.member word.id model.editing_words
 
 setNoTRCorrectForContext : Text.Model.TextWord -> Text.Model.TextWord
 setNoTRCorrectForContext text_word =
