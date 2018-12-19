@@ -1,8 +1,10 @@
 module Text.Translations.Model exposing (..)
 
+import Array exposing (Array)
 import Dict exposing (Dict)
 
 import Text.Model
+import Text.Word
 import Text.Translations
 
 import Flags
@@ -11,7 +13,7 @@ import Flags
 type alias Flags = { csrftoken : Flags.CSRFToken }
 
 type alias Model = {
-   words: Dict Text.Translations.Word Text.Model.TextWord
+   words: Dict Text.Translations.Word (Array Text.Model.TextWord)
  , editing_words: Dict Text.Translations.Word Bool
  , text: Text.Model.Text
  , new_translations: Dict String String
@@ -44,50 +46,40 @@ editingWordInstance : Model -> Text.Model.WordInstance -> Bool
 editingWordInstance model word =
   Dict.member word.id model.editing_words
 
-setNoTRCorrectForContext : Text.Model.TextWord -> Text.Model.TextWord
-setNoTRCorrectForContext text_word =
-  case text_word.translations of
-    Just translations ->
-      let
-        new_translations = List.map (\tr -> { tr | correct_for_context = False }) translations
-      in
-        { text_word | translations = Just new_translations }
+getTextWord : Model -> Int -> Text.Translations.Word -> Maybe Text.Model.TextWord
+getTextWord model instance word =
+  case Dict.get word model.words of
+    Just text_words ->
+      Array.get instance text_words
 
+    -- word not found
     Nothing ->
-      text_word
+      Nothing
 
-updateTranslation :
-     List Text.Model.TextWordTranslation
-  -> Text.Model.TextWordTranslation
-  -> List Text.Model.TextWordTranslation
-updateTranslation translations translation =
-  let
-    update = (\tr -> if tr.id == translation.id then translation else tr)
-  in
-    List.map update translations
-
-updateTextTranslation : Model -> Text.Translations.Word -> Text.Model.TextWordTranslation -> Model
-updateTextTranslation model word translation =
-  let
-    update_word =
-      (\value ->
-        case value of
-          Just v ->
-            let
-              text_word = setNoTRCorrectForContext v
-            in
-              case text_word.translations of
-                Just translations ->
-                  Just
-                    { text_word | translations = Just (updateTranslation translations translation) }
-
-                -- word has no translations
-                Nothing -> value
-
-          -- word not found
-          Nothing -> value)
+setTextWord : Model -> Int -> Text.Translations.Word -> Text.Model.TextWord -> Model
+setTextWord model instance word text_word =
+  case Dict.get word model.words of
+    Just text_words ->
+      let
+        new_text_words = Array.set instance text_word text_words
       in
-        { model | words = Dict.update word update_word model.words }
+        { model | words = Dict.insert word new_text_words model.words }
+    -- word not found
+    Nothing ->
+      model
+
+updateTextTranslation : Model -> Int -> Text.Translations.Word -> Text.Model.TextWordTranslation -> Model
+updateTextTranslation model instance word translation =
+  case getTextWord model instance word of
+    Just text_word ->
+      let
+        new_text_word = Text.Word.updateTranslation (Text.Word.setNoTRCorrectForContext text_word) translation
+      in
+        setTextWord model instance word new_text_word
+
+    -- text word not found
+    Nothing ->
+      model
 
 getNewTranslationForWord : Model -> Text.Model.TextWord -> Maybe String
 getNewTranslationForWord model text_word =
@@ -97,53 +89,27 @@ updateTranslationsForWord : Model -> Text.Model.TextWord -> String -> Model
 updateTranslationsForWord model text_word translation_text =
   { model | new_translations = Dict.insert text_word.word translation_text model.new_translations }
 
-addTranslation : Text.Model.TextWord -> Text.Model.TextWordTranslation -> Text.Model.TextWord
-addTranslation text_word translation =
-  let
-    new_translations =
-      (case text_word.translations of
-        Just translations ->
-          Just (translations ++ [translation])
 
-        Nothing ->
-          Nothing)
-  in
-    { text_word | translations = new_translations }
-
-addTextTranslation : Model -> Text.Translations.Word -> Text.Model.TextWordTranslation -> Model
-addTextTranslation model word translation =
-  case Dict.get word model.words of
+addTextTranslation : Model -> Int -> Text.Translations.Word -> Text.Model.TextWordTranslation -> Model
+addTextTranslation model instance word translation =
+  case getTextWord model instance word of
     Just text_word ->
       let
-        new_text_word = addTranslation text_word translation
-        new_words = Dict.insert word new_text_word model.words
+        new_text_word = Text.Word.addTranslation text_word translation
       in
-        { model | words = new_words }
+        setTextWord model instance word new_text_word
 
     Nothing ->
       model
 
-removeTranslation : Text.Model.TextWord -> Text.Model.TextWordTranslation -> Text.Model.TextWord
-removeTranslation text_word translation =
-  case text_word.translations of
-    Just translations ->
+removeTextTranslation : Model -> Int -> Text.Translations.Word -> Text.Model.TextWordTranslation -> Model
+removeTextTranslation model instance word translation =
+  case getTextWord model instance word of
+    Just text_word ->
       let
-        new_translations = List.filter (\tr -> tr.id /= translation.id) translations
+        new_text_word = Text.Word.removeTranslation text_word translation
       in
-        { text_word | translations = Just new_translations }
+        setTextWord model instance word new_text_word
 
     Nothing ->
-      text_word
-
-removeTextTranslation : Model -> Text.Translations.Word -> Text.Model.TextWordTranslation -> Model
-removeTextTranslation model word translation =
-  case Dict.get word model.words of
-      Just text_word ->
-        let
-          new_text_word = removeTranslation text_word translation
-          new_words = Dict.insert word new_text_word model.words
-        in
-          { model | words = new_words }
-
-      Nothing ->
-        model
+      model

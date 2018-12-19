@@ -19,7 +19,7 @@ type Msg =
   | SubmitNewTranslationForTextWord Text.Model.TextWord
   | DeleteTranslation Text.Model.TextWord Text.Model.TextWordTranslation
   -- result msgs
-  | UpdateTextTranslations (Result Http.Error (Dict Text.Translations.Word Text.Model.TextWord))
-  | UpdateTextTranslation (Result Http.Error (Text.Translations.Word, Text.Model.TextWordTranslation))
-  | SubmittedTextTranslation (Result Http.Error (Text.Translations.Word, Text.Model.TextWordTranslation))
+  | UpdateTextTranslations (Result Http.Error (Dict Text.Translations.Word (Array Text.Model.TextWord)))
+  | UpdateTextTranslation (Result Http.Error (Text.Translations.Word, Int, Text.Model.TextWordTranslation))
+  | SubmittedTextTranslation (Result Http.Error (Text.Translations.Word, Int, Text.Model.TextWordTranslation))
   | DeletedTranslation (Result Http.Error Text.Decode.TextWordTranslationDeleteResp)

@@ -20,17 +20,17 @@ import Flags
 update : (Msg -> msg) -> Msg -> Model -> (Model, Cmd msg)
 update parent_msg msg model =
   case msg of
-    EditWord text_word ->
-      (Text.Translations.Model.editWord model text_word, Cmd.none)
+    EditWord word_instance ->
+      (Text.Translations.Model.editWord model word_instance, Cmd.none)
 
-    CloseEditWord text_word ->
-      (Text.Translations.Model.uneditWord model text_word, Cmd.none)
+    CloseEditWord word_instance ->
+      (Text.Translations.Model.uneditWord model word_instance, Cmd.none)
 
     MakeCorrectForContext translation ->
       (model, updateTranslationAsCorrect parent_msg model.flags.csrftoken translation)
 
-    UpdateTextTranslation (Ok (word, translation)) ->
-      (Text.Translations.Model.updateTextTranslation model word translation, Cmd.none)
+    UpdateTextTranslation (Ok (word, instance, translation)) ->
+      (Text.Translations.Model.updateTextTranslation model instance word translation, Cmd.none)
 
     -- handle user-friendly msgs
     UpdateTextTranslation (Err err) -> let _ = Debug.log "error decoding text translation" err in
@@ -54,8 +54,8 @@ update parent_msg msg model =
         Nothing ->
           (model, Cmd.none)
 
-    SubmittedTextTranslation (Ok (word, translation)) ->
-      (Text.Translations.Model.addTextTranslation model word translation, Cmd.none)
+    SubmittedTextTranslation (Ok (word, instance, translation)) ->
+      (Text.Translations.Model.addTextTranslation model instance word translation, Cmd.none)
 
     -- handle user-friendly msgs
     SubmittedTextTranslation (Err err) -> let _ = Debug.log "error decoding adding text translations" err in
@@ -68,10 +68,11 @@ update parent_msg msg model =
       let
         _ = Debug.log "translation_deleted_resp" translation_deleted_resp
         _ = Debug.log "model words" model.words
+        instance = translation_deleted_resp.instance
         word = translation_deleted_resp.word
         translation = translation_deleted_resp.translation
       in
-        (Text.Translations.Model.removeTextTranslation model word translation, Cmd.none)
+        (Text.Translations.Model.removeTextTranslation model instance word translation, Cmd.none)
 
     -- handle user-friendly msgs
     DeletedTranslation (Err err) -> let _ = Debug.log "error decoding deleting text translations" err in

@@ -1,4 +1,4 @@
-from typing import Dict, AnyStr, TypeVar, Tuple
+from typing import Dict, AnyStr, TypeVar
 
 from django.db import models
 

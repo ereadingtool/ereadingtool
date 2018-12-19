@@ -23,6 +23,7 @@ type alias TextsRespError = Dict String String
 
 type alias TextWordTranslationDeleteResp = {
     word: String
+  , instance: Int
   , translation: Text.Model.TextWordTranslation
   , deleted: Bool }
 
@@ -109,24 +110,31 @@ textDifficultyDecoder : Decode.Decoder (List TextDifficulty)
 textDifficultyDecoder =
   Decode.keyValuePairs Decode.string
 
-textTranslationUpdateRespDecoder : Decode.Decoder (Word, Text.Model.TextWordTranslation)
+textTranslationUpdateRespDecoder : Decode.Decoder (Word, Int, Text.Model.TextWordTranslation)
 textTranslationUpdateRespDecoder =
-  Decode.map2 (,) (Decode.field "word" Decode.string) (Decode.field "translation" textWordTranslationsDecoder)
+  Decode.map3 (,,)
+    (Decode.field "word" Decode.string)
+    (Decode.field "instance" Decode.int)
+    (Decode.field "translation" textWordTranslationsDecoder)
 
-textTranslationAddRespDecoder : Decode.Decoder (Word, Text.Model.TextWordTranslation)
+textTranslationAddRespDecoder : Decode.Decoder (Word, Int, Text.Model.TextWordTranslation)
 textTranslationAddRespDecoder =
-  Decode.map2 (,) (Decode.field "word" Decode.string) (Decode.field "translation" textWordTranslationsDecoder)
+  Decode.map3 (,,)
+    (Decode.field "word" Decode.string)
+    (Decode.field "instance" Decode.int)
+    (Decode.field "translation" textWordTranslationsDecoder)
 
 textTranslationRemoveRespDecoder : Decode.Decoder TextWordTranslationDeleteResp
 textTranslationRemoveRespDecoder =
   decode TextWordTranslationDeleteResp
     |> required "word" Decode.string
+    |> required "instance" Decode.int
     |> required "translation" textWordTranslationsDecoder
     |> required "deleted" Decode.bool
 
-textTranslationsDecoder : Decode.Decoder (Dict Word Text.Model.TextWord)
+textTranslationsDecoder : Decode.Decoder (Dict Word (Array Text.Model.TextWord))
 textTranslationsDecoder =
-  Decode.dict textWordDecoder
+  Decode.dict (Decode.array textWordDecoder)
 
 textWordTranslationsDecoder : Decode.Decoder Text.Model.TextWordTranslation
 textWordTranslationsDecoder =

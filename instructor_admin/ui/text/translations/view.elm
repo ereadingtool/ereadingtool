@@ -27,10 +27,10 @@ tagWord model parent_msg instance token =
   let
     id = String.join "_" [toString instance, token]
   in
-    case Dict.get (token ++ " instance " ++ toString instance) model.words of
+    case Text.Translations.Model.getTextWord model instance token of
       Just text_word ->
         let
-          word_instance = {id=id, text_word=text_word}
+          word_instance = {id=id, instance=instance, text_word=text_word}
         in
           Html.node "span" [
             Html.Attributes.id id
