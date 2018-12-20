@@ -611,8 +611,9 @@ body {
 #translations_tab {
     background: #f9f9f9;
     padding: 15px 15px 15px 15px;
-    overflow-wrap: break-word;
+
     word-wrap: break-word;
+    overflow-wrap: break-word;
     hyphens: auto;
 }
 
