@@ -644,20 +644,23 @@ body {
     grid-column: 2;
 }
 
-.edit_menu {
+.edit_overlay {
+    display: inline-block;
     position: relative;
 }
 
-.edit_overlay {
+.edit_menu {
     display: grid;
     position: absolute;
+    top: 17px;
+    left: -145px;
 
     grid-template-columns: 10px auto 10px;
     grid-template-rows: 10px auto 10px;
 
     margin-top: 5px;
 
-    z-index: 2;
+    z-index: 1;
     max-width: 200px;
 
     background: #FFFFFF;
@@ -670,6 +673,20 @@ body {
     border: solid 0.5px lightgrey;
     border-radius: 2px;
     box-shadow: 0 1px 16px rgba(0,0,0,.1);
+}
+
+.edit_overlay:after {
+    position: absolute;
+    content: '';
+    left: -30px;
+    top: 11.5px;
+    width: 20px;
+    height: 20px;
+    background-color: #FFFFFF;
+    z-index: 1;
+    transform: rotate(45deg);
+    border-top: solid 0.5px lightgrey;
+    border-left: solid 0.5px lightgrey;
 }
 
 .edit_overlay_close_btn {
