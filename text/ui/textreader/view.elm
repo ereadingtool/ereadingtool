@@ -30,24 +30,26 @@ import VirtualDom
 
 
 tagWord : Model -> Section -> Int -> String -> Html Msg
-tagWord model text_reader_section word_instance word =
+tagWord model text_reader_section instance token =
   let
-    id = String.join "_" [toString word_instance, word]
-    reader_word = TextReaderWord id word
+    id = String.join "_" [toString instance, token]
+    reader_word = TextReaderWord id (String.toLower token)
     translations = (TextReader.Section.Model.translations text_reader_section)
   in
-    if (Dict.member word translations) then
-      Html.node "span" [classList [("defined_word", True), ("cursor", True)], onClick (Gloss reader_word)] [
-        span [classList [("highlighted", TextReader.Model.glossed reader_word model.gloss)] ] [ VirtualDom.text word ]
-      , view_gloss translations model reader_word
-      ]
-    else
-      case word == " " of
+    case token == " " of
         True ->
           span [class "space"] []
 
         False ->
-          VirtualDom.text word
+          if (Dict.member (String.toLower token) translations) then
+            Html.node "span" [classList [("defined_word", True), ("cursor", True)], onClick (Gloss reader_word)] [
+              span [classList [("highlighted", TextReader.Model.glossed reader_word model.gloss)] ] [
+                VirtualDom.text token
+              ]
+            , view_gloss translations model reader_word
+            ]
+          else
+            VirtualDom.text token
 
 view_answer : Section -> TextQuestion -> TextAnswer -> Html Msg
 view_answer text_section text_question text_answer =

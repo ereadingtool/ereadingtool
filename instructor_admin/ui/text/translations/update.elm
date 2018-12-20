@@ -9,6 +9,7 @@ import Text.Encode
 import Text.Decode
 
 import Config
+import Dict
 
 import Http
 
@@ -36,7 +37,7 @@ update parent_msg msg model =
     UpdateTextTranslation (Err err) -> let _ = Debug.log "error decoding text translation" err in
       (model, Cmd.none)
 
-    UpdateTextTranslations (Ok words) ->
+    UpdateTextTranslations (Ok words) -> let _ = Debug.log "words" (Dict.keys words) in
       ({ model | words = words }, Cmd.none)
 
     -- handle user-friendly msgs

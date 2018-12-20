@@ -34,11 +34,11 @@ editingWord model word =
 
 editWord : Model -> Text.Model.WordInstance -> Model
 editWord model word =
- { model | editing_words =
+ { model | editing_words = let _ = Debug.log "editing words" model.editing_words in
    Dict.insert word.id True (Dict.insert (String.toLower word.text_word.word) True model.editing_words) }
 
 uneditWord : Model -> Text.Model.WordInstance -> Model
-uneditWord model word =
+uneditWord model word = let _ = Debug.log "editing words" model.editing_words in
  { model | editing_words =
    Dict.remove word.id (Dict.remove (String.toLower word.text_word.word) model.editing_words) }
 

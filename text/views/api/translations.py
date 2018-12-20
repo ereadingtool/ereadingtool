@@ -50,4 +50,3 @@ class TextTranslationAPIView(LoginRequiredMixin, View):
 
         except TextWordTranslation.DoesNotExist:
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
-

@@ -13,8 +13,6 @@ import Dict exposing (Dict)
 
 import Text.Section.Words.Tag
 
-import Text.Translations exposing (Word, Translation, TextWord)
-
 import Text.Model
 import Text.Section.Model
 
@@ -27,37 +25,39 @@ tagWord model parent_msg instance token =
   let
     id = String.join "_" [toString instance, token]
   in
-    case Text.Translations.Model.getTextWord model instance token of
-      Just text_word ->
-        let
-          word_instance = {id=id, instance=instance, text_word=text_word}
-        in
-          Html.node "span" [
-            Html.Attributes.id id
-          , classList [("defined_word", True), ("cursor", True)]
-          , onClick (parent_msg (EditWord word_instance))
-          ] [
-            span [classList [("highlighted", Text.Translations.Model.editingWord model token)]] [
-              VirtualDom.text token
-            ]
-          , view_edit model parent_msg word_instance
-          ]
+    case token == " " of
+      True ->
+        span [class "space"] []
 
-      Nothing ->
-        case token == " " of
-          True ->
-            span [class "space"] []
+      False ->
+        case Text.Translations.Model.getTextWord model instance (String.toLower token) of
+          Just text_word ->
+            let
+              word_instance = {id=id, instance=instance, text_word=text_word}
+            in
+              Html.node "span" [
+                Html.Attributes.id id
+              , classList [("defined_word", True), ("cursor", True)]
+              ] [
+                span [
+                  classList [("highlighted", Text.Translations.Model.editingWord model token)]
+                , onClick (parent_msg (EditWord word_instance))
+                ] [
+                  VirtualDom.text token
+                ]
+              , view_edit model parent_msg word_instance
+              ]
 
-          False ->
+          Nothing ->
             VirtualDom.text token
 
 view_edit : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html msg
 view_edit model parent_msg word_instance =
   div [ classList [("edit_overlay", True), ("edit_menu", True)]
-      , onMouseLeave (parent_msg (CloseEditWord word_instance))
       , classList [("hidden", not (Text.Translations.Model.editingWordInstance model word_instance))]
       ] [
-    view_text_word_translations parent_msg word_instance.text_word
+    view_overlay_close_btn parent_msg word_instance
+  , view_text_word_translations parent_msg word_instance
   ]
 
 view_correct_for_context : Bool -> List (Html msg)
@@ -115,16 +115,34 @@ view_text_word_translation msg text_word translation =
       (view_correct_for_context translation.correct_for_context) ++ [view_translation_delete msg text_word translation]
   ]
 
-view_text_word_translations : (Msg -> msg) -> Text.Model.TextWord -> Html msg
-view_text_word_translations msg text_word =
-  case text_word.translations of
-    Just translations_list ->
-      div [class "translations"] <|
-        (List.map (view_text_word_translation msg text_word) translations_list) ++
-        [view_add_translation msg text_word]
+view_exit_btn : Html msg
+view_exit_btn =
+  Html.img [
+      attribute "src" "/static/img/cancel.svg"
+    , attribute "height" "13px"
+    , attribute "width" "13px"
+    , class "cursor"
+    ] []
 
-    Nothing ->
-      div [class "translations"] [view_add_translation msg text_word]
+view_overlay_close_btn : (Msg -> msg) -> Text.Model.WordInstance -> Html msg
+view_overlay_close_btn parent_msg word_instance =
+  div [class "edit_overlay_close_btn", onClick (parent_msg (CloseEditWord word_instance))] [
+    view_exit_btn
+  ]
+
+view_text_word_translations : (Msg -> msg) -> Text.Model.WordInstance -> Html msg
+view_text_word_translations msg word_instance =
+  let
+    text_word = word_instance.text_word
+  in
+    div [class "translations"]
+      (case text_word.translations of
+        Just translations_list ->
+            (List.map (view_text_word_translation msg text_word) translations_list)
+         ++ [view_add_translation msg text_word]
+
+        Nothing ->
+          [view_add_translation msg text_word])
 
 view_grammeme : (String, Maybe String) -> Html Msg
 view_grammeme (grammeme, grammeme_value) =
@@ -157,14 +175,6 @@ view_grammemes_as_string grammemes =
         Just _ -> True
         Nothing -> False)
   <| List.map view_grammeme_as_string (Dict.toList grammemes)
-
-view_word_translation : (Msg -> msg) -> (Word, Text.Model.TextWord) -> Html msg
-view_word_translation msg (word, text_word) =
-  div [class "word"] [
-    div [class "word_phrase"] [ Html.text word ]
-  , div [class "grammemes"] [ Html.text <| "(" ++ (view_grammemes_as_string text_word.grammemes) ++ ")" ]
-  , view_text_word_translations msg text_word
-  ]
 
 view_section : (Msg -> msg) -> Model -> Text.Section.Model.TextSection -> Html msg
 view_section parent_msg model section =
