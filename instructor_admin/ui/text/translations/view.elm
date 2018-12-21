@@ -14,7 +14,6 @@ import Dict exposing (Dict)
 import Text.Section.Words.Tag
 
 import Text.Model
-import Text.Section.Model
 
 import VirtualDom
 import HtmlParser
@@ -178,21 +177,6 @@ view_grammemes_as_string grammemes =
         Nothing -> False)
   <| List.map view_grammeme_as_string (Dict.toList grammemes)
 
-view_section : (Msg -> msg) -> Model -> Text.Section.Model.TextSection -> Html msg
-view_section parent_msg model section =
-  let
-    (text_body_vdom, _) =
-      Text.Section.Words.Tag.tagWordsAndToVDOM (tagWord model parent_msg) Dict.empty (HtmlParser.parse section.body)
-  in
-    div [class "text_section"] [
-      div [class "title"] [
-        Html.text ("Section " ++ (toString (section.order+1)))
-      ]
-    , div [class "body"] [
-        div [] text_body_vdom
-      ]
-    ]
-
 view_translations : (Msg -> msg) -> Maybe Model -> Html msg
 view_translations msg translation_model =
   case translation_model of
@@ -200,10 +184,7 @@ view_translations msg translation_model =
       let
         sections = Array.toList model.text.sections
         text_body = String.join " " (List.map (\section -> section.body) sections)
-        (text_body_vdom, occurrences) =
-          Text.Section.Words.Tag.tagWordsAndToVDOM (tagWord model msg) Dict.empty (HtmlParser.parse text_body)
-
-        _ = Debug.log "occurrences" occurrences
+        text_body_vdom = Text.Section.Words.Tag.tagWordsAndToVDOM (tagWord model msg) (HtmlParser.parse text_body)
       in
         div [id "translations_tab"] text_body_vdom
 

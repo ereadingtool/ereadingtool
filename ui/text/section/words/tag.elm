@@ -81,7 +81,7 @@ tagWordAndToVDOM tag_word node (msgs, occurrences) =
 
     HtmlParser.Element name attrs nodes ->
       let
-        (new_msgs, new_occurrences) = tagWordsAndToVDOM tag_word occurrences nodes
+        (new_msgs, new_occurrences) = tagWordsToVDOMWithFreqs tag_word occurrences nodes
 
         new_node =
           Html.node
@@ -94,10 +94,15 @@ tagWordAndToVDOM tag_word node (msgs, occurrences) =
     (HtmlParser.Comment str) as comment ->
         (msgs ++ [VirtualDom.text ""], occurrences)
 
-tagWordsAndToVDOM :
+tagWordsToVDOMWithFreqs :
      (Int -> String -> Html msg)
   -> Dict String Int
   -> List HtmlParser.Node
   -> (List (Html msg), Dict String Int)
-tagWordsAndToVDOM tag_word occurrences nodes =
+tagWordsToVDOMWithFreqs tag_word occurrences nodes =
   List.foldl (tagWordAndToVDOM tag_word) ([], occurrences) nodes
+
+tagWordsAndToVDOM : (Int -> String -> Html msg) -> List HtmlParser.Node -> List (Html msg)
+tagWordsAndToVDOM tag_word nodes =
+    Tuple.first
+ <| tagWordsToVDOMWithFreqs tag_word Dict.empty nodes

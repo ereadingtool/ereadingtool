@@ -24382,7 +24382,7 @@ var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F3(
 					_1: new_occurrences
 				};
 			case 'Element':
-				var _p12 = A3(_user$project$Text_Section_Words_Tag$tagWordsAndToVDOM, tag_word, _p16, _p8._2);
+				var _p12 = A3(_user$project$Text_Section_Words_Tag$tagWordsToVDOMWithFreqs, tag_word, _p16, _p8._2);
 				var new_msgs = _p12._0;
 				var new_occurrences = _p12._1;
 				var new_node = A3(
@@ -24423,7 +24423,7 @@ var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F3(
 				};
 		}
 	});
-var _user$project$Text_Section_Words_Tag$tagWordsAndToVDOM = F3(
+var _user$project$Text_Section_Words_Tag$tagWordsToVDOMWithFreqs = F3(
 	function (tag_word, occurrences, nodes) {
 		return A3(
 			_elm_lang$core$List$foldl,
@@ -24434,6 +24434,11 @@ var _user$project$Text_Section_Words_Tag$tagWordsAndToVDOM = F3(
 				_1: occurrences
 			},
 			nodes);
+	});
+var _user$project$Text_Section_Words_Tag$tagWordsAndToVDOM = F2(
+	function (tag_word, nodes) {
+		return _elm_lang$core$Tuple$first(
+			A3(_user$project$Text_Section_Words_Tag$tagWordsToVDOMWithFreqs, tag_word, _elm_lang$core$Dict$empty, nodes));
 	});
 
 var _user$project$Text_Translations_View$view_grammeme_as_string = function (_p0) {
@@ -24952,66 +24957,12 @@ var _user$project$Text_Translations_View$tagWord = F4(
 			}
 		}
 	});
-var _user$project$Text_Translations_View$view_section = F3(
-	function (parent_msg, model, section) {
-		var _p12 = A3(
-			_user$project$Text_Section_Words_Tag$tagWordsAndToVDOM,
-			A2(_user$project$Text_Translations_View$tagWord, model, parent_msg),
-			_elm_lang$core$Dict$empty,
-			_jinjor$elm_html_parser$HtmlParser$parse(section.body));
-		var text_body_vdom = _p12._0;
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('text_section'),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('title'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text(
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								'Section ',
-								_elm_lang$core$Basics$toString(section.order + 1))),
-						_1: {ctor: '[]'}
-					}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('body'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{ctor: '[]'},
-								text_body_vdom),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
 var _user$project$Text_Translations_View$view_translations = F2(
 	function (msg, translation_model) {
-		var _p13 = translation_model;
-		if (_p13.ctor === 'Just') {
-			var _p16 = _p13._0;
-			var sections = _elm_lang$core$Array$toList(_p16.text.sections);
+		var _p12 = translation_model;
+		if (_p12.ctor === 'Just') {
+			var _p13 = _p12._0;
+			var sections = _elm_lang$core$Array$toList(_p13.text.sections);
 			var text_body = A2(
 				_elm_lang$core$String$join,
 				' ',
@@ -25021,14 +24972,10 @@ var _user$project$Text_Translations_View$view_translations = F2(
 						return section.body;
 					},
 					sections));
-			var _p14 = A3(
+			var text_body_vdom = A2(
 				_user$project$Text_Section_Words_Tag$tagWordsAndToVDOM,
-				A2(_user$project$Text_Translations_View$tagWord, _p16, msg),
-				_elm_lang$core$Dict$empty,
+				A2(_user$project$Text_Translations_View$tagWord, _p13, msg),
 				_jinjor$elm_html_parser$HtmlParser$parse(text_body));
-			var text_body_vdom = _p14._0;
-			var occurrences = _p14._1;
-			var _p15 = A2(_elm_lang$core$Debug$log, 'occurrences', occurrences);
 			return A2(
 				_elm_lang$html$Html$div,
 				{
@@ -25707,12 +25654,10 @@ var _user$project$TextReader_View$tagWord = F4(
 var _user$project$TextReader_View$view_text_section = F2(
 	function (model, text_reader_section) {
 		var text_section = _user$project$TextReader_Section_Model$textSection(text_reader_section);
-		var _p7 = A3(
+		var text_body_vdom = A2(
 			_user$project$Text_Section_Words_Tag$tagWordsAndToVDOM,
 			A2(_user$project$TextReader_View$tagWord, model, text_reader_section),
-			_elm_lang$core$Dict$empty,
 			_jinjor$elm_html_parser$HtmlParser$parse(text_section.body));
-		var text_body_vdom = _p7._0;
 		var section_title = A2(
 			_elm_lang$core$Basics_ops['++'],
 			'Section ',
@@ -25763,8 +25708,8 @@ var _user$project$TextReader_View$view_text_section = F2(
 			});
 	});
 var _user$project$TextReader_View$view_content = function (model) {
-	var _p8 = model.progress;
-	switch (_p8.ctor) {
+	var _p7 = model.progress;
+	switch (_p7.ctor) {
 		case 'ViewIntro':
 			return A2(
 				_elm_lang$html$Html$div,
@@ -25818,7 +25763,7 @@ var _user$project$TextReader_View$view_content = function (model) {
 				},
 				{
 					ctor: '::',
-					_0: A2(_user$project$TextReader_View$view_text_section, model, _p8._0),
+					_0: A2(_user$project$TextReader_View$view_text_section, model, _p7._0),
 					_1: {
 						ctor: '::',
 						_0: _user$project$TextReader_View$view_exceptions(model),
@@ -25845,7 +25790,7 @@ var _user$project$TextReader_View$view_content = function (model) {
 					}
 				});
 		case 'Complete':
-			return A2(_user$project$TextReader_View$view_text_complete, model, _p8._0);
+			return A2(_user$project$TextReader_View$view_text_complete, model, _p7._0);
 		default:
 			return A2(
 				_elm_lang$html$Html$div,

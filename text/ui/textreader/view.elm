@@ -166,11 +166,8 @@ view_text_section : Model -> Section -> Html Msg
 view_text_section model text_reader_section =
   let
     text_section = TextReader.Section.Model.textSection text_reader_section
-    (text_body_vdom, _) =
-      Text.Section.Words.Tag.tagWordsAndToVDOM
-      (tagWord model text_reader_section)
-      Dict.empty
-      (HtmlParser.parse text_section.body)
+    text_body_vdom =
+      Text.Section.Words.Tag.tagWordsAndToVDOM (tagWord model text_reader_section) (HtmlParser.parse text_section.body)
     section_title = ("Section " ++ (toString (text_section.order +1)) ++ "/" ++ (toString text_section.num_of_sections))
   in
     div [class "text_section"] <| [
