@@ -12153,15 +12153,22 @@ var _user$project$Main$view_footer = function (model) {
 				},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text(
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							'Showing ',
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								_elm_lang$core$Basics$toString(
-									_elm_lang$core$List$length(model.texts)),
-								' entries'))),
+					_0: function () {
+						var _p0 = model.loading;
+						if (_p0 === true) {
+							return _elm_lang$html$Html$text('Loading...');
+						} else {
+							return _elm_lang$html$Html$text(
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									'Showing ',
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										_elm_lang$core$Basics$toString(
+											_elm_lang$core$List$length(model.texts)),
+										' entries')));
+						}
+					}(),
 					_1: {ctor: '[]'}
 				}),
 			_1: {ctor: '[]'}
@@ -12193,9 +12200,9 @@ var _user$project$Main$view_tags = function (text_list_item) {
 					ctor: '::',
 					_0: _elm_lang$html$Html$text(
 						function () {
-							var _p0 = text_list_item.tags;
-							if (_p0.ctor === 'Just') {
-								return A2(_elm_lang$core$String$join, ', ', _p0._0);
+							var _p1 = text_list_item.tags;
+							if (_p1.ctor === 'Just') {
+								return A2(_elm_lang$core$String$join, ', ', _p1._0);
 							} else {
 								return '';
 							}
@@ -12549,28 +12556,28 @@ var _user$project$Main$view_texts = function (model) {
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
-var _user$project$Main$Model = F3(
-	function (a, b, c) {
-		return {texts: a, profile: b, flags: c};
+var _user$project$Main$Model = F4(
+	function (a, b, c, d) {
+		return {texts: a, profile: b, flags: c, loading: d};
 	});
 var _user$project$Main$LoggedOut = function (a) {
 	return {ctor: 'LoggedOut', _0: a};
 };
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p1 = msg;
-		switch (_p1.ctor) {
+		var _p2 = msg;
+		switch (_p2.ctor) {
 			case 'Update':
-				if (_p1._0.ctor === 'Ok') {
+				if (_p2._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{texts: _p1._0._0}),
+							{texts: _p2._0._0, loading: false}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p2 = A2(_elm_lang$core$Debug$log, 'error', _p1._0._0);
+					var _p3 = A2(_elm_lang$core$Debug$log, 'error', _p2._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'LogOut':
@@ -12580,11 +12587,11 @@ var _user$project$Main$update = F2(
 					_1: A3(_user$project$User_Profile$logout, model.profile, model.flags.csrftoken, _user$project$Main$LoggedOut)
 				};
 			default:
-				if (_p1._0.ctor === 'Ok') {
+				if (_p2._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: model,
-						_1: _user$project$Ports$redirect(_p1._0._0.redirect)
+						_1: _user$project$Ports$redirect(_p2._0._0.redirect)
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
@@ -12625,7 +12632,8 @@ var _user$project$Main$init = function (flags) {
 		_0: {
 			texts: {ctor: '[]'},
 			profile: _user$project$User_Profile$init_profile(flags),
-			flags: flags
+			flags: flags,
+			loading: true
 		},
 		_1: _user$project$Main$updateTexts(
 			{ctor: '[]'})

@@ -30,6 +30,7 @@ type alias Model = {
     texts : List TextListItem
   , profile : User.Profile.Profile
   , flags : Flags
+  , loading : Bool
   }
 
 type alias Filter = List String
@@ -39,6 +40,7 @@ init flags = ({
       texts=[]
     , profile=User.Profile.init_profile flags
     , flags=flags
+    , loading=True
   }, updateTexts [])
 
 subscriptions : Model -> Sub Msg
@@ -58,7 +60,7 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     Update (Ok texts) ->
-      ({ model | texts = texts }, Cmd.none)
+      ({ model | texts = texts, loading=False }, Cmd.none)
 
     -- handle user-friendly msgs
     Update (Err err) -> let _ = Debug.log "error" err in
@@ -150,7 +152,12 @@ view_texts model =
 view_footer : Model -> Html Msg
 view_footer model = div [classList [("footer_items", True)] ] [
     div [classList [("footer", True), ("message", True)] ] [
-        Html.text <| "Showing " ++ toString (List.length model.texts) ++ " entries"
+      (case model.loading of
+         True ->
+           Html.text "Loading..."
+
+         False ->
+           Html.text <| "Showing " ++ toString (List.length model.texts) ++ " entries")
     ]
  ]
 
