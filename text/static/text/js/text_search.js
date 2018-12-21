@@ -10696,9 +10696,9 @@ var _user$project$Text_Model$TextWord = F5(
 	function (a, b, c, d, e) {
 		return {id: a, instance: b, word: c, grammemes: d, translations: e};
 	});
-var _user$project$Text_Model$WordInstance = F2(
-	function (a, b) {
-		return {id: a, text_word: b};
+var _user$project$Text_Model$WordInstance = F3(
+	function (a, b, c) {
+		return {id: a, instance: b, text_word: c};
 	});
 var _user$project$Text_Model$Text = function (a) {
 	return function (b) {
@@ -11153,21 +11153,23 @@ var _user$project$Text_Decode$textWordTranslationsDecoder = A3(
 			'id',
 			_elm_lang$core$Json_Decode$int,
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextWordTranslation))));
-var _user$project$Text_Decode$textTranslationAddRespDecoder = A3(
-	_elm_lang$core$Json_Decode$map2,
-	F2(
-		function (v0, v1) {
-			return {ctor: '_Tuple2', _0: v0, _1: v1};
+var _user$project$Text_Decode$textTranslationAddRespDecoder = A4(
+	_elm_lang$core$Json_Decode$map3,
+	F3(
+		function (v0, v1, v2) {
+			return {ctor: '_Tuple3', _0: v0, _1: v1, _2: v2};
 		}),
 	A2(_elm_lang$core$Json_Decode$field, 'word', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'instance', _elm_lang$core$Json_Decode$int),
 	A2(_elm_lang$core$Json_Decode$field, 'translation', _user$project$Text_Decode$textWordTranslationsDecoder));
-var _user$project$Text_Decode$textTranslationUpdateRespDecoder = A3(
-	_elm_lang$core$Json_Decode$map2,
-	F2(
-		function (v0, v1) {
-			return {ctor: '_Tuple2', _0: v0, _1: v1};
+var _user$project$Text_Decode$textTranslationUpdateRespDecoder = A4(
+	_elm_lang$core$Json_Decode$map3,
+	F3(
+		function (v0, v1, v2) {
+			return {ctor: '_Tuple3', _0: v0, _1: v1, _2: v2};
 		}),
 	A2(_elm_lang$core$Json_Decode$field, 'word', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'instance', _elm_lang$core$Json_Decode$int),
 	A2(_elm_lang$core$Json_Decode$field, 'translation', _user$project$Text_Decode$textWordTranslationsDecoder));
 var _user$project$Text_Decode$textDifficultyDecoder = _elm_lang$core$Json_Decode$keyValuePairs(_elm_lang$core$Json_Decode$string);
 var _user$project$Text_Decode$textListItemDecoder = A3(
@@ -11322,7 +11324,8 @@ var _user$project$Text_Decode$textWordDecoder = A3(
 					'id',
 					_elm_lang$core$Json_Decode$int,
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextWord))))));
-var _user$project$Text_Decode$textTranslationsDecoder = _elm_lang$core$Json_Decode$dict(_user$project$Text_Decode$textWordDecoder);
+var _user$project$Text_Decode$textTranslationsDecoder = _elm_lang$core$Json_Decode$dict(
+	_elm_lang$core$Json_Decode$array(_user$project$Text_Decode$textWordDecoder));
 var _user$project$Text_Decode$TextCreateResp = F2(
 	function (a, b) {
 		return {id: a, redirect: b};
@@ -11382,9 +11385,9 @@ var _user$project$Text_Decode$textProgressDecoder = A3(
 	'updated',
 	_elm_lang$core$Json_Decode$bool,
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextProgressUpdateResp));
-var _user$project$Text_Decode$TextWordTranslationDeleteResp = F3(
-	function (a, b, c) {
-		return {word: a, translation: b, deleted: c};
+var _user$project$Text_Decode$TextWordTranslationDeleteResp = F4(
+	function (a, b, c, d) {
+		return {word: a, instance: b, translation: c, deleted: d};
 	});
 var _user$project$Text_Decode$textTranslationRemoveRespDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -11396,9 +11399,13 @@ var _user$project$Text_Decode$textTranslationRemoveRespDecoder = A3(
 		_user$project$Text_Decode$textWordTranslationsDecoder,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'word',
-			_elm_lang$core$Json_Decode$string,
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextWordTranslationDeleteResp))));
+			'instance',
+			_elm_lang$core$Json_Decode$int,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'word',
+				_elm_lang$core$Json_Decode$string,
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextWordTranslationDeleteResp)))));
 
 var _user$project$Search$Error = F2(
 	function (a, b) {

@@ -58,8 +58,12 @@ countOccurrences token (tokens, occurrences) =
   in
     (new_tokens, new_occurrences)
 
-tagWordAndToVDOM : (Int -> String -> Html msg) -> HtmlParser.Node -> Html msg
-tagWordAndToVDOM tag_word node =
+tagWordAndToVDOM :
+     (Int -> String -> Html msg)
+  -> HtmlParser.Node
+  -> (List (Html msg), Dict String Int)
+  -> (List (Html msg), Dict String Int)
+tagWordAndToVDOM tag_word node (msgs, occurrences) =
   case node of
     HtmlParser.Text str ->
       let
@@ -69,21 +73,31 @@ tagWordAndToVDOM tag_word node =
 
         tokenized_text = List.foldl intersperseWords [] word_tokens
 
-        (items, _) = List.foldl countOccurrences ([], Dict.empty) tokenized_text
+        (items, new_occurrences) = List.foldl countOccurrences ([], occurrences) tokenized_text
+
+        new_node = span [] (List.map (\(token, instance) -> tag_word instance token) items)
       in
-        span [] (List.map (\(token, instance) -> tag_word instance token) items)
+        (msgs ++ [new_node], new_occurrences)
 
     HtmlParser.Element name attrs nodes ->
-      Html.node
-        name
-        (List.map (\(name, value) ->
-          Html.Attributes.attribute name value) attrs
-        )
-        (tagWordsAndToVDOM tag_word nodes)
+      let
+        (new_msgs, new_occurrences) = tagWordsAndToVDOM tag_word occurrences nodes
+
+        new_node =
+          Html.node
+            name
+            (List.map (\(name, value) -> Html.Attributes.attribute name value) attrs)
+            new_msgs
+      in
+        (msgs ++ [new_node], new_occurrences)
 
     (HtmlParser.Comment str) as comment ->
-        VirtualDom.text ""
+        (msgs ++ [VirtualDom.text ""], occurrences)
 
-tagWordsAndToVDOM : (Int -> String -> Html msg) -> List HtmlParser.Node -> List (Html msg)
-tagWordsAndToVDOM tag_word nodes =
-  List.map (tagWordAndToVDOM tag_word) nodes
+tagWordsAndToVDOM :
+     (Int -> String -> Html msg)
+  -> Dict String Int
+  -> List HtmlParser.Node
+  -> (List (Html msg), Dict String Int)
+tagWordsAndToVDOM tag_word occurrences nodes =
+  List.foldl (tagWordAndToVDOM tag_word) ([], occurrences) nodes

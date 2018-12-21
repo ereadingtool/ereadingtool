@@ -181,7 +181,8 @@ view_grammemes_as_string grammemes =
 view_section : (Msg -> msg) -> Model -> Text.Section.Model.TextSection -> Html msg
 view_section parent_msg model section =
   let
-    text_body_vdom = Text.Section.Words.Tag.tagWordsAndToVDOM (tagWord model parent_msg) (HtmlParser.parse section.body)
+    (text_body_vdom, _) =
+      Text.Section.Words.Tag.tagWordsAndToVDOM (tagWord model parent_msg) Dict.empty (HtmlParser.parse section.body)
   in
     div [class "text_section"] [
       div [class "title"] [
@@ -198,8 +199,13 @@ view_translations msg translation_model =
     Just model ->
       let
         sections = Array.toList model.text.sections
+        text_body = String.join " " (List.map (\section -> section.body) sections)
+        (text_body_vdom, occurrences) =
+          Text.Section.Words.Tag.tagWordsAndToVDOM (tagWord model msg) Dict.empty (HtmlParser.parse text_body)
+
+        _ = Debug.log "occurrences" occurrences
       in
-        div [id "translations_tab"] (List.map (view_section msg model) sections)
+        div [id "translations_tab"] text_body_vdom
 
     Nothing ->
       div [id "translations_tab"] [
