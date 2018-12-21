@@ -10728,9 +10728,9 @@ var _user$project$Text_Model$TextWord = F5(
 	function (a, b, c, d, e) {
 		return {id: a, instance: b, word: c, grammemes: d, translations: e};
 	});
-var _user$project$Text_Model$WordInstance = F2(
-	function (a, b) {
-		return {id: a, text_word: b};
+var _user$project$Text_Model$WordInstance = F3(
+	function (a, b, c) {
+		return {id: a, instance: b, text_word: c};
 	});
 var _user$project$Text_Model$Text = function (a) {
 	return function (b) {
@@ -11938,15 +11938,7 @@ var _user$project$Views$view_logo = function (event_attr) {
 			{
 				ctor: '::',
 				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/star_logo.png'),
-				_1: {
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '60px'),
-					_1: {
-						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '205px'),
-						_1: {ctor: '[]'}
-					}
-				}
+				_1: {ctor: '[]'}
 			},
 			event_attr),
 		{ctor: '[]'});
