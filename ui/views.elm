@@ -17,8 +17,6 @@ view_logo : List (Html.Attribute msg) -> Html msg
 view_logo event_attr =
   Html.img ([
       attribute "src" "/static/img/star_logo.png"
-    , attribute "height" "60px"
-    , attribute "width" "205px"
     ] ++ event_attr) []
 
 view_header : List (Html msg) -> List (Html msg) -> Html msg

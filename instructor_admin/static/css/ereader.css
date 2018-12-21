@@ -41,10 +41,13 @@ body {
     align-items: center;
 
     border: solid 0.5px lightgrey;
+
+    padding-left: 50px;
 }
 
-.header div:nth-child(1) {
-    padding-left: 20px;
+#header img:nth-child(1) {
+    height: 50px;
+    width: 170px;
 }
 
 .menu {
@@ -62,7 +65,7 @@ body {
     display: grid;
 
     margin-top: 35px;
-    grid-template-columns: 4% auto 4%;
+    grid-template-columns: 10% auto 4%;
 
     grid-column-gap: 0;
 

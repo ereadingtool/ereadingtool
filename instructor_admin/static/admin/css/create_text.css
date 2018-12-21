@@ -214,7 +214,7 @@ body {
 #tabs {
     display: grid;
 
-    grid-template-columns: 15% 70% 15%;
+    grid-template-columns: 10% auto 10%;
 
     row-gap: 0;
 
@@ -222,7 +222,7 @@ body {
     font-size: 18px;
     font-weight: 200;
 
-    margin-top: 100px;
+    margin-top: 25px;
     margin-bottom: 15px;
 }
 
