@@ -58,6 +58,7 @@ view_edit model parent_msg word_instance =
     div [class "edit_menu"] [
       view_overlay_close_btn parent_msg word_instance
     , view_text_word_translations parent_msg word_instance
+    , view_match_translations parent_msg word_instance
     ]
   ]
 
@@ -144,6 +145,15 @@ view_text_word_translations msg word_instance =
 
         Nothing ->
           [view_add_translation msg text_word])
+
+view_match_translations : (Msg -> msg) -> Text.Model.WordInstance -> Html msg
+view_match_translations parent_msg word_instance =
+  div [class "edit_overlay_match_translations"] [
+    Html.button [ attribute "title" "Use these translations across all instances of this word"
+                , onClick (parent_msg (MatchTranslations word_instance))] [
+      Html.text "Save for all instances"
+    ]
+  ]
 
 view_grammeme : (String, Maybe String) -> Html Msg
 view_grammeme (grammeme, grammeme_value) =

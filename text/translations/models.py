@@ -65,6 +65,23 @@ class TextWordTranslation(models.Model):
         }
 
     @classmethod
+    def to_set_json_schema(cls) -> Dict:
+        schema = {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'id': {'type': 'number'},
+                    'correct_for_context': {'type': 'boolean'},
+                    'text': {'type': 'string'},
+                }
+            },
+            'minItems': 1
+        }
+
+        return schema
+
+    @classmethod
     def to_add_json_schema(cls) -> Dict:
         schema = {
             'type': 'object',

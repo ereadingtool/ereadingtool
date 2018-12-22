@@ -9,6 +9,8 @@ import Text.Encode
 import Text.Decode
 
 import Config
+
+import Array exposing (Array)
 import Dict
 
 import Http
@@ -21,6 +23,29 @@ import Flags
 update : (Msg -> msg) -> Msg -> Model -> (Model, Cmd msg)
 update parent_msg msg model =
   case msg of
+    MatchTranslations word_instance ->
+      let
+        text_word = word_instance.text_word
+        word = String.toLower text_word.word
+      in
+        case text_word.translations of
+          Just new_translations ->
+            let
+              put_translations = putTranslations parent_msg model.flags.csrftoken new_translations
+            in
+              case Text.Translations.Model.getTextWords model word of
+                Just text_words ->
+                  (model, Cmd.batch (List.map put_translations (Array.toList text_words)))
+
+                Nothing ->
+                  (model, Cmd.none)
+
+          Nothing ->
+            (model, Cmd.none)
+
+    UpdatedTextWord (Ok text_word) ->
+      (Text.Translations.Model.setTextWord model text_word.instance (String.toLower text_word.word) text_word, Cmd.none)
+
     EditWord word_instance ->
       (Text.Translations.Model.editWord model word_instance, Cmd.none)
 
@@ -32,6 +57,9 @@ update parent_msg msg model =
 
     UpdateTextTranslation (Ok (word, instance, translation)) ->
       (Text.Translations.Model.updateTextTranslation model instance word translation, Cmd.none)
+
+    UpdatedTextWord (Err err) -> let _ = Debug.log ("error updating text word" ++ toString err) in
+      (model, Cmd.none)
 
     -- handle user-friendly msgs
     UpdateTextTranslation (Err err) -> let _ = Debug.log "error decoding text translation" err in
@@ -91,6 +119,19 @@ deleteTranslation msg csrftoken text_word translation =
   in
     Http.send (msg << DeletedTranslation) request
 
+putTranslations :
+  (Msg -> msg) -> Flags.CSRFToken -> List Text.Model.TextWordTranslation -> Text.Model.TextWord -> Cmd msg
+putTranslations msg csrftoken translations text_word =
+  let
+    endpoint_uri = Config.text_word_api_endpoint text_word.id
+    headers = [Http.header "X-CSRFToken" csrftoken]
+    encoded_translations = Text.Encode.textTranslationsEncoder translations
+    body = (Http.jsonBody encoded_translations)
+    request =
+      HttpHelpers.put_with_headers endpoint_uri headers body Text.Decode.textWordDecoder
+  in
+    Http.send (msg << UpdatedTextWord) request
+
 postTranslation : (Msg -> msg) -> Flags.CSRFToken -> Text.Model.TextWord -> String -> Cmd msg
 postTranslation msg csrftoken text_word translation_text =
   let
@@ -108,7 +149,7 @@ updateTranslationAsCorrect msg csrftoken translation =
   let
     endpoint_uri = Config.text_translation_api_endpoint translation.id
     headers = [Http.header "X-CSRFToken" csrftoken]
-    encoded_translation = Text.Encode.textTranslationEncoder { translation | correct_for_context = True }
+    encoded_translation = Text.Encode.textTranslationAsCorrectEncoder { translation | correct_for_context = True }
     body = (Http.jsonBody encoded_translation)
     request =
       HttpHelpers.put_with_headers endpoint_uri headers body Text.Decode.textTranslationUpdateRespDecoder

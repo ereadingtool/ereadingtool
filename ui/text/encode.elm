@@ -28,9 +28,20 @@ textEncoder text =
             _ -> []))
     ] ++ conclusion
 
-
 textTranslationEncoder : Text.Model.TextWordTranslation -> Encode.Value
 textTranslationEncoder text_translation =
+  Encode.object [
+    ("id", Encode.int text_translation.id)
+  , ("text", Encode.string text_translation.text)
+  , ("correct_for_context", Encode.bool text_translation.correct_for_context)
+  ]
+
+textTranslationsEncoder : List Text.Model.TextWordTranslation -> Encode.Value
+textTranslationsEncoder text_translations =
+  Encode.list (List.map textTranslationEncoder text_translations)
+
+textTranslationAsCorrectEncoder : Text.Model.TextWordTranslation -> Encode.Value
+textTranslationAsCorrectEncoder text_translation =
   Encode.object [
     ("id", Encode.int text_translation.id)
   , ("correct_for_context", Encode.bool text_translation.correct_for_context)

@@ -46,6 +46,29 @@ class TextWordTranslationsAPIView(LoginRequiredMixin, View):
         except (TextWord.DoesNotExist, DatabaseError):
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
 
+    def put(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        if 'pk' not in kwargs:
+            return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
+
+        try:
+            text_word_set_translation_params = json.loads(request.body.decode('utf8'))
+
+            jsonschema.validate(text_word_set_translation_params, TextWordTranslation.to_set_json_schema())
+
+        except json.JSONDecodeError as decode_error:
+            return HttpResponse(json.dumps({'errors': {'json': str(decode_error)}}), status=400)
+
+        except jsonschema.ValidationError as validation_error:
+            return HttpResponse(json.dumps({'errors': {'json': str(validation_error)}}), status=400)
+
+        try:
+            text_word = TextWord.objects.get(pk=kwargs['pk'])
+
+            return HttpResponse(json.dumps(text_word.to_dict()))
+
+        except (TextWord.DoesNotExist, DatabaseError):
+            return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
+
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
@@ -75,5 +98,3 @@ class TextWordTranslationsAPIView(LoginRequiredMixin, View):
 
         except (TextWord.DoesNotExist, DatabaseError):
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
-
-
