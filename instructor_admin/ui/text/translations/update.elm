@@ -95,8 +95,6 @@ update parent_msg msg model =
 
     DeletedTranslation (Ok translation_deleted_resp) ->
       let
-        _ = Debug.log "translation_deleted_resp" translation_deleted_resp
-        _ = Debug.log "model words" model.words
         instance = translation_deleted_resp.instance
         word = translation_deleted_resp.word
         translation = translation_deleted_resp.translation

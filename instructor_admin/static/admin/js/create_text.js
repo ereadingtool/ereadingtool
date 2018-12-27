@@ -25933,7 +25933,11 @@ var _user$project$Text_Translations_Model$updateTextTranslation = F4(
 	});
 var _user$project$Text_Translations_Model$addTextTranslation = F4(
 	function (model, instance, word, translation) {
-		var _p5 = A3(_user$project$Text_Translations_Model$getTextWord, model, instance, word);
+		var _p5 = A3(
+			_user$project$Text_Translations_Model$getTextWord,
+			model,
+			instance,
+			_elm_lang$core$String$toLower(word));
 		if (_p5.ctor === 'Just') {
 			var new_text_word = A2(_user$project$Text_Word$addTranslation, _p5._0, translation);
 			return A4(_user$project$Text_Translations_Model$setTextWord, model, instance, word, new_text_word);
@@ -25943,7 +25947,11 @@ var _user$project$Text_Translations_Model$addTextTranslation = F4(
 	});
 var _user$project$Text_Translations_Model$removeTextTranslation = F4(
 	function (model, instance, word, translation) {
-		var _p6 = A3(_user$project$Text_Translations_Model$getTextWord, model, instance, word);
+		var _p6 = A3(
+			_user$project$Text_Translations_Model$getTextWord,
+			model,
+			instance,
+			_elm_lang$core$String$toLower(word));
 		if (_p6.ctor === 'Just') {
 			var new_text_word = A2(_user$project$Text_Word$removeTranslation, _p6._0, translation);
 			return A4(_user$project$Text_Translations_Model$setTextWord, model, instance, word, new_text_word);
@@ -29666,19 +29674,17 @@ var _user$project$Text_Translations_Update$update = F3(
 				};
 			default:
 				if (_p5._0.ctor === 'Ok') {
-					var _p18 = _p5._0._0;
-					var translation = _p18.translation;
-					var word = _p18.word;
-					var instance = _p18.instance;
-					var _p16 = A2(_elm_lang$core$Debug$log, 'model words', model.words);
-					var _p17 = A2(_elm_lang$core$Debug$log, 'translation_deleted_resp', _p18);
+					var _p16 = _p5._0._0;
+					var translation = _p16.translation;
+					var word = _p16.word;
+					var instance = _p16.instance;
 					return {
 						ctor: '_Tuple2',
 						_0: A4(_user$project$Text_Translations_Model$removeTextTranslation, model, instance, word, translation),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p19 = A2(_elm_lang$core$Debug$log, 'error decoding deleting text translations', _p5._0._0);
+					var _p17 = A2(_elm_lang$core$Debug$log, 'error decoding deleting text translations', _p5._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 		}

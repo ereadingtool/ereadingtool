@@ -38,12 +38,13 @@ class TextWordTranslationsAPIView(LoginRequiredMixin, View):
             deleted, deleted_objs = text_word_translation.delete()
 
             return HttpResponse(json.dumps({
-                'word': str(text_word_translation.word),
+                'word': str(text_word_translation.word.word).lower(),
+                'instance': text_word_translation.word.instance,
                 'translation': text_word_translation_dict,
                 'deleted': deleted >= 1
             }))
 
-        except (TextWord.DoesNotExist, DatabaseError):
+        except (TextWord.DoesNotExist, TextWordTranslation.DoesNotExist, DatabaseError):
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
@@ -69,7 +70,8 @@ class TextWordTranslationsAPIView(LoginRequiredMixin, View):
             text_word_translation = TextWordTranslation.create(**text_word_add_translation_params)
 
             return HttpResponse(json.dumps({
-                'word': str(text_word_translation.word),
+                'word': str(text_word_translation.word.word).lower(),
+                'instance': text_word.instance,
                 'translation': text_word_translation.to_dict()
             }))
 

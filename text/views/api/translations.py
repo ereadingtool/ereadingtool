@@ -65,11 +65,11 @@ class TextTranslationMergeAPIView(LoginRequiredMixin, View):
                         text_words.append(text_word)
 
             return HttpResponse(json.dumps([{
-                'word': text_word.word,
+                'word': text_word.word.lower(),
                 'grammemes': text_word.grammemes,
                 'translation':
-                    [translation.to_dict() for translation in text_word.translations]
-                    if text_word.translations else None
+                    [translation.to_dict() for translation in text_word.translations.all()]
+                    if text_word.translations.exists() else None
             } for text_word in text_words]))
 
         except (DatabaseError, TextWord.DoesNotExist) as e:
