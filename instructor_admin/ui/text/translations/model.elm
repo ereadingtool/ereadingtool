@@ -72,6 +72,22 @@ getTextWord model instance word =
     Nothing ->
       Nothing
 
+setTextWords : Model -> List Text.Model.TextWord -> Model
+setTextWords model text_words =
+  let
+    new_text_words =
+      Array.foldl
+        (\text_word text_words -> Array.set text_word.instance text_word text_words)
+        (Array.empty)
+        (Array.fromList text_words)
+  in
+    case List.head text_words of
+      Just first_text_word ->
+        { model | words = Dict.insert (String.toLower first_text_word.word) new_text_words model.words }
+
+      Nothing ->
+        model
+
 setTextWord : Model -> Int -> Text.Translations.Word -> Text.Model.TextWord -> Model
 setTextWord model instance word text_word =
   case getTextWords model word of

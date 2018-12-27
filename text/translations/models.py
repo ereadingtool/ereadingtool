@@ -1,4 +1,4 @@
-from typing import Dict, AnyStr, TypeVar
+from typing import Dict, AnyStr, Optional
 
 from django.db import models
 
@@ -105,7 +105,7 @@ class TextWordTranslation(models.Model):
         return schema
 
     @classmethod
-    def create(cls, word: TextWord, phrase: AnyStr) -> TypeVar('TextWordTranslation'):
-        text_word_translation = cls.objects.create(word=word, phrase=phrase)
+    def create(cls, word: TextWord, phrase: AnyStr, correct_for_context: Optional[bool] = False):
+        text_word_translation = cls.objects.create(word=word, phrase=phrase, correct_for_context=correct_for_context)
 
         return text_word_translation

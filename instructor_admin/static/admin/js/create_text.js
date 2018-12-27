@@ -23321,6 +23321,7 @@ var _user$project$Config$text_word_api_endpoint = function (id) {
 			_elm_lang$core$Basics$toString(id),
 			'/translation/'));
 };
+var _user$project$Config$text_translation_api_merge_endpoint = '/api/text/translations/merge/';
 var _user$project$Config$text_translation_api_endpoint = function (id) {
 	return A2(
 		_elm_lang$core$Basics_ops['++'],
@@ -24631,6 +24632,56 @@ var _user$project$Text_Encode$textTranslationAsCorrectEncoder = function (text_t
 			}
 		});
 };
+var _user$project$Text_Encode$textTranslationsMergeEncoder = F2(
+	function (text_word_translations, text_words) {
+		return _elm_lang$core$Json_Encode$object(
+			{
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'text_word_ids',
+					_1: _elm_lang$core$Json_Encode$list(
+						A2(
+							_elm_lang$core$List$map,
+							function (tw) {
+								return _elm_lang$core$Json_Encode$int(tw.id);
+							},
+							text_words))
+				},
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'translations',
+						_1: _elm_lang$core$Json_Encode$list(
+							A2(
+								_elm_lang$core$List$map,
+								function (twt) {
+									return _elm_lang$core$Json_Encode$object(
+										{
+											ctor: '::',
+											_0: {
+												ctor: '_Tuple2',
+												_0: 'correct_for_context',
+												_1: _elm_lang$core$Json_Encode$bool(twt.correct_for_context)
+											},
+											_1: {
+												ctor: '::',
+												_0: {
+													ctor: '_Tuple2',
+													_0: 'phrase',
+													_1: _elm_lang$core$Json_Encode$string(twt.text)
+												},
+												_1: {ctor: '[]'}
+											}
+										});
+								},
+								text_word_translations))
+					},
+					_1: {ctor: '[]'}
+				}
+			});
+	});
 var _user$project$Text_Encode$textTranslationEncoder = function (text_translation) {
 	return _elm_lang$core$Json_Encode$object(
 		{
@@ -25762,6 +25813,31 @@ var _user$project$Text_Translations_Model$getNewTranslationForWord = F2(
 	function (model, text_word) {
 		return A2(_elm_lang$core$Dict$get, text_word.word, model.new_translations);
 	});
+var _user$project$Text_Translations_Model$setTextWords = F2(
+	function (model, text_words) {
+		var new_text_words = A3(
+			_elm_lang$core$Array$foldl,
+			F2(
+				function (text_word, text_words) {
+					return A3(_elm_lang$core$Array$set, text_word.instance, text_word, text_words);
+				}),
+			_elm_lang$core$Array$empty,
+			_elm_lang$core$Array$fromList(text_words));
+		var _p0 = _elm_lang$core$List$head(text_words);
+		if (_p0.ctor === 'Just') {
+			return _elm_lang$core$Native_Utils.update(
+				model,
+				{
+					words: A3(
+						_elm_lang$core$Dict$insert,
+						_elm_lang$core$String$toLower(_p0._0.word),
+						new_text_words,
+						model.words)
+				});
+		} else {
+			return model;
+		}
+	});
 var _user$project$Text_Translations_Model$editingWordInstance = F2(
 	function (model, word_instance) {
 		return A2(_elm_lang$core$Dict$member, word_instance.id, model.editing_words);
@@ -25809,11 +25885,11 @@ var _user$project$Text_Translations_Model$getTextWords = F2(
 	});
 var _user$project$Text_Translations_Model$matchTranslations = F2(
 	function (model, word_instance) {
-		var _p0 = A2(
+		var _p1 = A2(
 			_user$project$Text_Translations_Model$getTextWords,
 			model,
 			_elm_lang$core$String$toLower(word_instance.text_word.word));
-		if (_p0.ctor === 'Just') {
+		if (_p1.ctor === 'Just') {
 			return model;
 		} else {
 			return model;
@@ -25821,18 +25897,18 @@ var _user$project$Text_Translations_Model$matchTranslations = F2(
 	});
 var _user$project$Text_Translations_Model$getTextWord = F3(
 	function (model, instance, word) {
-		var _p1 = A2(_user$project$Text_Translations_Model$getTextWords, model, word);
-		if (_p1.ctor === 'Just') {
-			return A2(_elm_lang$core$Array$get, instance, _p1._0);
+		var _p2 = A2(_user$project$Text_Translations_Model$getTextWords, model, word);
+		if (_p2.ctor === 'Just') {
+			return A2(_elm_lang$core$Array$get, instance, _p2._0);
 		} else {
 			return _elm_lang$core$Maybe$Nothing;
 		}
 	});
 var _user$project$Text_Translations_Model$setTextWord = F4(
 	function (model, instance, word, text_word) {
-		var _p2 = A2(_user$project$Text_Translations_Model$getTextWords, model, word);
-		if (_p2.ctor === 'Just') {
-			var new_text_words = A3(_elm_lang$core$Array$set, instance, text_word, _p2._0);
+		var _p3 = A2(_user$project$Text_Translations_Model$getTextWords, model, word);
+		if (_p3.ctor === 'Just') {
+			var new_text_words = A3(_elm_lang$core$Array$set, instance, text_word, _p3._0);
 			return _elm_lang$core$Native_Utils.update(
 				model,
 				{
@@ -25844,11 +25920,11 @@ var _user$project$Text_Translations_Model$setTextWord = F4(
 	});
 var _user$project$Text_Translations_Model$updateTextTranslation = F4(
 	function (model, instance, word, translation) {
-		var _p3 = A3(_user$project$Text_Translations_Model$getTextWord, model, instance, word);
-		if (_p3.ctor === 'Just') {
+		var _p4 = A3(_user$project$Text_Translations_Model$getTextWord, model, instance, word);
+		if (_p4.ctor === 'Just') {
 			var new_text_word = A2(
 				_user$project$Text_Word$updateTranslation,
-				_user$project$Text_Word$setNoTRCorrectForContext(_p3._0),
+				_user$project$Text_Word$setNoTRCorrectForContext(_p4._0),
 				translation);
 			return A4(_user$project$Text_Translations_Model$setTextWord, model, instance, word, new_text_word);
 		} else {
@@ -25857,9 +25933,9 @@ var _user$project$Text_Translations_Model$updateTextTranslation = F4(
 	});
 var _user$project$Text_Translations_Model$addTextTranslation = F4(
 	function (model, instance, word, translation) {
-		var _p4 = A3(_user$project$Text_Translations_Model$getTextWord, model, instance, word);
-		if (_p4.ctor === 'Just') {
-			var new_text_word = A2(_user$project$Text_Word$addTranslation, _p4._0, translation);
+		var _p5 = A3(_user$project$Text_Translations_Model$getTextWord, model, instance, word);
+		if (_p5.ctor === 'Just') {
+			var new_text_word = A2(_user$project$Text_Word$addTranslation, _p5._0, translation);
 			return A4(_user$project$Text_Translations_Model$setTextWord, model, instance, word, new_text_word);
 		} else {
 			return model;
@@ -25867,9 +25943,9 @@ var _user$project$Text_Translations_Model$addTextTranslation = F4(
 	});
 var _user$project$Text_Translations_Model$removeTextTranslation = F4(
 	function (model, instance, word, translation) {
-		var _p5 = A3(_user$project$Text_Translations_Model$getTextWord, model, instance, word);
-		if (_p5.ctor === 'Just') {
-			var new_text_word = A2(_user$project$Text_Word$removeTranslation, _p5._0, translation);
+		var _p6 = A3(_user$project$Text_Translations_Model$getTextWord, model, instance, word);
+		if (_p6.ctor === 'Just') {
+			var new_text_word = A2(_user$project$Text_Word$removeTranslation, _p6._0, translation);
 			return A4(_user$project$Text_Translations_Model$setTextWord, model, instance, word, new_text_word);
 		} else {
 			return model;
@@ -26139,6 +26215,7 @@ var _user$project$Text_Decode$textWordDecoder = A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextWord))))));
 var _user$project$Text_Decode$textTranslationsDecoder = _elm_lang$core$Json_Decode$dict(
 	_elm_lang$core$Json_Decode$array(_user$project$Text_Decode$textWordDecoder));
+var _user$project$Text_Decode$textWordsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textWordDecoder);
 var _user$project$Text_Decode$TextCreateResp = F2(
 	function (a, b) {
 		return {id: a, redirect: b};
@@ -26232,8 +26309,8 @@ var _user$project$Text_Translations_Msg$UpdateTextTranslation = function (a) {
 var _user$project$Text_Translations_Msg$UpdateTextTranslations = function (a) {
 	return {ctor: 'UpdateTextTranslations', _0: a};
 };
-var _user$project$Text_Translations_Msg$UpdatedTextWord = function (a) {
-	return {ctor: 'UpdatedTextWord', _0: a};
+var _user$project$Text_Translations_Msg$UpdatedTextWords = function (a) {
+	return {ctor: 'UpdatedTextWords', _0: a};
 };
 var _user$project$Text_Translations_Msg$MatchTranslations = function (a) {
 	return {ctor: 'MatchTranslations', _0: a};
@@ -29429,21 +29506,21 @@ var _user$project$Text_Translations_Update$postTranslation = F4(
 			request);
 	});
 var _user$project$Text_Translations_Update$putTranslations = F4(
-	function (msg, csrftoken, translations, text_word) {
-		var encoded_translations = _user$project$Text_Encode$textTranslationsEncoder(translations);
-		var body = _elm_lang$http$Http$jsonBody(encoded_translations);
+	function (msg, csrftoken, translations, text_words) {
+		var encoded_merge_request = A2(_user$project$Text_Encode$textTranslationsMergeEncoder, translations, text_words);
+		var body = _elm_lang$http$Http$jsonBody(encoded_merge_request);
 		var headers = {
 			ctor: '::',
 			_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
 			_1: {ctor: '[]'}
 		};
-		var endpoint_uri = _user$project$Config$text_word_api_endpoint(text_word.id);
-		var request = A4(_user$project$HttpHelpers$put_with_headers, endpoint_uri, headers, body, _user$project$Text_Decode$textWordDecoder);
+		var endpoint_uri = _user$project$Config$text_translation_api_merge_endpoint;
+		var request = A4(_user$project$HttpHelpers$put_with_headers, endpoint_uri, headers, body, _user$project$Text_Decode$textWordsDecoder);
 		return A2(
 			_elm_lang$http$Http$send,
 			function (_p3) {
 				return msg(
-					_user$project$Text_Translations_Msg$UpdatedTextWord(_p3));
+					_user$project$Text_Translations_Msg$UpdatedTextWords(_p3));
 			},
 			request);
 	});
@@ -29481,11 +29558,8 @@ var _user$project$Text_Translations_Update$update = F3(
 						return {
 							ctor: '_Tuple2',
 							_0: model,
-							_1: _elm_lang$core$Platform_Cmd$batch(
-								A2(
-									_elm_lang$core$List$map,
-									put_translations,
-									_elm_lang$core$Array$toList(_p7._0)))
+							_1: put_translations(
+								_elm_lang$core$Array$toList(_p7._0))
 						};
 					} else {
 						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
@@ -29511,21 +29585,15 @@ var _user$project$Text_Translations_Update$update = F3(
 					_0: model,
 					_1: A3(_user$project$Text_Translations_Update$updateTranslationAsCorrect, parent_msg, model.flags.csrftoken, _p5._0)
 				};
-			case 'UpdatedTextWord':
+			case 'UpdatedTextWords':
 				if (_p5._0.ctor === 'Ok') {
-					var _p8 = _p5._0._0;
 					return {
 						ctor: '_Tuple2',
-						_0: A4(
-							_user$project$Text_Translations_Model$setTextWord,
-							model,
-							_p8.instance,
-							_elm_lang$core$String$toLower(_p8.word),
-							_p8),
+						_0: A2(_user$project$Text_Translations_Model$setTextWords, model, _p5._0._0),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p9 = _elm_lang$core$Debug$log(
+					var _p8 = _elm_lang$core$Debug$log(
 						A2(
 							_elm_lang$core$Basics_ops['++'],
 							'error updating text word',
@@ -29540,25 +29608,25 @@ var _user$project$Text_Translations_Update$update = F3(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p10 = A2(_elm_lang$core$Debug$log, 'error decoding text translation', _p5._0._0);
+					var _p9 = A2(_elm_lang$core$Debug$log, 'error decoding text translation', _p5._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'UpdateTextTranslations':
 				if (_p5._0.ctor === 'Ok') {
-					var _p12 = _p5._0._0;
-					var _p11 = A2(
+					var _p11 = _p5._0._0;
+					var _p10 = A2(
 						_elm_lang$core$Debug$log,
 						'words',
-						_elm_lang$core$Dict$keys(_p12));
+						_elm_lang$core$Dict$keys(_p11));
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{words: _p12}),
+							{words: _p11}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p13 = A2(_elm_lang$core$Debug$log, 'error decoding text translations', _p5._0._0);
+					var _p12 = A2(_elm_lang$core$Debug$log, 'error decoding text translations', _p5._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'UpdateNewTranslationForTextWord':
@@ -29568,13 +29636,13 @@ var _user$project$Text_Translations_Update$update = F3(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'SubmitNewTranslationForTextWord':
-				var _p15 = _p5._0;
-				var _p14 = A2(_user$project$Text_Translations_Model$getNewTranslationForWord, model, _p15);
-				if (_p14.ctor === 'Just') {
+				var _p14 = _p5._0;
+				var _p13 = A2(_user$project$Text_Translations_Model$getNewTranslationForWord, model, _p14);
+				if (_p13.ctor === 'Just') {
 					return {
 						ctor: '_Tuple2',
 						_0: model,
-						_1: A4(_user$project$Text_Translations_Update$postTranslation, parent_msg, model.flags.csrftoken, _p15, _p14._0)
+						_1: A4(_user$project$Text_Translations_Update$postTranslation, parent_msg, model.flags.csrftoken, _p14, _p13._0)
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
@@ -29587,7 +29655,7 @@ var _user$project$Text_Translations_Update$update = F3(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p16 = A2(_elm_lang$core$Debug$log, 'error decoding adding text translations', _p5._0._0);
+					var _p15 = A2(_elm_lang$core$Debug$log, 'error decoding adding text translations', _p5._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'DeleteTranslation':
@@ -29598,19 +29666,19 @@ var _user$project$Text_Translations_Update$update = F3(
 				};
 			default:
 				if (_p5._0.ctor === 'Ok') {
-					var _p19 = _p5._0._0;
-					var translation = _p19.translation;
-					var word = _p19.word;
-					var instance = _p19.instance;
-					var _p17 = A2(_elm_lang$core$Debug$log, 'model words', model.words);
-					var _p18 = A2(_elm_lang$core$Debug$log, 'translation_deleted_resp', _p19);
+					var _p18 = _p5._0._0;
+					var translation = _p18.translation;
+					var word = _p18.word;
+					var instance = _p18.instance;
+					var _p16 = A2(_elm_lang$core$Debug$log, 'model words', model.words);
+					var _p17 = A2(_elm_lang$core$Debug$log, 'translation_deleted_resp', _p18);
 					return {
 						ctor: '_Tuple2',
 						_0: A4(_user$project$Text_Translations_Model$removeTextTranslation, model, instance, word, translation),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p20 = A2(_elm_lang$core$Debug$log, 'error decoding deleting text translations', _p5._0._0);
+					var _p19 = A2(_elm_lang$core$Debug$log, 'error decoding deleting text translations', _p5._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 		}

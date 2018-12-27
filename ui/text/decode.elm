@@ -143,6 +143,10 @@ textWordTranslationsDecoder =
     |> required "correct_for_context" Decode.bool
     |> required "text" Decode.string
 
+textWordsDecoder : Decode.Decoder (List Text.Model.TextWord)
+textWordsDecoder =
+  Decode.list textWordDecoder
+
 textWordDecoder : Decode.Decoder Text.Model.TextWord
 textWordDecoder =
   decode Text.Model.TextWord

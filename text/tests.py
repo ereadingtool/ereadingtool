@@ -198,7 +198,9 @@ class TestText(TestUser, TestCase):
         if diff_data:
             text_data.update(diff_data)
 
-        resp = self.instructor.post('/api/text/', json.dumps(text_data), content_type='application/json')
+        resp = self.instructor.post(reverse_lazy('text-api'),
+                                    json.dumps(text_data),
+                                    content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
@@ -214,7 +216,8 @@ class TestText(TestUser, TestCase):
         text_one = self.create_text()
         text_two = self.create_text(diff_data={'tags': ['Society and Societal Trends']})
 
-        resp = self.instructor.put('/api/text/{0}/tag/'.format(text_one.pk), json.dumps('Society and Societal Trends'),
+        resp = self.instructor.put(reverse_lazy('text-tag-api', kwargs={'pk': text_one.pk}),
+                                   json.dumps('Society and Societal Trends'),
                                    content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
@@ -223,7 +226,7 @@ class TestText(TestUser, TestCase):
 
         self.assertIn('Society and Societal Trends', [tag.name for tag in text_one.tags.all()])
 
-        resp = self.instructor.put('/api/text/{0}/tag/'.format(text_one.pk),
+        resp = self.instructor.put(reverse_lazy('text-tag-api', kwargs={'pk': text_one.pk}),
                                    json.dumps(['Sports', 'Science/Technology', 'Other']),
                                    content_type='application/json')
 
@@ -231,7 +234,7 @@ class TestText(TestUser, TestCase):
 
         self.assertEquals(text_one.tags.count(), 4)
 
-        resp = self.instructor.delete('/api/text/{0}/tag/'.format(text_one.pk),
+        resp = self.instructor.delete(reverse_lazy('text-tag-api', kwargs={'pk': text_one.pk}),
                                       json.dumps('Other'),
                                       content_type='application/json')
 
@@ -240,7 +243,7 @@ class TestText(TestUser, TestCase):
         self.assertEquals(text_one.tags.count(), 3)
         self.assertEquals(text_two.tags.count(), 1)
 
-        resp = self.instructor.delete('/api/text/{0}/tag/'.format(text_two.pk),
+        resp = self.instructor.delete(reverse_lazy('text-tag-api', kwargs={'pk': text_two.pk}),
                                       json.dumps('Society and Societal Trends'),
                                       content_type='application/json')
 
@@ -258,7 +261,7 @@ class TestText(TestUser, TestCase):
     def test_put_new_section(self):
         test_data = self.get_test_data()
 
-        resp = self.instructor.post('/api/text/', json.dumps(test_data), content_type='application/json')
+        resp = self.instructor.post(reverse_lazy('text-api'), json.dumps(test_data), content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
@@ -270,7 +273,9 @@ class TestText(TestUser, TestCase):
 
         test_data['text_sections'].append(self.gen_text_section_params(2))
 
-        resp = self.instructor.put(f'/api/text/{text_id}/', json.dumps(test_data), content_type='application/json')
+        resp = self.instructor.put(reverse_lazy('text-item-api', kwargs={'pk': text_id}),
+                                   json.dumps(test_data),
+                                   content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
@@ -381,7 +386,7 @@ class TestText(TestUser, TestCase):
     def test_put_text(self):
         test_data = self.get_test_data()
 
-        resp = self.instructor.post('/api/text/', json.dumps(test_data), content_type='application/json')
+        resp = self.instructor.post(reverse_lazy('text-api'), json.dumps(test_data), content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
@@ -395,7 +400,7 @@ class TestText(TestUser, TestCase):
         test_data['introduction'] = 'a new introduction'
         test_data['author'] = 'J. K. Idding'
 
-        resp = self.instructor.put('/api/text/{pk}/'.format(pk=text.pk), json.dumps(test_data),
+        resp = self.instructor.put(reverse_lazy('text-item-api', kwargs={'pk': text.pk}), json.dumps(test_data),
                                    content_type='application/json')
 
         self.assertEquals(resp.status_code, 200)
@@ -404,7 +409,8 @@ class TestText(TestUser, TestCase):
 
         self.assertIn('id', resp_content)
 
-        resp = self.instructor.get('/api/text/{0}/'.format(text.id), content_type='application/json')
+        resp = self.instructor.get(reverse_lazy('text-item-api', kwargs={'pk': text.id}),
+                                   content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
@@ -421,7 +427,7 @@ class TestText(TestUser, TestCase):
         test_data['text_sections'][1]['questions'][0]['body'] = 'A new question?'
         test_data['text_sections'][1]['questions'][0]['answers'][1]['text'] = 'A new answer.'
 
-        resp = self.instructor.put('/api/text/{pk}/'.format(pk=text.pk), json.dumps(test_data),
+        resp = self.instructor.put(reverse_lazy('text-item-api', kwargs={'pk': text.pk}), json.dumps(test_data),
                                    content_type='application/json')
 
         self.assertEquals(resp.status_code, 200)
@@ -430,7 +436,8 @@ class TestText(TestUser, TestCase):
 
         self.assertIn('id', resp_content)
 
-        resp = self.instructor.get('/api/text/{0}/'.format(text.id), content_type='application/json')
+        resp = self.instructor.get(reverse_lazy('text-item-api', kwargs={'pk': text.id}),
+                                   content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
@@ -444,7 +451,9 @@ class TestText(TestUser, TestCase):
     def test_text_lock(self):
         other_instructor_client = self.new_instructor_client(Client())
 
-        resp = self.instructor.post('/api/text/', json.dumps(self.get_test_data()), content_type='application/json')
+        resp = self.instructor.post(reverse_lazy('text-api'),
+                                    json.dumps(self.get_test_data()),
+                                    content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
@@ -454,27 +463,30 @@ class TestText(TestUser, TestCase):
 
         text = Text.objects.get(pk=resp_content['id'])
 
-        resp = self.instructor.post('/api/text/{0}/lock/'.format(text.pk), content_type='application/json')
+        lock_api_endpoint_for_text = reverse_lazy('text-lock-api', kwargs={'pk': text.pk})
+
+        resp = self.instructor.post(reverse_lazy('text-lock-api', kwargs={'pk': text.pk}),
+                                    content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
-        resp = other_instructor_client.post('/api/text/{0}/lock/'.format(text.pk), content_type='application/json')
+        resp = other_instructor_client.post(lock_api_endpoint_for_text, content_type='application/json')
 
         self.assertEquals(resp.status_code, 500, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
-        resp = other_instructor_client.delete('/api/text/{0}/lock/'.format(text.pk), content_type='application/json')
+        resp = other_instructor_client.delete(lock_api_endpoint_for_text, content_type='application/json')
 
         self.assertEquals(resp.status_code, 500, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
-        resp = self.instructor.delete('/api/text/{0}/lock/'.format(text.pk), content_type='application/json')
+        resp = self.instructor.delete(lock_api_endpoint_for_text, content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
-        resp = other_instructor_client.post('/api/text/{0}/lock/'.format(text.pk), content_type='application/json')
+        resp = other_instructor_client.post(lock_api_endpoint_for_text, content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
-        resp = self.instructor.post('/api/text/{0}/lock/'.format(text.pk), content_type='application/json')
+        resp = self.instructor.post(lock_api_endpoint_for_text, content_type='application/json')
 
         self.assertEquals(resp.status_code, 500, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
@@ -484,7 +496,7 @@ class TestText(TestUser, TestCase):
         for answer in test_data['text_sections'][0]['questions'][0]['answers']:
             answer['correct'] = False
 
-        resp = self.instructor.post('/api/text/', json.dumps(test_data), content_type='application/json')
+        resp = self.instructor.post(reverse_lazy('text-api'), json.dumps(test_data), content_type='application/json')
 
         self.assertEquals(resp.status_code, 400, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
@@ -498,7 +510,7 @@ class TestText(TestUser, TestCase):
         # set one correct answer
         test_data['text_sections'][0]['questions'][0]['answers'][0]['correct'] = True
 
-        resp = self.instructor.post('/api/text/', json.dumps(test_data), content_type='application/json')
+        resp = self.instructor.post(reverse_lazy('text-api'), json.dumps(test_data), content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
@@ -513,7 +525,7 @@ class TestText(TestUser, TestCase):
         # no limit for text section bodies
         test_data['text_sections'][0]['body'] = 'a' * test_text_section_body_size
 
-        resp = self.instructor.post('/api/text/', json.dumps(test_data), content_type='application/json')
+        resp = self.instructor.post(reverse_lazy('text-api'), json.dumps(test_data), content_type='application/json')
 
         self.assertEquals(resp.status_code, 400, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
@@ -530,7 +542,7 @@ class TestText(TestUser, TestCase):
 
         test_data['text_sections'][0]['questions'][0]['answers'][0]['feedback'] = 'a'
 
-        resp = self.instructor.post('/api/text/', json.dumps(test_data), content_type='application/json')
+        resp = self.instructor.post(reverse_lazy('text-api'), json.dumps(test_data), content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
@@ -549,11 +561,13 @@ class TestText(TestUser, TestCase):
 
         num_of_sections = len(test_data['text_sections'])
 
-        resp = self.instructor.post('/api/text/', json.dumps({"malformed": "json"}), content_type='application/json')
+        resp = self.instructor.post(reverse_lazy('text-api'),
+                                    json.dumps({"malformed": "json"}),
+                                    content_type='application/json')
 
         self.assertEquals(resp.status_code, 400)
 
-        resp = self.instructor.post('/api/text/', json.dumps(test_data), content_type='application/json')
+        resp = self.instructor.post(reverse_lazy('text-api'), json.dumps(test_data), content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
@@ -568,7 +582,8 @@ class TestText(TestUser, TestCase):
 
         self.assertEquals(TextSection.objects.count(), num_of_sections)
 
-        resp = self.instructor.get('/api/text/{0}/'.format(text.id), content_type='application/json')
+        resp = self.instructor.get(reverse_lazy('text-item-api', kwargs={'pk': text.id}),
+                                   content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
@@ -583,7 +598,9 @@ class TestText(TestUser, TestCase):
         return text
 
     def test_delete_text(self):
-        resp = self.instructor.post('/api/text/', json.dumps(self.get_test_data()), content_type='application/json')
+        resp = self.instructor.post(reverse_lazy('text-api'),
+                                    json.dumps(self.get_test_data()),
+                                    content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
@@ -593,7 +610,8 @@ class TestText(TestUser, TestCase):
 
         self.assertIn('id', resp_content)
 
-        resp = self.instructor.delete('/api/text/{0}/'.format(resp_content['id']), content_type='application/json')
+        resp = self.instructor.delete(reverse_lazy('text-item-api', kwargs={'pk': resp_content['id']}),
+                                      content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
@@ -619,10 +637,12 @@ class TestText(TestUser, TestCase):
 
         return test_data
 
-    def gen_question_type(self) -> AnyStr:
+    @classmethod
+    def gen_question_type(cls) -> AnyStr:
         return one_of([just('main_idea'), just('detail')]).example()
 
-    def gen_text_section_question_params(self, order: int) -> Dict:
+    @classmethod
+    def gen_text_section_question_params(cls, order: int) -> Dict:
         return {'body': f'Question {order+1}?',
                 'order': order,
                 'answers': [
@@ -641,7 +661,7 @@ class TestText(TestUser, TestCase):
                   {'text': 'Click to write choice 4',
                    'correct': True,
                    'order': 3, 'feedback': 'Answer 4 Feedback.'}
-                  ], 'question_type': self.gen_question_type()}
+                  ], 'question_type': cls.gen_question_type()}
 
     def add_questions_to_test_data(self, test_data: Dict, section: int, num_of_questions: int) -> Dict:
         first_question = test_data['text_sections'][section]['questions'][0]
@@ -652,15 +672,17 @@ class TestText(TestUser, TestCase):
 
         return test_data
 
-    def gen_text_section_params(self, order: int, question_params: Optional[List[Dict]]=None) -> Dict:
+    @classmethod
+    def gen_text_section_params(cls, order: int, question_params: Optional[List[Dict]] = None) -> Dict:
         return {
             'order': order,
             'body': f'<p style="text-align:center">section {order}</p>\n',
-            'questions': question_params or [self.gen_text_section_question_params(order=0),
-                                             self.gen_text_section_question_params(order=1)]
+            'questions': question_params or [cls.gen_text_section_question_params(order=0),
+                                             cls.gen_text_section_question_params(order=1)]
          }
 
-    def get_test_data(self, section_params: Optional[List[Dict]]=None) -> Dict:
+    @classmethod
+    def get_test_data(cls, section_params: Optional[List[Dict]] = None) -> Dict:
         return {
             'title': 'text title',
             'introduction': 'an introduction to the text',
@@ -669,5 +691,5 @@ class TestText(TestUser, TestCase):
             'tags': ['Sports', 'Science/Technology', 'Other'],
             'author': 'author',
             'source': 'source',
-            'text_sections': section_params or [self.gen_text_section_params(0), self.gen_text_section_params(1)]
+            'text_sections': section_params or [cls.gen_text_section_params(0), cls.gen_text_section_params(1)]
         }
