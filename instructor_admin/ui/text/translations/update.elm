@@ -11,7 +11,6 @@ import Text.Decode
 import Config
 
 import Array exposing (Array)
-import Dict
 
 import Http
 
@@ -58,14 +57,14 @@ update parent_msg msg model =
     UpdateTextTranslation (Ok (word, instance, translation)) ->
       (Text.Translations.Model.updateTextTranslation model instance word translation, Cmd.none)
 
-    UpdatedTextWords (Err err) -> let _ = Debug.log ("error updating text word" ++ toString err) in
+    UpdatedTextWords (Err err) -> let _ = Debug.log ("error updating text words" ++ toString err) in
       (model, Cmd.none)
 
     -- handle user-friendly msgs
     UpdateTextTranslation (Err err) -> let _ = Debug.log "error decoding text translation" err in
       (model, Cmd.none)
 
-    UpdateTextTranslations (Ok words) -> let _ = Debug.log "words" (Dict.keys words) in
+    UpdateTextTranslations (Ok words) ->
       ({ model | words = words }, Cmd.none)
 
     -- handle user-friendly msgs
@@ -124,7 +123,7 @@ putTranslations msg csrftoken translations text_words =
     endpoint_uri = Config.text_translation_api_merge_endpoint
     headers = [Http.header "X-CSRFToken" csrftoken]
     encoded_merge_request = Text.Encode.textTranslationsMergeEncoder translations text_words
-    body = (Http.jsonBody encoded_merge_request)
+    body = Http.jsonBody encoded_merge_request
     request =
       HttpHelpers.put_with_headers endpoint_uri headers body Text.Decode.textWordsDecoder
   in

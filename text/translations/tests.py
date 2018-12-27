@@ -10,7 +10,7 @@ from django.test.client import Client
 
 from text.models import Text
 
-from text.translations.models import TextWord
+from text.translations.models import TextWord, TextWordTranslation
 
 from text.tests import TestText
 from ereadingtool.test.user import TestUser
@@ -62,3 +62,7 @@ class TestTextWordTranslations(TestUser, TestCase):
         )
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        translations = TextWordTranslation.objects.filter(word=test_text_word)
+
+        self.assertEquals(len(translations), 3)

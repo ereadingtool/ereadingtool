@@ -58,11 +58,13 @@ class TextTranslationMergeAPIView(LoginRequiredMixin, View):
                 text_word = TextWord.objects.get(pk=text_word_id)
 
                 with transaction.atomic():
-                    TextWordTranslation.objects.filter(pk=text_word.pk).delete()
+                    TextWordTranslation.objects.filter(word=text_word.pk).delete()
 
                     for translation in translation_merge_params['translations']:
                         translation['word'] = text_word
-                        text_words.append(text_word)
+                        TextWordTranslation.create(**translation)
+
+                    text_words.append(text_word)
 
             return HttpResponse(json.dumps([{
                 'word': text_word.word.lower(),

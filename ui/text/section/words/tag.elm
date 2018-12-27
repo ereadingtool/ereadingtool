@@ -51,10 +51,11 @@ intersperseWords token tokens =
 countOccurrences : String -> (List (String, Int), Dict String Int) -> (List (String, Int), Dict String Int)
 countOccurrences token (tokens, occurrences) =
   let
-    num_of_prev_occurrences = Maybe.withDefault -1 (Dict.get token occurrences)
+    normalized_token = String.toLower token
+    num_of_prev_occurrences = Maybe.withDefault -1 (Dict.get normalized_token occurrences)
     instance = num_of_prev_occurrences + 1
-    new_occurrences = Dict.insert token instance occurrences
-    new_tokens = tokens ++ [(token, instance)]
+    new_occurrences = Dict.insert normalized_token instance occurrences
+    new_tokens = tokens ++ [(normalized_token, instance)]
   in
     (new_tokens, new_occurrences)
 
