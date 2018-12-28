@@ -52,15 +52,19 @@ tagWord model parent_msg instance token =
 
 view_edit : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html msg
 view_edit model parent_msg word_instance =
-  div [ class "edit_overlay"
-      , classList [("hidden", not (Text.Translations.Model.editingWordInstance model word_instance))]
-      ] [
-    div [class "edit_menu"] [
-      view_overlay_close_btn parent_msg word_instance
-    , view_text_word_translations parent_msg word_instance
-    , view_match_translations parent_msg word_instance
+  let
+    normalized_word = String.toLower word_instance.text_word.word
+    instance_count = Text.Translations.Model.instanceCount model normalized_word
+  in
+    div [ class "edit_overlay"
+        , classList [("hidden", not (Text.Translations.Model.editingWordInstance model word_instance))]
+        ] [
+      div [class "edit_menu"] <| [
+        view_overlay_close_btn parent_msg word_instance
+      , view_text_word_translations parent_msg word_instance
+      ] ++
+        (if instance_count > 1 then [view_match_translations parent_msg word_instance] else [])
     ]
-  ]
 
 view_correct_for_context : Bool -> List (Html msg)
 view_correct_for_context correct =

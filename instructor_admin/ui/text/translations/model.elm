@@ -31,6 +31,15 @@ init flags text = {
  , flags=flags }
 
 
+instanceCount : Model -> Text.Translations.Word -> Int
+instanceCount model word =
+  case getTextWords model word of
+    Just text_words ->
+      Array.length text_words
+
+    Nothing ->
+      0
+
 getTextWords : Model -> Text.Translations.Word -> Maybe (Array Text.Model.TextWord)
 getTextWords model word =
   Dict.get word model.words

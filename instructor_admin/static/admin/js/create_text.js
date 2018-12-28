@@ -25954,6 +25954,15 @@ var _user$project$Text_Translations_Model$removeTextTranslation = F4(
 			return model;
 		}
 	});
+var _user$project$Text_Translations_Model$instanceCount = F2(
+	function (model, word) {
+		var _p10 = A2(_user$project$Text_Translations_Model$getTextWords, model, word);
+		if (_p10.ctor === 'Just') {
+			return _elm_lang$core$Array$length(_p10._0);
+		} else {
+			return 0;
+		}
+	});
 var _user$project$Text_Translations_Model$init = F2(
 	function (flags, text) {
 		return {words: _elm_lang$core$Dict$empty, editing_words: _elm_lang$core$Dict$empty, editing_word_instances: _elm_lang$core$Dict$empty, text: text, new_translations: _elm_lang$core$Dict$empty, flags: flags};
@@ -28029,6 +28038,8 @@ var _user$project$Text_Translations_View$view_text_word_translations = F2(
 	});
 var _user$project$Text_Translations_View$view_edit = F3(
 	function (model, parent_msg, word_instance) {
+		var normalized_word = _elm_lang$core$String$toLower(word_instance.text_word.word);
+		var instance_count = A2(_user$project$Text_Translations_Model$instanceCount, model, normalized_word);
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -28058,19 +28069,22 @@ var _user$project$Text_Translations_View$view_edit = F3(
 						_0: _elm_lang$html$Html_Attributes$class('edit_menu'),
 						_1: {ctor: '[]'}
 					},
-					{
-						ctor: '::',
-						_0: A2(_user$project$Text_Translations_View$view_overlay_close_btn, parent_msg, word_instance),
-						_1: {
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						{
 							ctor: '::',
-							_0: A2(_user$project$Text_Translations_View$view_text_word_translations, parent_msg, word_instance),
+							_0: A2(_user$project$Text_Translations_View$view_overlay_close_btn, parent_msg, word_instance),
 							_1: {
 								ctor: '::',
-								_0: A2(_user$project$Text_Translations_View$view_match_translations, parent_msg, word_instance),
+								_0: A2(_user$project$Text_Translations_View$view_text_word_translations, parent_msg, word_instance),
 								_1: {ctor: '[]'}
 							}
-						}
-					}),
+						},
+						(_elm_lang$core$Native_Utils.cmp(instance_count, 1) > 0) ? {
+							ctor: '::',
+							_0: A2(_user$project$Text_Translations_View$view_match_translations, parent_msg, word_instance),
+							_1: {ctor: '[]'}
+						} : {ctor: '[]'})),
 				_1: {ctor: '[]'}
 			});
 	});
