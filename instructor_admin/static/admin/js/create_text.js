@@ -28038,6 +28038,7 @@ var _user$project$Text_Translations_View$view_text_word_translations = F2(
 	});
 var _user$project$Text_Translations_View$view_edit = F3(
 	function (model, parent_msg, word_instance) {
+		var editing_word = A2(_user$project$Text_Translations_Model$editingWordInstance, model, word_instance);
 		var normalized_word = _elm_lang$core$String$toLower(word_instance.text_word.word);
 		var instance_count = A2(_user$project$Text_Translations_Model$instanceCount, model, normalized_word);
 		return A2(
@@ -28050,11 +28051,7 @@ var _user$project$Text_Translations_View$view_edit = F3(
 					_0: _elm_lang$html$Html_Attributes$classList(
 						{
 							ctor: '::',
-							_0: {
-								ctor: '_Tuple2',
-								_0: 'hidden',
-								_1: !A2(_user$project$Text_Translations_Model$editingWordInstance, model, word_instance)
-							},
+							_0: {ctor: '_Tuple2', _0: 'hidden', _1: !editing_word},
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}

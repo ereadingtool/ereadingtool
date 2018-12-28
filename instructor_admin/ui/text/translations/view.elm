@@ -55,9 +55,10 @@ view_edit model parent_msg word_instance =
   let
     normalized_word = String.toLower word_instance.text_word.word
     instance_count = Text.Translations.Model.instanceCount model normalized_word
+    editing_word = Text.Translations.Model.editingWordInstance model word_instance
   in
     div [ class "edit_overlay"
-        , classList [("hidden", not (Text.Translations.Model.editingWordInstance model word_instance))]
+        , classList [("hidden", not editing_word)]
         ] [
       div [class "edit_menu"] <| [
         view_overlay_close_btn parent_msg word_instance
