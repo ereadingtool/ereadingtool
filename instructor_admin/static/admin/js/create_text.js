@@ -28087,6 +28087,7 @@ var _user$project$Text_Translations_View$view_edit = F3(
 	});
 var _user$project$Text_Translations_View$tagWord = F4(
 	function (model, parent_msg, instance, token) {
+		var normalized_token = _elm_lang$core$String$toLower(token);
 		var id = A2(
 			_elm_lang$core$String$join,
 			'_',
@@ -28110,11 +28111,7 @@ var _user$project$Text_Translations_View$tagWord = F4(
 				},
 				{ctor: '[]'});
 		} else {
-			var _p11 = A3(
-				_user$project$Text_Translations_Model$getTextWord,
-				model,
-				instance,
-				_elm_lang$core$String$toLower(token));
+			var _p11 = A3(_user$project$Text_Translations_Model$getTextWord, model, instance, normalized_token);
 			if (_p11.ctor === 'Just') {
 				var word_instance = {id: id, instance: instance, text_word: _p11._0};
 				return A3(

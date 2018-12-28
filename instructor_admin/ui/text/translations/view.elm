@@ -23,13 +23,14 @@ tagWord : Model -> (Msg -> msg) -> Int -> String -> Html msg
 tagWord model parent_msg instance token =
   let
     id = String.join "_" [toString instance, token]
+    normalized_token = String.toLower token
   in
     case token == " " of
       True ->
         span [class "space"] []
 
       False ->
-        case Text.Translations.Model.getTextWord model instance (String.toLower token) of
+        case Text.Translations.Model.getTextWord model instance normalized_token of
           Just text_word ->
             let
               word_instance = {id=id, instance=instance, text_word=text_word}
