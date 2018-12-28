@@ -14,7 +14,8 @@ type alias Flags = { csrftoken : Flags.CSRFToken }
 
 type alias Model = {
    words: Dict Text.Translations.Word (Array Text.Model.TextWord)
- , editing_words: Dict Text.Translations.Word Bool
+ , editing_words: Dict Text.Translations.Word Int
+ , editing_word_instances: Dict Text.Translations.Word Bool
  , text: Text.Model.Text
  , new_translations: Dict String String
  , flags: Flags }
@@ -24,6 +25,7 @@ init : Flags -> Text.Model.Text -> Model
 init flags text = {
    words=Dict.empty
  , editing_words=Dict.empty
+ , editing_word_instances=Dict.empty
  , text=text
  , new_translations=Dict.empty
  , flags=flags }
@@ -48,19 +50,44 @@ editingWord model word =
 
 editWord : Model -> Text.Model.WordInstance -> Model
 editWord model word_instance =
- { model | editing_words =
-   Dict.insert word_instance.id True
-   (Dict.insert (String.toLower word_instance.text_word.word) True model.editing_words) }
+  let
+    normalized_word = String.toLower word_instance.text_word.word
+
+    new_edited_words =
+      (case Dict.get normalized_word model.editing_words of
+        Just ref_count ->
+          Dict.insert normalized_word (ref_count+1) model.editing_words
+
+        Nothing ->
+          Dict.insert normalized_word 0 model.editing_words)
+
+    new_editing_word_instances = Dict.insert word_instance.id True model.editing_word_instances
+  in
+    { model | editing_words = new_edited_words, editing_word_instances = new_editing_word_instances }
 
 uneditWord : Model -> Text.Model.WordInstance -> Model
 uneditWord model word_instance =
- { model | editing_words =
-   Dict.remove word_instance.id
-   (Dict.remove (String.toLower word_instance.text_word.word) model.editing_words) }
+  let
+    normalized_word = String.toLower word_instance.text_word.word
+
+    new_edited_words =
+      (case Dict.get normalized_word model.editing_words of
+        Just ref_count ->
+          if (ref_count - 1) == -1 then
+            Dict.remove normalized_word model.editing_words
+          else
+            Dict.insert normalized_word (ref_count-1) model.editing_words
+
+        Nothing ->
+          model.editing_words)
+
+    new_editing_word_instances = Dict.remove word_instance.id model.editing_word_instances
+  in
+   { model | editing_words = new_edited_words, editing_word_instances = new_editing_word_instances }
 
 editingWordInstance : Model -> Text.Model.WordInstance -> Bool
 editingWordInstance model word_instance =
-  Dict.member word_instance.id model.editing_words
+  Dict.member word_instance.id model.editing_word_instances
 
 getTextWord : Model -> Int -> Text.Translations.Word -> Maybe Text.Model.TextWord
 getTextWord model instance word =
@@ -74,19 +101,12 @@ getTextWord model instance word =
 
 setTextWords : Model -> List Text.Model.TextWord -> Model
 setTextWords model text_words =
-  let
-    new_text_words =
-      Array.foldl
-        (\text_word text_words -> Array.set text_word.instance text_word text_words)
-        (Array.empty)
-        (Array.fromList text_words)
-  in
-    case List.head text_words of
-      Just first_text_word ->
-        { model | words = Dict.insert (String.toLower first_text_word.word) new_text_words model.words }
+  case List.head text_words of
+    Just first_text_word ->
+      { model | words = Dict.insert (String.toLower first_text_word.word) (Array.fromList text_words) model.words }
 
-      Nothing ->
-        model
+    Nothing ->
+      model
 
 setTextWord : Model -> Int -> Text.Translations.Word -> Text.Model.TextWord -> Model
 setTextWord model instance word text_word =

@@ -30,15 +30,17 @@ update parent_msg msg model =
         case text_word.translations of
           Just new_translations ->
             let
-              put_translations = putTranslations parent_msg model.flags.csrftoken new_translations
+              match_translations = putMatchTranslations parent_msg model.flags.csrftoken
             in
               case Text.Translations.Model.getTextWords model word of
                 Just text_words ->
-                  (model, put_translations (Array.toList text_words))
+                  (model, match_translations new_translations (Array.toList text_words))
 
+                -- no text words associated with this word
                 Nothing ->
                   (model, Cmd.none)
 
+          -- no translations to match
           Nothing ->
             (model, Cmd.none)
 
@@ -57,7 +59,7 @@ update parent_msg msg model =
     UpdateTextTranslation (Ok (word, instance, translation)) ->
       (Text.Translations.Model.updateTextTranslation model instance word translation, Cmd.none)
 
-    UpdatedTextWords (Err err) -> let _ = Debug.log ("error updating text words" ++ toString err) in
+    UpdatedTextWords (Err err) -> let _ = Debug.log "error updating text words" err in
       (model, Cmd.none)
 
     -- handle user-friendly msgs
@@ -116,9 +118,9 @@ deleteTranslation msg csrftoken text_word translation =
   in
     Http.send (msg << DeletedTranslation) request
 
-putTranslations :
+putMatchTranslations :
   (Msg -> msg) -> Flags.CSRFToken -> List Text.Model.TextWordTranslation -> List Text.Model.TextWord -> Cmd msg
-putTranslations msg csrftoken translations text_words =
+putMatchTranslations msg csrftoken translations text_words =
   let
     endpoint_uri = Config.text_translation_api_merge_endpoint
     headers = [Http.header "X-CSRFToken" csrftoken]
