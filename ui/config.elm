@@ -10,8 +10,8 @@ text_api_endpoint = "/api/text/"
 text_translation_api_endpoint : Int -> String
 text_translation_api_endpoint id = "/api/text/translation/" ++ toString id ++ "/"
 
-text_translation_api_merge_endpoint : String
-text_translation_api_merge_endpoint = "/api/text/translations/merge/"
+text_translation_api_match_endpoint : String
+text_translation_api_match_endpoint = "/api/text/translations/match/"
 
 text_word_api_endpoint : Int -> String
 text_word_api_endpoint id = "/api/text/word/" ++ toString id ++ "/translation/"

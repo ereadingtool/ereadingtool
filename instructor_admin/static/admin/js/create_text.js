@@ -23321,7 +23321,7 @@ var _user$project$Config$text_word_api_endpoint = function (id) {
 			_elm_lang$core$Basics$toString(id),
 			'/translation/'));
 };
-var _user$project$Config$text_translation_api_merge_endpoint = '/api/text/translations/merge/';
+var _user$project$Config$text_translation_api_match_endpoint = '/api/text/translations/match/';
 var _user$project$Config$text_translation_api_endpoint = function (id) {
 	return A2(
 		_elm_lang$core$Basics_ops['++'],
@@ -29532,7 +29532,7 @@ var _user$project$Text_Translations_Update$putMatchTranslations = F4(
 			_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
 			_1: {ctor: '[]'}
 		};
-		var endpoint_uri = _user$project$Config$text_translation_api_merge_endpoint;
+		var endpoint_uri = _user$project$Config$text_translation_api_match_endpoint;
 		var request = A4(_user$project$HttpHelpers$put_with_headers, endpoint_uri, headers, body, _user$project$Text_Decode$textWordsDecoder);
 		return A2(
 			_elm_lang$http$Http$send,

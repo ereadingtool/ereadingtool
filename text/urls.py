@@ -8,8 +8,8 @@ from text.views.api.translations import TextTranslationAPIView, TextTranslationM
 from text.views.api.text_word import TextWordTranslationsAPIView
 
 urlpatterns = [
-    path('api/text/translations/merge/', TextTranslationMergeAPIView.as_view(),
-         name='text-translation-merge-method'),
+    path('api/text/translations/match/', TextTranslationMergeAPIView.as_view(),
+         name='text-translation-match-method'),
 
     path('api/text/translation/<int:tr_pk>/', TextTranslationAPIView.as_view(),
          name='text-translation-api'),

@@ -4,9 +4,6 @@ import Dict exposing (Dict)
 
 import Text.Model as Text
 
-import Json.Decode
-import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
-
 import Config exposing (student_api_endpoint, student_logout_api_endpoint)
 
 import Text.Translations exposing (Flashcards, Word, TextWord, Grammemes, textWordDecoder)

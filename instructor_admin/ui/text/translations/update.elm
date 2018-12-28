@@ -122,7 +122,7 @@ putMatchTranslations :
   (Msg -> msg) -> Flags.CSRFToken -> List Text.Model.TextWordTranslation -> List Text.Model.TextWord -> Cmd msg
 putMatchTranslations msg csrftoken translations text_words =
   let
-    endpoint_uri = Config.text_translation_api_merge_endpoint
+    endpoint_uri = Config.text_translation_api_match_endpoint
     headers = [Http.header "X-CSRFToken" csrftoken]
     encoded_merge_request = Text.Encode.textTranslationsMergeEncoder translations text_words
     body = Http.jsonBody encoded_merge_request

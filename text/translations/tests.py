@@ -50,7 +50,7 @@ class TestTextWordTranslations(TestUser, TestCase):
         )
 
         resp = self.instructor.put(
-            reverse_lazy('text-translation-merge-method'),
+            reverse_lazy('text-translation-match-method'),
             json.dumps({
                 'text_word_ids': [test_text_word.pk],
                 'translations': [

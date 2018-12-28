@@ -9953,7 +9953,7 @@ var _user$project$Config$text_word_api_endpoint = function (id) {
 			_elm_lang$core$Basics$toString(id),
 			'/translation/'));
 };
-var _user$project$Config$text_translation_api_merge_endpoint = '/api/text/translations/merge/';
+var _user$project$Config$text_translation_api_match_endpoint = '/api/text/translations/match/';
 var _user$project$Config$text_translation_api_endpoint = function (id) {
 	return A2(
 		_elm_lang$core$Basics_ops['++'],
