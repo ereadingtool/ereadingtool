@@ -1,19 +1,17 @@
-from typing import Dict, Optional
+from typing import Dict
 
 from django.db import models
 from django.template import loader
 from django.urls import reverse_lazy, reverse
-from django.utils import timezone
 
 from flashcards.models import Flashcards
 from report.models import StudentPerformanceReport
 from text.models import TextDifficulty, Text
-from text_reading.base import TextReadingStateMachine
-from user.mixins.models import Profile
+from user.mixins.models import Profile, TextReadings
 from user.models import ReaderUser
 
 
-class Student(Profile, models.Model):
+class Student(Profile, TextReadings, models.Model):
     user = models.OneToOneField(ReaderUser, on_delete=models.CASCADE)
     difficulty_preference = models.ForeignKey(TextDifficulty, null=True, on_delete=models.SET_NULL,
                                               related_name='students')
@@ -62,32 +60,10 @@ class Student(Profile, models.Model):
         text_student_summary = text.to_student_summary_dict()
 
         text_student_summary['text_sections_complete'] = self.sections_complete_for(text)
-        text_student_summary['last_read_dt'] = self.last_read(text)
+        text_student_summary['last_read_dt'] = self.last_read_dt(text)
+        text_student_summary['questions_correct'] = self.last_read_questions_correct(text)
 
         return text_student_summary
-
-    def last_read(self, text: Text) -> Optional[timezone.datetime]:
-        last_read_dt = None
-
-        if self.text_readings.filter(text=text).exists():
-            last_reading = self.text_readings.filter(text=text).order_by('-start_dt')[0]
-
-            if last_reading.last_read_dt:
-                last_read_dt = last_reading.last_read_dt.isoformat()
-
-        return last_read_dt
-
-    def sections_complete_for(self, text: Text) -> int:
-        sections_complete = 0
-
-        if self.text_readings.exclude(state=TextReadingStateMachine.complete.name).filter(text=text).exists():
-            current_text_reading = self.text_readings.exclude(
-                state=TextReadingStateMachine.complete.name).get(text=text)
-
-            if not current_text_reading.state_machine.is_intro:
-                sections_complete = current_text_reading.current_section.order
-
-        return sections_complete
 
     def __str__(self):
         return self.user.username

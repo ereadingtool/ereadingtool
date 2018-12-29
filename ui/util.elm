@@ -16,8 +16,14 @@ valid_email_regex = Regex.regex "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$
 is_valid_email : String -> Bool
 is_valid_email addr = Regex.contains valid_email_regex addr
 
-tupleDecoder : Json.Decode.Decoder ( String, String )
-tupleDecoder = Json.Decode.map2 (,) (Json.Decode.index 0 Json.Decode.string) (Json.Decode.index 1 Json.Decode.string)
+stringTupleDecoder : Json.Decode.Decoder ( String, String )
+stringTupleDecoder =
+  Json.Decode.map2 (,) (Json.Decode.index 0 Json.Decode.string) (Json.Decode.index 1 Json.Decode.string)
+
+intTupleDecoder : Json.Decode.Decoder ( Int, Int )
+intTupleDecoder =
+  Json.Decode.map2 (,) (Json.Decode.index 0 Json.Decode.int) (Json.Decode.index 1 Json.Decode.int)
+
 
 onEnterUp : msg -> Html.Attribute msg
 onEnterUp msg =

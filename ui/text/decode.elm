@@ -7,6 +7,8 @@ import Text.Section.Decode
 
 import Array exposing (Array)
 
+import Util
+
 import Json.Decode as Decode
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 
@@ -75,6 +77,7 @@ textListItemDecoder =
     |> required "last_read_dt" (Decode.nullable date)
     |> required "text_section_count" Decode.int
     |> required "text_sections_complete" (Decode.nullable Decode.int)
+    |> required "questions_correct" (Decode.nullable Util.intTupleDecoder)
     |> required "uri" Decode.string
     |> required "write_locker" (Decode.nullable Decode.string)
 

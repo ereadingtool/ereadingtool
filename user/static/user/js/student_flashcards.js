@@ -10186,7 +10186,9 @@ var _user$project$Text_Model$TextListItem = function (a) {
 											return function (l) {
 												return function (m) {
 													return function (n) {
-														return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, last_read_dt: j, text_section_count: k, text_sections_complete: l, uri: m, write_locker: n};
+														return function (o) {
+															return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, last_read_dt: j, text_section_count: k, text_sections_complete: l, questions_correct: m, uri: n, write_locker: o};
+														};
 													};
 												};
 											};
@@ -10680,7 +10682,15 @@ var _user$project$Util$onEnterUp = function (msg) {
 			},
 			_elm_lang$html$Html_Events$keyCode));
 };
-var _user$project$Util$tupleDecoder = A3(
+var _user$project$Util$intTupleDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	F2(
+		function (v0, v1) {
+			return {ctor: '_Tuple2', _0: v0, _1: v1};
+		}),
+	A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$int),
+	A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$int));
+var _user$project$Util$stringTupleDecoder = A3(
 	_elm_lang$core$Json_Decode$map2,
 	F2(
 		function (v0, v1) {
@@ -10723,11 +10733,11 @@ var _user$project$Student_Profile_Decode$studentProfileParamsDecoder = A3(
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 			'difficulties',
-			_elm_lang$core$Json_Decode$list(_user$project$Util$tupleDecoder),
+			_elm_lang$core$Json_Decode$list(_user$project$Util$stringTupleDecoder),
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 				'difficulty_preference',
-				_elm_lang$core$Json_Decode$nullable(_user$project$Util$tupleDecoder),
+				_elm_lang$core$Json_Decode$nullable(_user$project$Util$stringTupleDecoder),
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 					'email',

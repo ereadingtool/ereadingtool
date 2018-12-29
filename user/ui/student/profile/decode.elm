@@ -7,7 +7,7 @@ import Student.Profile exposing (StudentProfileParams, PerformanceReport)
 
 import Student.Profile.Model
 
-import Util exposing (tupleDecoder)
+import Util exposing (stringTupleDecoder)
 
 import Text.Translations exposing (Flashcards, Word, TextWord, Grammemes, textWordDecoder)
 
@@ -36,8 +36,8 @@ studentProfileParamsDecoder =
     |> required "id" (Json.Decode.nullable Json.Decode.int)
     |> required "username" Json.Decode.string
     |> required "email" Json.Decode.string
-    |> required "difficulty_preference" (Json.Decode.nullable tupleDecoder)
-    |> required "difficulties" (Json.Decode.list tupleDecoder)
+    |> required "difficulty_preference" (Json.Decode.nullable stringTupleDecoder)
+    |> required "difficulties" (Json.Decode.list stringTupleDecoder)
     |> required "performance_report" performanceReportDecoder
     |> required "flashcards" (Json.Decode.nullable (Json.Decode.list wordTextWordDecoder))
 

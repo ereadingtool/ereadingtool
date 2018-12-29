@@ -6996,7 +6996,9 @@ var _user$project$Text_Model$TextListItem = function (a) {
 											return function (l) {
 												return function (m) {
 													return function (n) {
-														return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, last_read_dt: j, text_section_count: k, text_sections_complete: l, uri: m, write_locker: n};
+														return function (o) {
+															return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, last_read_dt: j, text_section_count: k, text_sections_complete: l, questions_correct: m, uri: n, write_locker: o};
+														};
 													};
 												};
 											};

@@ -287,6 +287,14 @@ view_search_results text_list_items =
 
             Nothing ->
               "")
+
+        questions_correct =
+          (case text_item.questions_correct of
+            Just correct ->
+              toString (Tuple.first correct) ++ " out of " ++ toString (Tuple.second correct)
+
+            Nothing ->
+              "None")
       in
         div [class "search_result"] [
           div [class "result_item"] [
@@ -312,6 +320,10 @@ view_search_results text_list_items =
         , div [class "result_item"] [
             div [class "result_item_title"] [ Html.text last_read ]
           , div [class "sub_description"] [ Html.text "Last Read" ]
+          ]
+        , div [class "result_item"] [
+            div [class "result_item_title"] [ Html.text questions_correct ]
+          , div [class "sub_description"] [ Html.text "Questions Correct" ]
           ]
         ]
   in

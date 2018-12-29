@@ -3,6 +3,7 @@ from typing import TypeVar, Optional, Dict, Union
 from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
+from django.db.models import Count, Sum
 
 from mixins.model import Timestamped
 from question.models import Question, Answer
@@ -115,6 +116,11 @@ class TextReading(models.Model):
     @property
     def number_of_sections(self):
         return self.sections.count()
+
+    @property
+    def max_score(self):
+        return self.sections.prefetch_related('questions').annotate(num_of_questions=Count('questions')).aggregate(
+            max_score=Sum('num_of_questions'))['max_score']
 
     @cached_property
     def sections(self):

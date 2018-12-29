@@ -64,6 +64,7 @@ type alias TextListItem = {
   , last_read_dt : Maybe Date
   , text_section_count: Int
   , text_sections_complete: Maybe Int
+  , questions_correct: Maybe (Int, Int)
   , uri: String
   , write_locker: Maybe String }
 
