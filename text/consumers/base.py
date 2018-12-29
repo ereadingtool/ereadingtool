@@ -146,6 +146,8 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             else:
                 result = await self.get_current_text_reading_dict(random_state=self.scope['random_state'])
 
+            await database_sync_to_async(self.text_reading.set_last_read_dt)()
+
             await self.send_json({
                 'command': self.text_reading.current_state.name,
                 'result': result

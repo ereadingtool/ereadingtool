@@ -61,6 +61,7 @@ type alias TextListItem = {
   , tags: Maybe (List String)
   , created_dt: Date
   , modified_dt: Date
+  , last_read_dt : Maybe Date
   , text_section_count: Int
   , text_sections_complete: Maybe Int
   , uri: String

@@ -21,7 +21,7 @@ class TextReadingStateMachine(StateMachine):
 
     back_to_reading = complete.to(in_progress)
 
-    def next_state(self, next_section: Optional[TextSection]=None, reading=True, *args, **kwargs):
+    def next_state(self, next_section: Optional[TextSection] = None, reading=True, *args, **kwargs):
         if self.is_intro and next_section:
             self.reading()
 
@@ -31,7 +31,7 @@ class TextReadingStateMachine(StateMachine):
         elif self.is_in_progress and not next_section:
             self.completing()
 
-    def prev_state(self, prev_section: Optional[TextSection]=None, reading=True, *args, **kwargs):
+    def prev_state(self, prev_section: Optional[TextSection] = None, reading=True, *args, **kwargs):
         if self.is_in_progress and prev_section:
             self.prev()
 

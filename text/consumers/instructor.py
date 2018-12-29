@@ -21,10 +21,11 @@ logger = logging.getLogger('django.consumers')
 
 
 class InstructorTextReaderConsumer(TextReaderConsumer):
+    @database_sync_to_async
     def start_reading(self):
         instructor = self.scope['user'].instructor
 
-        return database_sync_to_async(InstructorTextReading.start_or_resume)(instructor=instructor, text=self.text)
+        return InstructorTextReading.start_or_resume(instructor=instructor, text=self.text)
 
 
 class ParseTextSectionForDefinitions(SyncConsumer):

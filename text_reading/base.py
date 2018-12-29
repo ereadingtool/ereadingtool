@@ -30,6 +30,7 @@ class TextReading(models.Model):
 
     start_dt = models.DateTimeField(null=False, auto_now_add=True)
     end_dt = models.DateTimeField(null=True)
+    last_read_dt = models.DateTimeField(null=True)
 
     def __init__(self, *args, **kwargs):
         """
@@ -129,6 +130,10 @@ class TextReading(models.Model):
                                           error_msg=f"Can't access current section in state {self.current_state}")
 
         return self.current_section
+
+    def set_last_read_dt(self):
+        self.last_read_dt = timezone.now()
+        self.save()
 
     def set_end_dt(self):
         self.end_dt = timezone.now()

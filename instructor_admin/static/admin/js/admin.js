@@ -10541,7 +10541,9 @@ var _user$project$Text_Model$TextListItem = function (a) {
 										return function (k) {
 											return function (l) {
 												return function (m) {
-													return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, text_section_count: j, text_sections_complete: k, uri: l, write_locker: m};
+													return function (n) {
+														return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, last_read_dt: j, text_section_count: k, text_sections_complete: l, uri: m, write_locker: n};
+													};
 												};
 											};
 										};
@@ -10987,42 +10989,46 @@ var _user$project$Text_Decode$textListItemDecoder = A3(
 				_elm_lang$core$Json_Decode$int,
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'modified_dt',
-					_elm_community$json_extra$Json_Decode_Extra$date,
+					'last_read_dt',
+					_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
 					A3(
 						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'created_dt',
+						'modified_dt',
 						_elm_community$json_extra$Json_Decode_Extra$date,
 						A3(
 							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'tags',
-							_elm_lang$core$Json_Decode$nullable(
-								_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
+							'created_dt',
+							_elm_community$json_extra$Json_Decode_Extra$date,
 							A3(
 								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'last_modified_by',
-								_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+								'tags',
+								_elm_lang$core$Json_Decode$nullable(
+									_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)),
 								A3(
 									_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-									'created_by',
-									_elm_lang$core$Json_Decode$string,
+									'last_modified_by',
+									_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 									A3(
 										_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-										'difficulty',
+										'created_by',
 										_elm_lang$core$Json_Decode$string,
 										A3(
 											_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-											'author',
+											'difficulty',
 											_elm_lang$core$Json_Decode$string,
 											A3(
 												_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-												'title',
+												'author',
 												_elm_lang$core$Json_Decode$string,
 												A3(
 													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-													'id',
-													_elm_lang$core$Json_Decode$int,
-													_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextListItem))))))))))))));
+													'title',
+													_elm_lang$core$Json_Decode$string,
+													A3(
+														_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+														'id',
+														_elm_lang$core$Json_Decode$int,
+														_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextListItem)))))))))))))));
 var _user$project$Text_Decode$textListDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textListItemDecoder);
 var _user$project$Text_Decode$grammemesDecoder = _elm_lang$core$Json_Decode$dict(
 	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string));

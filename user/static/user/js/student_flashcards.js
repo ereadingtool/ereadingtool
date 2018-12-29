@@ -9599,7 +9599,7 @@ var _user$project$Config$text_word_api_endpoint = function (id) {
 			_elm_lang$core$Basics$toString(id),
 			'/translation/'));
 };
-var _user$project$Config$text_translation_api_merge_endpoint = '/api/text/translations/merge/';
+var _user$project$Config$text_translation_api_match_endpoint = '/api/text/translations/match/';
 var _user$project$Config$text_translation_api_endpoint = function (id) {
 	return A2(
 		_elm_lang$core$Basics_ops['++'],
@@ -10185,7 +10185,9 @@ var _user$project$Text_Model$TextListItem = function (a) {
 										return function (k) {
 											return function (l) {
 												return function (m) {
-													return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, text_section_count: j, text_sections_complete: k, uri: l, write_locker: m};
+													return function (n) {
+														return {id: a, title: b, author: c, difficulty: d, created_by: e, last_modified_by: f, tags: g, created_dt: h, modified_dt: i, last_read_dt: j, text_section_count: k, text_sections_complete: l, uri: m, write_locker: n};
+													};
 												};
 											};
 										};

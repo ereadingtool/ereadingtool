@@ -72,6 +72,7 @@ textListItemDecoder =
     |> required "tags" (Decode.nullable (Decode.list Decode.string))
     |> required "created_dt" date
     |> required "modified_dt" date
+    |> required "last_read_dt" (Decode.nullable date)
     |> required "text_section_count" Decode.int
     |> required "text_sections_complete" (Decode.nullable Decode.int)
     |> required "uri" Decode.string

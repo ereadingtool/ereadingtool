@@ -1,4 +1,4 @@
-from typing import TypeVar
+from typing import Tuple
 
 from django.db import models
 
@@ -12,7 +12,7 @@ class InstructorTextReading(TextReading, models.Model):
     instructor = models.ForeignKey(Instructor, null=False, on_delete=models.CASCADE, related_name='text_readings')
 
     @classmethod
-    def start(cls, instructor: Instructor, text: Text) -> TypeVar('InstructorTextReading'):
+    def start(cls, instructor: Instructor, text: Text) -> 'InstructorTextReading':
         """
 
         :param instructor:
@@ -24,7 +24,7 @@ class InstructorTextReading(TextReading, models.Model):
         return text_reading
 
     @classmethod
-    def resume(cls, instructor: Instructor, text: Text) -> TypeVar('InstructorTextReading'):
+    def resume(cls, instructor: Instructor, text: Text) -> 'InstructorTextReading':
         """
 
         :param instructor:
@@ -36,7 +36,7 @@ class InstructorTextReading(TextReading, models.Model):
                                   text=text).exclude(state=cls.state_machine_cls.complete.name).get()
 
     @classmethod
-    def start_or_resume(cls, instructor: Instructor, text: Text) -> TypeVar('InstructorTextReading'):
+    def start_or_resume(cls, instructor: Instructor, text: Text) -> Tuple[bool, 'InstructorTextReading']:
         """
 
         :param instructor:
@@ -44,11 +44,15 @@ class InstructorTextReading(TextReading, models.Model):
         :return: TextReading
         """
 
-        if cls.objects.filter(instructor=instructor,
-                              text=text).exclude(state=cls.state_machine_cls.complete.name).count():
-            return False, cls.resume(instructor=instructor, text=text)
+        existing_reading = cls.objects.filter(instructor=instructor, text=text).exclude(
+            state=cls.state_machine_cls.complete.name).exists()
+
+        if existing_reading:
+            text_reading = cls.resume(instructor=instructor, text=text)
         else:
-            return True, cls.start(instructor=instructor, text=text)
+            text_reading = cls.start(instructor=instructor, text=text)
+
+        return (not existing_reading), text_reading
 
     @property
     def text_reading_answer_cls(self):

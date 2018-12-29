@@ -16,6 +16,7 @@ import Text.Search.ReadingStatus exposing (TextReadStatusSearch)
 
 import Ports exposing (clearInputText)
 
+import Date.Utils
 import Dict exposing (Dict)
 
 import Views
@@ -52,7 +53,8 @@ type Msg =
  | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
 
 
-type alias Flags = Flags.Flags {
+type alias Flags =
+  Flags.Flags {
     text_difficulties: List Text.Model.TextDifficulty
   , text_statuses: List (String, String)
   , welcome: Bool
@@ -267,13 +269,24 @@ view_search_results text_list_items =
         tags =
           (case text_item.tags of
             Just tags -> String.join ", " tags
+
             Nothing -> "")
+
         sections_complete =
           (case text_item.text_sections_complete of
             Just sections_complete ->
               toString sections_complete ++ " / " ++ toString text_item.text_section_count
+
             Nothing ->
               "0 / " ++ toString text_item.text_section_count)
+
+        last_read =
+          (case text_item.last_read_dt of
+            Just dt ->
+              Date.Utils.month_day_year_fmt dt
+
+            Nothing ->
+              "")
       in
         div [class "search_result"] [
           div [class "result_item"] [
@@ -295,6 +308,10 @@ view_search_results text_list_items =
         , div [class "result_item"] [
             div [class "result_item_title"] [ Html.text tags ]
           , div [class "sub_description"] [ Html.text "Tags" ]
+          ]
+        , div [class "result_item"] [
+            div [class "result_item_title"] [ Html.text last_read ]
+          , div [class "sub_description"] [ Html.text "Last Read" ]
           ]
         ]
   in
