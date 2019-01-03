@@ -62,8 +62,8 @@ class StudentPerformanceReport(object):
 
     @property
     def first_of_last_month(self):
-        if self.first_of_current_month == 1:
-            return self.first_of_current_month.replace(year=self.today_dt.year-1, month=self.today_dt.month-1)
+        if self.first_of_current_month.month == 1:
+            return self.first_of_current_month.replace(year=self.today_dt.year-1, month=12)
         else:
             return self.first_of_current_month.replace(month=self.today_dt.month-1)
 

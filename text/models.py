@@ -127,7 +127,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
         return schema
 
     @classmethod
-    def update(cls, text_params: Dict, text_sections_params: Dict) -> TypeVar('Text'):
+    def update(cls, text_params: Dict, text_sections_params: Dict) -> 'Text':
         if text_params['text'].write_locked:
             raise WriteLocked
 
@@ -160,7 +160,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
         return text
 
     @classmethod
-    def create(cls, text_params: Dict, text_sections_params: Dict) -> TypeVar('Text'):
+    def create(cls, text_params: Dict, text_sections_params: Dict) -> 'Text':
         text = text_params['form'].save()
         text.save()
 
@@ -222,7 +222,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
 
         return text_dict
 
-    def to_dict(self, text_sections: Optional[List]=None) -> Dict:
+    def to_dict(self, text_sections: Optional[List] = None) -> Dict:
         return {
             'id': self.pk,
             'title': self.title,
