@@ -55,7 +55,7 @@ countOccurrences token (tokens, occurrences) =
     num_of_prev_occurrences = Maybe.withDefault -1 (Dict.get normalized_token occurrences)
     instance = num_of_prev_occurrences + 1
     new_occurrences = Dict.insert normalized_token instance occurrences
-    new_tokens = tokens ++ [(normalized_token, instance)]
+    new_tokens = tokens ++ [(token, instance)]
   in
     (new_tokens, new_occurrences)
 

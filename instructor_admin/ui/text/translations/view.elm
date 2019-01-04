@@ -73,10 +73,7 @@ view_btns model parent_msg word_instance =
     instance_count = Text.Translations.Model.instanceCount model normalized_word
   in
     div [class "text_word_options"] <| [
-      Html.button [ attribute "title" "Delete this word instance from glossing."
-                  , onClick (parent_msg (DeleteTextWord word_instance.text_word))] [
-        Html.text "Delete from glossing"
-      ]
+      view_delete_text_word parent_msg word_instance
     ] ++ (if instance_count > 1 then [view_match_translations parent_msg word_instance] else [])
 
 view_delete_text_word : (Msg -> msg) -> Text.Model.WordInstance -> Html msg

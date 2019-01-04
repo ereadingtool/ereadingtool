@@ -84,19 +84,17 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
         words = dict()
 
         for section in self.sections.prefetch_related('translated_words__translations').all():
-            for word in section.translated_words.all():
-                word_text = str(word.word).lower()
+            for text_word in section.translated_words.all():
+                words.setdefault(text_word.word, [])
 
-                words.setdefault(word_text, [])
-
-                words[word_text].append({
-                    'id': word.pk,
+                words[text_word.word].append({
+                    'id': text_word.pk,
                     # word.instance is the word instance within a particular section
-                    'instance': word.instance,
-                    'word': word.word,
-                    'grammemes': word.grammemes,
+                    'instance': text_word.instance,
+                    'word': text_word.word,
+                    'grammemes': text_word.grammemes,
                     'translations': [translation.to_dict() for translation in
-                                     word.translations.all()] or None
+                                     text_word.translations.all()] or None
                 })
 
         return words

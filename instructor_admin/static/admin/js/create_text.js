@@ -27470,15 +27470,15 @@ var _user$project$Text_Section_Words_Tag$countOccurrences = F2(
 			-1,
 			A2(_elm_lang$core$Dict$get, normalized_token, _p2));
 		var instance = num_of_prev_occurrences + 1;
-		var new_occurrences = A3(_elm_lang$core$Dict$insert, normalized_token, instance, _p2);
 		var new_tokens = A2(
 			_elm_lang$core$Basics_ops['++'],
 			_p1._0,
 			{
 				ctor: '::',
-				_0: {ctor: '_Tuple2', _0: normalized_token, _1: instance},
+				_0: {ctor: '_Tuple2', _0: token, _1: instance},
 				_1: {ctor: '[]'}
 			});
+		var new_occurrences = A3(_elm_lang$core$Dict$insert, normalized_token, instance, _p2);
 		return {ctor: '_Tuple2', _0: new_tokens, _1: new_occurrences};
 	});
 var _user$project$Text_Section_Words_Tag$punctuation_re = _elm_lang$core$Regex$regex('[?!.,]');
@@ -27542,8 +27542,8 @@ var _user$project$Text_Section_Words_Tag$maybeParseWordWithPunctuation = functio
 var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F3(
 	function (tag_word, node, _p6) {
 		var _p7 = _p6;
-		var _p16 = _p7._1;
-		var _p15 = _p7._0;
+		var _p17 = _p7._1;
+		var _p16 = _p7._0;
 		var _p8 = node;
 		switch (_p8.ctor) {
 			case 'Text':
@@ -27563,26 +27563,27 @@ var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F3(
 					{
 						ctor: '_Tuple2',
 						_0: {ctor: '[]'},
-						_1: _p16
+						_1: _p17
 					},
 					tokenized_text);
 				var items = _p9._0;
 				var new_occurrences = _p9._1;
+				var _p10 = A2(_elm_lang$core$Debug$log, 'items', items);
 				var new_node = A2(
 					_elm_lang$html$Html$span,
 					{ctor: '[]'},
 					A2(
 						_elm_lang$core$List$map,
-						function (_p10) {
-							var _p11 = _p10;
-							return A2(tag_word, _p11._1, _p11._0);
+						function (_p11) {
+							var _p12 = _p11;
+							return A2(tag_word, _p12._1, _p12._0);
 						},
 						items));
 				return {
 					ctor: '_Tuple2',
 					_0: A2(
 						_elm_lang$core$Basics_ops['++'],
-						_p15,
+						_p16,
 						{
 							ctor: '::',
 							_0: new_node,
@@ -27591,17 +27592,17 @@ var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F3(
 					_1: new_occurrences
 				};
 			case 'Element':
-				var _p12 = A3(_user$project$Text_Section_Words_Tag$tagWordsToVDOMWithFreqs, tag_word, _p16, _p8._2);
-				var new_msgs = _p12._0;
-				var new_occurrences = _p12._1;
+				var _p13 = A3(_user$project$Text_Section_Words_Tag$tagWordsToVDOMWithFreqs, tag_word, _p17, _p8._2);
+				var new_msgs = _p13._0;
+				var new_occurrences = _p13._1;
 				var new_node = A3(
 					_elm_lang$html$Html$node,
 					_p8._0,
 					A2(
 						_elm_lang$core$List$map,
-						function (_p13) {
-							var _p14 = _p13;
-							return A2(_elm_lang$html$Html_Attributes$attribute, _p14._0, _p14._1);
+						function (_p14) {
+							var _p15 = _p14;
+							return A2(_elm_lang$html$Html_Attributes$attribute, _p15._0, _p15._1);
 						},
 						_p8._1),
 					new_msgs);
@@ -27609,7 +27610,7 @@ var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F3(
 					ctor: '_Tuple2',
 					_0: A2(
 						_elm_lang$core$Basics_ops['++'],
-						_p15,
+						_p16,
 						{
 							ctor: '::',
 							_0: new_node,
@@ -27622,13 +27623,13 @@ var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F3(
 					ctor: '_Tuple2',
 					_0: A2(
 						_elm_lang$core$Basics_ops['++'],
-						_p15,
+						_p16,
 						{
 							ctor: '::',
 							_0: _elm_lang$virtual_dom$VirtualDom$text(''),
 							_1: {ctor: '[]'}
 						}),
-					_1: _p16
+					_1: _p17
 				};
 		}
 	});
@@ -28109,24 +28110,7 @@ var _user$project$Text_Translations_View$view_btns = F3(
 				_elm_lang$core$Basics_ops['++'],
 				{
 					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$button,
-						{
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'title', 'Delete this word instance from glossing.'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(
-									parent_msg(
-										_user$project$Text_Translations_Msg$DeleteTextWord(word_instance.text_word))),
-								_1: {ctor: '[]'}
-							}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('Delete from glossing'),
-							_1: {ctor: '[]'}
-						}),
+					_0: A2(_user$project$Text_Translations_View$view_delete_text_word, parent_msg, word_instance),
 					_1: {ctor: '[]'}
 				},
 				(_elm_lang$core$Native_Utils.cmp(instance_count, 1) > 0) ? {
