@@ -15,11 +15,13 @@ type Msg =
     EditWord Text.Model.WordInstance
   | CloseEditWord Text.Model.WordInstance
   | MakeCorrectForContext Text.Model.TextWordTranslation
+  | DeleteTextWord Text.Model.TextWord
   | UpdateNewTranslationForTextWord Text.Model.TextWord String
   | SubmitNewTranslationForTextWord Text.Model.TextWord
   | DeleteTranslation Text.Model.TextWord Text.Model.TextWordTranslation
   | MatchTranslations Text.Model.WordInstance
   -- result msgs
+  | DeletedTextWord (Result Http.Error Text.Model.TextWord)
   | UpdatedTextWords (Result Http.Error (List Text.Model.TextWord))
   | UpdateTextTranslations (Result Http.Error (Dict Text.Translations.Word (Array Text.Model.TextWord)))
   | UpdateTextTranslation (Result Http.Error (Text.Translations.Word, Int, Text.Model.TextWordTranslation))

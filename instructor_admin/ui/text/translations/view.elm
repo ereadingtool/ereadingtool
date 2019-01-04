@@ -54,8 +54,6 @@ tagWord model parent_msg instance token =
 view_edit : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html msg
 view_edit model parent_msg word_instance =
   let
-    normalized_word = String.toLower word_instance.text_word.word
-    instance_count = Text.Translations.Model.instanceCount model normalized_word
     editing_word = Text.Translations.Model.editingWordInstance model word_instance
   in
     div [ class "edit_overlay"
@@ -64,9 +62,31 @@ view_edit model parent_msg word_instance =
       div [class "edit_menu"] <| [
         view_overlay_close_btn parent_msg word_instance
       , view_text_word_translations parent_msg word_instance
-      ] ++
-        (if instance_count > 1 then [view_match_translations parent_msg word_instance] else [])
+      , view_btns model parent_msg word_instance
+      ]
     ]
+
+view_btns : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html msg
+view_btns model parent_msg word_instance =
+  let
+    normalized_word = String.toLower word_instance.text_word.word
+    instance_count = Text.Translations.Model.instanceCount model normalized_word
+  in
+    div [class "text_word_options"] <| [
+      Html.button [ attribute "title" "Delete this word instance from glossing."
+                  , onClick (parent_msg (DeleteTextWord word_instance.text_word))] [
+        Html.text "Delete from glossing"
+      ]
+    ] ++ (if instance_count > 1 then [view_match_translations parent_msg word_instance] else [])
+
+view_delete_text_word : (Msg -> msg) -> Text.Model.WordInstance -> Html msg
+view_delete_text_word parent_msg word_instance =
+  div [class "delete_text_word"] [
+    Html.button [ attribute "title" "Delete this word instance from glossing."
+                , onClick (parent_msg (DeleteTextWord word_instance.text_word))] [
+      Html.text "Delete from glossing"
+    ]
+  ]
 
 view_correct_for_context : Bool -> List (Html msg)
 view_correct_for_context correct =

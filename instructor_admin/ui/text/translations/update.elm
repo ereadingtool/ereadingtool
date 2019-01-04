@@ -62,6 +62,12 @@ update parent_msg msg model =
     UpdatedTextWords (Err err) -> let _ = Debug.log "error updating text words" err in
       (model, Cmd.none)
 
+    DeleteTextWord text_word ->
+      (model, Cmd.none)
+
+    DeletedTextWord text_word ->
+      (model, Cmd.none)
+
     -- handle user-friendly msgs
     UpdateTextTranslation (Err err) -> let _ = Debug.log "error decoding text translation" err in
       (model, Cmd.none)
