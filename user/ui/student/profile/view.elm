@@ -160,8 +160,6 @@ view_cancel_btn : Html.Attribute Msg -> Html Msg
 view_cancel_btn event_attr =
   Html.img [
       attribute "src" "/static/img/cancel.svg"
-    , attribute "height" "13px"
-    , attribute "width" "13px"
     , class "cursor"
     , event_attr
     ] []

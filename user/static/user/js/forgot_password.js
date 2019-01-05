@@ -11405,7 +11405,11 @@ var _user$project$Views$view_logo = function (event_attr) {
 			{
 				ctor: '::',
 				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/star_logo.png'),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$id('logo'),
+					_1: {ctor: '[]'}
+				}
 			},
 			event_attr),
 		{ctor: '[]'});

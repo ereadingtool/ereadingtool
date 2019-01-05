@@ -15,6 +15,17 @@ from user.instructor.models import Instructor
 class TextSearchView(TemplateView):
     template_name = 'text_search.html'
 
+    def get(self, request, *args, **kwargs) -> HttpResponse:
+        response = super(TextSearchView, self).get(request, *args, **kwargs)
+
+        welcome_session_params = request.session['welcome']
+
+        del welcome_session_params['student_search']
+
+        request.session['welcome'] = welcome_session_params
+
+        return response
+
     model = Text
 
 
@@ -38,6 +49,17 @@ class TextSearchLoadElm(ElmLoadJsView):
             'quote': False,
             'safe': True,
             'value': json.dumps(text_statuses)
+        }
+
+        try:
+            welcome = self.request.session['welcome']['student_search']
+        except KeyError:
+            welcome = False
+
+        context['elm']['welcome'] = {
+            'quote': False,
+            'safe': True,
+            'value': json.dumps(welcome)
         }
 
         return context

@@ -1,6 +1,6 @@
 import json
 
-from typing import TypeVar, Dict
+from typing import TypeVar, Dict, Union
 
 from django import forms
 from django.contrib.auth import login, logout
@@ -33,6 +33,17 @@ class ElmLoadJsStudentView(LoginRequiredMixin, ElmLoadJsBaseView):
             pass
 
         context['elm']['profile_id'] = {'quote': False, 'safe': True, 'value': profile.id or 'null'}
+
+        try:
+            welcome = self.request.session['welcome']['student_profile']
+        except KeyError:
+            welcome = False
+
+        context['elm']['welcome'] = {
+            'quote': False,
+            'safe': True,
+            'value': json.dumps(welcome)
+        }
 
         return context
 
@@ -78,7 +89,7 @@ class StudentAPIView(LoginRequiredMixin, APIView):
     def put_error(self, errors: dict) -> HttpResponse:
         return HttpResponse(json.dumps(errors), status=400)
 
-    def put_success(self, request: HttpRequest, student_form: Form) -> HttpResponse:
+    def put_success(self, request: HttpRequest, student_form: Union[Form, forms.ModelForm]) -> HttpResponse:
         student = student_form.save()
 
         return HttpResponse(json.dumps(student.to_dict()))
@@ -117,13 +128,16 @@ class StudentAPIView(LoginRequiredMixin, APIView):
 
 
 class StudentSignupAPIView(APIView):
-    def form(self, request: HttpRequest, params: dict) -> Form:
+    def form(self, request: HttpRequest, params: dict) -> forms.ModelForm:
         return StudentSignUpForm(params)
 
     def post_success(self, request: HttpRequest, student_signup_form: Form) -> HttpResponse:
         student = student_signup_form.save()
 
-        self.request.session['welcome'] = True
+        request.session['welcome'] = {
+            'student_profile': True,
+            'student_search': True
+        }
 
         return HttpResponse(json.dumps({'id': student.pk, 'redirect': reverse('student-login')}))
 
@@ -179,6 +193,17 @@ class StudentLoginView(TemplateView):
 
 class StudentProfileView(StudentView, TemplateView):
     template_name = 'student/profile.html'
+
+    def get(self, request, *args, **kwargs) -> HttpResponse:
+        response = super(StudentProfileView, self).get(request, *args, **kwargs)
+
+        welcome_session_params = request.session['welcome']
+
+        del welcome_session_params['student_profile']
+
+        request.session['welcome'] = welcome_session_params
+
+        return response
 
     def get_context_data(self, **kwargs):
         context = super(StudentProfileView, self).get_context_data(**kwargs)

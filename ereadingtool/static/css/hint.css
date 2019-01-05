@@ -24,3 +24,8 @@
     grid-column: 3;
     grid-row: 1;
 }
+
+.exit > .img {
+    width: 13px;
+    height: 13px;
+}

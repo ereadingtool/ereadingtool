@@ -22830,7 +22830,11 @@ var _user$project$Views$view_logo = function (event_attr) {
 			{
 				ctor: '::',
 				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/star_logo.png'),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$id('logo'),
+					_1: {ctor: '[]'}
+				}
 			},
 			event_attr),
 		{ctor: '[]'});
@@ -23718,19 +23722,11 @@ var _user$project$Student_Profile_View$view_cancel_btn = function (event_attr) {
 			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/cancel.svg'),
 			_1: {
 				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '13px'),
+				_0: _elm_lang$html$Html_Attributes$class('cursor'),
 				_1: {
 					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '13px'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('cursor'),
-						_1: {
-							ctor: '::',
-							_0: event_attr,
-							_1: {ctor: '[]'}
-						}
-					}
+					_0: event_attr,
+					_1: {ctor: '[]'}
 				}
 			}
 		},

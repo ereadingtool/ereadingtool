@@ -45,7 +45,7 @@ body {
     padding-left: 50px;
 }
 
-#header img:nth-child(1) {
+#header #logo {
     height: 50px;
     width: 170px;
 }
