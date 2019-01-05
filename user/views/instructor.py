@@ -77,10 +77,31 @@ class InstructorLogoutAPIView(LoginRequiredMixin, View):
 class InstructorLoginView(TemplateView):
     template_name = 'instructor/login.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(InstructorLoginView, self).get_context_data(**kwargs)
+
+        context['title'] = 'Instructor Login'
+
+        return context
+
 
 class InstructorSignUpView(TemplateView):
     template_name = 'instructor/signup.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(InstructorSignUpView, self).get_context_data(**kwargs)
+
+        context['title'] = 'Instructor Signup'
+
+        return context
+
 
 class InstructorProfileView(InstructorView, TemplateView):
     template_name = 'instructor/profile.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(InstructorProfileView, self).get_context_data(**kwargs)
+
+        context['title'] = 'Instructor Profile'
+
+        return context

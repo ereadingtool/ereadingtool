@@ -18,6 +18,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from mixins.view import ElmLoadJsBaseView, NoAuthElmLoadJsView
 
 
+Form = TypeVar('Form', bound=forms.Form)
+
+
 class ElmLoadJsStudentView(LoginRequiredMixin, ElmLoadJsBaseView):
     def get_context_data(self, **kwargs) -> Dict:
         context = super(ElmLoadJsStudentView, self).get_context_data(**kwargs)
@@ -30,7 +33,6 @@ class ElmLoadJsStudentView(LoginRequiredMixin, ElmLoadJsBaseView):
             pass
 
         context['elm']['profile_id'] = {'quote': False, 'safe': True, 'value': profile.id or 'null'}
-
 
         return context
 
@@ -56,7 +58,7 @@ class StudentAPIView(LoginRequiredMixin, APIView):
     # returns permission denied HTTP message rather than redirect to login
     raise_exception = True
 
-    def form(self, request: HttpRequest, params: dict, **kwargs) -> TypeVar('forms.Form'):
+    def form(self, request: HttpRequest, params: dict, **kwargs) -> Form:
         return StudentForm(params, **kwargs)
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
@@ -70,13 +72,13 @@ class StudentAPIView(LoginRequiredMixin, APIView):
 
         return HttpResponse(json.dumps(student.to_dict()))
 
-    def post_success(self, request: HttpRequest, form: TypeVar('forms.Form')) -> HttpResponse:
+    def post_success(self, request: HttpRequest, form: Form) -> HttpResponse:
         raise NotImplementedError
 
     def put_error(self, errors: dict) -> HttpResponse:
         return HttpResponse(json.dumps(errors), status=400)
 
-    def put_success(self, request: HttpRequest, student_form: TypeVar('forms.Form')) -> HttpResponse:
+    def put_success(self, request: HttpRequest, student_form: Form) -> HttpResponse:
         student = student_form.save()
 
         return HttpResponse(json.dumps(student.to_dict()))
@@ -115,10 +117,10 @@ class StudentAPIView(LoginRequiredMixin, APIView):
 
 
 class StudentSignupAPIView(APIView):
-    def form(self, request: HttpRequest, params: dict) -> TypeVar('forms.Form'):
+    def form(self, request: HttpRequest, params: dict) -> Form:
         return StudentSignUpForm(params)
 
-    def post_success(self, request: HttpRequest, student_signup_form: TypeVar('forms.Form')) -> HttpResponse:
+    def post_success(self, request: HttpRequest, student_signup_form: Form) -> HttpResponse:
         student = student_signup_form.save()
 
         self.request.session['welcome'] = True
@@ -134,10 +136,10 @@ class StudentLogoutAPIView(LoginRequiredMixin, View):
 
 
 class StudentLoginAPIView(APIView):
-    def form(self, request: HttpRequest, params: dict) -> TypeVar('forms.Form'):
+    def form(self, request: HttpRequest, params: dict) -> Form:
         return StudentLoginForm(request, params)
 
-    def post_success(self, request: HttpRequest, student_login_form: TypeVar('forms.Form')) -> HttpResponse:
+    def post_success(self, request: HttpRequest, student_login_form: Form) -> HttpResponse:
         reader_user = student_login_form.get_user()
 
         if hasattr(reader_user, 'instructor'):
@@ -156,6 +158,8 @@ class StudentSignUpView(TemplateView):
     def get_context_data(self, **kwargs) -> dict:
         context = super(StudentSignUpView, self).get_context_data(**kwargs)
 
+        context['title'] = 'Student Signup'
+
         context['difficulties'] = json.dumps([(text_difficulty.slug, text_difficulty.name)
                                               for text_difficulty in TextDifficulty.objects.all()])
 
@@ -165,10 +169,31 @@ class StudentSignUpView(TemplateView):
 class StudentLoginView(TemplateView):
     template_name = 'student/login.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(StudentLoginView, self).get_context_data(**kwargs)
+
+        context['title'] = 'Student Login'
+
+        return context
+
 
 class StudentProfileView(StudentView, TemplateView):
     template_name = 'student/profile.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(StudentProfileView, self).get_context_data(**kwargs)
+
+        context['title'] = 'Student Profile'
+
+        return context
+
 
 class StudentFlashcardView(StudentView, TemplateView):
     template_name = 'student/flashcards.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(StudentFlashcardView, self).get_context_data(**kwargs)
+
+        context['title'] = 'Student Flashcards'
+
+        return context
