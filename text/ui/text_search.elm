@@ -106,7 +106,7 @@ init flags =
     , text_search=text_search
     , help=text_search_help
     , error_msg=Nothing
-    , flags={ flags | welcome = True }
+    , flags=flags
     }
     , updateResults text_search)
 

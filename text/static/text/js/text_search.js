@@ -13550,9 +13550,7 @@ var _user$project$Main$init = function (flags) {
 			text_search: text_search,
 			help: text_search_help,
 			error_msg: _elm_lang$core$Maybe$Nothing,
-			flags: _elm_lang$core$Native_Utils.update(
-				flags,
-				{welcome: true})
+			flags: flags
 		},
 		_1: _user$project$Main$updateResults(text_search)
 	};

@@ -24384,9 +24384,7 @@ var _user$project$Main$init = function (flags) {
 	return {
 		ctor: '_Tuple2',
 		_0: {
-			flags: _elm_lang$core$Native_Utils.update(
-				flags,
-				{welcome: true}),
+			flags: flags,
 			profile: _user$project$Student_Profile$emptyStudentProfile,
 			editing: _elm_lang$core$Dict$empty,
 			username_update: {username: '', valid: _elm_lang$core$Maybe$Nothing, msg: _elm_lang$core$Maybe$Nothing},

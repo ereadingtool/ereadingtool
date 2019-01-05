@@ -24050,6 +24050,9 @@ var _user$project$Text_Translations_Msg$UpdateTextTranslations = function (a) {
 var _user$project$Text_Translations_Msg$UpdatedTextWords = function (a) {
 	return {ctor: 'UpdatedTextWords', _0: a};
 };
+var _user$project$Text_Translations_Msg$DeletedTextWord = function (a) {
+	return {ctor: 'DeletedTextWord', _0: a};
+};
 var _user$project$Text_Translations_Msg$MatchTranslations = function (a) {
 	return {ctor: 'MatchTranslations', _0: a};
 };
@@ -24064,6 +24067,9 @@ var _user$project$Text_Translations_Msg$UpdateNewTranslationForTextWord = F2(
 	function (a, b) {
 		return {ctor: 'UpdateNewTranslationForTextWord', _0: a, _1: b};
 	});
+var _user$project$Text_Translations_Msg$DeleteTextWord = function (a) {
+	return {ctor: 'DeleteTextWord', _0: a};
+};
 var _user$project$Text_Translations_Msg$MakeCorrectForContext = function (a) {
 	return {ctor: 'MakeCorrectForContext', _0: a};
 };
@@ -24339,15 +24345,15 @@ var _user$project$Text_Section_Words_Tag$countOccurrences = F2(
 			-1,
 			A2(_elm_lang$core$Dict$get, normalized_token, _p2));
 		var instance = num_of_prev_occurrences + 1;
-		var new_occurrences = A3(_elm_lang$core$Dict$insert, normalized_token, instance, _p2);
 		var new_tokens = A2(
 			_elm_lang$core$Basics_ops['++'],
 			_p1._0,
 			{
 				ctor: '::',
-				_0: {ctor: '_Tuple2', _0: normalized_token, _1: instance},
+				_0: {ctor: '_Tuple2', _0: token, _1: instance},
 				_1: {ctor: '[]'}
 			});
+		var new_occurrences = A3(_elm_lang$core$Dict$insert, normalized_token, instance, _p2);
 		return {ctor: '_Tuple2', _0: new_tokens, _1: new_occurrences};
 	});
 var _user$project$Text_Section_Words_Tag$punctuation_re = _elm_lang$core$Regex$regex('[?!.,]');
@@ -24931,11 +24937,65 @@ var _user$project$Text_Translations_View$view_text_word_translations = F2(
 				}
 			}());
 	});
+var _user$project$Text_Translations_View$view_delete_text_word = F2(
+	function (parent_msg, word_instance) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('delete_text_word'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$button,
+					{
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'title', 'Delete this word instance from glossing.'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(
+								parent_msg(
+									_user$project$Text_Translations_Msg$DeleteTextWord(word_instance.text_word))),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Delete from glossing'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			});
+	});
+var _user$project$Text_Translations_View$view_btns = F3(
+	function (model, parent_msg, word_instance) {
+		var normalized_word = _elm_lang$core$String$toLower(word_instance.text_word.word);
+		var instance_count = A2(_user$project$Text_Translations_Model$instanceCount, model, normalized_word);
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('text_word_options'),
+				_1: {ctor: '[]'}
+			},
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				{
+					ctor: '::',
+					_0: A2(_user$project$Text_Translations_View$view_delete_text_word, parent_msg, word_instance),
+					_1: {ctor: '[]'}
+				},
+				(_elm_lang$core$Native_Utils.cmp(instance_count, 1) > 0) ? {
+					ctor: '::',
+					_0: A2(_user$project$Text_Translations_View$view_match_translations, parent_msg, word_instance),
+					_1: {ctor: '[]'}
+				} : {ctor: '[]'}));
+	});
 var _user$project$Text_Translations_View$view_edit = F3(
 	function (model, parent_msg, word_instance) {
 		var editing_word = A2(_user$project$Text_Translations_Model$editingWordInstance, model, word_instance);
-		var normalized_word = _elm_lang$core$String$toLower(word_instance.text_word.word);
-		var instance_count = A2(_user$project$Text_Translations_Model$instanceCount, model, normalized_word);
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -24961,22 +25021,19 @@ var _user$project$Text_Translations_View$view_edit = F3(
 						_0: _elm_lang$html$Html_Attributes$class('edit_menu'),
 						_1: {ctor: '[]'}
 					},
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						{
+					{
+						ctor: '::',
+						_0: A2(_user$project$Text_Translations_View$view_overlay_close_btn, parent_msg, word_instance),
+						_1: {
 							ctor: '::',
-							_0: A2(_user$project$Text_Translations_View$view_overlay_close_btn, parent_msg, word_instance),
+							_0: A2(_user$project$Text_Translations_View$view_text_word_translations, parent_msg, word_instance),
 							_1: {
 								ctor: '::',
-								_0: A2(_user$project$Text_Translations_View$view_text_word_translations, parent_msg, word_instance),
+								_0: A3(_user$project$Text_Translations_View$view_btns, model, parent_msg, word_instance),
 								_1: {ctor: '[]'}
 							}
-						},
-						(_elm_lang$core$Native_Utils.cmp(instance_count, 1) > 0) ? {
-							ctor: '::',
-							_0: A2(_user$project$Text_Translations_View$view_match_translations, parent_msg, word_instance),
-							_1: {ctor: '[]'}
-						} : {ctor: '[]'})),
+						}
+					}),
 				_1: {ctor: '[]'}
 			});
 	});

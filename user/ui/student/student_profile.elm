@@ -24,7 +24,7 @@ init flags =
     student_help = Student.Profile.Help.init
   in
     ({
-      flags = { flags | welcome = True }
+      flags = flags
     , profile = Student.Profile.emptyStudentProfile
     , editing = Dict.empty
     , username_update = {username = "", valid = Nothing, msg = Nothing}

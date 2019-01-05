@@ -58,7 +58,7 @@ class StudentAPIView(LoginRequiredMixin, APIView):
     # returns permission denied HTTP message rather than redirect to login
     raise_exception = True
 
-    def form(self, request: HttpRequest, params: dict, **kwargs) -> Form:
+    def form(self, request: HttpRequest, params: dict, **kwargs) -> forms.ModelForm:
         return StudentForm(params, **kwargs)
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
