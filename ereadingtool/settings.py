@@ -27,7 +27,7 @@ CHANNEL_LAYERS = {
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
-ADMINs = [('Andrew', 'als2@pdx.edu')]
+ADMINS = [('Andrew', 'als2@pdx.edu')]
 
 LOGGING = {
     'version': 1,
