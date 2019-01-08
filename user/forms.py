@@ -62,10 +62,14 @@ class InstructorSignUpForm(SignUpForm):
 
 
 class StudentSignUpForm(SignUpForm):
+    class Meta:
+        model = Student
+        exclude = ('user', 'difficulty_preference', 'flashcards',)
+
     difficulty = forms.CharField(required=True)
 
     def clean_difficulty(self):
-        if not TextDifficulty.objects.filter(slug=self.cleaned_data['difficulty']).count():
+        if not TextDifficulty.objects.filter(slug=self.cleaned_data['difficulty']).exists():
             raise forms.ValidationError(_("This difficulty does not exist."), code='difficulty_does_not_exist')
 
         return self.cleaned_data['difficulty']
@@ -77,10 +81,6 @@ class StudentSignUpForm(SignUpForm):
         student.save()
 
         return student
-
-    class Meta:
-        model = Student
-        exclude = ('user', 'difficulty_preference',)
 
 
 class AuthenticationForm(BaseAuthenticationForm):

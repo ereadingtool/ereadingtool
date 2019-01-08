@@ -197,11 +197,11 @@ class StudentProfileView(StudentView, TemplateView):
     def get(self, request, *args, **kwargs) -> HttpResponse:
         response = super(StudentProfileView, self).get(request, *args, **kwargs)
 
-        welcome_session_params = request.session['welcome']
+        welcome_session_params = request.session.get('welcome', None)
 
-        del welcome_session_params['student_profile']
-
-        request.session['welcome'] = welcome_session_params
+        if welcome_session_params:
+            del welcome_session_params['student_profile']
+            request.session['welcome'] = welcome_session_params
 
         return response
 

@@ -15,7 +15,7 @@ from ereadingtool.test.user import TestUser as TestUserBase
 from django.urls import reverse
 from django.core import mail
 
-from text.models import Text
+from text.models import Text, TextDifficulty
 from text.tests import TestText
 
 from text_reading.models import StudentTextReading, InstructorTextReading
@@ -27,6 +27,8 @@ Reading = Union[StudentTextReading, InstructorTextReading]
 class TestUser(TestUserBase, TestCase):
     def setUp(self):
         super(TestUser, self).setUp()
+
+        TextDifficulty.setup_default()
 
         self.anonymous_client = Client()
 
@@ -172,6 +174,23 @@ class TestUser(TestUserBase, TestCase):
                 'title': 'Past Month'
             }
         })
+
+    def test_student_signup(self):
+        signup_uri = reverse('api-student-signup')
+
+        signup_resp = self.anonymous_client.post(signup_uri,
+                                                 data=json.dumps({
+                                                     'email': 'testing@test.com',
+                                                     'password': 'p4ssw0rd12!',
+                                                     'confirm_password': 'p4ssw0rd12!',
+                                                     'difficulty': TextDifficulty.objects.get(pk=1).slug
+                                                 }),
+                                                 content_type='application/json')
+
+        if signup_resp.status_code == 400:
+            print(signup_resp.content)
+
+        self.assertEquals(signup_resp.status_code, 200)
 
     def test_set_username(self):
         resp = self.student_client.put(self.student_api_endpoint,
