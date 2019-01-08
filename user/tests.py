@@ -1,23 +1,17 @@
 import json
+import re
 from typing import Dict, Union, AnyStr, List
 
-import re
-
+from django.core import mail
+from django.http.response import HttpResponse, HttpResponseRedirect
 from django.test import TestCase
-
 from django.test.client import Client
-
+from django.urls import reverse
 from django.utils import timezone as dt
 
-from django.http.response import HttpResponse, HttpResponseRedirect
-
 from ereadingtool.test.user import TestUser as TestUserBase
-from django.urls import reverse
-from django.core import mail
-
 from text.models import Text, TextDifficulty
 from text.tests import TestText
-
 from text_reading.models import StudentTextReading, InstructorTextReading
 
 SectionSpec = List[Dict[AnyStr, int]]
@@ -42,7 +36,8 @@ class TestUser(TestUserBase, TestCase):
         self.password_reset_api_endpoint = reverse('api-password-reset')
         self.password_reset_confirm_api_endpoint = reverse('api-password-reset-confirm')
 
-    def read_test(self, text: Text, text_reading: Reading, sections: SectionSpec, end_dt: dt.datetime = None) -> Reading:
+    def read_test(self, text: Text, text_reading: Reading, sections: SectionSpec,
+                  end_dt: dt.datetime = None) -> Reading:
         section_num = 0
 
         text_sections = text.sections.all()
@@ -95,9 +90,9 @@ class TestUser(TestUserBase, TestCase):
         today_dt = dt.now()
 
         if today_dt.month == 1:
-            last_month_dt = today_dt.replace(month=12, year=today_dt.year-1)
+            last_month_dt = today_dt.replace(month=12, year=today_dt.year - 1)
         else:
-            last_month_dt = today_dt.replace(month=today_dt.month-1)
+            last_month_dt = today_dt.replace(month=today_dt.month - 1)
 
         # 3 sections, with 7, 2, and 3 questions, respectively (total questions: 12)
         text_params = test_text.generate_text_params(
@@ -175,22 +170,43 @@ class TestUser(TestUserBase, TestCase):
             }
         })
 
-    def test_student_signup(self):
+    def test_student_signup(self, student_signup_params: Dict) -> Client:
         signup_uri = reverse('api-student-signup')
 
-        signup_resp = self.anonymous_client.post(signup_uri,
-                                                 data=json.dumps({
-                                                     'email': 'testing@test.com',
-                                                     'password': 'p4ssw0rd12!',
-                                                     'confirm_password': 'p4ssw0rd12!',
-                                                     'difficulty': TextDifficulty.objects.get(pk=1).slug
-                                                 }),
+        anonymous_client = Client()
+
+        signup_resp = anonymous_client.post(signup_uri, data=json.dumps(student_signup_params),
+                                            content_type='application/json')
+
+        self.assertEquals(signup_resp.status_code, 200, signup_resp.content)
+
+        return anonymous_client
+
+    def test_welcome_flag(self):
+        student_profile_url = reverse('student-profile')
+
+        student_signup_params = {
+            'email': 'testing@test.com',
+            'password': 'p4ssw0rd12!',
+            'confirm_password': 'p4ssw0rd12!',
+            'difficulty': TextDifficulty.objects.get(pk=1).slug
+        }
+
+        student_client = self.test_student_signup(student_signup_params)
+
+        student_login_resp = student_client.post(self.student_login_api_endpoint,
+                                                 data=json.dumps({'username': student_signup_params['email'],
+                                                                  'password': student_signup_params['password']}),
                                                  content_type='application/json')
 
-        if signup_resp.status_code == 400:
-            print(signup_resp.content)
+        # welcome flag should be present on the first loading of the profile page, but not on subsequent loads
+        self.assertIn('welcome', student_login_resp.wsgi_request.session)
+        self.assertIn('student_profile', student_login_resp.wsgi_request.session['welcome'])
 
-        self.assertEquals(signup_resp.status_code, 200)
+        student_profile = student_client.get(student_profile_url)
+
+        self.assertIn('welcome', student_profile.wsgi_request.session)
+        self.assertNotIn('student_profile', student_profile.wsgi_request.session['welcome'])
 
     def test_set_username(self):
         resp = self.student_client.put(self.student_api_endpoint,
@@ -273,9 +289,9 @@ class TestUser(TestUserBase, TestCase):
 
         resp = self.anonymous_client.post(self.password_reset_confirm_api_endpoint,
                                           data=json.dumps({
-                                           'uidb64': uidb64,
-                                           'new_password1': 'a new pass',
-                                           'new_password2': 'a new pass'}), content_type='application/json')
+                                              'uidb64': uidb64,
+                                              'new_password1': 'a new pass',
+                                              'new_password2': 'a new pass'}), content_type='application/json')
 
         self.assertEquals(resp.status_code, 200)
 
