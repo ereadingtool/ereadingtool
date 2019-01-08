@@ -18,11 +18,14 @@ class TextSearchView(TemplateView):
     def get(self, request, *args, **kwargs) -> HttpResponse:
         response = super(TextSearchView, self).get(request, *args, **kwargs)
 
-        welcome_session_params = request.session['welcome']
+        try:
+            welcome_session_params = request.session['welcome']
 
-        del welcome_session_params['student_search']
+            del welcome_session_params['student_search']
 
-        request.session['welcome'] = welcome_session_params
+            request.session['welcome'] = welcome_session_params
+        except KeyError:
+            pass
 
         return response
 
