@@ -39,6 +39,16 @@ class ElmLoadJsStudentView(LoginRequiredMixin, ElmLoadJsBaseView):
         except KeyError:
             welcome = False
 
+        try:
+            if welcome:
+                student_session = self.request.session['welcome']
+
+                del student_session['student_profile']
+
+                self.request.session['welcome'] = student_session
+        except KeyError:
+            pass
+
         context['elm']['welcome'] = {
             'quote': False,
             'safe': True,
@@ -193,17 +203,6 @@ class StudentLoginView(TemplateView):
 
 class StudentProfileView(StudentView, TemplateView):
     template_name = 'student/profile.html'
-
-    def get(self, request, *args, **kwargs) -> HttpResponse:
-        response = super(StudentProfileView, self).get(request, *args, **kwargs)
-
-        welcome_session_params = request.session.get('welcome', None)
-
-        if welcome_session_params:
-            del welcome_session_params['student_profile']
-            request.session['welcome'] = welcome_session_params
-
-        return response
 
     def get_context_data(self, **kwargs):
         context = super(StudentProfileView, self).get_context_data(**kwargs)

@@ -183,7 +183,8 @@ class TestUser(TestUserBase, TestCase):
         return anonymous_client
 
     def test_welcome_flag(self):
-        student_profile_url = reverse('student-profile')
+        student_profile_url = reverse('load-elm-student')
+        search_url = reverse('text-search-load-elm')
 
         student_signup_params = {
             'email': 'testing@test.com',
@@ -200,13 +201,45 @@ class TestUser(TestUserBase, TestCase):
                                                  content_type='application/json')
 
         # welcome flag should be present on the first loading of the profile page, but not on subsequent loads
-        self.assertIn('welcome', student_login_resp.wsgi_request.session)
-        self.assertIn('student_profile', student_login_resp.wsgi_request.session['welcome'])
+        def match_welcome_flag(resp: HttpResponse) -> bool:
+            welcome_re = re.compile(r'.+welcome\s*:(?P<welcome>\w+).+', re.IGNORECASE | re.DOTALL)
 
-        student_profile = student_client.get(student_profile_url)
+            matches = welcome_re.match(str(resp.content))
 
-        self.assertIn('welcome', student_profile.wsgi_request.session)
-        self.assertNotIn('student_profile', student_profile.wsgi_request.session['welcome'])
+            self.assertTrue(matches, 'no welcome flag')
+
+            welcome_flag = json.loads(matches.group('welcome'))
+
+            return welcome_flag
+
+        # present
+        first_profile_resp = student_client.get(student_profile_url)
+
+        welcome = match_welcome_flag(first_profile_resp)
+
+        self.assertTrue(welcome)
+
+        # not present
+        second_profile_resp = student_client.get(student_profile_url)
+
+        welcome = match_welcome_flag(second_profile_resp)
+
+        self.assertFalse(welcome)
+
+        # same with search page
+        first_search_resp = student_client.get(search_url)
+
+        # present
+        welcome = match_welcome_flag(first_search_resp)
+
+        self.assertTrue(welcome)
+
+        second_search_resp = student_client.get(search_url)
+
+        # not present
+        welcome = match_welcome_flag(second_search_resp)
+
+        self.assertFalse(welcome)
 
     def test_set_username(self):
         resp = self.student_client.put(self.student_api_endpoint,
