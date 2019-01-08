@@ -59,7 +59,7 @@ class TextReading(models.Model):
         }
 
     @property
-    def text_reading_answer_cls(self) -> TypeVar('TextReadingAnswers', bound='TextReadingAnswers'):
+    def text_reading_answer_cls(self) -> 'TextReadingAnswers':
         raise NotImplementedError
 
     @property
@@ -76,7 +76,7 @@ class TextReading(models.Model):
 
     @property
     def score(self) -> Dict:
-        answered_correctly = self.text_reading_answers.order_by('-created_dt').filter(
+        answered_correctly = self.text_reading_answers.order_by('created_dt').filter(
             question=models.OuterRef('question'))
 
         scores = self.text_reading_answers.values('question').annotate(
@@ -159,7 +159,7 @@ class TextReading(models.Model):
                 error_msg='Please answer all questions before continuing to the next section.'
             )
 
-    def answer(self, answer: Answer) -> Optional[TypeVar('TextReadingAnswers', bound='TextReadingAnswers')]:
+    def answer(self, answer: Answer) -> Optional['TextReadingAnswers']:
         if answer.question.text_section != self.current_section:
             raise TextReadingQuestionNotInSection(code='question_not_in_section',
                                                   error_msg='This question is not in this section.')
@@ -236,18 +236,15 @@ class TextReading(models.Model):
         self.save()
 
     @classmethod
-    def start(cls, profile: Union[TypeVar('Student'), TypeVar('Instructor')],
-              text: Text) -> TypeVar('TextReadingAnswers', bound='TextReading'):
+    def start(cls, profile: Union['Student', 'Instructor'], text: Text) -> 'TextReading':
         raise NotImplementedError
 
     @classmethod
-    def resume(cls, profile: Union[TypeVar('Student'), TypeVar('Instructor')],
-               text: Text) -> TypeVar('TextReadingAnswers', bound='TextReading'):
+    def resume(cls, profile: Union['Student', 'Instructor'], text: Text) -> 'TextReading':
         raise NotImplementedError
 
     @classmethod
-    def start_or_resume(cls, profile: Union[TypeVar('Student'), TypeVar('Instructor')],
-                        text: Text) -> TypeVar('TextReadingAnswers', bound='TextReading'):
+    def start_or_resume(cls, profile: Union['Student', 'Instructor'], text: Text) -> 'TextReading':
         raise NotImplementedError
 
 
