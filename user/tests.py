@@ -93,7 +93,7 @@ class TestUser(TestUserBase, TestCase):
         today_dt = dt.now()
 
         if today_dt.month == 1:
-            last_month_dt = today_dt.replace(month=12)
+            last_month_dt = today_dt.replace(month=12, year=today_dt.year-1)
         else:
             last_month_dt = today_dt.replace(month=today_dt.month-1)
 
