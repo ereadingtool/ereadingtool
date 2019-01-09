@@ -170,7 +170,15 @@ class TestUser(TestUserBase, TestCase):
             }
         })
 
-    def test_student_signup(self, student_signup_params: Dict) -> Client:
+    def test_student_signup(self, student_signup_params: Dict = None) -> Client:
+        if not student_signup_params:
+            student_signup_params = {
+                'email': 'testing@test.com',
+                'password': 'p4ssw0rd12!',
+                'confirm_password': 'p4ssw0rd12!',
+                'difficulty': TextDifficulty.objects.get(pk=1).slug
+            }
+
         signup_uri = reverse('api-student-signup')
 
         anonymous_client = Client()
