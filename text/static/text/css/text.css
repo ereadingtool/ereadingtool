@@ -2,7 +2,7 @@ span {
     display: inline-block;
 }
 
-.text {
+#text {
     display: grid;
     grid-column: 2;
 
@@ -12,6 +12,15 @@ span {
     letter-spacing: 0;
 
     grid-template-columns: 10% auto 10%;
+    grid-template-rows: 10% auto 10%;
+
+    align-content: center;
+    justify-content: center;
+}
+
+#content {
+    grid-column: 2;
+    grid-row: 2;
 }
 
 .text_section {
@@ -68,6 +77,8 @@ span {
 #text_intro {
     grid-column: 2;
     display: grid;
+
+    margin-top: 100px;
 
     align-items: center;
     justify-items: center;

@@ -1,7 +1,7 @@
 module TextReader.View exposing (..)
 
 import Html exposing (Html, div, span)
-import Html.Attributes exposing (class, classList, attribute, property)
+import Html.Attributes exposing (id, class, classList, attribute, property)
 import Html.Events exposing (onClick, onDoubleClick, onMouseLeave)
 
 import Array exposing (Array)
@@ -199,21 +199,21 @@ view_next_btn =
 
 view_text_complete : Model -> TextScores -> Html Msg
 view_text_complete model scores =
-  div [class "text"] [
-      div [attribute "id" "text_score"] [
+  div [class "complete"] [
+    div [attribute "id" "text_score"] [
+      Html.text
+        ("Sections complete: " ++ (toString scores.complete_sections) ++ "/" ++ (toString scores.num_of_sections))
+    , div [] [
         Html.text
-          ("Sections complete: " ++ (toString scores.complete_sections) ++ "/" ++ (toString scores.num_of_sections))
-      , div [] [
-          Html.text
-            ("Score: " ++ (toString scores.section_scores) ++ " out of " ++ (toString scores.possible_section_scores))
-        ]
-      ]
-    , view_text_conclusion model.text
-    , div [class "nav"] [
-        view_prev_btn
-      , div [attribute "id" "goback", onClick StartOver] [ Html.text "Start Over" ]
+          ("Score: " ++ (toString scores.section_scores) ++ " out of " ++ (toString scores.possible_section_scores))
       ]
     ]
+  , view_text_conclusion model.text
+  , div [class "nav"] [
+      view_prev_btn
+    , div [attribute "id" "goback", onClick StartOver] [ Html.text "Start Over" ]
+    ]
+  ]
 
 view_exceptions : Model -> Html Msg
 view_exceptions model =
@@ -228,22 +228,30 @@ view_exceptions model =
 
 view_content : Model -> Html Msg
 view_content model =
-  case model.progress of
-    ViewIntro ->
-      div [class "text"] <| [
-        view_text_introduction model.text
-      , div [onClick NextSection, class "nav"] [ div [class "start_btn"] [ Html.text "Start" ] ]
-      ]
+  let
+    content =
+      (case model.progress of
+        ViewIntro ->
+          [
+            view_text_introduction model.text
+          , div [onClick NextSection, class "nav"] [
+              div [class "start_btn"] [ Html.text "Start" ]
+            ]
+          ]
 
-    ViewSection section ->
-      div [class "text"] [
-        view_text_section model section
-      , view_exceptions model
-      , div [class "nav"] [view_prev_btn, view_next_btn]
-      ]
+        ViewSection section ->
+          [
+            view_text_section model section
+          , view_exceptions model
+          , div [class "nav"] [view_prev_btn, view_next_btn]
+          ]
 
-    Complete text_scores ->
-      view_text_complete model text_scores
+        Complete text_scores ->
+          [view_text_complete model text_scores]
 
-    _ ->
-      div [] []
+        _ ->
+          [])
+  in
+    div [id "text"] [
+      div [id "content"] content
+    ]

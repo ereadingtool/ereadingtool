@@ -25277,7 +25277,7 @@ var _user$project$TextReader_View$view_text_complete = F2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('text'),
+				_0: _elm_lang$html$Html_Attributes$class('complete'),
 				_1: {ctor: '[]'}
 			},
 			{
@@ -25882,17 +25882,11 @@ var _user$project$TextReader_View$view_text_section = F2(
 			});
 	});
 var _user$project$TextReader_View$view_content = function (model) {
-	var _p7 = model.progress;
-	switch (_p7.ctor) {
-		case 'ViewIntro':
-			return A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('text'),
-					_1: {ctor: '[]'}
-				},
-				{
+	var content = function () {
+		var _p7 = model.progress;
+		switch (_p7.ctor) {
+			case 'ViewIntro':
+				return {
 					ctor: '::',
 					_0: _user$project$TextReader_View$view_text_introduction(model.text),
 					_1: {
@@ -25926,16 +25920,9 @@ var _user$project$TextReader_View$view_content = function (model) {
 							}),
 						_1: {ctor: '[]'}
 					}
-				});
-		case 'ViewSection':
-			return A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('text'),
-					_1: {ctor: '[]'}
-				},
-				{
+				};
+			case 'ViewSection':
+				return {
 					ctor: '::',
 					_0: A2(_user$project$TextReader_View$view_text_section, model, _p7._0),
 					_1: {
@@ -25962,15 +25949,36 @@ var _user$project$TextReader_View$view_content = function (model) {
 							_1: {ctor: '[]'}
 						}
 					}
-				});
-		case 'Complete':
-			return A2(_user$project$TextReader_View$view_text_complete, model, _p7._0);
-		default:
-			return A2(
+				};
+			case 'Complete':
+				return {
+					ctor: '::',
+					_0: A2(_user$project$TextReader_View$view_text_complete, model, _p7._0),
+					_1: {ctor: '[]'}
+				};
+			default:
+				return {ctor: '[]'};
+		}
+	}();
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('text'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
 				_elm_lang$html$Html$div,
-				{ctor: '[]'},
-				{ctor: '[]'});
-	}
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$id('content'),
+					_1: {ctor: '[]'}
+				},
+				content),
+			_1: {ctor: '[]'}
+		});
 };
 
 var _user$project$TextReader_Question_Decode$answerDecoder = A3(
