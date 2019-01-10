@@ -114,6 +114,7 @@ table td {
 
     grid-template-columns: auto;
     grid-template-rows: 25px 35px;
+    margin-bottom: 15px;
 }
 
 .profile_item_title {
