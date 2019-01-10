@@ -5,7 +5,8 @@ from text.views.api.text import TextAPIView
 from text.views.api.tag import TextTagAPIView
 from text.views.api.lock import TextLockAPIView
 from text.views.api.translations import TextTranslationAPIView, TextTranslationMergeAPIView
-from text.views.api.text_word import TextWordTranslationsAPIView
+from text.views.api.text_word.word import TextWordTranslationsAPIView
+from text.views.api.text_word.group import TextWordGroupAPIView
 
 urlpatterns = [
     path('api/text/translations/match/', TextTranslationMergeAPIView.as_view(),
@@ -13,6 +14,8 @@ urlpatterns = [
 
     path('api/text/translation/<int:tr_pk>/', TextTranslationAPIView.as_view(),
          name='text-translation-api'),
+
+    path('api/text/word/compound/<int:pk>/', TextWordGroupAPIView.as_view(), name='text-word-group-api'),
 
     path('api/text/word/<int:pk>/translation/', TextWordTranslationsAPIView.as_view(),
          name='text-word-api'),
