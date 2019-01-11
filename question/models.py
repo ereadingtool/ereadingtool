@@ -24,12 +24,11 @@ class Question(Timestamped, models.Model):
     def __str__(self):
         return self.body[:15]
 
-    def to_text_reading_dict(self, text_reading=None, random_state=None) -> Dict:
+    def to_text_reading_dict(self, text_reading=None) -> Dict:
         answers = [answer.to_text_reading_dict(text_reading=text_reading) for answer in self.answers.all()]
 
-        if random_state:
-            random.setstate(random_state)
-            random.shuffle(answers)
+        random.seed(text_reading.random_seed)
+        random.shuffle(answers)
 
         return {
             'id': self.pk,

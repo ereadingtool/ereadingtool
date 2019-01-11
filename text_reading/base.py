@@ -33,6 +33,8 @@ class TextReading(models.Model):
     end_dt = models.DateTimeField(null=True)
     last_read_dt = models.DateTimeField(null=True)
 
+    random_seed = models.CharField(max_length=256, null=False)
+
     def __init__(self, *args, **kwargs):
         """
         Deserialize the state from the db.
@@ -101,11 +103,10 @@ class TextReading(models.Model):
             'possible_section_scores': len(scores)
         }
 
-    def to_text_reading_dict(self, random_state, **kwargs) -> Dict:
+    def to_text_reading_dict(self, **kwargs) -> Dict:
         if self.state_machine.is_in_progress:
             return self.get_current_section().to_text_reading_dict(text_reading=self,
-                                                                   num_of_sections=self.number_of_sections,
-                                                                   random_state=random_state)
+                                                                   num_of_sections=self.number_of_sections)
 
         elif self.state_machine.is_intro:
             return self.text.to_text_reading_dict()

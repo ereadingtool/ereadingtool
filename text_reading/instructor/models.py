@@ -1,3 +1,5 @@
+import os
+
 from typing import Tuple
 
 from django.db import models
@@ -19,7 +21,7 @@ class InstructorTextReading(TextReading, models.Model):
         :param text:
         :return: TextReading
         """
-        text_reading = cls.objects.create(instructor=instructor, text=text)
+        text_reading = cls.objects.create(instructor=instructor, text=text, random_seed=os.urandom(256))
 
         return text_reading
 
