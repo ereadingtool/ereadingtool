@@ -12,7 +12,7 @@ class TextGroupWord(models.Model):
         unique_together = (('group', 'word', 'order'),)
 
     group = models.ForeignKey(TextWordGroup, related_name='components', on_delete=models.CASCADE)
-    word = models.ForeignKey(TextWord, related_name='group_word', on_delete=models.CASCADE)
+    word = models.OneToOneField(TextWord, related_name='group_word', on_delete=models.CASCADE)
 
     order = models.IntegerField(default=0)
 

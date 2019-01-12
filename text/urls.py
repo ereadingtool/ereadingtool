@@ -16,6 +16,7 @@ urlpatterns = [
          name='text-translation-api'),
 
     path('api/text/word/compound/<int:pk>/', TextWordGroupAPIView.as_view(), name='text-word-group-api'),
+    path('api/text/word/compound/', TextWordGroupAPIView.as_view(), name='text-word-group-api'),
 
     path('api/text/word/<int:pk>/translation/', TextWordTranslationsAPIView.as_view(),
          name='text-word-api'),
