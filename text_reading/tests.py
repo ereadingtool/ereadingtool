@@ -1,5 +1,4 @@
 import random
-import asyncio
 
 from typing import Dict, AnyStr, List, Tuple
 

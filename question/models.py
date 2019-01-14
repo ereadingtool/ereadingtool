@@ -27,8 +27,9 @@ class Question(Timestamped, models.Model):
     def to_text_reading_dict(self, text_reading=None) -> Dict:
         answers = [answer.to_text_reading_dict(text_reading=text_reading) for answer in self.answers.all()]
 
-        random.seed(text_reading.random_seed)
-        random.shuffle(answers)
+        if text_reading:
+            random.seed(text_reading.random_seed)
+            random.shuffle(answers)
 
         return {
             'id': self.pk,

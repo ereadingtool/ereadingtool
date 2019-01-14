@@ -68,7 +68,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
 
             await self.send_json({
                 'command': self.text_reading.current_state.name,
-                'result': await self.get_current_text_reading_dict(random_state=self.scope['random_state'])
+                'result': await self.get_current_text_reading_dict()
             })
 
         except TextReadingQuestionNotInSection:
@@ -92,7 +92,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
 
             await self.send_json({
                 'command': self.text_reading.current_state.name,
-                'result': await self.get_current_text_reading_dict(random_state=self.scope['random_state'])
+                'result': await self.get_current_text_reading_dict()
             })
 
         except TextReadingException as e:
@@ -110,7 +110,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
 
             await self.send_json({
                 'command': self.text_reading.current_state.name,
-                'result': await self.get_current_text_reading_dict(random_state=self.scope['random_state'])
+                'result': await self.get_current_text_reading_dict()
             })
 
         except TextReadingNotAllQuestionsAnswered as e:
