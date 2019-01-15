@@ -43,6 +43,8 @@ import Text.Create exposing (..)
 
 import Text.Translations.Model
 import Text.Translations.Update
+import Text.Translations.Subscriptions
+
 
 init : Flags -> (Model, Cmd Msg)
 init flags = ({
@@ -447,7 +449,7 @@ delete_text csrftoken text =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Sub.batch [
+  Sub.batch <| [
       -- text updates
       Text.Subscriptions.subscriptions TextComponentMsg model
       -- handle clearing messages
@@ -458,6 +460,12 @@ subscriptions model =
     , ckEditorUpdate UpdateTextCkEditors
       -- handle text delete confirmation
     , confirmation ConfirmTextDelete
+  ] ++ [
+    (case model.text_translations_model of
+      Just translation_model ->
+        Text.Translations.Subscriptions.subscriptions TextTranslationMsg translation_model
+      Nothing ->
+        Sub.none)
   ]
 
 main : Program Flags Model Msg

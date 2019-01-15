@@ -58,7 +58,7 @@ LOGGING = {
             'formatter': 'verbose'
         },
         'mail_admins': {
-            'level': 'INFO',
+            'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
             'include_html': True,
             'filters': ['require_debug_true']
