@@ -10028,6 +10028,18 @@ var _user$project$Ports$scrollTo = _elm_lang$core$Native_Platform.outgoingPort(
 	function (v) {
 		return v;
 	});
+var _user$project$Ports$selectedText = _elm_lang$core$Native_Platform.incomingPort(
+	'selectedText',
+	_elm_lang$core$Json_Decode$oneOf(
+		{
+			ctor: '::',
+			_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+			_1: {
+				ctor: '::',
+				_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+				_1: {ctor: '[]'}
+			}
+		}));
 
 var _user$project$Help_PopUp$setAllInvisible = function (msgs) {
 	return _rnons$ordered_containers$OrderedDict$fromList(

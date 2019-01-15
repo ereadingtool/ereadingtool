@@ -62,6 +62,9 @@ update parent_msg msg model =
     UpdatedTextWords (Err err) -> let _ = Debug.log "error updating text words" err in
       (model, Cmd.none)
 
+    SelectedText text_string -> let _ = Debug.log "selected string" text_string in
+      (model, Cmd.none)
+
     DeleteTextWord text_word ->
       (model, Cmd.none)
 

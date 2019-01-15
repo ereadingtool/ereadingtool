@@ -20,6 +20,7 @@ type Msg =
   | SubmitNewTranslationForTextWord Text.Model.TextWord
   | DeleteTranslation Text.Model.TextWord Text.Model.TextWordTranslation
   | MatchTranslations Text.Model.WordInstance
+  | SelectedText (Maybe String)
   -- result msgs
   | DeletedTextWord (Result Http.Error Text.Model.TextWord)
   | UpdatedTextWords (Result Http.Error (List Text.Model.TextWord))

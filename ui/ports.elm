@@ -20,3 +20,5 @@ port confirmation : (Bool -> msg) -> Sub msg
 port redirect : String -> Cmd msg
 
 port scrollTo : String -> Cmd msg
+
+port selectedText : (Maybe String -> msg) -> Sub msg

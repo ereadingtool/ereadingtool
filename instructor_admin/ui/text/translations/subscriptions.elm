@@ -1,10 +1,13 @@
 module Text.Translations.Subscriptions exposing (..)
 
-import Text.Translations.Msg exposing (Msg)
+import Ports
+
+import Text.Translations.Msg exposing (Msg, Msg(..))
 import Text.Translations.Model exposing (Model)
 
 
 subscriptions : (Msg -> msg) -> Model -> Sub msg
-subscriptions parent_msg model =
+subscriptions msg model =
   Sub.batch [
+    Ports.selectedText (SelectedText >> msg)
   ]

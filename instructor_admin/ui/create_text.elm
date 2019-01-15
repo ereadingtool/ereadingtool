@@ -464,6 +464,7 @@ subscriptions model =
     (case model.text_translations_model of
       Just translation_model ->
         Text.Translations.Subscriptions.subscriptions TextTranslationMsg translation_model
+
       Nothing ->
         Sub.none)
   ]

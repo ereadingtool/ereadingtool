@@ -20,6 +20,27 @@
         }
     }
 
+    function getSelectedText() {
+         var selected_obj = window.getSelection();
+
+         if (selected_obj) {
+             return selected_obj.toString();
+         } else {
+             return null;
+         }
+    }
+
+    function sendSelectedText() {
+         // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
+         window.requestAnimationFrame(function (timestamp) {
+             var selected_text = getSelectedText();
+
+             app.ports.selectedText.send(selected_text.toString());
+         });
+    }
+
+    document.onmouseup = sendSelectedText;
+
     app.ports.selectAllInputText.subscribe(function (elem_id) {
         // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
         window.requestAnimationFrame(function (timestamp) {
