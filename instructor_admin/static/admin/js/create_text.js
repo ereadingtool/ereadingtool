@@ -28218,17 +28218,21 @@ var _user$project$Text_Translations_View$tagWord = F4(
 						_0: _elm_lang$html$Html_Attributes$id(id),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$classList(
-								{
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'defined_word', _1: true},
-									_1: {
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-token', token),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$classList(
+									{
 										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'cursor', _1: true},
-										_1: {ctor: '[]'}
-									}
-								}),
-							_1: {ctor: '[]'}
+										_0: {ctor: '_Tuple2', _0: 'defined_word', _1: true},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'cursor', _1: true},
+											_1: {ctor: '[]'}
+										}
+									}),
+								_1: {ctor: '[]'}
+							}
 						}
 					},
 					{
@@ -28267,7 +28271,19 @@ var _user$project$Text_Translations_View$tagWord = F4(
 						}
 					});
 			} else {
-				return _elm_lang$virtual_dom$VirtualDom$text(token);
+				return A3(
+					_elm_lang$html$Html$node,
+					'span',
+					{
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-token', token),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$virtual_dom$VirtualDom$text(token),
+						_1: {ctor: '[]'}
+					});
 			}
 		}
 	});

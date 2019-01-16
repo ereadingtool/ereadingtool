@@ -37,6 +37,7 @@ tagWord model parent_msg instance token =
             in
               Html.node "span" [
                 Html.Attributes.id id
+              , attribute "data-token" token
               , classList [("defined_word", True), ("cursor", True)]
               ] [
                 span [
@@ -49,7 +50,9 @@ tagWord model parent_msg instance token =
               ]
 
           Nothing ->
-            VirtualDom.text token
+            Html.node "span" [attribute "data-token" token] [
+              VirtualDom.text token
+            ]
 
 view_edit : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html msg
 view_edit model parent_msg word_instance =

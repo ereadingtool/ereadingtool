@@ -19,6 +19,9 @@ from user.views.mixin import ProfileView
 from mixins.view import ElmLoadJsBaseView
 
 
+Form = TypeVar('Form', bound=forms.Form)
+
+
 class ElmLoadJsInstructorView(LoginRequiredMixin, ElmLoadJsBaseView):
     def get_context_data(self, **kwargs) -> Dict:
         context = super(ElmLoadJsInstructorView, self).get_context_data(**kwargs)
@@ -41,20 +44,20 @@ class InstructorView(ProfileView):
 
 
 class InstructorSignupAPIView(APIView):
-    def form(self, request: HttpRequest, params: Dict) -> TypeVar('forms.Form'):
+    def form(self, request: HttpRequest, params: Dict) -> forms.ModelForm:
         return InstructorSignUpForm(params)
 
-    def post_success(self, request: HttpRequest, instructor_signup_form: TypeVar('forms.Form')) -> HttpResponse:
+    def post_success(self, request: HttpRequest, instructor_signup_form: Form) -> HttpResponse:
         instructor = instructor_signup_form.save()
 
         return HttpResponse(json.dumps({'id': instructor.pk, 'redirect': reverse('instructor-login')}))
 
 
 class InstructorLoginAPIView(APIView):
-    def form(self, request: HttpRequest, params: Dict) -> TypeVar('forms.Form'):
+    def form(self, request: HttpRequest, params: Dict) -> Form:
         return InstructorLoginForm(request, params)
 
-    def post_success(self, request: HttpRequest, instructor_login_form: TypeVar('forms.Form')) -> HttpResponse:
+    def post_success(self, request: HttpRequest, instructor_login_form: Form) -> HttpResponse:
         reader_user = instructor_login_form.get_user()
 
         if hasattr(reader_user, 'student'):
