@@ -30,29 +30,24 @@ tagWord model parent_msg instance token =
         span [class "space"] []
 
       False ->
-        case Text.Translations.Model.getTextWord model instance normalized_token of
-          Just text_word ->
-            let
-              word_instance = {id=id, instance=instance, text_word=text_word}
-            in
-              Html.node "span" [
-                Html.Attributes.id id
-              , attribute "data-token" token
-              , classList [("defined_word", True), ("cursor", True)]
-              ] [
-                span [
-                  classList [("highlighted", Text.Translations.Model.editingWord model token)]
-                , onClick (parent_msg (EditWord word_instance))
-                ] [
-                  VirtualDom.text token
-                ]
-              , view_edit model parent_msg word_instance
-              ]
-
-          Nothing ->
-            Html.node "span" [attribute "data-token" token] [
+        let
+          text_word = Text.Translations.Model.getTextWord model instance normalized_token
+          word_instance = {id=id, instance=instance, word=token, text_word=text_word}
+        in
+          Html.node "span" [
+            Html.Attributes.id id
+          , attribute "data-token" token
+          , classList [("defined_word", True)
+          , ("cursor", True)]
+          ] [
+            span [
+              classList [("highlighted", Text.Translations.Model.editingWord model token)]
+            , onClick (parent_msg (EditWord word_instance))
+            ] [
               VirtualDom.text token
             ]
+          , view_edit model parent_msg word_instance
+          ]
 
 view_edit : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html msg
 view_edit model parent_msg word_instance =
@@ -64,7 +59,7 @@ view_edit model parent_msg word_instance =
         ] [
       div [class "edit_menu"] <| [
         view_overlay_close_btn parent_msg word_instance
-      , view_text_word_translations parent_msg word_instance
+      , view_word_instance parent_msg word_instance
       , view_btns model parent_msg word_instance
       ]
     ]
@@ -72,7 +67,7 @@ view_edit model parent_msg word_instance =
 view_btns : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html msg
 view_btns model parent_msg word_instance =
   let
-    normalized_word = String.toLower word_instance.text_word.word
+    normalized_word = String.toLower word_instance.word
     instance_count = Text.Translations.Model.instanceCount model normalized_word
   in
     div [class "text_word_options"] <| [
@@ -81,12 +76,18 @@ view_btns model parent_msg word_instance =
 
 view_delete_text_word : (Msg -> msg) -> Text.Model.WordInstance -> Html msg
 view_delete_text_word parent_msg word_instance =
-  div [class "delete_text_word"] [
-    Html.button [ attribute "title" "Delete this word instance from glossing."
-                , onClick (parent_msg (DeleteTextWord word_instance.text_word))] [
-      Html.text "Delete from glossing"
-    ]
-  ]
+  div [class "delete_text_word"]
+    (case word_instance.text_word of
+      Just text_word -> [
+        Html.button
+          [ attribute "title" "Delete this word instance from glossing."
+          , onClick (parent_msg (DeleteTextWord text_word))] [
+            Html.text "Delete from glossing"
+          ]
+        ]
+
+      Nothing ->
+        [])
 
 view_correct_for_context : Bool -> List (Html msg)
 view_correct_for_context correct =
@@ -103,6 +104,23 @@ view_correct_for_context correct =
 
     False ->
       []
+
+view_add_as_text_word : (Msg -> msg) -> Text.Model.WordInstance -> Html msg
+view_add_as_text_word msg word_instance =
+  div [class "add_as_text_word"] [
+    div [] [
+      Html.text "Add as text word."
+    ]
+  , div [] [
+      Html.img [
+        attribute "src" "/static/img/add.svg"
+      , attribute "height" "17px"
+      , attribute "width" "17px"
+      , attribute "title" "Add a new translation."
+      , onClick (msg (AddTextWord word_instance))] []
+    ]
+  ]
+
 
 view_add_translation : (Msg -> msg) -> Text.Model.TextWord -> Html msg
 view_add_translation msg text_word =
@@ -158,19 +176,22 @@ view_overlay_close_btn parent_msg word_instance =
     view_exit_btn
   ]
 
-view_text_word_translations : (Msg -> msg) -> Text.Model.WordInstance -> Html msg
-view_text_word_translations msg word_instance =
-  let
-    text_word = word_instance.text_word
-  in
-    div [class "translations"]
-      (case text_word.translations of
-        Just translations_list ->
-            (List.map (view_text_word_translation msg text_word) translations_list)
-         ++ [view_add_translation msg text_word]
+view_word_instance : (Msg -> msg) -> Text.Model.WordInstance -> Html msg
+view_word_instance msg word_instance =
+  div [class "word_instance"]
+      (case word_instance.text_word of
+        Just text_word ->
+          case text_word.translations of
+            Just translations_list ->
+              [div [class "translations"] <|
+                  (List.map (view_text_word_translation msg text_word) translations_list)
+               ++ [view_add_translation msg text_word]]
+
+            Nothing ->
+              [view_add_translation msg text_word]
 
         Nothing ->
-          [view_add_translation msg text_word])
+          [view_add_as_text_word msg word_instance])
 
 view_match_translations : (Msg -> msg) -> Text.Model.WordInstance -> Html msg
 view_match_translations parent_msg word_instance =

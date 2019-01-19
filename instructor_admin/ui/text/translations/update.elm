@@ -23,26 +23,7 @@ update : (Msg -> msg) -> Msg -> Model -> (Model, Cmd msg)
 update parent_msg msg model =
   case msg of
     MatchTranslations word_instance ->
-      let
-        text_word = word_instance.text_word
-        word = String.toLower text_word.word
-      in
-        case text_word.translations of
-          Just new_translations ->
-            let
-              match_translations = putMatchTranslations parent_msg model.flags.csrftoken
-            in
-              case Text.Translations.Model.getTextWords model word of
-                Just text_words ->
-                  (model, match_translations new_translations (Array.toList text_words))
-
-                -- no text words associated with this word
-                Nothing ->
-                  (model, Cmd.none)
-
-          -- no translations to match
-          Nothing ->
-            (model, Cmd.none)
+      (model, matchTranslations parent_msg model word_instance)
 
     UpdatedTextWords (Ok text_words) ->
       (Text.Translations.Model.setTextWords model text_words, Cmd.none)
@@ -85,6 +66,9 @@ update parent_msg msg model =
     UpdateNewTranslationForTextWord text_word translation_text ->
       (Text.Translations.Model.updateTranslationsForWord model text_word translation_text, Cmd.none)
 
+    AddTextWord word_instance ->
+      (model, Cmd.none)
+
     SubmitNewTranslationForTextWord text_word ->
       case Text.Translations.Model.getNewTranslationForWord model text_word of
         Just translation_text ->
@@ -114,6 +98,34 @@ update parent_msg msg model =
     -- handle user-friendly msgs
     DeletedTranslation (Err err) -> let _ = Debug.log "error decoding deleting text translations" err in
       (model, Cmd.none)
+
+matchTranslations : (Msg -> msg) -> Model -> Text.Model.WordInstance -> Cmd msg
+matchTranslations parent_msg model word_instance =
+  let
+    word = String.toLower word_instance.word
+  in
+    case word_instance.text_word of
+      Just text_word ->
+        case text_word.translations of
+          Just new_translations ->
+            let
+              match_translations = putMatchTranslations parent_msg model.flags.csrftoken
+            in
+              case Text.Translations.Model.getTextWords model word of
+                Just text_words ->
+                  match_translations new_translations (Array.toList text_words)
+
+                -- no text words associated with this word
+                Nothing ->
+                  Cmd.none
+
+          -- no translations to match
+          Nothing ->
+            Cmd.none
+
+      -- no text word
+      Nothing ->
+        Cmd.none
 
 deleteTranslation : (Msg -> msg) -> Flags.CSRFToken -> Text.Model.TextWord -> Text.Model.TextWordTranslation -> Cmd msg
 deleteTranslation msg csrftoken text_word translation =

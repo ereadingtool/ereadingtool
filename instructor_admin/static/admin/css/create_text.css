@@ -571,10 +571,14 @@ body {
     font-size: 14px;
 }
 
-.translations {
+.word_instance  {
     grid-row: 2;
     grid-column: 2;
 
+    display: grid;
+}
+
+.translations {
     display: grid;
 
     grid-template-columns: min-content;
@@ -621,6 +625,14 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     margin-top: 5px;
+}
+
+.add_as_text_word {
+    display: grid;
+    grid-template-columns: 1fr 10%;
+
+    margin-top: 5px;
+    font-size: large;
 }
 
 .translation_delete {

@@ -44,15 +44,6 @@ getTextWords : Model -> Text.Translations.Word -> Maybe (Array Text.Model.TextWo
 getTextWords model word =
   Dict.get word model.words
 
-matchTranslations : Model -> Text.Model.WordInstance -> Model
-matchTranslations model word_instance =
-  case getTextWords model (String.toLower word_instance.text_word.word) of
-    Just text_words ->
-      model
-
-    Nothing ->
-      model
-
 editingWord : Model -> String -> Bool
 editingWord model word =
   Dict.member (String.toLower word) model.editing_words
@@ -60,7 +51,7 @@ editingWord model word =
 editWord : Model -> Text.Model.WordInstance -> Model
 editWord model word_instance =
   let
-    normalized_word = String.toLower word_instance.text_word.word
+    normalized_word = String.toLower word_instance.word
 
     new_edited_words =
       (case Dict.get normalized_word model.editing_words of
@@ -77,7 +68,7 @@ editWord model word_instance =
 uneditWord : Model -> Text.Model.WordInstance -> Model
 uneditWord model word_instance =
   let
-    normalized_word = String.toLower word_instance.text_word.word
+    normalized_word = String.toLower word_instance.word
 
     new_edited_words =
       (case Dict.get normalized_word model.editing_words of

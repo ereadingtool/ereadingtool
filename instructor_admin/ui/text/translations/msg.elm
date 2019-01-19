@@ -17,6 +17,7 @@ type Msg =
   | MakeCorrectForContext Text.Model.TextWordTranslation
   | DeleteTextWord Text.Model.TextWord
   | UpdateNewTranslationForTextWord Text.Model.TextWord String
+  | AddTextWord Text.Model.WordInstance
   | SubmitNewTranslationForTextWord Text.Model.TextWord
   | DeleteTranslation Text.Model.TextWord Text.Model.TextWordTranslation
   | MatchTranslations Text.Model.WordInstance
