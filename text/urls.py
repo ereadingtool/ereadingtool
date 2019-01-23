@@ -5,7 +5,7 @@ from text.views.api.text import TextAPIView
 from text.views.api.tag import TextTagAPIView
 from text.views.api.lock import TextLockAPIView
 from text.views.api.translations import TextTranslationAPIView, TextTranslationMergeAPIView
-from text.views.api.text_word.word import TextWordTranslationsAPIView
+from text.views.api.text_word.word import TextWordAPIView, TextWordTranslationsAPIView
 from text.views.api.text_word.group import TextWordGroupAPIView
 
 urlpatterns = [
@@ -18,8 +18,14 @@ urlpatterns = [
     path('api/text/word/compound/<int:pk>/', TextWordGroupAPIView.as_view(), name='text-word-group-api'),
     path('api/text/word/compound/', TextWordGroupAPIView.as_view(), name='text-word-group-api'),
 
-    path('api/text/word/<int:pk>/translation/', TextWordTranslationsAPIView.as_view(),
+    path('api/text/word/<int:pk>/', TextWordAPIView.as_view(),
          name='text-word-api'),
+
+    path('api/text/word/', TextWordAPIView.as_view(),
+         name='text-word-api'),
+
+    path('api/text/word/<int:pk>/translation/', TextWordTranslationsAPIView.as_view(),
+         name='text-word-translation-api'),
 
     path('api/text/<int:pk>/', TextAPIView.as_view(), name='text-item-api'),
     path('api/text/', TextAPIView.as_view(), name='text-api'),

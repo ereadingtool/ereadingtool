@@ -13,6 +13,35 @@ from django.db import DatabaseError
 from text.translations.models import TextWord, TextWordTranslation
 
 
+class TextWordAPIView(LoginRequiredMixin, View):
+    login_url = reverse_lazy('instructor-login')
+    allowed_methods = ['post', 'delete']
+
+    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        try:
+            text_word_add_params = json.loads(request.body.decode('utf8'))
+
+            jsonschema.validate(text_word_add_params, TextWord.to_add_json_schema())
+
+        except json.JSONDecodeError as decode_error:
+            return HttpResponse(json.dumps({'errors': {'json': str(decode_error)}}), status=400)
+
+        except jsonschema.ValidationError as validation_error:
+            return HttpResponse(json.dumps({'errors': {'json': str(validation_error)}}), status=400)
+
+        try:
+            text_word = TextWord.create(**text_word_add_params)
+
+            text_word_dict = text_word.to_dict()
+
+            text_word_dict['id'] = text_word.pk
+
+            return HttpResponse(json.dumps(text_word_dict))
+
+        except DatabaseError:
+            return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
+
+
 class TextWordTranslationsAPIView(LoginRequiredMixin, View):
     login_url = reverse_lazy('instructor-login')
     allowed_methods = ['post', 'delete']

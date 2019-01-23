@@ -29,6 +29,9 @@ CHANNEL_LAYERS = {
 
 ADMINS = [('Andrew', 'als2@pdx.edu')]
 
+# days
+INVITATION_EXPIRY = 30
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -114,7 +117,8 @@ INSTALLED_APPS += [
     'text_reading',
     'tag',
     'report',
-    'flashcards'
+    'flashcards',
+    'invite'
 ]
 
 AUTH_USER_MODEL = 'user.ReaderUser'

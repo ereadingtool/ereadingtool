@@ -1,4 +1,4 @@
-from typing import Dict, AnyStr, Optional
+from typing import Dict, AnyStr, Optional, Union
 
 from django.db import models
 
@@ -46,6 +46,43 @@ class TextWord(models.Model):
             'grammemes': self.grammemes,
             'translation': translation.phrase if translation else None
         }
+
+    @classmethod
+    def create(cls, **params) -> 'TextWord':
+        params['text_section'] = TextSection.objects.get(pk=params['text_section'])
+
+        return TextWord.objects.create(**params)
+
+    @classmethod
+    def grammeme_add_schema(cls) -> Dict:
+        grammeme_schema = {
+            'type': 'object',
+            'properties': {
+                'pos': {'type': 'string'},
+                'tense': {'type': 'string'},
+                'aspect': {'type': 'string'},
+                'form': {'type': 'string'},
+                'mood': {'type': 'string'}
+            }
+        }
+
+        return grammeme_schema
+
+    @classmethod
+    def to_add_json_schema(cls) -> Dict:
+        schema = {
+            'type': 'object',
+            'properties': {
+                'text_section': {'type': 'number'},
+                'instance': {'type': 'number'},
+                'word': {'type': 'string'},
+                'grammeme': cls.grammeme_add_schema()
+            },
+            'minItems': 1,
+            'required': ['text_section', 'instance', 'word']
+        }
+
+        return schema
 
 
 class TextWordTranslation(models.Model):

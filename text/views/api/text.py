@@ -50,7 +50,7 @@ class TextAPIView(LoginRequiredMixin, View):
 
     @classmethod
     def validate_text_section_params(cls, text_section_params: List[Dict], errors: Dict,
-                                     text_sections: Optional[List[TypeVar('TextSection')]]=None) -> (Dict, Dict):
+                                     text_sections: Optional[List['TextSection']] = None) -> (Dict, Dict):
         new_text_params = {}
 
         for i, text_section_param in enumerate(text_section_params):
@@ -70,7 +70,7 @@ class TextAPIView(LoginRequiredMixin, View):
 
     @classmethod
     def validate_text_params(cls, text_params: Dict, errors: Dict,
-                             text: Optional[TypeVar('Text')]=None) -> (Dict, Dict):
+                             text: Optional['Text'] = None) -> (Dict, Dict):
         # default difficulty
         if 'difficulty' not in text_params or not text_params['difficulty']:
             text_params['difficulty'] = 'intermediate_mid'
@@ -94,7 +94,7 @@ class TextAPIView(LoginRequiredMixin, View):
 
     @classmethod
     def validate_question_param(cls, text_key: AnyStr, question_param: Dict, errors: Dict,
-                                question_instances: List[TypeVar('Question')]=None) -> (List, Dict):
+                                question_instances: List['Question'] = None) -> (List, Dict):
         questions = []
 
         for i, question_param in enumerate(question_param):
@@ -140,7 +140,7 @@ class TextAPIView(LoginRequiredMixin, View):
 
     @classmethod
     def validate_text_section_param(cls, text_section_param: Dict, order: int, errors: Dict, output_params: Dict,
-                                    text_section_instance: Optional[TypeVar('TextSection')]=None) -> (Dict, Dict):
+                                    text_section_instance: Optional['TextSection'] = None) -> (Dict, Dict):
         text_section = dict()
         text_section_key = f'textsection_{order}'
 
@@ -313,7 +313,7 @@ class TextAPIView(LoginRequiredMixin, View):
             else:
                 return text_queryset
 
-    def validate_params(self, text_params: AnyStr, text: Optional[TypeVar('Text')]=None) -> (Dict, Dict, HttpResponse):
+    def validate_params(self, text_params: AnyStr, text: Optional['Text'] = None) -> (Dict, Dict, HttpResponse):
         errors = resp = text_sections_params = None
 
         try:

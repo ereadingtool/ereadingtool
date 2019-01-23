@@ -11,6 +11,8 @@ from hypothesis.strategies import just, one_of
 
 from ereadingtool.test.user import TestUser
 from ereadingtool.urls import reverse_lazy
+from django.urls import reverse
+
 from question.models import Answer
 from tag.models import Tag
 from text.consumers.instructor import ParseTextSectionForDefinitions
@@ -596,6 +598,44 @@ class TestText(TestUser, TestCase):
         self.assertEquals(resp_content['tags'], test_data['tags'])
 
         return text
+
+    def test_add_text_word_to_text_section(self):
+        test_data = self.get_test_data()
+
+        text_word_api_endpoint = reverse('text-word-api')
+
+        test_data['text_sections'][0]['body'] += 'A test sentence.'
+
+        resp = self.instructor.post(reverse_lazy('text-api'),
+                                    json.dumps(test_data),
+                                    content_type='application/json')
+
+        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        self.assertEquals(Text.objects.count(), 1)
+
+        resp_content = json.loads(resp.content.decode('utf8'))
+
+        self.assertIn('id', resp_content)
+
+        text = Text.objects.get(pk=resp_content['id'])
+
+        text_section_one = text.sections.all()[0]
+
+        self.assertTrue(text_section_one)
+
+        resp = self.instructor.post(text_word_api_endpoint,
+                                    json.dumps({
+                                        'text_section': text_section_one.pk,
+                                        'instance': 0,
+                                        'word': 'sentence'
+                                    }), content_type='application/json')
+
+        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        resp_content = json.loads(resp.content.decode('utf8'))
+
+        self.assertIn('id', resp_content)
 
     def test_delete_text(self):
         resp = self.instructor.post(reverse_lazy('text-api'),

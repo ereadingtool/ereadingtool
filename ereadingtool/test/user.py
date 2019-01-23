@@ -1,14 +1,18 @@
-from typing import AnyStr, Optional, Tuple
+from typing import Dict, Union, AnyStr, List
+from typing import Optional, Tuple
 
 from django.test import TestCase
 from django.test.client import Client
 from hypothesis.extra.django.models import models
 from hypothesis.strategies import just, text
 
-from user.models import ReaderUser
-
+from text_reading.models import StudentTextReading, InstructorTextReading
 from user.instructor.models import Instructor
+from user.models import ReaderUser
 from user.student.models import Student
+
+SectionSpec = List[Dict[AnyStr, int]]
+Reading = Union[StudentTextReading, InstructorTextReading]
 
 
 class TestUser(TestCase):
@@ -36,8 +40,16 @@ class TestUser(TestCase):
 
         return user, user_passwd, student
 
-    def new_instructor_client(self, client: Client) -> Client:
+    def new_instructor(self) -> (ReaderUser, AnyStr, Instructor):
         user, user_passwd = self.new_user()
+
+        instructor = models(Instructor, user=just(user)).example()
+
+        return user, user_passwd, instructor
+
+    def new_instructor_client(self, client: Client,
+                              user_and_pass: Optional[Tuple[ReaderUser, AnyStr]] = None) -> Client:
+        user, user_passwd = user_and_pass or self.new_user()
 
         instructor = models(Instructor, user=just(user)).example()
         instructor.save()
@@ -48,7 +60,7 @@ class TestUser(TestCase):
 
         return client
 
-    def new_student_client(self, client: Client, user_and_pass: Optional[Tuple[ReaderUser, AnyStr]]=None) -> Client:
+    def new_student_client(self, client: Client, user_and_pass: Optional[Tuple[ReaderUser, AnyStr]] = None) -> Client:
         user, user_passwd = user_and_pass or self.new_user()
 
         student = models(Student, user=just(user)).example()
