@@ -27933,13 +27933,13 @@ var _user$project$Text_Translations_View$view_add_translation = F2(
 				}
 			});
 	});
-var _user$project$Text_Translations_View$view_add_text_word = F2(
+var _user$project$Text_Translations_View$view_add_as_text_word = F2(
 	function (msg, word_instance) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('add_translation'),
+				_0: _elm_lang$html$Html_Attributes$class('add_as_text_word'),
 				_1: {ctor: '[]'}
 			},
 			{
@@ -28144,7 +28144,7 @@ var _user$project$Text_Translations_View$view_word_instance = F2(
 				} else {
 					return {
 						ctor: '::',
-						_0: A2(_user$project$Text_Translations_View$view_add_text_word, msg, word_instance),
+						_0: A2(_user$project$Text_Translations_View$view_add_as_text_word, msg, word_instance),
 						_1: {ctor: '[]'}
 					};
 				}
