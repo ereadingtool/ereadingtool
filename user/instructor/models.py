@@ -10,8 +10,13 @@ from user.models import ReaderUser
 
 class Instructor(Profile, TextReadings, models.Model):
     user = models.OneToOneField(ReaderUser, on_delete=models.CASCADE)
+    admin = models.BooleanField(null=True)
 
     login_url = reverse_lazy('instructor-login')
+
+    @property
+    def is_admin(self):
+        return self.admin or False
 
     @property
     def text_search_queryset(self):

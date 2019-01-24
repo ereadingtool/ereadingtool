@@ -622,8 +622,6 @@ class TestText(TestUser, TestCase):
 
         text_section_one = text.sections.all()[0]
 
-        self.assertTrue(text_section_one)
-
         resp = self.instructor.post(text_word_api_endpoint,
                                     json.dumps({
                                         'text_section': text_section_one.pk,

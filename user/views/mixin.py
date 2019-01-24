@@ -1,5 +1,3 @@
-from typing import AnyStr, TypeVar
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 
@@ -12,7 +10,7 @@ from user.mixins.models import Profile
 
 class ProfileView(LoginRequiredMixin, TemplateView):
     @property
-    def profile_model(self) -> TypeVar('Profile'):
+    def profile_model(self) -> 'Profile':
         raise NotImplementedError
 
     def get(self, request, *args, **kwargs) -> HttpResponse:

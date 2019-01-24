@@ -1,4 +1,7 @@
 from django import forms
+from django.db.models import Sum, F, DateTimeField
+from django.db.models.functions import Now
+
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import AuthenticationForm as BaseAuthenticationForm
 from django.core.validators import validate_email
@@ -10,6 +13,8 @@ from user.models import ReaderUser
 
 from user.instructor.models import Instructor
 from user.student.models import Student
+
+from invite.models import Invite
 
 
 class SignUpForm(forms.ModelForm):
@@ -55,10 +60,55 @@ class SignUpForm(forms.ModelForm):
         return profile
 
 
+class InstructorInviteForm(forms.ModelForm):
+    class Meta:
+        model = Invite
+        fields = ('email', 'inviter',)
+
+    def __init__(self, *args, **kwargs):
+        super(InstructorInviteForm, self).__init__(*args, **kwargs)
+
+        self.fields['inviter'].required = False
+        self.fields['inviter'].disabled = True
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+
+        validate_email(email)
+
+        return email
+
+    def save(self, commit=True):
+        if Invite.objects.filter(email=self.cleaned_data['email']).exists():
+            invite = Invite.objects.get(email=self.cleaned_data['email'])
+        else:
+            invite = Invite.create(**self.cleaned_data)
+
+        return invite
+
+
 class InstructorSignUpForm(SignUpForm):
     class Meta:
         model = Instructor
         exclude = ('user',)
+
+    invite_code = forms.CharField(required=True)
+
+    def clean_invite_code(self):
+        invite_code = self.cleaned_data['invite_code']
+        validation_error = forms.ValidationError(f'The invite code {invite_code} is expired or invalid.')
+
+        try:
+            invite = Invite.objects.get(key=invite_code)
+
+            if invite.expired:
+                raise validation_error
+
+            Invite.objects.filter(pk=invite.pk).delete()
+        except Invite.DoesNotExist:
+            raise validation_error
+
+        return invite.key
 
 
 class StudentSignUpForm(SignUpForm):
@@ -108,6 +158,10 @@ class StudentLoginForm(AuthenticationForm):
 
 
 class StudentForm(forms.ModelForm):
+    class Meta:
+        model = Student
+        exclude = ('user',)
+
     username = forms.CharField(validators=[ReaderUser.username_validator], required=False)
 
     def __init__(self, *args, **kwargs):
@@ -122,7 +176,3 @@ class StudentForm(forms.ModelForm):
         student.user.save()
 
         return student
-
-    class Meta:
-        model = Student
-        exclude = ('user',)

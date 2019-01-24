@@ -4,12 +4,12 @@ from typing import TypeVar, Dict
 from django import forms
 from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, HttpRequest
+from django.http import HttpResponse, HttpRequest, HttpResponseForbidden
 from django.urls import reverse
 
 from django.views.generic import TemplateView, View
 
-from user.forms import InstructorSignUpForm, InstructorLoginForm
+from user.forms import InstructorSignUpForm, InstructorLoginForm, InstructorInviteForm
 
 from user.instructor.models import Instructor
 
@@ -41,6 +41,26 @@ class ElmLoadJsInstructorView(LoginRequiredMixin, ElmLoadJsBaseView):
 class InstructorView(ProfileView):
     profile_model = Instructor
     login_url = Instructor.login_url
+
+
+class InstructorInviteAPIView(LoginRequiredMixin, APIView):
+    login_url = Instructor.login_url
+
+    def dispatch(self, request, *args, **kwargs):
+        if not (hasattr(request.user, 'profile') and
+                isinstance(request.user.profile, Instructor) and
+                request.user.profile.is_admin):
+            return HttpResponseForbidden()
+
+        return super(InstructorInviteAPIView, self).dispatch(request, *args, **kwargs)
+
+    def form(self, request: HttpRequest, params: Dict) -> forms.ModelForm:
+        return InstructorInviteForm(params, initial={'inviter': self.request.user.profile.pk})
+
+    def post_success(self, request: HttpRequest, instructor_invite_form: Form) -> HttpResponse:
+        invite = instructor_invite_form.save()
+
+        return HttpResponse(json.dumps(invite.to_dict()), status=200)
 
 
 class InstructorSignupAPIView(APIView):

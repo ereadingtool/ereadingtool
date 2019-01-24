@@ -1,5 +1,4 @@
 import json
-from typing import TypeVar
 
 from django import forms
 from django.http import HttpResponse, HttpRequest
@@ -11,10 +10,10 @@ from django.views.generic import View
 
 
 class APIView(View):
-    def form(self, request: HttpRequest, params: dict) -> TypeVar('forms.Form'):
+    def form(self, request: HttpRequest, params: dict) -> 'forms.Form':
         raise NotImplementedError
 
-    def post_success(self, request: HttpRequest, form: TypeVar('forms.Form')) -> HttpResponse:
+    def post_success(self, request: HttpRequest, form: 'forms.Form') -> HttpResponse:
         raise NotImplementedError
 
     @method_decorator(sensitive_post_parameters())
@@ -23,7 +22,7 @@ class APIView(View):
     def dispatch(self, request, *args, **kwargs):
         return super(APIView, self).dispatch(request, *args, **kwargs)
 
-    def format_form_errors(self, form: TypeVar('forms.Form')) -> dict:
+    def format_form_errors(self, form: 'forms.Form') -> dict:
         errors = {k: str(' '.join(form.errors[k])) for k in form.errors.keys()}
 
         # convert special Django form field error __all__ to something more frontend-friendly
@@ -36,6 +35,9 @@ class APIView(View):
         return HttpResponse(errors={"errors": {'json': str(error)}}, status=400)
 
     def post_error(self, errors: dict) -> HttpResponse:
+        if not errors:
+            errors['all'] = 'An unspecified error has occurred.'
+
         return HttpResponse(json.dumps(errors), status=400)
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
@@ -48,10 +50,12 @@ class APIView(View):
 
         form = self.form(request, params)
 
-        if not form.is_valid():
+        form_is_valid = form.is_valid()
+
+        if not form_is_valid:
             errors = self.format_form_errors(form)
 
-        if errors:
-            return self.post_error(errors)
-        else:
+        if form_is_valid:
             return self.post_success(request, form)
+        else:
+            return self.post_error(errors)

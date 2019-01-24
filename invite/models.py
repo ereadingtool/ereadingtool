@@ -1,3 +1,5 @@
+from typing import Dict, Any
+
 import datetime
 
 from django.conf import settings
@@ -13,18 +15,29 @@ class Invite(models.Model):
 
     inviter = models.ForeignKey('user.Instructor', null=False, blank=False, on_delete=models.CASCADE)
 
+    expiry = datetime.timedelta(days=settings.INVITATION_EXPIRY)
+
+    def __str__(self):
+        return f'{self.inviter} invited {self.email} on {self.created}'
+
     @property
     def expiration_dt(self):
-        return self.created + datetime.timedelta(days=settings.INVITATION_EXPIRY)
+        return self.created + self.expiry
 
     @property
     def expired(self):
         return self.expiration_dt <= timezone.now()
 
     @classmethod
-    def create(cls, email, instructor: 'Instructor', **kwargs):
+    def create(cls, email, inviter: Any, **kwargs):
         key = get_random_string(64).lower()
 
-        invite = Invite.objects.create(email=email, key=key, inviter=instructor)
+        invite = Invite.objects.create(email=email, key=key, inviter=inviter)
 
         return invite
+
+    def to_dict(self) -> Dict:
+        return {
+            'email': self.email,
+            'invite_code': self.key,
+        }
