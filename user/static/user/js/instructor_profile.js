@@ -9672,6 +9672,18 @@ var _user$project$Ports$scrollTo = _elm_lang$core$Native_Platform.outgoingPort(
 	function (v) {
 		return v;
 	});
+var _user$project$Ports$selectedText = _elm_lang$core$Native_Platform.incomingPort(
+	'selectedText',
+	_elm_lang$core$Json_Decode$oneOf(
+		{
+			ctor: '::',
+			_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+			_1: {
+				ctor: '::',
+				_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+				_1: {ctor: '[]'}
+			}
+		}));
 
 var _user$project$Help_PopUp$setAllInvisible = function (msgs) {
 	return _rnons$ordered_containers$OrderedDict$fromList(
@@ -10137,9 +10149,9 @@ var _user$project$Text_Model$TextWord = F5(
 	function (a, b, c, d, e) {
 		return {id: a, instance: b, word: c, grammemes: d, translations: e};
 	});
-var _user$project$Text_Model$WordInstance = F3(
-	function (a, b, c) {
-		return {id: a, instance: b, text_word: c};
+var _user$project$Text_Model$WordInstance = F4(
+	function (a, b, c, d) {
+		return {id: a, instance: b, word: c, text_word: d};
 	});
 var _user$project$Text_Model$Text = function (a) {
 	return function (b) {

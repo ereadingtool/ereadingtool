@@ -32,6 +32,31 @@ class TestInstructorUser(TestUserBase, TestCase):
             'email': invitee_email,
         }), content_type='application/json')
 
+    def instructor_signup(self, invite_code: AnyStr, email: AnyStr,
+                          password: Optional[AnyStr] = None) -> HttpResponse:
+        password = password or self.password_strategy.example()
+
+        anonymous_client = Client()
+
+        resp = anonymous_client.post(reverse('api-instructor-signup'), data=json.dumps({
+            'email': email,
+            'password': password,
+            'confirm_password': password,
+            'invite_code': invite_code
+        }), content_type='application/json')
+
+        return resp
+
+    def setup_admin_instructor(self):
+        self.instructor_admin_user, self.instructor_admin_password = self.new_user(
+            username='ereader@pdx.edu',
+            password='test-p4ssw0rd!'
+        )
+
+        admin_instructor = self.new_instructor_with_user(self.instructor_admin_user, admin=just(True))
+
+        self.assertTrue(admin_instructor.is_admin)
+
     def test_other_users_cant_invite(self):
         invitee_email = 'test-invite@test.com'
 
@@ -99,28 +124,3 @@ class TestInstructorUser(TestUserBase, TestCase):
         resp = self.instructor_signup(resp_content['invite_code'], invitee_email)
 
         self.assertEquals(resp.status_code, 200, json.loads(resp.content.decode('utf8')))
-
-    def instructor_signup(self, invite_code: AnyStr, email: AnyStr,
-                          password: Optional[AnyStr] = None) -> HttpResponse:
-        password = password or self.password_strategy.example()
-
-        anonymous_client = Client()
-
-        resp = anonymous_client.post(reverse('api-instructor-signup'), data=json.dumps({
-            'email': email,
-            'password': password,
-            'confirm_password': password,
-            'invite_code': invite_code
-        }), content_type='application/json')
-
-        return resp
-
-    def setup_admin_instructor(self):
-        self.instructor_admin_user, self.instructor_admin_password = self.new_user(
-            username='ereader@pdx.edu',
-            password='test-p4ssw0rd!'
-        )
-
-        admin_instructor = self.new_instructor_with_user(self.instructor_admin_user, admin=just(True))
-
-        self.assertTrue(admin_instructor.is_admin)

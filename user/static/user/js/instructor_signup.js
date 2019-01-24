@@ -10264,6 +10264,18 @@ var _user$project$Ports$scrollTo = _elm_lang$core$Native_Platform.outgoingPort(
 	function (v) {
 		return v;
 	});
+var _user$project$Ports$selectedText = _elm_lang$core$Native_Platform.incomingPort(
+	'selectedText',
+	_elm_lang$core$Json_Decode$oneOf(
+		{
+			ctor: '::',
+			_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+			_1: {
+				ctor: '::',
+				_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+				_1: {ctor: '[]'}
+			}
+		}));
 
 var _user$project$Help_PopUp$setAllInvisible = function (msgs) {
 	return _rnons$ordered_containers$OrderedDict$fromList(
@@ -10729,9 +10741,9 @@ var _user$project$Text_Model$TextWord = F5(
 	function (a, b, c, d, e) {
 		return {id: a, instance: b, word: c, grammemes: d, translations: e};
 	});
-var _user$project$Text_Model$WordInstance = F3(
-	function (a, b, c) {
-		return {id: a, instance: b, text_word: c};
+var _user$project$Text_Model$WordInstance = F4(
+	function (a, b, c, d) {
+		return {id: a, instance: b, word: c, text_word: d};
 	});
 var _user$project$Text_Model$Text = function (a) {
 	return function (b) {
@@ -12393,12 +12405,51 @@ var _user$project$SignUp$view = F6(
 			});
 	});
 
+var _user$project$Main$isValidInviteCodeLength = function (invite_code) {
+	var _p0 = _elm_lang$core$Native_Utils.cmp(
+		_elm_lang$core$String$length(invite_code),
+		64) > 0;
+	if (_p0 === true) {
+		return {ctor: '_Tuple2', _0: false, _1: 'too long'};
+	} else {
+		var _p1 = _elm_lang$core$Native_Utils.cmp(
+			_elm_lang$core$String$length(invite_code),
+			64) < 0;
+		if (_p1 === true) {
+			return {ctor: '_Tuple2', _0: false, _1: 'too short'};
+		} else {
+			return {ctor: '_Tuple2', _0: true, _1: ''};
+		}
+	}
+};
+var _user$project$Main$updateInviteCode = F2(
+	function (model, invite_code) {
+		var _p2 = _user$project$Main$isValidInviteCodeLength(invite_code);
+		var valid_invite_code = _p2._0;
+		var invite_code_err = _p2._1;
+		var signup_params = model.signup_params;
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				signup_params: _elm_lang$core$Native_Utils.update(
+					signup_params,
+					{invite_code: invite_code}),
+				errors: (valid_invite_code || _elm_lang$core$Native_Utils.eq(invite_code, '')) ? A2(_elm_lang$core$Dict$remove, 'invite_code', model.errors) : A3(
+					_elm_lang$core$Dict$insert,
+					'invite_code',
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'This invite code is ',
+						A2(_elm_lang$core$Basics_ops['++'], invite_code_err, '.')),
+					model.errors)
+			});
+	});
 var _user$project$Main$init = function (flags) {
 	return {
 		ctor: '_Tuple2',
 		_0: {
 			flags: flags,
-			signup_params: {email: '', password: '', confirm_password: ''},
+			signup_params: {email: '', password: '', confirm_password: '', invite_code: ''},
 			show_passwords: false,
 			errors: _elm_lang$core$Dict$fromList(
 				{ctor: '[]'})
@@ -12429,7 +12480,15 @@ var _user$project$Main$signUpEncoder = function (signup_params) {
 						_0: 'confirm_password',
 						_1: _elm_lang$core$Json_Encode$string(signup_params.confirm_password)
 					},
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'invite_code',
+							_1: _elm_lang$core$Json_Encode$string(signup_params.invite_code)
+						},
+						_1: {ctor: '[]'}
+					}
 				}
 			}
 		});
@@ -12450,9 +12509,9 @@ var _user$project$Main$signUpRespDecoder = A3(
 		'id',
 		_elm_lang$core$Json_Decode$int,
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Main$SignUpResp)));
-var _user$project$Main$SignUpParams = F3(
-	function (a, b, c) {
-		return {email: a, password: b, confirm_password: c};
+var _user$project$Main$SignUpParams = F4(
+	function (a, b, c, d) {
+		return {email: a, password: b, confirm_password: c, invite_code: d};
 	});
 var _user$project$Main$Model = F4(
 	function (a, b, c, d) {
@@ -12482,8 +12541,8 @@ var _user$project$Main$post_signup = F2(
 	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p0 = msg;
-		switch (_p0.ctor) {
+		var _p3 = msg;
+		switch (_p3.ctor) {
 			case 'ToggleShowPassword':
 				return {
 					ctor: '_Tuple2',
@@ -12493,48 +12552,54 @@ var _user$project$Main$update = F2(
 			case 'UpdatePassword':
 				return {
 					ctor: '_Tuple2',
-					_0: A2(_user$project$SignUp$update_password, model, _p0._0),
+					_0: A2(_user$project$SignUp$update_password, model, _p3._0),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'UpdateConfirmPassword':
 				return {
 					ctor: '_Tuple2',
-					_0: A2(_user$project$SignUp$update_confirm_password, model, _p0._0),
+					_0: A2(_user$project$SignUp$update_confirm_password, model, _p3._0),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'UpdateEmail':
 				return {
 					ctor: '_Tuple2',
-					_0: A2(_user$project$SignUp$update_email, model, _p0._0),
+					_0: A2(_user$project$SignUp$update_email, model, _p3._0),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'UpdateInviteCode':
+				return {
+					ctor: '_Tuple2',
+					_0: A2(_user$project$Main$updateInviteCode, model, _p3._0),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'Submit':
 				return {
 					ctor: '_Tuple2',
-					_0: _user$project$SignUp$submit(model),
+					_0: model,
 					_1: A2(_user$project$Main$post_signup, model.flags.csrftoken, model.signup_params)
 				};
 			case 'Submitted':
-				if (_p0._0.ctor === 'Ok') {
+				if (_p3._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: model,
-						_1: _elm_lang$navigation$Navigation$load(_p0._0._0.redirect)
+						_1: _elm_lang$navigation$Navigation$load(_p3._0._0.redirect)
 					};
 				} else {
-					var _p1 = _p0._0._0;
-					switch (_p1.ctor) {
+					var _p4 = _p3._0._0;
+					switch (_p4.ctor) {
 						case 'BadStatus':
-							var _p2 = A2(
+							var _p5 = A2(
 								_elm_lang$core$Json_Decode$decodeString,
 								_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
-								_p1._0.body);
-							if (_p2.ctor === 'Ok') {
+								_p4._0.body);
+							if (_p5.ctor === 'Ok') {
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
 										model,
-										{errors: _p2._0}),
+										{errors: _p5._0}),
 									_1: _elm_lang$core$Platform_Cmd$none
 								};
 							} else {
@@ -12550,6 +12615,67 @@ var _user$project$Main$update = F2(
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
 	});
+var _user$project$Main$UpdateInviteCode = function (a) {
+	return {ctor: 'UpdateInviteCode', _0: a};
+};
+var _user$project$Main$view_invite_code_input = function (model) {
+	var err_msg = {
+		ctor: '::',
+		_0: _user$project$SignUp$signup_label(
+			A2(
+				_elm_lang$html$Html$em,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(
+						A2(
+							_elm_lang$core$Maybe$withDefault,
+							'',
+							A2(_elm_lang$core$Dict$get, 'invite_code', model.errors))),
+					_1: {ctor: '[]'}
+				})),
+		_1: {ctor: '[]'}
+	};
+	var err = A2(_elm_lang$core$Dict$member, 'invite_code', model.errors);
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		{
+			ctor: '::',
+			_0: _user$project$SignUp$signup_label(
+				A2(
+					_elm_lang$html$Html$span,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Invite Code '),
+						_1: {ctor: '[]'}
+					})),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$input,
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						{
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'size', '25'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateInviteCode),
+								_1: {ctor: '[]'}
+							}
+						},
+						err ? {
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'input_error'),
+							_1: {ctor: '[]'}
+						} : {ctor: '[]'}),
+					{ctor: '[]'}),
+				_1: {ctor: '[]'}
+			}
+		},
+		err ? err_msg : {ctor: '[]'});
+};
 var _user$project$Main$UpdateConfirmPassword = function (a) {
 	return {ctor: 'UpdateConfirmPassword', _0: a};
 };
@@ -12560,19 +12686,81 @@ var _user$project$Main$UpdateEmail = function (a) {
 	return {ctor: 'UpdateEmail', _0: a};
 };
 var _user$project$Main$ToggleShowPassword = {ctor: 'ToggleShowPassword'};
+var _user$project$Main$instructor_signup_view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _user$project$Views$view_unauthed_header,
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$classList(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'signup', _1: true},
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('signup_title'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('Instructor Signup'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$classList(
+										{
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'signup_box', _1: true},
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								},
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									A2(_user$project$SignUp$view_email_input, _user$project$Main$UpdateEmail, model),
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										A2(
+											_user$project$SignUp$view_password_input,
+											{ctor: '_Tuple3', _0: _user$project$Main$ToggleShowPassword, _1: _user$project$Main$UpdatePassword, _2: _user$project$Main$UpdateConfirmPassword},
+											model),
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											_user$project$Main$view_invite_code_input(model),
+											A2(_user$project$SignUp$view_submit, _user$project$Main$Submit, model))))),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Views$view_footer,
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
 var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
-	{
-		init: _user$project$Main$init,
-		view: A5(
-			_user$project$SignUp$view,
-			'Instructor Signup',
-			_user$project$Main$UpdateEmail,
-			{ctor: '_Tuple3', _0: _user$project$Main$ToggleShowPassword, _1: _user$project$Main$UpdatePassword, _2: _user$project$Main$UpdateConfirmPassword},
-			_user$project$Main$Submit,
-			_user$project$Main$Logout),
-		subscriptions: _user$project$Main$subscriptions,
-		update: _user$project$Main$update
-	})(
+	{init: _user$project$Main$init, view: _user$project$Main$instructor_signup_view, subscriptions: _user$project$Main$subscriptions, update: _user$project$Main$update})(
 	A2(
 		_elm_lang$core$Json_Decode$andThen,
 		function (csrftoken) {

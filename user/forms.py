@@ -94,21 +94,26 @@ class InstructorSignUpForm(SignUpForm):
 
     invite_code = forms.CharField(required=True)
 
-    def clean_invite_code(self):
-        invite_code = self.cleaned_data['invite_code']
-        validation_error = forms.ValidationError(f'The invite code {invite_code} is expired or invalid.')
+    def clean(self):
+        cleaned_data = super(InstructorSignUpForm, self).clean()
+
+        invite_code = cleaned_data['invite_code']
+        email = cleaned_data['email']
+
+        validation_error = forms.ValidationError(f'This invite code is expired or invalid.  '
+                                                 f'Please verify that the e-mail address and invite code are correct.')
 
         try:
-            invite = Invite.objects.get(key=invite_code)
+            invite = Invite.objects.get(email=email, key=invite_code)
 
             if invite.expired:
-                raise validation_error
+                self.add_error('invite_code', validation_error)
 
             Invite.objects.filter(pk=invite.pk).delete()
         except Invite.DoesNotExist:
-            raise validation_error
+            self.add_error('invite_code', validation_error)
 
-        return invite.key
+        return cleaned_data
 
 
 class StudentSignUpForm(SignUpForm):
