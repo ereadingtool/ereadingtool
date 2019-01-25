@@ -61,6 +61,9 @@ student_signup_page = "/signup/student/"
 instructor_signup_page : String
 instructor_signup_page = "/signup/instructor/"
 
+instructor_invite_uri : String
+instructor_invite_uri = "/api/instructor/invite/"
+
 student_login_page : String
 student_login_page = "/login/student/"
 

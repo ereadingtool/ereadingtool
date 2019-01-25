@@ -9575,6 +9575,7 @@ var _user$project$Config$text_page = function (text_id) {
 var _user$project$Config$forgot_password_page = '/user/password_reset/';
 var _user$project$Config$instructor_login_page = '/login/instructor/';
 var _user$project$Config$student_login_page = '/login/student/';
+var _user$project$Config$instructor_invite_uri = '/api/instructor/invite/';
 var _user$project$Config$instructor_signup_page = '/signup/instructor/';
 var _user$project$Config$student_signup_page = '/signup/student/';
 var _user$project$Config$instructor_profile_page = '/profile/instructor/';
@@ -9972,10 +9973,13 @@ var _user$project$Instructor_Profile$attrs = function (_p0) {
 var _user$project$Instructor_Profile$texts = function (instructor_profile) {
 	return _user$project$Instructor_Profile$attrs(instructor_profile).texts;
 };
-var _user$project$Instructor_Profile$username = function (_p2) {
-	var _p3 = _p2;
-	return _p3._0.username;
+var _user$project$Instructor_Profile$username = function (instructor_profile) {
+	return _user$project$Instructor_Profile$attrs(instructor_profile).username;
 };
+var _user$project$Instructor_Profile$invites = function (instructor_profile) {
+	return _user$project$Instructor_Profile$attrs(instructor_profile).invites;
+};
+var _user$project$Instructor_Profile$inviteURI = _user$project$Config$instructor_invite_uri;
 var _user$project$Instructor_Profile$Text = function (a) {
 	return function (b) {
 		return function (c) {
@@ -10009,9 +10013,13 @@ var _user$project$Instructor_Profile$Text = function (a) {
 		};
 	};
 };
-var _user$project$Instructor_Profile$InstructorProfileParams = F3(
+var _user$project$Instructor_Profile$Invite = F3(
 	function (a, b, c) {
-		return {id: a, texts: b, username: c};
+		return {email: a, invite_code: b, expiration: c};
+	});
+var _user$project$Instructor_Profile$InstructorProfileParams = F4(
+	function (a, b, c, d) {
+		return {id: a, texts: b, invites: c, username: d};
 	});
 var _user$project$Instructor_Profile$InstructorProfile = function (a) {
 	return {ctor: 'InstructorProfile', _0: a};
@@ -10019,6 +10027,30 @@ var _user$project$Instructor_Profile$InstructorProfile = function (a) {
 var _user$project$Instructor_Profile$init_profile = function (params) {
 	return _user$project$Instructor_Profile$InstructorProfile(params);
 };
+var _user$project$Instructor_Profile$addInvite = F2(
+	function (instructor_profile, invite) {
+		var new_invites = function () {
+			var _p2 = _user$project$Instructor_Profile$invites(instructor_profile);
+			if (_p2.ctor === 'Just') {
+				return _elm_lang$core$Maybe$Just(
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						_p2._0,
+						{
+							ctor: '::',
+							_0: invite,
+							_1: {ctor: '[]'}
+						}));
+			} else {
+				return _elm_lang$core$Maybe$Nothing;
+			}
+		}();
+		var new_attrs = _user$project$Instructor_Profile$attrs(instructor_profile);
+		return _user$project$Instructor_Profile$InstructorProfile(
+			_elm_lang$core$Native_Utils.update(
+				new_attrs,
+				{invites: new_invites}));
+	});
 
 var _user$project$Question_Model$new_question = function (i) {
 	return {
@@ -11456,6 +11488,106 @@ var _user$project$Views$view_authed_header = F3(
 			A3(_user$project$Menu_View$view_lower_menu, m_items, profile, top_level_menu_msg));
 	});
 
+var _user$project$Main$view_instructor_invite = function (invite) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('invite'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('label'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('Email: '),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('value'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(invite.email),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('label'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Invite Code: '),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('value'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(invite.invite_code),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('label'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('Expiration: '),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('value'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text(invite.expiration),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}
+			}
+		});
+};
 var _user$project$Main$view_tags = function (tags) {
 	return A2(
 		_elm_lang$core$List$map,
@@ -11706,6 +11838,318 @@ var _user$project$Main$view_texts = function (model) {
 			},
 			_user$project$Instructor_Profile$texts(model.profile)));
 };
+var _user$project$Main$newInviteRespDecoder = A4(
+	_elm_lang$core$Json_Decode$map3,
+	_user$project$Instructor_Profile$Invite,
+	A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'invite_code', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'expiration', _elm_lang$core$Json_Decode$string));
+var _user$project$Main$newInviteEncoder = function (new_invite) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'email',
+				_1: _elm_lang$core$Json_Encode$string(new_invite.email)
+			},
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Main$updateNewInviteEmail = F2(
+	function (model, email) {
+		var validated_errors = (_user$project$Util$is_valid_email(email) || _elm_lang$core$Native_Utils.eq(email, '')) ? A2(_elm_lang$core$Dict$remove, 'invite', model.errors) : A3(_elm_lang$core$Dict$insert, 'invite', 'This e-mail is invalid.', model.errors);
+		var new_invite = model.new_invite;
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				new_invite: _elm_lang$core$Native_Utils.update(
+					new_invite,
+					{email: email}),
+				errors: validated_errors
+			});
+	});
+var _user$project$Main$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$none;
+};
+var _user$project$Main$init = function (flags) {
+	return {
+		ctor: '_Tuple2',
+		_0: {
+			flags: flags,
+			profile: _user$project$Instructor_Profile$init_profile(flags.instructor_profile),
+			new_invite: {email: ''},
+			errors: _elm_lang$core$Dict$empty
+		},
+		_1: _elm_lang$core$Platform_Cmd$none
+	};
+};
+var _user$project$Main$Flags = F2(
+	function (a, b) {
+		return {csrftoken: a, instructor_profile: b};
+	});
+var _user$project$Main$NewInviteResp = F2(
+	function (a, b) {
+		return {email: a, invite_code: b};
+	});
+var _user$project$Main$NewInvite = function (a) {
+	return {email: a};
+};
+var _user$project$Main$Model = F4(
+	function (a, b, c, d) {
+		return {flags: a, profile: b, new_invite: c, errors: d};
+	});
+var _user$project$Main$LoggedOut = function (a) {
+	return {ctor: 'LoggedOut', _0: a};
+};
+var _user$project$Main$LogOut = function (a) {
+	return {ctor: 'LogOut', _0: a};
+};
+var _user$project$Main$SubmitNewInvite = {ctor: 'SubmitNewInvite'};
+var _user$project$Main$SubmittedNewInvite = function (a) {
+	return {ctor: 'SubmittedNewInvite', _0: a};
+};
+var _user$project$Main$submitNewInvite = function (model) {
+	var _p1 = _user$project$Util$is_valid_email(model.new_invite.email);
+	if (_p1 === true) {
+		var encoded_new_invite = _user$project$Main$newInviteEncoder(model.new_invite);
+		var req = A4(
+			_user$project$HttpHelpers$post_with_headers,
+			_user$project$Instructor_Profile$inviteURI,
+			{
+				ctor: '::',
+				_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', model.flags.csrftoken),
+				_1: {ctor: '[]'}
+			},
+			_elm_lang$http$Http$jsonBody(encoded_new_invite),
+			_user$project$Main$newInviteRespDecoder);
+		return A2(_elm_lang$http$Http$send, _user$project$Main$SubmittedNewInvite, req);
+	} else {
+		return _elm_lang$core$Platform_Cmd$none;
+	}
+};
+var _user$project$Main$update = F2(
+	function (msg, model) {
+		var _p2 = msg;
+		switch (_p2.ctor) {
+			case 'UpdateNewInviteEmail':
+				var _p3 = A2(_elm_lang$core$Debug$log, 'erorrs', model.errors);
+				return {
+					ctor: '_Tuple2',
+					_0: A2(_user$project$Main$updateNewInviteEmail, model, _p2._0),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'SubmitNewInvite':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _user$project$Main$submitNewInvite(model)
+				};
+			case 'SubmittedNewInvite':
+				if (_p2._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								profile: A2(_user$project$Instructor_Profile$addInvite, model.profile, _p2._0._0)
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					var _p4 = A2(_elm_lang$core$Debug$log, 'error inviting', _p2._0._0);
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								errors: A3(_elm_lang$core$Dict$insert, 'invite', 'Something went wrong.', model.errors)
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				}
+			case 'LogOut':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: A3(_user$project$Instructor_Profile$logout, model.profile, model.flags.csrftoken, _user$project$Main$LoggedOut)
+				};
+			default:
+				if (_p2._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: model,
+						_1: _user$project$Ports$redirect(_p2._0._0.redirect)
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+		}
+	});
+var _user$project$Main$UpdateNewInviteEmail = function (a) {
+	return {ctor: 'UpdateNewInviteEmail', _0: a};
+};
+var _user$project$Main$view_instructor_invite_create = function (model) {
+	var error_msg = A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(
+				A2(
+					_elm_lang$core$Maybe$withDefault,
+					'',
+					A2(_elm_lang$core$Dict$get, 'invite', model.errors))),
+			_1: {ctor: '[]'}
+		});
+	var has_error = A2(_elm_lang$core$Dict$member, 'invite', model.errors);
+	var error_attrs = has_error ? {
+		ctor: '::',
+		_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'input_error'),
+		_1: {ctor: '[]'}
+	} : {ctor: '[]'};
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('create_invite'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$id('input'),
+					_1: {ctor: '[]'}
+				},
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$input,
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								{
+									ctor: '::',
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'size', '25'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateNewInviteEmail),
+										_1: {
+											ctor: '::',
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Invite an instructor'),
+											_1: {ctor: '[]'}
+										}
+									}
+								},
+								error_attrs),
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
+					},
+					has_error ? {
+						ctor: '::',
+						_0: error_msg,
+						_1: {ctor: '[]'}
+					} : {ctor: '[]'})),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$id('submit'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$input,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$SubmitNewInvite),
+								_1: {
+									ctor: '::',
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'button'),
+									_1: {
+										ctor: '::',
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', 'Submit'),
+										_1: {ctor: '[]'}
+									}
+								}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Main$view_instructor_invites = function (model) {
+	var _p5 = _user$project$Instructor_Profile$invites(model.profile);
+	if (_p5.ctor === 'Just') {
+		return {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('invites'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$span,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('profile_item_title'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Invitations'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$span,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('profile_item_value'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('list'),
+										_1: {ctor: '[]'}
+									},
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										A2(_elm_lang$core$List$map, _user$project$Main$view_instructor_invite, _p5._0),
+										{
+											ctor: '::',
+											_0: _user$project$Main$view_instructor_invite_create(model),
+											_1: {ctor: '[]'}
+										})),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}),
+			_1: {ctor: '[]'}
+		};
+	} else {
+		return {ctor: '[]'};
+	}
+};
 var _user$project$Main$view_content = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -11733,48 +12177,9 @@ var _user$project$Main$view_content = function (model) {
 						}),
 					_1: {ctor: '[]'}
 				},
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('profile_item'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$span,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('profile_item_title'),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text('Username'),
-									_1: {ctor: '[]'}
-								}),
-							_1: {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$span,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('profile_item_value'),
-										_1: {ctor: '[]'}
-									},
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text(
-											_user$project$Instructor_Profile$username(model.profile)),
-										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							}
-						}),
-					_1: {
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					{
 						ctor: '::',
 						_0: A2(
 							_elm_lang$html$Html$div,
@@ -11794,7 +12199,7 @@ var _user$project$Main$view_content = function (model) {
 									},
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text('Texts'),
+										_0: _elm_lang$html$Html$text('Username'),
 										_1: {ctor: '[]'}
 									}),
 								_1: {
@@ -11808,88 +12213,66 @@ var _user$project$Main$view_content = function (model) {
 										},
 										{
 											ctor: '::',
-											_0: _user$project$Main$view_texts(model),
+											_0: _elm_lang$html$Html$text(
+												_user$project$Instructor_Profile$username(model.profile)),
 											_1: {ctor: '[]'}
 										}),
 									_1: {ctor: '[]'}
 								}
 							}),
-						_1: {ctor: '[]'}
-					}
-				}),
-			_1: {
-				ctor: '::',
-				_0: (!_elm_lang$core$String$isEmpty(model.err_str)) ? A2(
-					_elm_lang$html$Html$span,
-					{
-						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'error'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('error'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html$text(model.err_str),
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('profile_item'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$span,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('profile_item_title'),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text('Texts'),
+											_1: {ctor: '[]'}
+										}),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$span,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('profile_item_value'),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: _user$project$Main$view_texts(model),
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}
+								}),
 							_1: {ctor: '[]'}
 						}
-					}) : _elm_lang$html$Html$text(''),
-				_1: {ctor: '[]'}
-			}
+					},
+					function () {
+						var _p6 = _user$project$Instructor_Profile$invites(model.profile);
+						if (_p6.ctor === 'Just') {
+							return _user$project$Main$view_instructor_invites(model);
+						} else {
+							return {ctor: '[]'};
+						}
+					}())),
+			_1: {ctor: '[]'}
 		});
-};
-var _user$project$Main$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$none;
-};
-var _user$project$Main$init = function (flags) {
-	return {
-		ctor: '_Tuple2',
-		_0: {
-			flags: flags,
-			profile: _user$project$Instructor_Profile$init_profile(flags.instructor_profile),
-			err_str: ''
-		},
-		_1: _elm_lang$core$Platform_Cmd$none
-	};
-};
-var _user$project$Main$Flags = F2(
-	function (a, b) {
-		return {csrftoken: a, instructor_profile: b};
-	});
-var _user$project$Main$Model = F3(
-	function (a, b, c) {
-		return {flags: a, profile: b, err_str: c};
-	});
-var _user$project$Main$LoggedOut = function (a) {
-	return {ctor: 'LoggedOut', _0: a};
-};
-var _user$project$Main$update = F2(
-	function (msg, model) {
-		var _p1 = msg;
-		switch (_p1.ctor) {
-			case 'Update':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'LogOut':
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: A3(_user$project$Instructor_Profile$logout, model.profile, model.flags.csrftoken, _user$project$Main$LoggedOut)
-				};
-			default:
-				if (_p1._0.ctor === 'Ok') {
-					return {
-						ctor: '_Tuple2',
-						_0: model,
-						_1: _user$project$Ports$redirect(_p1._0._0.redirect)
-					};
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-		}
-	});
-var _user$project$Main$LogOut = function (a) {
-	return {ctor: 'LogOut', _0: a};
 };
 var _user$project$Main$view = function (model) {
 	return A2(
@@ -11932,135 +12315,172 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 						function (id) {
 							return A2(
 								_elm_lang$core$Json_Decode$andThen,
-								function (texts) {
+								function (invites) {
 									return A2(
 										_elm_lang$core$Json_Decode$andThen,
-										function (username) {
-											return _elm_lang$core$Json_Decode$succeed(
-												{id: id, texts: texts, username: username});
+										function (texts) {
+											return A2(
+												_elm_lang$core$Json_Decode$andThen,
+												function (username) {
+													return _elm_lang$core$Json_Decode$succeed(
+														{id: id, invites: invites, texts: texts, username: username});
+												},
+												A2(_elm_lang$core$Json_Decode$field, 'username', _elm_lang$core$Json_Decode$string));
 										},
-										A2(_elm_lang$core$Json_Decode$field, 'username', _elm_lang$core$Json_Decode$string));
+										A2(
+											_elm_lang$core$Json_Decode$field,
+											'texts',
+											_elm_lang$core$Json_Decode$list(
+												A2(
+													_elm_lang$core$Json_Decode$andThen,
+													function (author) {
+														return A2(
+															_elm_lang$core$Json_Decode$andThen,
+															function (conclusion) {
+																return A2(
+																	_elm_lang$core$Json_Decode$andThen,
+																	function (created_by) {
+																		return A2(
+																			_elm_lang$core$Json_Decode$andThen,
+																			function (created_dt) {
+																				return A2(
+																					_elm_lang$core$Json_Decode$andThen,
+																					function (difficulty) {
+																						return A2(
+																							_elm_lang$core$Json_Decode$andThen,
+																							function (edit_uri) {
+																								return A2(
+																									_elm_lang$core$Json_Decode$andThen,
+																									function (id) {
+																										return A2(
+																											_elm_lang$core$Json_Decode$andThen,
+																											function (introduction) {
+																												return A2(
+																													_elm_lang$core$Json_Decode$andThen,
+																													function (last_modified_by) {
+																														return A2(
+																															_elm_lang$core$Json_Decode$andThen,
+																															function (modified_dt) {
+																																return A2(
+																																	_elm_lang$core$Json_Decode$andThen,
+																																	function (source) {
+																																		return A2(
+																																			_elm_lang$core$Json_Decode$andThen,
+																																			function (tags) {
+																																				return A2(
+																																					_elm_lang$core$Json_Decode$andThen,
+																																					function (text_section_count) {
+																																						return A2(
+																																							_elm_lang$core$Json_Decode$andThen,
+																																							function (title) {
+																																								return A2(
+																																									_elm_lang$core$Json_Decode$andThen,
+																																									function (write_locker) {
+																																										return _elm_lang$core$Json_Decode$succeed(
+																																											{author: author, conclusion: conclusion, created_by: created_by, created_dt: created_dt, difficulty: difficulty, edit_uri: edit_uri, id: id, introduction: introduction, last_modified_by: last_modified_by, modified_dt: modified_dt, source: source, tags: tags, text_section_count: text_section_count, title: title, write_locker: write_locker});
+																																									},
+																																									A2(
+																																										_elm_lang$core$Json_Decode$field,
+																																										'write_locker',
+																																										_elm_lang$core$Json_Decode$oneOf(
+																																											{
+																																												ctor: '::',
+																																												_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																																												_1: {
+																																													ctor: '::',
+																																													_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+																																													_1: {ctor: '[]'}
+																																												}
+																																											})));
+																																							},
+																																							A2(_elm_lang$core$Json_Decode$field, 'title', _elm_lang$core$Json_Decode$string));
+																																					},
+																																					A2(_elm_lang$core$Json_Decode$field, 'text_section_count', _elm_lang$core$Json_Decode$int));
+																																			},
+																																			A2(
+																																				_elm_lang$core$Json_Decode$field,
+																																				'tags',
+																																				_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)));
+																																	},
+																																	A2(_elm_lang$core$Json_Decode$field, 'source', _elm_lang$core$Json_Decode$string));
+																															},
+																															A2(_elm_lang$core$Json_Decode$field, 'modified_dt', _elm_lang$core$Json_Decode$string));
+																													},
+																													A2(
+																														_elm_lang$core$Json_Decode$field,
+																														'last_modified_by',
+																														_elm_lang$core$Json_Decode$oneOf(
+																															{
+																																ctor: '::',
+																																_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																																_1: {
+																																	ctor: '::',
+																																	_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+																																	_1: {ctor: '[]'}
+																																}
+																															})));
+																											},
+																											A2(_elm_lang$core$Json_Decode$field, 'introduction', _elm_lang$core$Json_Decode$string));
+																									},
+																									A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int));
+																							},
+																							A2(_elm_lang$core$Json_Decode$field, 'edit_uri', _elm_lang$core$Json_Decode$string));
+																					},
+																					A2(_elm_lang$core$Json_Decode$field, 'difficulty', _elm_lang$core$Json_Decode$string));
+																			},
+																			A2(_elm_lang$core$Json_Decode$field, 'created_dt', _elm_lang$core$Json_Decode$string));
+																	},
+																	A2(_elm_lang$core$Json_Decode$field, 'created_by', _elm_lang$core$Json_Decode$string));
+															},
+															A2(
+																_elm_lang$core$Json_Decode$field,
+																'conclusion',
+																_elm_lang$core$Json_Decode$oneOf(
+																	{
+																		ctor: '::',
+																		_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																		_1: {
+																			ctor: '::',
+																			_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+																			_1: {ctor: '[]'}
+																		}
+																	})));
+													},
+													A2(_elm_lang$core$Json_Decode$field, 'author', _elm_lang$core$Json_Decode$string)))));
 								},
 								A2(
 									_elm_lang$core$Json_Decode$field,
-									'texts',
-									_elm_lang$core$Json_Decode$list(
-										A2(
-											_elm_lang$core$Json_Decode$andThen,
-											function (author) {
-												return A2(
-													_elm_lang$core$Json_Decode$andThen,
-													function (conclusion) {
-														return A2(
+									'invites',
+									_elm_lang$core$Json_Decode$oneOf(
+										{
+											ctor: '::',
+											_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+											_1: {
+												ctor: '::',
+												_0: A2(
+													_elm_lang$core$Json_Decode$map,
+													_elm_lang$core$Maybe$Just,
+													_elm_lang$core$Json_Decode$list(
+														A2(
 															_elm_lang$core$Json_Decode$andThen,
-															function (created_by) {
+															function (email) {
 																return A2(
 																	_elm_lang$core$Json_Decode$andThen,
-																	function (created_dt) {
+																	function (expiration) {
 																		return A2(
 																			_elm_lang$core$Json_Decode$andThen,
-																			function (difficulty) {
-																				return A2(
-																					_elm_lang$core$Json_Decode$andThen,
-																					function (edit_uri) {
-																						return A2(
-																							_elm_lang$core$Json_Decode$andThen,
-																							function (id) {
-																								return A2(
-																									_elm_lang$core$Json_Decode$andThen,
-																									function (introduction) {
-																										return A2(
-																											_elm_lang$core$Json_Decode$andThen,
-																											function (last_modified_by) {
-																												return A2(
-																													_elm_lang$core$Json_Decode$andThen,
-																													function (modified_dt) {
-																														return A2(
-																															_elm_lang$core$Json_Decode$andThen,
-																															function (source) {
-																																return A2(
-																																	_elm_lang$core$Json_Decode$andThen,
-																																	function (tags) {
-																																		return A2(
-																																			_elm_lang$core$Json_Decode$andThen,
-																																			function (text_section_count) {
-																																				return A2(
-																																					_elm_lang$core$Json_Decode$andThen,
-																																					function (title) {
-																																						return A2(
-																																							_elm_lang$core$Json_Decode$andThen,
-																																							function (write_locker) {
-																																								return _elm_lang$core$Json_Decode$succeed(
-																																									{author: author, conclusion: conclusion, created_by: created_by, created_dt: created_dt, difficulty: difficulty, edit_uri: edit_uri, id: id, introduction: introduction, last_modified_by: last_modified_by, modified_dt: modified_dt, source: source, tags: tags, text_section_count: text_section_count, title: title, write_locker: write_locker});
-																																							},
-																																							A2(
-																																								_elm_lang$core$Json_Decode$field,
-																																								'write_locker',
-																																								_elm_lang$core$Json_Decode$oneOf(
-																																									{
-																																										ctor: '::',
-																																										_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-																																										_1: {
-																																											ctor: '::',
-																																											_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
-																																											_1: {ctor: '[]'}
-																																										}
-																																									})));
-																																					},
-																																					A2(_elm_lang$core$Json_Decode$field, 'title', _elm_lang$core$Json_Decode$string));
-																																			},
-																																			A2(_elm_lang$core$Json_Decode$field, 'text_section_count', _elm_lang$core$Json_Decode$int));
-																																	},
-																																	A2(
-																																		_elm_lang$core$Json_Decode$field,
-																																		'tags',
-																																		_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)));
-																															},
-																															A2(_elm_lang$core$Json_Decode$field, 'source', _elm_lang$core$Json_Decode$string));
-																													},
-																													A2(_elm_lang$core$Json_Decode$field, 'modified_dt', _elm_lang$core$Json_Decode$string));
-																											},
-																											A2(
-																												_elm_lang$core$Json_Decode$field,
-																												'last_modified_by',
-																												_elm_lang$core$Json_Decode$oneOf(
-																													{
-																														ctor: '::',
-																														_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-																														_1: {
-																															ctor: '::',
-																															_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
-																															_1: {ctor: '[]'}
-																														}
-																													})));
-																									},
-																									A2(_elm_lang$core$Json_Decode$field, 'introduction', _elm_lang$core$Json_Decode$string));
-																							},
-																							A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int));
-																					},
-																					A2(_elm_lang$core$Json_Decode$field, 'edit_uri', _elm_lang$core$Json_Decode$string));
+																			function (invite_code) {
+																				return _elm_lang$core$Json_Decode$succeed(
+																					{email: email, expiration: expiration, invite_code: invite_code});
 																			},
-																			A2(_elm_lang$core$Json_Decode$field, 'difficulty', _elm_lang$core$Json_Decode$string));
+																			A2(_elm_lang$core$Json_Decode$field, 'invite_code', _elm_lang$core$Json_Decode$string));
 																	},
-																	A2(_elm_lang$core$Json_Decode$field, 'created_dt', _elm_lang$core$Json_Decode$string));
+																	A2(_elm_lang$core$Json_Decode$field, 'expiration', _elm_lang$core$Json_Decode$string));
 															},
-															A2(_elm_lang$core$Json_Decode$field, 'created_by', _elm_lang$core$Json_Decode$string));
-													},
-													A2(
-														_elm_lang$core$Json_Decode$field,
-														'conclusion',
-														_elm_lang$core$Json_Decode$oneOf(
-															{
-																ctor: '::',
-																_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-																_1: {
-																	ctor: '::',
-																	_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
-																	_1: {ctor: '[]'}
-																}
-															})));
-											},
-											A2(_elm_lang$core$Json_Decode$field, 'author', _elm_lang$core$Json_Decode$string)))));
+															A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string)))),
+												_1: {ctor: '[]'}
+											}
+										})));
 						},
 						A2(
 							_elm_lang$core$Json_Decode$field,
@@ -12077,7 +12497,6 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 								})))));
 		},
 		A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string)));
-var _user$project$Main$Update = {ctor: 'Update'};
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};

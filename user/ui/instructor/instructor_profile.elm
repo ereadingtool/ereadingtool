@@ -1,5 +1,10 @@
 import Html exposing (Html, div, span)
-import Html.Attributes exposing (class, classList, attribute)
+import Html.Attributes exposing (id, class, classList, attribute)
+import Html.Events exposing (onClick, onInput)
+
+import HttpHelpers
+
+import Dict exposing (Dict)
 
 import Http
 
@@ -9,6 +14,9 @@ import Flags
 import User.Profile
 import Instructor.Profile
 
+import Json.Encode
+import Json.Decode
+
 import Menu.Msg as MenuMsg
 import Menu.Logout
 
@@ -16,9 +24,13 @@ import Ports
 
 import Http
 
+import Util exposing (is_valid_email)
+
 -- UPDATE
 type Msg =
-   Update
+   UpdateNewInviteEmail Email
+ | SubmittedNewInvite (Result Http.Error Instructor.Profile.Invite)
+ | SubmitNewInvite
  | LogOut MenuMsg.Msg
  | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
 
@@ -26,26 +38,91 @@ type alias Flags = {
    csrftoken : Flags.CSRFToken
  , instructor_profile : Instructor.Profile.InstructorProfileParams }
 
+type alias Email = String
+
+type alias NewInviteResp = {
+   email : Email
+ , invite_code : String
+ }
+
+type alias NewInvite = {
+  email : Email }
+
 type alias Model = {
     flags : Flags
   , profile : Instructor.Profile.InstructorProfile
-  , err_str : String }
+  , new_invite : NewInvite
+  , errors : Dict String String }
 
 init : Flags -> (Model, Cmd Msg)
 init flags = ({
     flags = flags
-  , profile=Instructor.Profile.init_profile flags.instructor_profile
-  , err_str = "" }, Cmd.none)
+  , profile = Instructor.Profile.init_profile flags.instructor_profile
+  , new_invite = {email=""}
+  , errors = Dict.empty }, Cmd.none)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
+updateNewInviteEmail : Model -> Email -> Model
+updateNewInviteEmail model email =
+  let
+    new_invite = model.new_invite
+
+    validated_errors =
+      (if (is_valid_email email) || (email == "") then
+        Dict.remove "invite" model.errors
+      else
+        Dict.insert "invite" "This e-mail is invalid." model.errors)
+  in
+    { model | new_invite = {new_invite | email = email}, errors = validated_errors }
+
+newInviteEncoder : NewInvite -> Json.Encode.Value
+newInviteEncoder new_invite =
+  Json.Encode.object [
+    ("email", Json.Encode.string new_invite.email)
+  ]
+
+newInviteRespDecoder : Json.Decode.Decoder Instructor.Profile.Invite
+newInviteRespDecoder =
+  Json.Decode.map3 Instructor.Profile.Invite
+    (Json.Decode.field "email" Json.Decode.string)
+    (Json.Decode.field "invite_code" Json.Decode.string)
+    (Json.Decode.field "expiration" Json.Decode.string)
+
+submitNewInvite : Model -> Cmd Msg
+submitNewInvite model =
+  case is_valid_email model.new_invite.email of
+    True ->
+      let
+        encoded_new_invite = newInviteEncoder model.new_invite
+
+        req =
+          HttpHelpers.post_with_headers
+           Instructor.Profile.inviteURI
+           [Http.header "X-CSRFToken" model.flags.csrftoken]
+           (Http.jsonBody encoded_new_invite) newInviteRespDecoder
+      in
+        Http.send SubmittedNewInvite req
+
+    False ->
+      Cmd.none
+
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    Update ->
-      (model, Cmd.none)
+    UpdateNewInviteEmail email -> let _ = Debug.log "erorrs" model.errors in
+      (updateNewInviteEmail model email, Cmd.none)
+
+    SubmitNewInvite ->
+      (model, submitNewInvite model)
+
+    SubmittedNewInvite (Ok invite) ->
+      ({ model | profile = Instructor.Profile.addInvite model.profile invite}, Cmd.none)
+
+    SubmittedNewInvite (Err err) -> let _ = Debug.log "error inviting" err in
+      ({ model | errors = (Dict.insert "invite" "Something went wrong." model.errors)}, Cmd.none)
 
     LogOut msg ->
       (model, Instructor.Profile.logout model.profile model.flags.csrftoken LoggedOut)
@@ -99,6 +176,59 @@ view_text instructor_profile text =
     , div [] []
     ]
 
+view_instructor_invite : Instructor.Profile.Invite -> Html Msg
+view_instructor_invite invite =
+  div [class "invite"] [
+    div [class "label"] [ Html.text "Email: " ]
+  , div [class "value"] [ Html.text invite.email ]
+  , div [class "label"] [ Html.text "Invite Code: " ]
+  , div [class "value"] [ Html.text invite.invite_code ]
+  , div [class "label"] [ Html.text "Expiration: " ]
+  , div [class "value"] [ Html.text invite.expiration ]
+  ]
+
+view_instructor_invite_create : Model -> Html Msg
+view_instructor_invite_create model =
+  let
+    has_error = Dict.member "invite" model.errors
+
+    error_attrs =
+      if has_error then
+        [attribute "class" "input_error"]
+      else
+        []
+
+    error_msg =
+      div [] [ Html.text (Maybe.withDefault "" (Dict.get "invite" model.errors)) ]
+  in
+    div [id "create_invite"] [
+      div [id "input"] <| [
+        Html.input
+          ([attribute "size" "25"
+          , onInput UpdateNewInviteEmail
+          , attribute "placeholder" "Invite an instructor"] ++ (error_attrs)) []
+      ] ++ (if has_error then [error_msg] else [])
+    , div [id "submit"] [
+        Html.input [onClick SubmitNewInvite, attribute "type" "button", attribute "value" "Submit"] []
+      ]
+    ]
+
+view_instructor_invites : Model -> List (Html Msg)
+view_instructor_invites model =
+  case Instructor.Profile.invites model.profile of
+    Just invites -> [
+        div [class "invites"] [
+          span [class "profile_item_title"] [ Html.text "Invitations" ]
+        , span [class "profile_item_value"] [
+            div [class "list"] <|
+              (List.map view_instructor_invite invites) ++ [view_instructor_invite_create model]
+          ]
+        ]
+      ]
+
+    Nothing ->
+      []
+
 view_texts : Model -> Html Msg
 view_texts model =
   div [] (List.map (\text -> (view_text model.profile) text) (Instructor.Profile.texts model.profile))
@@ -106,7 +236,7 @@ view_texts model =
 view_content : Model -> Html Msg
 view_content model =
   div [ classList [("profile", True)] ] [
-    div [classList [("profile_items", True)] ] [
+    div [classList [("profile_items", True)] ] <| [
       div [class "profile_item"] [
         span [class "profile_item_title"] [ Html.text "Username" ]
       , span [class "profile_item_value"] [ Html.text (Instructor.Profile.username model.profile) ]
@@ -115,10 +245,12 @@ view_content model =
         span [class "profile_item_title"] [ Html.text "Texts" ]
       , span [class "profile_item_value"] [ view_texts model ]
       ]
-    ]
-    , (if not (String.isEmpty model.err_str) then
-        span [attribute "class" "error"] [ Html.text "error", Html.text model.err_str ]
-       else Html.text "")
+    ] ++
+      (case Instructor.Profile.invites model.profile of
+         Just _ ->
+           view_instructor_invites model
+
+         Nothing -> [])
   ]
 
 -- VIEW

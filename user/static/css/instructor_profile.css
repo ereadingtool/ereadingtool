@@ -11,3 +11,38 @@
 .text > div {
     margin: 2px 0 7px 0;
 }
+
+.invites {
+    grid-column: 1;
+
+    grid-template-columns: auto;
+    grid-template-rows: 25px 35px;
+
+    margin-bottom: 15px;
+}
+
+.invite {
+    margin-top: 15px;
+}
+
+.invite > .label {
+    margin-top: 5px;
+}
+
+.invite > .value {
+    font-size: larger;
+}
+
+#create_invite {
+    margin-top: 15px;
+}
+
+#create_invite > #submit {
+    margin-top: 5px;
+}
+
+.invites > .profile_item_value > .list {
+    display: grid;
+
+    grid-template-columns: auto;
+}

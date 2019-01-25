@@ -6732,6 +6732,7 @@ var _user$project$Config$text_page = function (text_id) {
 var _user$project$Config$forgot_password_page = '/user/password_reset/';
 var _user$project$Config$instructor_login_page = '/login/instructor/';
 var _user$project$Config$student_login_page = '/login/student/';
+var _user$project$Config$instructor_invite_uri = '/api/instructor/invite/';
 var _user$project$Config$instructor_signup_page = '/signup/instructor/';
 var _user$project$Config$student_signup_page = '/signup/student/';
 var _user$project$Config$instructor_profile_page = '/profile/instructor/';

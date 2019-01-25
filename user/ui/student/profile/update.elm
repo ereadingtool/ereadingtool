@@ -50,6 +50,7 @@ put_profile csrftoken student_profile =
            (Http.jsonBody encoded_profile) Student.Profile.Decode.studentProfileDecoder
       in
         Http.send Submitted req
+
     Nothing ->
       Cmd.none
 

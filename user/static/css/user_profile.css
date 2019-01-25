@@ -201,6 +201,11 @@ table td {
     top: 50px;
 }
 
+.input_error {
+    border: 1px solid #ff0000;
+    background-color: #ffeeee;
+}
+
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
     .header {
         display: flex;

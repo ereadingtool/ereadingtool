@@ -32,7 +32,8 @@ class Instructor(Profile, TextReadings, models.Model):
             'username': self.user.username,
             'texts': [text.to_instructor_summary_dict()
                       for text in self.created_texts.model.objects.filter(
-                    Q(created_by=self) | Q(last_modified_by=self))]
+                    Q(created_by=self) | Q(last_modified_by=self))],
+            'invites': [invite.to_dict() for invite in self.invite_set.all()] if self.invite_set.exists() else None
         }
 
     def to_text_summary_dict(self, text: Text) -> Dict:
