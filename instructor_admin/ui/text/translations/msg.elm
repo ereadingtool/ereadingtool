@@ -12,7 +12,9 @@ import Text.Decode
 
 type Msg =
   -- action msgs
-    EditWord Text.Model.WordInstance
+    AddToMergeWords Text.Model.WordInstance
+  | RemoveFromMergeWords Text.Model.WordInstance
+  | EditWord Text.Model.WordInstance
   | CloseEditWord Text.Model.WordInstance
   | MakeCorrectForContext Text.Model.TextWordTranslation
   | DeleteTextWord Text.Model.TextWord

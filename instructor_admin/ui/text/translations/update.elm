@@ -46,6 +46,12 @@ update parent_msg msg model =
     SelectedText text_string -> let _ = Debug.log "selected string" text_string in
       (model, Cmd.none)
 
+    AddToMergeWords word_instance ->
+      (Text.Translations.Model.addToMergeWords model word_instance, Cmd.none)
+
+    RemoveFromMergeWords word_instance ->
+      (Text.Translations.Model.removeFromMergeWords model word_instance, Cmd.none)
+
     DeleteTextWord text_word ->
       (model, Cmd.none)
 

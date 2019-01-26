@@ -14,6 +14,7 @@ type alias Flags = { csrftoken : Flags.CSRFToken }
 
 type alias Model = {
    words: Dict Text.Translations.Word (Array Text.Model.TextWord)
+ , merging_words: Dict String Text.Model.WordInstance
  , editing_words: Dict Text.Translations.Word Int
  , editing_word_instances: Dict Text.Translations.Word Bool
  , text: Text.Model.Text
@@ -24,12 +25,21 @@ type alias Model = {
 init : Flags -> Text.Model.Text -> Model
 init flags text = {
    words=Dict.empty
+ , merging_words=Dict.empty
  , editing_words=Dict.empty
  , editing_word_instances=Dict.empty
  , text=text
  , new_translations=Dict.empty
  , flags=flags }
 
+
+addToMergeWords : Model -> Text.Model.WordInstance -> Model
+addToMergeWords model word_instance =
+  { model | merging_words = Dict.insert word_instance.id word_instance model.merging_words }
+
+removeFromMergeWords : Model -> Text.Model.WordInstance -> Model
+removeFromMergeWords model word_instance =
+  { model | merging_words = Dict.remove word_instance.id model.merging_words }
 
 instanceCount : Model -> Text.Translations.Word -> Int
 instanceCount model word =

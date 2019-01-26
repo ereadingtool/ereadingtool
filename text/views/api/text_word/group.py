@@ -32,16 +32,12 @@ class TextWordGroupAPIView(LoginRequiredMixin, View):
         try:
             text_word_ids = json.loads(request.body.decode('utf8'))
         except json.JSONDecodeError:
-            resp['error'] = 'Something went wrong.'
-
-            return HttpResponseServerError(json.dumps(resp))
+            return self.default_error_resp
 
         try:
             text_words = TextWord.objects.filter(pk__in=text_word_ids, group_word=None)
         except ValueError:
             # invalid ids
-            resp['error'] = 'Something went wrong.'
-
             return self.default_error_resp
 
         with transaction.atomic():

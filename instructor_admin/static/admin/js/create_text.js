@@ -23313,6 +23313,7 @@ var _user$project$Config$text_page = function (text_id) {
 var _user$project$Config$forgot_password_page = '/user/password_reset/';
 var _user$project$Config$instructor_login_page = '/login/instructor/';
 var _user$project$Config$student_login_page = '/login/student/';
+var _user$project$Config$instructor_invite_uri = '/api/instructor/invite/';
 var _user$project$Config$instructor_signup_page = '/signup/instructor/';
 var _user$project$Config$student_signup_page = '/signup/student/';
 var _user$project$Config$instructor_profile_page = '/profile/instructor/';
@@ -24163,10 +24164,13 @@ var _user$project$Instructor_Profile$attrs = function (_p0) {
 var _user$project$Instructor_Profile$texts = function (instructor_profile) {
 	return _user$project$Instructor_Profile$attrs(instructor_profile).texts;
 };
-var _user$project$Instructor_Profile$username = function (_p2) {
-	var _p3 = _p2;
-	return _p3._0.username;
+var _user$project$Instructor_Profile$username = function (instructor_profile) {
+	return _user$project$Instructor_Profile$attrs(instructor_profile).username;
 };
+var _user$project$Instructor_Profile$invites = function (instructor_profile) {
+	return _user$project$Instructor_Profile$attrs(instructor_profile).invites;
+};
+var _user$project$Instructor_Profile$inviteURI = _user$project$Config$instructor_invite_uri;
 var _user$project$Instructor_Profile$Text = function (a) {
 	return function (b) {
 		return function (c) {
@@ -24200,9 +24204,13 @@ var _user$project$Instructor_Profile$Text = function (a) {
 		};
 	};
 };
-var _user$project$Instructor_Profile$InstructorProfileParams = F3(
+var _user$project$Instructor_Profile$Invite = F3(
 	function (a, b, c) {
-		return {id: a, texts: b, username: c};
+		return {email: a, invite_code: b, expiration: c};
+	});
+var _user$project$Instructor_Profile$InstructorProfileParams = F4(
+	function (a, b, c, d) {
+		return {id: a, texts: b, invites: c, username: d};
 	});
 var _user$project$Instructor_Profile$InstructorProfile = function (a) {
 	return {ctor: 'InstructorProfile', _0: a};
@@ -24210,6 +24218,30 @@ var _user$project$Instructor_Profile$InstructorProfile = function (a) {
 var _user$project$Instructor_Profile$init_profile = function (params) {
 	return _user$project$Instructor_Profile$InstructorProfile(params);
 };
+var _user$project$Instructor_Profile$addInvite = F2(
+	function (instructor_profile, invite) {
+		var new_invites = function () {
+			var _p2 = _user$project$Instructor_Profile$invites(instructor_profile);
+			if (_p2.ctor === 'Just') {
+				return _elm_lang$core$Maybe$Just(
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						_p2._0,
+						{
+							ctor: '::',
+							_0: invite,
+							_1: {ctor: '[]'}
+						}));
+			} else {
+				return _elm_lang$core$Maybe$Nothing;
+			}
+		}();
+		var new_attrs = _user$project$Instructor_Profile$attrs(instructor_profile);
+		return _user$project$Instructor_Profile$InstructorProfile(
+			_elm_lang$core$Native_Utils.update(
+				new_attrs,
+				{invites: new_invites}));
+	});
 
 var _user$project$Student_Profile$logout = F3(
 	function (student_profile, csrftoken, logout_msg) {
@@ -25979,16 +26011,32 @@ var _user$project$Text_Translations_Model$instanceCount = F2(
 			return 0;
 		}
 	});
+var _user$project$Text_Translations_Model$removeFromMergeWords = F2(
+	function (model, word_instance) {
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				merging_words: A2(_elm_lang$core$Dict$remove, word_instance.id, model.merging_words)
+			});
+	});
+var _user$project$Text_Translations_Model$addToMergeWords = F2(
+	function (model, word_instance) {
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				merging_words: A3(_elm_lang$core$Dict$insert, word_instance.id, word_instance, model.merging_words)
+			});
+	});
 var _user$project$Text_Translations_Model$init = F2(
 	function (flags, text) {
-		return {words: _elm_lang$core$Dict$empty, editing_words: _elm_lang$core$Dict$empty, editing_word_instances: _elm_lang$core$Dict$empty, text: text, new_translations: _elm_lang$core$Dict$empty, flags: flags};
+		return {words: _elm_lang$core$Dict$empty, merging_words: _elm_lang$core$Dict$empty, editing_words: _elm_lang$core$Dict$empty, editing_word_instances: _elm_lang$core$Dict$empty, text: text, new_translations: _elm_lang$core$Dict$empty, flags: flags};
 	});
 var _user$project$Text_Translations_Model$Flags = function (a) {
 	return {csrftoken: a};
 };
-var _user$project$Text_Translations_Model$Model = F6(
-	function (a, b, c, d, e, f) {
-		return {words: a, editing_words: b, editing_word_instances: c, text: d, new_translations: e, flags: f};
+var _user$project$Text_Translations_Model$Model = F7(
+	function (a, b, c, d, e, f, g) {
+		return {words: a, merging_words: b, editing_words: c, editing_word_instances: d, text: e, new_translations: f, flags: g};
 	});
 
 var _user$project$Question_Decode$questionDecoder = A3(
@@ -26382,6 +26430,12 @@ var _user$project$Text_Translations_Msg$CloseEditWord = function (a) {
 };
 var _user$project$Text_Translations_Msg$EditWord = function (a) {
 	return {ctor: 'EditWord', _0: a};
+};
+var _user$project$Text_Translations_Msg$RemoveFromMergeWords = function (a) {
+	return {ctor: 'RemoveFromMergeWords', _0: a};
+};
+var _user$project$Text_Translations_Msg$AddToMergeWords = function (a) {
+	return {ctor: 'AddToMergeWords', _0: a};
 };
 
 var _user$project$Text_Create$Flags = F4(
@@ -27816,6 +27870,26 @@ var _user$project$Text_Translations_View$view_overlay_close_btn = F2(
 				_1: {ctor: '[]'}
 			});
 	});
+var _user$project$Text_Translations_View$view_merge_btn = A2(
+	_elm_lang$html$Html$img,
+	{
+		ctor: '::',
+		_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/merge.svg'),
+		_1: {
+			ctor: '::',
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '25px'),
+			_1: {
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '25px'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('cursor'),
+					_1: {ctor: '[]'}
+				}
+			}
+		}
+	},
+	{ctor: '[]'});
 var _user$project$Text_Translations_View$view_translation_delete = F3(
 	function (msg, text_word, translation) {
 		return A2(
@@ -28189,6 +28263,45 @@ var _user$project$Text_Translations_View$view_delete_text_word = F2(
 				}
 			}());
 	});
+var _user$project$Text_Translations_View$view_make_compound_text_word = F2(
+	function (parent_msg, word_instance) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('merge_words'),
+				_1: {ctor: '[]'}
+			},
+			function () {
+				var _p13 = word_instance.text_word;
+				if (_p13.ctor === 'Just') {
+					return {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'title', 'Merge into compound word.'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onClick(
+										parent_msg(
+											_user$project$Text_Translations_Msg$AddToMergeWords(word_instance))),
+									_1: {ctor: '[]'}
+								}
+							},
+							{
+								ctor: '::',
+								_0: _user$project$Text_Translations_View$view_merge_btn,
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					};
+				} else {
+					return {ctor: '[]'};
+				}
+			}());
+	});
 var _user$project$Text_Translations_View$view_btns = F3(
 	function (model, parent_msg, word_instance) {
 		var normalized_word = _elm_lang$core$String$toLower(word_instance.word);
@@ -28205,7 +28318,11 @@ var _user$project$Text_Translations_View$view_btns = F3(
 				{
 					ctor: '::',
 					_0: A2(_user$project$Text_Translations_View$view_delete_text_word, parent_msg, word_instance),
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: A2(_user$project$Text_Translations_View$view_make_compound_text_word, parent_msg, word_instance),
+						_1: {ctor: '[]'}
+					}
 				},
 				(_elm_lang$core$Native_Utils.cmp(instance_count, 1) > 0) ? {
 					ctor: '::',
@@ -28272,8 +28389,8 @@ var _user$project$Text_Translations_View$tagWord = F4(
 					_1: {ctor: '[]'}
 				}
 			});
-		var _p13 = _elm_lang$core$Native_Utils.eq(token, ' ');
-		if (_p13 === true) {
+		var _p14 = _elm_lang$core$Native_Utils.eq(token, ' ');
+		if (_p14 === true) {
 			return A2(
 				_elm_lang$html$Html$span,
 				{
@@ -28349,10 +28466,10 @@ var _user$project$Text_Translations_View$tagWord = F4(
 	});
 var _user$project$Text_Translations_View$view_translations = F2(
 	function (msg, translation_model) {
-		var _p14 = translation_model;
-		if (_p14.ctor === 'Just') {
-			var _p15 = _p14._0;
-			var sections = _elm_lang$core$Array$toList(_p15.text.sections);
+		var _p15 = translation_model;
+		if (_p15.ctor === 'Just') {
+			var _p16 = _p15._0;
+			var sections = _elm_lang$core$Array$toList(_p16.text.sections);
 			var text_body = A2(
 				_elm_lang$core$String$join,
 				' ',
@@ -28364,7 +28481,7 @@ var _user$project$Text_Translations_View$view_translations = F2(
 					sections));
 			var text_body_vdom = A2(
 				_user$project$Text_Section_Words_Tag$tagWordsAndToVDOM,
-				A2(_user$project$Text_Translations_View$tagWord, _p15, msg),
+				A2(_user$project$Text_Translations_View$tagWord, _p16, msg),
 				_jinjor$elm_html_parser$HtmlParser$parse(text_body));
 			return A2(
 				_elm_lang$html$Html$div,
@@ -29793,6 +29910,18 @@ var _user$project$Text_Translations_Update$update = F3(
 			case 'SelectedText':
 				var _p10 = A2(_elm_lang$core$Debug$log, 'selected string', _p8._0);
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'AddToMergeWords':
+				return {
+					ctor: '_Tuple2',
+					_0: A2(_user$project$Text_Translations_Model$addToMergeWords, model, _p8._0),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'RemoveFromMergeWords':
+				return {
+					ctor: '_Tuple2',
+					_0: A2(_user$project$Text_Translations_Model$removeFromMergeWords, model, _p8._0),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 			case 'DeleteTextWord':
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'DeletedTextWord':
@@ -30913,135 +31042,172 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 						function (id) {
 							return A2(
 								_elm_lang$core$Json_Decode$andThen,
-								function (texts) {
+								function (invites) {
 									return A2(
 										_elm_lang$core$Json_Decode$andThen,
-										function (username) {
-											return _elm_lang$core$Json_Decode$succeed(
-												{id: id, texts: texts, username: username});
+										function (texts) {
+											return A2(
+												_elm_lang$core$Json_Decode$andThen,
+												function (username) {
+													return _elm_lang$core$Json_Decode$succeed(
+														{id: id, invites: invites, texts: texts, username: username});
+												},
+												A2(_elm_lang$core$Json_Decode$field, 'username', _elm_lang$core$Json_Decode$string));
 										},
-										A2(_elm_lang$core$Json_Decode$field, 'username', _elm_lang$core$Json_Decode$string));
+										A2(
+											_elm_lang$core$Json_Decode$field,
+											'texts',
+											_elm_lang$core$Json_Decode$list(
+												A2(
+													_elm_lang$core$Json_Decode$andThen,
+													function (author) {
+														return A2(
+															_elm_lang$core$Json_Decode$andThen,
+															function (conclusion) {
+																return A2(
+																	_elm_lang$core$Json_Decode$andThen,
+																	function (created_by) {
+																		return A2(
+																			_elm_lang$core$Json_Decode$andThen,
+																			function (created_dt) {
+																				return A2(
+																					_elm_lang$core$Json_Decode$andThen,
+																					function (difficulty) {
+																						return A2(
+																							_elm_lang$core$Json_Decode$andThen,
+																							function (edit_uri) {
+																								return A2(
+																									_elm_lang$core$Json_Decode$andThen,
+																									function (id) {
+																										return A2(
+																											_elm_lang$core$Json_Decode$andThen,
+																											function (introduction) {
+																												return A2(
+																													_elm_lang$core$Json_Decode$andThen,
+																													function (last_modified_by) {
+																														return A2(
+																															_elm_lang$core$Json_Decode$andThen,
+																															function (modified_dt) {
+																																return A2(
+																																	_elm_lang$core$Json_Decode$andThen,
+																																	function (source) {
+																																		return A2(
+																																			_elm_lang$core$Json_Decode$andThen,
+																																			function (tags) {
+																																				return A2(
+																																					_elm_lang$core$Json_Decode$andThen,
+																																					function (text_section_count) {
+																																						return A2(
+																																							_elm_lang$core$Json_Decode$andThen,
+																																							function (title) {
+																																								return A2(
+																																									_elm_lang$core$Json_Decode$andThen,
+																																									function (write_locker) {
+																																										return _elm_lang$core$Json_Decode$succeed(
+																																											{author: author, conclusion: conclusion, created_by: created_by, created_dt: created_dt, difficulty: difficulty, edit_uri: edit_uri, id: id, introduction: introduction, last_modified_by: last_modified_by, modified_dt: modified_dt, source: source, tags: tags, text_section_count: text_section_count, title: title, write_locker: write_locker});
+																																									},
+																																									A2(
+																																										_elm_lang$core$Json_Decode$field,
+																																										'write_locker',
+																																										_elm_lang$core$Json_Decode$oneOf(
+																																											{
+																																												ctor: '::',
+																																												_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																																												_1: {
+																																													ctor: '::',
+																																													_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+																																													_1: {ctor: '[]'}
+																																												}
+																																											})));
+																																							},
+																																							A2(_elm_lang$core$Json_Decode$field, 'title', _elm_lang$core$Json_Decode$string));
+																																					},
+																																					A2(_elm_lang$core$Json_Decode$field, 'text_section_count', _elm_lang$core$Json_Decode$int));
+																																			},
+																																			A2(
+																																				_elm_lang$core$Json_Decode$field,
+																																				'tags',
+																																				_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)));
+																																	},
+																																	A2(_elm_lang$core$Json_Decode$field, 'source', _elm_lang$core$Json_Decode$string));
+																															},
+																															A2(_elm_lang$core$Json_Decode$field, 'modified_dt', _elm_lang$core$Json_Decode$string));
+																													},
+																													A2(
+																														_elm_lang$core$Json_Decode$field,
+																														'last_modified_by',
+																														_elm_lang$core$Json_Decode$oneOf(
+																															{
+																																ctor: '::',
+																																_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																																_1: {
+																																	ctor: '::',
+																																	_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+																																	_1: {ctor: '[]'}
+																																}
+																															})));
+																											},
+																											A2(_elm_lang$core$Json_Decode$field, 'introduction', _elm_lang$core$Json_Decode$string));
+																									},
+																									A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int));
+																							},
+																							A2(_elm_lang$core$Json_Decode$field, 'edit_uri', _elm_lang$core$Json_Decode$string));
+																					},
+																					A2(_elm_lang$core$Json_Decode$field, 'difficulty', _elm_lang$core$Json_Decode$string));
+																			},
+																			A2(_elm_lang$core$Json_Decode$field, 'created_dt', _elm_lang$core$Json_Decode$string));
+																	},
+																	A2(_elm_lang$core$Json_Decode$field, 'created_by', _elm_lang$core$Json_Decode$string));
+															},
+															A2(
+																_elm_lang$core$Json_Decode$field,
+																'conclusion',
+																_elm_lang$core$Json_Decode$oneOf(
+																	{
+																		ctor: '::',
+																		_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																		_1: {
+																			ctor: '::',
+																			_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+																			_1: {ctor: '[]'}
+																		}
+																	})));
+													},
+													A2(_elm_lang$core$Json_Decode$field, 'author', _elm_lang$core$Json_Decode$string)))));
 								},
 								A2(
 									_elm_lang$core$Json_Decode$field,
-									'texts',
-									_elm_lang$core$Json_Decode$list(
-										A2(
-											_elm_lang$core$Json_Decode$andThen,
-											function (author) {
-												return A2(
-													_elm_lang$core$Json_Decode$andThen,
-													function (conclusion) {
-														return A2(
+									'invites',
+									_elm_lang$core$Json_Decode$oneOf(
+										{
+											ctor: '::',
+											_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+											_1: {
+												ctor: '::',
+												_0: A2(
+													_elm_lang$core$Json_Decode$map,
+													_elm_lang$core$Maybe$Just,
+													_elm_lang$core$Json_Decode$list(
+														A2(
 															_elm_lang$core$Json_Decode$andThen,
-															function (created_by) {
+															function (email) {
 																return A2(
 																	_elm_lang$core$Json_Decode$andThen,
-																	function (created_dt) {
+																	function (expiration) {
 																		return A2(
 																			_elm_lang$core$Json_Decode$andThen,
-																			function (difficulty) {
-																				return A2(
-																					_elm_lang$core$Json_Decode$andThen,
-																					function (edit_uri) {
-																						return A2(
-																							_elm_lang$core$Json_Decode$andThen,
-																							function (id) {
-																								return A2(
-																									_elm_lang$core$Json_Decode$andThen,
-																									function (introduction) {
-																										return A2(
-																											_elm_lang$core$Json_Decode$andThen,
-																											function (last_modified_by) {
-																												return A2(
-																													_elm_lang$core$Json_Decode$andThen,
-																													function (modified_dt) {
-																														return A2(
-																															_elm_lang$core$Json_Decode$andThen,
-																															function (source) {
-																																return A2(
-																																	_elm_lang$core$Json_Decode$andThen,
-																																	function (tags) {
-																																		return A2(
-																																			_elm_lang$core$Json_Decode$andThen,
-																																			function (text_section_count) {
-																																				return A2(
-																																					_elm_lang$core$Json_Decode$andThen,
-																																					function (title) {
-																																						return A2(
-																																							_elm_lang$core$Json_Decode$andThen,
-																																							function (write_locker) {
-																																								return _elm_lang$core$Json_Decode$succeed(
-																																									{author: author, conclusion: conclusion, created_by: created_by, created_dt: created_dt, difficulty: difficulty, edit_uri: edit_uri, id: id, introduction: introduction, last_modified_by: last_modified_by, modified_dt: modified_dt, source: source, tags: tags, text_section_count: text_section_count, title: title, write_locker: write_locker});
-																																							},
-																																							A2(
-																																								_elm_lang$core$Json_Decode$field,
-																																								'write_locker',
-																																								_elm_lang$core$Json_Decode$oneOf(
-																																									{
-																																										ctor: '::',
-																																										_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-																																										_1: {
-																																											ctor: '::',
-																																											_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
-																																											_1: {ctor: '[]'}
-																																										}
-																																									})));
-																																					},
-																																					A2(_elm_lang$core$Json_Decode$field, 'title', _elm_lang$core$Json_Decode$string));
-																																			},
-																																			A2(_elm_lang$core$Json_Decode$field, 'text_section_count', _elm_lang$core$Json_Decode$int));
-																																	},
-																																	A2(
-																																		_elm_lang$core$Json_Decode$field,
-																																		'tags',
-																																		_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)));
-																															},
-																															A2(_elm_lang$core$Json_Decode$field, 'source', _elm_lang$core$Json_Decode$string));
-																													},
-																													A2(_elm_lang$core$Json_Decode$field, 'modified_dt', _elm_lang$core$Json_Decode$string));
-																											},
-																											A2(
-																												_elm_lang$core$Json_Decode$field,
-																												'last_modified_by',
-																												_elm_lang$core$Json_Decode$oneOf(
-																													{
-																														ctor: '::',
-																														_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-																														_1: {
-																															ctor: '::',
-																															_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
-																															_1: {ctor: '[]'}
-																														}
-																													})));
-																									},
-																									A2(_elm_lang$core$Json_Decode$field, 'introduction', _elm_lang$core$Json_Decode$string));
-																							},
-																							A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int));
-																					},
-																					A2(_elm_lang$core$Json_Decode$field, 'edit_uri', _elm_lang$core$Json_Decode$string));
+																			function (invite_code) {
+																				return _elm_lang$core$Json_Decode$succeed(
+																					{email: email, expiration: expiration, invite_code: invite_code});
 																			},
-																			A2(_elm_lang$core$Json_Decode$field, 'difficulty', _elm_lang$core$Json_Decode$string));
+																			A2(_elm_lang$core$Json_Decode$field, 'invite_code', _elm_lang$core$Json_Decode$string));
 																	},
-																	A2(_elm_lang$core$Json_Decode$field, 'created_dt', _elm_lang$core$Json_Decode$string));
+																	A2(_elm_lang$core$Json_Decode$field, 'expiration', _elm_lang$core$Json_Decode$string));
 															},
-															A2(_elm_lang$core$Json_Decode$field, 'created_by', _elm_lang$core$Json_Decode$string));
-													},
-													A2(
-														_elm_lang$core$Json_Decode$field,
-														'conclusion',
-														_elm_lang$core$Json_Decode$oneOf(
-															{
-																ctor: '::',
-																_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-																_1: {
-																	ctor: '::',
-																	_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
-																	_1: {ctor: '[]'}
-																}
-															})));
-											},
-											A2(_elm_lang$core$Json_Decode$field, 'author', _elm_lang$core$Json_Decode$string)))));
+															A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string)))),
+												_1: {ctor: '[]'}
+											}
+										})));
 						},
 						A2(
 							_elm_lang$core$Json_Decode$field,

@@ -72,7 +72,20 @@ view_btns model parent_msg word_instance =
   in
     div [class "text_word_options"] <| [
       view_delete_text_word parent_msg word_instance
+    , view_make_compound_text_word parent_msg word_instance
     ] ++ (if instance_count > 1 then [view_match_translations parent_msg word_instance] else [])
+
+view_make_compound_text_word : (Msg -> msg) -> Text.Model.WordInstance -> Html msg
+view_make_compound_text_word parent_msg word_instance =
+  div [class "merge_words"]
+    (case word_instance.text_word of
+      Just text_word -> [
+          div [ attribute "title" "Merge into compound word."
+              , onClick (parent_msg (AddToMergeWords word_instance))] [ view_merge_btn ]
+        ]
+
+      Nothing ->
+        [])
 
 view_delete_text_word : (Msg -> msg) -> Text.Model.WordInstance -> Html msg
 view_delete_text_word parent_msg word_instance =
@@ -160,6 +173,15 @@ view_text_word_translation msg text_word translation =
   , div [class "icons"] <|
       (view_correct_for_context translation.correct_for_context) ++ [view_translation_delete msg text_word translation]
   ]
+
+view_merge_btn : Html msg
+view_merge_btn =
+  Html.img [
+      attribute "src" "/static/img/merge.svg"
+    , attribute "height" "25px"
+    , attribute "width" "25px"
+    , class "cursor"
+    ] []
 
 view_exit_btn : Html msg
 view_exit_btn =
