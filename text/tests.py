@@ -211,6 +211,15 @@ class TestText(TestUser, TestCase):
 
         return text
 
+    def test_set_difficulty(self):
+        text = self.create_text(diff_data={'difficulty': 'advanced_mid'})
+
+        self.assertEquals(text.difficulty.slug, 'advanced_mid')
+
+        text = self.create_text(diff_data={'difficulty': 'intermediate_high'})
+
+        self.assertEquals(text.difficulty.slug, 'intermediate_high')
+
     def test_text_tags(self):
         test_data = self.get_test_data()
 

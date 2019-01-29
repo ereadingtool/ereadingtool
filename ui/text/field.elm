@@ -36,17 +36,24 @@ update_error (field_id, field_error)
         case field_name of
           "introduction" ->
             set_intro text_fields { intro_attrs | error_string = field_error, error = True }
+
           "conclusion" ->
             set_conclusion text_fields { conclusion_attrs | error_string = field_error, error = True }
+
           "title" ->
             set_title text_fields { title_attrs | error_string = field_error, error = True }
+
           "author" ->
             set_author text_fields { author_attrs | error_string = field_error, error = True }
+
           "source" ->
             set_source text_fields { source_attrs | error_string = field_error, error = True }
+
           "tags" ->
             set_tags text_fields { tags_attrs | error_string = field_error, error = True }
+
           _ -> text_fields -- not a valid field name
+
       _ -> text_fields -- no text errors
 
 title : TextFields -> TextTitle

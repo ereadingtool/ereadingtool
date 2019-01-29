@@ -88,7 +88,7 @@ textJSONtoComponent text =
 retrieveTextDifficultyOptions : Cmd Msg
 retrieveTextDifficultyOptions =
   let
-    request = Http.get (String.join "?" [text_api_endpoint, "difficulties=list"]) Text.Decode.textDifficultyDecoder
+    request = Http.get (String.join "?" [text_api_endpoint, "difficulties=list"]) Text.Decode.textDifficultiesDecoder
   in
     Http.send UpdateTextDifficultyOptions request
 
@@ -112,12 +112,15 @@ update msg model = case msg of
     SubmitText ->
       let
         text = Text.Component.text model.text_component
+        _ = Debug.log "text" text
       in
         case model.mode of
           ReadOnlyMode write_locker ->
             ({ model | success_msg = Just <| "Text is locked by " ++ write_locker}, Cmd.none)
+
           EditMode ->
             ({ model | error_msg = Nothing, success_msg = Nothing }, update_text model.flags.csrftoken text)
+
           CreateMode ->
             ({ model | error_msg = Nothing, success_msg = Nothing }, post_text model.flags.csrftoken text)
 

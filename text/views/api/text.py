@@ -231,7 +231,7 @@ class TextAPIView(LoginRequiredMixin, View):
         statuses = request.GET.getlist('status')
 
         if 'difficulties' in request.GET.keys():
-            return HttpResponse(json.dumps({d.slug: d.name for d in TextDifficulty.objects.all()}))
+            return HttpResponse(json.dumps([(d.slug, d.name) for d in TextDifficulty.objects.all()]))
 
         valid_difficulties = all(list(map(lambda difficulty: difficulty in all_difficulties, difficulties)))
         valid_tags = all(list(map(lambda tag: tag in all_tags, tags)))

@@ -110,9 +110,13 @@ textLockRespDecoder =
   decode TextLockResp
     |> required "locked" Decode.bool
 
-textDifficultyDecoder : Decode.Decoder (List TextDifficulty)
+textDifficultiesDecoder : Decode.Decoder (List TextDifficulty)
+textDifficultiesDecoder =
+  Decode.list textDifficultyDecoder
+
+textDifficultyDecoder : Decode.Decoder TextDifficulty
 textDifficultyDecoder =
-  Decode.keyValuePairs Decode.string
+  Util.stringTupleDecoder
 
 textTranslationUpdateRespDecoder : Decode.Decoder (Word, Int, Text.Model.TextWordTranslation)
 textTranslationUpdateRespDecoder =

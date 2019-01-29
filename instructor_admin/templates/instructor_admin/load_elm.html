@@ -20,48 +20,6 @@
         }
     }
 
-    function sendSelectedText() {
-         // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
-         window.requestAnimationFrame(function (timestamp) {
-             var selected_obj = window.getSelection();
-             var selection_text = null;
-
-             var tokens = [];
-
-             if (selected_obj.rangeCount > 0) {
-                 var first_range = selected_obj.getRangeAt(0);
-                 var last_range = selected_obj.getRangeAt(selected_obj.rangeCount-1);
-
-                 var start_container = first_range.startContainer;
-
-                 var i = first_range.startOffset+1;
-
-                 var elem = start_container.childNodes[i];
-
-                 if (elem) {
-                     while (elem != last_range.endContainer.parentElement) {
-                          var token = elem.getAttribute('token');
-
-                          if (token != '') {
-                               tokens.push(token);
-                          }
-
-                          i++;
-                          elem = start_container.childNodes[i];
-                     }
-                 }
-             }
-
-             if (tokens.length > 0) {
-                  selection_text = tokens.join(' ');
-             }
-
-             app.ports.selectedText.send(selection_text);
-         });
-    }
-
-    document.onmouseup = sendSelectedText;
-
     app.ports.selectAllInputText.subscribe(function (elem_id) {
         // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
         window.requestAnimationFrame(function (timestamp) {

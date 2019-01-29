@@ -20,7 +20,8 @@ type TextComponent = TextComponent Text TextFields TextTags TextSectionComponent
 
 init : Text -> TextComponent
 init text =
-  TextComponent text init_text_fields (tags_to_dict text.tags) (Text.Section.Component.Group.fromTextSections text.sections)
+  TextComponent
+    text init_text_fields (tags_to_dict text.tags) (Text.Section.Component.Group.fromTextSections text.sections)
 
 text : TextComponent -> Text
 text (TextComponent text _ text_tags component_group) =
@@ -91,16 +92,22 @@ set_text_attribute ((TextComponent text fields text_tags components) as text_com
   case attr_name of
     "title" ->
       TextComponent { text | title = value } fields text_tags components
+
     "introduction" ->
       TextComponent { text | introduction = value } fields text_tags components
+
     "author" ->
       TextComponent { text | author = value } fields text_tags components
+
     "source" ->
       TextComponent { text | source = value } fields text_tags components
+
     "difficulty" ->
       TextComponent { text | difficulty = value } fields text_tags components
+
     "conclusion" ->
       TextComponent { text | conclusion = Just value } fields text_tags components
+
     _ ->
       text_component
 

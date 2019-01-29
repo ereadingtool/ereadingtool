@@ -157,15 +157,17 @@ view_author params edit_author text_author =
     div [attribute "id" "text_author_view", attribute "class" "text_property"] <| [
       div [] [ Html.text "Text Author" ]
     , (case text_author_attrs.editable of
-       False ->
-          div [
-            attribute "id" text_author_attrs.id
-          , attribute "class" "editable"
-          , onClick (ToggleEditable (Author text_author) True)
-          ] [
-            div [] [ Html.text params.text.author ]
-          ]
-       True -> div [] [ edit_author params text_author ])
+         False ->
+           div [
+             attribute "id" text_author_attrs.id
+           , attribute "class" "editable"
+           , onClick (ToggleEditable (Author text_author) True)
+           ] [
+             div [] [ Html.text params.text.author ]
+           ]
+
+         True ->
+           div [] [ edit_author params text_author ])
     ] ++
       (if text_author_attrs.error then
         [ div [class "error"] [ Html.text text_author_attrs.error_string ]]
