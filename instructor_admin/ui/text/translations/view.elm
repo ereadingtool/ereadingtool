@@ -19,6 +19,21 @@ import VirtualDom
 import HtmlParser
 
 
+wordInstanceOnClick : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html.Attribute msg
+wordInstanceOnClick model parent_msg word_instance =
+  case Dict.isEmpty model.merging_words of
+    True ->
+      onClick (parent_msg (EditWord word_instance))
+
+    -- subsequent clicks on word instances will add them to the list of words to be merged
+    False ->
+      case Dict.member word_instance.id model.merging_words of
+        True ->
+          onClick (parent_msg (RemoveFromMergeWords word_instance))
+
+        False ->
+          onClick (parent_msg (AddToMergeWords word_instance))
+
 tagWord : Model -> (Msg -> msg) -> Int -> String -> Html msg
 tagWord model parent_msg instance token =
   let
@@ -33,6 +48,9 @@ tagWord model parent_msg instance token =
         let
           text_word = Text.Translations.Model.getTextWord model instance normalized_token
           word_instance = {id=id, instance=instance, word=token, text_word=text_word}
+
+          editing_word = Text.Translations.Model.editingWord model token
+          merging_word = Text.Translations.Model.mergingWord model word_instance
         in
           Html.node "span" [
             Html.Attributes.id id
@@ -41,8 +59,11 @@ tagWord model parent_msg instance token =
           , ("cursor", True)]
           ] [
             span [
-              classList [("highlighted", Text.Translations.Model.editingWord model token)]
-            , onClick (parent_msg (EditWord word_instance))
+              classList [
+                ("edit-highlight", editing_word)
+              , ("merge-highlight", merging_word && (not editing_word))
+              ]
+            , wordInstanceOnClick model parent_msg word_instance
             ] [
               VirtualDom.text token
             ]
@@ -59,7 +80,7 @@ view_edit model parent_msg word_instance =
         ] [
       div [class "edit_menu"] <| [
         view_overlay_close_btn parent_msg word_instance
-      , view_word_instance parent_msg word_instance
+      , view_word_instance model parent_msg word_instance
       , view_btns model parent_msg word_instance
       ]
     ]
@@ -72,30 +93,61 @@ view_btns model parent_msg word_instance =
   in
     div [class "text_word_options"] <| [
       view_delete_text_word parent_msg word_instance
-    , view_make_compound_text_word parent_msg word_instance
+    , view_make_compound_text_word model parent_msg word_instance
     ] ++ (if instance_count > 1 then [view_match_translations parent_msg word_instance] else [])
 
-view_make_compound_text_word : (Msg -> msg) -> Text.Model.WordInstance -> Html msg
-view_make_compound_text_word parent_msg word_instance =
-  div [class "merge_words"]
-    (case word_instance.text_word of
-      Just text_word -> [
-          div [ attribute "title" "Merge into compound word."
-              , onClick (parent_msg (AddToMergeWords word_instance))] [ view_merge_btn ]
-        ]
+view_make_compound_text_word_on_click : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html.Attribute msg
+view_make_compound_text_word_on_click model parent_msg word_instance =
+  let
+    merging_words = Dict.toList <| Text.Translations.Model.mergingWords model
+  in
+    case List.length merging_words == 1 of
+      True ->
+        onClick (parent_msg (RemoveFromMergeWords word_instance))
 
-      Nothing ->
-        [])
+      False ->
+        onClick (parent_msg (AddToMergeWords word_instance))
+
+view_make_compound_text_word : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html msg
+view_make_compound_text_word model parent_msg word_instance =
+  let
+    other_merging_words = Dict.toList (Dict.remove word_instance.id (Text.Translations.Model.mergingWords model))
+
+    merge_txt =
+      (case Text.Translations.Model.mergingWord model word_instance of
+        True ->
+          case List.length other_merging_words >= 1 of
+            True ->
+              "Merge together"
+
+            False ->
+              "Cancel merge"
+
+        False ->
+          "Merge")
+  in
+    div [class "merge_words"]
+      (case word_instance.text_word of
+        Just text_word -> [
+            div [ attribute "title" "Merge into compound word."
+                , classList [("merge-highlight", Text.Translations.Model.mergingWord model word_instance)]
+                , view_make_compound_text_word_on_click model parent_msg word_instance] [
+                  view_merge_btn, Html.text merge_txt
+                ]
+          ]
+
+        Nothing ->
+          [])
 
 view_delete_text_word : (Msg -> msg) -> Text.Model.WordInstance -> Html msg
 view_delete_text_word parent_msg word_instance =
   div [class "delete_text_word"]
     (case word_instance.text_word of
       Just text_word -> [
-        Html.button
+        div
           [ attribute "title" "Delete this word instance from glossing."
           , onClick (parent_msg (DeleteTextWord text_word))] [
-            Html.text "Delete from glossing"
+            Html.text "Delete"
           ]
         ]
 
@@ -198,9 +250,32 @@ view_overlay_close_btn parent_msg word_instance =
     view_exit_btn
   ]
 
-view_word_instance : (Msg -> msg) -> Text.Model.WordInstance -> Html msg
-view_word_instance msg word_instance =
-  div [class "word_instance"]
+view_instance_word : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html msg
+view_instance_word model msg word_instance =
+  let
+    word_txt =
+      (case Text.Translations.Model.mergingWord model word_instance of
+        True ->
+          let
+            merging_words =
+                 List.map (\(k, v) -> v.word)
+              <| Dict.toList
+              <| Dict.remove word_instance.id (Text.Translations.Model.mergingWords model)
+          in
+            String.join "-" ([word_instance.word] ++ merging_words)
+
+        False ->
+          word_instance.word)
+  in
+    div [class "word"] [
+      Html.text word_txt
+    ]
+
+view_word_instance : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html msg
+view_word_instance model msg word_instance =
+  div [class "word_instance"] <| [
+    view_instance_word model msg word_instance
+  ] ++
       (case word_instance.text_word of
         Just text_word ->
           case text_word.translations of

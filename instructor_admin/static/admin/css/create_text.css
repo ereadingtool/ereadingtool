@@ -578,6 +578,11 @@ body {
     display: grid;
 }
 
+.word_instance > .word {
+    margin: 5px 0 25px 0;
+    font-size: larger;
+}
+
 .translations {
     display: grid;
 
@@ -716,4 +721,16 @@ body {
     grid-template-columns: auto auto;
 
     padding-top: 5px;
+}
+
+.delete_text_word {
+    font-weight: 400;
+}
+
+.merge_words {
+    font-weight: 400;
+}
+
+.merge-highlight {
+    background: lightblue;
 }

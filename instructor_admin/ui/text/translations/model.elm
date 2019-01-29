@@ -33,6 +33,18 @@ init flags text = {
  , flags=flags }
 
 
+cancelMerge : Model -> Model
+cancelMerge model =
+  { model | merging_words = Dict.empty }
+
+mergingWords : Model -> Dict String Text.Model.WordInstance
+mergingWords model =
+  model.merging_words
+
+mergingWord : Model -> Text.Model.WordInstance -> Bool
+mergingWord model word_instance =
+  Dict.member word_instance.id model.merging_words
+
 addToMergeWords : Model -> Text.Model.WordInstance -> Model
 addToMergeWords model word_instance =
   { model | merging_words = Dict.insert word_instance.id word_instance model.merging_words }
@@ -92,8 +104,11 @@ uneditWord model word_instance =
           model.editing_words)
 
     new_editing_word_instances = Dict.remove word_instance.id model.editing_word_instances
+    cancelled_merge_model = cancelMerge model
   in
-   { model | editing_words = new_edited_words, editing_word_instances = new_editing_word_instances }
+   { cancelled_merge_model |
+     editing_words = new_edited_words
+   , editing_word_instances = new_editing_word_instances }
 
 editingWordInstance : Model -> Text.Model.WordInstance -> Bool
 editingWordInstance model word_instance =
