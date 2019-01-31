@@ -588,7 +588,7 @@ body {
 .translations {
     display: grid;
 
-    grid-template-columns: min-content;
+    grid-template-columns: auto;
 }
 
 .translation {
@@ -722,12 +722,12 @@ body {
     display: grid;
 
     grid-template-columns: auto auto auto;
-    grid-template-rows: 50px;
+    grid-template-rows: min-content;
 
     grid-column-gap: 5px;
 
-    padding-top: 10px;
-    margin: 5px;
+    margin-bottom: 10px;
+    margin-top: 10px;
 }
 
 .text-word-option {
