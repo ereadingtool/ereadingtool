@@ -576,6 +576,8 @@ body {
     grid-column: 2;
 
     display: grid;
+
+    margin: 5px;
 }
 
 .word_instance > .word {
@@ -678,7 +680,7 @@ body {
     margin-top: 5px;
 
     z-index: 1;
-    max-width: 200px;
+    min-width: 250px;
 
     background: #FFFFFF;
 
@@ -718,13 +720,32 @@ body {
     grid-row: 3;
 
     display: grid;
-    grid-template-columns: auto auto;
 
-    padding-top: 5px;
+    grid-template-columns: auto auto auto;
+    grid-template-rows: 50px;
+
+    grid-column-gap: 5px;
+
+    padding-top: 10px;
+    margin: 5px;
 }
 
-.delete_text_word {
+.text-word-option {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+
+    max-height: 20px;
     font-weight: 400;
+    white-space: nowrap;
+}
+
+.text-word-option > div {
+    grid-column: 2;
+    grid-row: 2;
+
+    border: solid 1px black;
+    padding: 5px;
 }
 
 .merge_words {

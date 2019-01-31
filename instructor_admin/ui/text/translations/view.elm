@@ -21,18 +21,18 @@ import HtmlParser
 
 wordInstanceOnClick : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html.Attribute msg
 wordInstanceOnClick model parent_msg word_instance =
-  case Dict.isEmpty model.merging_words of
-    True ->
-      onClick (parent_msg (EditWord word_instance))
-
+  case Text.Translations.Model.isMergingWords model of
     -- subsequent clicks on word instances will add them to the list of words to be merged
-    False ->
-      case Dict.member word_instance.id model.merging_words of
+    True ->
+      case Text.Translations.Model.mergingWord model word_instance of
         True ->
           onClick (parent_msg (RemoveFromMergeWords word_instance))
 
         False ->
           onClick (parent_msg (AddToMergeWords word_instance))
+
+    False ->
+      onClick (parent_msg (EditWord word_instance))
 
 tagWord : Model -> (Msg -> msg) -> Int -> String -> Html msg
 tagWord model parent_msg instance token =
@@ -92,8 +92,8 @@ view_btns model parent_msg word_instance =
     instance_count = Text.Translations.Model.instanceCount model normalized_word
   in
     div [class "text_word_options"] <| [
-      view_delete_text_word parent_msg word_instance
-    , view_make_compound_text_word model parent_msg word_instance
+      view_make_compound_text_word model parent_msg word_instance
+    , view_delete_text_word parent_msg word_instance
     ] ++ (if instance_count > 1 then [view_match_translations parent_msg word_instance] else [])
 
 view_make_compound_text_word_on_click : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html.Attribute msg
@@ -126,13 +126,13 @@ view_make_compound_text_word model parent_msg word_instance =
         False ->
           "Merge")
   in
-    div [class "merge_words"]
+    div [class "text-word-option"]
       (case word_instance.text_word of
         Just text_word -> [
             div [ attribute "title" "Merge into compound word."
                 , classList [("merge-highlight", Text.Translations.Model.mergingWord model word_instance)]
                 , view_make_compound_text_word_on_click model parent_msg word_instance] [
-                  view_merge_btn, Html.text merge_txt
+                  Html.text merge_txt
                 ]
           ]
 
@@ -141,7 +141,7 @@ view_make_compound_text_word model parent_msg word_instance =
 
 view_delete_text_word : (Msg -> msg) -> Text.Model.WordInstance -> Html msg
 view_delete_text_word parent_msg word_instance =
-  div [class "delete_text_word"]
+  div [class "text-word-option"]
     (case word_instance.text_word of
       Just text_word -> [
         div
@@ -292,10 +292,10 @@ view_word_instance model msg word_instance =
 
 view_match_translations : (Msg -> msg) -> Text.Model.WordInstance -> Html msg
 view_match_translations parent_msg word_instance =
-  div [class "edit_overlay_match_translations"] [
-    Html.button [ attribute "title" "Use these translations across all instances of this word"
-                , onClick (parent_msg (MatchTranslations word_instance))] [
-      Html.text "Save for all instances"
+  div [class "text-word-option"] [
+    div [ attribute "title" "Use these translations across all instances of this word"
+        , onClick (parent_msg (MatchTranslations word_instance))] [
+      Html.text "Save for all"
     ]
   ]
 

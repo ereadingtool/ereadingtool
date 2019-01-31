@@ -26017,6 +26017,9 @@ var _user$project$Text_Translations_Model$mergingWord = F2(
 var _user$project$Text_Translations_Model$mergingWords = function (model) {
 	return model.merging_words;
 };
+var _user$project$Text_Translations_Model$isMergingWords = function (model) {
+	return !_elm_lang$core$Dict$isEmpty(model.merging_words);
+};
 var _user$project$Text_Translations_Model$cancelMerge = function (model) {
 	return _elm_lang$core$Native_Utils.update(
 		model,
@@ -27817,13 +27820,13 @@ var _user$project$Text_Translations_View$view_match_translations = F2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('edit_overlay_match_translations'),
+				_0: _elm_lang$html$Html_Attributes$class('text-word-option'),
 				_1: {ctor: '[]'}
 			},
 			{
 				ctor: '::',
 				_0: A2(
-					_elm_lang$html$Html$button,
+					_elm_lang$html$Html$div,
 					{
 						ctor: '::',
 						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'title', 'Use these translations across all instances of this word'),
@@ -27837,7 +27840,7 @@ var _user$project$Text_Translations_View$view_match_translations = F2(
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text('Save for all instances'),
+						_0: _elm_lang$html$Html$text('Save for all'),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
@@ -28295,7 +28298,7 @@ var _user$project$Text_Translations_View$view_delete_text_word = F2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('delete_text_word'),
+				_0: _elm_lang$html$Html_Attributes$class('text-word-option'),
 				_1: {ctor: '[]'}
 			},
 			function () {
@@ -28371,7 +28374,7 @@ var _user$project$Text_Translations_View$view_make_compound_text_word = F3(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('merge_words'),
+				_0: _elm_lang$html$Html_Attributes$class('text-word-option'),
 				_1: {ctor: '[]'}
 			},
 			function () {
@@ -28405,12 +28408,8 @@ var _user$project$Text_Translations_View$view_make_compound_text_word = F3(
 							},
 							{
 								ctor: '::',
-								_0: _user$project$Text_Translations_View$view_merge_btn,
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html$text(merge_txt),
-									_1: {ctor: '[]'}
-								}
+								_0: _elm_lang$html$Html$text(merge_txt),
+								_1: {ctor: '[]'}
 							}),
 						_1: {ctor: '[]'}
 					};
@@ -28434,10 +28433,10 @@ var _user$project$Text_Translations_View$view_btns = F3(
 				_elm_lang$core$Basics_ops['++'],
 				{
 					ctor: '::',
-					_0: A2(_user$project$Text_Translations_View$view_delete_text_word, parent_msg, word_instance),
+					_0: A3(_user$project$Text_Translations_View$view_make_compound_text_word, model, parent_msg, word_instance),
 					_1: {
 						ctor: '::',
-						_0: A3(_user$project$Text_Translations_View$view_make_compound_text_word, model, parent_msg, word_instance),
+						_0: A2(_user$project$Text_Translations_View$view_delete_text_word, parent_msg, word_instance),
 						_1: {ctor: '[]'}
 					}
 				},
@@ -28493,13 +28492,9 @@ var _user$project$Text_Translations_View$view_edit = F3(
 	});
 var _user$project$Text_Translations_View$wordInstanceOnClick = F3(
 	function (model, parent_msg, word_instance) {
-		var _p20 = _elm_lang$core$Dict$isEmpty(model.merging_words);
+		var _p20 = _user$project$Text_Translations_Model$isMergingWords(model);
 		if (_p20 === true) {
-			return _elm_lang$html$Html_Events$onClick(
-				parent_msg(
-					_user$project$Text_Translations_Msg$EditWord(word_instance)));
-		} else {
-			var _p21 = A2(_elm_lang$core$Dict$member, word_instance.id, model.merging_words);
+			var _p21 = A2(_user$project$Text_Translations_Model$mergingWord, model, word_instance);
 			if (_p21 === true) {
 				return _elm_lang$html$Html_Events$onClick(
 					parent_msg(
@@ -28509,6 +28504,10 @@ var _user$project$Text_Translations_View$wordInstanceOnClick = F3(
 					parent_msg(
 						_user$project$Text_Translations_Msg$AddToMergeWords(word_instance)));
 			}
+		} else {
+			return _elm_lang$html$Html_Events$onClick(
+				parent_msg(
+					_user$project$Text_Translations_Msg$EditWord(word_instance)));
 		}
 	});
 var _user$project$Text_Translations_View$tagWord = F4(

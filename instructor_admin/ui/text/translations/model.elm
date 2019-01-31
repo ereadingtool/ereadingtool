@@ -37,6 +37,10 @@ cancelMerge : Model -> Model
 cancelMerge model =
   { model | merging_words = Dict.empty }
 
+isMergingWords : Model -> Bool
+isMergingWords model =
+  not (Dict.isEmpty model.merging_words)
+
 mergingWords : Model -> Dict String Text.Model.WordInstance
 mergingWords model =
   model.merging_words
