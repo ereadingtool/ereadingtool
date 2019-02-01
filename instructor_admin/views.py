@@ -2,6 +2,9 @@ import json
 from typing import Dict
 
 from csp.decorators import csp_replace
+
+from django.middleware.csrf import get_token
+from django.urls import reverse
 from django.http import Http404
 from django.http import HttpResponse, HttpRequest
 from django.views.generic import TemplateView
@@ -98,6 +101,15 @@ class AdminCreateEditElmLoadView(ElmLoadJsView):
             'quote': False,
             'safe': True,
             'value': json.dumps([tag.name for tag in Text.tag_choices()])
+        }
+
+        context['elm']['translation_flags'] = {
+            'quote': False,
+            'safe': True,
+            'value': json.dumps({
+                'csrftoken': get_token(self.request),
+                'group_word_endpoint_url': reverse('text-word-group-api')
+            })
         }
 
         return context

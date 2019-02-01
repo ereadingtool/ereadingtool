@@ -29,6 +29,9 @@ type alias TextWordTranslationDeleteResp = {
   , translation: Text.Model.TextWordTranslation
   , deleted: Bool }
 
+type alias TextWordMergeResp = { text_words: List Text.Model.TextWord, grouped : Bool, error: Maybe String }
+
+
 grammemesDecoder : Decode.Decoder Text.Model.Grammemes
 grammemesDecoder =
   Decode.dict (Decode.nullable Decode.string)
@@ -163,6 +166,13 @@ textWordDecoder =
     |> required "word" Decode.string
     |> required "grammemes" grammemesDecoder
     |> required "translations" (Decode.nullable (Decode.list textWordTranslationsDecoder))
+
+textWordMergeDecoder : Decode.Decoder TextWordMergeResp
+textWordMergeDecoder =
+  decode TextWordMergeResp
+    |> required "text_words" textWordsDecoder
+    |> required "grouped" Decode.bool
+    |> required "error" (Decode.nullable Decode.string)
 
 decodeRespErrors : String -> Result String TextsRespError
 decodeRespErrors str =

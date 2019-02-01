@@ -156,7 +156,8 @@ update msg model = case msg of
                 ({ model |
                      text_component=text_component
                    , mode=EditMode
-                   , text_translations_model=Just (Text.Translations.Model.init {csrftoken=model.flags.csrftoken} text)
+                   , text_translations_model=
+                       Just (Text.Translations.Model.init model.flags.translation_flags text)
                    , success_msg=Just <| "editing '" ++ text.title ++ "' text"
                  }, Cmd.batch [
                       Text.Component.reinitialize_ck_editors text_component

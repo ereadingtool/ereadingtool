@@ -22,10 +22,9 @@ class TextWordGroupAPIView(LoginRequiredMixin, View):
                                                  content_type='application/json')
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        text_group_words = []
-
         resp = {
             'grouped': False,
+            'text_words': [],
             'error': None
         }
 
@@ -45,8 +44,12 @@ class TextWordGroupAPIView(LoginRequiredMixin, View):
 
             # maintains order from parameter list
             for i, text_word in enumerate(text_words):
-                text_group_words.append(TextGroupWord.objects.create(group=text_group, word=text_word, order=i))
+                text_group_word = TextGroupWord.objects.create(group=text_group, word=text_word, order=i)
 
+                # avoids a call to refresh_db()
+                text_word[i].group_word = text_group_word
+
+        resp['text_words'] = [text_word.to_dict() for text_word in text_words]
         resp['grouped'] = True
 
         return HttpResponse(json.dumps(resp), status=200, content_type='application/json')

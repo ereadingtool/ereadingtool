@@ -31,6 +31,7 @@ type alias Flags = {
     instructor_profile : Instructor.Profile.InstructorProfileParams
   , csrftoken: Flags.CSRFToken
   , text: Maybe Json.Encode.Value
+  , translation_flags: TextTranslations.Flags
   , tags: List String }
 
 type alias InstructorUser = String

@@ -10,7 +10,10 @@ import Text.Translations
 import Flags
 
 
-type alias Flags = { csrftoken : Flags.CSRFToken }
+
+type MergeState = Mergeable | Cancelable
+
+type alias Flags = { group_word_endpoint_url: String, csrftoken : Flags.CSRFToken }
 
 type alias Model = {
    words: Dict Text.Translations.Word (Array Text.Model.TextWord)
@@ -32,6 +35,31 @@ init flags text = {
  , new_translations=Dict.empty
  , flags=flags }
 
+
+mergingWordInstances : Model -> List Text.Model.WordInstance
+mergingWordInstances model =
+  Dict.values (mergingWords model)
+
+mergeSiblings : Model -> Text.Model.WordInstance -> List Text.Model.WordInstance
+mergeSiblings model word_instance =
+  Dict.values <| (Dict.remove word_instance.id (mergingWords model))
+
+mergeState : Model -> Text.Model.WordInstance -> Maybe MergeState
+mergeState model word_instance =
+  let
+    other_merging_words = mergeSiblings model word_instance
+  in
+    case mergingWord model word_instance of
+      True ->
+        case List.length other_merging_words >= 1 of
+          True ->
+            Just Mergeable
+
+          False ->
+            Just Cancelable
+
+      False ->
+        Nothing
 
 cancelMerge : Model -> Model
 cancelMerge model =

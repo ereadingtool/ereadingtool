@@ -54,9 +54,7 @@ tagWord model parent_msg instance token =
         in
           Html.node "span" [
             Html.Attributes.id id
-          , attribute "data-token" token
-          , classList [("defined_word", True)
-          , ("cursor", True)]
+          , classList [("defined_word", True), ("cursor", True)]
           ] [
             span [
               classList [
@@ -98,32 +96,34 @@ view_btns model parent_msg word_instance =
 
 view_make_compound_text_word_on_click : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html.Attribute msg
 view_make_compound_text_word_on_click model parent_msg word_instance =
-  let
-    merging_words = Dict.toList <| Text.Translations.Model.mergingWords model
-  in
-    case List.length merging_words == 1 of
-      True ->
-        onClick (parent_msg (RemoveFromMergeWords word_instance))
+  case (Text.Translations.Model.mergeState model word_instance) of
+    Just merge_state ->
+      case merge_state of
+        Cancelable ->
+          onClick (parent_msg (RemoveFromMergeWords word_instance))
 
-      False ->
-        onClick (parent_msg (AddToMergeWords word_instance))
+        Mergeable ->
+          onClick (parent_msg (MergeWords (Text.Translations.Model.mergingWordInstances model)))
+
+    Nothing ->
+      onClick (parent_msg (AddToMergeWords word_instance))
 
 view_make_compound_text_word : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html msg
 view_make_compound_text_word model parent_msg word_instance =
   let
-    other_merging_words = Dict.toList (Dict.remove word_instance.id (Text.Translations.Model.mergingWords model))
+    merge_state = Text.Translations.Model.mergeState model word_instance
 
     merge_txt =
-      (case Text.Translations.Model.mergingWord model word_instance of
-        True ->
-          case List.length other_merging_words >= 1 of
-            True ->
+      (case merge_state of
+        Just state ->
+          case state of
+            Mergeable ->
               "Merge together"
 
-            False ->
+            Cancelable ->
               "Cancel merge"
 
-        False ->
+        Nothing ->
           "Merge")
   in
     div [class "text-word-option"]
@@ -226,15 +226,6 @@ view_text_word_translation msg text_word translation =
       (view_correct_for_context translation.correct_for_context) ++ [view_translation_delete msg text_word translation]
   ]
 
-view_merge_btn : Html msg
-view_merge_btn =
-  Html.img [
-      attribute "src" "/static/img/merge.svg"
-    , attribute "height" "25px"
-    , attribute "width" "25px"
-    , class "cursor"
-    ] []
-
 view_exit_btn : Html msg
 view_exit_btn =
   Html.img [
@@ -262,7 +253,7 @@ view_instance_word model msg word_instance =
               <| Dict.toList
               <| Dict.remove word_instance.id (Text.Translations.Model.mergingWords model)
           in
-            String.join "-" ([word_instance.word] ++ merging_words)
+            String.join " " ([word_instance.word] ++ merging_words)
 
         False ->
           word_instance.word)

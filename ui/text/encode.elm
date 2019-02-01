@@ -60,6 +60,11 @@ textTranslationAsCorrectEncoder text_translation =
   , ("correct_for_context", Encode.bool text_translation.correct_for_context)
   ]
 
+textWordMergeEncoder : List Text.Model.TextWord -> Encode.Value
+textWordMergeEncoder text_words =
+  Encode.list
+    (List.map (\text_word -> Encode.int text_word.id) text_words)
+
 newTextTranslationEncoder : String -> Encode.Value
 newTextTranslationEncoder translation =
   Encode.object [

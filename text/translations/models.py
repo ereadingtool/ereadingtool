@@ -44,7 +44,11 @@ class TextWord(models.Model):
         return {
             'word': self.word,
             'grammemes': self.grammemes,
-            'translation': translation.phrase if translation else None
+            'translation': translation.phrase if translation else None,
+            'group': {
+                'group': self.group_word.group_id,
+                'order': self.group_word.order
+            } if self.group_word else None
         }
 
     @classmethod

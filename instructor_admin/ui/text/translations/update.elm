@@ -43,7 +43,13 @@ update parent_msg msg model =
     UpdatedTextWords (Err err) -> let _ = Debug.log "error updating text words" err in
       (model, Cmd.none)
 
-    SelectedText text_string -> let _ = Debug.log "selected string" text_string in
+    MergeWords word_instances ->
+      (model, postMergeWords parent_msg model model.flags.csrftoken word_instances)
+
+    MergedWords (Ok merge_resp) ->
+      (model, Cmd.none)
+
+    MergedWords (Err err) -> let _ = Debug.log "error merging text words" err in
       (model, Cmd.none)
 
     AddToMergeWords word_instance ->
@@ -104,6 +110,21 @@ update parent_msg msg model =
     -- handle user-friendly msgs
     DeletedTranslation (Err err) -> let _ = Debug.log "error decoding deleting text translations" err in
       (model, Cmd.none)
+
+
+postMergeWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List Text.Model.WordInstance -> Cmd msg
+postMergeWords parent_msg model csrftoken word_instances =
+  let
+    endpoint_uri = model.flags.group_word_endpoint_url
+    headers = [Http.header "X-CSRFToken" csrftoken]
+    text_words = List.filterMap (\instance -> instance.text_word) word_instances
+    encoded_text_word_ids = Text.Encode.textWordMergeEncoder text_words
+    body = (Http.jsonBody encoded_text_word_ids)
+    request =
+      HttpHelpers.post_with_headers endpoint_uri headers body Text.Decode.textWordMergeDecoder
+  in
+    Http.send (parent_msg << MergedWords) request
+
 
 matchTranslations : (Msg -> msg) -> Model -> Text.Model.WordInstance -> Cmd msg
 matchTranslations parent_msg model word_instance =

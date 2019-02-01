@@ -11299,6 +11299,23 @@ var _user$project$Text_Decode$textTranslationRemoveRespDecoder = A3(
 				'word',
 				_elm_lang$core$Json_Decode$string,
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextWordTranslationDeleteResp)))));
+var _user$project$Text_Decode$TextWordMergeResp = F3(
+	function (a, b, c) {
+		return {text_words: a, grouped: b, error: c};
+	});
+var _user$project$Text_Decode$textWordMergeDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'error',
+	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'grouped',
+		_elm_lang$core$Json_Decode$bool,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'text_words',
+			_user$project$Text_Decode$textWordsDecoder,
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Decode$TextWordMergeResp))));
 
 
 var _user$project$Profile_Flags$UnAuthedFlags = function (a) {
