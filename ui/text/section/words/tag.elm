@@ -36,20 +36,21 @@ maybeParseWordWithPunctuation str =
       _ ->
         [str]
 
-intersperseWords : String -> List String -> List String
-intersperseWords token tokens =
-  let
-    whitespace = " "
-  in
-    case has_punctuation token of
-      True ->
-        tokens ++ [token]
+intersperseWordsWith : String -> String -> List String -> List String
+intersperseWordsWith str token tokens =
+  case has_punctuation token of
+    True ->
+      tokens ++ [token]
 
-      False ->
-        tokens ++ [whitespace, token]
+    False ->
+      tokens ++ [str, token]
 
-countOccurrences : String -> (List (String, Int), Dict String Int) -> (List (String, Int), Dict String Int)
-countOccurrences token (tokens, occurrences) =
+intersperseWithWhitespace : List String -> List String
+intersperseWithWhitespace word_tokens =
+  List.foldl (intersperseWordsWith " ") [] word_tokens
+
+countOccurrence : String -> (List (String, Int), Dict String Int) -> (List (String, Int), Dict String Int)
+countOccurrence token (tokens, occurrences) =
   let
     normalized_token = String.toLower token
     num_of_prev_occurrences = Maybe.withDefault -1 (Dict.get normalized_token occurrences)
@@ -59,44 +60,50 @@ countOccurrences token (tokens, occurrences) =
   in
     (new_tokens, new_occurrences)
 
+countOccurrences : List String -> Dict String Int -> (List (String, Int), Dict String Int)
+countOccurrences words occurrences =
+  List.foldl countOccurrence ([], occurrences) words
+
 parseCompoundWord :
-     (String -> Maybe (Int, Int))
-  -> String
-  -> (List String, (Int, List String))
-  -> (List String, (Int, List String))
-parseCompoundWord is_part_of_compound_word token (tokens, (compound_index, compound_token)) =
-  case is_part_of_compound_word token of
-    Just (pos, length) ->
+     (Int -> String -> Maybe (Int, Int, Int))
+  -> (String, Int)
+  -> (List (String, Int), (Int, List String))
+  -> (List (String, Int), (Int, List String))
+parseCompoundWord is_part_of_compound_word (token, instance) (token_occurrences, (compound_index, compound_token)) =
+  case is_part_of_compound_word instance token of
+    Just (pos, length, group_instance) ->
       case pos == compound_index of
         True ->
           if pos+1 == length then
             let
-              compound_word = compound_token ++ [token]
+              compound_word = String.join " " (compound_token ++ [token])
+              compound_word_instance = (compound_word, group_instance)
             in
               -- we're at the end of a compound word
-              (tokens ++ compound_word, (0, []))
+              (token_occurrences ++ [compound_word_instance], (0, []))
           else
             -- token is part of a compound word and is in the right position
-            (tokens, (pos+1, compound_token ++ [token]))
+            (token_occurrences, (pos+1, compound_token ++ [token]))
 
         False ->
           -- token is part of a compound word but not the right position
-          (tokens, (0, []))
+          (token_occurrences, (0, []))
 
     Nothing ->
       -- regular word
-      (tokens ++ [token], (0, []))
+      (token_occurrences, (0, []))
 
-parseCompoundWords : (String -> Maybe (Int, Int)) -> List String -> List String
-parseCompoundWords is_part_of_compound_word tokens =
+parseCompoundWords : (Int -> String -> Maybe (Int, Int, Int)) -> List (String, Int) -> List (String, Int)
+parseCompoundWords is_part_of_compound_word token_occurrences =
   let
-    (tokens_with_compound_words, _) = List.foldl (parseCompoundWord is_part_of_compound_word) ([], (0, [])) tokens
+    (token_occurrences_with_compound_words, _) =
+      List.foldl (parseCompoundWord is_part_of_compound_word) ([], (0, [])) token_occurrences
   in
-    tokens_with_compound_words
+    token_occurrences_with_compound_words
 
 tagWordAndToVDOM :
      (Int -> String -> Html msg)
-  -> (String -> Maybe (Int, Int))
+  -> (Int -> String -> Maybe (Int, Int, Int))
   -> HtmlParser.Node
   -> (List (Html msg), Dict String Int)
   -> (List (Html msg), Dict String Int)
@@ -108,11 +115,13 @@ tagWordAndToVDOM tag_word is_part_of_compound_word node (html, occurrences) =
              List.concat
           <| List.map maybeParseWordWithPunctuation (String.words str)
 
-        tokenized_text = parseCompoundWords is_part_of_compound_word (List.foldl intersperseWords [] word_tokens)
+        text_words = intersperseWithWhitespace word_tokens
 
-        (counted_tokens, token_occurrences) = List.foldl countOccurrences ([], occurrences) tokenized_text
+        (counted_occurrences, token_occurrences) = countOccurrences text_words occurrences
 
-        new_node = span [] (List.map (\(token, instance) -> tag_word instance token) counted_tokens)
+        counted_words = parseCompoundWords is_part_of_compound_word counted_occurrences
+
+        new_node = span [] (List.map (\(token, instance) -> tag_word instance token) counted_words)
       in
         (html ++ [new_node], token_occurrences)
 
@@ -133,7 +142,7 @@ tagWordAndToVDOM tag_word is_part_of_compound_word node (html, occurrences) =
 
 tagWordsToVDOMWithFreqs :
      (Int -> String -> Html msg)
-  -> (String -> Maybe (Int, Int))
+  -> (Int -> String -> Maybe (Int, Int, Int))
   -> Dict String Int
   -> List HtmlParser.Node
   -> (List (Html msg), Dict String Int)
@@ -142,7 +151,7 @@ tagWordsToVDOMWithFreqs tag_word is_part_of_compound_word occurrences nodes =
 
 tagWordsAndToVDOM :
      (Int -> String -> Html msg)
-  -> (String -> Maybe (Int, Int))
+  -> (Int -> String -> Maybe (Int, Int, Int))
   -> List HtmlParser.Node
   -> List (Html msg)
 tagWordsAndToVDOM tag_word is_part_of_compound_word nodes =

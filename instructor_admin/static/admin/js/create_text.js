@@ -27602,34 +27602,145 @@ var _user$project$Text_Tags_View$view_tags = F5(
 			});
 	});
 
-var _user$project$Text_Section_Words_Tag$countOccurrences = F2(
-	function (token, _p0) {
-		var _p1 = _p0;
-		var _p2 = _p1._1;
+var _user$project$Text_Section_Words_Tag$parseCompoundWord = F3(
+	function (is_part_of_compound_word, _p1, _p0) {
+		var _p2 = _p1;
+		var _p9 = _p2._0;
+		var _p3 = _p0;
+		var _p8 = _p3._0;
+		var _p7 = _p3._1._1;
+		var _p4 = A2(is_part_of_compound_word, _p2._1, _p9);
+		if (_p4.ctor === 'Just') {
+			var _p6 = _p4._0._0;
+			var _p5 = _elm_lang$core$Native_Utils.eq(_p6, _p3._1._0);
+			if (_p5 === true) {
+				if (_elm_lang$core$Native_Utils.eq(_p6 + 1, _p4._0._1)) {
+					var compound_word = A2(
+						_elm_lang$core$String$join,
+						' ',
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							_p7,
+							{
+								ctor: '::',
+								_0: _p9,
+								_1: {ctor: '[]'}
+							}));
+					var compound_word_instance = {ctor: '_Tuple2', _0: compound_word, _1: _p4._0._2};
+					return {
+						ctor: '_Tuple2',
+						_0: A2(
+							_elm_lang$core$Basics_ops['++'],
+							_p8,
+							{
+								ctor: '::',
+								_0: compound_word_instance,
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '_Tuple2',
+							_0: 0,
+							_1: {ctor: '[]'}
+						}
+					};
+				} else {
+					return {
+						ctor: '_Tuple2',
+						_0: _p8,
+						_1: {
+							ctor: '_Tuple2',
+							_0: _p6 + 1,
+							_1: A2(
+								_elm_lang$core$Basics_ops['++'],
+								_p7,
+								{
+									ctor: '::',
+									_0: _p9,
+									_1: {ctor: '[]'}
+								})
+						}
+					};
+				}
+			} else {
+				return {
+					ctor: '_Tuple2',
+					_0: _p8,
+					_1: {
+						ctor: '_Tuple2',
+						_0: 0,
+						_1: {ctor: '[]'}
+					}
+				};
+			}
+		} else {
+			return {
+				ctor: '_Tuple2',
+				_0: _p8,
+				_1: {
+					ctor: '_Tuple2',
+					_0: 0,
+					_1: {ctor: '[]'}
+				}
+			};
+		}
+	});
+var _user$project$Text_Section_Words_Tag$parseCompoundWords = F2(
+	function (is_part_of_compound_word, token_occurrences) {
+		var _p10 = A3(
+			_elm_lang$core$List$foldl,
+			_user$project$Text_Section_Words_Tag$parseCompoundWord(is_part_of_compound_word),
+			{
+				ctor: '_Tuple2',
+				_0: {ctor: '[]'},
+				_1: {
+					ctor: '_Tuple2',
+					_0: 0,
+					_1: {ctor: '[]'}
+				}
+			},
+			token_occurrences);
+		var token_occurrences_with_compound_words = _p10._0;
+		return token_occurrences_with_compound_words;
+	});
+var _user$project$Text_Section_Words_Tag$countOccurrence = F2(
+	function (token, _p11) {
+		var _p12 = _p11;
+		var _p13 = _p12._1;
 		var normalized_token = _elm_lang$core$String$toLower(token);
 		var num_of_prev_occurrences = A2(
 			_elm_lang$core$Maybe$withDefault,
 			-1,
-			A2(_elm_lang$core$Dict$get, normalized_token, _p2));
+			A2(_elm_lang$core$Dict$get, normalized_token, _p13));
 		var instance = num_of_prev_occurrences + 1;
 		var new_tokens = A2(
 			_elm_lang$core$Basics_ops['++'],
-			_p1._0,
+			_p12._0,
 			{
 				ctor: '::',
 				_0: {ctor: '_Tuple2', _0: token, _1: instance},
 				_1: {ctor: '[]'}
 			});
-		var new_occurrences = A3(_elm_lang$core$Dict$insert, normalized_token, instance, _p2);
+		var new_occurrences = A3(_elm_lang$core$Dict$insert, normalized_token, instance, _p13);
 		return {ctor: '_Tuple2', _0: new_tokens, _1: new_occurrences};
+	});
+var _user$project$Text_Section_Words_Tag$countOccurrences = F2(
+	function (words, occurrences) {
+		return A3(
+			_elm_lang$core$List$foldl,
+			_user$project$Text_Section_Words_Tag$countOccurrence,
+			{
+				ctor: '_Tuple2',
+				_0: {ctor: '[]'},
+				_1: occurrences
+			},
+			words);
 	});
 var _user$project$Text_Section_Words_Tag$punctuation_re = _elm_lang$core$Regex$regex('[?!.,]');
 var _user$project$Text_Section_Words_Tag$has_punctuation = _elm_lang$core$Regex$contains(_user$project$Text_Section_Words_Tag$punctuation_re);
-var _user$project$Text_Section_Words_Tag$intersperseWords = F2(
-	function (token, tokens) {
-		var whitespace = ' ';
-		var _p3 = _user$project$Text_Section_Words_Tag$has_punctuation(token);
-		if (_p3 === true) {
+var _user$project$Text_Section_Words_Tag$intersperseWordsWith = F3(
+	function (str, token, tokens) {
+		var _p14 = _user$project$Text_Section_Words_Tag$has_punctuation(token);
+		if (_p14 === true) {
 			return A2(
 				_elm_lang$core$Basics_ops['++'],
 				tokens,
@@ -27644,7 +27755,7 @@ var _user$project$Text_Section_Words_Tag$intersperseWords = F2(
 				tokens,
 				{
 					ctor: '::',
-					_0: whitespace,
+					_0: str,
 					_1: {
 						ctor: '::',
 						_0: token,
@@ -27653,17 +27764,24 @@ var _user$project$Text_Section_Words_Tag$intersperseWords = F2(
 				});
 		}
 	});
+var _user$project$Text_Section_Words_Tag$intersperseWithWhitespace = function (word_tokens) {
+	return A3(
+		_elm_lang$core$List$foldl,
+		_user$project$Text_Section_Words_Tag$intersperseWordsWith(' '),
+		{ctor: '[]'},
+		word_tokens);
+};
 var _user$project$Text_Section_Words_Tag$maybeParseWordWithPunctuation = function (str) {
 	var matches = A3(
 		_elm_lang$core$Regex$find,
 		_elm_lang$core$Regex$AtMost(1),
 		_user$project$Text_Section_Words_Tag$punctuation_re,
 		str);
-	var _p4 = matches;
-	if ((_p4.ctor === '::') && (_p4._1.ctor === '[]')) {
-		var _p5 = _p4._0;
-		var word = A3(_elm_lang$core$String$slice, 0, _p5.index, str);
-		var punctuation_char = A3(_elm_lang$core$String$slice, _p5.index, _p5.index + 1, str);
+	var _p15 = matches;
+	if ((_p15.ctor === '::') && (_p15._1.ctor === '[]')) {
+		var _p16 = _p15._0;
+		var word = A3(_elm_lang$core$String$slice, 0, _p16.index, str);
+		var punctuation_char = A3(_elm_lang$core$String$slice, _p16.index, _p16.index + 1, str);
 		return {
 			ctor: '::',
 			_0: word,
@@ -27681,79 +27799,66 @@ var _user$project$Text_Section_Words_Tag$maybeParseWordWithPunctuation = functio
 		};
 	}
 };
-var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F3(
-	function (tag_word, node, _p6) {
-		var _p7 = _p6;
-		var _p18 = _p7._1;
-		var _p17 = _p7._0;
-		var _p8 = node;
-		switch (_p8.ctor) {
+var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F4(
+	function (tag_word, is_part_of_compound_word, node, _p17) {
+		var _p18 = _p17;
+		var _p27 = _p18._1;
+		var _p26 = _p18._0;
+		var _p19 = node;
+		switch (_p19.ctor) {
 			case 'Text':
 				var word_tokens = _elm_lang$core$List$concat(
 					A2(
 						_elm_lang$core$List$map,
 						_user$project$Text_Section_Words_Tag$maybeParseWordWithPunctuation,
-						_elm_lang$core$String$words(_p8._0)));
-				var _p9 = A2(_elm_lang$core$Debug$log, 'word_tokens', word_tokens);
-				var tokenized_text = A3(
-					_elm_lang$core$List$foldl,
-					_user$project$Text_Section_Words_Tag$intersperseWords,
-					{ctor: '[]'},
-					word_tokens);
-				var _p10 = A2(_elm_lang$core$Debug$log, 'tokenized text', tokenized_text);
-				var _p11 = A3(
-					_elm_lang$core$List$foldl,
-					_user$project$Text_Section_Words_Tag$countOccurrences,
-					{
-						ctor: '_Tuple2',
-						_0: {ctor: '[]'},
-						_1: _p18
-					},
-					tokenized_text);
-				var items = _p11._0;
-				var new_occurrences = _p11._1;
+						_elm_lang$core$String$words(_p19._0)));
+				var text_words = _user$project$Text_Section_Words_Tag$intersperseWithWhitespace(word_tokens);
+				var _p20 = A2(_user$project$Text_Section_Words_Tag$countOccurrences, text_words, _p27);
+				var counted_occurrences = _p20._0;
+				var token_occurrences = _p20._1;
+				var counted_words = A2(_user$project$Text_Section_Words_Tag$parseCompoundWords, is_part_of_compound_word, counted_occurrences);
 				var new_node = A2(
 					_elm_lang$html$Html$span,
 					{ctor: '[]'},
 					A2(
 						_elm_lang$core$List$map,
-						function (_p12) {
-							var _p13 = _p12;
-							return A2(tag_word, _p13._1, _p13._0);
+						function (_p21) {
+							var _p22 = _p21;
+							return A2(tag_word, _p22._1, _p22._0);
 						},
-						items));
+						counted_words));
 				return {
 					ctor: '_Tuple2',
 					_0: A2(
 						_elm_lang$core$Basics_ops['++'],
-						_p17,
+						_p26,
 						{
 							ctor: '::',
 							_0: new_node,
 							_1: {ctor: '[]'}
 						}),
-					_1: new_occurrences
+					_1: token_occurrences
 				};
 			case 'Element':
-				var _p14 = A3(_user$project$Text_Section_Words_Tag$tagWordsToVDOMWithFreqs, tag_word, _p18, _p8._2);
-				var new_msgs = _p14._0;
-				var new_occurrences = _p14._1;
+				var _p23 = A4(_user$project$Text_Section_Words_Tag$tagWordsToVDOMWithFreqs, tag_word, is_part_of_compound_word, _p27, _p19._2);
+				var new_msgs = _p23._0;
+				var new_occurrences = _p23._1;
 				var new_node = A3(
 					_elm_lang$html$Html$node,
-					_p8._0,
+					_p19._0,
 					A2(
 						_elm_lang$core$List$map,
-						function (_p15) {
-							var _p16 = _p15;
-							return A2(_elm_lang$html$Html_Attributes$attribute, _p16._0, _p16._1);
+						function (_p24) {
+							var _p25 = _p24;
+							return A2(_elm_lang$html$Html_Attributes$attribute, _p25._0, _p25._1);
 						},
-						_p8._1),
+						_p19._1),
 					new_msgs);
 				return {
 					ctor: '_Tuple2',
 					_0: A2(
 						_elm_lang$core$Basics_ops['++'],
-						_p17,
+						_p26,
 						{
 							ctor: '::',
 							_0: new_node,
@@ -27766,21 +27871,21 @@ var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F3(
 					ctor: '_Tuple2',
 					_0: A2(
 						_elm_lang$core$Basics_ops['++'],
-						_p17,
+						_p26,
 						{
 							ctor: '::',
 							_0: _elm_lang$virtual_dom$VirtualDom$text(''),
 							_1: {ctor: '[]'}
 						}),
-					_1: _p18
+					_1: _p27
 				};
 		}
 	});
-var _user$project$Text_Section_Words_Tag$tagWordsToVDOMWithFreqs = F3(
-	function (tag_word, occurrences, nodes) {
+var _user$project$Text_Section_Words_Tag$tagWordsToVDOMWithFreqs = F4(
+	function (tag_word, is_part_of_compound_word, occurrences, nodes) {
 		return A3(
 			_elm_lang$core$List$foldl,
-			_user$project$Text_Section_Words_Tag$tagWordAndToVDOM(tag_word),
+			A2(_user$project$Text_Section_Words_Tag$tagWordAndToVDOM, tag_word, is_part_of_compound_word),
 			{
 				ctor: '_Tuple2',
 				_0: {ctor: '[]'},
@@ -27788,10 +27893,10 @@ var _user$project$Text_Section_Words_Tag$tagWordsToVDOMWithFreqs = F3(
 			},
 			nodes);
 	});
-var _user$project$Text_Section_Words_Tag$tagWordsAndToVDOM = F2(
-	function (tag_word, nodes) {
+var _user$project$Text_Section_Words_Tag$tagWordsAndToVDOM = F3(
+	function (tag_word, is_part_of_compound_word, nodes) {
 		return _elm_lang$core$Tuple$first(
-			A3(_user$project$Text_Section_Words_Tag$tagWordsToVDOMWithFreqs, tag_word, _elm_lang$core$Dict$empty, nodes));
+			A4(_user$project$Text_Section_Words_Tag$tagWordsToVDOMWithFreqs, tag_word, is_part_of_compound_word, _elm_lang$core$Dict$empty, nodes));
 	});
 
 var _user$project$Text_Translations_View$view_grammeme_as_string = function (_p0) {
@@ -28531,12 +28636,22 @@ var _user$project$Text_Translations_View$view_edit = F3(
 				_1: {ctor: '[]'}
 			});
 	});
+var _user$project$Text_Translations_View$is_part_of_compound_word = F3(
+	function (model, instance, word) {
+		var _p21 = A3(_user$project$Text_Translations_Model$getTextWord, model, instance, word);
+		if (_p21.ctor === 'Just') {
+			return _elm_lang$core$Maybe$Just(
+				{ctor: '_Tuple3', _0: 1, _1: 1, _2: 1});
+		} else {
+			return _elm_lang$core$Maybe$Nothing;
+		}
+	});
 var _user$project$Text_Translations_View$wordInstanceOnClick = F3(
 	function (model, parent_msg, word_instance) {
-		var _p21 = _user$project$Text_Translations_Model$isMergingWords(model);
-		if (_p21 === true) {
-			var _p22 = A2(_user$project$Text_Translations_Model$mergingWord, model, word_instance);
-			if (_p22 === true) {
+		var _p22 = _user$project$Text_Translations_Model$isMergingWords(model);
+		if (_p22 === true) {
+			var _p23 = A2(_user$project$Text_Translations_Model$mergingWord, model, word_instance);
+			if (_p23 === true) {
 				return _elm_lang$html$Html_Events$onClick(
 					parent_msg(
 						_user$project$Text_Translations_Msg$RemoveFromMergeWords(word_instance)));
@@ -28566,8 +28681,8 @@ var _user$project$Text_Translations_View$tagWord = F4(
 					_1: {ctor: '[]'}
 				}
 			});
-		var _p23 = _elm_lang$core$Native_Utils.eq(token, ' ');
-		if (_p23 === true) {
+		var _p24 = _elm_lang$core$Native_Utils.eq(token, ' ');
+		if (_p24 === true) {
 			return A2(
 				_elm_lang$html$Html$span,
 				{
@@ -28639,10 +28754,10 @@ var _user$project$Text_Translations_View$tagWord = F4(
 	});
 var _user$project$Text_Translations_View$view_translations = F2(
 	function (msg, translation_model) {
-		var _p24 = translation_model;
-		if (_p24.ctor === 'Just') {
-			var _p25 = _p24._0;
-			var sections = _elm_lang$core$Array$toList(_p25.text.sections);
+		var _p25 = translation_model;
+		if (_p25.ctor === 'Just') {
+			var _p26 = _p25._0;
+			var sections = _elm_lang$core$Array$toList(_p26.text.sections);
 			var text_body = A2(
 				_elm_lang$core$String$join,
 				' ',
@@ -28652,9 +28767,10 @@ var _user$project$Text_Translations_View$view_translations = F2(
 						return section.body;
 					},
 					sections));
-			var text_body_vdom = A2(
+			var text_body_vdom = A3(
 				_user$project$Text_Section_Words_Tag$tagWordsAndToVDOM,
-				A2(_user$project$Text_Translations_View$tagWord, _p25, msg),
+				A2(_user$project$Text_Translations_View$tagWord, _p26, msg),
+				_user$project$Text_Translations_View$is_part_of_compound_word(_p26),
 				_jinjor$elm_html_parser$HtmlParser$parse(text_body));
 			return A2(
 				_elm_lang$html$Html$div,

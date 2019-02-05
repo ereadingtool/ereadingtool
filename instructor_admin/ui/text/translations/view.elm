@@ -34,6 +34,16 @@ wordInstanceOnClick model parent_msg word_instance =
     False ->
       onClick (parent_msg (EditWord word_instance))
 
+is_part_of_compound_word : Model -> Int -> String -> Maybe (Int, Int, Int)
+is_part_of_compound_word model instance word =
+  case Text.Translations.Model.getTextWord model instance word of
+    Just text_word ->
+      -- TODO(andrew): TextWord needs optional group entries
+      Just (1, 1, 1)
+
+    Nothing ->
+      Nothing
+
 tagWord : Model -> (Msg -> msg) -> Int -> String -> Html msg
 tagWord model parent_msg instance token =
   let
@@ -329,7 +339,10 @@ view_translations msg translation_model =
       let
         sections = Array.toList model.text.sections
         text_body = String.join " " (List.map (\section -> section.body) sections)
-        text_body_vdom = Text.Section.Words.Tag.tagWordsAndToVDOM (tagWord model msg) (HtmlParser.parse text_body)
+
+        text_body_vdom =
+          Text.Section.Words.Tag.tagWordsAndToVDOM
+            (tagWord model msg) (is_part_of_compound_word model) (HtmlParser.parse text_body)
       in
         div [id "translations_tab"] text_body_vdom
 
