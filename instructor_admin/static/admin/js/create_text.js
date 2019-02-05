@@ -27684,8 +27684,8 @@ var _user$project$Text_Section_Words_Tag$maybeParseWordWithPunctuation = functio
 var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F3(
 	function (tag_word, node, _p6) {
 		var _p7 = _p6;
-		var _p16 = _p7._1;
-		var _p15 = _p7._0;
+		var _p18 = _p7._1;
+		var _p17 = _p7._0;
 		var _p8 = node;
 		switch (_p8.ctor) {
 			case 'Text':
@@ -27694,37 +27694,39 @@ var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F3(
 						_elm_lang$core$List$map,
 						_user$project$Text_Section_Words_Tag$maybeParseWordWithPunctuation,
 						_elm_lang$core$String$words(_p8._0)));
+				var _p9 = A2(_elm_lang$core$Debug$log, 'word_tokens', word_tokens);
 				var tokenized_text = A3(
 					_elm_lang$core$List$foldl,
 					_user$project$Text_Section_Words_Tag$intersperseWords,
 					{ctor: '[]'},
 					word_tokens);
-				var _p9 = A3(
+				var _p10 = A2(_elm_lang$core$Debug$log, 'tokenized text', tokenized_text);
+				var _p11 = A3(
 					_elm_lang$core$List$foldl,
 					_user$project$Text_Section_Words_Tag$countOccurrences,
 					{
 						ctor: '_Tuple2',
 						_0: {ctor: '[]'},
-						_1: _p16
+						_1: _p18
 					},
 					tokenized_text);
-				var items = _p9._0;
-				var new_occurrences = _p9._1;
+				var items = _p11._0;
+				var new_occurrences = _p11._1;
 				var new_node = A2(
 					_elm_lang$html$Html$span,
 					{ctor: '[]'},
 					A2(
 						_elm_lang$core$List$map,
-						function (_p10) {
-							var _p11 = _p10;
-							return A2(tag_word, _p11._1, _p11._0);
+						function (_p12) {
+							var _p13 = _p12;
+							return A2(tag_word, _p13._1, _p13._0);
 						},
 						items));
 				return {
 					ctor: '_Tuple2',
 					_0: A2(
 						_elm_lang$core$Basics_ops['++'],
-						_p15,
+						_p17,
 						{
 							ctor: '::',
 							_0: new_node,
@@ -27733,17 +27735,17 @@ var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F3(
 					_1: new_occurrences
 				};
 			case 'Element':
-				var _p12 = A3(_user$project$Text_Section_Words_Tag$tagWordsToVDOMWithFreqs, tag_word, _p16, _p8._2);
-				var new_msgs = _p12._0;
-				var new_occurrences = _p12._1;
+				var _p14 = A3(_user$project$Text_Section_Words_Tag$tagWordsToVDOMWithFreqs, tag_word, _p18, _p8._2);
+				var new_msgs = _p14._0;
+				var new_occurrences = _p14._1;
 				var new_node = A3(
 					_elm_lang$html$Html$node,
 					_p8._0,
 					A2(
 						_elm_lang$core$List$map,
-						function (_p13) {
-							var _p14 = _p13;
-							return A2(_elm_lang$html$Html_Attributes$attribute, _p14._0, _p14._1);
+						function (_p15) {
+							var _p16 = _p15;
+							return A2(_elm_lang$html$Html_Attributes$attribute, _p16._0, _p16._1);
 						},
 						_p8._1),
 					new_msgs);
@@ -27751,7 +27753,7 @@ var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F3(
 					ctor: '_Tuple2',
 					_0: A2(
 						_elm_lang$core$Basics_ops['++'],
-						_p15,
+						_p17,
 						{
 							ctor: '::',
 							_0: new_node,
@@ -27764,13 +27766,13 @@ var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F3(
 					ctor: '_Tuple2',
 					_0: A2(
 						_elm_lang$core$Basics_ops['++'],
-						_p15,
+						_p17,
 						{
 							ctor: '::',
 							_0: _elm_lang$virtual_dom$VirtualDom$text(''),
 							_1: {ctor: '[]'}
 						}),
-					_1: _p16
+					_1: _p18
 				};
 		}
 	});
