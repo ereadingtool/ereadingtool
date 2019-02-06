@@ -40,7 +40,7 @@ is_part_of_compound_word model instance word =
     Just text_word ->
       case text_word.group of
         Just group ->
-          Just (group.pos, group.instance, group.length)
+          Just (group.instance, group.pos, group.length)
 
         Nothing ->
           Nothing

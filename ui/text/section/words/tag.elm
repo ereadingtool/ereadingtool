@@ -36,16 +36,16 @@ maybeParseWordWithPunctuation str =
       _ ->
         [str]
 
-intersperseWordsWith : String -> String -> List String -> List String
-intersperseWordsWith str token tokens =
+intersperseWordsWith : String -> (String, Int) -> List (String, Int) -> List (String, Int)
+intersperseWordsWith str ((token, token_occurrence) as token_instance) tokens =
   case has_punctuation token of
     True ->
-      tokens ++ [token]
+      tokens ++ [token_instance]
 
     False ->
-      tokens ++ [str, token]
+      tokens ++ [(str, 0), token_instance]
 
-intersperseWithWhitespace : List String -> List String
+intersperseWithWhitespace : List (String, Int) -> List (String, Int)
 intersperseWithWhitespace word_tokens =
   List.foldl (intersperseWordsWith " ") [] word_tokens
 
@@ -71,19 +71,27 @@ parseCompoundWord :
   -> (List (String, Int), (Int, List String))
 parseCompoundWord is_part_of_compound_word (token, instance) (token_occurrences, (compound_index, compound_token)) =
   case is_part_of_compound_word instance token of
-    Just (pos, length, group_instance) ->
+    Just (group_instance, pos, compound_word_length) ->
       case pos == compound_index of
         True ->
-          if pos+1 == length then
+          let
+            _ = Debug.log "pos" pos
+            _ = Debug.log "compound_word_length" compound_word_length
+          in
+          if pos+1 == compound_word_length then
             let
               compound_word = String.join " " (compound_token ++ [token])
               compound_word_instance = (compound_word, group_instance)
+              _ = Debug.log "compound_word_instance" compound_word_instance
             in
               -- we're at the end of a compound word
               (token_occurrences ++ [compound_word_instance], (0, []))
           else
+            let
+              _ = Debug.log "compound_word_instance so far" (compound_token ++ [token])
+            in
             -- token is part of a compound word and is in the right position
-            (token_occurrences, (pos+1, compound_token ++ [token]))
+              (token_occurrences, (pos+1, compound_token ++ [token]))
 
         False ->
           -- token is part of a compound word but not the right position
@@ -115,11 +123,9 @@ tagWordAndToVDOM tag_word is_part_of_compound_word node (html, occurrences) =
              List.concat
           <| List.map maybeParseWordWithPunctuation (String.words str)
 
-        text_words = intersperseWithWhitespace word_tokens
+        (counted_occurrences, token_occurrences) = countOccurrences word_tokens occurrences
 
-        (counted_occurrences, token_occurrences) = countOccurrences text_words occurrences
-
-        counted_words = parseCompoundWords is_part_of_compound_word counted_occurrences
+        counted_words = intersperseWithWhitespace (parseCompoundWords is_part_of_compound_word counted_occurrences)
 
         _ = Debug.log "text words" counted_words
 

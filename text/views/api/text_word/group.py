@@ -47,7 +47,7 @@ class TextWordGroupAPIView(LoginRequiredMixin, View):
                 text_group_word = TextGroupWord.objects.create(group=text_group, word=text_word, order=i)
 
                 # avoids a call to refresh_db()
-                text_word[i].group_word = text_group_word
+                text_words[i].group_word = text_group_word
 
         resp['text_words'] = [text_word.to_dict() for text_word in text_words]
         resp['grouped'] = True
