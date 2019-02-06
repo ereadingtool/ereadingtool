@@ -74,22 +74,14 @@ parseCompoundWord is_part_of_compound_word (token, instance) (token_occurrences,
     Just (group_instance, pos, compound_word_length) ->
       case pos == compound_index of
         True ->
-          let
-            _ = Debug.log "pos" pos
-            _ = Debug.log "compound_word_length" compound_word_length
-          in
           if pos+1 == compound_word_length then
             let
               compound_word = String.join " " (compound_token ++ [token])
               compound_word_instance = (compound_word, group_instance)
-              _ = Debug.log "compound_word_instance" compound_word_instance
             in
               -- we're at the end of a compound word
               (token_occurrences ++ [compound_word_instance], (0, []))
           else
-            let
-              _ = Debug.log "compound_word_instance so far" (compound_token ++ [token])
-            in
             -- token is part of a compound word and is in the right position
               (token_occurrences, (pos+1, compound_token ++ [token]))
 
