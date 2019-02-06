@@ -38,8 +38,12 @@ is_part_of_compound_word : Model -> Int -> String -> Maybe (Int, Int, Int)
 is_part_of_compound_word model instance word =
   case Text.Translations.Model.getTextWord model instance word of
     Just text_word ->
-      -- TODO(andrew): TextWord needs optional group entries
-      Just (1, 1, 1)
+      case text_word.group of
+        Just group ->
+          Just (group.pos, group.instance, group.length)
+
+        Nothing ->
+          Nothing
 
     Nothing ->
       Nothing

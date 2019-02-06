@@ -21640,9 +21640,13 @@ var _user$project$Text_Model$TextWordTranslation = F3(
 	function (a, b, c) {
 		return {id: a, correct_for_context: b, text: c};
 	});
-var _user$project$Text_Model$TextWord = F5(
+var _user$project$Text_Model$TextGroup = F5(
 	function (a, b, c, d, e) {
-		return {id: a, instance: b, word: c, grammemes: d, translations: e};
+		return {id: a, instance: b, pos: c, length: d, translations: e};
+	});
+var _user$project$Text_Model$TextWord = F6(
+	function (a, b, c, d, e, f) {
+		return {id: a, instance: b, word: c, grammemes: d, translations: e, group: f};
 	});
 var _user$project$Text_Model$WordInstance = F4(
 	function (a, b, c, d) {
@@ -26175,6 +26179,28 @@ var _user$project$Text_Decode$textWordTranslationsDecoder = A3(
 			'id',
 			_elm_lang$core$Json_Decode$int,
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextWordTranslation))));
+var _user$project$Text_Decode$textGroupDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'translations',
+	_elm_lang$core$Json_Decode$nullable(
+		_elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textWordTranslationsDecoder)),
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'length',
+		_elm_lang$core$Json_Decode$int,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'pos',
+			_elm_lang$core$Json_Decode$int,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'instance',
+				_elm_lang$core$Json_Decode$int,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'id',
+					_elm_lang$core$Json_Decode$int,
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextGroup))))));
 var _user$project$Text_Decode$textTranslationAddRespDecoder = A4(
 	_elm_lang$core$Json_Decode$map3,
 	F3(
@@ -26335,26 +26361,30 @@ var _user$project$Text_Decode$textDecoder = A3(
 															_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$Text))))))))))))))));
 var _user$project$Text_Decode$textWordDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'translations',
-	_elm_lang$core$Json_Decode$nullable(
-		_elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textWordTranslationsDecoder)),
+	'group',
+	_elm_lang$core$Json_Decode$nullable(_user$project$Text_Decode$textGroupDecoder),
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'grammemes',
-		_user$project$Text_Decode$grammemesDecoder,
+		'translations',
+		_elm_lang$core$Json_Decode$nullable(
+			_elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textWordTranslationsDecoder)),
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'word',
-			_elm_lang$core$Json_Decode$string,
+			'grammemes',
+			_user$project$Text_Decode$grammemesDecoder,
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'instance',
-				_elm_lang$core$Json_Decode$int,
+				'word',
+				_elm_lang$core$Json_Decode$string,
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'id',
+					'instance',
 					_elm_lang$core$Json_Decode$int,
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextWord))))));
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'id',
+						_elm_lang$core$Json_Decode$int,
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextWord)))))));
 var _user$project$Text_Decode$textTranslationsDecoder = _elm_lang$core$Json_Decode$dict(
 	_elm_lang$core$Json_Decode$array(_user$project$Text_Decode$textWordDecoder));
 var _user$project$Text_Decode$textWordsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textWordDecoder);
@@ -28640,18 +28670,24 @@ var _user$project$Text_Translations_View$is_part_of_compound_word = F3(
 	function (model, instance, word) {
 		var _p21 = A3(_user$project$Text_Translations_Model$getTextWord, model, instance, word);
 		if (_p21.ctor === 'Just') {
-			return _elm_lang$core$Maybe$Just(
-				{ctor: '_Tuple3', _0: 1, _1: 1, _2: 1});
+			var _p22 = _p21._0.group;
+			if (_p22.ctor === 'Just') {
+				var _p23 = _p22._0;
+				return _elm_lang$core$Maybe$Just(
+					{ctor: '_Tuple3', _0: _p23.pos, _1: _p23.instance, _2: _p23.length});
+			} else {
+				return _elm_lang$core$Maybe$Nothing;
+			}
 		} else {
 			return _elm_lang$core$Maybe$Nothing;
 		}
 	});
 var _user$project$Text_Translations_View$wordInstanceOnClick = F3(
 	function (model, parent_msg, word_instance) {
-		var _p22 = _user$project$Text_Translations_Model$isMergingWords(model);
-		if (_p22 === true) {
-			var _p23 = A2(_user$project$Text_Translations_Model$mergingWord, model, word_instance);
-			if (_p23 === true) {
+		var _p24 = _user$project$Text_Translations_Model$isMergingWords(model);
+		if (_p24 === true) {
+			var _p25 = A2(_user$project$Text_Translations_Model$mergingWord, model, word_instance);
+			if (_p25 === true) {
 				return _elm_lang$html$Html_Events$onClick(
 					parent_msg(
 						_user$project$Text_Translations_Msg$RemoveFromMergeWords(word_instance)));
@@ -28681,8 +28717,8 @@ var _user$project$Text_Translations_View$tagWord = F4(
 					_1: {ctor: '[]'}
 				}
 			});
-		var _p24 = _elm_lang$core$Native_Utils.eq(token, ' ');
-		if (_p24 === true) {
+		var _p26 = _elm_lang$core$Native_Utils.eq(token, ' ');
+		if (_p26 === true) {
 			return A2(
 				_elm_lang$html$Html$span,
 				{
@@ -28754,10 +28790,10 @@ var _user$project$Text_Translations_View$tagWord = F4(
 	});
 var _user$project$Text_Translations_View$view_translations = F2(
 	function (msg, translation_model) {
-		var _p25 = translation_model;
-		if (_p25.ctor === 'Just') {
-			var _p26 = _p25._0;
-			var sections = _elm_lang$core$Array$toList(_p26.text.sections);
+		var _p27 = translation_model;
+		if (_p27.ctor === 'Just') {
+			var _p28 = _p27._0;
+			var sections = _elm_lang$core$Array$toList(_p28.text.sections);
 			var text_body = A2(
 				_elm_lang$core$String$join,
 				' ',
@@ -28769,8 +28805,8 @@ var _user$project$Text_Translations_View$view_translations = F2(
 					sections));
 			var text_body_vdom = A3(
 				_user$project$Text_Section_Words_Tag$tagWordsAndToVDOM,
-				A2(_user$project$Text_Translations_View$tagWord, _p26, msg),
-				_user$project$Text_Translations_View$is_part_of_compound_word(_p26),
+				A2(_user$project$Text_Translations_View$tagWord, _p28, msg),
+				_user$project$Text_Translations_View$is_part_of_compound_word(_p28),
 				_jinjor$elm_html_parser$HtmlParser$parse(text_body));
 			return A2(
 				_elm_lang$html$Html$div,

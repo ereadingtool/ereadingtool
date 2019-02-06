@@ -4,7 +4,7 @@ from text.translations.models import TextWord
 
 
 class TextWordGroup(models.Model):
-    pass
+    instance = models.IntegerField(default=0)
 
 
 class TextGroupWord(models.Model):

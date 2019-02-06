@@ -158,6 +158,15 @@ textWordsDecoder : Decode.Decoder (List Text.Model.TextWord)
 textWordsDecoder =
   Decode.list textWordDecoder
 
+textGroupDecoder : Decode.Decoder Text.Model.TextGroup
+textGroupDecoder =
+  decode Text.Model.TextGroup
+    |> required "id" Decode.int
+    |> required "instance" Decode.int
+    |> required "pos" Decode.int
+    |> required "length" Decode.int
+    |> required "translations" (Decode.nullable (Decode.list textWordTranslationsDecoder))
+
 textWordDecoder : Decode.Decoder Text.Model.TextWord
 textWordDecoder =
   decode Text.Model.TextWord
@@ -166,6 +175,7 @@ textWordDecoder =
     |> required "word" Decode.string
     |> required "grammemes" grammemesDecoder
     |> required "translations" (Decode.nullable (Decode.list textWordTranslationsDecoder))
+    |> required "group" (Decode.nullable textGroupDecoder)
 
 textWordMergeDecoder : Decode.Decoder TextWordMergeResp
 textWordMergeDecoder =

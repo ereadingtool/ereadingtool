@@ -87,15 +87,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
             for text_word in section.translated_words.all():
                 words.setdefault(text_word.word, [])
 
-                words[text_word.word].append({
-                    'id': text_word.pk,
-                    # word.instance is the word instance within a particular section
-                    'instance': text_word.instance,
-                    'word': text_word.word,
-                    'grammemes': text_word.grammemes,
-                    'translations': [translation.to_dict() for translation in
-                                     text_word.translations.all()] or None
-                })
+                words[text_word.word].append(text_word.to_translations_dict())
 
         return words
 

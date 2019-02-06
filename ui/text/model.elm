@@ -22,12 +22,21 @@ type alias TextWordTranslation = {
  , text: String
  }
 
+type alias TextGroup = {
+    id: Int
+  , instance: Int
+  , pos: Int
+  , length: Int
+  , translations: Maybe (List TextWordTranslation)
+  }
+
 type alias TextWord = {
    id: Int
  , instance : Int
  , word: Word
  , grammemes: Grammemes
  , translations: Maybe (List TextWordTranslation)
+ , group: Maybe TextGroup
  }
 
 type alias WordInstance = {id: String, instance: Int, word: String, text_word: Maybe TextWord}

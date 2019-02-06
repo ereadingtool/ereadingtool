@@ -51,6 +51,32 @@ class TextWord(models.Model):
             } if self.group_word else None
         }
 
+    def to_translations_dict(self):
+        translation_dict = {
+            'id': self.pk,
+            # word.instance is the word instance within a particular section
+            'instance': self.instance,
+            'word': self.word,
+            'grammemes': self.grammemes,
+            'translations': [translation.to_dict() for translation in
+                             self.translations.all()] or None,
+            'group': None
+        }
+
+        try:
+            translation_dict['group'] = {
+                'id': self.group_word.group.pk,
+                'instance': self.group_word.group.instance,
+                'pos': self.group_word.order,
+                'length': self.group_word.group.components.count(),
+                'translations': [translation.to_dict() for translation in
+                                 self.group_word.group.translations.all()] or None
+            }
+        except models.ObjectDoesNotExist:
+            pass
+
+        return translation_dict
+
     @classmethod
     def create(cls, **params) -> 'TextWord':
         params['text_section'] = TextSection.objects.get(pk=params['text_section'])
