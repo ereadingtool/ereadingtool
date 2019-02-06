@@ -27635,11 +27635,12 @@ var _user$project$Text_Tags_View$view_tags = F5(
 var _user$project$Text_Section_Words_Tag$parseCompoundWord = F3(
 	function (is_part_of_compound_word, _p1, _p0) {
 		var _p2 = _p1;
-		var _p9 = _p2._0;
+		var _p10 = _p2._0;
+		var _p9 = _p2._1;
 		var _p3 = _p0;
 		var _p8 = _p3._0;
 		var _p7 = _p3._1._1;
-		var _p4 = A2(is_part_of_compound_word, _p2._1, _p9);
+		var _p4 = A2(is_part_of_compound_word, _p9, _p10);
 		if (_p4.ctor === 'Just') {
 			var _p6 = _p4._0._0;
 			var _p5 = _elm_lang$core$Native_Utils.eq(_p6, _p3._1._0);
@@ -27653,7 +27654,7 @@ var _user$project$Text_Section_Words_Tag$parseCompoundWord = F3(
 							_p7,
 							{
 								ctor: '::',
-								_0: _p9,
+								_0: _p10,
 								_1: {ctor: '[]'}
 							}));
 					var compound_word_instance = {ctor: '_Tuple2', _0: compound_word, _1: _p4._0._2};
@@ -27685,7 +27686,7 @@ var _user$project$Text_Section_Words_Tag$parseCompoundWord = F3(
 								_p7,
 								{
 									ctor: '::',
-									_0: _p9,
+									_0: _p10,
 									_1: {ctor: '[]'}
 								})
 						}
@@ -27694,7 +27695,14 @@ var _user$project$Text_Section_Words_Tag$parseCompoundWord = F3(
 			} else {
 				return {
 					ctor: '_Tuple2',
-					_0: _p8,
+					_0: A2(
+						_elm_lang$core$Basics_ops['++'],
+						_p8,
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: _p10, _1: _p9},
+							_1: {ctor: '[]'}
+						}),
 					_1: {
 						ctor: '_Tuple2',
 						_0: 0,
@@ -27705,7 +27713,14 @@ var _user$project$Text_Section_Words_Tag$parseCompoundWord = F3(
 		} else {
 			return {
 				ctor: '_Tuple2',
-				_0: _p8,
+				_0: A2(
+					_elm_lang$core$Basics_ops['++'],
+					_p8,
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: _p10, _1: _p9},
+						_1: {ctor: '[]'}
+					}),
 				_1: {
 					ctor: '_Tuple2',
 					_0: 0,
@@ -27716,7 +27731,7 @@ var _user$project$Text_Section_Words_Tag$parseCompoundWord = F3(
 	});
 var _user$project$Text_Section_Words_Tag$parseCompoundWords = F2(
 	function (is_part_of_compound_word, token_occurrences) {
-		var _p10 = A3(
+		var _p11 = A3(
 			_elm_lang$core$List$foldl,
 			_user$project$Text_Section_Words_Tag$parseCompoundWord(is_part_of_compound_word),
 			{
@@ -27729,28 +27744,28 @@ var _user$project$Text_Section_Words_Tag$parseCompoundWords = F2(
 				}
 			},
 			token_occurrences);
-		var token_occurrences_with_compound_words = _p10._0;
+		var token_occurrences_with_compound_words = _p11._0;
 		return token_occurrences_with_compound_words;
 	});
 var _user$project$Text_Section_Words_Tag$countOccurrence = F2(
-	function (token, _p11) {
-		var _p12 = _p11;
-		var _p13 = _p12._1;
+	function (token, _p12) {
+		var _p13 = _p12;
+		var _p14 = _p13._1;
 		var normalized_token = _elm_lang$core$String$toLower(token);
 		var num_of_prev_occurrences = A2(
 			_elm_lang$core$Maybe$withDefault,
 			-1,
-			A2(_elm_lang$core$Dict$get, normalized_token, _p13));
+			A2(_elm_lang$core$Dict$get, normalized_token, _p14));
 		var instance = num_of_prev_occurrences + 1;
 		var new_tokens = A2(
 			_elm_lang$core$Basics_ops['++'],
-			_p12._0,
+			_p13._0,
 			{
 				ctor: '::',
 				_0: {ctor: '_Tuple2', _0: token, _1: instance},
 				_1: {ctor: '[]'}
 			});
-		var new_occurrences = A3(_elm_lang$core$Dict$insert, normalized_token, instance, _p13);
+		var new_occurrences = A3(_elm_lang$core$Dict$insert, normalized_token, instance, _p14);
 		return {ctor: '_Tuple2', _0: new_tokens, _1: new_occurrences};
 	});
 var _user$project$Text_Section_Words_Tag$countOccurrences = F2(
@@ -27769,8 +27784,8 @@ var _user$project$Text_Section_Words_Tag$punctuation_re = _elm_lang$core$Regex$r
 var _user$project$Text_Section_Words_Tag$has_punctuation = _elm_lang$core$Regex$contains(_user$project$Text_Section_Words_Tag$punctuation_re);
 var _user$project$Text_Section_Words_Tag$intersperseWordsWith = F3(
 	function (str, token, tokens) {
-		var _p14 = _user$project$Text_Section_Words_Tag$has_punctuation(token);
-		if (_p14 === true) {
+		var _p15 = _user$project$Text_Section_Words_Tag$has_punctuation(token);
+		if (_p15 === true) {
 			return A2(
 				_elm_lang$core$Basics_ops['++'],
 				tokens,
@@ -27807,11 +27822,11 @@ var _user$project$Text_Section_Words_Tag$maybeParseWordWithPunctuation = functio
 		_elm_lang$core$Regex$AtMost(1),
 		_user$project$Text_Section_Words_Tag$punctuation_re,
 		str);
-	var _p15 = matches;
-	if ((_p15.ctor === '::') && (_p15._1.ctor === '[]')) {
-		var _p16 = _p15._0;
-		var word = A3(_elm_lang$core$String$slice, 0, _p16.index, str);
-		var punctuation_char = A3(_elm_lang$core$String$slice, _p16.index, _p16.index + 1, str);
+	var _p16 = matches;
+	if ((_p16.ctor === '::') && (_p16._1.ctor === '[]')) {
+		var _p17 = _p16._0;
+		var word = A3(_elm_lang$core$String$slice, 0, _p17.index, str);
+		var punctuation_char = A3(_elm_lang$core$String$slice, _p17.index, _p17.index + 1, str);
 		return {
 			ctor: '::',
 			_0: word,
@@ -27830,38 +27845,39 @@ var _user$project$Text_Section_Words_Tag$maybeParseWordWithPunctuation = functio
 	}
 };
 var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F4(
-	function (tag_word, is_part_of_compound_word, node, _p17) {
-		var _p18 = _p17;
-		var _p27 = _p18._1;
-		var _p26 = _p18._0;
-		var _p19 = node;
-		switch (_p19.ctor) {
+	function (tag_word, is_part_of_compound_word, node, _p18) {
+		var _p19 = _p18;
+		var _p29 = _p19._1;
+		var _p28 = _p19._0;
+		var _p20 = node;
+		switch (_p20.ctor) {
 			case 'Text':
 				var word_tokens = _elm_lang$core$List$concat(
 					A2(
 						_elm_lang$core$List$map,
 						_user$project$Text_Section_Words_Tag$maybeParseWordWithPunctuation,
-						_elm_lang$core$String$words(_p19._0)));
+						_elm_lang$core$String$words(_p20._0)));
 				var text_words = _user$project$Text_Section_Words_Tag$intersperseWithWhitespace(word_tokens);
-				var _p20 = A2(_user$project$Text_Section_Words_Tag$countOccurrences, text_words, _p27);
-				var counted_occurrences = _p20._0;
-				var token_occurrences = _p20._1;
+				var _p21 = A2(_user$project$Text_Section_Words_Tag$countOccurrences, text_words, _p29);
+				var counted_occurrences = _p21._0;
+				var token_occurrences = _p21._1;
 				var counted_words = A2(_user$project$Text_Section_Words_Tag$parseCompoundWords, is_part_of_compound_word, counted_occurrences);
+				var _p22 = A2(_elm_lang$core$Debug$log, 'text words', counted_words);
 				var new_node = A2(
 					_elm_lang$html$Html$span,
 					{ctor: '[]'},
 					A2(
 						_elm_lang$core$List$map,
-						function (_p21) {
-							var _p22 = _p21;
-							return A2(tag_word, _p22._1, _p22._0);
+						function (_p23) {
+							var _p24 = _p23;
+							return A2(tag_word, _p24._1, _p24._0);
 						},
 						counted_words));
 				return {
 					ctor: '_Tuple2',
 					_0: A2(
 						_elm_lang$core$Basics_ops['++'],
-						_p26,
+						_p28,
 						{
 							ctor: '::',
 							_0: new_node,
@@ -27870,25 +27886,25 @@ var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F4(
 					_1: token_occurrences
 				};
 			case 'Element':
-				var _p23 = A4(_user$project$Text_Section_Words_Tag$tagWordsToVDOMWithFreqs, tag_word, is_part_of_compound_word, _p27, _p19._2);
-				var new_msgs = _p23._0;
-				var new_occurrences = _p23._1;
+				var _p25 = A4(_user$project$Text_Section_Words_Tag$tagWordsToVDOMWithFreqs, tag_word, is_part_of_compound_word, _p29, _p20._2);
+				var new_msgs = _p25._0;
+				var new_occurrences = _p25._1;
 				var new_node = A3(
 					_elm_lang$html$Html$node,
-					_p19._0,
+					_p20._0,
 					A2(
 						_elm_lang$core$List$map,
-						function (_p24) {
-							var _p25 = _p24;
-							return A2(_elm_lang$html$Html_Attributes$attribute, _p25._0, _p25._1);
+						function (_p26) {
+							var _p27 = _p26;
+							return A2(_elm_lang$html$Html_Attributes$attribute, _p27._0, _p27._1);
 						},
-						_p19._1),
+						_p20._1),
 					new_msgs);
 				return {
 					ctor: '_Tuple2',
 					_0: A2(
 						_elm_lang$core$Basics_ops['++'],
-						_p26,
+						_p28,
 						{
 							ctor: '::',
 							_0: new_node,
@@ -27901,13 +27917,13 @@ var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F4(
 					ctor: '_Tuple2',
 					_0: A2(
 						_elm_lang$core$Basics_ops['++'],
-						_p26,
+						_p28,
 						{
 							ctor: '::',
 							_0: _elm_lang$virtual_dom$VirtualDom$text(''),
 							_1: {ctor: '[]'}
 						}),
-					_1: _p27
+					_1: _p29
 				};
 		}
 	});

@@ -87,11 +87,11 @@ parseCompoundWord is_part_of_compound_word (token, instance) (token_occurrences,
 
         False ->
           -- token is part of a compound word but not the right position
-          (token_occurrences, (0, []))
+          (token_occurrences ++ [(token, instance)], (0, []))
 
     Nothing ->
       -- regular word
-      (token_occurrences, (0, []))
+      (token_occurrences ++ [(token, instance)], (0, []))
 
 parseCompoundWords : (Int -> String -> Maybe (Int, Int, Int)) -> List (String, Int) -> List (String, Int)
 parseCompoundWords is_part_of_compound_word token_occurrences =
@@ -120,6 +120,8 @@ tagWordAndToVDOM tag_word is_part_of_compound_word node (html, occurrences) =
         (counted_occurrences, token_occurrences) = countOccurrences text_words occurrences
 
         counted_words = parseCompoundWords is_part_of_compound_word counted_occurrences
+
+        _ = Debug.log "text words" counted_words
 
         new_node = span [] (List.map (\(token, instance) -> tag_word instance token) counted_words)
       in
