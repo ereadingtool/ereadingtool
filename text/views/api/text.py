@@ -291,10 +291,10 @@ class TextAPIView(LoginRequiredMixin, View):
             return unread_text_queryset_for_user
 
         if 'read' in statuses:
-            status_filters.append(models.Q(num_of_complete__gte=1))
+            status_filters.append(models.Q(num_of_complete__gte=1) & models.Q(num_of_in_progress=0))
 
         if 'in_progress' in statuses:
-            status_filters.append(models.Q(num_of_in_progress__gte=1))
+            status_filters.append(models.Q(num_of_in_progress__gte=1) & models.Q(num_of_complete=0))
 
         status_filter = or_filters(status_filters)
 
