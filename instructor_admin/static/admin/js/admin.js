@@ -10529,21 +10529,21 @@ var _user$project$Text_Model$WordValues = F2(
 	function (a, b) {
 		return {grammemes: a, translations: b};
 	});
-var _user$project$Text_Model$TextWordTranslation = F3(
+var _user$project$Text_Model$Translation = F3(
 	function (a, b, c) {
 		return {id: a, correct_for_context: b, text: c};
 	});
-var _user$project$Text_Model$TextGroup = F5(
+var _user$project$Text_Model$TextWordGroup = F5(
 	function (a, b, c, d, e) {
-		return {id: a, instance: b, pos: c, length: d, translations: e};
+		return {id: a, instance: b, word: c, grammemes: d, translations: e};
+	});
+var _user$project$Text_Model$TextGroupDetails = F4(
+	function (a, b, c, d) {
+		return {id: a, instance: b, pos: c, length: d};
 	});
 var _user$project$Text_Model$TextWord = F6(
 	function (a, b, c, d, e, f) {
 		return {id: a, instance: b, word: c, grammemes: d, translations: e, group: f};
-	});
-var _user$project$Text_Model$WordInstance = F4(
-	function (a, b, c, d) {
-		return {id: a, instance: b, word: c, text_word: d};
 	});
 var _user$project$Text_Model$Text = function (a) {
 	return function (b) {
@@ -10606,6 +10606,12 @@ var _user$project$Text_Model$TextListItem = function (a) {
 			};
 		};
 	};
+};
+var _user$project$Text_Model$CompoundWordTranslation = function (a) {
+	return {ctor: 'CompoundWordTranslation', _0: a};
+};
+var _user$project$Text_Model$WordTranslation = function (a) {
+	return {ctor: 'WordTranslation', _0: a};
 };
 
 var _user$project$Student_Profile$logout = F3(
@@ -11027,6 +11033,23 @@ var _user$project$Text_Decode$decodeRespErrors = function (str) {
 			_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string)),
 		str);
 };
+var _user$project$Text_Decode$textGroupDetailsDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'length',
+	_elm_lang$core$Json_Decode$int,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'pos',
+		_elm_lang$core$Json_Decode$int,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'instance',
+			_elm_lang$core$Json_Decode$int,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'id',
+				_elm_lang$core$Json_Decode$int,
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextGroupDetails)))));
 var _user$project$Text_Decode$textWordTranslationsDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'text',
@@ -11039,29 +11062,7 @@ var _user$project$Text_Decode$textWordTranslationsDecoder = A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 			'id',
 			_elm_lang$core$Json_Decode$int,
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextWordTranslation))));
-var _user$project$Text_Decode$textGroupDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'translations',
-	_elm_lang$core$Json_Decode$nullable(
-		_elm_lang$core$Json_Decode$list(_user$project$Text_Decode$textWordTranslationsDecoder)),
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'length',
-		_elm_lang$core$Json_Decode$int,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'pos',
-			_elm_lang$core$Json_Decode$int,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'instance',
-				_elm_lang$core$Json_Decode$int,
-				A3(
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'id',
-					_elm_lang$core$Json_Decode$int,
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$TextGroup))))));
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Model$Translation))));
 var _user$project$Text_Decode$textTranslationAddRespDecoder = A4(
 	_elm_lang$core$Json_Decode$map3,
 	F3(
@@ -11223,7 +11224,7 @@ var _user$project$Text_Decode$textDecoder = A3(
 var _user$project$Text_Decode$textWordDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'group',
-	_elm_lang$core$Json_Decode$nullable(_user$project$Text_Decode$textGroupDecoder),
+	_elm_lang$core$Json_Decode$nullable(_user$project$Text_Decode$textGroupDetailsDecoder),
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'translations',

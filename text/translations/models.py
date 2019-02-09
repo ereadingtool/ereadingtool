@@ -68,9 +68,7 @@ class TextWord(models.Model):
                 'id': self.group_word.group.pk,
                 'instance': self.group_word.group.instance,
                 'pos': self.group_word.order,
-                'length': self.group_word.group.components.count(),
-                'translations': [translation.to_dict() for translation in
-                                 self.group_word.group.translations.all()] or None
+                'length': self.group_word.group.components.count()
             }
         except models.ObjectDoesNotExist:
             pass

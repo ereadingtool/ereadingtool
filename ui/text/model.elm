@@ -2,7 +2,8 @@ module Text.Model exposing (..)
 
 import Text.Section.Model exposing (emptyTextSection)
 
-import Text.Translations exposing (Word, Translation)
+import Text.Translations exposing (..)
+
 
 import Dict exposing (Dict)
 import Date exposing (Date)
@@ -14,32 +15,27 @@ type alias Grammemes = Dict String (Maybe String)
 
 type alias WordValues = {
     grammemes: Grammemes
-  , translations: Maybe (List Text.Translations.Translation) }
+  , translations: Maybe (List String) }
 
-type alias TextWordTranslation = {
+type alias Translation = {
    id: Int
  , correct_for_context: Bool
  , text: String
  }
 
-type alias TextGroup = {
+type alias TextGroupDetails = {
     id: Int
   , instance: Int
   , pos: Int
   , length: Int
-  , translations: Maybe (List TextWordTranslation)
   }
 
-type alias TextWord = {
-   id: Int
- , instance : Int
- , word: Word
- , grammemes: Grammemes
- , translations: Maybe (List TextWordTranslation)
- , group: Maybe TextGroup
- }
+type alias Translations = List Translation
 
-type alias WordInstance = {id: String, instance: Int, word: String, text_word: Maybe TextWord}
+type Word = Word (Maybe TextGroupDetails) | CompoundWord
+
+type TextWord = TextWord Id Instance Phrase Grammemes (Maybe Translations) Word
+
 type alias Words = Dict Word WordValues
 type alias TextWords = Dict Word TextWord
 

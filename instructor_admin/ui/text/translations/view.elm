@@ -15,11 +15,13 @@ import Text.Section.Words.Tag
 
 import Text.Model
 
+import Text.Translations.Word.Instance exposing (WordInstance)
+
 import VirtualDom
 import HtmlParser
 
 
-wordInstanceOnClick : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html.Attribute msg
+wordInstanceOnClick : Model -> (Msg -> msg) -> WordInstance -> Html.Attribute msg
 wordInstanceOnClick model parent_msg word_instance =
   case Text.Translations.Model.isMergingWords model of
     -- subsequent clicks on word instances will add them to the list of words to be merged
@@ -36,7 +38,7 @@ wordInstanceOnClick model parent_msg word_instance =
 
 is_part_of_compound_word : Model -> Int -> String -> Maybe (Int, Int, Int)
 is_part_of_compound_word model instance word =
-  case Text.Translations.Model.getTextWord model instance word of
+  case Text.Translations.Model.getTranslatedWord model instance word of
     Just text_word ->
       case text_word.group of
         Just group ->
@@ -52,7 +54,6 @@ tagWord : Model -> (Msg -> msg) -> Int -> String -> Html msg
 tagWord model parent_msg instance token =
   let
     id = String.join "_" [toString instance, token]
-    normalized_token = String.toLower token
   in
     case token == " " of
       True ->
@@ -60,8 +61,7 @@ tagWord model parent_msg instance token =
 
       False ->
         let
-          text_word = Text.Translations.Model.getTextWord model instance normalized_token
-          word_instance = {id=id, instance=instance, word=token, text_word=text_word}
+          word_instance = Text.Translations.Model.newWordInstance model id instance token
 
           editing_word = Text.Translations.Model.editingWord model token
           merging_word = Text.Translations.Model.mergingWord model word_instance
@@ -82,7 +82,7 @@ tagWord model parent_msg instance token =
           , view_edit model parent_msg word_instance
           ]
 
-view_edit : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html msg
+view_edit : Model -> (Msg -> msg) -> WordInstance -> Html msg
 view_edit model parent_msg word_instance =
   let
     editing_word = Text.Translations.Model.editingWordInstance model word_instance
@@ -97,7 +97,7 @@ view_edit model parent_msg word_instance =
       ]
     ]
 
-view_btns : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html msg
+view_btns : Model -> (Msg -> msg) -> WordInstance -> Html msg
 view_btns model parent_msg word_instance =
   let
     normalized_word = String.toLower word_instance.word
@@ -108,7 +108,7 @@ view_btns model parent_msg word_instance =
     , view_delete_text_word parent_msg word_instance
     ] ++ (if instance_count > 1 then [view_match_translations parent_msg word_instance] else [])
 
-view_make_compound_text_word_on_click : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html.Attribute msg
+view_make_compound_text_word_on_click : Model -> (Msg -> msg) -> WordInstance -> Html.Attribute msg
 view_make_compound_text_word_on_click model parent_msg word_instance =
   case (Text.Translations.Model.mergeState model word_instance) of
     Just merge_state ->
@@ -122,7 +122,7 @@ view_make_compound_text_word_on_click model parent_msg word_instance =
     Nothing ->
       onClick (parent_msg (AddToMergeWords word_instance))
 
-view_make_compound_text_word : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html msg
+view_make_compound_text_word : Model -> (Msg -> msg) -> WordInstance -> Html msg
 view_make_compound_text_word model parent_msg word_instance =
   let
     merge_state = Text.Translations.Model.mergeState model word_instance
@@ -153,7 +153,7 @@ view_make_compound_text_word model parent_msg word_instance =
         Nothing ->
           [])
 
-view_delete_text_word : (Msg -> msg) -> Text.Model.WordInstance -> Html msg
+view_delete_text_word : (Msg -> msg) -> WordInstance -> Html msg
 view_delete_text_word parent_msg word_instance =
   div [class "text-word-option"]
     (case word_instance.text_word of
@@ -184,7 +184,7 @@ view_correct_for_context correct =
     False ->
       []
 
-view_add_as_text_word : (Msg -> msg) -> Text.Model.WordInstance -> Html msg
+view_add_as_text_word : (Msg -> msg) -> WordInstance -> Html msg
 view_add_as_text_word msg word_instance =
   div [class "add_as_text_word"] [
     div [] [
@@ -220,7 +220,7 @@ view_add_translation msg text_word =
     ]
   ]
 
-view_translation_delete : (Msg -> msg) -> Text.Model.TextWord -> Text.Model.TextWordTranslation -> Html msg
+view_translation_delete : (Msg -> msg) -> Text.Model.TextWord -> Text.Model.Translation -> Html msg
 view_translation_delete msg text_word translation =
   div [class "translation_delete"] [
       Html.img [
@@ -231,7 +231,7 @@ view_translation_delete msg text_word translation =
       , onClick (msg (DeleteTranslation text_word translation))] []
     ]
 
-view_text_word_translation : (Msg -> msg) -> Text.Model.TextWord -> Text.Model.TextWordTranslation -> Html msg
+view_text_word_translation : (Msg -> msg) -> Text.Model.TextWord -> Text.Model.Translation -> Html msg
 view_text_word_translation msg text_word translation =
   div [classList [("translation", True)]] [
     div [ classList [("editable", True), ("phrase", True)]
@@ -249,13 +249,13 @@ view_exit_btn =
     , class "cursor"
     ] []
 
-view_overlay_close_btn : (Msg -> msg) -> Text.Model.WordInstance -> Html msg
+view_overlay_close_btn : (Msg -> msg) -> WordInstance -> Html msg
 view_overlay_close_btn parent_msg word_instance =
   div [class "edit_overlay_close_btn", onClick (parent_msg (CloseEditWord word_instance))] [
     view_exit_btn
   ]
 
-view_instance_word : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html msg
+view_instance_word : Model -> (Msg -> msg) -> WordInstance -> Html msg
 view_instance_word model msg word_instance =
   let
     word_txt =
@@ -276,7 +276,7 @@ view_instance_word model msg word_instance =
       Html.text word_txt
     ]
 
-view_word_instance : Model -> (Msg -> msg) -> Text.Model.WordInstance -> Html msg
+view_word_instance : Model -> (Msg -> msg) -> WordInstance -> Html msg
 view_word_instance model msg word_instance =
   div [class "word_instance"] <| [
     view_instance_word model msg word_instance
@@ -295,7 +295,7 @@ view_word_instance model msg word_instance =
         Nothing ->
           [view_add_as_text_word msg word_instance])
 
-view_match_translations : (Msg -> msg) -> Text.Model.WordInstance -> Html msg
+view_match_translations : (Msg -> msg) -> WordInstance -> Html msg
 view_match_translations parent_msg word_instance =
   div [class "text-word-option"] [
     div [ attribute "title" "Use these translations across all instances of this word"

@@ -89,6 +89,17 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
 
                 words[text_word.word].append(text_word.to_translations_dict())
 
+                try:
+                    group = text_word.group_word.group
+
+                    if group.phrase not in words:
+                        words.setdefault(group.phrase, [])
+
+                        words[group.phrase][group.instance] = group.to_translations_dict()
+
+                except models.ObjectDoesNotExist:
+                    pass
+
         return words
 
     @classmethod

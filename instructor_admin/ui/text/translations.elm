@@ -5,9 +5,12 @@ import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardc
 
 import Dict exposing (Dict)
 
+type alias Id = String
+type alias Instance = Int
+type alias Phrase = String
 type alias Word = String
+type alias Token = String
 type alias Meaning = String
-type alias Translation = String
 
 type alias Grammemes = {
     pos: Maybe String
@@ -16,7 +19,7 @@ type alias Grammemes = {
   , form: Maybe String
   , mood: Maybe String }
 
-type alias TextWord = {word: Word, grammemes: Grammemes, translation: Maybe Translation}
+type alias TextWord = {word: Word, grammemes: Grammemes, translation: Maybe String}
 
 type alias Flashcards = Dict Word TextWord
 

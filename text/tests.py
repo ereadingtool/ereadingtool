@@ -312,7 +312,7 @@ class TestText(TestUser, TestCase):
 
         text['unread'] = self.create_text(diff_data={'title': 'unread', 'tags': ['Science/Technology']})
 
-        def test_status(statuses, expected_texts: List, addl_filters: List[Tuple]=None):
+        def test_status(statuses, expected_texts: List, addl_filters: List[Tuple] = None):
             if addl_filters is None:
                 addl_filters = list()
 

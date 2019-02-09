@@ -28,7 +28,7 @@ textEncoder text =
             _ -> []))
     ] ++ conclusion
 
-textTranslationEncoder : Text.Model.TextWordTranslation -> Encode.Value
+textTranslationEncoder : Text.Model.Translation -> Encode.Value
 textTranslationEncoder text_translation =
   Encode.object [
     ("id", Encode.int text_translation.id)
@@ -36,7 +36,7 @@ textTranslationEncoder text_translation =
   , ("correct_for_context", Encode.bool text_translation.correct_for_context)
   ]
 
-textTranslationsMergeEncoder : List Text.Model.TextWordTranslation -> List Text.Model.TextWord -> Encode.Value
+textTranslationsMergeEncoder : List Text.Model.Translation -> List Text.Model.TextWord -> Encode.Value
 textTranslationsMergeEncoder text_word_translations text_words =
   Encode.object [
     ("text_word_ids", Encode.list <| List.map (\tw -> Encode.int tw.id) text_words)
@@ -49,11 +49,11 @@ textTranslationsMergeEncoder text_word_translations text_words =
           ]) text_word_translations)
   ]
 
-textTranslationsEncoder : List Text.Model.TextWordTranslation -> Encode.Value
+textTranslationsEncoder : List Text.Model.Translation -> Encode.Value
 textTranslationsEncoder text_translations =
   Encode.list (List.map textTranslationEncoder text_translations)
 
-textTranslationAsCorrectEncoder : Text.Model.TextWordTranslation -> Encode.Value
+textTranslationAsCorrectEncoder : Text.Model.Translation -> Encode.Value
 textTranslationAsCorrectEncoder text_translation =
   Encode.object [
     ("id", Encode.int text_translation.id)

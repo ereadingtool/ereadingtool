@@ -7,28 +7,30 @@ import Array exposing (Array)
 import Text.Model
 import Text.Translations
 
+import Text.Translations.Word.Instance exposing (WordInstance)
+
 import Text.Decode
 
 
 type Msg =
   -- action msgs
   -- merges
-    AddToMergeWords Text.Model.WordInstance
-  | RemoveFromMergeWords Text.Model.WordInstance
-  | MergeWords (List Text.Model.WordInstance)
+    AddToMergeWords WordInstance
+  | RemoveFromMergeWords WordInstance
+  | MergeWords (List WordInstance)
 
   -- words
-  | AddTextWord Text.Model.WordInstance
-  | EditWord Text.Model.WordInstance
-  | CloseEditWord Text.Model.WordInstance
+  | AddTextWord WordInstance
+  | EditWord WordInstance
+  | CloseEditWord WordInstance
   | DeleteTextWord Text.Model.TextWord
 
   -- translations
-  | MakeCorrectForContext Text.Model.TextWordTranslation
+  | MakeCorrectForContext Text.Model.Translation
   | UpdateNewTranslationForTextWord Text.Model.TextWord String
   | SubmitNewTranslationForTextWord Text.Model.TextWord
-  | DeleteTranslation Text.Model.TextWord Text.Model.TextWordTranslation
-  | MatchTranslations Text.Model.WordInstance
+  | DeleteTranslation Text.Model.TextWord Text.Model.Translation
+  | MatchTranslations WordInstance
 
   -- result msgs
   -- words
@@ -38,6 +40,6 @@ type Msg =
 
   -- translations
   | UpdateTextTranslations (Result Http.Error (Dict Text.Translations.Word (Array Text.Model.TextWord)))
-  | UpdateTextTranslation (Result Http.Error (Text.Translations.Word, Int, Text.Model.TextWordTranslation))
-  | SubmittedTextTranslation (Result Http.Error (Text.Translations.Word, Int, Text.Model.TextWordTranslation))
+  | UpdateTextTranslation (Result Http.Error (Text.Translations.Word, Int, Text.Model.Translation))
+  | SubmittedTextTranslation (Result Http.Error (Text.Translations.Word, Int, Text.Model.Translation))
   | DeletedTranslation (Result Http.Error Text.Decode.TextWordTranslationDeleteResp)

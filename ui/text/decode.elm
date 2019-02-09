@@ -26,7 +26,7 @@ type alias TextsRespError = Dict String String
 type alias TextWordTranslationDeleteResp = {
     word: String
   , instance: Int
-  , translation: Text.Model.TextWordTranslation
+  , translation: Text.Model.Translation
   , deleted: Bool }
 
 type alias TextWordMergeResp = { text_words: List Text.Model.TextWord, grouped : Bool, error: Maybe String }
@@ -121,14 +121,14 @@ textDifficultyDecoder : Decode.Decoder TextDifficulty
 textDifficultyDecoder =
   Util.stringTupleDecoder
 
-textTranslationUpdateRespDecoder : Decode.Decoder (Word, Int, Text.Model.TextWordTranslation)
+textTranslationUpdateRespDecoder : Decode.Decoder (Word, Int, Text.Model.Translation)
 textTranslationUpdateRespDecoder =
   Decode.map3 (,,)
     (Decode.field "word" Decode.string)
     (Decode.field "instance" Decode.int)
     (Decode.field "translation" textWordTranslationsDecoder)
 
-textTranslationAddRespDecoder : Decode.Decoder (Word, Int, Text.Model.TextWordTranslation)
+textTranslationAddRespDecoder : Decode.Decoder (Word, Int, Text.Model.Translation)
 textTranslationAddRespDecoder =
   Decode.map3 (,,)
     (Decode.field "word" Decode.string)
@@ -147,9 +147,9 @@ textTranslationsDecoder : Decode.Decoder (Dict Word (Array Text.Model.TextWord))
 textTranslationsDecoder =
   Decode.dict (Decode.array textWordDecoder)
 
-textWordTranslationsDecoder : Decode.Decoder Text.Model.TextWordTranslation
+textWordTranslationsDecoder : Decode.Decoder Text.Model.Translation
 textWordTranslationsDecoder =
-  decode Text.Model.TextWordTranslation
+  decode Text.Model.Translation
     |> required "id" Decode.int
     |> required "correct_for_context" Decode.bool
     |> required "text" Decode.string
@@ -158,14 +158,13 @@ textWordsDecoder : Decode.Decoder (List Text.Model.TextWord)
 textWordsDecoder =
   Decode.list textWordDecoder
 
-textGroupDecoder : Decode.Decoder Text.Model.TextGroup
-textGroupDecoder =
-  decode Text.Model.TextGroup
+textGroupDetailsDecoder : Decode.Decoder Text.Model.TextGroupDetails
+textGroupDetailsDecoder =
+  decode Text.Model.TextGroupDetails
     |> required "id" Decode.int
     |> required "instance" Decode.int
     |> required "pos" Decode.int
     |> required "length" Decode.int
-    |> required "translations" (Decode.nullable (Decode.list textWordTranslationsDecoder))
 
 textWordDecoder : Decode.Decoder Text.Model.TextWord
 textWordDecoder =
@@ -175,7 +174,7 @@ textWordDecoder =
     |> required "word" Decode.string
     |> required "grammemes" grammemesDecoder
     |> required "translations" (Decode.nullable (Decode.list textWordTranslationsDecoder))
-    |> required "group" (Decode.nullable textGroupDecoder)
+    |> required "group" (Decode.nullable textGroupDetailsDecoder)
 
 textWordMergeDecoder : Decode.Decoder TextWordMergeResp
 textWordMergeDecoder =

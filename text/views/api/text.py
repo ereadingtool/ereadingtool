@@ -279,8 +279,7 @@ class TextAPIView(LoginRequiredMixin, View):
         text_queryset = user.text_search_queryset.filter(**filter_by)
         text_queryset_for_user = user.text_search_queryset_for_user.filter(**filter_by)
 
-        # (set of all texts) - (set of texts user has read)
-        unread_text_queryset_for_user = text_queryset.difference(text_queryset_for_user)
+        unread_text_queryset_for_user = text_queryset.exclude(studenttextreading__student=user)
 
         status_filters = []
 
@@ -289,7 +288,7 @@ class TextAPIView(LoginRequiredMixin, View):
             return text_queryset
 
         if statuses == {'unread'}:
-            return unread_text_queryset_for_user.filter(**filter_by)
+            return unread_text_queryset_for_user
 
         if 'read' in statuses:
             status_filters.append(models.Q(num_of_complete__gte=1))
@@ -304,14 +303,14 @@ class TextAPIView(LoginRequiredMixin, View):
 
         if 'unread' in statuses:
             # (set of unread texts by user) | (set of texts read by user that are in_progress or read)
-            return unread_text_queryset_for_user.filter(**filter_by).union(
+            return unread_text_queryset_for_user.union(
                 text_queryset_for_user
             )
+
+        if statuses:
+            return text_queryset_for_user
         else:
-            if statuses:
-                return text_queryset_for_user
-            else:
-                return text_queryset
+            return text_queryset
 
     def validate_params(self, text_params: AnyStr, text: Optional['Text'] = None) -> (Dict, Dict, HttpResponse):
         errors = resp = text_sections_params = None
