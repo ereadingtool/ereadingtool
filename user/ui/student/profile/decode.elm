@@ -1,5 +1,7 @@
 module Student.Profile.Decode exposing (..)
 
+import Dict exposing (Dict)
+
 import Json.Decode
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 
@@ -9,7 +11,9 @@ import Student.Profile.Model
 
 import Util exposing (stringTupleDecoder)
 
-import Text.Translations exposing (Flashcards, Word, TextWord, Grammemes, textWordDecoder)
+import Text.Translations exposing (Word, Grammemes)
+
+import Text.Translations.Decode
 
 
 username_valid_decoder : Json.Decode.Decoder Student.Profile.Model.UsernameUpdate
@@ -20,9 +24,11 @@ username_valid_decoder =
     |> required "msg" (Json.Decode.nullable Json.Decode.string)
 
 
-wordTextWordDecoder : Json.Decode.Decoder (Word, TextWord)
+wordTextWordDecoder : Json.Decode.Decoder (Word, Text.Translations.Decode.TextWord)
 wordTextWordDecoder =
-  Json.Decode.map2 (,) (Json.Decode.index 0 Json.Decode.string) (Json.Decode.index 1 textWordDecoder)
+  Json.Decode.map2 (,)
+    (Json.Decode.index 0 Json.Decode.string)
+    (Json.Decode.index 1 Text.Translations.Decode.textWordDecoder)
 
 performanceReportDecoder : Json.Decode.Decoder PerformanceReport
 performanceReportDecoder =

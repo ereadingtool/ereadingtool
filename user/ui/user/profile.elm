@@ -2,7 +2,7 @@ module User.Profile exposing (..)
 
 import Profile exposing (..)
 
-import Text.Translations exposing (TextWord, Word)
+import Text.Translations exposing (Word)
 
 import Config exposing (student_api_endpoint)
 
@@ -18,7 +18,7 @@ import Student.Profile.Decode
 
 import Student.View
 
-import Text.Translations exposing (Flashcards)
+import Text.Translations.Decode exposing (TextWord, Flashcards)
 
 import Menu.Msg exposing (Msg)
 

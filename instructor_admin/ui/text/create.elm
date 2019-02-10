@@ -7,8 +7,9 @@ import Json.Encode
 
 import Http
 
-import Text.Model exposing (Text, TextDifficulty, TextWord, TextWords)
+import Text.Model exposing (Text, TextDifficulty)
 
+import Text.Translations
 import Text.Translations.Model as TextTranslations
 import Text.Translations.Msg
 
@@ -31,7 +32,7 @@ type alias Flags = {
     instructor_profile : Instructor.Profile.InstructorProfileParams
   , csrftoken: Flags.CSRFToken
   , text: Maybe Json.Encode.Value
-  , translation_flags: TextTranslations.Flags
+  , translation_flags: Text.Translations.Flags
   , tags: List String }
 
 type alias InstructorUser = String

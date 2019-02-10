@@ -5,7 +5,11 @@ import Dict exposing (Dict)
 import Array exposing (Array)
 
 import Text.Model
-import Text.Translations
+import Text.Translations exposing (..)
+
+import Text.Translations.TextWord exposing (TextWord)
+
+import Text.Translations.Decode
 
 import Text.Translations.Word.Instance exposing (WordInstance)
 
@@ -23,23 +27,23 @@ type Msg =
   | AddTextWord WordInstance
   | EditWord WordInstance
   | CloseEditWord WordInstance
-  | DeleteTextWord Text.Model.TextWord
+  | DeleteTextWord TextWord
 
   -- translations
-  | MakeCorrectForContext Text.Model.Translation
-  | UpdateNewTranslationForTextWord Text.Model.TextWord String
-  | SubmitNewTranslationForTextWord Text.Model.TextWord
-  | DeleteTranslation Text.Model.TextWord Text.Model.Translation
+  | MakeCorrectForContext Translation
+  | UpdateNewTranslationForTextWord TextWord String
+  | SubmitNewTranslationForTextWord TextWord
+  | DeleteTranslation TextWord Translation
   | MatchTranslations WordInstance
 
   -- result msgs
   -- words
-  | MergedWords (Result Http.Error Text.Decode.TextWordMergeResp)
-  | DeletedTextWord (Result Http.Error Text.Model.TextWord)
-  | UpdatedTextWords (Result Http.Error (List Text.Model.TextWord))
+  | MergedWords (Result Http.Error Text.Translations.Decode.TextWordMergeResp)
+  | DeletedTextWord (Result Http.Error TextWord)
+  | UpdatedTextWords (Result Http.Error (List TextWord))
 
   -- translations
-  | UpdateTextTranslations (Result Http.Error (Dict Text.Translations.Word (Array Text.Model.TextWord)))
-  | UpdateTextTranslation (Result Http.Error (Text.Translations.Word, Int, Text.Model.Translation))
-  | SubmittedTextTranslation (Result Http.Error (Text.Translations.Word, Int, Text.Model.Translation))
-  | DeletedTranslation (Result Http.Error Text.Decode.TextWordTranslationDeleteResp)
+  | UpdateTextTranslations (Result Http.Error (Dict Text.Translations.Word (Array TextWord)))
+  | UpdateTextTranslation (Result Http.Error (Text.Translations.Word, Int, Translation))
+  | SubmittedTextTranslation (Result Http.Error (Text.Translations.Word, Int, Translation))
+  | DeletedTranslation (Result Http.Error Text.Translations.Decode.TextWordTranslationDeleteResp)

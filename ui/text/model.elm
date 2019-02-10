@@ -11,34 +11,6 @@ import Array exposing (Array)
 
 type alias TextDifficulty = (String, String)
 
-type alias Grammemes = Dict String (Maybe String)
-
-type alias WordValues = {
-    grammemes: Grammemes
-  , translations: Maybe (List String) }
-
-type alias Translation = {
-   id: Int
- , correct_for_context: Bool
- , text: String
- }
-
-type alias TextGroupDetails = {
-    id: Int
-  , instance: Int
-  , pos: Int
-  , length: Int
-  }
-
-type alias Translations = List Translation
-
-type Word = Word (Maybe TextGroupDetails) | CompoundWord
-
-type TextWord = TextWord Id Instance Phrase Grammemes (Maybe Translations) Word
-
-type alias Words = Dict Word WordValues
-type alias TextWords = Dict Word TextWord
-
 type alias Text = {
     id: Maybe Int
   , title: String

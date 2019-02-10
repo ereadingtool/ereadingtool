@@ -6,7 +6,8 @@ import Text.Model as Text
 
 import Config exposing (student_api_endpoint, student_logout_api_endpoint)
 
-import Text.Translations exposing (Flashcards, Word, TextWord, Grammemes, textWordDecoder)
+import Text.Translations exposing (Word, Grammemes)
+import Text.Translations.Decode exposing (TextWord, Flashcards)
 
 import HttpHelpers
 import Http
@@ -27,10 +28,10 @@ type alias StudentProfileParams = {
   , difficulty_preference: Maybe Text.TextDifficulty
   , difficulties: List Text.TextDifficulty
   , performance_report: PerformanceReport
-  , flashcards: Maybe (List (Word, TextWord))
+  , flashcards: Maybe (List (Word, Text.Translations.Decode.TextWord))
   }
 
-type StudentProfile = StudentProfile StudentProfileParams (Maybe Flashcards)
+type StudentProfile = StudentProfile StudentProfileParams (Maybe Text.Translations.Decode.Flashcards)
 
 
 emptyStudentProfile : StudentProfile

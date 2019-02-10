@@ -1,7 +1,7 @@
 module Text.Decode exposing (..)
 
-import Text.Model exposing (Text, TextDifficulty, TextListItem, WordValues, Words)
-import Text.Translations exposing (Word)
+import Text.Model exposing (Text, TextDifficulty, TextListItem)
+import Text.Translations.Decode
 
 import Text.Section.Decode
 
@@ -23,29 +23,6 @@ type alias TextProgressUpdateResp = { updated: Bool }
 
 type alias TextsRespError = Dict String String
 
-type alias TextWordTranslationDeleteResp = {
-    word: String
-  , instance: Int
-  , translation: Text.Model.Translation
-  , deleted: Bool }
-
-type alias TextWordMergeResp = { text_words: List Text.Model.TextWord, grouped : Bool, error: Maybe String }
-
-
-grammemesDecoder : Decode.Decoder Text.Model.Grammemes
-grammemesDecoder =
-  Decode.dict (Decode.nullable Decode.string)
-
-wordValuesDecoder : Decode.Decoder WordValues
-wordValuesDecoder =
-  decode WordValues
-    |> required "grammemes" grammemesDecoder
-    |> required "translations" (Decode.nullable (Decode.list Decode.string))
-
-wordsDecoder : Decode.Decoder Words
-wordsDecoder =
-  Decode.dict wordValuesDecoder
-
 textDecoder : Decode.Decoder Text
 textDecoder =
   decode Text
@@ -63,7 +40,7 @@ textDecoder =
     |> required "modified_dt" (Decode.nullable date)
     |> required "text_sections" (Decode.map Array.fromList (Text.Section.Decode.textSectionsDecoder))
     |> required "write_locker" (Decode.nullable Decode.string)
-    |> required "words" wordsDecoder
+    |> required "words" Text.Translations.Decode.wordsDecoder
 
 textListItemDecoder : Decode.Decoder TextListItem
 textListItemDecoder =
@@ -120,68 +97,6 @@ textDifficultiesDecoder =
 textDifficultyDecoder : Decode.Decoder TextDifficulty
 textDifficultyDecoder =
   Util.stringTupleDecoder
-
-textTranslationUpdateRespDecoder : Decode.Decoder (Word, Int, Text.Model.Translation)
-textTranslationUpdateRespDecoder =
-  Decode.map3 (,,)
-    (Decode.field "word" Decode.string)
-    (Decode.field "instance" Decode.int)
-    (Decode.field "translation" textWordTranslationsDecoder)
-
-textTranslationAddRespDecoder : Decode.Decoder (Word, Int, Text.Model.Translation)
-textTranslationAddRespDecoder =
-  Decode.map3 (,,)
-    (Decode.field "word" Decode.string)
-    (Decode.field "instance" Decode.int)
-    (Decode.field "translation" textWordTranslationsDecoder)
-
-textTranslationRemoveRespDecoder : Decode.Decoder TextWordTranslationDeleteResp
-textTranslationRemoveRespDecoder =
-  decode TextWordTranslationDeleteResp
-    |> required "word" Decode.string
-    |> required "instance" Decode.int
-    |> required "translation" textWordTranslationsDecoder
-    |> required "deleted" Decode.bool
-
-textTranslationsDecoder : Decode.Decoder (Dict Word (Array Text.Model.TextWord))
-textTranslationsDecoder =
-  Decode.dict (Decode.array textWordDecoder)
-
-textWordTranslationsDecoder : Decode.Decoder Text.Model.Translation
-textWordTranslationsDecoder =
-  decode Text.Model.Translation
-    |> required "id" Decode.int
-    |> required "correct_for_context" Decode.bool
-    |> required "text" Decode.string
-
-textWordsDecoder : Decode.Decoder (List Text.Model.TextWord)
-textWordsDecoder =
-  Decode.list textWordDecoder
-
-textGroupDetailsDecoder : Decode.Decoder Text.Model.TextGroupDetails
-textGroupDetailsDecoder =
-  decode Text.Model.TextGroupDetails
-    |> required "id" Decode.int
-    |> required "instance" Decode.int
-    |> required "pos" Decode.int
-    |> required "length" Decode.int
-
-textWordDecoder : Decode.Decoder Text.Model.TextWord
-textWordDecoder =
-  decode Text.Model.TextWord
-    |> required "id" Decode.int
-    |> required "instance" Decode.int
-    |> required "word" Decode.string
-    |> required "grammemes" grammemesDecoder
-    |> required "translations" (Decode.nullable (Decode.list textWordTranslationsDecoder))
-    |> required "group" (Decode.nullable textGroupDetailsDecoder)
-
-textWordMergeDecoder : Decode.Decoder TextWordMergeResp
-textWordMergeDecoder =
-  decode TextWordMergeResp
-    |> required "text_words" textWordsDecoder
-    |> required "grouped" Decode.bool
-    |> required "error" (Decode.nullable Decode.string)
 
 decodeRespErrors : String -> Result String TextsRespError
 decodeRespErrors str =
