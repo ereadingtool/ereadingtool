@@ -2,8 +2,6 @@ module User.Profile exposing (..)
 
 import Profile exposing (..)
 
-import Text.Translations exposing (Word)
-
 import Config exposing (student_api_endpoint)
 
 import Html exposing (Html, div)

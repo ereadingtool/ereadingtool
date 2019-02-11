@@ -10772,6 +10772,9 @@ var _user$project$Text_Translations_Decode$textWordInstanceDecoder = A7(
 	_elm_lang$core$Json_Decode$nullable(
 		_elm_lang$core$Json_Decode$list(_user$project$Text_Translations_Decode$textWordTranslationsDecoder)),
 	_user$project$Text_Translations_Decode$wordDecoder);
+var _user$project$Text_Translations_Decode$textWordInstancesDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Translations_Decode$textWordInstanceDecoder);
+var _user$project$Text_Translations_Decode$textWordDictInstancesDecoder = _elm_lang$core$Json_Decode$dict(
+	_elm_lang$core$Json_Decode$array(_user$project$Text_Translations_Decode$textWordInstanceDecoder));
 var _user$project$Text_Translations_Decode$textTranslationAddRespDecoder = A4(
 	_elm_lang$core$Json_Decode$map3,
 	F3(
@@ -10818,8 +10821,6 @@ var _user$project$Text_Translations_Decode$textWordDecoder = A3(
 			'word',
 			_elm_lang$core$Json_Decode$string,
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Translations_Decode$TextWord))));
-var _user$project$Text_Translations_Decode$textTranslationsDecoder = _elm_lang$core$Json_Decode$dict(
-	_elm_lang$core$Json_Decode$array(_user$project$Text_Translations_Decode$textWordDecoder));
 var _user$project$Text_Translations_Decode$textWordsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Translations_Decode$textWordDecoder);
 var _user$project$Text_Translations_Decode$TextWordTranslationDeleteResp = F4(
 	function (a, b, c, d) {

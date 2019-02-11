@@ -67,9 +67,13 @@ textTranslationRemoveRespDecoder =
     |> required "translation" textWordTranslationsDecoder
     |> required "deleted" Json.Decode.bool
 
-textTranslationsDecoder : Json.Decode.Decoder (Dict Word (Array TextWord))
-textTranslationsDecoder =
-  Json.Decode.dict (Json.Decode.array textWordDecoder)
+textWordDictInstancesDecoder : Json.Decode.Decoder (Dict Word (Array Text.Translations.TextWord.TextWord))
+textWordDictInstancesDecoder =
+  Json.Decode.dict (Json.Decode.array textWordInstanceDecoder)
+
+textWordInstancesDecoder : Json.Decode.Decoder (List Text.Translations.TextWord.TextWord)
+textWordInstancesDecoder =
+  Json.Decode.list textWordInstanceDecoder
 
 textWordTranslationsDecoder : Json.Decode.Decoder Translation
 textWordTranslationsDecoder =

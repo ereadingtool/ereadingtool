@@ -1,10 +1,10 @@
 module Text.Translations.Msg exposing (Msg, Msg(..))
 
-import Http
-import Dict exposing (Dict)
 import Array exposing (Array)
 
-import Text.Model
+import Http
+import Dict exposing (Dict)
+
 import Text.Translations exposing (..)
 
 import Text.Translations.TextWord exposing (TextWord)
@@ -12,8 +12,6 @@ import Text.Translations.TextWord exposing (TextWord)
 import Text.Translations.Decode
 
 import Text.Translations.Word.Instance exposing (WordInstance)
-
-import Text.Decode
 
 
 type Msg =

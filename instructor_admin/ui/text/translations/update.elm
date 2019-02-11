@@ -179,7 +179,7 @@ putMatchTranslations msg csrftoken translations text_words =
     encoded_merge_request = Text.Translations.Encode.textTranslationsMergeEncoder translations text_words
     body = Http.jsonBody encoded_merge_request
     request =
-      HttpHelpers.put_with_headers endpoint_uri headers body Text.Translations.Decode.textWordsDecoder
+      HttpHelpers.put_with_headers endpoint_uri headers body Text.Translations.Decode.textWordInstancesDecoder
   in
     Http.send (msg << UpdatedTextWords) request
 
@@ -218,6 +218,6 @@ retrieveTextWords msg text_id =
   let
     request =
       Http.get (String.join "?" [String.join "" [Config.text_api_endpoint,  toString text_id], "text_words=list"])
-        Text.Translations.Decode.textTranslationsDecoder
+        Text.Translations.Decode.textWordDictInstancesDecoder
   in
     Http.send (msg << UpdateTextTranslations) request
