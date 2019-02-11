@@ -36,20 +36,26 @@ class TextWord(models.Model):
     def to_dict(self):
         translation = None
 
+        text_word_dict = {
+            'word': self.word,
+            'grammemes': self.grammemes,
+            'translation': translation.phrase if translation else None,
+        }
+
         try:
             translation = self.translations.filter(correct_for_context=True)[0]
         except IndexError:
             pass
 
-        return {
-            'word': self.word,
-            'grammemes': self.grammemes,
-            'translation': translation.phrase if translation else None,
-            'group': {
+        try:
+            text_word_dict['group'] = {
                 'group': self.group_word.group_id,
                 'order': self.group_word.order
-            } if self.group_word else None
-        }
+            }
+        except models.ObjectDoesNotExist:
+            text_word_dict['group'] = None
+
+        return text_word_dict
 
     def to_translations_dict(self):
         translation_dict = {
