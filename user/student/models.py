@@ -30,6 +30,10 @@ class Student(Profile, TextReadings, models.Model):
         return self.text_search_queryset.where_student(self)
 
     @property
+    def unread_text_queryset(self):
+        return self.text_search_queryset.exclude(studenttextreading__student=self)
+
+    @property
     def performance(self):
         return StudentPerformanceReport(student=self)
 

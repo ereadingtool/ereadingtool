@@ -279,7 +279,7 @@ class TextAPIView(LoginRequiredMixin, View):
         text_queryset = user.text_search_queryset.filter(**filter_by)
         text_queryset_for_user = user.text_search_queryset_for_user.filter(**filter_by)
 
-        unread_text_queryset_for_user = text_queryset.exclude(studenttextreading__student=user)
+        unread_text_queryset_for_user = user.unread_text_queryset
 
         status_filters = []
 

@@ -18,8 +18,10 @@ from text.consumers.instructor import ParseTextSectionForDefinitions
 from text.glosbe.api import GlosbeAPI, GlosbeTranslations, GlosbeTranslation
 from text.models import TextDifficulty, Text, TextSection
 from text_reading.base import TextReadingNotAllQuestionsAnswered
-from text_reading.models import StudentTextReading
+from text_reading.models import StudentTextReading, InstructorTextReading
 from user.student.models import Student
+
+from user.instructor.models import Instructor
 
 from statemachine import State
 
@@ -293,22 +295,22 @@ class TestText(TestUser, TestCase):
 
         self.assertEquals(3, text.sections.count())
 
-    def test_get_text_by_status(self):
-        student = Student.objects.get()
-        reading_state_cls = StudentTextReading.state_machine_cls
+    def test_filter_text_by_status(self):
+        user = Student.objects.get()
+        state_cls = StudentTextReading.state_machine_cls
 
         text = collections.OrderedDict()
 
         text['intro'] = self.create_text(diff_data={'title': 'stopped at intro',
                                                     'tags': ['Other']})
-        text_one_reading = self.test_text_reading(text['intro'], student, reading_state_cls.intro)
+        text_one_reading = self.test_text_reading(text['intro'], user, state_cls.intro)
 
         text['in_progress'] = self.create_text(diff_data={'title': 'stopped at in_progress',
                                                           'tags': ['Economics/Business', 'Medicine/Health Care']})
-        text_two_reading = self.test_text_reading(text['in_progress'], student, reading_state_cls.in_progress)
+        text_two_reading = self.test_text_reading(text['in_progress'], user, state_cls.in_progress)
 
         text['read'] = self.create_text(diff_data={'title': 'stopped at complete', 'tags': ['Sports']})
-        text_three_reading = self.test_text_reading(text['read'], student, reading_state_cls.complete)
+        text_three_reading = self.test_text_reading(text['read'], user, state_cls.complete)
 
         text['unread'] = self.create_text(diff_data={'title': 'unread', 'tags': ['Science/Technology']})
 
@@ -656,22 +658,22 @@ class TestText(TestUser, TestCase):
         return {'body': f'Question {order+1}?',
                 'order': order,
                 'answers': [
-                  {'text': 'Click to write choice 1',
-                   'correct': False,
-                   'order': 0,
-                   'feedback': 'Answer 1 Feedback.'},
-                  {'text': 'Click to write choice 2',
-                   'correct': False,
-                   'order': 1,
-                   'feedback': 'Answer 2 Feedback.'},
-                  {'text': 'Click to write choice 3',
-                   'correct': False,
-                   'order': 2,
-                   'feedback': 'Answer 3 Feedback.'},
-                  {'text': 'Click to write choice 4',
-                   'correct': True,
-                   'order': 3, 'feedback': 'Answer 4 Feedback.'}
-                  ], 'question_type': cls.gen_question_type()}
+                    {'text': 'Click to write choice 1',
+                     'correct': False,
+                     'order': 0,
+                     'feedback': 'Answer 1 Feedback.'},
+                    {'text': 'Click to write choice 2',
+                     'correct': False,
+                     'order': 1,
+                     'feedback': 'Answer 2 Feedback.'},
+                    {'text': 'Click to write choice 3',
+                     'correct': False,
+                     'order': 2,
+                     'feedback': 'Answer 3 Feedback.'},
+                    {'text': 'Click to write choice 4',
+                     'correct': True,
+                     'order': 3, 'feedback': 'Answer 4 Feedback.'}
+                ], 'question_type': cls.gen_question_type()}
 
     def add_questions_to_test_data(self, test_data: Dict, section: int, num_of_questions: int) -> Dict:
         first_question = test_data['text_sections'][section]['questions'][0]
@@ -689,7 +691,7 @@ class TestText(TestUser, TestCase):
             'body': f'<p style="text-align:center">section {order}</p>\n',
             'questions': question_params or [cls.gen_text_section_question_params(order=0),
                                              cls.gen_text_section_question_params(order=1)]
-         }
+        }
 
     @classmethod
     def get_test_data(cls, section_params: Optional[List[Dict]] = None) -> Dict:

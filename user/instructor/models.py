@@ -26,6 +26,10 @@ class Instructor(Profile, TextReadings, models.Model):
     def text_search_queryset_for_user(self):
         return self.text_search_queryset.where_instructor(self)
 
+    @property
+    def unread_text_queryset(self):
+        return self.text_search_queryset.exclude(instructortextreading__instructor=self)
+
     def to_dict(self):
         return {
             'id': self.pk,
