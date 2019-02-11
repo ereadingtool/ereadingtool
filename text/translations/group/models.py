@@ -7,7 +7,7 @@ class TextWordGroup(models.Model):
     instance = models.IntegerField(default=0)
 
     @property
-    def group_phrase(self):
+    def phrase(self):
         return ' '.join([component.word.word for component in self.components.order_by('order')])
 
     def to_translations_dict(self):
