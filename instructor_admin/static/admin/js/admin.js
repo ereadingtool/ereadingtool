@@ -10736,9 +10736,12 @@ var _user$project$Text_Translations_Decode$wordHelpDecoder = function (word_type
 	switch (_p0) {
 		case 'single':
 			return A2(
-				_elm_lang$core$Json_Decode$map,
-				_user$project$Text_Translations_TextWord$Word,
-				_elm_lang$core$Json_Decode$nullable(_user$project$Text_Translations_Decode$textGroupDetailsDecoder));
+				_elm_lang$core$Json_Decode$field,
+				'group',
+				A2(
+					_elm_lang$core$Json_Decode$map,
+					_user$project$Text_Translations_TextWord$Word,
+					_elm_lang$core$Json_Decode$nullable(_user$project$Text_Translations_Decode$textGroupDetailsDecoder)));
 		case 'compound':
 			return _elm_lang$core$Json_Decode$succeed(_user$project$Text_Translations_TextWord$CompoundWord);
 		default:
@@ -10765,12 +10768,15 @@ var _user$project$Text_Translations_Decode$textWordTranslationsDecoder = A3(
 var _user$project$Text_Translations_Decode$textWordInstanceDecoder = A7(
 	_elm_lang$core$Json_Decode$map6,
 	_user$project$Text_Translations_TextWord$new,
-	_elm_lang$core$Json_Decode$int,
-	_elm_lang$core$Json_Decode$int,
-	_elm_lang$core$Json_Decode$string,
-	_user$project$Text_Translations_Decode$grammemesDecoder,
-	_elm_lang$core$Json_Decode$nullable(
-		_elm_lang$core$Json_Decode$list(_user$project$Text_Translations_Decode$textWordTranslationsDecoder)),
+	A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int),
+	A2(_elm_lang$core$Json_Decode$field, 'instance', _elm_lang$core$Json_Decode$int),
+	A2(_elm_lang$core$Json_Decode$field, 'word', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'grammemes', _user$project$Text_Translations_Decode$grammemesDecoder),
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'translations',
+		_elm_lang$core$Json_Decode$nullable(
+			_elm_lang$core$Json_Decode$list(_user$project$Text_Translations_Decode$textWordTranslationsDecoder))),
 	_user$project$Text_Translations_Decode$wordDecoder);
 var _user$project$Text_Translations_Decode$textWordInstancesDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Translations_Decode$textWordInstanceDecoder);
 var _user$project$Text_Translations_Decode$textWordDictInstancesDecoder = _elm_lang$core$Json_Decode$dict(

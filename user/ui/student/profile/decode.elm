@@ -1,7 +1,5 @@
 module Student.Profile.Decode exposing (..)
 
-import Dict exposing (Dict)
-
 import Json.Decode
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 

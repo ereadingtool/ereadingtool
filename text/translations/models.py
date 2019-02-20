@@ -66,7 +66,8 @@ class TextWord(models.Model):
             'grammemes': self.grammemes,
             'translations': [translation.to_dict() for translation in
                              self.translations.all()] or None,
-            'group': None
+            'group': None,
+            'word_type': 'single'
         }
 
         try:

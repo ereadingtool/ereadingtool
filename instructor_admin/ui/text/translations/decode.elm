@@ -103,7 +103,8 @@ wordHelpDecoder : String -> Json.Decode.Decoder Text.Translations.TextWord.Word
 wordHelpDecoder word_type =
   case word_type of
     "single" ->
-      Json.Decode.map Text.Translations.TextWord.Word (Json.Decode.nullable textGroupDetailsDecoder)
+      Json.Decode.field "group"
+        (Json.Decode.map Text.Translations.TextWord.Word (Json.Decode.nullable textGroupDetailsDecoder))
 
     "compound" ->
       Json.Decode.succeed Text.Translations.TextWord.CompoundWord
@@ -114,11 +115,11 @@ wordHelpDecoder word_type =
 textWordInstanceDecoder : Json.Decode.Decoder Text.Translations.TextWord.TextWord
 textWordInstanceDecoder =
   Json.Decode.map6 Text.Translations.TextWord.new
-    Json.Decode.int
-    Json.Decode.int
-    Json.Decode.string
-    grammemesDecoder
-    (Json.Decode.nullable (Json.Decode.list textWordTranslationsDecoder))
+    (Json.Decode.field "id" Json.Decode.int)
+    (Json.Decode.field "instance" Json.Decode.int)
+    (Json.Decode.field "word" Json.Decode.string)
+    (Json.Decode.field "grammemes" grammemesDecoder)
+    (Json.Decode.field "translations" (Json.Decode.nullable (Json.Decode.list textWordTranslationsDecoder)))
     wordDecoder
 
 grammemesDecoder : Json.Decode.Decoder Text.Translations.Grammemes
