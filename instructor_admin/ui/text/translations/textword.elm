@@ -8,6 +8,10 @@ type Word = Word (Maybe TextGroupDetails) | CompoundWord
 type TextWord = TextWord Int Instance Phrase Grammemes (Maybe Translations) Word
 
 
+instance : TextWord -> Int
+instance (TextWord _ instance _ _ _ _) =
+  instance
+
 group : TextWord -> Maybe TextGroupDetails
 group (TextWord _ _ _ _ _ word) =
   case word of

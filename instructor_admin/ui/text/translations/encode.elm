@@ -4,7 +4,6 @@ import Text.Translations exposing (..)
 
 import Text.Translations.TextWord exposing (TextWord)
 
-import Text.Model
 import Json.Encode as Encode
 
 

@@ -11,12 +11,17 @@ class TextWordGroup(models.Model):
         return ' '.join([component.word.word for component in self.components.order_by('order')])
 
     def to_translations_dict(self):
-        return {
+        translation_dict = {
             'id': self.pk,
             'instance': self.instance,
-            'translations': [translation.to_dict() for translation in
-                             self.translations.all()] or None
+            'word': self.phrase,
+            'grammemes': None,
+            'translations': None,
+            'group': None,
+            'word_type': 'compound'
         }
+
+        return translation_dict
 
 
 class TextGroupWord(models.Model):

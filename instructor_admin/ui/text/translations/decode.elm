@@ -23,7 +23,9 @@ type alias TextWordTranslationDeleteResp = {
   , deleted: Bool }
 
 type alias TextWordMergeResp = {
-    text_words: List TextWord
+    phrase: String
+  , instance: Int
+  , text_words: List Text.Translations.TextWord.TextWord
   , grouped : Bool
   , error: Maybe String }
 
@@ -41,7 +43,9 @@ wordsDecoder =
 textWordMergeDecoder : Json.Decode.Decoder TextWordMergeResp
 textWordMergeDecoder =
   decode TextWordMergeResp
-    |> required "text_words" textWordsDecoder
+    |> required "phrase" Json.Decode.string
+    |> required "instance" Json.Decode.int
+    |> required "text_words" textWordInstancesDecoder
     |> required "grouped" Json.Decode.bool
     |> required "error" (Json.Decode.nullable Json.Decode.string)
 

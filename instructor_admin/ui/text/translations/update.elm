@@ -29,7 +29,16 @@ update parent_msg msg model =
       (model, matchTranslations parent_msg model word_instance)
 
     UpdatedTextWords (Ok text_words) ->
-      (Text.Translations.Model.setTextWords model text_words, Cmd.none)
+      -- assume a homogeneous list of text words
+      case List.head text_words of
+        Just first_text_word ->
+          let
+            phrase = Text.Translations.TextWord.phrase first_text_word
+          in
+            (Text.Translations.Model.setTextWordsForPhrase model phrase text_words, Cmd.none)
+
+        Nothing ->
+          (model, Cmd.none)
 
     EditWord word_instance ->
       (Text.Translations.Model.editWord model word_instance, Cmd.none)
@@ -50,7 +59,13 @@ update parent_msg msg model =
       (model, postMergeWords parent_msg model model.flags.csrftoken word_instances)
 
     MergedWords (Ok merge_resp) ->
-      (model, Cmd.none)
+      case merge_resp.grouped of
+        True ->
+          ( Text.Translations.Model.completeMerge model merge_resp.phrase merge_resp.instance merge_resp.text_words
+          , Cmd.none)
+
+        False ->
+          (model, Cmd.none)
 
     MergedWords (Err err) -> let _ = Debug.log "error merging text words" err in
       (model, Cmd.none)

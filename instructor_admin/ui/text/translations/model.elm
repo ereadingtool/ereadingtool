@@ -63,6 +63,19 @@ mergeState model word_instance =
       False ->
         Nothing
 
+completeMerge : Model -> Phrase -> Instance -> List TextWord -> Model
+completeMerge model phrase instance text_words =
+  let
+    id = String.join "_" [toString instance, phrase]
+    merged_word_instance = newWordInstance model id instance phrase
+
+    new_model =
+         setTextWords model text_words
+      |> cancelMerge
+      |> uneditAllWords
+  in
+    editWord new_model merged_word_instance
+
 cancelMerge : Model -> Model
 cancelMerge model =
   { model | merging_words = Dict.empty }
@@ -98,9 +111,9 @@ instanceCount model word =
     Nothing ->
       0
 
-getTextWords : Model -> Text.Translations.Word -> Maybe (Array TextWord)
-getTextWords model word =
-  Dict.get word model.words
+getTextWords : Model -> Phrase -> Maybe (Array TextWord)
+getTextWords model phrase =
+  Dict.get phrase model.words
 
 editingWord : Model -> String -> Bool
 editingWord model word =
@@ -123,6 +136,12 @@ editWord model word_instance =
     new_editing_word_instances = Dict.insert word_instance_id True model.editing_word_instances
   in
     { model | editing_words = new_edited_words, editing_word_instances = new_editing_word_instances }
+
+uneditAllWords : Model -> Model
+uneditAllWords model =
+  { model |
+     editing_words = Dict.empty
+   , editing_word_instances = Dict.empty }
 
 uneditWord : Model -> WordInstance -> Model
 uneditWord model word_instance =
@@ -166,24 +185,26 @@ getTextWord model instance word =
 
 setTextWords : Model -> List TextWord -> Model
 setTextWords model text_words =
-  case List.head text_words of
-    Just first_text_word ->
-      let
-        phrase = Text.Translations.TextWord.phrase first_text_word
-      in
-        { model | words = Dict.insert (String.toLower phrase) (Array.fromList text_words) model.words }
+  List.foldl (\text_word model ->
+    let
+      phrase = Text.Translations.TextWord.phrase text_word
+      instance = Text.Translations.TextWord.instance text_word
+    in
+      setTextWord model instance phrase text_word)
+  model text_words
 
-    Nothing ->
-      model
+setTextWordsForPhrase : Model -> Phrase -> List TextWord -> Model
+setTextWordsForPhrase model phrase text_words =
+  { model | words = Dict.insert (String.toLower phrase) (Array.fromList text_words) model.words }
 
-setTextWord : Model -> Int -> Text.Translations.Word -> TextWord -> Model
-setTextWord model instance word text_word =
-  case getTextWords model word of
+setTextWord : Model -> Int -> Phrase -> TextWord -> Model
+setTextWord model instance phrase text_word =
+  case getTextWords model phrase of
     Just text_words ->
       let
         new_text_words = Array.set instance text_word text_words
       in
-        { model | words = Dict.insert word new_text_words model.words }
+        { model | words = Dict.insert phrase new_text_words model.words }
     -- word not found
     Nothing ->
       model

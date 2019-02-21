@@ -10589,6 +10589,10 @@ var _user$project$Text_Translations_TextWord$group = function (_p6) {
 		return _elm_lang$core$Maybe$Nothing;
 	}
 };
+var _user$project$Text_Translations_TextWord$instance = function (_p9) {
+	var _p10 = _p9;
+	return _p10._1;
+};
 var _user$project$Text_Translations_TextWord$CompoundWord = {ctor: 'CompoundWord'};
 var _user$project$Text_Translations_TextWord$Word = function (a) {
 	return {ctor: 'Word', _0: a};
@@ -10602,15 +10606,15 @@ var _user$project$Text_Translations_TextWord$new = F6(
 		return A6(_user$project$Text_Translations_TextWord$TextWord, id, instance, phrase, grammemes, translations, word);
 	});
 var _user$project$Text_Translations_TextWord$addTranslation = F2(
-	function (_p9, translation) {
-		var _p10 = _p9;
+	function (_p11, translation) {
+		var _p12 = _p11;
 		var new_translations = function () {
-			var _p11 = _p10._4;
-			if (_p11.ctor === 'Just') {
+			var _p13 = _p12._4;
+			if (_p13.ctor === 'Just') {
 				return _elm_lang$core$Maybe$Just(
 					A2(
 						_elm_lang$core$Basics_ops['++'],
-						_p11._0,
+						_p13._0,
 						{
 							ctor: '::',
 							_0: translation,
@@ -10620,58 +10624,58 @@ var _user$project$Text_Translations_TextWord$addTranslation = F2(
 				return _elm_lang$core$Maybe$Nothing;
 			}
 		}();
-		return A6(_user$project$Text_Translations_TextWord$TextWord, _p10._0, _p10._1, _p10._2, _p10._3, new_translations, _p10._5);
+		return A6(_user$project$Text_Translations_TextWord$TextWord, _p12._0, _p12._1, _p12._2, _p12._3, new_translations, _p12._5);
 	});
 var _user$project$Text_Translations_TextWord$removeTranslation = F2(
-	function (_p12, text_word_translation) {
-		var _p13 = _p12;
-		var _p14 = _p13._4;
-		if (_p14.ctor === 'Just') {
+	function (_p14, text_word_translation) {
+		var _p15 = _p14;
+		var _p16 = _p15._4;
+		if (_p16.ctor === 'Just') {
 			var new_translations = A2(
 				_elm_lang$core$List$filter,
 				function (tr) {
 					return !_elm_lang$core$Native_Utils.eq(tr.id, text_word_translation.id);
 				},
-				_p14._0);
+				_p16._0);
 			return A6(
 				_user$project$Text_Translations_TextWord$TextWord,
-				_p13._0,
-				_p13._1,
-				_p13._2,
-				_p13._3,
+				_p15._0,
+				_p15._1,
+				_p15._2,
+				_p15._3,
 				_elm_lang$core$Maybe$Just(new_translations),
-				_p13._5);
+				_p15._5);
 		} else {
-			return _p13;
+			return _p15;
 		}
 	});
 var _user$project$Text_Translations_TextWord$updateTranslation = F2(
-	function (_p15, text_word_translation) {
-		var _p16 = _p15;
-		var _p17 = _p16._4;
-		if (_p17.ctor === 'Just') {
+	function (_p17, text_word_translation) {
+		var _p18 = _p17;
+		var _p19 = _p18._4;
+		if (_p19.ctor === 'Just') {
 			var new_translations = A2(
 				_elm_lang$core$List$map,
 				function (tr) {
 					return _elm_lang$core$Native_Utils.eq(tr.id, text_word_translation.id) ? text_word_translation : tr;
 				},
-				_p17._0);
+				_p19._0);
 			return A6(
 				_user$project$Text_Translations_TextWord$TextWord,
-				_p16._0,
-				_p16._1,
-				_p16._2,
-				_p16._3,
+				_p18._0,
+				_p18._1,
+				_p18._2,
+				_p18._3,
 				_elm_lang$core$Maybe$Just(new_translations),
-				_p16._5);
+				_p18._5);
 		} else {
-			return _p16;
+			return _p18;
 		}
 	});
-var _user$project$Text_Translations_TextWord$setNoTRCorrectForContext = function (_p18) {
-	var _p19 = _p18;
-	var _p20 = _p19._4;
-	if (_p20.ctor === 'Just') {
+var _user$project$Text_Translations_TextWord$setNoTRCorrectForContext = function (_p20) {
+	var _p21 = _p20;
+	var _p22 = _p21._4;
+	if (_p22.ctor === 'Just') {
 		var new_translations = A2(
 			_elm_lang$core$List$map,
 			function (tr) {
@@ -10679,17 +10683,17 @@ var _user$project$Text_Translations_TextWord$setNoTRCorrectForContext = function
 					tr,
 					{correct_for_context: false});
 			},
-			_p20._0);
+			_p22._0);
 		return A6(
 			_user$project$Text_Translations_TextWord$TextWord,
-			_p19._0,
-			_p19._1,
-			_p19._2,
-			_p19._3,
+			_p21._0,
+			_p21._1,
+			_p21._2,
+			_p21._3,
 			_elm_lang$core$Maybe$Just(new_translations),
-			_p19._5);
+			_p21._5);
 	} else {
-		return _p19;
+		return _p21;
 	}
 };
 
@@ -10849,9 +10853,9 @@ var _user$project$Text_Translations_Decode$textTranslationRemoveRespDecoder = A3
 				'word',
 				_elm_lang$core$Json_Decode$string,
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Translations_Decode$TextWordTranslationDeleteResp)))));
-var _user$project$Text_Translations_Decode$TextWordMergeResp = F3(
-	function (a, b, c) {
-		return {text_words: a, grouped: b, error: c};
+var _user$project$Text_Translations_Decode$TextWordMergeResp = F5(
+	function (a, b, c, d, e) {
+		return {phrase: a, instance: b, text_words: c, grouped: d, error: e};
 	});
 var _user$project$Text_Translations_Decode$textWordMergeDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -10864,8 +10868,16 @@ var _user$project$Text_Translations_Decode$textWordMergeDecoder = A3(
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 			'text_words',
-			_user$project$Text_Translations_Decode$textWordsDecoder,
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Translations_Decode$TextWordMergeResp))));
+			_user$project$Text_Translations_Decode$textWordInstancesDecoder,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'instance',
+				_elm_lang$core$Json_Decode$int,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'phrase',
+					_elm_lang$core$Json_Decode$string,
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Translations_Decode$TextWordMergeResp))))));
 
 var _user$project$Student_Profile$logout = F3(
 	function (student_profile, csrftoken, logout_msg) {
