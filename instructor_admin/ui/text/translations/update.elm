@@ -64,8 +64,8 @@ update parent_msg msg model =
           ( Text.Translations.Model.completeMerge model merge_resp.phrase merge_resp.instance merge_resp.text_words
           , Cmd.none)
 
-        False ->
-          (model, Cmd.none)
+        False -> let _ = Debug.log "error merging text words" merge_resp.error in
+          (Text.Translations.Model.cancelMerge model, Cmd.none)
 
     MergedWords (Err err) -> let _ = Debug.log "error merging text words" err in
       (model, Cmd.none)
@@ -232,7 +232,7 @@ retrieveTextWords : (Msg -> msg) -> Int -> Cmd msg
 retrieveTextWords msg text_id =
   let
     request =
-      Http.get (String.join "?" [String.join "" [Config.text_api_endpoint,  toString text_id], "text_words=list"])
+      Http.get (String.join "?" [String.join "" [Config.text_api_endpoint,  toString text_id, "/"], "text_words=list"])
         Text.Translations.Decode.textWordDictInstancesDecoder
   in
     Http.send (msg << UpdateTextTranslations) request

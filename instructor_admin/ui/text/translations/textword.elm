@@ -5,7 +5,7 @@ import Text.Translations exposing (..)
 
 type Word = Word (Maybe TextGroupDetails) | CompoundWord
 
-type TextWord = TextWord Int Instance Phrase Grammemes (Maybe Translations) Word
+type TextWord = TextWord Int Instance Phrase (Maybe Grammemes) (Maybe Translations) Word
 
 
 instance : TextWord -> Int
@@ -25,7 +25,7 @@ id : TextWord -> Int
 id (TextWord id _ _ _ _ _) =
   id
 
-new : Int -> Instance -> Phrase -> Grammemes -> Maybe Translations -> Word -> TextWord
+new : Int -> Instance -> Phrase -> Maybe Grammemes -> Maybe Translations -> Word -> TextWord
 new id instance phrase grammemes translations word =
   TextWord id instance phrase grammemes translations word
 

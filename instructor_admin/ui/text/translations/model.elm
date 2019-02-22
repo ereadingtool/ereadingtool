@@ -34,9 +34,9 @@ init flags text = {
  , flags=flags }
 
 
-newWordInstance : Model -> Id -> Instance -> Token  -> WordInstance
-newWordInstance model id instance token =
-  Text.Translations.Word.Instance.new id instance token (getTextWord model instance token)
+newWordInstance : Model -> Instance -> Token -> WordInstance
+newWordInstance model instance token =
+  Text.Translations.Word.Instance.new instance token (getTextWord model instance token)
 
 mergingWordInstances : Model -> List WordInstance
 mergingWordInstances model =
@@ -66,13 +66,12 @@ mergeState model word_instance =
 completeMerge : Model -> Phrase -> Instance -> List TextWord -> Model
 completeMerge model phrase instance text_words =
   let
-    id = String.join "_" [toString instance, phrase]
-    merged_word_instance = newWordInstance model id instance phrase
-
     new_model =
          setTextWords model text_words
       |> cancelMerge
       |> uneditAllWords
+
+    merged_word_instance = newWordInstance new_model instance phrase
   in
     editWord new_model merged_word_instance
 
@@ -173,9 +172,9 @@ editingWordInstance : Model -> WordInstance -> Bool
 editingWordInstance model word_instance =
   Dict.member (Text.Translations.Word.Instance.id word_instance) model.editing_word_instances
 
-getTextWord : Model -> Int -> Text.Translations.Word -> Maybe TextWord
-getTextWord model instance word =
-  case getTextWords model word of
+getTextWord : Model -> Int -> Phrase -> Maybe TextWord
+getTextWord model instance phrase =
+  case getTextWords model phrase of
     Just text_words ->
       Array.get instance text_words
 
@@ -199,15 +198,16 @@ setTextWordsForPhrase model phrase text_words =
 
 setTextWord : Model -> Int -> Phrase -> TextWord -> Model
 setTextWord model instance phrase text_word =
-  case getTextWords model phrase of
-    Just text_words ->
-      let
-        new_text_words = Array.set instance text_word text_words
-      in
-        { model | words = Dict.insert phrase new_text_words model.words }
-    -- word not found
-    Nothing ->
-      model
+  let
+    new_text_words =
+      (case getTextWords model phrase of
+        Just text_words ->
+          Array.set instance text_word text_words
+        -- word not found
+        Nothing ->
+          Array.fromList [text_word])
+   in
+     { model | words = Dict.insert phrase new_text_words model.words }
 
 updateTextTranslation : Model -> Int -> Text.Translations.Word -> Translation -> Model
 updateTextTranslation model instance word translation =

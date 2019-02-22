@@ -122,7 +122,7 @@ textWordInstanceDecoder =
     (Json.Decode.field "id" Json.Decode.int)
     (Json.Decode.field "instance" Json.Decode.int)
     (Json.Decode.field "word" Json.Decode.string)
-    (Json.Decode.field "grammemes" grammemesDecoder)
+    (Json.Decode.field "grammemes" (Json.Decode.nullable grammemesDecoder))
     (Json.Decode.field "translations" (Json.Decode.nullable (Json.Decode.list textWordTranslationsDecoder)))
     wordDecoder
 

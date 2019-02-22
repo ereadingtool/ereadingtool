@@ -63,7 +63,7 @@ tagWord model parent_msg instance token =
 
       False ->
         let
-          word_instance = Text.Translations.Model.newWordInstance model id instance token
+          word_instance = Text.Translations.Model.newWordInstance model instance token
 
           editing_word = Text.Translations.Model.editingWord model token
           merging_word = Text.Translations.Model.mergingWord model word_instance

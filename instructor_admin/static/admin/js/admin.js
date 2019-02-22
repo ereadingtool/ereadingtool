@@ -10775,7 +10775,10 @@ var _user$project$Text_Translations_Decode$textWordInstanceDecoder = A7(
 	A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int),
 	A2(_elm_lang$core$Json_Decode$field, 'instance', _elm_lang$core$Json_Decode$int),
 	A2(_elm_lang$core$Json_Decode$field, 'word', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$field, 'grammemes', _user$project$Text_Translations_Decode$grammemesDecoder),
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'grammemes',
+		_elm_lang$core$Json_Decode$nullable(_user$project$Text_Translations_Decode$grammemesDecoder)),
 	A2(
 		_elm_lang$core$Json_Decode$field,
 		'translations',

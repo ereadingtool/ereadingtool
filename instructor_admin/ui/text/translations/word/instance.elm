@@ -4,24 +4,24 @@ import Text.Translations exposing (..)
 
 import Text.Translations.TextWord exposing (TextWord)
 
-type WordInstance = WordInstance Id Instance Token (Maybe TextWord)
+type WordInstance = WordInstance Instance Token (Maybe TextWord)
 
 
 id : WordInstance -> Id
-id (WordInstance id _ _ _) =
-  id
+id (WordInstance instance token _) =
+  String.join "_" [toString instance, token]
 
 textWord : WordInstance -> Maybe TextWord
-textWord (WordInstance _ _ _ text_word) =
+textWord (WordInstance _ _ text_word) =
   text_word
 
 word : WordInstance -> Token
-word (WordInstance _ _ word _) =
+word (WordInstance _ word _) =
   word
 
 normalizeToken : String -> String
 normalizeToken = String.toLower
 
-new : Id -> Instance -> Token -> Maybe TextWord -> WordInstance
-new id instance token text_word =
-  WordInstance id instance token text_word
+new : Instance -> Token -> Maybe TextWord -> WordInstance
+new instance token text_word =
+  WordInstance instance token text_word
