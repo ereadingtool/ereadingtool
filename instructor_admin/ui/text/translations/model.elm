@@ -184,13 +184,18 @@ getTextWord model instance phrase =
 
 setTextWords : Model -> List TextWord -> Model
 setTextWords model text_words =
-  List.foldl (\text_word model ->
-    let
-      phrase = Text.Translations.TextWord.phrase text_word
-      instance = Text.Translations.TextWord.instance text_word
-    in
-      setTextWord model instance phrase text_word)
-  model text_words
+  let
+    -- ensure we're initializing the arrays in the right order
+    sorted_text_words =
+      List.sortBy (\text_word -> Text.Translations.TextWord.instance text_word) text_words
+  in
+    List.foldl (\text_word model ->
+      let
+        phrase = Text.Translations.TextWord.phrase text_word
+        instance = Text.Translations.TextWord.instance text_word
+      in
+        setTextWord model instance phrase text_word)
+    model sorted_text_words
 
 setTextWordsForPhrase : Model -> Phrase -> List TextWord -> Model
 setTextWordsForPhrase model phrase text_words =

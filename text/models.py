@@ -1,7 +1,6 @@
-from typing import TypeVar, Optional, List, Dict
+from typing import Optional, List, Dict
 
 from django.db import models
-
 from mixins.model import Timestamped, WriteLockable, WriteLocked
 from tag.models import Taggable
 
@@ -83,11 +82,37 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
         # word instances are tracked across the entire text
         words = dict()
 
-        for section in self.sections.prefetch_related('translated_words__translations').all():
+        # translated_words__translations joins TextSections with TextWords and their TextWordTranslations
+
+        # translated_words__group_word__group__translations
+        # joins TextSections with TextWords, their TextGroupWord, TextWordGroup and the group's TextWordGroupTranslation
+        for section in self.sections.prefetch_related(
+                'translated_words__translations').prefetch_related(
+                'translated_words__group_word__group__translations').all():
+
+            seen_group = dict()
+
             for text_word in section.translated_words.all():
                 words.setdefault(text_word.word, [])
 
                 words[text_word.word].append(text_word.to_translations_dict())
+
+                # if the word is part of a word group, append the group to our list of words
+                try:
+                    word_group = text_word.group_word.group
+
+                    word_group_instance_name = '_'.join([word_group.phrase, str(word_group.instance)])
+
+                    if word_group_instance_name in seen_group:
+                        continue
+
+                    seen_group.setdefault(word_group_instance_name, 0)
+                    seen_group[word_group_instance_name] += 1
+
+                    words.setdefault(word_group.phrase, [])
+                    words[word_group.phrase].append(word_group.to_translations_dict())
+                except models.ObjectDoesNotExist:
+                    pass
 
         return words
 
@@ -320,4 +345,4 @@ class TextSection(TextSectionDefinitionsMixin, Timestamped, models.Model):
         }
 
     def __str__(self):
-        return self.text.title
+        return f'Text Section {self.order} of {self.text.title}'
