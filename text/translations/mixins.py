@@ -17,6 +17,27 @@ from text.glosbe.api import GlosbeAPI, GlosbeThrottlingException
 logger = logging.getLogger('django')
 
 
+class TextWordGrammemes(models.Model):
+    class Meta:
+        abstract = True
+
+    pos = models.CharField(max_length=32, null=True, blank=True)
+    tense = models.CharField(max_length=32, null=True, blank=True)
+    aspect = models.CharField(max_length=32, null=True, blank=True)
+    form = models.CharField(max_length=32, null=True, blank=True)
+    mood = models.CharField(max_length=32, null=True, blank=True)
+
+    @property
+    def grammemes(self):
+        return {
+            'pos': self.pos,
+            'tense': self.tense,
+            'aspect': self.aspect,
+            'form': self.form,
+            'mood': self.mood
+        }
+
+
 class TextSectionDefinitionsMixin(models.Model):
     class Meta:
         abstract = True

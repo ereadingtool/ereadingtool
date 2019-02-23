@@ -1,9 +1,10 @@
 from django.db import models
 
 from text.translations.models import TextWord
+from text.translations.mixins import TextWordGrammemes
 
 
-class TextWordGroup(models.Model):
+class TextWordGroup(TextWordGrammemes, models.Model):
     instance = models.IntegerField(default=0)
 
     @property
