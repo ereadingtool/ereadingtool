@@ -34,6 +34,7 @@ type alias Flags = { group_word_endpoint_url: String, csrftoken : Flags.CSRFToke
 
 type alias Translation = {
    id: Int
+ , endpoint: String
  , correct_for_context: Bool
  , text: String
  }

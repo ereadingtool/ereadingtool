@@ -1,5 +1,7 @@
 from django.db import models
 
+from django.urls import reverse
+
 from text.translations.models import TextWord
 from text.translations.mixins import TextWordGrammemes
 
@@ -19,7 +21,11 @@ class TextWordGroup(TextWordGrammemes, models.Model):
             'grammemes': None,
             'translations': None,
             'group': None,
-            'word_type': 'compound'
+            'word_type': 'compound',
+            'endpoints': {
+                'text_word': reverse('text-word-api', kwargs={'pk': self.pk}),
+                'translations': reverse('text-word-translation-api', kwargs={'pk': self.pk})
+            }
         }
 
         return translation_dict

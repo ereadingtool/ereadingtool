@@ -83,6 +83,7 @@ textWordTranslationsDecoder : Json.Decode.Decoder Translation
 textWordTranslationsDecoder =
   decode Translation
     |> required "id" Json.Decode.int
+    |> required "endpoint" Json.Decode.string
     |> required "correct_for_context" Json.Decode.bool
     |> required "text" Json.Decode.string
 
@@ -108,7 +109,7 @@ wordHelpDecoder word_type =
   case word_type of
     "single" ->
       Json.Decode.field "group"
-        (Json.Decode.map Text.Translations.TextWord.Word (Json.Decode.nullable textGroupDetailsDecoder))
+        (Json.Decode.map Text.Translations.TextWord.SingleWord (Json.Decode.nullable textGroupDetailsDecoder))
 
     "compound" ->
       Json.Decode.succeed Text.Translations.TextWord.CompoundWord
@@ -116,15 +117,22 @@ wordHelpDecoder word_type =
     _ ->
       Json.Decode.fail "Unsupported word type"
 
+textWordEndpointsDecoder : Json.Decode.Decoder Text.Translations.TextWord.Endpoints
+textWordEndpointsDecoder =
+  decode Text.Translations.TextWord.Endpoints
+    |> required "text_word" Json.Decode.string
+    |> required "translations" Json.Decode.string
+
 textWordInstanceDecoder : Json.Decode.Decoder Text.Translations.TextWord.TextWord
 textWordInstanceDecoder =
-  Json.Decode.map6 Text.Translations.TextWord.new
+  Json.Decode.map7 Text.Translations.TextWord.new
     (Json.Decode.field "id" Json.Decode.int)
     (Json.Decode.field "instance" Json.Decode.int)
     (Json.Decode.field "word" Json.Decode.string)
     (Json.Decode.field "grammemes" (Json.Decode.nullable grammemesDecoder))
     (Json.Decode.field "translations" (Json.Decode.nullable (Json.Decode.list textWordTranslationsDecoder)))
     wordDecoder
+    (Json.Decode.field "endpoints" textWordEndpointsDecoder)
 
 grammemesDecoder : Json.Decode.Decoder Text.Translations.Grammemes
 grammemesDecoder =

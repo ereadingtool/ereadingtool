@@ -2,6 +2,8 @@ from typing import Dict, AnyStr, Optional
 
 from django.db import models
 
+from django.urls import reverse
+
 from text.models import TextSection
 from text.translations.mixins import TextWordGrammemes
 
@@ -52,7 +54,11 @@ class TextWord(TextWordGrammemes, models.Model):
             'translations': [translation.to_dict() for translation in
                              self.translations.all()] or None,
             'group': None,
-            'word_type': 'single'
+            'word_type': 'single',
+            'endpoints': {
+                'text_word': reverse('text-word-api', kwargs={'pk': self.pk}),
+                'translations': reverse('text-word-translation-api', kwargs={'pk': self.pk})
+            }
         }
 
         try:
@@ -117,6 +123,7 @@ class TextWordTranslation(models.Model):
     def to_dict(self):
         return {
             'id': self.pk,
+            'endpoint': reverse('text-translation-api', kwargs={'tr_pk': self.pk}),
             'correct_for_context': self.correct_for_context,
             'text': self.phrase
         }

@@ -175,10 +175,10 @@ matchTranslations parent_msg model word_instance =
 deleteTranslation : (Msg -> msg) -> Flags.CSRFToken -> TextWord -> Translation -> Cmd msg
 deleteTranslation msg csrftoken text_word translation =
   let
-    endpoint_uri = Config.text_word_api_endpoint (Text.Translations.TextWord.id text_word)
+    endpoint_uri = Text.Translations.TextWord.translations_endpoint text_word
     headers = [Http.header "X-CSRFToken" csrftoken]
     encoded_translation = Text.Translations.Encode.deleteTextTranslationEncode translation.id
-    body = (Http.jsonBody encoded_translation)
+    body = Http.jsonBody encoded_translation
     request =
       HttpHelpers.delete_with_headers
         endpoint_uri headers body Text.Translations.Decode.textTranslationRemoveRespDecoder
@@ -201,10 +201,10 @@ putMatchTranslations msg csrftoken translations text_words =
 postTranslation : (Msg -> msg) -> Flags.CSRFToken -> TextWord -> String -> Cmd msg
 postTranslation msg csrftoken text_word translation_text =
   let
-    endpoint_uri = Config.text_word_api_endpoint (Text.Translations.TextWord.id text_word)
+    endpoint_uri = Text.Translations.TextWord.translations_endpoint text_word
     headers = [Http.header "X-CSRFToken" csrftoken]
     encoded_translation = Text.Translations.Encode.newTextTranslationEncoder translation_text
-    body = (Http.jsonBody encoded_translation)
+    body = Http.jsonBody encoded_translation
 
     request =
       HttpHelpers.post_with_headers endpoint_uri headers body Text.Translations.Decode.textTranslationAddRespDecoder
@@ -214,7 +214,6 @@ postTranslation msg csrftoken text_word translation_text =
 updateTranslationAsCorrect : (Msg -> msg) -> Flags.CSRFToken -> Translation -> Cmd msg
 updateTranslationAsCorrect msg csrftoken translation =
   let
-    endpoint_uri = Config.text_translation_api_endpoint translation.id
     headers = [Http.header "X-CSRFToken" csrftoken]
 
     encoded_translation =
@@ -224,7 +223,7 @@ updateTranslationAsCorrect msg csrftoken translation =
 
     request =
       HttpHelpers.put_with_headers
-        endpoint_uri headers body Text.Translations.Decode.textTranslationUpdateRespDecoder
+        translation.endpoint headers body Text.Translations.Decode.textTranslationUpdateRespDecoder
   in
     Http.send (msg << UpdateTextTranslation) request
 
