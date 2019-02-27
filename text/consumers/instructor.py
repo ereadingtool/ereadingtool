@@ -15,7 +15,7 @@ from text.consumers.base import TextReaderConsumer
 from text_reading.models import InstructorTextReading
 from text.models import TextSection
 
-from text.translations.models import TextWordTranslation, TextWord
+from text.translations.models import TextPhraseTranslation, TextWord
 
 logger = logging.getLogger('django.consumers')
 
@@ -70,7 +70,7 @@ class ParseTextSectionForDefinitions(SyncConsumer):
                         if len(word_instance['translations']):
                             for j, translation in enumerate(word_instance['translations']):
                                 if translation.phrase:
-                                    text_word_definition = TextWordTranslation.objects.create(
+                                    text_word_definition = TextPhraseTranslation.objects.create(
                                         word=text_word,
                                         phrase=translation.phrase.text,
                                         correct_for_context=(True if j == 0 else False))

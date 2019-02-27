@@ -135,7 +135,7 @@ class TestTextWordTranslations(TestUser, TestCase):
         resp = self.instructor.put(
             reverse_lazy('text-translation-match-method'),
             json.dumps({
-                'text_word_ids': [test_text_word.pk],
+                'words': [{'id': test_text_word.pk, 'word_type': 'single'}],
                 'translations': [
                     {'correct_for_context': True, 'phrase': 'stuff'},
                     {'correct_for_context': False, 'phrase': 'stuff 2'},

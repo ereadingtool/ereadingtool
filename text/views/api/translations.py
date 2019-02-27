@@ -4,13 +4,14 @@ import jsonschema
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpRequest, HttpResponseServerError
-from django.http import HttpResponseNotAllowed
 from django.urls import reverse_lazy
 from django.views.generic import View
 
 from django.db import transaction, DatabaseError
+from django.core.exceptions import ObjectDoesNotExist
 
-from text.translations.models import TextWordTranslation, TextWord
+from text.translations.mixins import TextPhraseTranslation
+from text.translations.phrase import TextPhrase
 
 
 class TextTranslationMergeAPIView(LoginRequiredMixin, View):
@@ -21,29 +22,7 @@ class TextTranslationMergeAPIView(LoginRequiredMixin, View):
         try:
             translation_merge_params = json.loads(request.body.decode('utf8'))
 
-            jsonschema.validate(translation_merge_params, {
-                'type': 'object',
-                'properties': {
-                    'translations': {
-                        'type': 'array',
-                        'items': {
-                            'type': 'object',
-                            'properties': {
-                                'correct_for_context': {'type': 'boolean'},
-                                'phrase': {'type': 'string'},
-                            }
-                        },
-                        'minItems': 1
-                    },
-                    'text_word_ids': {
-                        'type': 'array',
-                        'items': {
-                            'type': 'integer',
-                        },
-                        'minItems': 1
-                    }
-                }
-            })
+            jsonschema.validate(translation_merge_params, TextPhraseTranslation.to_merge_json_schema())
 
         except json.JSONDecodeError as decode_error:
             return HttpResponse(json.dumps({'errors': {'json': str(decode_error)}}), status=400)
@@ -52,74 +31,34 @@ class TextTranslationMergeAPIView(LoginRequiredMixin, View):
             return HttpResponse(json.dumps({'errors': {'json': str(validation_error)}}), status=400)
 
         try:
-            text_words = []
+            text_phrases = []
 
-            for text_word_id in translation_merge_params['text_word_ids']:
-                text_word = TextWord.objects.get(pk=text_word_id)
+            for text_phrase in translation_merge_params['words']:
+                text_phrase, create_translation = TextPhrase.get(**text_phrase)
 
                 with transaction.atomic():
-                    TextWordTranslation.objects.filter(word=text_word.pk).delete()
+                    text_phrase._meta.model.objects.filter(word=text_phrase.pk).delete()
 
                     for translation in translation_merge_params['translations']:
-                        translation['word'] = text_word
-                        TextWordTranslation.create(**translation)
+                        translation['word'] = text_phrase
+                        create_translation(**translation)
 
-                    text_words.append(text_word)
+                    text_phrases.append(text_phrase)
 
             response = []
 
-            for i, text_word in enumerate(text_words):
+            for i, text_phrase in enumerate(text_phrases):
                 response.append({
-                    'id': text_word.id,
+                    'id': text_phrase.id,
                     'instance': i,
-                    'word': text_word.word.lower(),
-                    'grammemes': text_word.grammemes,
+                    'word': text_phrase.word.lower(),
+                    'grammemes': text_phrase.grammemes,
                     'translations':
-                        [translation.to_dict() for translation in text_word.translations.all()]
-                        if text_word.translations.exists() else None
+                        [translation.to_dict() for translation in text_phrase.translations.all()]
+                        if text_phrase.translations.exists() else None
                 })
 
             return HttpResponse(json.dumps(response), status=200)
 
-        except (DatabaseError, TextWord.DoesNotExist) as e:
-            return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
-
-
-class TextTranslationAPIView(LoginRequiredMixin, View):
-    login_url = reverse_lazy('instructor-login')
-    allowed_methods = ['put']
-
-    def put(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        text_word_translation = None
-
-        if 'tr_pk' not in kwargs:
-            return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
-
-        try:
-            text_translation_update_params = json.loads(request.body.decode('utf8'))
-
-            jsonschema.validate(text_translation_update_params, TextWordTranslation.to_update_json_schema())
-
-        except json.JSONDecodeError as decode_error:
-            return HttpResponse(json.dumps({'errors': {'json': str(decode_error)}}), status=400)
-
-        except jsonschema.ValidationError as validation_error:
-            return HttpResponse(json.dumps({'errors': {'json': str(validation_error)}}), status=400)
-
-        try:
-            text_word_translation = TextWordTranslation.objects.get(pk=kwargs['tr_pk'])
-
-            with transaction.atomic():
-                TextWordTranslation.objects.filter(word=text_word_translation.word).update(correct_for_context=False)
-                TextWordTranslation.objects.filter(pk=kwargs['tr_pk']).update(**text_translation_update_params)
-
-            text_word_translation.refresh_from_db()
-
-            return HttpResponse(json.dumps({
-                'word': text_word_translation.word.word,
-                'instance': text_word_translation.word.instance,
-                'translation': text_word_translation.to_dict()
-            }))
-
-        except TextWordTranslation.DoesNotExist:
+        except (DatabaseError, ObjectDoesNotExist) as e:
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))

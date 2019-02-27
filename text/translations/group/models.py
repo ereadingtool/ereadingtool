@@ -1,9 +1,11 @@
+from typing import AnyStr, Optional
+
 from django.db import models
 
 from django.urls import reverse
 
 from text.translations.models import TextWord
-from text.translations.mixins import TextWordGrammemes
+from text.translations.mixins import TextWordGrammemes, TextPhraseTranslation
 
 
 class TextWordGroup(TextWordGrammemes, models.Model):
@@ -18,7 +20,7 @@ class TextWordGroup(TextWordGrammemes, models.Model):
             'id': self.pk,
             'instance': self.instance,
             'word': self.phrase,
-            'grammemes': None,
+            'grammemes': self.grammemes,
             'translations': None,
             'group': None,
             'word_type': 'compound',
@@ -41,11 +43,11 @@ class TextGroupWord(models.Model):
     order = models.IntegerField(default=0)
 
 
-class TextWordGroupTranslation(models.Model):
+class TextWordGroupTranslation(TextPhraseTranslation, models.Model):
     group = models.ForeignKey(TextWordGroup, related_name='translations', on_delete=models.CASCADE)
 
-    correct_for_context = models.BooleanField(default=False)
-    phrase = models.TextField()
+    def __str__(self):
+        return f'{self.group.phrase} - {self.phrase}'
 
     def to_dict(self):
         return {
@@ -54,3 +56,8 @@ class TextWordGroupTranslation(models.Model):
             'text': self.phrase
         }
 
+    @classmethod
+    def create(cls, group: TextWordGroup, phrase: AnyStr, correct_for_context: Optional[bool] = False):
+        text_group_translation = cls.objects.create(group=group, phrase=phrase, correct_for_context=correct_for_context)
+
+        return text_group_translation

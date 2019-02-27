@@ -5,7 +5,7 @@ from django.db import models
 from django.urls import reverse
 
 from text.models import TextSection
-from text.translations.mixins import TextWordGrammemes
+from text.translations.mixins import TextWordGrammemes, TextPhraseTranslation
 
 
 class TextWord(TextWordGrammemes, models.Model):
@@ -80,21 +80,6 @@ class TextWord(TextWordGrammemes, models.Model):
         return TextWord.objects.create(**params)
 
     @classmethod
-    def grammeme_add_schema(cls) -> Dict:
-        grammeme_schema = {
-            'type': 'object',
-            'properties': {
-                'pos': {'type': 'string'},
-                'tense': {'type': 'string'},
-                'aspect': {'type': 'string'},
-                'form': {'type': 'string'},
-                'mood': {'type': 'string'}
-            }
-        }
-
-        return grammeme_schema
-
-    @classmethod
     def to_add_json_schema(cls) -> Dict:
         schema = {
             'type': 'object',
@@ -111,11 +96,8 @@ class TextWord(TextWordGrammemes, models.Model):
         return schema
 
 
-class TextWordTranslation(models.Model):
+class TextWordTranslation(TextPhraseTranslation, models.Model):
     word = models.ForeignKey(TextWord, related_name='translations', on_delete=models.CASCADE)
-    correct_for_context = models.BooleanField(default=False)
-
-    phrase = models.TextField()
 
     def __str__(self):
         return f'{self.word} - {self.phrase}'
@@ -123,50 +105,10 @@ class TextWordTranslation(models.Model):
     def to_dict(self):
         return {
             'id': self.pk,
-            'endpoint': reverse('text-translation-api', kwargs={'tr_pk': self.pk}),
+            'endpoint': reverse('text-word-translation-api', kwargs={'pk': self.word.pk, 'tr_pk': self.pk}),
             'correct_for_context': self.correct_for_context,
             'text': self.phrase
         }
-
-    @classmethod
-    def to_set_json_schema(cls) -> Dict:
-        schema = {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'id': {'type': 'number'},
-                    'correct_for_context': {'type': 'boolean'},
-                    'text': {'type': 'string'},
-                }
-            },
-            'minItems': 1
-        }
-
-        return schema
-
-    @classmethod
-    def to_add_json_schema(cls) -> Dict:
-        schema = {
-            'type': 'object',
-            'properties': {
-                'phrase': {'type': 'string'},
-            }
-        }
-
-        return schema
-
-    @classmethod
-    def to_update_json_schema(cls) -> Dict:
-        schema = {
-            'type': 'object',
-            'properties': {
-                'correct_for_context': {'type': 'boolean'},
-                'text': {'type': 'string'},
-            }
-        }
-
-        return schema
 
     @classmethod
     def create(cls, word: TextWord, phrase: AnyStr, correct_for_context: Optional[bool] = False):
