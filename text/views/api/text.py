@@ -288,7 +288,7 @@ class TextAPIView(LoginRequiredMixin, View):
             return text_queryset
 
         if statuses == {'unread'}:
-            return unread_text_queryset_for_user
+            return unread_text_queryset_for_user.filter(**filter_by)
 
         if 'read' in statuses:
             status_filters.append(models.Q(num_of_complete__gte=1) & models.Q(num_of_in_progress=0))
@@ -303,7 +303,7 @@ class TextAPIView(LoginRequiredMixin, View):
 
         if 'unread' in statuses:
             # (set of unread texts by user) | (set of texts read by user that are in_progress or read)
-            return unread_text_queryset_for_user.union(
+            return unread_text_queryset_for_user.filter(**filter_by).union(
                 text_queryset_for_user
             )
 
