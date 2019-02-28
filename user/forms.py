@@ -97,11 +97,17 @@ class InstructorSignUpForm(SignUpForm):
     def clean(self):
         cleaned_data = super(InstructorSignUpForm, self).clean()
 
-        invite_code = cleaned_data['invite_code']
-        email = cleaned_data['email']
+        email = None
+        invite_code = None
 
         validation_error = forms.ValidationError(f'This invite code is expired or invalid.  '
                                                  f'Please verify that the e-mail address and invite code are correct.')
+
+        try:
+            invite_code = cleaned_data['invite_code']
+            email = cleaned_data['email']
+        except KeyError:
+            self.add_error('invite_code', validation_error)
 
         try:
             invite = Invite.objects.get(email=email, key=invite_code)
