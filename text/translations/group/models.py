@@ -11,6 +11,8 @@ from text.translations.mixins import TextWordGrammemes, TextPhraseTranslation
 class TextWordGroup(TextWordGrammemes, models.Model):
     instance = models.IntegerField(default=0)
 
+    word_type = 'compound'
+
     @property
     def phrase(self):
         return ' '.join([component.word.word for component in self.components.order_by('order')])
@@ -23,7 +25,7 @@ class TextWordGroup(TextWordGrammemes, models.Model):
             'grammemes': self.grammemes,
             'translations': None,
             'group': None,
-            'word_type': 'compound',
+            'word_type': self.word_type,
             'endpoints': {
                 'text_word': reverse('text-word-api', kwargs={'pk': self.pk}),
                 'translations': reverse('text-word-translation-api', kwargs={'pk': self.pk})

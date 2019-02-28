@@ -4,7 +4,7 @@ from text.views.template import TextLoadElm, TextView, TextSearchView, TextSearc
 from text.views.api.text import TextAPIView
 from text.views.api.tag import TextTagAPIView
 from text.views.api.lock import TextLockAPIView
-from text.views.api.translations import TextTranslationMergeAPIView
+from text.views.api.translations import TextTranslationMatchAPIView
 from text.views.api.text_word.word import TextWordAPIView, TextWordTranslationsAPIView
 from text.views.api.text_word.group import TextWordGroupAPIView
 
@@ -18,10 +18,10 @@ urlpatterns = [
     path('api/text/word/', TextWordAPIView.as_view(),
          name='text-word-api'),
 
-    path('api/text/translations/match/', TextTranslationMergeAPIView.as_view(),
+    path('api/text/translations/match/', TextTranslationMatchAPIView.as_view(),
          name='text-translation-match-method'),
 
-    path('api/text/word/<int:pk>/translation/<int:tr_pk>/', TextWordTranslationsAPIView.as_view(),
+    path('api/text/<str:word_type>/word/<int:pk>/translation/<int:tr_pk>/', TextWordTranslationsAPIView.as_view(),
          name='text-word-translation-api'),
 
     path('api/text/word/<int:pk>/translation/', TextWordTranslationsAPIView.as_view(),

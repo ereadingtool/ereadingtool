@@ -14,7 +14,7 @@ from text.translations.mixins import TextPhraseTranslation
 from text.translations.phrase import TextPhrase
 
 
-class TextTranslationMergeAPIView(LoginRequiredMixin, View):
+class TextTranslationMatchAPIView(LoginRequiredMixin, View):
     login_url = reverse_lazy('instructor-login')
     allowed_methods = ['put']
 
@@ -37,7 +37,7 @@ class TextTranslationMergeAPIView(LoginRequiredMixin, View):
                 text_phrase, create_translation = TextPhrase.get(**text_phrase)
 
                 with transaction.atomic():
-                    text_phrase._meta.model.objects.filter(word=text_phrase.pk).delete()
+                    text_phrase.translations.filter().delete()
 
                     for translation in translation_merge_params['translations']:
                         translation['word'] = text_phrase
@@ -47,16 +47,8 @@ class TextTranslationMergeAPIView(LoginRequiredMixin, View):
 
             response = []
 
-            for i, text_phrase in enumerate(text_phrases):
-                response.append({
-                    'id': text_phrase.id,
-                    'instance': i,
-                    'word': text_phrase.word.lower(),
-                    'grammemes': text_phrase.grammemes,
-                    'translations':
-                        [translation.to_dict() for translation in text_phrase.translations.all()]
-                        if text_phrase.translations.exists() else None
-                })
+            for text_phrase in text_phrases:
+                response.append(text_phrase.to_translations_dict())
 
             return HttpResponse(json.dumps(response), status=200)
 

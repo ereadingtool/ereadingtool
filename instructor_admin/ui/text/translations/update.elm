@@ -175,13 +175,12 @@ matchTranslations parent_msg model word_instance =
 deleteTranslation : (Msg -> msg) -> Flags.CSRFToken -> TextWord -> Translation -> Cmd msg
 deleteTranslation msg csrftoken text_word translation =
   let
-    endpoint_uri = Text.Translations.TextWord.translations_endpoint text_word
     headers = [Http.header "X-CSRFToken" csrftoken]
     encoded_translation = Text.Translations.Encode.deleteTextTranslationEncode translation.id
     body = Http.jsonBody encoded_translation
     request =
       HttpHelpers.delete_with_headers
-        endpoint_uri headers body Text.Translations.Decode.textTranslationRemoveRespDecoder
+        translation.endpoint headers body Text.Translations.Decode.textTranslationRemoveRespDecoder
   in
     Http.send (msg << DeletedTranslation) request
 

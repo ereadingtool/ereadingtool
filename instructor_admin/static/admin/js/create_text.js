@@ -24233,6 +24233,18 @@ var _user$project$Text_Translations_TextWord$instance = function (_p11) {
 	var _p12 = _p11;
 	return _p12._1;
 };
+var _user$project$Text_Translations_TextWord$word = function (_p13) {
+	var _p14 = _p13;
+	return _p14._5;
+};
+var _user$project$Text_Translations_TextWord$wordType = function (text_word) {
+	var _p15 = _user$project$Text_Translations_TextWord$word(text_word);
+	if (_p15.ctor === 'SingleWord') {
+		return 'single';
+	} else {
+		return 'compound';
+	}
+};
 var _user$project$Text_Translations_TextWord$Endpoints = F2(
 	function (a, b) {
 		return {text_word: a, translations: b};
@@ -24250,15 +24262,15 @@ var _user$project$Text_Translations_TextWord$new = F7(
 		return A7(_user$project$Text_Translations_TextWord$TextWord, id, instance, phrase, grammemes, translations, word, endpoint);
 	});
 var _user$project$Text_Translations_TextWord$addTranslation = F2(
-	function (_p13, translation) {
-		var _p14 = _p13;
+	function (_p16, translation) {
+		var _p17 = _p16;
 		var new_translations = function () {
-			var _p15 = _p14._4;
-			if (_p15.ctor === 'Just') {
+			var _p18 = _p17._4;
+			if (_p18.ctor === 'Just') {
 				return _elm_lang$core$Maybe$Just(
 					A2(
 						_elm_lang$core$Basics_ops['++'],
-						_p15._0,
+						_p18._0,
 						{
 							ctor: '::',
 							_0: translation,
@@ -24268,41 +24280,17 @@ var _user$project$Text_Translations_TextWord$addTranslation = F2(
 				return _elm_lang$core$Maybe$Nothing;
 			}
 		}();
-		return A7(_user$project$Text_Translations_TextWord$TextWord, _p14._0, _p14._1, _p14._2, _p14._3, new_translations, _p14._5, _p14._6);
+		return A7(_user$project$Text_Translations_TextWord$TextWord, _p17._0, _p17._1, _p17._2, _p17._3, new_translations, _p17._5, _p17._6);
 	});
 var _user$project$Text_Translations_TextWord$removeTranslation = F2(
-	function (_p16, text_word_translation) {
-		var _p17 = _p16;
-		var _p18 = _p17._4;
-		if (_p18.ctor === 'Just') {
-			var new_translations = A2(
-				_elm_lang$core$List$filter,
-				function (tr) {
-					return !_elm_lang$core$Native_Utils.eq(tr.id, text_word_translation.id);
-				},
-				_p18._0);
-			return A7(
-				_user$project$Text_Translations_TextWord$TextWord,
-				_p17._0,
-				_p17._1,
-				_p17._2,
-				_p17._3,
-				_elm_lang$core$Maybe$Just(new_translations),
-				_p17._5,
-				_p17._6);
-		} else {
-			return _p17;
-		}
-	});
-var _user$project$Text_Translations_TextWord$updateTranslation = F2(
 	function (_p19, text_word_translation) {
 		var _p20 = _p19;
 		var _p21 = _p20._4;
 		if (_p21.ctor === 'Just') {
 			var new_translations = A2(
-				_elm_lang$core$List$map,
+				_elm_lang$core$List$filter,
 				function (tr) {
-					return _elm_lang$core$Native_Utils.eq(tr.id, text_word_translation.id) ? text_word_translation : tr;
+					return !_elm_lang$core$Native_Utils.eq(tr.id, text_word_translation.id);
 				},
 				_p21._0);
 			return A7(
@@ -24318,10 +24306,34 @@ var _user$project$Text_Translations_TextWord$updateTranslation = F2(
 			return _p20;
 		}
 	});
-var _user$project$Text_Translations_TextWord$setNoTRCorrectForContext = function (_p22) {
-	var _p23 = _p22;
-	var _p24 = _p23._4;
-	if (_p24.ctor === 'Just') {
+var _user$project$Text_Translations_TextWord$updateTranslation = F2(
+	function (_p22, text_word_translation) {
+		var _p23 = _p22;
+		var _p24 = _p23._4;
+		if (_p24.ctor === 'Just') {
+			var new_translations = A2(
+				_elm_lang$core$List$map,
+				function (tr) {
+					return _elm_lang$core$Native_Utils.eq(tr.id, text_word_translation.id) ? text_word_translation : tr;
+				},
+				_p24._0);
+			return A7(
+				_user$project$Text_Translations_TextWord$TextWord,
+				_p23._0,
+				_p23._1,
+				_p23._2,
+				_p23._3,
+				_elm_lang$core$Maybe$Just(new_translations),
+				_p23._5,
+				_p23._6);
+		} else {
+			return _p23;
+		}
+	});
+var _user$project$Text_Translations_TextWord$setNoTRCorrectForContext = function (_p25) {
+	var _p26 = _p25;
+	var _p27 = _p26._4;
+	if (_p27.ctor === 'Just') {
 		var new_translations = A2(
 			_elm_lang$core$List$map,
 			function (tr) {
@@ -24329,18 +24341,18 @@ var _user$project$Text_Translations_TextWord$setNoTRCorrectForContext = function
 					tr,
 					{correct_for_context: false});
 			},
-			_p24._0);
+			_p27._0);
 		return A7(
 			_user$project$Text_Translations_TextWord$TextWord,
-			_p23._0,
-			_p23._1,
-			_p23._2,
-			_p23._3,
+			_p26._0,
+			_p26._1,
+			_p26._2,
+			_p26._3,
 			_elm_lang$core$Maybe$Just(new_translations),
-			_p23._5,
-			_p23._6);
+			_p26._5,
+			_p26._6);
 	} else {
-		return _p23;
+		return _p26;
 	}
 };
 
@@ -30171,13 +30183,31 @@ var _user$project$Text_Translations_Encode$textTranslationsMergeEncoder = F2(
 				ctor: '::',
 				_0: {
 					ctor: '_Tuple2',
-					_0: 'text_word_ids',
+					_0: 'words',
 					_1: _elm_lang$core$Json_Encode$list(
 						A2(
 							_elm_lang$core$List$map,
 							function (tw) {
-								return _elm_lang$core$Json_Encode$int(
-									_user$project$Text_Translations_TextWord$id(tw));
+								return _elm_lang$core$Json_Encode$object(
+									{
+										ctor: '::',
+										_0: {
+											ctor: '_Tuple2',
+											_0: 'id',
+											_1: _elm_lang$core$Json_Encode$int(
+												_user$project$Text_Translations_TextWord$id(tw))
+										},
+										_1: {
+											ctor: '::',
+											_0: {
+												ctor: '_Tuple2',
+												_0: 'word_type',
+												_1: _elm_lang$core$Json_Encode$string(
+													_user$project$Text_Translations_TextWord$wordType(tw))
+											},
+											_1: {ctor: '[]'}
+										}
+									});
 							},
 							text_words))
 				},
@@ -30356,8 +30386,7 @@ var _user$project$Text_Translations_Update$deleteTranslation = F4(
 			_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
 			_1: {ctor: '[]'}
 		};
-		var endpoint_uri = _user$project$Text_Translations_TextWord$translations_endpoint(text_word);
-		var request = A4(_user$project$HttpHelpers$delete_with_headers, endpoint_uri, headers, body, _user$project$Text_Translations_Decode$textTranslationRemoveRespDecoder);
+		var request = A4(_user$project$HttpHelpers$delete_with_headers, translation.endpoint, headers, body, _user$project$Text_Translations_Decode$textTranslationRemoveRespDecoder);
 		return A2(
 			_elm_lang$http$Http$send,
 			function (_p4) {

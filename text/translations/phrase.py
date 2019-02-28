@@ -12,3 +12,13 @@ class TextPhrase(object):
 
         elif word_type == 'compound':
             return TextWordGroup.objects.get(pk=id), TextWordGroupTranslation.create
+
+
+class TextPhraseTranslation(object):
+    @classmethod
+    def get(cls, id: int, word_type: AnyStr):
+        if word_type == 'single':
+            return TextWordTranslation.objects.get(pk=id), TextWordTranslation.create
+
+        elif word_type == 'compound':
+            return TextWordGroupTranslation.objects.get(pk=id), TextWordGroupTranslation.create

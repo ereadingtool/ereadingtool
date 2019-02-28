@@ -18,8 +18,15 @@ textTranslationEncoder text_translation =
 textTranslationsMergeEncoder : List Translation -> List TextWord -> Encode.Value
 textTranslationsMergeEncoder text_word_translations text_words =
   Encode.object [
-    ("text_word_ids", Encode.list <| List.map (\tw -> Encode.int (Text.Translations.TextWord.id tw)) text_words)
-  , ("translations"
+    ( "words"
+    ,  Encode.list
+    <| List.map (\tw ->
+          Encode.object [
+            ("id", Encode.int (Text.Translations.TextWord.id tw))
+          , ("word_type", Encode.string (Text.Translations.TextWord.wordType tw))
+          ]
+       ) text_words)
+  , ( "translations"
     , Encode.list <| List.map
         (\twt ->
           Encode.object [

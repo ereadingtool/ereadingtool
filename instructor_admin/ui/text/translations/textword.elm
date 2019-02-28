@@ -13,6 +13,19 @@ type alias Endpoints = {
 type TextWord = TextWord Int Instance Phrase (Maybe Grammemes) (Maybe Translations) Word Endpoints
 
 
+wordType : TextWord -> String
+wordType text_word =
+  case (word text_word) of
+    SingleWord _ ->
+      "single"
+
+    CompoundWord ->
+      "compound"
+
+word : TextWord -> Word
+word (TextWord _ _ _ _ _ word _) =
+  word
+
 instance : TextWord -> Int
 instance (TextWord _ instance _ _ _ _ _) =
   instance

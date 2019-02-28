@@ -17,6 +17,8 @@ class TextWord(TextWordGrammemes, models.Model):
     instance = models.IntegerField(default=0)
     word = models.CharField(max_length=128, blank=False)
 
+    word_type = 'single'
+
     def __str__(self):
         return f'{self.word} instance {self.instance+1}'
 
@@ -54,7 +56,7 @@ class TextWord(TextWordGrammemes, models.Model):
             'translations': [translation.to_dict() for translation in
                              self.translations.all()] or None,
             'group': None,
-            'word_type': 'single',
+            'word_type': self.word_type,
             'endpoints': {
                 'text_word': reverse('text-word-api', kwargs={'pk': self.pk}),
                 'translations': reverse('text-word-translation-api', kwargs={'pk': self.pk})
@@ -105,7 +107,11 @@ class TextWordTranslation(TextPhraseTranslation, models.Model):
     def to_dict(self):
         return {
             'id': self.pk,
-            'endpoint': reverse('text-word-translation-api', kwargs={'pk': self.word.pk, 'tr_pk': self.pk}),
+            'endpoint': reverse('text-word-translation-api', kwargs={
+                'pk': self.word.pk,
+                'tr_pk': self.pk,
+                'word_type': self.word.word_type
+            }),
             'correct_for_context': self.correct_for_context,
             'text': self.phrase
         }
