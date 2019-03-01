@@ -129,6 +129,12 @@ update parent_msg msg model =
     DeletedTranslation (Err err) -> let _ = Debug.log "error decoding deleting text translations" err in
       (model, Cmd.none)
 
+    SetGrammeme word_instance grammeme_str ->
+      (model, Cmd.none)
+
+    RemoveGrammeme word_instance grammeme_str ->
+      (model, Cmd.none)
+
 
 postMergeWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> Cmd msg
 postMergeWords parent_msg model csrftoken word_instances =

@@ -1,11 +1,10 @@
 module Text.Translations exposing (..)
 
-import Json.Decode
-import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
-
 import Flags
 
 import Dict exposing (Dict)
+
+import Set exposing (Set)
 
 
 type alias Id = String
@@ -48,3 +47,29 @@ type alias Grammemes = {
   , form: Maybe String
   , mood: Maybe String }
 
+grammeme_keys : Set String
+grammeme_keys = Set.fromList [
+   "pos"
+ , "tense"
+ , "aspect"
+ , "form"
+ , "mood"
+ ]
+
+maybe_to_bool : Maybe a -> Bool
+maybe_to_bool maybe =
+  case maybe of
+    Just _ ->
+      True
+
+    Nothing ->
+      False
+
+defined_grammemes : Grammemes -> List (String, Bool)
+defined_grammemes grammemes =
+  [ ("pos", maybe_to_bool grammemes.pos)
+  , ("tense", maybe_to_bool grammemes.tense)
+  , ("aspect", maybe_to_bool grammemes.aspect)
+  , ("form", maybe_to_bool grammemes.form)
+  , ("mood", maybe_to_bool grammemes.mood)
+  ]

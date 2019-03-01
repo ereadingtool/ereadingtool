@@ -34,6 +34,10 @@ type Msg =
   | DeleteTranslation TextWord Translation
   | MatchTranslations WordInstance
 
+  -- grammemes
+  | SetGrammeme WordInstance String
+  | RemoveGrammeme WordInstance String
+
   -- result msgs
   -- words
   | MergedWords (Result Http.Error Text.Translations.Decode.TextWordMergeResp)

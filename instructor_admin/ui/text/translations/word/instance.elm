@@ -2,10 +2,25 @@ module Text.Translations.Word.Instance exposing (..)
 
 import Text.Translations exposing (..)
 
+import Set exposing (Set)
+
 import Text.Translations.TextWord exposing (TextWord)
 
 type WordInstance = WordInstance Instance Token (Maybe TextWord)
 
+
+grammeme_keys : Set String
+grammeme_keys =
+  Text.Translations.grammeme_keys
+
+grammemes : WordInstance -> Maybe Grammemes
+grammemes word_instance =
+  case (textWord word_instance) of
+    Just text_word ->
+      Text.Translations.TextWord.grammemes text_word
+
+    Nothing ->
+      Nothing
 
 id : WordInstance -> Id
 id (WordInstance instance token _) =

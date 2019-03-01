@@ -615,8 +615,8 @@ body {
 }
 
 .word > .grammemes {
-    display: inline-block;
-    margin-left: 10px;
+    display: grid;
+    font-size: smaller;
 }
 
 #translations_tab {
