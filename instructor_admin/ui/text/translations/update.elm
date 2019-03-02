@@ -126,11 +126,17 @@ update parent_msg msg model =
         (Text.Translations.Model.removeTextTranslation model instance word translation, Cmd.none)
 
     -- handle user-friendly msgs
-    DeletedTranslation (Err err) -> let _ = Debug.log "error decoding deleting text translations" err in
+    DeletedTranslation (Err err) -> let _ = Debug.log "error deleting text translations" err in
       (model, Cmd.none)
 
-    SetGrammeme word_instance grammeme_str ->
-      (model, Cmd.none)
+    SelectGrammemeForEditing word_instance grammeme_name ->
+      (Text.Translations.Model.selectGrammemeForEditing model word_instance grammeme_name, Cmd.none)
+
+    InputGrammeme word_instance grammeme_value ->
+      (Text.Translations.Model.inputGrammeme model word_instance grammeme_value, Cmd.none)
+
+    SaveEditedGrammemes word_instance ->
+      Text.Translations.Model.saveEditedGrammemes model word_instance
 
     RemoveGrammeme word_instance grammeme_str ->
       (model, Cmd.none)

@@ -26359,13 +26359,97 @@ var _user$project$Text_Translations_Model$completeMerge = F4(
 		var merged_word_instance = A3(_user$project$Text_Translations_Model$newWordInstance, new_model, instance, phrase);
 		return A2(_user$project$Text_Translations_Model$editWord, new_model, merged_word_instance);
 	});
+var _user$project$Text_Translations_Model$selectGrammemeForEditing = F3(
+	function (model, word_instance, grammeme_name) {
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				editing_grammeme_for_instance: A3(
+					_elm_lang$core$Dict$insert,
+					_user$project$Text_Translations_Word_Instance$id(word_instance),
+					grammeme_name,
+					model.editing_grammeme_for_instance)
+			});
+	});
+var _user$project$Text_Translations_Model$editingGrammemesForWordInstance = F2(
+	function (model, word_instance) {
+		var _p11 = A2(
+			_elm_lang$core$Dict$get,
+			_user$project$Text_Translations_Word_Instance$id(word_instance),
+			model.editing_grammemes);
+		if (_p11.ctor === 'Just') {
+			return _p11._0;
+		} else {
+			return _elm_lang$core$Dict$empty;
+		}
+	});
+var _user$project$Text_Translations_Model$inputGrammeme = F3(
+	function (model, word_instance, grammeme_value) {
+		var update_grammeme_value = function (v) {
+			var _p12 = v;
+			if (_p12.ctor === 'Just') {
+				return _elm_lang$core$Maybe$Just(
+					A2(_elm_lang$core$Basics_ops['++'], _p12._0, grammeme_value));
+			} else {
+				return _elm_lang$core$Maybe$Just(grammeme_value);
+			}
+		};
+		var first_grammeme_name = A2(
+			_elm_lang$core$Maybe$withDefault,
+			'aspect',
+			_elm_lang$core$List$head(
+				_elm_lang$core$Set$toList(_user$project$Text_Translations_Word_Instance$grammeme_keys)));
+		var grammeme_name = function () {
+			var _p13 = A2(
+				_elm_lang$core$Dict$get,
+				_user$project$Text_Translations_Word_Instance$id(word_instance),
+				model.editing_grammeme_for_instance);
+			if (_p13.ctor === 'Just') {
+				return _p13._0;
+			} else {
+				return first_grammeme_name;
+			}
+		}();
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				editing_grammemes: A3(
+					_elm_lang$core$Dict$insert,
+					_user$project$Text_Translations_Word_Instance$id(word_instance),
+					A3(
+						_elm_lang$core$Dict$update,
+						grammeme_name,
+						update_grammeme_value,
+						A2(_user$project$Text_Translations_Model$editingGrammemesForWordInstance, model, word_instance)),
+					model.editing_grammemes)
+			});
+	});
+var _user$project$Text_Translations_Model$saveEditedGrammemes = F2(
+	function (model, word_instance) {
+		return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+	});
+var _user$project$Text_Translations_Model$selectedGrammemeValueForInstance = F2(
+	function (model, word_instance) {
+		var _p14 = A2(
+			_elm_lang$core$Dict$get,
+			_user$project$Text_Translations_Word_Instance$id(word_instance),
+			model.editing_grammeme_for_instance);
+		if (_p14.ctor === 'Just') {
+			return A2(
+				_elm_lang$core$Dict$get,
+				_p14._0,
+				A2(_user$project$Text_Translations_Model$editingGrammemesForWordInstance, model, word_instance));
+		} else {
+			return _elm_lang$core$Maybe$Nothing;
+		}
+	});
 var _user$project$Text_Translations_Model$init = F2(
 	function (flags, text) {
-		return {words: _elm_lang$core$Dict$empty, merging_words: _elm_lang$core$Dict$empty, editing_words: _elm_lang$core$Dict$empty, editing_word_instances: _elm_lang$core$Dict$empty, text: text, new_translations: _elm_lang$core$Dict$empty, flags: flags};
+		return {words: _elm_lang$core$Dict$empty, merging_words: _elm_lang$core$Dict$empty, editing_words: _elm_lang$core$Dict$empty, editing_grammeme_for_instance: _elm_lang$core$Dict$empty, editing_grammemes: _elm_lang$core$Dict$empty, editing_word_instances: _elm_lang$core$Dict$empty, text: text, new_translations: _elm_lang$core$Dict$empty, flags: flags};
 	});
-var _user$project$Text_Translations_Model$Model = F7(
-	function (a, b, c, d, e, f, g) {
-		return {words: a, merging_words: b, editing_words: c, editing_word_instances: d, text: e, new_translations: f, flags: g};
+var _user$project$Text_Translations_Model$Model = F9(
+	function (a, b, c, d, e, f, g, h, i) {
+		return {words: a, merging_words: b, editing_grammeme_for_instance: c, editing_grammemes: d, editing_words: e, editing_word_instances: f, text: g, new_translations: h, flags: i};
 	});
 
 var _user$project$Text_Translations_Msg$DeletedTranslation = function (a) {
@@ -26393,9 +26477,16 @@ var _user$project$Text_Translations_Msg$RemoveGrammeme = F2(
 	function (a, b) {
 		return {ctor: 'RemoveGrammeme', _0: a, _1: b};
 	});
-var _user$project$Text_Translations_Msg$SetGrammeme = F2(
+var _user$project$Text_Translations_Msg$SaveEditedGrammemes = function (a) {
+	return {ctor: 'SaveEditedGrammemes', _0: a};
+};
+var _user$project$Text_Translations_Msg$InputGrammeme = F2(
 	function (a, b) {
-		return {ctor: 'SetGrammeme', _0: a, _1: b};
+		return {ctor: 'InputGrammeme', _0: a, _1: b};
+	});
+var _user$project$Text_Translations_Msg$SelectGrammemeForEditing = F2(
+	function (a, b) {
+		return {ctor: 'SelectGrammemeForEditing', _0: a, _1: b};
 	});
 var _user$project$Text_Translations_Msg$MatchTranslations = function (a) {
 	return {ctor: 'MatchTranslations', _0: a};
@@ -28089,8 +28180,12 @@ var _user$project$Text_Section_Words_Tag$tagWordsAndToVDOM = F3(
 			A4(_user$project$Text_Section_Words_Tag$tagWordsToVDOMWithFreqs, tag_word, is_part_of_compound_word, _elm_lang$core$Dict$empty, nodes));
 	});
 
-var _user$project$Text_Translations_View$view_add_grammemes = F2(
-	function (msg, word_instance) {
+var _user$project$Text_Translations_View$view_add_grammemes = F3(
+	function (model, msg, word_instance) {
+		var grammeme_value = A2(
+			_elm_lang$core$Maybe$withDefault,
+			'',
+			A2(_user$project$Text_Translations_Model$selectedGrammemeValueForInstance, model, word_instance));
 		var grammeme_keys = _elm_lang$core$Set$toList(_user$project$Text_Translations_Word_Instance$grammeme_keys);
 		return A2(
 			_elm_lang$html$Html$div,
@@ -28102,98 +28197,111 @@ var _user$project$Text_Translations_View$view_add_grammemes = F2(
 			{
 				ctor: '::',
 				_0: A2(
-					_elm_lang$html$Html$div,
-					{ctor: '[]'},
+					_elm_lang$html$Html$select,
 					{
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$select,
-							{ctor: '[]'},
-							A2(
-								_elm_lang$core$List$map,
-								function (grammeme) {
-									return A2(
-										_elm_lang$html$Html$option,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$value(grammeme),
-											_1: {ctor: '[]'}
-										},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text(grammeme),
-											_1: {ctor: '[]'}
-										});
-								},
-								grammeme_keys)),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{ctor: '[]'},
+						_0: _elm_lang$html$Html_Events$onInput(
+							function (_p0) {
+								return msg(
+									A2(_user$project$Text_Translations_Msg$SelectGrammemeForEditing, word_instance, _p0));
+							}),
+						_1: {ctor: '[]'}
+					},
+					A2(
+						_elm_lang$core$List$map,
+						function (grammeme) {
+							return A2(
+								_elm_lang$html$Html$option,
 								{
 									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$input,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$placeholder('add a grammeme..'),
-											_1: {ctor: '[]'}
-										},
-										{ctor: '[]'}),
+									_0: _elm_lang$html$Html_Attributes$value(grammeme),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(grammeme),
+									_1: {ctor: '[]'}
+								});
+						},
+						grammeme_keys)),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onInput(
+								function (_p1) {
+									return msg(
+										A2(_user$project$Text_Translations_Msg$InputGrammeme, word_instance, _p1));
+								}),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$input,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$placeholder('add/edit a grammeme..'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(grammeme_value),
 									_1: {ctor: '[]'}
 								}),
-							_1: {
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
+							{
 								ctor: '::',
 								_0: A2(
-									_elm_lang$html$Html$div,
-									{ctor: '[]'},
+									_elm_lang$html$Html$img,
 									{
 										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$img,
-											{
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/add.svg'),
+										_1: {
+											ctor: '::',
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '17px'),
+											_1: {
 												ctor: '::',
-												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/add.svg'),
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '17px'),
 												_1: {
 													ctor: '::',
-													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '17px'),
+													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'title', 'Save grammeme.'),
 													_1: {
 														ctor: '::',
-														_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '17px'),
-														_1: {
-															ctor: '::',
-															_0: A2(_elm_lang$html$Html_Attributes$attribute, 'title', 'Add a new grammeme.'),
-															_1: {
-																ctor: '::',
-																_0: _elm_lang$html$Html_Events$onClick(
-																	msg(
-																		A2(_user$project$Text_Translations_Msg$SetGrammeme, word_instance, ''))),
-																_1: {ctor: '[]'}
-															}
-														}
+														_0: _elm_lang$html$Html_Events$onClick(
+															msg(
+																_user$project$Text_Translations_Msg$SaveEditedGrammemes(word_instance))),
+														_1: {ctor: '[]'}
 													}
 												}
-											},
-											{ctor: '[]'}),
-										_1: {ctor: '[]'}
-									}),
+											}
+										}
+									},
+									{ctor: '[]'}),
 								_1: {ctor: '[]'}
-							}
-						}
-					}),
-				_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}
 			});
 	});
-var _user$project$Text_Translations_View$view_grammeme_as_string = function (_p0) {
-	var _p1 = _p0;
-	var _p2 = _p1._1;
-	if (_p2.ctor === 'Just') {
+var _user$project$Text_Translations_View$view_grammeme_as_string = function (_p2) {
+	var _p3 = _p2;
+	var _p4 = _p3._1;
+	if (_p4.ctor === 'Just') {
 		return _elm_lang$core$Maybe$Just(
 			A2(
 				_elm_lang$core$Basics_ops['++'],
-				_p1._0,
-				A2(_elm_lang$core$Basics_ops['++'], ': ', _p2._0)));
+				_p3._0,
+				A2(_elm_lang$core$Basics_ops['++'], ': ', _p4._0)));
 	} else {
 		return _elm_lang$core$Maybe$Nothing;
 	}
@@ -28208,8 +28316,8 @@ var _user$project$Text_Translations_View$view_grammemes_as_string = function (gr
 			A2(
 				_elm_lang$core$List$filter,
 				function (str) {
-					var _p3 = str;
-					if (_p3.ctor === 'Just') {
+					var _p5 = str;
+					if (_p5.ctor === 'Just') {
 						return true;
 					} else {
 						return false;
@@ -28220,10 +28328,10 @@ var _user$project$Text_Translations_View$view_grammemes_as_string = function (gr
 					_user$project$Text_Translations_View$view_grammeme_as_string,
 					_elm_lang$core$Dict$toList(grammemes)))));
 };
-var _user$project$Text_Translations_View$view_grammeme = function (_p4) {
-	var _p5 = _p4;
-	var _p6 = _p5._1;
-	if (_p6.ctor === 'Just') {
+var _user$project$Text_Translations_View$view_grammeme = function (_p6) {
+	var _p7 = _p6;
+	var _p8 = _p7._1;
+	if (_p8.ctor === 'Just') {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -28233,13 +28341,13 @@ var _user$project$Text_Translations_View$view_grammeme = function (_p4) {
 			},
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html$text(_p5._0),
+				_0: _elm_lang$html$Html$text(_p7._0),
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html$text(' : '),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(_p6._0),
+						_0: _elm_lang$html$Html$text(_p8._0),
 						_1: {ctor: '[]'}
 					}
 				}
@@ -28255,8 +28363,8 @@ var _user$project$Text_Translations_View$view_grammeme = function (_p4) {
 			{ctor: '[]'});
 	}
 };
-var _user$project$Text_Translations_View$view_grammemes = F2(
-	function (msg, word_instance) {
+var _user$project$Text_Translations_View$view_grammemes = F3(
+	function (model, msg, word_instance) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -28267,29 +28375,29 @@ var _user$project$Text_Translations_View$view_grammemes = F2(
 			A2(
 				_elm_lang$core$Basics_ops['++'],
 				function () {
-					var _p7 = _user$project$Text_Translations_Word_Instance$grammemes(word_instance);
-					if (_p7.ctor === 'Just') {
-						var _p8 = _p7._0;
+					var _p9 = _user$project$Text_Translations_Word_Instance$grammemes(word_instance);
+					if (_p9.ctor === 'Just') {
+						var _p10 = _p9._0;
 						return {
 							ctor: '::',
 							_0: _user$project$Text_Translations_View$view_grammeme(
-								{ctor: '_Tuple2', _0: 'pos', _1: _p8.pos}),
+								{ctor: '_Tuple2', _0: 'pos', _1: _p10.pos}),
 							_1: {
 								ctor: '::',
 								_0: _user$project$Text_Translations_View$view_grammeme(
-									{ctor: '_Tuple2', _0: 'tense', _1: _p8.tense}),
+									{ctor: '_Tuple2', _0: 'tense', _1: _p10.tense}),
 								_1: {
 									ctor: '::',
 									_0: _user$project$Text_Translations_View$view_grammeme(
-										{ctor: '_Tuple2', _0: 'aspect', _1: _p8.aspect}),
+										{ctor: '_Tuple2', _0: 'aspect', _1: _p10.aspect}),
 									_1: {
 										ctor: '::',
 										_0: _user$project$Text_Translations_View$view_grammeme(
-											{ctor: '_Tuple2', _0: 'form', _1: _p8.form}),
+											{ctor: '_Tuple2', _0: 'form', _1: _p10.form}),
 										_1: {
 											ctor: '::',
 											_0: _user$project$Text_Translations_View$view_grammeme(
-												{ctor: '_Tuple2', _0: 'mood', _1: _p8.mood}),
+												{ctor: '_Tuple2', _0: 'mood', _1: _p10.mood}),
 											_1: {ctor: '[]'}
 										}
 									}
@@ -28302,7 +28410,7 @@ var _user$project$Text_Translations_View$view_grammemes = F2(
 				}(),
 				{
 					ctor: '::',
-					_0: A2(_user$project$Text_Translations_View$view_add_grammemes, msg, word_instance),
+					_0: A3(_user$project$Text_Translations_View$view_add_grammemes, model, msg, word_instance),
 					_1: {ctor: '[]'}
 				}));
 	});
@@ -28342,14 +28450,14 @@ var _user$project$Text_Translations_View$view_instance_word = F3(
 	function (model, msg, word_instance) {
 		var word = _user$project$Text_Translations_Word_Instance$word;
 		var word_txt = function () {
-			var _p9 = A2(_user$project$Text_Translations_Model$mergingWord, model, word_instance);
-			if (_p9 === true) {
+			var _p11 = A2(_user$project$Text_Translations_Model$mergingWord, model, word_instance);
+			if (_p11 === true) {
 				var word_instance_id = _user$project$Text_Translations_Word_Instance$id(word_instance);
 				var merging_words = A2(
 					_elm_lang$core$List$map,
-					function (_p10) {
-						var _p11 = _p10;
-						return word(_p11._1);
+					function (_p12) {
+						var _p13 = _p12;
+						return word(_p13._1);
 					},
 					_elm_lang$core$Dict$toList(
 						A2(
@@ -28383,7 +28491,7 @@ var _user$project$Text_Translations_View$view_instance_word = F3(
 				_0: _elm_lang$html$Html$text(word_txt),
 				_1: {
 					ctor: '::',
-					_0: A2(_user$project$Text_Translations_View$view_grammemes, msg, word_instance),
+					_0: A3(_user$project$Text_Translations_View$view_grammemes, model, msg, word_instance),
 					_1: {ctor: '[]'}
 				}
 			});
@@ -28496,9 +28604,9 @@ var _user$project$Text_Translations_View$view_add_translation = F2(
 									_1: {
 										ctor: '::',
 										_0: _elm_lang$html$Html_Events$onInput(
-											function (_p12) {
+											function (_p14) {
 												return msg(
-													A2(_user$project$Text_Translations_Msg$UpdateNewTranslationForTextWord, text_word, _p12));
+													A2(_user$project$Text_Translations_Msg$UpdateNewTranslationForTextWord, text_word, _p14));
 											}),
 										_1: {ctor: '[]'}
 									}
@@ -28605,8 +28713,8 @@ var _user$project$Text_Translations_View$view_add_as_text_word = F2(
 			});
 	});
 var _user$project$Text_Translations_View$view_correct_for_context = function (correct) {
-	var _p13 = correct;
-	if (_p13 === true) {
+	var _p15 = correct;
+	if (_p15 === true) {
 		return {
 			ctor: '::',
 			_0: A2(
@@ -28727,11 +28835,11 @@ var _user$project$Text_Translations_View$view_word_instance = F3(
 					_1: {ctor: '[]'}
 				},
 				function () {
-					var _p14 = _user$project$Text_Translations_Word_Instance$textWord(word_instance);
-					if (_p14.ctor === 'Just') {
-						var _p16 = _p14._0;
-						var _p15 = _user$project$Text_Translations_TextWord$translations(_p16);
-						if (_p15.ctor === 'Just') {
+					var _p16 = _user$project$Text_Translations_Word_Instance$textWord(word_instance);
+					if (_p16.ctor === 'Just') {
+						var _p18 = _p16._0;
+						var _p17 = _user$project$Text_Translations_TextWord$translations(_p18);
+						if (_p17.ctor === 'Just') {
 							return {
 								ctor: '::',
 								_0: A2(
@@ -28745,11 +28853,11 @@ var _user$project$Text_Translations_View$view_word_instance = F3(
 										_elm_lang$core$Basics_ops['++'],
 										A2(
 											_elm_lang$core$List$map,
-											A2(_user$project$Text_Translations_View$view_text_word_translation, msg, _p16),
-											_p15._0),
+											A2(_user$project$Text_Translations_View$view_text_word_translation, msg, _p18),
+											_p17._0),
 										{
 											ctor: '::',
-											_0: A2(_user$project$Text_Translations_View$view_add_translation, msg, _p16),
+											_0: A2(_user$project$Text_Translations_View$view_add_translation, msg, _p18),
 											_1: {ctor: '[]'}
 										})),
 								_1: {ctor: '[]'}
@@ -28757,7 +28865,7 @@ var _user$project$Text_Translations_View$view_word_instance = F3(
 						} else {
 							return {
 								ctor: '::',
-								_0: A2(_user$project$Text_Translations_View$view_add_translation, msg, _p16),
+								_0: A2(_user$project$Text_Translations_View$view_add_translation, msg, _p18),
 								_1: {ctor: '[]'}
 							};
 						}
@@ -28781,8 +28889,8 @@ var _user$project$Text_Translations_View$view_delete_text_word = F2(
 				_1: {ctor: '[]'}
 			},
 			function () {
-				var _p17 = textWord(word_instance);
-				if (_p17.ctor === 'Just') {
+				var _p19 = textWord(word_instance);
+				if (_p19.ctor === 'Just') {
 					return {
 						ctor: '::',
 						_0: A2(
@@ -28794,7 +28902,7 @@ var _user$project$Text_Translations_View$view_delete_text_word = F2(
 									ctor: '::',
 									_0: _elm_lang$html$Html_Events$onClick(
 										parent_msg(
-											_user$project$Text_Translations_Msg$DeleteTextWord(_p17._0))),
+											_user$project$Text_Translations_Msg$DeleteTextWord(_p19._0))),
 									_1: {ctor: '[]'}
 								}
 							},
@@ -28812,10 +28920,10 @@ var _user$project$Text_Translations_View$view_delete_text_word = F2(
 	});
 var _user$project$Text_Translations_View$view_make_compound_text_word_on_click = F3(
 	function (model, parent_msg, word_instance) {
-		var _p18 = A2(_user$project$Text_Translations_Model$mergeState, model, word_instance);
-		if (_p18.ctor === 'Just') {
-			var _p19 = _p18._0;
-			if (_p19.ctor === 'Cancelable') {
+		var _p20 = A2(_user$project$Text_Translations_Model$mergeState, model, word_instance);
+		if (_p20.ctor === 'Just') {
+			var _p21 = _p20._0;
+			if (_p21.ctor === 'Cancelable') {
 				return _elm_lang$html$Html_Events$onClick(
 					parent_msg(
 						_user$project$Text_Translations_Msg$RemoveFromMergeWords(word_instance)));
@@ -28835,10 +28943,10 @@ var _user$project$Text_Translations_View$view_make_compound_text_word = F3(
 	function (model, parent_msg, word_instance) {
 		var merge_state = A2(_user$project$Text_Translations_Model$mergeState, model, word_instance);
 		var merge_txt = function () {
-			var _p20 = merge_state;
-			if (_p20.ctor === 'Just') {
-				var _p21 = _p20._0;
-				if (_p21.ctor === 'Mergeable') {
+			var _p22 = merge_state;
+			if (_p22.ctor === 'Just') {
+				var _p23 = _p22._0;
+				if (_p23.ctor === 'Mergeable') {
 					return 'Merge together';
 				} else {
 					return 'Cancel merge';
@@ -28855,8 +28963,8 @@ var _user$project$Text_Translations_View$view_make_compound_text_word = F3(
 				_1: {ctor: '[]'}
 			},
 			function () {
-				var _p22 = _user$project$Text_Translations_Word_Instance$textWord(word_instance);
-				if (_p22.ctor === 'Just') {
+				var _p24 = _user$project$Text_Translations_Word_Instance$textWord(word_instance);
+				if (_p24.ctor === 'Just') {
 					return {
 						ctor: '::',
 						_0: A2(
@@ -28970,13 +29078,13 @@ var _user$project$Text_Translations_View$view_edit = F3(
 	});
 var _user$project$Text_Translations_View$is_part_of_compound_word = F3(
 	function (model, instance, word) {
-		var _p23 = A3(_user$project$Text_Translations_Model$getTextWord, model, instance, word);
-		if (_p23.ctor === 'Just') {
-			var _p24 = _user$project$Text_Translations_TextWord$group(_p23._0);
-			if (_p24.ctor === 'Just') {
-				var _p25 = _p24._0;
+		var _p25 = A3(_user$project$Text_Translations_Model$getTextWord, model, instance, word);
+		if (_p25.ctor === 'Just') {
+			var _p26 = _user$project$Text_Translations_TextWord$group(_p25._0);
+			if (_p26.ctor === 'Just') {
+				var _p27 = _p26._0;
 				return _elm_lang$core$Maybe$Just(
-					{ctor: '_Tuple3', _0: _p25.instance, _1: _p25.pos, _2: _p25.length});
+					{ctor: '_Tuple3', _0: _p27.instance, _1: _p27.pos, _2: _p27.length});
 			} else {
 				return _elm_lang$core$Maybe$Nothing;
 			}
@@ -28986,10 +29094,10 @@ var _user$project$Text_Translations_View$is_part_of_compound_word = F3(
 	});
 var _user$project$Text_Translations_View$wordInstanceOnClick = F3(
 	function (model, parent_msg, word_instance) {
-		var _p26 = _user$project$Text_Translations_Model$isMergingWords(model);
-		if (_p26 === true) {
-			var _p27 = A2(_user$project$Text_Translations_Model$mergingWord, model, word_instance);
-			if (_p27 === true) {
+		var _p28 = _user$project$Text_Translations_Model$isMergingWords(model);
+		if (_p28 === true) {
+			var _p29 = A2(_user$project$Text_Translations_Model$mergingWord, model, word_instance);
+			if (_p29 === true) {
 				return _elm_lang$html$Html_Events$onClick(
 					parent_msg(
 						_user$project$Text_Translations_Msg$RemoveFromMergeWords(word_instance)));
@@ -29018,8 +29126,8 @@ var _user$project$Text_Translations_View$tagWord = F4(
 					_1: {ctor: '[]'}
 				}
 			});
-		var _p28 = _elm_lang$core$Native_Utils.eq(token, ' ');
-		if (_p28 === true) {
+		var _p30 = _elm_lang$core$Native_Utils.eq(token, ' ');
+		if (_p30 === true) {
 			return A2(
 				_elm_lang$html$Html$span,
 				{
@@ -29090,10 +29198,10 @@ var _user$project$Text_Translations_View$tagWord = F4(
 	});
 var _user$project$Text_Translations_View$view_translations = F2(
 	function (msg, translation_model) {
-		var _p29 = translation_model;
-		if (_p29.ctor === 'Just') {
-			var _p30 = _p29._0;
-			var sections = _elm_lang$core$Array$toList(_p30.text.sections);
+		var _p31 = translation_model;
+		if (_p31.ctor === 'Just') {
+			var _p32 = _p31._0;
+			var sections = _elm_lang$core$Array$toList(_p32.text.sections);
 			var text_body = A2(
 				_elm_lang$core$String$join,
 				' ',
@@ -29105,8 +29213,8 @@ var _user$project$Text_Translations_View$view_translations = F2(
 					sections));
 			var text_body_vdom = A3(
 				_user$project$Text_Section_Words_Tag$tagWordsAndToVDOM,
-				A2(_user$project$Text_Translations_View$tagWord, _p30, msg),
-				_user$project$Text_Translations_View$is_part_of_compound_word(_p30),
+				A2(_user$project$Text_Translations_View$tagWord, _p32, msg),
+				_user$project$Text_Translations_View$is_part_of_compound_word(_p32),
 				_jinjor$elm_html_parser$HtmlParser$parse(text_body));
 			return A2(
 				_elm_lang$html$Html$div,
@@ -30840,11 +30948,23 @@ var _user$project$Text_Translations_Update$update = F3(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p23 = A2(_elm_lang$core$Debug$log, 'error decoding deleting text translations', _p9._0._0);
+					var _p23 = A2(_elm_lang$core$Debug$log, 'error deleting text translations', _p9._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
-			case 'SetGrammeme':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'SelectGrammemeForEditing':
+				return {
+					ctor: '_Tuple2',
+					_0: A3(_user$project$Text_Translations_Model$selectGrammemeForEditing, model, _p9._0, _p9._1),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'InputGrammeme':
+				return {
+					ctor: '_Tuple2',
+					_0: A3(_user$project$Text_Translations_Model$inputGrammeme, model, _p9._0, _p9._1),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'SaveEditedGrammemes':
+				return A2(_user$project$Text_Translations_Model$saveEditedGrammemes, model, _p9._0);
 			default:
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}

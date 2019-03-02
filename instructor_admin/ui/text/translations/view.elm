@@ -284,7 +284,7 @@ view_instance_word model msg word_instance =
   in
     div [class "word"] [
       Html.text word_txt
-    , view_grammemes msg word_instance
+    , view_grammemes model msg word_instance
     ]
 
 view_word_instance : Model -> (Msg -> msg) -> WordInstance -> Html msg
@@ -333,28 +333,30 @@ view_grammeme_as_string (grammeme, grammeme_value) =
     _ ->
       Nothing
 
-view_add_grammemes : (Msg -> msg) -> WordInstance -> Html msg
-view_add_grammemes msg word_instance =
+view_add_grammemes : Model -> (Msg -> msg) -> WordInstance -> Html msg
+view_add_grammemes model msg word_instance =
   let
     grammeme_keys = Set.toList Text.Translations.Word.Instance.grammeme_keys
+    grammeme_value = Maybe.withDefault "" (Text.Translations.Model.selectedGrammemeValueForInstance model word_instance)
   in
     div [class "add"] [
-      div [] [
-        select [] (List.map (\grammeme -> option [value grammeme] [ Html.text grammeme ]) grammeme_keys)
-      , div [] [Html.input [placeholder "add a grammeme.."] []]
-      , div [] [
-        Html.img [
-          attribute "src" "/static/img/add.svg"
-        , attribute "height" "17px"
-        , attribute "width" "17px"
-        , attribute "title" "Add a new grammeme."
-        , onClick (msg (SetGrammeme word_instance ""))] []
-        ]
+      select [onInput (SelectGrammemeForEditing word_instance >> msg)]
+        (List.map (\grammeme -> option [value grammeme] [ Html.text grammeme ]) grammeme_keys)
+    , div [onInput (InputGrammeme word_instance >> msg)] [
+        Html.input [placeholder "add/edit a grammeme.."] [ Html.text grammeme_value ]
+      ]
+    , div [] [
+      Html.img [
+        attribute "src" "/static/img/add.svg"
+      , attribute "height" "17px"
+      , attribute "width" "17px"
+      , attribute "title" "Save grammeme."
+      , onClick (msg (SaveEditedGrammemes word_instance))] []
       ]
     ]
 
-view_grammemes : (Msg -> msg) -> WordInstance -> Html msg
-view_grammemes msg word_instance =
+view_grammemes : Model -> (Msg -> msg) -> WordInstance -> Html msg
+view_grammemes model msg word_instance =
   div [class "grammemes"] <|
     (case (Text.Translations.Word.Instance.grammemes word_instance) of
        Just gramemmes ->
@@ -366,7 +368,7 @@ view_grammemes msg word_instance =
          ]
 
        Nothing ->
-         []) ++ [view_add_grammemes msg word_instance]
+         []) ++ [view_add_grammemes model msg word_instance]
 
 view_grammemes_as_string : Dict String (Maybe String) -> String
 view_grammemes_as_string grammemes =

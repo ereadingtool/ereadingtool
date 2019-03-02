@@ -35,7 +35,9 @@ type Msg =
   | MatchTranslations WordInstance
 
   -- grammemes
-  | SetGrammeme WordInstance String
+  | SelectGrammemeForEditing WordInstance String
+  | InputGrammeme WordInstance String
+  | SaveEditedGrammemes WordInstance
   | RemoveGrammeme WordInstance String
 
   -- result msgs
