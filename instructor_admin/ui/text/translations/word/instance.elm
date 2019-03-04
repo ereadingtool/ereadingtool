@@ -9,9 +9,18 @@ import Text.Translations.TextWord exposing (TextWord)
 type WordInstance = WordInstance Instance Token (Maybe TextWord)
 
 
-grammeme_keys : Set String
-grammeme_keys =
-  Text.Translations.grammeme_keys
+grammemeValue : WordInstance -> String -> Maybe String
+grammemeValue word_instance grammeme_name =
+  case (textWord word_instance) of
+    Just text_word ->
+      Text.Translations.TextWord.grammemeValue text_word grammeme_name
+
+    Nothing ->
+      Nothing
+
+grammemeKeys : Set String
+grammemeKeys =
+  Text.Translations.grammemeKeys
 
 grammemes : WordInstance -> Maybe Grammemes
 grammemes word_instance =

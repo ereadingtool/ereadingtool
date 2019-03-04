@@ -51,15 +51,21 @@ editingGrammeme : Model -> String
 editingGrammeme model =
   let
     first_grammeme_name =
-         Set.toList Text.Translations.Word.Instance.grammeme_keys
+         Set.toList Text.Translations.Word.Instance.grammemeKeys
       |> List.head
       |> Maybe.withDefault "aspect"
   in
     Maybe.withDefault first_grammeme_name model.editing_grammeme
 
-editingGrammemeValue : Model -> String
-editingGrammemeValue model =
-  Maybe.withDefault "" (Dict.get (editingGrammeme model) model.editing_grammemes)
+editingGrammemeValue : Model -> WordInstance -> String
+editingGrammemeValue model word_instance =
+  let
+    grammeme_name = editingGrammeme model
+
+    word_instance_grammemes =
+      Maybe.withDefault "" (Text.Translations.Word.Instance.grammemeValue word_instance grammeme_name)
+  in
+    Maybe.withDefault word_instance_grammemes (Dict.get grammeme_name model.editing_grammemes)
 
 inputGrammeme : Model -> String -> Model
 inputGrammeme model new_grammeme_value =

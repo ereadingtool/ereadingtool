@@ -47,8 +47,30 @@ type alias Grammemes = {
   , form: Maybe String
   , mood: Maybe String }
 
-grammeme_keys : Set String
-grammeme_keys = Set.fromList [
+
+grammemeValue : Grammemes -> String -> Maybe String
+grammemeValue grammemes name =
+  case name of
+    "pos" ->
+      grammemes.pos
+
+    "tense" ->
+      grammemes.tense
+
+    "aspect" ->
+      grammemes.aspect
+
+    "form" ->
+      grammemes.form
+
+    "mood" ->
+      grammemes.mood
+
+    _ ->
+      Nothing
+
+grammemeKeys : Set String
+grammemeKeys = Set.fromList [
    "pos"
  , "tense"
  , "aspect"
@@ -56,8 +78,8 @@ grammeme_keys = Set.fromList [
  , "mood"
  ]
 
-maybe_to_bool : Maybe a -> Bool
-maybe_to_bool maybe =
+maybeToBool : Maybe a -> Bool
+maybeToBool maybe =
   case maybe of
     Just _ ->
       True
@@ -65,11 +87,11 @@ maybe_to_bool maybe =
     Nothing ->
       False
 
-defined_grammemes : Grammemes -> List (String, Bool)
-defined_grammemes grammemes =
-  [ ("pos", maybe_to_bool grammemes.pos)
-  , ("tense", maybe_to_bool grammemes.tense)
-  , ("aspect", maybe_to_bool grammemes.aspect)
-  , ("form", maybe_to_bool grammemes.form)
-  , ("mood", maybe_to_bool grammemes.mood)
+definedGrammemes : Grammemes -> List (String, Bool)
+definedGrammemes grammemes =
+  [ ("pos", maybeToBool grammemes.pos)
+  , ("tense", maybeToBool grammemes.tense)
+  , ("aspect", maybeToBool grammemes.aspect)
+  , ("form", maybeToBool grammemes.form)
+  , ("mood", maybeToBool grammemes.mood)
   ]

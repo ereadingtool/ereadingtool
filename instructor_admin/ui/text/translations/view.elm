@@ -336,8 +336,8 @@ view_grammeme_as_string (grammeme, grammeme_value) =
 view_add_grammemes : Model -> (Msg -> msg) -> WordInstance -> Html msg
 view_add_grammemes model msg word_instance =
   let
-    grammeme_keys = Set.toList Text.Translations.Word.Instance.grammeme_keys
-    grammeme_value = Text.Translations.Model.editingGrammemeValue model
+    grammeme_keys = Set.toList Text.Translations.Word.Instance.grammemeKeys
+    grammeme_value = Text.Translations.Model.editingGrammemeValue model word_instance
   in
     div [class "add"] [
       select [onInput (SelectGrammemeForEditing word_instance >> msg)]
