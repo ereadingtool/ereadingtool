@@ -337,13 +337,13 @@ view_add_grammemes : Model -> (Msg -> msg) -> WordInstance -> Html msg
 view_add_grammemes model msg word_instance =
   let
     grammeme_keys = Set.toList Text.Translations.Word.Instance.grammeme_keys
-    grammeme_value = Maybe.withDefault "" (Text.Translations.Model.selectedGrammemeValueForInstance model word_instance)
+    grammeme_value = Text.Translations.Model.editingGrammemeValue model
   in
     div [class "add"] [
       select [onInput (SelectGrammemeForEditing word_instance >> msg)]
         (List.map (\grammeme -> option [value grammeme] [ Html.text grammeme ]) grammeme_keys)
     , div [onInput (InputGrammeme word_instance >> msg)] [
-        Html.input [placeholder "add/edit a grammeme.."] [ Html.text grammeme_value ]
+        Html.input [placeholder "add/edit a grammeme..", value grammeme_value] []
       ]
     , div [] [
       Html.img [

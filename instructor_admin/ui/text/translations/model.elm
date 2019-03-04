@@ -17,8 +17,8 @@ type alias Grammemes = Dict String (Maybe String)
 type alias Model = {
    words: Dict Text.Translations.Word (Array TextWord)
  , merging_words: Dict String WordInstance
- , editing_grammeme_for_instance : Dict String String
- , editing_grammemes: Dict String (Dict String String)
+ , editing_grammeme: Maybe String
+ , editing_grammemes: Dict String String
  , editing_words: Dict Text.Translations.Word Int
  , editing_word_instances: Dict Text.Translations.Word Bool
  , text: Text.Model.Text
@@ -31,7 +31,7 @@ init flags text = {
    words=Dict.empty
  , merging_words=Dict.empty
  , editing_words=Dict.empty
- , editing_grammeme_for_instance=Dict.empty
+ , editing_grammeme=Nothing
  , editing_grammemes=Dict.empty
  , editing_word_instances=Dict.empty
  , text=text
@@ -39,63 +39,38 @@ init flags text = {
  , flags=flags }
 
 
-selectedGrammemeValueForInstance : Model -> WordInstance -> Maybe String
-selectedGrammemeValueForInstance model word_instance =
-  case Dict.get (Text.Translations.Word.Instance.id word_instance) model.editing_grammeme_for_instance of
-    Just grammeme_name ->
-      Dict.get grammeme_name (editingGrammemesForWordInstance model word_instance)
-
-    Nothing ->
-      Nothing
-
 saveEditedGrammemes : Model -> WordInstance -> (Model, Cmd msg)
 saveEditedGrammemes model word_instance =
   (model, Cmd.none)
 
-editingGrammemesForWordInstance : Model -> WordInstance -> Dict String String
-editingGrammemesForWordInstance model word_instance =
-  case Dict.get (Text.Translations.Word.Instance.id word_instance) model.editing_grammemes of
-    Just editing_grammemes ->
-      editing_grammemes
+selectGrammemeForEditing : Model -> String -> Model
+selectGrammemeForEditing model grammeme_name =
+  { model | editing_grammeme = Just grammeme_name }
 
-    Nothing ->
-      Dict.empty
-
-selectGrammemeForEditing : Model -> WordInstance -> String -> Model
-selectGrammemeForEditing model word_instance grammeme_name =
-  { model | editing_grammeme_for_instance =
-      Dict.insert (Text.Translations.Word.Instance.id word_instance) grammeme_name model.editing_grammeme_for_instance }
-
-inputGrammeme : Model -> WordInstance -> String -> Model
-inputGrammeme model word_instance grammeme_value =
+editingGrammeme : Model -> String
+editingGrammeme model =
   let
     first_grammeme_name =
          Set.toList Text.Translations.Word.Instance.grammeme_keys
       |> List.head
       |> Maybe.withDefault "aspect"
+  in
+    Maybe.withDefault first_grammeme_name model.editing_grammeme
 
-    grammeme_name =
-      (case Dict.get (Text.Translations.Word.Instance.id word_instance) model.editing_grammeme_for_instance of
-        Just grammeme_name ->
-          grammeme_name
+editingGrammemeValue : Model -> String
+editingGrammemeValue model =
+  Maybe.withDefault "" (Dict.get (editingGrammeme model) model.editing_grammemes)
 
-        Nothing ->
-          first_grammeme_name)
-
-    update_grammeme_value =
-      (\v ->
-        case v of
-          Just value ->
-            Just (value ++ grammeme_value)
-
-          Nothing ->
-            Just grammeme_value)
-   in
-     { model | editing_grammemes =
-         Dict.insert (Text.Translations.Word.Instance.id word_instance)
-           (Dict.update grammeme_name update_grammeme_value (editingGrammemesForWordInstance model word_instance))
-           model.editing_grammemes
-     }
+inputGrammeme : Model -> String -> Model
+inputGrammeme model new_grammeme_value =
+  let
+    editing_grammeme_name = editingGrammeme model
+    old_grammeme_value = editingGrammemeValue model
+  in
+    { model
+      | editing_grammemes =
+          Dict.insert editing_grammeme_name new_grammeme_value model.editing_grammemes
+    }
 
 newWordInstance : Model -> Instance -> Token -> WordInstance
 newWordInstance model instance token =
@@ -229,7 +204,8 @@ uneditWord model word_instance =
   in
    { cancelled_merge_model |
      editing_words = new_edited_words
-   , editing_word_instances = new_editing_word_instances }
+   , editing_word_instances = new_editing_word_instances
+   , editing_grammemes = Dict.empty }
 
 editingWordInstance : Model -> WordInstance -> Bool
 editingWordInstance model word_instance =

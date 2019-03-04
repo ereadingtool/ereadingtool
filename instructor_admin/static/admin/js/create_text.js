@@ -26312,7 +26312,7 @@ var _user$project$Text_Translations_Model$uneditWord = F2(
 		}();
 		return _elm_lang$core$Native_Utils.update(
 			cancelled_merge_model,
-			{editing_words: new_edited_words, editing_word_instances: new_editing_word_instances});
+			{editing_words: new_edited_words, editing_word_instances: new_editing_word_instances, editing_grammemes: _elm_lang$core$Dict$empty});
 	});
 var _user$project$Text_Translations_Model$mergeSiblings = F2(
 	function (model, word_instance) {
@@ -26359,97 +26359,52 @@ var _user$project$Text_Translations_Model$completeMerge = F4(
 		var merged_word_instance = A3(_user$project$Text_Translations_Model$newWordInstance, new_model, instance, phrase);
 		return A2(_user$project$Text_Translations_Model$editWord, new_model, merged_word_instance);
 	});
-var _user$project$Text_Translations_Model$selectGrammemeForEditing = F3(
-	function (model, word_instance, grammeme_name) {
+var _user$project$Text_Translations_Model$editingGrammeme = function (model) {
+	var first_grammeme_name = A2(
+		_elm_lang$core$Maybe$withDefault,
+		'aspect',
+		_elm_lang$core$List$head(
+			_elm_lang$core$Set$toList(_user$project$Text_Translations_Word_Instance$grammeme_keys)));
+	return A2(_elm_lang$core$Maybe$withDefault, first_grammeme_name, model.editing_grammeme);
+};
+var _user$project$Text_Translations_Model$editingGrammemeValue = function (model) {
+	return A2(
+		_elm_lang$core$Maybe$withDefault,
+		'',
+		A2(
+			_elm_lang$core$Dict$get,
+			_user$project$Text_Translations_Model$editingGrammeme(model),
+			model.editing_grammemes));
+};
+var _user$project$Text_Translations_Model$inputGrammeme = F2(
+	function (model, new_grammeme_value) {
+		var old_grammeme_value = _user$project$Text_Translations_Model$editingGrammemeValue(model);
+		var editing_grammeme_name = _user$project$Text_Translations_Model$editingGrammeme(model);
 		return _elm_lang$core$Native_Utils.update(
 			model,
 			{
-				editing_grammeme_for_instance: A3(
-					_elm_lang$core$Dict$insert,
-					_user$project$Text_Translations_Word_Instance$id(word_instance),
-					grammeme_name,
-					model.editing_grammeme_for_instance)
+				editing_grammemes: A3(_elm_lang$core$Dict$insert, editing_grammeme_name, new_grammeme_value, model.editing_grammemes)
 			});
 	});
-var _user$project$Text_Translations_Model$editingGrammemesForWordInstance = F2(
-	function (model, word_instance) {
-		var _p11 = A2(
-			_elm_lang$core$Dict$get,
-			_user$project$Text_Translations_Word_Instance$id(word_instance),
-			model.editing_grammemes);
-		if (_p11.ctor === 'Just') {
-			return _p11._0;
-		} else {
-			return _elm_lang$core$Dict$empty;
-		}
-	});
-var _user$project$Text_Translations_Model$inputGrammeme = F3(
-	function (model, word_instance, grammeme_value) {
-		var update_grammeme_value = function (v) {
-			var _p12 = v;
-			if (_p12.ctor === 'Just') {
-				return _elm_lang$core$Maybe$Just(
-					A2(_elm_lang$core$Basics_ops['++'], _p12._0, grammeme_value));
-			} else {
-				return _elm_lang$core$Maybe$Just(grammeme_value);
-			}
-		};
-		var first_grammeme_name = A2(
-			_elm_lang$core$Maybe$withDefault,
-			'aspect',
-			_elm_lang$core$List$head(
-				_elm_lang$core$Set$toList(_user$project$Text_Translations_Word_Instance$grammeme_keys)));
-		var grammeme_name = function () {
-			var _p13 = A2(
-				_elm_lang$core$Dict$get,
-				_user$project$Text_Translations_Word_Instance$id(word_instance),
-				model.editing_grammeme_for_instance);
-			if (_p13.ctor === 'Just') {
-				return _p13._0;
-			} else {
-				return first_grammeme_name;
-			}
-		}();
+var _user$project$Text_Translations_Model$selectGrammemeForEditing = F2(
+	function (model, grammeme_name) {
 		return _elm_lang$core$Native_Utils.update(
 			model,
 			{
-				editing_grammemes: A3(
-					_elm_lang$core$Dict$insert,
-					_user$project$Text_Translations_Word_Instance$id(word_instance),
-					A3(
-						_elm_lang$core$Dict$update,
-						grammeme_name,
-						update_grammeme_value,
-						A2(_user$project$Text_Translations_Model$editingGrammemesForWordInstance, model, word_instance)),
-					model.editing_grammemes)
+				editing_grammeme: _elm_lang$core$Maybe$Just(grammeme_name)
 			});
 	});
 var _user$project$Text_Translations_Model$saveEditedGrammemes = F2(
 	function (model, word_instance) {
 		return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 	});
-var _user$project$Text_Translations_Model$selectedGrammemeValueForInstance = F2(
-	function (model, word_instance) {
-		var _p14 = A2(
-			_elm_lang$core$Dict$get,
-			_user$project$Text_Translations_Word_Instance$id(word_instance),
-			model.editing_grammeme_for_instance);
-		if (_p14.ctor === 'Just') {
-			return A2(
-				_elm_lang$core$Dict$get,
-				_p14._0,
-				A2(_user$project$Text_Translations_Model$editingGrammemesForWordInstance, model, word_instance));
-		} else {
-			return _elm_lang$core$Maybe$Nothing;
-		}
-	});
 var _user$project$Text_Translations_Model$init = F2(
 	function (flags, text) {
-		return {words: _elm_lang$core$Dict$empty, merging_words: _elm_lang$core$Dict$empty, editing_words: _elm_lang$core$Dict$empty, editing_grammeme_for_instance: _elm_lang$core$Dict$empty, editing_grammemes: _elm_lang$core$Dict$empty, editing_word_instances: _elm_lang$core$Dict$empty, text: text, new_translations: _elm_lang$core$Dict$empty, flags: flags};
+		return {words: _elm_lang$core$Dict$empty, merging_words: _elm_lang$core$Dict$empty, editing_words: _elm_lang$core$Dict$empty, editing_grammeme: _elm_lang$core$Maybe$Nothing, editing_grammemes: _elm_lang$core$Dict$empty, editing_word_instances: _elm_lang$core$Dict$empty, text: text, new_translations: _elm_lang$core$Dict$empty, flags: flags};
 	});
 var _user$project$Text_Translations_Model$Model = F9(
 	function (a, b, c, d, e, f, g, h, i) {
-		return {words: a, merging_words: b, editing_grammeme_for_instance: c, editing_grammemes: d, editing_words: e, editing_word_instances: f, text: g, new_translations: h, flags: i};
+		return {words: a, merging_words: b, editing_grammeme: c, editing_grammemes: d, editing_words: e, editing_word_instances: f, text: g, new_translations: h, flags: i};
 	});
 
 var _user$project$Text_Translations_Msg$DeletedTranslation = function (a) {
@@ -28182,10 +28137,7 @@ var _user$project$Text_Section_Words_Tag$tagWordsAndToVDOM = F3(
 
 var _user$project$Text_Translations_View$view_add_grammemes = F3(
 	function (model, msg, word_instance) {
-		var grammeme_value = A2(
-			_elm_lang$core$Maybe$withDefault,
-			'',
-			A2(_user$project$Text_Translations_Model$selectedGrammemeValueForInstance, model, word_instance));
+		var grammeme_value = _user$project$Text_Translations_Model$editingGrammemeValue(model);
 		var grammeme_keys = _elm_lang$core$Set$toList(_user$project$Text_Translations_Word_Instance$grammeme_keys);
 		return A2(
 			_elm_lang$html$Html$div,
@@ -28244,13 +28196,13 @@ var _user$project$Text_Translations_View$view_add_grammemes = F3(
 								{
 									ctor: '::',
 									_0: _elm_lang$html$Html_Attributes$placeholder('add/edit a grammeme..'),
-									_1: {ctor: '[]'}
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$value(grammeme_value),
+										_1: {ctor: '[]'}
+									}
 								},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text(grammeme_value),
-									_1: {ctor: '[]'}
-								}),
+								{ctor: '[]'}),
 							_1: {ctor: '[]'}
 						}),
 					_1: {
@@ -30954,13 +30906,13 @@ var _user$project$Text_Translations_Update$update = F3(
 			case 'SelectGrammemeForEditing':
 				return {
 					ctor: '_Tuple2',
-					_0: A3(_user$project$Text_Translations_Model$selectGrammemeForEditing, model, _p9._0, _p9._1),
+					_0: A2(_user$project$Text_Translations_Model$selectGrammemeForEditing, model, _p9._1),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'InputGrammeme':
 				return {
 					ctor: '_Tuple2',
-					_0: A3(_user$project$Text_Translations_Model$inputGrammeme, model, _p9._0, _p9._1),
+					_0: A2(_user$project$Text_Translations_Model$inputGrammeme, model, _p9._1),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'SaveEditedGrammemes':

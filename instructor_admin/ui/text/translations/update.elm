@@ -130,10 +130,10 @@ update parent_msg msg model =
       (model, Cmd.none)
 
     SelectGrammemeForEditing word_instance grammeme_name ->
-      (Text.Translations.Model.selectGrammemeForEditing model word_instance grammeme_name, Cmd.none)
+      (Text.Translations.Model.selectGrammemeForEditing model grammeme_name, Cmd.none)
 
     InputGrammeme word_instance grammeme_value ->
-      (Text.Translations.Model.inputGrammeme model word_instance grammeme_value, Cmd.none)
+      (Text.Translations.Model.inputGrammeme model grammeme_value, Cmd.none)
 
     SaveEditedGrammemes word_instance ->
       Text.Translations.Model.saveEditedGrammemes model word_instance
