@@ -28251,7 +28251,7 @@ var _user$project$Text_Translations_View$view_add_grammemes = F3(
 									_elm_lang$html$Html$img,
 									{
 										ctor: '::',
-										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/add.svg'),
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/save.svg'),
 										_1: {
 											ctor: '::',
 											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '17px'),

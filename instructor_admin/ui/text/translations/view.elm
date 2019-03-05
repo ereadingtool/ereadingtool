@@ -347,10 +347,10 @@ view_add_grammemes model msg word_instance =
       ]
     , div [] [
       Html.img [
-        attribute "src" "/static/img/add.svg"
+        attribute "src" "/static/img/save.svg"
       , attribute "height" "17px"
       , attribute "width" "17px"
-      , attribute "title" "Save grammeme."
+      , attribute "title" "Save edited grammemes."
       , onClick (msg (SaveEditedGrammemes word_instance))] []
       ]
     ]

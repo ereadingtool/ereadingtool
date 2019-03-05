@@ -61,10 +61,14 @@ class TextWordAPIView(LoginRequiredMixin, View):
             text_phrase, _ = TextPhrase.get(id=kwargs['pk'],
                                             word_type=text_word_update_params.pop('word_type'))
 
-            update_params = text_word_update_params.pop('grammemes')
+            updated_grammeme_params = text_word_update_params.pop('grammemes')
 
             with transaction.atomic():
-                text_phrase._meta.managers[0].filter(pk=text_phrase.pk).update(**update_params)
+                updated = text_phrase._meta.managers[0].filter(pk=text_phrase.pk).update(**updated_grammeme_params)
+
+                if updated:
+                    for grammeme, grammeme_value in updated_grammeme_params.items():
+                        setattr(text_phrase, grammeme, grammeme_value)
 
                 text_word_dict = text_phrase.to_translations_dict()
 
