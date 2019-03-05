@@ -44,6 +44,7 @@ type Msg =
   -- words
   | MergedWords (Result Http.Error Text.Translations.Decode.TextWordMergeResp)
   | DeletedTextWord (Result Http.Error TextWord)
+  | UpdatedTextWord (Result Http.Error TextWord)
   | UpdatedTextWords (Result Http.Error (List TextWord))
 
   -- translations

@@ -97,6 +97,20 @@ class TextWord(TextWordGrammemes, models.Model):
 
         return schema
 
+    @classmethod
+    def to_update_json_schema(cls) -> Dict:
+        schema = {
+            'type': 'object',
+            'properties': {
+                'word_type': {'type': 'string'},
+                'grammemes': cls.grammeme_add_schema()
+            },
+            'minItems': 1,
+            'required': ['word_type', 'grammemes']
+        }
+
+        return schema
+
 
 class TextWordTranslation(TextPhraseTranslation, models.Model):
     word = models.ForeignKey(TextWord, related_name='translations', on_delete=models.CASCADE)

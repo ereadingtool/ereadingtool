@@ -39,9 +39,9 @@ init flags text = {
  , flags=flags }
 
 
-saveEditedGrammemes : Model -> WordInstance -> (Model, Cmd msg)
-saveEditedGrammemes model word_instance =
-  (model, Cmd.none)
+clearEditingFields : Model -> Model
+clearEditingFields model =
+  { model | editing_grammemes = Dict.empty }
 
 selectGrammemeForEditing : Model -> String -> Model
 selectGrammemeForEditing model grammeme_name =
@@ -233,6 +233,8 @@ setTextWords model text_words =
     -- ensure we're initializing the arrays in the right order
     sorted_text_words =
       List.sortBy (\text_word -> Text.Translations.TextWord.instance text_word) text_words
+
+    new_model = clearEditingFields model
   in
     List.foldl (\text_word model ->
       let
@@ -240,7 +242,7 @@ setTextWords model text_words =
         instance = Text.Translations.TextWord.instance text_word
       in
         setTextWord model instance phrase text_word)
-    model sorted_text_words
+    new_model sorted_text_words
 
 setTextWordsForPhrase : Model -> Phrase -> List TextWord -> Model
 setTextWordsForPhrase model phrase text_words =

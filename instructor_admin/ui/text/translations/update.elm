@@ -13,6 +13,7 @@ import Text.Translations.Decode
 
 import Config
 
+import Dict exposing (Dict)
 import Array exposing (Array)
 
 import Http
@@ -29,16 +30,10 @@ update parent_msg msg model =
       (model, matchTranslations parent_msg model word_instance)
 
     UpdatedTextWords (Ok text_words) ->
-      -- assume a homogeneous list of text words
-      case List.head text_words of
-        Just first_text_word ->
-          let
-            phrase = Text.Translations.TextWord.phrase first_text_word
-          in
-            (Text.Translations.Model.setTextWordsForPhrase model phrase text_words, Cmd.none)
+      (Text.Translations.Model.setTextWords model text_words, Cmd.none)
 
-        Nothing ->
-          (model, Cmd.none)
+    UpdatedTextWord (Ok text_word) ->
+      (Text.Translations.Model.setTextWords model [text_word], Cmd.none)
 
     EditWord word_instance ->
       (Text.Translations.Model.editWord model word_instance, Cmd.none)
@@ -53,6 +48,9 @@ update parent_msg msg model =
       (Text.Translations.Model.updateTextTranslation model instance word translation, Cmd.none)
 
     UpdatedTextWords (Err err) -> let _ = Debug.log "error updating text words" err in
+      (model, Cmd.none)
+
+    UpdatedTextWord (Err err) -> let _ = Debug.log "error updating text word" err in
       (model, Cmd.none)
 
     MergeWords word_instances ->
@@ -136,7 +134,7 @@ update parent_msg msg model =
       (Text.Translations.Model.inputGrammeme model grammeme_value, Cmd.none)
 
     SaveEditedGrammemes word_instance ->
-      Text.Translations.Model.saveEditedGrammemes model word_instance
+      (model, updateGrammemes parent_msg model.flags.csrftoken word_instance model.editing_grammemes)
 
     RemoveGrammeme word_instance grammeme_str ->
       (model, Cmd.none)
@@ -208,6 +206,30 @@ putMatchTranslations msg csrftoken translations text_words =
       HttpHelpers.put_with_headers endpoint_uri headers body Text.Translations.Decode.textWordInstancesDecoder
   in
     Http.send (msg << UpdatedTextWords) request
+
+updateGrammemes : (Msg -> msg) -> Flags.CSRFToken -> WordInstance -> Dict String String -> Cmd msg
+updateGrammemes msg csrftoken word_instance grammemes =
+  case Text.Translations.Word.Instance.textWord word_instance of
+    Just text_word ->
+      let
+        headers = [Http.header "X-CSRFToken" csrftoken]
+
+        text_word_endpoint = Text.Translations.TextWord.text_word_endpoint text_word
+
+        encoded_grammemes =
+          Text.Translations.Encode.grammemesEncoder text_word grammemes
+
+        body = (Http.jsonBody encoded_grammemes)
+
+        request =
+          HttpHelpers.put_with_headers
+            text_word_endpoint headers body Text.Translations.Decode.textWordInstanceDecoder
+      in
+        Http.send (msg << UpdatedTextWord) request
+
+    -- no text word to update
+    Nothing ->
+      Cmd.none
 
 postTranslation : (Msg -> msg) -> Flags.CSRFToken -> TextWord -> String -> Cmd msg
 postTranslation msg csrftoken text_word translation_text =

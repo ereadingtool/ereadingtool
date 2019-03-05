@@ -13,13 +13,13 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from text.translations.models import TextWord
 
-from text.translations.phrase import TextPhraseTranslation
+from text.translations.phrase import TextPhrase, TextPhraseTranslation
 from text.translations.mixins import TextPhraseTranslation as PhraseTranslation
 
 
 class TextWordAPIView(LoginRequiredMixin, View):
     login_url = reverse_lazy('instructor-login')
-    allowed_methods = ['post', 'delete']
+    allowed_methods = ['post', 'put', 'delete']
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         try:
@@ -39,6 +39,36 @@ class TextWordAPIView(LoginRequiredMixin, View):
             text_word_dict = text_word.to_dict()
 
             text_word_dict['id'] = text_word.pk
+
+            return HttpResponse(json.dumps(text_word_dict))
+
+        except DatabaseError:
+            return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
+
+    def put(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        try:
+            text_word_update_params = json.loads(request.body.decode('utf8'))
+
+            jsonschema.validate(text_word_update_params, TextWord.to_update_json_schema())
+
+        except json.JSONDecodeError as decode_error:
+            return HttpResponse(json.dumps({'errors': {'json': str(decode_error)}}), status=400)
+
+        except jsonschema.ValidationError as validation_error:
+            return HttpResponse(json.dumps({'errors': {'json': str(validation_error)}}), status=400)
+
+        try:
+            text_phrase, _ = TextPhrase.get(id=kwargs['pk'],
+                                            word_type=text_word_update_params.pop('word_type'))
+
+            update_params = text_word_update_params.pop('grammemes')
+
+            with transaction.atomic():
+                text_phrase._meta.managers[0].filter(pk=text_phrase.pk).update(**update_params)
+
+                text_word_dict = text_phrase.to_translations_dict()
+
+                text_word_dict['id'] = text_phrase.pk
 
             return HttpResponse(json.dumps(text_word_dict))
 
@@ -120,11 +150,12 @@ class TextWordTranslationsAPIView(LoginRequiredMixin, View):
             text_word_translation, _ = TextPhraseTranslation.get(id=kwargs['tr_pk'], word_type=kwargs['word_type'])
 
             with transaction.atomic():
-                text_word_translation._meta.objects.filter(
+                text_word_translation._meta.managers[0].objects.filter(
                     word=text_word_translation.word).update(
                     correct_for_context=False)
 
-                text_word_translation._meta.filter(pk=kwargs['tr_pk']).update(**text_translation_update_params)
+                text_word_translation._meta.managers[0].objects.filter(
+                    pk=kwargs['tr_pk']).update(**text_translation_update_params)
 
             text_word_translation.refresh_from_db()
 

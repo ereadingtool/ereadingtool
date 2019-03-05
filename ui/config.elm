@@ -7,9 +7,6 @@ username_validation_api_endpoint = "/api/username/"
 text_api_endpoint : String
 text_api_endpoint = "/api/text/"
 
-text_translation_api_endpoint : Int -> String
-text_translation_api_endpoint id = "/api/text/translation/" ++ toString id ++ "/"
-
 text_translation_api_match_endpoint : String
 text_translation_api_match_endpoint = "/api/text/translations/match/"
 

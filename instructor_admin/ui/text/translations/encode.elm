@@ -6,6 +6,8 @@ import Text.Translations.TextWord exposing (TextWord)
 
 import Json.Encode as Encode
 
+import Dict exposing (Dict)
+
 
 textTranslationEncoder : Translation -> Encode.Value
 textTranslationEncoder text_translation =
@@ -61,4 +63,16 @@ deleteTextTranslationEncode : Int -> Encode.Value
 deleteTextTranslationEncode translation_id =
   Encode.object [
     ("id", Encode.int translation_id)
+  ]
+
+encodeDict : (comparable -> String) -> (v -> Encode.Value) -> Dict comparable v -> Encode.Value
+encodeDict k_name v_value dict =
+  Encode.object
+    <| List.map (\(k, v) -> (k_name k, v_value v)) (Dict.toList dict)
+
+grammemesEncoder : TextWord -> Dict String String -> Encode.Value
+grammemesEncoder text_word grammemes =
+  Encode.object [
+    ("word_type", Encode.string (Text.Translations.TextWord.wordType text_word))
+  , ("grammemes", encodeDict identity Encode.string grammemes)
   ]
