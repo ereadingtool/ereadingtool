@@ -96,6 +96,11 @@ class GlosbeAPI(object):
                 if time_diff.total_seconds() >= random.randint(5, 10):
                     break
 
+        resp = requests.get(req)
+
+        if resp.status_code != 200:
+            raise GlosbeException(message=resp.reason)
+
         resp = json.loads(requests.get(req).text)
 
         self.last_request = timezone.now()
