@@ -17,7 +17,7 @@ from text.glosbe.api import GlosbeAPI, GlosbeThrottlingException
 logger = logging.getLogger('django')
 
 
-class TextWordGrammemes(models.Model):
+class TextPhraseGrammemes(models.Model):
     class Meta:
         abstract = True
 
@@ -50,88 +50,6 @@ class TextWordGrammemes(models.Model):
             'aspect': self.aspect,
             'form': self.form,
             'mood': self.mood
-        }
-
-
-class TextPhraseTranslation(models.Model):
-    class Meta:
-        abstract = True
-
-    phrase = models.TextField()
-    correct_for_context = models.BooleanField(default=False)
-
-    @classmethod
-    def to_set_json_schema(cls) -> Dict:
-        schema = {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'id': {'type': 'number'},
-                    'correct_for_context': {'type': 'boolean'},
-                    'text': {'type': 'string'},
-                }
-            },
-            'minItems': 1
-        }
-
-        return schema
-
-    @classmethod
-    def to_add_json_schema(cls) -> Dict:
-        schema = {
-            'type': 'object',
-            'properties': {
-                'phrase': {'type': 'string'},
-            }
-        }
-
-        return schema
-
-    @classmethod
-    def to_update_json_schema(cls) -> Dict:
-        schema = {
-            'type': 'object',
-            'properties': {
-                'correct_for_context': {'type': 'boolean'},
-                'text': {'type': 'string'},
-            }
-        }
-
-        return schema
-
-    @classmethod
-    def to_word_json_schema(cls):
-        return {
-            'id': {'type': 'number'},
-            'word_type': {'type': 'string', 'enum': ['single', 'compound']}
-        }
-
-    @classmethod
-    def to_merge_json_schema(cls):
-        return {
-            'type': 'object',
-            'properties': {
-                'translations': {
-                    'type': 'array',
-                    'items': {
-                        'type': 'object',
-                        'properties': {
-                            'correct_for_context': {'type': 'boolean'},
-                            'phrase': {'type': 'string'},
-                        }
-                    },
-                    'minItems': 1
-                },
-                'words': {
-                    'type': 'array',
-                    'items': {
-                        'type': 'object',
-                        'properties': cls.to_word_json_schema()
-                    },
-                    'minItems': 1
-                }
-            }
         }
 
 

@@ -10,8 +10,7 @@ from django.views.generic import View
 from django.db import transaction, DatabaseError
 from django.core.exceptions import ObjectDoesNotExist
 
-from text.translations.mixins import TextPhraseTranslation
-from text.translations.phrase import TextPhrase
+from text.phrase.models import TextPhrase, TextPhraseTranslation
 
 
 class TextTranslationMatchAPIView(LoginRequiredMixin, View):
@@ -34,7 +33,7 @@ class TextTranslationMatchAPIView(LoginRequiredMixin, View):
             text_phrases = []
 
             for text_phrase in translation_merge_params['words']:
-                text_phrase, create_translation = TextPhrase.get(**text_phrase)
+                text_phrase, create_translation = TextPhrase.objects.get(**text_phrase)
 
                 with transaction.atomic():
                     text_phrase.translations.filter().delete()

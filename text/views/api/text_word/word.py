@@ -13,8 +13,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from text.translations.models import TextWord
 
-from text.translations.phrase import TextPhrase, TextPhraseTranslation
-from text.translations.mixins import TextPhraseTranslation as PhraseTranslation
+from text.phrase.models import TextPhrase, TextPhraseTranslation
 
 
 class TextWordAPIView(LoginRequiredMixin, View):
@@ -58,8 +57,8 @@ class TextWordAPIView(LoginRequiredMixin, View):
             return HttpResponse(json.dumps({'errors': {'json': str(validation_error)}}), status=400)
 
         try:
-            text_phrase, _ = TextPhrase.get(id=kwargs['pk'],
-                                            word_type=text_word_update_params.pop('word_type'))
+            text_phrase, _ = TextPhrase.objects.get(id=kwargs['pk'],
+                                                    word_type=text_word_update_params.pop('word_type'))
 
             updated_grammeme_params = text_word_update_params.pop('grammemes')
 
@@ -86,7 +85,7 @@ class TextWordTranslationsAPIView(LoginRequiredMixin, View):
 
     def delete(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         try:
-            text_word_translation, _ = TextPhraseTranslation.get(id=kwargs['tr_pk'], word_type=kwargs['word_type'])
+            text_word_translation, _ = TextPhrase.objects.get(id=kwargs['tr_pk'], word_type=kwargs['word_type'])
 
             text_word_translation_dict = text_word_translation.to_dict()
 
@@ -118,7 +117,7 @@ class TextWordTranslationsAPIView(LoginRequiredMixin, View):
             return HttpResponse(json.dumps({'errors': {'json': str(validation_error)}}), status=400)
 
         try:
-            text_word, translation_create = TextPhraseTranslation.get(id=kwargs['pk'], word_type=kwargs['word_type'])
+            text_word, translation_create = TextPhraseTranslation.objects.get(id=kwargs['pk'], word_type=kwargs['word_type'])
 
             text_word_add_translation_params['word'] = text_word
 
@@ -142,7 +141,7 @@ class TextWordTranslationsAPIView(LoginRequiredMixin, View):
         try:
             text_translation_update_params = json.loads(request.body.decode('utf8'))
 
-            jsonschema.validate(text_translation_update_params, PhraseTranslation.to_update_json_schema())
+            jsonschema.validate(text_translation_update_params, TextPhraseTranslation.to_update_json_schema())
 
         except json.JSONDecodeError as decode_error:
             return HttpResponse(json.dumps({'errors': {'json': str(decode_error)}}), status=400)
@@ -151,7 +150,7 @@ class TextWordTranslationsAPIView(LoginRequiredMixin, View):
             return HttpResponse(json.dumps({'errors': {'json': str(validation_error)}}), status=400)
 
         try:
-            text_word_translation, _ = TextPhraseTranslation.get(id=kwargs['tr_pk'], word_type=kwargs['word_type'])
+            text_word_translation, _ = TextPhraseTranslation.objects.get(id=kwargs['tr_pk'], word_type=kwargs['word_type'])
 
             with transaction.atomic():
                 text_word_translation._meta.managers[0].objects.filter(
