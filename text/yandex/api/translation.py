@@ -1,24 +1,8 @@
-from typing import AnyStr, Union, Dict, List
-
-import random
 import requests
-import json
-
-from django.utils import timezone
-
 from django.conf import settings
 
-
-class YandexException(Exception):
-    def __init__(self, message: AnyStr, *args, **kwargs):
-        self.message = message
-
-    def __str__(self):
-        return f'{self.message}'
-
-
-class YandexThrottlingException(YandexException):
-    pass
+from text.yandex.api.base import YandexAPI
+from text.yandex.exceptions import *
 
 
 class YandexPhrase(object):
@@ -35,13 +19,6 @@ class YandexTranslation(object):
     def __init__(self, phrase: Union[YandexPhrase, None], translation: Dict, *args, **kwargs):
         self.phrase = phrase
         self.translation = translation
-
-    @property
-    def meanings(self) -> Union[List[Dict], None]:
-        try:
-            return self.translation['meanings']
-        except KeyError:
-            return None
 
 
 class YandexTranslations(object):
@@ -64,31 +41,8 @@ class YandexTranslations(object):
             self.translations.append(translation)
 
 
-class YandexInvalidAPIKeyException(YandexException):
-    pass
-
-
-class YandexBlockedAPIKeyException(YandexException):
-    pass
-
-
-class YandexExceededDailyLimitException(YandexException):
-    pass
-
-
-class YandexMaxTextSizeException(YandexException):
-    pass
-
-
-class YandexTextCannotBeTranslatedException(YandexException):
-    pass
-
-
-class YandexDirectionNotSupportedException(YandexException):
-    pass
-
-
-class YandexTranslationAPI(object):
+class YandexTranslationAPI(YandexAPI):
+    api_key = settings.YANDEX_TRANSLATION_API_KEY
     yandex_translate_uri = 'https://translate.yandex.net/api/v1.5/tr.json/'
 
     def resp_to_exception(self, resp: requests.Response) -> YandexException:
@@ -107,45 +61,27 @@ class YandexTranslationAPI(object):
         return exceptions.get(status_code, YandexException(message=resp.reason))
 
     def __init__(self, from_lang: AnyStr = 'ru', to_lang: AnyStr = 'en', **kwargs):
+        super(YandexTranslationAPI, self).__init__(from_lang, to_lang, **kwargs)
+
         self.from_lang = from_lang
         self.to_lang = to_lang
 
         self.last_request = None
 
     def translate(self, phrase: AnyStr) -> Union[YandexTranslations, None]:
-        definitions = None
+        translations = None
 
-        req_params = '&'.join([
-            '='.join(['key', settings.YANDEX_TRANSLATION_API_KEY]),
-            '='.join(['text', phrase]),
-            '='.join(['lang', '-'.join([self.from_lang, self.to_lang])]),
-            '='.join(['format', 'plain'])
-        ])
-
-        req = ''.join([self.yandex_translate_uri, 'translate', '?' + req_params])
-
-        if self.last_request:
-            while True:
-                time_diff = timezone.now() - self.last_request
-
-                if time_diff.total_seconds() >= random.randint(5, 10):
-                    break
-
-        resp = requests.get(req)
-
-        if resp.status_code != 200:
-            raise self.resp_to_exception(resp)
-
-        resp = json.loads(requests.get(req).text)
-
-        self.last_request = timezone.now()
+        resp = self.request(uri=self.yandex_translate_uri, method='translate', params={
+            'text': phrase,
+            'format': 'plain'
+        })
 
         if 'text' in resp:
-            definitions = YandexTranslations(
+            translations = YandexTranslations(
                 from_lang=self.from_lang,
                 to_lang=self.to_lang,
                 phrase=phrase,
                 translations=resp['text']
             )
 
-        return definitions
+        return translations

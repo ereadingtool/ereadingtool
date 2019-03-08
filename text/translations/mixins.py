@@ -12,7 +12,7 @@ from django.utils.functional import cached_property
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
-from text.yandex.api import YandexTranslationAPI, YandexThrottlingException
+from text.yandex.api.definition import YandexDefinitionAPI, YandexThrottlingException
 
 logger = logging.getLogger('django')
 
@@ -59,7 +59,7 @@ class TextSectionDefinitionsMixin(models.Model):
 
     word_re = re.compile(r'([^\W\d]+-[^\W\d]+|[^\W\d]+)')
     morph = pymorphy2.MorphAnalyzer()
-    glosbe_api = YandexTranslationAPI()
+    yandex_definitions_api = YandexDefinitionAPI()
     body = NotImplemented
 
     @cached_property
@@ -102,7 +102,8 @@ class TextSectionDefinitionsMixin(models.Model):
         num_of_words = len(list(self.words))
 
         for i, word in enumerate(self.words):
-            translations = []
+            translations = None
+
             word_freq.setdefault(word, 0)
             word_freq[word] += 1
 
@@ -112,8 +113,11 @@ class TextSectionDefinitionsMixin(models.Model):
                 translations = seen_translations[word]
             else:
                 try:
-                    translations = self.glosbe_api.translate(parsed_word.normal_form).translations
-                    seen_translations[word] = translations
+                    definitions = self.yandex_definitions_api.lookup(parsed_word.normal_form)
+
+                    # list of definitions contain list of translations
+                    if definitions and definitions[0].translations:
+                        translations = seen_translations[word] = definitions[0].translations
 
                     logger.info(f'Retrieved translation for word {i+1} out of {num_of_words}.')
                 except YandexThrottlingException as e:

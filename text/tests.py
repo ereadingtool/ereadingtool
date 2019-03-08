@@ -15,7 +15,10 @@ from ereadingtool.urls import reverse_lazy
 from question.models import Answer
 from tag.models import Tag
 from text.consumers.instructor import ParseTextSectionForDefinitions
-from text.yandex.api import YandexTranslationAPI, YandexTranslations, YandexTranslation
+
+from text.yandex.api.definition import (YandexDefinition, YandexDefinitions, YandexDefinitionAPI, YandexTranslations,
+                                        YandexTranslation, YandexPhrase)
+
 from text.models import TextDifficulty, Text, TextSection
 from text_reading.base import TextReadingNotAllQuestionsAnswered
 from text_reading.models import StudentTextReading, InstructorTextReading
@@ -42,17 +45,21 @@ class TestText(TestUser, TestCase):
         self.student = self.new_student_client(Client())
 
     def test_definition_objs(self):
-        yandex_translation_api = YandexTranslationAPI()
+        yandex_translation_api = YandexDefinitionAPI()
 
-        defs = yandex_translation_api.translate('заявление')
+        definitions = yandex_translation_api.lookup('заявление')
 
-        self.assertIsInstance(defs, YandexTranslations)
+        if definitions:
+            self.assertIsInstance(definitions, YandexDefinitions)
+            self.assertIsInstance(definitions[0], YandexDefinition)
 
-        self.assertIsInstance(defs.translations, list)
+            if definitions[0].translations:
+                self.assertIsInstance(definitions[0].translations, YandexTranslations)
+                self.assertIsInstance(definitions[0].translations[0], YandexTranslation)
 
-        definitions = defs.translations
+                yandex_translation = definitions[0].translations[0]
 
-        self.assertIsInstance(definitions[0], YandexTranslation)
+                self.assertIsInstance(yandex_translation.phrase, YandexPhrase)
 
     def test_parsing_words(self):
         test_data = self.get_test_data()
@@ -106,7 +113,7 @@ class TestText(TestUser, TestCase):
 
         text_word = text_section.translated_words.all()[0]
 
-        self.assertTrue(text_word.translations.count())
+        self.assertGreater(text_word.translations.count(), 0)
 
         text_section_word_translation = text_word.translations.all()[0]
 
