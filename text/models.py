@@ -245,7 +245,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
 
 
 class TextSection(TextSectionDefinitionsMixin, Timestamped, models.Model):
-    text = models.ForeignKey(Text, null=True, related_name='sections', on_delete=models.SET_NULL)
+    text = models.ForeignKey(Text, related_name='sections', on_delete=models.CASCADE)
 
     order = models.IntegerField()
     body = models.TextField()
