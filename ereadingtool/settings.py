@@ -29,6 +29,8 @@ CHANNEL_LAYERS = {
 
 ADMINS = [('Andrew', 'als2@pdx.edu')]
 
+YANDEX_TRANSLATION_API_KEY = os.getenv('YANDEX_TRANSLATION_API_KEY')
+
 # days
 INVITATION_EXPIRY = 30
 

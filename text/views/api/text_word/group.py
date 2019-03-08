@@ -10,6 +10,7 @@ from django.db import transaction
 
 from django.db import models
 
+from text.phrase.models import TextPhrase
 from text.translations.models import TextWord
 from text.translations.group.models import TextWordGroup, TextGroupWord
 
@@ -54,7 +55,9 @@ class TextWordGroupAPIView(LoginRequiredMixin, View):
         if all(map(lambda tw: group_for_text_word(tw) is None, text_words)):
             # words can be grouped together since they do not belong to any current group
             with transaction.atomic():
-                text_group = TextWordGroup.objects.create()
+                text_group = TextWordGroup(text_section=text_words[0].text_section)
+
+                text_group_text_words = list()
 
                 phrases = []
 
@@ -62,14 +65,24 @@ class TextWordGroupAPIView(LoginRequiredMixin, View):
 
                 # maintain order from parameter list
                 for i, text_word in enumerate(text_words):
-                    phrases.append(text_word.word)
+                    phrases.append(text_word.phrase)
 
-                    text_group_word = TextGroupWord.objects.create(group=text_group, word=text_word, order=i)
+                    text_group_word = TextGroupWord(word=text_word, order=i)
+
+                    text_group_text_words.append(text_group_word)
 
                     # avoids a call to refresh_from_db()
                     text_words[i].group_word = text_group_word
 
                 resp['phrase'] = ' '.join(phrases)
+
+                text_group.phrase = resp['phrase']
+                text_group.save()
+
+                for text_group_word in text_group_text_words:
+                    text_group_word.group = text_group
+                    text_group_word.save()
+
                 resp['grouped'] = True
         else:
             try:

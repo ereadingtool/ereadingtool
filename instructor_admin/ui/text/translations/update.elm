@@ -100,7 +100,7 @@ update parent_msg msg model =
     SubmitNewTranslationForTextWord text_word ->
       case Text.Translations.Model.getNewTranslationForWord model text_word of
         Just translation_text ->
-          (model, postTranslation parent_msg model.flags.csrftoken text_word translation_text)
+          (model, postTranslation parent_msg model.flags.csrftoken text_word translation_text True)
 
         Nothing ->
           (model, Cmd.none)
@@ -231,12 +231,12 @@ updateGrammemes msg csrftoken word_instance grammemes =
     Nothing ->
       Cmd.none
 
-postTranslation : (Msg -> msg) -> Flags.CSRFToken -> TextWord -> String -> Cmd msg
-postTranslation msg csrftoken text_word translation_text =
+postTranslation : (Msg -> msg) -> Flags.CSRFToken -> TextWord -> String -> Bool -> Cmd msg
+postTranslation msg csrftoken text_word translation_text correct_for_context =
   let
     endpoint_uri = Text.Translations.TextWord.translations_endpoint text_word
     headers = [Http.header "X-CSRFToken" csrftoken]
-    encoded_translation = Text.Translations.Encode.newTextTranslationEncoder translation_text
+    encoded_translation = Text.Translations.Encode.newTextTranslationEncoder translation_text correct_for_context
     body = Http.jsonBody encoded_translation
 
     request =

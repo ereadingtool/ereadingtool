@@ -12,7 +12,7 @@ from django.utils.functional import cached_property
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
-from text.glosbe.api import GlosbeAPI, GlosbeThrottlingException
+from text.yandex.api import YandexTranslationAPI, YandexThrottlingException
 
 logger = logging.getLogger('django')
 
@@ -59,7 +59,7 @@ class TextSectionDefinitionsMixin(models.Model):
 
     word_re = re.compile(r'([^\W\d]+-[^\W\d]+|[^\W\d]+)')
     morph = pymorphy2.MorphAnalyzer()
-    glosbe_api = GlosbeAPI()
+    glosbe_api = YandexTranslationAPI()
     body = NotImplemented
 
     @cached_property
@@ -116,8 +116,8 @@ class TextSectionDefinitionsMixin(models.Model):
                     seen_translations[word] = translations
 
                     logger.info(f'Retrieved translation for word {i+1} out of {num_of_words}.')
-                except GlosbeThrottlingException as e:
-                    logger.error(f'GlosbeThrottlingException {e.message}')
+                except YandexThrottlingException as e:
+                    logger.error(f'YandexThrottlingException {e.message}')
 
             words.setdefault(word, [])
 

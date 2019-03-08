@@ -57,8 +57,7 @@ class TextWordAPIView(LoginRequiredMixin, View):
             return HttpResponse(json.dumps({'errors': {'json': str(validation_error)}}), status=400)
 
         try:
-            text_phrase, _ = TextPhrase.objects.get(id=kwargs['pk'],
-                                                    word_type=text_word_update_params.pop('word_type'))
+            text_phrase = TextPhrase.objects.get(id=kwargs['pk'])
 
             updated_grammeme_params = text_word_update_params.pop('grammemes')
 
@@ -85,15 +84,15 @@ class TextWordTranslationsAPIView(LoginRequiredMixin, View):
 
     def delete(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         try:
-            text_word_translation, _ = TextPhrase.objects.get(id=kwargs['tr_pk'], word_type=kwargs['word_type'])
+            text_phrase_translation = TextPhraseTranslation.objects.get(id=kwargs['tr_pk'])
 
-            text_word_translation_dict = text_word_translation.to_dict()
+            text_word_translation_dict = text_phrase_translation.to_dict()
 
-            deleted, deleted_objs = text_word_translation.delete()
+            deleted, deleted_objs = text_phrase_translation.delete()
 
             return HttpResponse(json.dumps({
-                'word': str(text_word_translation.word.word).lower(),
-                'instance': text_word_translation.word.instance,
+                'word': str(text_phrase_translation.text_phrase.phrase),
+                'instance': text_phrase_translation.text_phrase.instance,
                 'translation': text_word_translation_dict,
                 'deleted': deleted >= 1
             }))
@@ -102,13 +101,13 @@ class TextWordTranslationsAPIView(LoginRequiredMixin, View):
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        if 'pk' not in kwargs or 'word_type' not in kwargs:
+        if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
 
         try:
             text_word_add_translation_params = json.loads(request.body.decode('utf8'))
 
-            jsonschema.validate(text_word_add_translation_params, PhraseTranslation.to_add_json_schema())
+            jsonschema.validate(text_word_add_translation_params, TextPhraseTranslation.to_add_json_schema())
 
         except json.JSONDecodeError as decode_error:
             return HttpResponse(json.dumps({'errors': {'json': str(decode_error)}}), status=400)
@@ -117,23 +116,28 @@ class TextWordTranslationsAPIView(LoginRequiredMixin, View):
             return HttpResponse(json.dumps({'errors': {'json': str(validation_error)}}), status=400)
 
         try:
-            text_word, translation_create = TextPhraseTranslation.objects.get(id=kwargs['pk'], word_type=kwargs['word_type'])
+            with transaction.atomic():
+                text_phrase = TextPhrase.objects.get(id=kwargs['pk'])
 
-            text_word_add_translation_params['word'] = text_word
+                text_word_add_translation_params['text_phrase'] = text_phrase
 
-            text_word_translation = translation_create(**text_word_add_translation_params)
+                if 'correct_for_context' in text_word_add_translation_params and text_word_add_translation_params[
+                   'correct_for_context']:
+                    TextPhraseTranslation.objects.filter(text_phrase=text_phrase).update(correct_for_context=False)
 
-            return HttpResponse(json.dumps({
-                'word': str(text_word_translation.word.word).lower(),
-                'instance': text_word.instance,
-                'translation': text_word_translation.to_dict()
-            }))
+                text_phrase_translation = TextPhraseTranslation.create(**text_word_add_translation_params)
 
-        except (TextWord.DoesNotExist, DatabaseError):
+                return HttpResponse(json.dumps({
+                    'word': str(text_phrase_translation.text_phrase.phrase),
+                    'instance': text_phrase.instance,
+                    'translation': text_phrase_translation.to_dict()
+                }))
+
+        except (TextPhrase.DoesNotExist, DatabaseError):
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
 
     def put(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        text_word_translation = None
+        text_phrase_translation = None
 
         if 'tr_pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
@@ -150,22 +154,21 @@ class TextWordTranslationsAPIView(LoginRequiredMixin, View):
             return HttpResponse(json.dumps({'errors': {'json': str(validation_error)}}), status=400)
 
         try:
-            text_word_translation, _ = TextPhraseTranslation.objects.get(id=kwargs['tr_pk'], word_type=kwargs['word_type'])
+            text_phrase_translation = TextPhraseTranslation.objects.get(id=kwargs['tr_pk'])
 
             with transaction.atomic():
-                text_word_translation._meta.managers[0].objects.filter(
-                    word=text_word_translation.word).update(
-                    correct_for_context=False)
+                # set all other translations to correct_for_context=False
+                TextPhraseTranslation.objects.filter(
+                    text_phrase=text_phrase_translation.text_phrase).update(correct_for_context=False)
 
-                text_word_translation._meta.managers[0].objects.filter(
-                    pk=kwargs['tr_pk']).update(**text_translation_update_params)
+                TextPhraseTranslation.objects.filter(pk=kwargs['tr_pk']).update(**text_translation_update_params)
 
-            text_word_translation.refresh_from_db()
+            text_phrase_translation.refresh_from_db()
 
             return HttpResponse(json.dumps({
-                'word': text_word_translation.word.word,
-                'instance': text_word_translation.word.instance,
-                'translation': text_word_translation.to_dict()
+                'word': text_phrase_translation.text_phrase.phrase,
+                'instance': text_phrase_translation.text_phrase.instance,
+                'translation': text_phrase_translation.to_dict()
             }))
 
         except ObjectDoesNotExist:

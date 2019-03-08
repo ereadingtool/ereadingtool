@@ -24,6 +24,8 @@ class TextWord(TextPhrase):
         except models.ObjectDoesNotExist:
             text_word_dict['group'] = None
 
+        return text_word_dict
+
     def to_translations_dict(self):
         translation_dict = super(TextWord, self).to_translations_dict()
 
@@ -36,3 +38,5 @@ class TextWord(TextPhrase):
             }
         except models.ObjectDoesNotExist:
             pass
+
+        return translation_dict

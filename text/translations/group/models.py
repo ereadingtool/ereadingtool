@@ -1,17 +1,11 @@
-from typing import AnyStr, Optional
-
 from django.db import models
 
-from text.translations.models import TextWord
 from text.phrase.models import TextPhrase
+from text.translations.models import TextWord
 
 
 class TextWordGroup(TextPhrase):
-    word_type = 'compound'
-
-    @property
-    def phrase(self):
-        return ' '.join([component.word.word for component in self.components.order_by('order')])
+    pass
 
 
 class TextGroupWord(models.Model):

@@ -86,7 +86,7 @@ addTranslation (TextWord id instance phrase grammemes translations word url) tra
     new_translations =
       (case translations of
         Just trs ->
-          Just (trs ++ [translation])
+          Just ((List.map (\tr -> { tr | correct_for_context = False }) trs) ++ [translation])
 
         Nothing ->
           Nothing)

@@ -21,7 +21,7 @@ urlpatterns = [
     path('api/text/translations/match/', TextTranslationMatchAPIView.as_view(),
          name='text-translation-match-method'),
 
-    path('api/text/<str:word_type>/word/<int:pk>/translation/<int:tr_pk>/', TextWordTranslationsAPIView.as_view(),
+    path('api/text/word/<int:pk>/translation/<int:tr_pk>/', TextWordTranslationsAPIView.as_view(),
          name='text-word-translation-api'),
 
     path('api/text/word/<int:pk>/translation/', TextWordTranslationsAPIView.as_view(),

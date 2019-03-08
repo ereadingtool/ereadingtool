@@ -11,7 +11,7 @@ import Json.Decode
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 
 
-type alias TextWord = {word: Word, grammemes: Grammemes, translation: Maybe String}
+type alias TextWord = {phrase: Word, grammemes: Grammemes, translation: Maybe String}
 
 type alias Flashcards = Dict Word TextWord
 type alias TextWords = Dict Word TextWord
@@ -128,7 +128,7 @@ textWordInstanceDecoder =
   Json.Decode.map7 Text.Translations.TextWord.new
     (Json.Decode.field "id" Json.Decode.int)
     (Json.Decode.field "instance" Json.Decode.int)
-    (Json.Decode.field "word" Json.Decode.string)
+    (Json.Decode.field "phrase" Json.Decode.string)
     (Json.Decode.field "grammemes" (Json.Decode.nullable grammemesDecoder))
     (Json.Decode.field "translations" (Json.Decode.nullable (Json.Decode.list textWordTranslationsDecoder)))
     wordDecoder
@@ -146,7 +146,7 @@ grammemesDecoder =
 textWordDecoder : Json.Decode.Decoder TextWord
 textWordDecoder =
   decode TextWord
-    |> required "word" Json.Decode.string
+    |> required "phrase" Json.Decode.string
     |> required "grammemes" grammemesDecoder
     |> required "translation" (Json.Decode.nullable Json.Decode.string)
 

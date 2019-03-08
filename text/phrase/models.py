@@ -17,6 +17,13 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
 
     phrase = models.CharField(max_length=128, blank=False)
 
+    @property
+    def child_instance(self):
+        try:
+            return self.textword
+        except models.ObjectDoesNotExist:
+            return self.textwordgroup
+
     def __str__(self):
         return f'{self.phrase} instance {self.instance+1} from text section {self.text_section}'
 
@@ -57,16 +64,24 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
         schema = {
             'type': 'object',
             'properties': {
-                'word_type': {'type': 'string'},
                 'grammemes': cls.grammeme_add_schema()
             },
             'minItems': 1,
-            'required': ['word_type', 'grammemes']
+            'required': ['grammemes']
         }
 
         return schema
 
     def to_translations_dict(self):
+        word_type = 'single'
+
+        try:
+            if self.textwordgroup:
+                word_type = 'compound'
+
+        except models.ObjectDoesNotExist:
+            pass
+
         translation_dict = {
             'id': self.pk,
             # phrase.instance is the phrase instance within a particular section
@@ -76,7 +91,7 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
             'translations': [translation.to_dict() for translation in
                              self.translations.all()] or None,
             'group': None,
-            'word_type': 'word_type',
+            'word_type': word_type,
             'endpoints': {
                 'text_word': reverse('text-word-api', kwargs={'pk': self.pk}),
                 'translations': reverse('text-word-translation-api', kwargs={'pk': self.pk})
@@ -127,7 +142,8 @@ class TextPhraseTranslation(models.Model):
             'properties': {
                 'correct_for_context': {'type': 'boolean'},
                 'text': {'type': 'string'},
-            }
+            },
+            'required': ['correct_for_context']
         }
 
         return schema
@@ -173,9 +189,8 @@ class TextPhraseTranslation(models.Model):
         return {
             'id': self.pk,
             'endpoint': reverse('text-word-translation-api', kwargs={
-                'pk': self.phrase.pk,
+                'pk': self.text_phrase.pk,
                 'tr_pk': self.pk,
-                'word_type': 'word_type'
             }),
             'correct_for_context': self.correct_for_context,
             'text': self.phrase

@@ -56,13 +56,13 @@ class ParseTextSectionForDefinitions(SyncConsumer):
                 with transaction.atomic():
                     text_word, text_word_created = TextWord.objects.get_or_create(
                         text_section=text_section,
-                        word=word,
+                        phrase=word,
                         instance=i,
                         **word_instance['grammemes'])
 
                     if text_word_created:
                         # populate translations
-                        logger.info(f'created a new word "{text_word.word}" '
+                        logger.info(f'created a new word "{text_word.phrase}" '
                                     f'(pk: {text_word.pk}, instance: {text_word.instance}) '
                                     f'for section pk {text_section.pk}')
 

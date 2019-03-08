@@ -53,10 +53,11 @@ textWordMergeEncoder text_words =
   Encode.list
     (List.map (\text_word -> Encode.int (Text.Translations.TextWord.id text_word)) text_words)
 
-newTextTranslationEncoder : String -> Encode.Value
-newTextTranslationEncoder translation =
+newTextTranslationEncoder : String -> Bool-> Encode.Value
+newTextTranslationEncoder translation correct_for_context =
   Encode.object [
     ("phrase", Encode.string translation)
+  , ("correct_for_context", Encode.bool correct_for_context)
   ]
 
 deleteTextTranslationEncode : Int -> Encode.Value

@@ -289,7 +289,7 @@ updateTranslationsForWord model text_word translation_text =
 
 addTextTranslation : Model -> Int -> Text.Translations.Word -> Translation -> Model
 addTextTranslation model instance word translation =
-  case getTextWord model instance (String.toLower word) of
+  case getTextWord model instance word of
     Just text_word ->
       let
         new_text_word = Text.Translations.TextWord.addTranslation text_word translation
@@ -301,7 +301,7 @@ addTextTranslation model instance word translation =
 
 removeTextTranslation : Model -> Int -> Text.Translations.Word -> Translation -> Model
 removeTextTranslation model instance word translation =
-  case getTextWord model instance (String.toLower word) of
+  case getTextWord model instance word of
     Just text_word ->
       let
         new_text_word = Text.Translations.TextWord.removeTranslation text_word translation

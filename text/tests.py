@@ -15,7 +15,7 @@ from ereadingtool.urls import reverse_lazy
 from question.models import Answer
 from tag.models import Tag
 from text.consumers.instructor import ParseTextSectionForDefinitions
-from text.glosbe.api import GlosbeAPI, GlosbeTranslations, GlosbeTranslation
+from text.yandex.api import YandexTranslationAPI, YandexTranslations, YandexTranslation
 from text.models import TextDifficulty, Text, TextSection
 from text_reading.base import TextReadingNotAllQuestionsAnswered
 from text_reading.models import StudentTextReading, InstructorTextReading
@@ -41,19 +41,18 @@ class TestText(TestUser, TestCase):
         self.instructor = self.new_instructor_client(Client())
         self.student = self.new_student_client(Client())
 
-    @skip('IP is banned for now')
     def test_definition_objs(self):
-        glosbe_api = GlosbeAPI()
+        yandex_translation_api = YandexTranslationAPI()
 
-        defs = glosbe_api.translate('заявление')
+        defs = yandex_translation_api.translate('заявление')
 
-        self.assertIsInstance(defs, GlosbeTranslations)
+        self.assertIsInstance(defs, YandexTranslations)
 
-        self.assertEquals(defs.translations, 'list')
+        self.assertIsInstance(defs.translations, list)
 
         definitions = defs.translations
 
-        self.assertIsInstance(definitions[0], GlosbeTranslation)
+        self.assertIsInstance(definitions[0], YandexTranslation)
 
     def test_parsing_words(self):
         test_data = self.get_test_data()
@@ -80,7 +79,6 @@ class TestText(TestUser, TestCase):
         self.assertNotIn('2', words)
         self.assertIn('руб', words)
 
-    @skip('IP is banned for now')
     def test_word_definition_background_job(self):
         test_data = self.get_test_data()
 
@@ -114,7 +112,8 @@ class TestText(TestUser, TestCase):
 
         self.assertTrue(text_section_word_translation.phrase)
 
-    def test_text_reading(self, text: Text=None, student: Student=None, final_state: State=None) -> StudentTextReading:
+    def test_text_reading(self,
+                          text: Text = None, student: Student = None, final_state: State = None) -> StudentTextReading:
         test_data = self.get_test_data()
 
         if not student:
