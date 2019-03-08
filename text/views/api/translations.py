@@ -33,14 +33,14 @@ class TextTranslationMatchAPIView(LoginRequiredMixin, View):
             text_phrases = []
 
             for text_phrase in translation_merge_params['words']:
-                text_phrase, create_translation = TextPhrase.objects.get(**text_phrase)
+                text_phrase = TextPhrase.objects.get(**text_phrase)
 
                 with transaction.atomic():
                     text_phrase.translations.filter().delete()
 
                     for translation in translation_merge_params['translations']:
-                        translation['word'] = text_phrase
-                        create_translation(**translation)
+                        translation['text_phrase'] = text_phrase
+                        TextPhraseTranslation.create(**translation)
 
                     text_phrases.append(text_phrase)
 

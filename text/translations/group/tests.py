@@ -22,7 +22,7 @@ class TestTextWordGroup(TestUser, TestCase):
         super(TestTextWordGroup, self).__init__(*args, **kwargs)
 
         self.text_group_endpoint = reverse('text-word-group-api')
-        self.text_group_endpoint_for_group = lambda group: reverse('text-word-group-api', kwargs={'pk': group.pk})
+        self.text_group_item_endpoint = lambda group: reverse('text-word-group-api', kwargs={'pk': group.pk})
 
         self.test_text_data = TestText.get_test_data()
         self.text = None
@@ -51,7 +51,7 @@ class TestTextWordGroup(TestUser, TestCase):
 
         text_group = text_words[0].group_word.group
 
-        resp = self.instructor.delete(self.text_group_endpoint_for_group(text_group))
+        resp = self.instructor.delete(self.text_group_item_endpoint(text_group))
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
@@ -63,12 +63,12 @@ class TestTextWordGroup(TestUser, TestCase):
         section = self.text.sections.all()[0]
 
         test_text_word_one = TextWord.objects.create(
-            word='Post',
+            phrase='Post',
             text_section=section
         )
 
         test_text_word_two = TextWord.objects.create(
-            word='Office',
+            phrase='Office',
             text_section=section
         )
 

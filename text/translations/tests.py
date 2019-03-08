@@ -11,7 +11,8 @@ from django.test.client import Client
 
 from text.models import Text
 
-from text.translations.models import TextWord, TextWordTranslation
+from text.translations.models import TextWord
+from text.phrase.models import TextPhraseTranslation
 
 from text.tests import TestText
 from ereadingtool.test.user import TestUser
@@ -61,8 +62,8 @@ class TestTextWord(TestUser, TestCase):
         text_section_one = text.sections.all()[0]
 
         text_words = [
-            TextWord.objects.create(text_section=text_section_one, instance=0, word='Post').pk,
-            TextWord.objects.create(text_section=text_section_one, instance=0, word='Office').pk,
+            TextWord.objects.create(text_section=text_section_one, instance=0, phrase='Post').pk,
+            TextWord.objects.create(text_section=text_section_one, instance=0, phrase='Office').pk,
         ]
 
         resp = self.instructor.post(text_word_group_api_endpoint,
@@ -89,7 +90,7 @@ class TestTextWord(TestUser, TestCase):
                                     json.dumps({
                                         'text_section': text_section_one.pk,
                                         'instance': 0,
-                                        'word': 'sentence'
+                                        'phrase': 'sentence'
                                     }), content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
@@ -128,14 +129,14 @@ class TestTextWordTranslations(TestUser, TestCase):
     def test_translations_merge(self):
         # mock text word since we don't necessarily want to get into running translations code in this particular test
         test_text_word = TextWord.objects.create(
-            word='something',
+            phrase='something',
             text_section=self.text.sections.all()[0]
         )
 
         resp = self.instructor.put(
             reverse_lazy('text-translation-match-method'),
             json.dumps({
-                'words': [{'id': test_text_word.pk, 'word_type': 'single'}],
+                'words': [{'id': test_text_word.pk}],
                 'translations': [
                     {'correct_for_context': True, 'phrase': 'stuff'},
                     {'correct_for_context': False, 'phrase': 'stuff 2'},
@@ -146,6 +147,6 @@ class TestTextWordTranslations(TestUser, TestCase):
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
-        translations = TextWordTranslation.objects.filter(word=test_text_word)
+        translations = TextPhraseTranslation.objects.filter(text_phrase=test_text_word)
 
         self.assertEquals(len(translations), 3)

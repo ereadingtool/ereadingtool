@@ -11,6 +11,7 @@ from text.views.api.text_word.group import TextWordGroupAPIView
 
 urlpatterns = [
     path('api/text/word/compound/', TextWordGroupAPIView.as_view(), name='text-word-group-api'),
+    path('api/text/word/<int:pk>/compound/', TextWordGroupAPIView.as_view(), name='text-word-group-api'),
 
     path('api/text/word/<int:pk>/', TextWordAPIView.as_view(),
          name='text-word-api'),

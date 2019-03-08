@@ -50,11 +50,11 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
             'properties': {
                 'text_section': {'type': 'number'},
                 'instance': {'type': 'number'},
-                'word': {'type': 'string'},
+                'phrase': {'type': 'string'},
                 'grammeme': cls.grammeme_add_schema()
             },
             'minItems': 1,
-            'required': ['text_section', 'instance', 'word']
+            'required': ['text_section', 'instance', 'phrase']
         }
 
         return schema
@@ -152,7 +152,6 @@ class TextPhraseTranslation(models.Model):
     def to_word_json_schema(cls):
         return {
             'id': {'type': 'number'},
-            'word_type': {'type': 'string', 'enum': ['single', 'compound']}
         }
 
     @classmethod
