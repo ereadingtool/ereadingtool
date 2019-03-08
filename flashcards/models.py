@@ -1,13 +1,13 @@
 from django.db import models
 
-from text.translations.models import TextWord
+from text.phrase.models import TextPhrase
 
 
 class Flashcards(models.Model):
-    words = models.ManyToManyField(TextWord, related_name='flashcards')
+    words = models.ManyToManyField(TextPhrase, related_name='flashcards')
 
     def __str__(self):
         return f"{self.student}'s flashcards ({self.words.count()} words)"
 
     def to_dict(self):
-        return [(word.word, word.to_dict()) for word in self.words.all()]
+        return [(text_phrase.phrase, text_phrase.to_dict()) for text_phrase in self.words.all()]
