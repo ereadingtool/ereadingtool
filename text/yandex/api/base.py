@@ -18,6 +18,9 @@ class YandexAPI(object):
 
         self.last_request = None
 
+        if not self.api_key:
+            raise YandexInvalidAPIKeyException(message='The key for this API is missing.')
+
     def build_uri(self, uri: AnyStr, method: AnyStr, params: Dict) -> AnyStr:
         params['key'] = self.api_key
         params['lang'] = '-'.join([self.from_lang, self.to_lang])
