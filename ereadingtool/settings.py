@@ -57,8 +57,14 @@ LOGGING = {
         }
     },
     'handlers': {
-        'console': {
+        'console_info': {
             'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+        'console_debug': {
+            'level': 'DEBUG',
             'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
@@ -68,16 +74,22 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler',
             'include_html': True,
             'filters': ['require_debug_true']
+        },
+        'mail_admins_info': {
+            'level': 'INFO',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
+            'filters': ['require_debug_true']
         }
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'mail_admins'],
+            'handlers': ['console_info', 'mail_admins'],
             'level': 'INFO',
             'propagate': False,
         },
         'django.consumers': {
-            'handlers': ['console', 'mail_admins'],
+            'handlers': ['console_debug', 'mail_admins_info'],
             'level': 'INFO',
             'propagate': False,
         },

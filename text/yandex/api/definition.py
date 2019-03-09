@@ -1,4 +1,6 @@
 import requests
+import json
+
 from django.conf import settings
 
 from text.yandex.api.base import YandexAPI
@@ -17,6 +19,16 @@ class YandexPhrase(object):
 
 
 class YandexExamples(object):
+    def __len__(self):
+        return len(self.examples)
+
+    def __getitem__(self, item):
+        return self.examples[item]
+
+    def __iter__(self):
+        for example in self.examples:
+            yield example
+
     def __init__(self, phrase: AnyStr, language: AnyStr, examples: List[Dict], *args, **kwargs):
         self.phrase = phrase
         self.language = language
@@ -24,11 +36,11 @@ class YandexExamples(object):
 
         for ex in examples:
             try:
-                example_translation = ex['tr'][0]['text']
+                example_text = ex['tr'][0]['text']
             except (KeyError, IndexError):
-                example_translation = None
+                example_text = None
 
-            self.examples.append(YandexExample(text=ex['text'], example_translation=example_translation))
+            self.examples.append(YandexExample(text=ex['text'], example=example_text))
 
 
 class YandexTranslation(object):
@@ -46,8 +58,8 @@ class YandexTranslations(object):
         return self.translations[item]
 
     def __iter__(self):
-        for definition in self.translations:
-            yield definition
+        for translation in self.translations:
+            yield translation
 
     def __init__(self, phrase: AnyStr, language: AnyStr, translations: List[Dict], **kwargs):
         self.phrase = phrase
@@ -72,9 +84,9 @@ class YandexTranslations(object):
 
 
 class YandexExample(object):
-    def __init__(self, text: AnyStr, example_translation: AnyStr, *args, **kwargs):
+    def __init__(self, text: AnyStr, example: AnyStr, *args, **kwargs):
         self.text = text
-        self.example_translation = example_translation
+        self.example_translation = example
 
 
 class YandexDefinition(object):
@@ -126,7 +138,9 @@ class YandexDefinitionAPI(YandexAPI):
     yandex_definition_uri = 'https://dictionary.yandex.net/api/v1/dicservice.json/'
 
     def resp_to_exception(self, resp: requests.Response) -> YandexException:
-        status_code = resp.status_code
+        resp_json = json.loads(resp.content)
+
+        status_code = resp_json['code']
 
         exceptions = {
             401: YandexInvalidAPIKeyException(message='Invalid API key'),

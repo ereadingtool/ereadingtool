@@ -46,8 +46,8 @@ class ParseTextSectionForDefinitions(SyncConsumer):
 
         text_section_words = list(text_section.words)
 
-        logger.info(f'Parsing {len(text_section_words)} word definitions '
-                    f'for text section pk={message["text_section_pk"]}')
+        logger.debug(f'Parsing {len(text_section_words)} word definitions '
+                     f'for text section pk={message["text_section_pk"]}')
 
         word_data, word_freqs = text_section.parse_word_definitions()
 
@@ -62,27 +62,27 @@ class ParseTextSectionForDefinitions(SyncConsumer):
 
                     if text_word_created:
                         # populate translations
-                        logger.info(f'created a new word "{text_word.phrase}" '
-                                    f'(pk: {text_word.pk}, instance: {text_word.instance}) '
-                                    f'for section pk {text_section.pk}')
+                        logger.debug(f'created a new word "{text_word.phrase}" '
+                                     f'(pk: {text_word.pk}, instance: {text_word.instance}) '
+                                     f'for section pk {text_section.pk}')
 
                         text_word.save()
 
                         if len(word_instance['translations']):
                             for j, translation in enumerate(word_instance['translations']):
                                 if translation.phrase:
-                                    text_word_definition = TextPhraseTranslation.objects.create(
+                                    text_word_definition = TextPhraseTranslation.create(
                                         text_phrase=text_word,
                                         phrase=translation.phrase.text,
                                         correct_for_context=(True if j == 0 else False))
 
                                     text_word_definition.save()
 
-                            logger.info(f'created '
-                                        f'{len(word_instance["translations"])} translations '
-                                        f'for text word pk {text_word.pk}')
+                            logger.debug(f'created '
+                                         f'{len(word_instance["translations"])} translations '
+                                         f'for text word pk {text_word.pk}')
 
-        logger.info(f'Finished parsing translations for text section pk={message["text_section_pk"]}')
+        logger.debug(f'Finished parsing translations for text section pk={message["text_section_pk"]}')
 
         text_section.save()
 

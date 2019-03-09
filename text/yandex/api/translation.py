@@ -1,4 +1,6 @@
 import requests
+import json
+
 from django.conf import settings
 
 from text.yandex.api.base import YandexAPI
@@ -46,7 +48,9 @@ class YandexTranslationAPI(YandexAPI):
     yandex_translate_uri = 'https://translate.yandex.net/api/v1.5/tr.json/'
 
     def resp_to_exception(self, resp: requests.Response) -> YandexException:
-        status_code = resp.status_code
+        resp_json = json.loads(resp.content)
+
+        status_code = resp_json['code']
 
         exceptions = {
             401: YandexInvalidAPIKeyException(message='Invalid API key'),
