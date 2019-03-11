@@ -70,7 +70,7 @@ class TextView(TemplateView):
 
     # for text reading, relax connect-src CSP
     # since websockets are not the same origin as the HTTP requests (https://github.com/w3c/webappsec/issues/489)
-    @csp_replace(CONNECT_SRC=("ws://*", "'self'"))
+    @csp_replace(CONNECT_SRC=("wss://*", "'self'"))
     def dispatch(self, request, *args, **kwargs):
         return super(TextView, self).dispatch(request, *args, **kwargs)
 
@@ -98,7 +98,7 @@ class TextLoadElm(ElmLoadJsView):
 
         context['elm']['text_id'] = {'quote': False, 'safe': True, 'value': context['pk']}
 
-        ws_addr = f"ws://{host}/{profile_type}/text_read/{context['pk']}/"
+        ws_addr = f"wss://{host}/{profile_type}/text_read/{context['pk']}/"
 
         context['elm']['text_reader_ws_addr'] = {'quote': True, 'safe': True,
                                                  'value': ws_addr}
