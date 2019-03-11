@@ -295,11 +295,11 @@ class TextSection(TextSectionDefinitionsMixin, Timestamped, models.Model):
             'questions': questions_text_reading_dicts,
             'body': self.body,
             'translations': {
-                word.word: {
-                    'grammemes': word.grammemes,
+                text_phrase.phrase: {
+                    'grammemes': text_phrase.grammemes,
                     'translations': [translation.phrase for translation in
-                                     word.translations.filter(correct_for_context=True)]
-                } for word in self.translated_words.prefetch_related('translations').all()
+                                     text_phrase.translations.filter(correct_for_context=True)]
+                } for text_phrase in self.translated_words.prefetch_related('translations').all()
             }
         }
 
