@@ -68,7 +68,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
     def words(self):
         return {
             text_phrase.phrase: {
-                'grammemes': [item for item in text_phrase.grammemes.items()],
+                'grammemes': text_phrase.serialized_grammemes,
                 'translations': [translation.phrase for translation in
                                  text_phrase.translations.all()]
             }
@@ -298,9 +298,6 @@ class TextSection(TextSectionDefinitionsMixin, Timestamped, models.Model):
             # students dont need to know about endpoints
             if 'endpoints' in text_word_dict:
                 del text_word_dict['endpoints']
-
-            if 'grammemes' in text_word_dict:
-                text_word_dict['grammemes'] = [item for item in text_word_dict['grammemes'].items()]
 
             phrases[text_phrase.phrase].append(text_word_dict)
 

@@ -111,10 +111,6 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
         if 'endpoints' in text_phrase_reading_dict:
             del text_phrase_reading_dict['endpoints']
 
-        # grammemes need to be serialized differently for the frontend
-        if 'grammemes' in text_phrase_reading_dict:
-            text_phrase_reading_dict['grammemes'] = [item for item in text_phrase_reading_dict['grammemes'].items()]
-
         return text_phrase_reading_dict
 
 
