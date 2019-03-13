@@ -17,7 +17,7 @@ class Student(Profile, TextReadings, models.Model):
                                               related_name='students')
 
     flashcards = models.OneToOneField(Flashcards, null=True, blank=True, related_name='student',
-                                      on_delete=models.SET_NULL)
+                                      on_delete=models.CASCADE)
 
     login_url = reverse_lazy('student-login')
 
