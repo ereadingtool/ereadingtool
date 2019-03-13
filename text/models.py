@@ -68,7 +68,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
     def words(self):
         return {
             text_phrase.phrase: {
-                'grammemes': text_phrase.grammemes,
+                'grammemes': [item for item in text_phrase.grammemes.items()],
                 'translations': [translation.phrase for translation in
                                  text_phrase.translations.all()]
             }
