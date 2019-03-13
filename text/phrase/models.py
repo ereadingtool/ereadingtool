@@ -79,7 +79,7 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
             if self.textwordgroup:
                 word_type = 'compound'
 
-        except models.ObjectDoesNotExist:
+        except (AttributeError, models.ObjectDoesNotExist):
             pass
 
         translation_dict = {
