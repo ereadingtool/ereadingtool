@@ -27,6 +27,10 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
     def __str__(self):
         return f'{self.phrase} instance {self.instance+1} from text section {self.text_section}'
 
+    @property
+    def serialized_grammemes(self):
+        return [item for item in self.grammemes.items()]
+
     def to_dict(self):
         translation = None
 
@@ -37,7 +41,7 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
 
         text_word_dict = {
             'phrase': self.phrase,
-            'grammemes': [item for item in self.grammemes.items()],
+            'grammemes': self.serialized_grammemes,
             'translation': translation.phrase if translation else None,
         }
 
@@ -87,7 +91,7 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
             # phrase.instance is the phrase instance within a particular section
             'instance': self.instance,
             'phrase': self.phrase,
-            'grammemes': self.grammemes,
+            'grammemes': self.serialized_grammemes,
             'translations': [translation.to_dict() for translation in
                              self.translations.all()] or None,
             'group': None,
