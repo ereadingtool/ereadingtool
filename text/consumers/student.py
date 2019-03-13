@@ -33,7 +33,7 @@ class StudentTextReaderConsumer(TextReaderConsumer):
         return flashcards.words.filter(pk=text_phrase.pk).exists()
 
     @database_sync_to_async
-    def get_word_in_definitions(self, phrase: AnyStr, instance: int):
+    def get_text_phrase_in_definitions(self, phrase: AnyStr, instance: int):
         return TextPhrase.objects.filter(text_section=self.text_reading.current_section,
                                          phrase=phrase,
                                          instance=instance).get()
@@ -60,28 +60,28 @@ class StudentTextReaderConsumer(TextReaderConsumer):
         else:
             return student.flashcards
 
-    async def add_flashcard_phrase(self, user: ReaderUser, word: AnyStr, instance: int):
-        await super(StudentTextReaderConsumer, self).add_flashcard_phrase(user, word, instance)
+    async def add_flashcard_phrase(self, user: ReaderUser, phrase: AnyStr, instance: int):
+        await super(StudentTextReaderConsumer, self).add_flashcard_phrase(user, phrase, instance)
 
         if self.student and self.text_reading:
-            if await self.phrase_exists_in_definitions(word):
+            if await self.phrase_exists_in_definitions(phrase):
                 flashcards = await self.get_flashcards_for_student(self.student)
 
-                text_word = None
+                text_phrase = None
 
                 try:
-                    text_word = await self.get_word_in_definitions(word, instance)
-                except TextWord.DoesNotExist:
+                    text_phrase = await self.get_text_phrase_in_definitions(phrase, instance)
+                except TextPhrase.DoesNotExist:
                     await self.send_json({
                         'command': 'exception',
-                        'result': {'code': 'unknown', 'error_msg': f'{word} does not exist in your text.'}
+                        'result': {'code': 'unknown', 'error_msg': f'{phrase} does not exist in your text.'}
                     })
 
-                await self.add_phrase_to_flashcards(flashcards, text_word)
+                await self.add_phrase_to_flashcards(flashcards, text_phrase)
 
                 await self.send_json({
-                    'command': 'add_flashcard_word',
-                    'result': await database_sync_to_async(text_word.to_dict)()
+                    'command': 'add_flashcard_phrase',
+                    'result': await database_sync_to_async(text_phrase.child_instance.to_text_reading_dict)()
                 })
 
     async def remove_flashcard_phrase(self, user: ReaderUser, phrase: AnyStr, instance: int):
@@ -91,7 +91,7 @@ class StudentTextReaderConsumer(TextReaderConsumer):
             text_phrase = None
 
             try:
-                text_phrase = await self.get_word_in_definitions(phrase, instance)
+                text_phrase = await self.get_text_phrase_in_definitions(phrase, instance)
             except TextPhrase.DoesNotExist:
                 await self.send_json({
                     'command': 'exception',
@@ -102,6 +102,6 @@ class StudentTextReaderConsumer(TextReaderConsumer):
                 await self.remove_phrase_from_flashcards(self.student.flashcards, text_phrase)
 
                 await self.send_json({
-                    'command': 'remove_flashcard_word',
-                    'result': await database_sync_to_async(text_phrase.to_dict)()
+                    'command': 'remove_flashcard_phrase',
+                    'result': await database_sync_to_async(text_phrase.child_instance.to_text_reading_dict)()
                 })

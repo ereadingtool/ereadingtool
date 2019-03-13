@@ -10818,6 +10818,10 @@ var _user$project$TextReader_TextWord$phrase = function (_p12) {
 	var _p13 = _p12;
 	return _p13._2;
 };
+var _user$project$TextReader_TextWord$instance = function (_p14) {
+	var _p15 = _p14;
+	return _p15._1;
+};
 var _user$project$TextReader_TextWord$Translation = F2(
 	function (a, b) {
 		return {correct_for_context: a, text: b};

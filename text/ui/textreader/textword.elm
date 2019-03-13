@@ -26,6 +26,10 @@ type alias TextWordParams = {
 type TextWord = TextWord Int Instance Phrase (Maybe Grammemes) (Maybe Translations) Text.Translations.TextWord.Word
 
 
+instance : TextWord -> Instance
+instance (TextWord _ instance _ _ _ _) =
+  instance
+
 phrase : TextWord -> Phrase
 phrase (TextWord _ _ phrase _ _ _) =
   phrase

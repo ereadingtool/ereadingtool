@@ -156,8 +156,8 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             'next': 1,
             'prev': 1,
             'answer': 1,
-            'add_flashcard_word': 1,
-            'remove_flashcard_word': 1
+            'add_flashcard_phrase': 1,
+            'remove_flashcard_phrase': 1
         }
 
         try:
@@ -174,12 +174,12 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
                 if cmd == 'answer':
                     await self.answer(answer_id=content.get('answer_id', None), user=user)
 
-                if cmd == 'add_flashcard_word':
-                    await self.add_flashcard_phrase(user=user, phrase=content.get('word', None),
+                if cmd == 'add_flashcard_phrase':
+                    await self.add_flashcard_phrase(user=user, phrase=content.get('phrase', None),
                                                     instance=content.get('instance', 0))
 
-                if cmd == 'remove_flashcard_word':
-                    await self.remove_flashcard_phrase(user=user, phrase=content.get('word', None),
+                if cmd == 'remove_flashcard_phrase':
+                    await self.remove_flashcard_phrase(user=user, phrase=content.get('phrase', None),
                                                        instance=content.get('instance', 0))
 
             else:

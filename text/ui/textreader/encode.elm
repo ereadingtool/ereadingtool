@@ -2,6 +2,9 @@ module TextReader.Encode exposing (..)
 
 import TextReader.Model exposing (..)
 import TextReader.Answer.Model
+
+import TextReader.TextWord
+
 import Json.Encode
 
 
@@ -33,11 +36,13 @@ send_command cmd_req =
     AddToFlashcardsReq reader_word ->
       Json.Encode.object [
         ("command", Json.Encode.string "add_flashcard_phrase")
-      , ("word", Json.Encode.string reader_word.word)
+      , ("instance", Json.Encode.string (toString (TextReader.Model.instance reader_word)))
+      , ("phrase", Json.Encode.string (TextReader.Model.phrase reader_word))
       ]
 
     RemoveFromFlashcardsReq reader_word ->
       Json.Encode.object [
         ("command", Json.Encode.string "remove_flashcard_phrase")
-      , ("word", Json.Encode.string reader_word.word)
+      , ("instance", Json.Encode.string (toString (TextReader.Model.instance reader_word)))
+      , ("phrase", Json.Encode.string (TextReader.Model.phrase reader_word))
       ]

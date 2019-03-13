@@ -16,6 +16,8 @@ import TextReader.Model exposing (..)
 
 import TextReader.TextWord
 
+import TextReader.Model
+
 import TextReader.Text.Model exposing (Text)
 import TextReader.Section.Model exposing (Section, Words)
 import TextReader.Question.Model exposing (TextQuestion)
@@ -32,8 +34,8 @@ tagWord : Model -> Section -> Int -> String -> Html Msg
 tagWord model text_reader_section instance token =
   let
     id = String.join "_" [toString instance, token]
-    reader_word = TextReaderWord id (String.toLower token)
     textreader_textword = (TextReader.Section.Model.getTextWord text_reader_section instance token)
+    reader_word = TextReader.Model.new id instance token textreader_textword
   in
     case token == " " of
         True ->
@@ -124,7 +126,7 @@ view_translations defs =
 view_word_and_grammemes : TextReaderWord -> TextReader.TextWord.TextWord -> Html Msg
 view_word_and_grammemes reader_word text_word =
   div [] [
-    Html.text <| reader_word.word ++ " (" ++ TextReader.TextWord.grammemesToString text_word ++ ")"
+    Html.text <| (TextReader.Model.phrase reader_word) ++ " (" ++ TextReader.TextWord.grammemesToString text_word ++ ")"
   ]
 
 view_flashcard_words : Model -> Html Msg
@@ -136,13 +138,13 @@ view_flashcard_words model =
 view_flashcard_options : Model -> TextReaderWord -> Html Msg
 view_flashcard_options model reader_word =
   let
+    phrase = TextReader.Model.phrase reader_word
     flashcards = Maybe.withDefault Dict.empty (User.Profile.flashcards model.profile)
     add = div [class "cursor", onClick (AddToFlashcards reader_word)] [ Html.text "Add to Flashcards" ]
     remove = div [class "cursor", onClick (RemoveFromFlashcards reader_word)] [ Html.text "Remove from Flashcards" ]
+
   in
-    --TODO(andrew): re-add once i've fixed flashcards for textphrases
-    --div [class "gloss_flashcard_options"] (if Dict.member reader_word.word flashcards then [remove] else [add])
-    div  [class "gloss_flashcard_options"] []
+    div [class "gloss_flashcard_options"] (if Dict.member phrase flashcards then [remove] else [add])
 
 view_gloss : Model -> TextReaderWord -> TextReader.TextWord.TextWord -> Html Msg
 view_gloss model reader_word text_word =
