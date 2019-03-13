@@ -45,11 +45,11 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
     def start_reading(self):
         raise NotImplementedError
 
-    async def add_flashcard_word(self, user: ReaderUser, word: AnyStr, instance: int):
+    async def add_flashcard_phrase(self, user: ReaderUser, phrase: AnyStr, instance: int):
         if not user.is_authenticated:
             raise Unauthorized
 
-    async def remove_flashcard_word(self, user: ReaderUser, word: AnyStr, instance: int):
+    async def remove_flashcard_phrase(self, user: ReaderUser, phrase: AnyStr, instance: int):
         if not user.is_authenticated:
             raise Unauthorized
 
@@ -175,12 +175,12 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
                     await self.answer(answer_id=content.get('answer_id', None), user=user)
 
                 if cmd == 'add_flashcard_word':
-                    await self.add_flashcard_word(user=user, word=content.get('word', None),
-                                                  instance=content.get('instance', 0))
+                    await self.add_flashcard_phrase(user=user, phrase=content.get('word', None),
+                                                    instance=content.get('instance', 0))
 
                 if cmd == 'remove_flashcard_word':
-                    await self.remove_flashcard_word(user=user, word=content.get('word', None),
-                                                     instance=content.get('instance', 0))
+                    await self.remove_flashcard_phrase(user=user, phrase=content.get('word', None),
+                                                       instance=content.get('instance', 0))
 
             else:
                 await self.send_json({'error': f'{cmd} is not a valid command.'})

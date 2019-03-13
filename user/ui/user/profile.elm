@@ -18,6 +18,8 @@ import Student.View
 
 import Text.Translations.Decode exposing (TextWord, Flashcards)
 
+import TextReader.TextWord
+
 import Menu.Msg exposing (Msg)
 
 import Menu.Logout
@@ -105,7 +107,7 @@ flashcards profile =
     _ ->
       Nothing
 
-addFlashcard : Profile -> TextWord -> Profile
+addFlashcard : Profile -> TextReader.TextWord.TextWord -> Profile
 addFlashcard profile text_word =
   case profile of
     Student profile ->
@@ -114,7 +116,7 @@ addFlashcard profile text_word =
     _ ->
       profile
 
-removeFlashcard : Profile -> TextWord -> Profile
+removeFlashcard : Profile -> TextReader.TextWord.TextWord -> Profile
 removeFlashcard profile text_word =
   case profile of
     Student profile ->

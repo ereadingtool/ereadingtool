@@ -287,6 +287,23 @@ class TextSection(TextSectionDefinitionsMixin, Timestamped, models.Model):
 
         questions_count = len((list(questions_text_reading_dicts)))
 
+        phrases = dict()
+
+        for text_phrase in self.translated_words.prefetch_related('translations').filter(
+                translations__correct_for_context=True):
+            phrases.setdefault(text_phrase.phrase, [])
+
+            text_word_dict = text_phrase.child_instance.to_translations_dict()
+
+            # students dont need to know about endpoints
+            if 'endpoints' in text_word_dict:
+                del text_word_dict['endpoints']
+
+            if 'grammemes' in text_word_dict:
+                text_word_dict['grammemes'] = [item for item in text_word_dict['grammemes'].items()]
+
+            phrases[text_phrase.phrase].append(text_word_dict)
+
         text_section_dict = {
             'order': self.order,
             'created_dt': self.created_dt.isoformat(),
@@ -294,13 +311,7 @@ class TextSection(TextSectionDefinitionsMixin, Timestamped, models.Model):
             'question_count': questions_count,
             'questions': questions_text_reading_dicts,
             'body': self.body,
-            'translations': {
-                text_phrase.phrase: {
-                    'grammemes': text_phrase.grammemes,
-                    'translations': [translation.phrase for translation in
-                                     text_phrase.translations.filter(correct_for_context=True)]
-                } for text_phrase in self.translated_words.prefetch_related('translations').all()
-            }
+            'translations': phrases
         }
 
         text_section_dict.update(**kwargs)

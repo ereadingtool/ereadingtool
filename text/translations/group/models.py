@@ -5,7 +5,12 @@ from text.translations.models import TextWord
 
 
 class TextWordGroup(TextPhrase):
-    pass
+    def to_text_reading_dict(self):
+        text_reading_dict = super(TextWordGroup, self).to_text_reading_dict()
+
+        text_reading_dict['word'] = (text_reading_dict['word_type'], text_reading_dict['group'])
+
+        return text_reading_dict
 
 
 class TextGroupWord(models.Model):

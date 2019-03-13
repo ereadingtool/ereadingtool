@@ -10,6 +10,7 @@ import Html.Events exposing (..)
 import Html.Attributes exposing (..)
 
 import Dict exposing (Dict)
+import Set exposing (Set)
 
 import Text.Section.Words.Tag
 
@@ -21,8 +22,6 @@ import Text.Translations.Word.Instance exposing (WordInstance)
 
 import VirtualDom
 import HtmlParser
-
-import Set exposing (Set)
 
 
 wordInstanceOnClick : Model -> (Msg -> msg) -> WordInstance -> Html.Attribute msg
@@ -315,23 +314,9 @@ view_match_translations parent_msg word_instance =
     ]
   ]
 
-view_grammeme : (String, Maybe String) -> Html msg
+view_grammeme : (String, String) -> Html msg
 view_grammeme (grammeme, grammeme_value) =
-  case grammeme_value of
-    Just value ->
-      div [class "grammeme"] [ Html.text grammeme, Html.text " : ", Html.text value ]
-
-    Nothing ->
-      div [class "grammeme"] []
-
-view_grammeme_as_string : (String, Maybe String) -> Maybe String
-view_grammeme_as_string (grammeme, grammeme_value) =
-  case grammeme_value of
-    Just value ->
-      Just (grammeme ++ ": " ++ value)
-
-    _ ->
-      Nothing
+  div [class "grammeme"] [ Html.text grammeme, Html.text " : ", Html.text grammeme_value ]
 
 view_add_grammemes : Model -> (Msg -> msg) -> WordInstance -> Html msg
 view_add_grammemes model msg word_instance =
@@ -359,26 +344,11 @@ view_grammemes : Model -> (Msg -> msg) -> WordInstance -> Html msg
 view_grammemes model msg word_instance =
   div [class "grammemes"] <|
     (case (Text.Translations.Word.Instance.grammemes word_instance) of
-       Just gramemmes ->
-         [ view_grammeme ("pos", gramemmes.pos)
-         , view_grammeme ("tense", gramemmes.tense)
-         , view_grammeme ("aspect", gramemmes.aspect)
-         , view_grammeme ("form", gramemmes.form)
-         , view_grammeme ("mood", gramemmes.mood)
-         ]
+       Just grammemes ->
+         List.map view_grammeme <| Dict.toList grammemes
 
        Nothing ->
          []) ++ [view_add_grammemes model msg word_instance]
-
-view_grammemes_as_string : Dict String (Maybe String) -> String
-view_grammemes_as_string grammemes =
-     String.join ", "
-  <| List.map (Maybe.withDefault "")
-  <| List.filter
-       (\str -> case str of
-        Just _ -> True
-        Nothing -> False)
-  <| List.map view_grammeme_as_string (Dict.toList grammemes)
 
 view_translations : (Msg -> msg) -> Maybe Model -> Html msg
 view_translations msg translation_model =

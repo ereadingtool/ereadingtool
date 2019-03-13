@@ -10430,58 +10430,7 @@ var _user$project$Text_Section_Model$Section = function (a) {
 	return {ctor: 'Section', _0: a};
 };
 
-var _user$project$Text_Translations$maybeToBool = function (maybe) {
-	var _p0 = maybe;
-	if (_p0.ctor === 'Just') {
-		return true;
-	} else {
-		return false;
-	}
-};
-var _user$project$Text_Translations$definedGrammemes = function (grammemes) {
-	return {
-		ctor: '::',
-		_0: {
-			ctor: '_Tuple2',
-			_0: 'pos',
-			_1: _user$project$Text_Translations$maybeToBool(grammemes.pos)
-		},
-		_1: {
-			ctor: '::',
-			_0: {
-				ctor: '_Tuple2',
-				_0: 'tense',
-				_1: _user$project$Text_Translations$maybeToBool(grammemes.tense)
-			},
-			_1: {
-				ctor: '::',
-				_0: {
-					ctor: '_Tuple2',
-					_0: 'aspect',
-					_1: _user$project$Text_Translations$maybeToBool(grammemes.aspect)
-				},
-				_1: {
-					ctor: '::',
-					_0: {
-						ctor: '_Tuple2',
-						_0: 'form',
-						_1: _user$project$Text_Translations$maybeToBool(grammemes.form)
-					},
-					_1: {
-						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'mood',
-							_1: _user$project$Text_Translations$maybeToBool(grammemes.mood)
-						},
-						_1: {ctor: '[]'}
-					}
-				}
-			}
-		}
-	};
-};
-var _user$project$Text_Translations$grammemeKeys = _elm_lang$core$Set$fromList(
+var _user$project$Text_Translations$expectedGrammemeKeys = _elm_lang$core$Set$fromList(
 	{
 		ctor: '::',
 		_0: 'pos',
@@ -10503,24 +10452,6 @@ var _user$project$Text_Translations$grammemeKeys = _elm_lang$core$Set$fromList(
 			}
 		}
 	});
-var _user$project$Text_Translations$grammemeValue = F2(
-	function (grammemes, name) {
-		var _p1 = name;
-		switch (_p1) {
-			case 'pos':
-				return grammemes.pos;
-			case 'tense':
-				return grammemes.tense;
-			case 'aspect':
-				return grammemes.aspect;
-			case 'form':
-				return grammemes.form;
-			case 'mood':
-				return grammemes.mood;
-			default:
-				return _elm_lang$core$Maybe$Nothing;
-		}
-	});
 var _user$project$Text_Translations$WordValues = F2(
 	function (a, b) {
 		return {grammemes: a, translations: b};
@@ -10536,10 +10467,6 @@ var _user$project$Text_Translations$Flags = F2(
 var _user$project$Text_Translations$Translation = F4(
 	function (a, b, c, d) {
 		return {id: a, endpoint: b, correct_for_context: c, text: d};
-	});
-var _user$project$Text_Translations$Grammemes = F5(
-	function (a, b, c, d, e) {
-		return {pos: a, tense: b, aspect: c, form: d, mood: e};
 	});
 var _user$project$Text_Translations$Cancelable = {ctor: 'Cancelable'};
 var _user$project$Text_Translations$Mergeable = {ctor: 'Mergeable'};
@@ -10663,14 +10590,17 @@ var _user$project$Text_Translations_TextWord$translations_endpoint = function (t
 var _user$project$Text_Translations_TextWord$text_word_endpoint = function (text_word) {
 	return _user$project$Text_Translations_TextWord$endpoints(text_word).text_word;
 };
-var _user$project$Text_Translations_TextWord$group = function (_p8) {
-	var _p9 = _p8;
-	var _p10 = _p9._5;
-	if (_p10.ctor === 'SingleWord') {
-		return _p10._0;
+var _user$project$Text_Translations_TextWord$wordTypeToGroup = function (word) {
+	var _p8 = word;
+	if (_p8.ctor === 'SingleWord') {
+		return _p8._0;
 	} else {
 		return _elm_lang$core$Maybe$Nothing;
 	}
+};
+var _user$project$Text_Translations_TextWord$group = function (_p9) {
+	var _p10 = _p9;
+	return _user$project$Text_Translations_TextWord$wordTypeToGroup(_p10._5);
 };
 var _user$project$Text_Translations_TextWord$instance = function (_p11) {
 	var _p12 = _p11;
@@ -10680,13 +10610,17 @@ var _user$project$Text_Translations_TextWord$word = function (_p13) {
 	var _p14 = _p13;
 	return _p14._5;
 };
-var _user$project$Text_Translations_TextWord$wordType = function (text_word) {
-	var _p15 = _user$project$Text_Translations_TextWord$word(text_word);
+var _user$project$Text_Translations_TextWord$wordTypeToString = function (word) {
+	var _p15 = word;
 	if (_p15.ctor === 'SingleWord') {
 		return 'single';
 	} else {
 		return 'compound';
 	}
+};
+var _user$project$Text_Translations_TextWord$wordType = function (text_word) {
+	return _user$project$Text_Translations_TextWord$wordTypeToString(
+		_user$project$Text_Translations_TextWord$word(text_word));
 };
 var _user$project$Text_Translations_TextWord$grammemes = function (_p16) {
 	var _p17 = _p16;
@@ -10696,7 +10630,7 @@ var _user$project$Text_Translations_TextWord$grammemeValue = F2(
 	function (text_word, grammeme_name) {
 		var _p18 = _user$project$Text_Translations_TextWord$grammemes(text_word);
 		if (_p18.ctor === 'Just') {
-			return A2(_user$project$Text_Translations$grammemeValue, _p18._0, grammeme_name);
+			return A2(_elm_lang$core$Dict$get, grammeme_name, _p18._0);
 		} else {
 			return _elm_lang$core$Maybe$Nothing;
 		}
@@ -10709,6 +10643,19 @@ var _user$project$Text_Translations_TextWord$CompoundWord = {ctor: 'CompoundWord
 var _user$project$Text_Translations_TextWord$SingleWord = function (a) {
 	return {ctor: 'SingleWord', _0: a};
 };
+var _user$project$Text_Translations_TextWord$strToWordType = function (_p19) {
+	var _p20 = _p19;
+	var _p22 = _p20._1;
+	var _p21 = _p20._0;
+	switch (_p21) {
+		case 'single':
+			return _user$project$Text_Translations_TextWord$SingleWord(_p22);
+		case 'compound':
+			return _user$project$Text_Translations_TextWord$CompoundWord;
+		default:
+			return _user$project$Text_Translations_TextWord$SingleWord(_p22);
+	}
+};
 var _user$project$Text_Translations_TextWord$TextWord = F7(
 	function (a, b, c, d, e, f, g) {
 		return {ctor: 'TextWord', _0: a, _1: b, _2: c, _3: d, _4: e, _5: f, _6: g};
@@ -10718,11 +10665,11 @@ var _user$project$Text_Translations_TextWord$new = F7(
 		return A7(_user$project$Text_Translations_TextWord$TextWord, id, instance, phrase, grammemes, translations, word, endpoint);
 	});
 var _user$project$Text_Translations_TextWord$addTranslation = F2(
-	function (_p19, translation) {
-		var _p20 = _p19;
+	function (_p23, translation) {
+		var _p24 = _p23;
 		var new_translations = function () {
-			var _p21 = _p20._4;
-			if (_p21.ctor === 'Just') {
+			var _p25 = _p24._4;
+			if (_p25.ctor === 'Just') {
 				return _elm_lang$core$Maybe$Just(
 					A2(
 						_elm_lang$core$Basics_ops['++'],
@@ -10733,7 +10680,7 @@ var _user$project$Text_Translations_TextWord$addTranslation = F2(
 									tr,
 									{correct_for_context: false});
 							},
-							_p21._0),
+							_p25._0),
 						{
 							ctor: '::',
 							_0: translation,
@@ -10743,60 +10690,60 @@ var _user$project$Text_Translations_TextWord$addTranslation = F2(
 				return _elm_lang$core$Maybe$Nothing;
 			}
 		}();
-		return A7(_user$project$Text_Translations_TextWord$TextWord, _p20._0, _p20._1, _p20._2, _p20._3, new_translations, _p20._5, _p20._6);
+		return A7(_user$project$Text_Translations_TextWord$TextWord, _p24._0, _p24._1, _p24._2, _p24._3, new_translations, _p24._5, _p24._6);
 	});
 var _user$project$Text_Translations_TextWord$removeTranslation = F2(
-	function (_p22, text_word_translation) {
-		var _p23 = _p22;
-		var _p24 = _p23._4;
-		if (_p24.ctor === 'Just') {
+	function (_p26, text_word_translation) {
+		var _p27 = _p26;
+		var _p28 = _p27._4;
+		if (_p28.ctor === 'Just') {
 			var new_translations = A2(
 				_elm_lang$core$List$filter,
 				function (tr) {
 					return !_elm_lang$core$Native_Utils.eq(tr.id, text_word_translation.id);
 				},
-				_p24._0);
+				_p28._0);
 			return A7(
 				_user$project$Text_Translations_TextWord$TextWord,
-				_p23._0,
-				_p23._1,
-				_p23._2,
-				_p23._3,
+				_p27._0,
+				_p27._1,
+				_p27._2,
+				_p27._3,
 				_elm_lang$core$Maybe$Just(new_translations),
-				_p23._5,
-				_p23._6);
+				_p27._5,
+				_p27._6);
 		} else {
-			return _p23;
+			return _p27;
 		}
 	});
 var _user$project$Text_Translations_TextWord$updateTranslation = F2(
-	function (_p25, text_word_translation) {
-		var _p26 = _p25;
-		var _p27 = _p26._4;
-		if (_p27.ctor === 'Just') {
+	function (_p29, text_word_translation) {
+		var _p30 = _p29;
+		var _p31 = _p30._4;
+		if (_p31.ctor === 'Just') {
 			var new_translations = A2(
 				_elm_lang$core$List$map,
 				function (tr) {
 					return _elm_lang$core$Native_Utils.eq(tr.id, text_word_translation.id) ? text_word_translation : tr;
 				},
-				_p27._0);
+				_p31._0);
 			return A7(
 				_user$project$Text_Translations_TextWord$TextWord,
-				_p26._0,
-				_p26._1,
-				_p26._2,
-				_p26._3,
+				_p30._0,
+				_p30._1,
+				_p30._2,
+				_p30._3,
 				_elm_lang$core$Maybe$Just(new_translations),
-				_p26._5,
-				_p26._6);
+				_p30._5,
+				_p30._6);
 		} else {
-			return _p26;
+			return _p30;
 		}
 	});
-var _user$project$Text_Translations_TextWord$setNoTRCorrectForContext = function (_p28) {
-	var _p29 = _p28;
-	var _p30 = _p29._4;
-	if (_p30.ctor === 'Just') {
+var _user$project$Text_Translations_TextWord$setNoTRCorrectForContext = function (_p32) {
+	var _p33 = _p32;
+	var _p34 = _p33._4;
+	if (_p34.ctor === 'Just') {
 		var new_translations = A2(
 			_elm_lang$core$List$map,
 			function (tr) {
@@ -10804,42 +10751,140 @@ var _user$project$Text_Translations_TextWord$setNoTRCorrectForContext = function
 					tr,
 					{correct_for_context: false});
 			},
-			_p30._0);
+			_p34._0);
 		return A7(
 			_user$project$Text_Translations_TextWord$TextWord,
-			_p29._0,
-			_p29._1,
-			_p29._2,
-			_p29._3,
+			_p33._0,
+			_p33._1,
+			_p33._2,
+			_p33._3,
 			_elm_lang$core$Maybe$Just(new_translations),
-			_p29._5,
-			_p29._6);
+			_p33._5,
+			_p33._6);
 	} else {
-		return _p29;
+		return _p33;
 	}
 };
 
-var _user$project$Text_Translations_Decode$grammemesDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'mood',
-	_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'form',
-		_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'aspect',
-			_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'tense',
-				_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
-				A3(
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'pos',
-					_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Translations$Grammemes))))));
+var _user$project$TextReader_TextWord$newGrammemeFromList = function (grammemes) {
+	var _p0 = grammemes;
+	if (_p0.ctor === 'Just') {
+		return _elm_lang$core$Dict$fromList(_p0._0);
+	} else {
+		return _elm_lang$core$Dict$empty;
+	}
+};
+var _user$project$TextReader_TextWord$translations = function (_p1) {
+	var _p2 = _p1;
+	return _p2._4;
+};
+var _user$project$TextReader_TextWord$grammemes = function (_p3) {
+	var _p4 = _p3;
+	return _p4._3;
+};
+var _user$project$TextReader_TextWord$grammemesToString = function (text_word) {
+	var _p5 = _user$project$TextReader_TextWord$grammemes(text_word);
+	if (_p5.ctor === 'Just') {
+		return A2(
+			_elm_lang$core$String$join,
+			', ',
+			A2(
+				_elm_lang$core$List$map,
+				function (_p6) {
+					var _p7 = _p6;
+					return A2(
+						_elm_lang$core$Basics_ops['++'],
+						_p7._0,
+						A2(_elm_lang$core$Basics_ops['++'], ': ', _p7._1));
+				},
+				_elm_lang$core$Dict$toList(_p5._0)));
+	} else {
+		return '';
+	}
+};
+var _user$project$TextReader_TextWord$group = function (_p8) {
+	var _p9 = _p8;
+	return _user$project$Text_Translations_TextWord$wordTypeToGroup(_p9._5);
+};
+var _user$project$TextReader_TextWord$word = function (_p10) {
+	var _p11 = _p10;
+	return _p11._5;
+};
+var _user$project$TextReader_TextWord$wordType = function (text_word) {
+	return _user$project$Text_Translations_TextWord$wordTypeToString(
+		_user$project$TextReader_TextWord$word(text_word));
+};
+var _user$project$TextReader_TextWord$phrase = function (_p12) {
+	var _p13 = _p12;
+	return _p13._2;
+};
+var _user$project$TextReader_TextWord$Translation = F2(
+	function (a, b) {
+		return {correct_for_context: a, text: b};
+	});
+var _user$project$TextReader_TextWord$TextWordParams = F6(
+	function (a, b, c, d, e, f) {
+		return {id: a, instance: b, phrase: c, grammemes: d, translations: e, word: f};
+	});
+var _user$project$TextReader_TextWord$TextWord = F6(
+	function (a, b, c, d, e, f) {
+		return {ctor: 'TextWord', _0: a, _1: b, _2: c, _3: d, _4: e, _5: f};
+	});
+var _user$project$TextReader_TextWord$new = F6(
+	function (id, instance, phrase, grammemes, translations, word) {
+		return A6(_user$project$TextReader_TextWord$TextWord, id, instance, phrase, grammemes, translations, word);
+	});
+var _user$project$TextReader_TextWord$newFromParams = function (params) {
+	return A6(
+		_user$project$TextReader_TextWord$TextWord,
+		params.id,
+		params.instance,
+		params.phrase,
+		_elm_lang$core$Maybe$Just(
+			_user$project$TextReader_TextWord$newGrammemeFromList(params.grammemes)),
+		params.translations,
+		_user$project$Text_Translations_TextWord$strToWordType(params.word));
+};
+
+var _user$project$Util$onEnterUp = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'keyup',
+		A2(
+			_elm_lang$core$Json_Decode$andThen,
+			function (key) {
+				var _p0 = key;
+				if (_p0 === 13) {
+					return _elm_lang$core$Json_Decode$succeed(msg);
+				} else {
+					return _elm_lang$core$Json_Decode$fail('not enter key');
+				}
+			},
+			_elm_lang$html$Html_Events$keyCode));
+};
+var _user$project$Util$intTupleDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	F2(
+		function (v0, v1) {
+			return {ctor: '_Tuple2', _0: v0, _1: v1};
+		}),
+	A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$int),
+	A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$int));
+var _user$project$Util$stringTupleDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	F2(
+		function (v0, v1) {
+			return {ctor: '_Tuple2', _0: v0, _1: v1};
+		}),
+	A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
+var _user$project$Util$valid_email_regex = _elm_lang$core$Regex$caseInsensitive(
+	_elm_lang$core$Regex$regex('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$'));
+var _user$project$Util$is_valid_email = function (addr) {
+	return A2(_elm_lang$core$Regex$contains, _user$project$Util$valid_email_regex, addr);
+};
+
+var _user$project$Text_Translations_Decode$grammemesDecoder = _elm_lang$core$Json_Decode$list(_user$project$Util$stringTupleDecoder);
 var _user$project$Text_Translations_Decode$textWordEndpointsDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'translations',
@@ -10913,7 +10958,8 @@ var _user$project$Text_Translations_Decode$textWordInstanceDecoder = A8(
 	A2(
 		_elm_lang$core$Json_Decode$field,
 		'grammemes',
-		_elm_lang$core$Json_Decode$nullable(_user$project$Text_Translations_Decode$grammemesDecoder)),
+		_elm_lang$core$Json_Decode$nullable(
+			A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Dict$fromList, _user$project$Text_Translations_Decode$grammemesDecoder))),
 	A2(
 		_elm_lang$core$Json_Decode$field,
 		'translations',
@@ -10950,7 +10996,7 @@ var _user$project$Text_Translations_Decode$wordValuesDecoder = A3(
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'grammemes',
-		_user$project$Text_Translations_Decode$grammemesDecoder,
+		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Dict$fromList, _user$project$Text_Translations_Decode$grammemesDecoder),
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Translations$WordValues)));
 var _user$project$Text_Translations_Decode$wordsDecoder = _elm_lang$core$Json_Decode$dict(_user$project$Text_Translations_Decode$wordValuesDecoder);
 var _user$project$Text_Translations_Decode$TextWord = F3(
@@ -11128,36 +11174,52 @@ var _user$project$Student_Profile$setUserName = F2(
 var _user$project$Student_Profile$addFlashcard = F2(
 	function (_p18, text_word) {
 		var _p19 = _p18;
+		var phrase = _user$project$TextReader_TextWord$phrase(text_word);
 		return A2(
 			_user$project$Student_Profile$StudentProfile,
 			_p19._0,
 			_elm_lang$core$Maybe$Just(
 				A3(
 					_elm_lang$core$Dict$insert,
-					text_word.phrase,
+					phrase,
 					text_word,
 					A2(_elm_lang$core$Maybe$withDefault, _elm_lang$core$Dict$empty, _p19._1))));
 	});
 var _user$project$Student_Profile$removeFlashcard = F2(
 	function (_p20, text_word) {
 		var _p21 = _p20;
+		var phrase = _user$project$TextReader_TextWord$phrase(text_word);
 		var new_flashcards = _elm_lang$core$Maybe$Just(
 			A2(
 				_elm_lang$core$Dict$remove,
-				text_word.phrase,
+				phrase,
 				A2(_elm_lang$core$Maybe$withDefault, _elm_lang$core$Dict$empty, _p21._1)));
 		return A2(_user$project$Student_Profile$StudentProfile, _p21._0, new_flashcards);
 	});
 var _user$project$Student_Profile$init_profile = function (params) {
+	var flashcards = function () {
+		var _p22 = params.flashcards;
+		if (_p22.ctor === 'Just') {
+			return _elm_lang$core$Dict$fromList(
+				A2(
+					_elm_lang$core$List$map,
+					function (_p23) {
+						var _p24 = _p23;
+						return {
+							ctor: '_Tuple2',
+							_0: _p24._0,
+							_1: _user$project$TextReader_TextWord$newFromParams(_p24._1)
+						};
+					},
+					_p22._0));
+		} else {
+			return _elm_lang$core$Dict$empty;
+		}
+	}();
 	return A2(
 		_user$project$Student_Profile$StudentProfile,
 		params,
-		_elm_lang$core$Maybe$Just(
-			_elm_lang$core$Dict$fromList(
-				A2(
-					_elm_lang$core$Maybe$withDefault,
-					{ctor: '[]'},
-					params.flashcards))));
+		_elm_lang$core$Maybe$Just(flashcards));
 };
 
 var _user$project$Menu_Msg$StudentLogout = function (a) {
@@ -11388,44 +11450,6 @@ var _user$project$Text_Section_Decode$textSectionDecoder = A3(
 var _user$project$Text_Section_Decode$textSectionsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Section_Decode$textSectionDecoder);
 var _user$project$Text_Section_Decode$TextCreateResp = function (a) {
 	return {id: a};
-};
-
-var _user$project$Util$onEnterUp = function (msg) {
-	return A2(
-		_elm_lang$html$Html_Events$on,
-		'keyup',
-		A2(
-			_elm_lang$core$Json_Decode$andThen,
-			function (key) {
-				var _p0 = key;
-				if (_p0 === 13) {
-					return _elm_lang$core$Json_Decode$succeed(msg);
-				} else {
-					return _elm_lang$core$Json_Decode$fail('not enter key');
-				}
-			},
-			_elm_lang$html$Html_Events$keyCode));
-};
-var _user$project$Util$intTupleDecoder = A3(
-	_elm_lang$core$Json_Decode$map2,
-	F2(
-		function (v0, v1) {
-			return {ctor: '_Tuple2', _0: v0, _1: v1};
-		}),
-	A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$int),
-	A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$int));
-var _user$project$Util$stringTupleDecoder = A3(
-	_elm_lang$core$Json_Decode$map2,
-	F2(
-		function (v0, v1) {
-			return {ctor: '_Tuple2', _0: v0, _1: v1};
-		}),
-	A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
-var _user$project$Util$valid_email_regex = _elm_lang$core$Regex$caseInsensitive(
-	_elm_lang$core$Regex$regex('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$'));
-var _user$project$Util$is_valid_email = function (addr) {
-	return A2(_elm_lang$core$Regex$contains, _user$project$Util$valid_email_regex, addr);
 };
 
 var _user$project$Text_Decode$decodeRespErrors = function (str) {
@@ -11840,6 +11864,292 @@ var _user$project$Student_Profile_Model$Model = F7(
 		return {flags: a, profile: b, editing: c, err_str: d, help: e, username_update: f, errors: g};
 	});
 
+var _user$project$TextReader_Answer_Model$answer = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0;
+};
+var _user$project$TextReader_Answer_Model$answered = function (text_answer) {
+	var _p2 = _user$project$TextReader_Answer_Model$answer(text_answer).answered_correctly;
+	if (_p2.ctor === 'Just') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _user$project$TextReader_Answer_Model$feedback_viewable = function (text_answer) {
+	return _user$project$TextReader_Answer_Model$answered(text_answer);
+};
+var _user$project$TextReader_Answer_Model$selected = function (text_answer) {
+	return _user$project$TextReader_Answer_Model$answered(text_answer);
+};
+var _user$project$TextReader_Answer_Model$correct = function (text_answer) {
+	var _p3 = _user$project$TextReader_Answer_Model$answer(text_answer).answered_correctly;
+	if (_p3.ctor === 'Just') {
+		return _p3._0;
+	} else {
+		return false;
+	}
+};
+var _user$project$TextReader_Answer_Model$Answer = F6(
+	function (a, b, c, d, e, f) {
+		return {id: a, question_id: b, text: c, order: d, answered_correctly: e, feedback: f};
+	});
+var _user$project$TextReader_Answer_Model$TextAnswer = function (a) {
+	return {ctor: 'TextAnswer', _0: a};
+};
+var _user$project$TextReader_Answer_Model$gen_text_answer = function (answer) {
+	return _user$project$TextReader_Answer_Model$TextAnswer(answer);
+};
+
+var _user$project$TextReader_Question_Model$answered_correctly = function (_p0) {
+	var _p1 = _p0;
+	return _p1._1;
+};
+var _user$project$TextReader_Question_Model$answers = function (_p2) {
+	var _p3 = _p2;
+	return _p3._2;
+};
+var _user$project$TextReader_Question_Model$question = function (_p4) {
+	var _p5 = _p4;
+	return _p5._0;
+};
+var _user$project$TextReader_Question_Model$answered = function (text_question) {
+	var _p6 = _user$project$TextReader_Question_Model$answered_correctly(text_question);
+	if (_p6.ctor === 'Just') {
+		return _p6._0;
+	} else {
+		return false;
+	}
+};
+var _user$project$TextReader_Question_Model$Question = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {id: a, text_section_id: b, created_dt: c, modified_dt: d, body: e, order: f, answers: g, question_type: h};
+	});
+var _user$project$TextReader_Question_Model$TextQuestion = F3(
+	function (a, b, c) {
+		return {ctor: 'TextQuestion', _0: a, _1: b, _2: c};
+	});
+var _user$project$TextReader_Question_Model$gen_text_question = function (question) {
+	return A3(
+		_user$project$TextReader_Question_Model$TextQuestion,
+		question,
+		_elm_lang$core$Maybe$Nothing,
+		A2(_elm_lang$core$Array$map, _user$project$TextReader_Answer_Model$gen_text_answer, question.answers));
+};
+
+var _user$project$TextReader_Section_Model$textSection = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0;
+};
+var _user$project$TextReader_Section_Model$translations = function (section) {
+	return _user$project$TextReader_Section_Model$textSection(section).translations;
+};
+var _user$project$TextReader_Section_Model$questions = function (_p2) {
+	var _p3 = _p2;
+	return _p3._1;
+};
+var _user$project$TextReader_Section_Model$complete = function (section) {
+	return A2(
+		_elm_lang$core$List$all,
+		function (answered) {
+			return answered;
+		},
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (question) {
+					return _user$project$TextReader_Question_Model$answered(question);
+				},
+				_user$project$TextReader_Section_Model$questions(section))));
+};
+var _user$project$TextReader_Section_Model$completedSections = function (sections) {
+	return _elm_lang$core$List$sum(
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (section) {
+					return _user$project$TextReader_Section_Model$complete(section) ? 1 : 0;
+				},
+				sections)));
+};
+var _user$project$TextReader_Section_Model$maxScore = function (section) {
+	return _elm_lang$core$List$sum(
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (question) {
+					return 1;
+				},
+				_user$project$TextReader_Section_Model$questions(section))));
+};
+var _user$project$TextReader_Section_Model$score = function (section) {
+	return _elm_lang$core$List$sum(
+		_elm_lang$core$Array$toList(
+			A2(
+				_elm_lang$core$Array$map,
+				function (question) {
+					return A2(
+						_elm_lang$core$Maybe$withDefault,
+						false,
+						_user$project$TextReader_Question_Model$answered_correctly(question)) ? 1 : 0;
+				},
+				_user$project$TextReader_Section_Model$questions(section))));
+};
+var _user$project$TextReader_Section_Model$getTextWords = F2(
+	function (section, phrase) {
+		return A2(
+			_elm_lang$core$Dict$get,
+			phrase,
+			_user$project$TextReader_Section_Model$translations(section));
+	});
+var _user$project$TextReader_Section_Model$getTextWord = F3(
+	function (section, instance, phrase) {
+		var _p4 = A2(_user$project$TextReader_Section_Model$getTextWords, section, phrase);
+		if (_p4.ctor === 'Just') {
+			return A2(_elm_lang$core$Array$get, instance, _p4._0);
+		} else {
+			return _elm_lang$core$Maybe$Nothing;
+		}
+	});
+var _user$project$TextReader_Section_Model$emptyTextSection = {
+	order: 0,
+	body: '',
+	question_count: 0,
+	questions: _elm_lang$core$Array$fromList(
+		{ctor: '[]'}),
+	num_of_sections: 0,
+	translations: _elm_lang$core$Dict$empty
+};
+var _user$project$TextReader_Section_Model$TextSection = F6(
+	function (a, b, c, d, e, f) {
+		return {order: a, body: b, question_count: c, questions: d, num_of_sections: e, translations: f};
+	});
+var _user$project$TextReader_Section_Model$Section = F2(
+	function (a, b) {
+		return {ctor: 'Section', _0: a, _1: b};
+	});
+var _user$project$TextReader_Section_Model$newSection = function (text_section) {
+	return A2(
+		_user$project$TextReader_Section_Model$Section,
+		text_section,
+		A2(_elm_lang$core$Array$map, _user$project$TextReader_Question_Model$gen_text_question, text_section.questions));
+};
+
+var _user$project$TextReader_Question_Decode$answerDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'feedback',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'answered_correctly',
+		_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$bool),
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'order',
+			_elm_lang$core$Json_Decode$int,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'text',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'question_id',
+					_elm_lang$core$Json_Decode$int,
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'id',
+						_elm_lang$core$Json_Decode$int,
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$TextReader_Answer_Model$Answer)))))));
+var _user$project$TextReader_Question_Decode$answersDecoder = _elm_lang$core$Json_Decode$array(_user$project$TextReader_Question_Decode$answerDecoder);
+var _user$project$TextReader_Question_Decode$questionDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'question_type',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'answers',
+		_user$project$TextReader_Question_Decode$answersDecoder,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'order',
+			_elm_lang$core$Json_Decode$int,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'body',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'modified_dt',
+					_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'created_dt',
+						_elm_lang$core$Json_Decode$nullable(_elm_community$json_extra$Json_Decode_Extra$date),
+						A3(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+							'text_section_id',
+							_elm_lang$core$Json_Decode$int,
+							A3(
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+								'id',
+								_elm_lang$core$Json_Decode$int,
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$TextReader_Question_Model$Question)))))))));
+var _user$project$TextReader_Question_Decode$questionsDecoder = _elm_lang$core$Json_Decode$array(_user$project$TextReader_Question_Decode$questionDecoder);
+
+var _user$project$TextReader_Section_Decode$textWordTranslationDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'text',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'correct_for_context',
+		_elm_lang$core$Json_Decode$bool,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$TextReader_TextWord$Translation)));
+var _user$project$TextReader_Section_Decode$textWordTranslationsDecoder = _elm_lang$core$Json_Decode$nullable(
+	_elm_lang$core$Json_Decode$list(_user$project$TextReader_Section_Decode$textWordTranslationDecoder));
+var _user$project$TextReader_Section_Decode$textWordInstanceDecoder = A7(
+	_elm_lang$core$Json_Decode$map6,
+	_user$project$TextReader_TextWord$new,
+	A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int),
+	A2(_elm_lang$core$Json_Decode$field, 'instance', _elm_lang$core$Json_Decode$int),
+	A2(_elm_lang$core$Json_Decode$field, 'phrase', _elm_lang$core$Json_Decode$string),
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'grammemes',
+		_elm_lang$core$Json_Decode$nullable(
+			A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Dict$fromList, _user$project$Text_Translations_Decode$grammemesDecoder))),
+	A2(_elm_lang$core$Json_Decode$field, 'translations', _user$project$TextReader_Section_Decode$textWordTranslationsDecoder),
+	_user$project$Text_Translations_Decode$wordDecoder);
+var _user$project$TextReader_Section_Decode$textWordDictInstancesDecoder = _elm_lang$core$Json_Decode$dict(
+	_elm_lang$core$Json_Decode$array(_user$project$TextReader_Section_Decode$textWordInstanceDecoder));
+var _user$project$TextReader_Section_Decode$textSectionDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'translations',
+	_user$project$TextReader_Section_Decode$textWordDictInstancesDecoder,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'num_of_sections',
+		_elm_lang$core$Json_Decode$int,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'questions',
+			_user$project$TextReader_Question_Decode$questionsDecoder,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'question_count',
+				_elm_lang$core$Json_Decode$int,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'body',
+					_elm_lang$core$Json_Decode$string,
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'order',
+						_elm_lang$core$Json_Decode$int,
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$TextReader_Section_Model$TextSection)))))));
+var _user$project$TextReader_Section_Decode$textSectionsDecoder = _elm_lang$core$Json_Decode$list(_user$project$TextReader_Section_Decode$textSectionDecoder);
+var _user$project$TextReader_Section_Decode$sectionDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$TextReader_Section_Model$newSection, _user$project$TextReader_Section_Decode$textSectionDecoder);
+
 var _user$project$Student_Profile_Decode$performanceReportDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'pdf_link',
@@ -11849,19 +12159,56 @@ var _user$project$Student_Profile_Decode$performanceReportDecoder = A3(
 		'html',
 		_elm_lang$core$Json_Decode$string,
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Student_Profile$PerformanceReport)));
-var _user$project$Student_Profile_Decode$wordTextWordDecoder = A3(
-	_elm_lang$core$Json_Decode$map2,
-	F2(
-		function (v0, v1) {
-			return {ctor: '_Tuple2', _0: v0, _1: v1};
-		}),
-	A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$index, 1, _user$project$Text_Translations_Decode$textWordDecoder));
+var _user$project$Student_Profile_Decode$textWordParamsDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'word',
+	A3(
+		_elm_lang$core$Json_Decode$map2,
+		F2(
+			function (v0, v1) {
+				return {ctor: '_Tuple2', _0: v0, _1: v1};
+			}),
+		A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string),
+		A2(
+			_elm_lang$core$Json_Decode$index,
+			1,
+			_elm_lang$core$Json_Decode$nullable(_user$project$Text_Translations_Decode$textGroupDetailsDecoder))),
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'translations',
+		_user$project$TextReader_Section_Decode$textWordTranslationsDecoder,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'grammemes',
+			_elm_lang$core$Json_Decode$nullable(
+				_elm_lang$core$Json_Decode$list(_user$project$Util$stringTupleDecoder)),
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'phrase',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'instance',
+					_elm_lang$core$Json_Decode$int,
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'id',
+						_elm_lang$core$Json_Decode$int,
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$TextReader_TextWord$TextWordParams)))))));
+var _user$project$Student_Profile_Decode$wordTextWordDecoder = _elm_lang$core$Json_Decode$nullable(
+	_elm_lang$core$Json_Decode$list(
+		A3(
+			_elm_lang$core$Json_Decode$map2,
+			F2(
+				function (v0, v1) {
+					return {ctor: '_Tuple2', _0: v0, _1: v1};
+				}),
+			A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string),
+			A2(_elm_lang$core$Json_Decode$index, 1, _user$project$Student_Profile_Decode$textWordParamsDecoder))));
 var _user$project$Student_Profile_Decode$studentProfileParamsDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'flashcards',
-	_elm_lang$core$Json_Decode$nullable(
-		_elm_lang$core$Json_Decode$list(_user$project$Student_Profile_Decode$wordTextWordDecoder)),
+	_user$project$Student_Profile_Decode$wordTextWordDecoder,
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'performance_report',
@@ -13152,119 +13499,137 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 																																	function (grammemes) {
 																																		return A2(
 																																			_elm_lang$core$Json_Decode$andThen,
-																																			function (phrase) {
+																																			function (id) {
 																																				return A2(
 																																					_elm_lang$core$Json_Decode$andThen,
-																																					function (translation) {
-																																						return _elm_lang$core$Json_Decode$succeed(
-																																							{grammemes: grammemes, phrase: phrase, translation: translation});
-																																					},
-																																					A2(
-																																						_elm_lang$core$Json_Decode$field,
-																																						'translation',
-																																						_elm_lang$core$Json_Decode$oneOf(
-																																							{
-																																								ctor: '::',
-																																								_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-																																								_1: {
-																																									ctor: '::',
-																																									_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
-																																									_1: {ctor: '[]'}
-																																								}
-																																							})));
-																																			},
-																																			A2(_elm_lang$core$Json_Decode$field, 'phrase', _elm_lang$core$Json_Decode$string));
-																																	},
-																																	A2(
-																																		_elm_lang$core$Json_Decode$field,
-																																		'grammemes',
-																																		A2(
-																																			_elm_lang$core$Json_Decode$andThen,
-																																			function (aspect) {
-																																				return A2(
-																																					_elm_lang$core$Json_Decode$andThen,
-																																					function (form) {
+																																					function (instance) {
 																																						return A2(
 																																							_elm_lang$core$Json_Decode$andThen,
-																																							function (mood) {
+																																							function (phrase) {
 																																								return A2(
 																																									_elm_lang$core$Json_Decode$andThen,
-																																									function (pos) {
+																																									function (translations) {
 																																										return A2(
 																																											_elm_lang$core$Json_Decode$andThen,
-																																											function (tense) {
+																																											function (word) {
 																																												return _elm_lang$core$Json_Decode$succeed(
-																																													{aspect: aspect, form: form, mood: mood, pos: pos, tense: tense});
+																																													{grammemes: grammemes, id: id, instance: instance, phrase: phrase, translations: translations, word: word});
 																																											},
 																																											A2(
 																																												_elm_lang$core$Json_Decode$field,
-																																												'tense',
-																																												_elm_lang$core$Json_Decode$oneOf(
-																																													{
-																																														ctor: '::',
-																																														_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-																																														_1: {
-																																															ctor: '::',
-																																															_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
-																																															_1: {ctor: '[]'}
-																																														}
-																																													})));
+																																												'word',
+																																												A2(
+																																													_elm_lang$core$Json_Decode$andThen,
+																																													function (x0) {
+																																														return A2(
+																																															_elm_lang$core$Json_Decode$andThen,
+																																															function (x1) {
+																																																return _elm_lang$core$Json_Decode$succeed(
+																																																	{ctor: '_Tuple2', _0: x0, _1: x1});
+																																															},
+																																															A2(
+																																																_elm_lang$core$Json_Decode$index,
+																																																1,
+																																																_elm_lang$core$Json_Decode$oneOf(
+																																																	{
+																																																		ctor: '::',
+																																																		_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																																																		_1: {
+																																																			ctor: '::',
+																																																			_0: A2(
+																																																				_elm_lang$core$Json_Decode$map,
+																																																				_elm_lang$core$Maybe$Just,
+																																																				A2(
+																																																					_elm_lang$core$Json_Decode$andThen,
+																																																					function (id) {
+																																																						return A2(
+																																																							_elm_lang$core$Json_Decode$andThen,
+																																																							function (instance) {
+																																																								return A2(
+																																																									_elm_lang$core$Json_Decode$andThen,
+																																																									function (length) {
+																																																										return A2(
+																																																											_elm_lang$core$Json_Decode$andThen,
+																																																											function (pos) {
+																																																												return _elm_lang$core$Json_Decode$succeed(
+																																																													{id: id, instance: instance, length: length, pos: pos});
+																																																											},
+																																																											A2(_elm_lang$core$Json_Decode$field, 'pos', _elm_lang$core$Json_Decode$int));
+																																																									},
+																																																									A2(_elm_lang$core$Json_Decode$field, 'length', _elm_lang$core$Json_Decode$int));
+																																																							},
+																																																							A2(_elm_lang$core$Json_Decode$field, 'instance', _elm_lang$core$Json_Decode$int));
+																																																					},
+																																																					A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int))),
+																																																			_1: {ctor: '[]'}
+																																																		}
+																																																	})));
+																																													},
+																																													A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string))));
 																																									},
 																																									A2(
 																																										_elm_lang$core$Json_Decode$field,
-																																										'pos',
+																																										'translations',
 																																										_elm_lang$core$Json_Decode$oneOf(
 																																											{
 																																												ctor: '::',
 																																												_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
 																																												_1: {
 																																													ctor: '::',
-																																													_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+																																													_0: A2(
+																																														_elm_lang$core$Json_Decode$map,
+																																														_elm_lang$core$Maybe$Just,
+																																														_elm_lang$core$Json_Decode$list(
+																																															A2(
+																																																_elm_lang$core$Json_Decode$andThen,
+																																																function (correct_for_context) {
+																																																	return A2(
+																																																		_elm_lang$core$Json_Decode$andThen,
+																																																		function (text) {
+																																																			return _elm_lang$core$Json_Decode$succeed(
+																																																				{correct_for_context: correct_for_context, text: text});
+																																																		},
+																																																		A2(_elm_lang$core$Json_Decode$field, 'text', _elm_lang$core$Json_Decode$string));
+																																																},
+																																																A2(_elm_lang$core$Json_Decode$field, 'correct_for_context', _elm_lang$core$Json_Decode$bool)))),
 																																													_1: {ctor: '[]'}
 																																												}
 																																											})));
 																																							},
-																																							A2(
-																																								_elm_lang$core$Json_Decode$field,
-																																								'mood',
-																																								_elm_lang$core$Json_Decode$oneOf(
-																																									{
-																																										ctor: '::',
-																																										_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-																																										_1: {
-																																											ctor: '::',
-																																											_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
-																																											_1: {ctor: '[]'}
-																																										}
-																																									})));
+																																							A2(_elm_lang$core$Json_Decode$field, 'phrase', _elm_lang$core$Json_Decode$string));
 																																					},
-																																					A2(
-																																						_elm_lang$core$Json_Decode$field,
-																																						'form',
-																																						_elm_lang$core$Json_Decode$oneOf(
-																																							{
-																																								ctor: '::',
-																																								_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-																																								_1: {
-																																									ctor: '::',
-																																									_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
-																																									_1: {ctor: '[]'}
-																																								}
-																																							})));
+																																					A2(_elm_lang$core$Json_Decode$field, 'instance', _elm_lang$core$Json_Decode$int));
 																																			},
-																																			A2(
-																																				_elm_lang$core$Json_Decode$field,
-																																				'aspect',
-																																				_elm_lang$core$Json_Decode$oneOf(
-																																					{
-																																						ctor: '::',
-																																						_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-																																						_1: {
-																																							ctor: '::',
-																																							_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
-																																							_1: {ctor: '[]'}
-																																						}
-																																					})))))));
+																																			A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int));
+																																	},
+																																	A2(
+																																		_elm_lang$core$Json_Decode$field,
+																																		'grammemes',
+																																		_elm_lang$core$Json_Decode$oneOf(
+																																			{
+																																				ctor: '::',
+																																				_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																																				_1: {
+																																					ctor: '::',
+																																					_0: A2(
+																																						_elm_lang$core$Json_Decode$map,
+																																						_elm_lang$core$Maybe$Just,
+																																						_elm_lang$core$Json_Decode$list(
+																																							A2(
+																																								_elm_lang$core$Json_Decode$andThen,
+																																								function (x0) {
+																																									return A2(
+																																										_elm_lang$core$Json_Decode$andThen,
+																																										function (x1) {
+																																											return _elm_lang$core$Json_Decode$succeed(
+																																												{ctor: '_Tuple2', _0: x0, _1: x1});
+																																										},
+																																										A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
+																																								},
+																																								A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string)))),
+																																					_1: {ctor: '[]'}
+																																				}
+																																			})))));
 																													},
 																													A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string)))),
 																										_1: {ctor: '[]'}

@@ -2,7 +2,9 @@ module TextReader.Model exposing (..)
 
 import Dict exposing (Dict)
 
-import Text.Translations exposing (TextWord, Word)
+import TextReader.TextWord
+
+import Text.Translations exposing (Word)
 
 import TextReader.Text.Model exposing (Text)
 import TextReader.Section.Model exposing (Section)
@@ -51,8 +53,8 @@ type CmdResp =
     StartResp Text
   | InProgressResp Section
   | CompleteResp TextScores
-  | AddToFlashcardsResp TextWord
-  | RemoveFromFlashcardsResp TextWord
+  | AddToFlashcardsResp TextReader.TextWord.TextWord
+  | RemoveFromFlashcardsResp TextReader.TextWord.TextWord
   | ExceptionResp Exception
 
 type alias TextScores = {

@@ -3,12 +3,14 @@ module TextReader.Section.Model exposing (..)
 import Array exposing (Array)
 import Dict exposing (Dict)
 
-import Text.Model
+import Text.Translations exposing (..)
 
 import TextReader.Question.Model exposing (TextQuestion, Question)
-
+import TextReader.TextWord exposing (TextWord)
 
 type Section = Section TextSection (Array TextQuestion)
+
+type alias Words = Dict String (Array TextWord)
 
 type alias TextSection = {
     order : Int
@@ -16,7 +18,7 @@ type alias TextSection = {
   , question_count : Int
   , questions : Array TextReader.Question.Model.Question
   , num_of_sections : Int
-  , translations : Text.Model.Words }
+  , translations : Words }
 
 emptyTextSection : TextSection
 emptyTextSection = {
@@ -28,14 +30,30 @@ emptyTextSection = {
   , translations=Dict.empty
   }
 
+
+getTextWords : Section -> Phrase -> Maybe (Array TextWord)
+getTextWords section phrase =
+  Dict.get phrase (translations section)
+
+getTextWord : Section -> Instance -> Phrase -> Maybe TextWord
+getTextWord section instance phrase =
+  case getTextWords section phrase of
+    Just text_words ->
+      Array.get instance text_words
+
+    -- word not found
+    Nothing ->
+      Nothing
+
 questions : Section -> Array TextQuestion
 questions (Section _ questions) = questions
 
 textSection : Section -> TextSection
 textSection (Section text_section _) = text_section
 
-translations : Section -> Text.Model.Words
-translations (Section text_section _) = text_section.translations
+translations : Section -> Words
+translations section =
+  (textSection section).translations
 
 newSection : TextSection -> Section
 newSection text_section =
@@ -64,4 +82,5 @@ score section =
      List.sum
   <| Array.toList
   <| Array.map (\question ->
-       if (Maybe.withDefault False (TextReader.Question.Model.answered_correctly question)) then 1 else 0) (questions section)
+       if (Maybe.withDefault False (TextReader.Question.Model.answered_correctly question)) then 1 else 0)
+     (questions section)

@@ -37,7 +37,7 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
 
         text_word_dict = {
             'phrase': self.phrase,
-            'grammemes': self.grammemes,
+            'grammemes': [item for item in self.grammemes.items()],
             'translation': translation.phrase if translation else None,
         }
 
@@ -99,6 +99,19 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
         }
 
         return translation_dict
+
+    def to_text_reading_dict(self) -> Dict:
+        text_phrase_reading_dict = self.child_instance.to_translations_dict()
+
+        # students dont need to know about endpoints
+        if 'endpoints' in text_phrase_reading_dict:
+            del text_phrase_reading_dict['endpoints']
+
+        # grammemes need to be serialized differently for the frontend
+        if 'grammemes' in text_phrase_reading_dict:
+            text_phrase_reading_dict['grammemes'] = [item for item in text_phrase_reading_dict['grammemes'].items()]
+
+        return text_phrase_reading_dict
 
 
 class TextPhraseTranslation(models.Model):

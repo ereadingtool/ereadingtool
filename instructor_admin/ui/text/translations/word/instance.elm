@@ -20,7 +20,7 @@ grammemeValue word_instance grammeme_name =
 
 grammemeKeys : Set String
 grammemeKeys =
-  Text.Translations.grammemeKeys
+  Text.Translations.expectedGrammemeKeys
 
 grammemes : WordInstance -> Maybe Grammemes
 grammemes word_instance =

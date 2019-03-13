@@ -302,6 +302,10 @@ body {
     margin-left: 6px;
 }
 
+.highlighted {
+    background: yellow;
+}
+
 .edit-highlight {
     background: yellow;
 }

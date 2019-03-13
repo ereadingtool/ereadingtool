@@ -6,8 +6,10 @@ import Text.Model as Text
 
 import Config exposing (student_api_endpoint, student_logout_api_endpoint)
 
-import Text.Translations exposing (Word, Grammemes)
+import Text.Translations exposing (Phrase, Grammemes)
 import Text.Translations.Decode exposing (TextWord, Flashcards)
+
+import TextReader.TextWord
 
 import HttpHelpers
 import Http
@@ -28,7 +30,7 @@ type alias StudentProfileParams = {
   , difficulty_preference: Maybe Text.TextDifficulty
   , difficulties: List Text.TextDifficulty
   , performance_report: PerformanceReport
-  , flashcards: Maybe (List (Word, Text.Translations.Decode.TextWord))
+  , flashcards: Maybe (List (Phrase, TextReader.TextWord.TextWordParams))
   }
 
 type StudentProfile = StudentProfile StudentProfileParams (Maybe Text.Translations.Decode.Flashcards)
@@ -78,20 +80,34 @@ studentPerformanceReport (StudentProfile attrs _) = attrs.performance_report
 studentFlashcards : StudentProfile -> Maybe Flashcards
 studentFlashcards (StudentProfile attrs flashcards) = flashcards
 
-addFlashcard : StudentProfile -> TextWord -> StudentProfile
+addFlashcard : StudentProfile -> TextReader.TextWord.TextWord -> StudentProfile
 addFlashcard (StudentProfile attrs flashcards) text_word =
-  StudentProfile attrs (Just <| Dict.insert text_word.phrase text_word (Maybe.withDefault Dict.empty flashcards))
+  let
+    phrase = TextReader.TextWord.phrase text_word
+  in
+    StudentProfile attrs (Just <| Dict.insert phrase text_word (Maybe.withDefault Dict.empty flashcards))
 
-removeFlashcard : StudentProfile -> TextWord -> StudentProfile
+removeFlashcard : StudentProfile -> TextReader.TextWord.TextWord -> StudentProfile
 removeFlashcard (StudentProfile attrs flashcards) text_word =
   let
-    new_flashcards = Just <| Dict.remove text_word.phrase (Maybe.withDefault Dict.empty flashcards)
+    phrase = TextReader.TextWord.phrase text_word
+    new_flashcards = Just <| Dict.remove phrase (Maybe.withDefault Dict.empty flashcards)
   in
     StudentProfile attrs new_flashcards
 
 init_profile : StudentProfileParams -> StudentProfile
 init_profile params =
-  StudentProfile params (Just <| Dict.fromList <| Maybe.withDefault [] params.flashcards)
+  let
+    flashcards =
+      (case params.flashcards of
+        Just fcards ->
+             Dict.fromList
+          <| List.map (\(phrase, text_word) -> (phrase, TextReader.TextWord.newFromParams text_word)) fcards
+
+        Nothing ->
+          Dict.empty)
+  in
+    StudentProfile params (Just flashcards)
 
 logout : StudentProfile -> String -> (Result Http.Error Menu.Logout.LogOutResp -> msg) -> Cmd msg
 logout student_profile csrftoken logout_msg =

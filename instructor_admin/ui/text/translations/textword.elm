@@ -1,5 +1,7 @@
 module Text.Translations.TextWord exposing (..)
 
+import Dict exposing (Dict)
+
 import Text.Translations exposing (..)
 
 
@@ -17,7 +19,7 @@ grammemeValue : TextWord -> String -> Maybe String
 grammemeValue text_word grammeme_name =
   case (grammemes text_word) of
     Just grammemes ->
-      Text.Translations.grammemeValue grammemes grammeme_name
+      Dict.get grammeme_name grammemes
 
     Nothing ->
       Nothing
@@ -26,14 +28,30 @@ grammemes : TextWord -> Maybe Grammemes
 grammemes (TextWord _ _ _ grammemes _ _ _) =
   grammemes
 
-wordType : TextWord -> String
-wordType text_word =
-  case (word text_word) of
+strToWordType : (String, Maybe TextGroupDetails) -> Word
+strToWordType (str, group_details) =
+  case str of
+    "single" ->
+      SingleWord group_details
+
+    "compound" ->
+      CompoundWord
+
+    _ ->
+      SingleWord group_details
+
+wordTypeToString : Word -> String
+wordTypeToString word =
+  case word of
     SingleWord _ ->
       "single"
 
     CompoundWord ->
       "compound"
+
+wordType : TextWord -> String
+wordType text_word =
+  wordTypeToString (word text_word)
 
 word : TextWord -> Word
 word (TextWord _ _ _ _ _ word _) =
@@ -43,14 +61,18 @@ instance : TextWord -> Int
 instance (TextWord _ instance _ _ _ _ _) =
   instance
 
-group : TextWord -> Maybe TextGroupDetails
-group (TextWord _ _ _ _ _ word _) =
+wordTypeToGroup : Word -> Maybe TextGroupDetails
+wordTypeToGroup word =
   case word of
     SingleWord group_details ->
       group_details
 
     CompoundWord ->
       Nothing
+
+group : TextWord -> Maybe TextGroupDetails
+group (TextWord _ _ _ _ _ word _) =
+  wordTypeToGroup word
 
 endpoints : TextWord -> Endpoints
 endpoints (TextWord _ _ _ _ _ _ endpoints) =

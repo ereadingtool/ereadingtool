@@ -40,3 +40,10 @@ class TextWord(TextPhrase):
             pass
 
         return translation_dict
+
+    def to_text_reading_dict(self):
+        text_reading_dict = super(TextWord, self).to_text_reading_dict()
+
+        text_reading_dict['word'] = (text_reading_dict['word_type'], text_reading_dict['group'])
+
+        return text_reading_dict

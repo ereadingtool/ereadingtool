@@ -1,3 +1,5 @@
+import json
+
 from typing import TypeVar, Optional, Dict, Union
 
 from django.db import models

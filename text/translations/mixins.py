@@ -44,13 +44,14 @@ class TextPhraseGrammemes(models.Model):
 
     @property
     def grammemes(self):
-        return {
-            'pos': self.pos,
-            'tense': self.tense,
-            'aspect': self.aspect,
-            'form': self.form,
-            'mood': self.mood
-        }
+        grammeme_keys = self.grammeme_add_schema()['properties'].keys()
+        grammemes = {}
+
+        for grammeme_key in grammeme_keys:
+            if getattr(self, grammeme_key, None):
+                grammemes[grammeme_key] = getattr(self, grammeme_key, None)
+
+        return grammemes
 
 
 class TextSectionDefinitionsMixin(models.Model):

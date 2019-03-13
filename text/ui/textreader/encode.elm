@@ -32,12 +32,12 @@ send_command cmd_req =
 
     AddToFlashcardsReq reader_word ->
       Json.Encode.object [
-        ("command", Json.Encode.string "add_flashcard_word")
+        ("command", Json.Encode.string "add_flashcard_phrase")
       , ("word", Json.Encode.string reader_word.word)
       ]
 
     RemoveFromFlashcardsReq reader_word ->
       Json.Encode.object [
-        ("command", Json.Encode.string "remove_flashcard_word")
+        ("command", Json.Encode.string "remove_flashcard_phrase")
       , ("word", Json.Encode.string reader_word.word)
       ]

@@ -10,6 +10,7 @@ from mixins.view import ElmLoadJsView
 from text.models import Text, TextDifficulty, text_statuses
 
 from user.instructor.models import Instructor
+from django.conf import settings
 
 
 class TextSearchView(TemplateView):
@@ -70,7 +71,7 @@ class TextView(TemplateView):
 
     # for text reading, relax connect-src CSP
     # since websockets are not the same origin as the HTTP requests (https://github.com/w3c/webappsec/issues/489)
-    @csp_replace(CONNECT_SRC=("wss://*", "'self'"))
+    @csp_replace(CONNECT_SRC=("ws://*" if settings.DEV else "wss://*", "'self'"))
     def dispatch(self, request, *args, **kwargs):
         return super(TextView, self).dispatch(request, *args, **kwargs)
 
@@ -98,7 +99,9 @@ class TextLoadElm(ElmLoadJsView):
 
         context['elm']['text_id'] = {'quote': False, 'safe': True, 'value': context['pk']}
 
-        ws_addr = f"wss://{host}/{profile_type}/text_read/{context['pk']}/"
+        scheme = "ws://" if settings.DEV else "wss://"
+
+        ws_addr = f"{scheme}{host}/{profile_type}/text_read/{context['pk']}/"
 
         context['elm']['text_reader_ws_addr'] = {'quote': True, 'safe': True,
                                                  'value': ws_addr}

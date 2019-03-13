@@ -2,7 +2,6 @@ module Text.Translations.Model exposing (..)
 
 import Array exposing (Array)
 import Dict exposing (Dict)
-import Set exposing (Set)
 
 import Text.Model
 import Text.Translations exposing (..)
@@ -50,10 +49,7 @@ selectGrammemeForEditing model grammeme_name =
 editingGrammeme : Model -> String
 editingGrammeme model =
   let
-    first_grammeme_name =
-         Set.toList Text.Translations.Word.Instance.grammemeKeys
-      |> List.head
-      |> Maybe.withDefault "aspect"
+    first_grammeme_name = "aspect"
   in
     Maybe.withDefault first_grammeme_name model.editing_grammeme
 

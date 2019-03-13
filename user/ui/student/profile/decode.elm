@@ -9,9 +9,11 @@ import Student.Profile.Model
 
 import Util exposing (stringTupleDecoder)
 
-import Text.Translations exposing (Word, Grammemes)
-
+import Text.Translations exposing (Phrase, Grammemes)
 import Text.Translations.Decode
+
+import TextReader.Section.Decode
+import TextReader.TextWord
 
 
 username_valid_decoder : Json.Decode.Decoder Student.Profile.Model.UsernameUpdate
@@ -22,11 +24,26 @@ username_valid_decoder =
     |> required "msg" (Json.Decode.nullable Json.Decode.string)
 
 
-wordTextWordDecoder : Json.Decode.Decoder (Word, Text.Translations.Decode.TextWord)
+textWordParamsDecoder : Json.Decode.Decoder TextReader.TextWord.TextWordParams
+textWordParamsDecoder =
+  decode TextReader.TextWord.TextWordParams
+    |> required "id" Json.Decode.int
+    |> required "instance" Json.Decode.int
+    |> required "phrase" Json.Decode.string
+    |> required "grammemes" (Json.Decode.nullable (Json.Decode.list stringTupleDecoder))
+    |> required "translations" TextReader.Section.Decode.textWordTranslationsDecoder
+    |> required "word"
+         (Json.Decode.map2 (,)
+           (Json.Decode.index 0 Json.Decode.string)
+           (Json.Decode.index 1 (Json.Decode.nullable Text.Translations.Decode.textGroupDetailsDecoder)))
+
+wordTextWordDecoder : Json.Decode.Decoder (Maybe (List (Phrase, TextReader.TextWord.TextWordParams)))
 wordTextWordDecoder =
-  Json.Decode.map2 (,)
-    (Json.Decode.index 0 Json.Decode.string)
-    (Json.Decode.index 1 Text.Translations.Decode.textWordDecoder)
+  Json.Decode.nullable
+    (Json.Decode.list
+    (Json.Decode.map2 (,)
+      (Json.Decode.index 0 Json.Decode.string)
+      (Json.Decode.index 1 textWordParamsDecoder)))
 
 performanceReportDecoder : Json.Decode.Decoder PerformanceReport
 performanceReportDecoder =
@@ -43,7 +60,7 @@ studentProfileParamsDecoder =
     |> required "difficulty_preference" (Json.Decode.nullable stringTupleDecoder)
     |> required "difficulties" (Json.Decode.list stringTupleDecoder)
     |> required "performance_report" performanceReportDecoder
-    |> required "flashcards" (Json.Decode.nullable (Json.Decode.list wordTextWordDecoder))
+    |> required "flashcards" wordTextWordDecoder
 
 studentProfileDecoder : Json.Decode.Decoder Student.Profile.StudentProfile
 studentProfileDecoder =

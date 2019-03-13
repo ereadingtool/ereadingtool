@@ -7,14 +7,18 @@ import Text.Translations exposing (..)
 
 import Text.Translations.TextWord
 
+import TextReader.TextWord
+
+import Util
+
 import Json.Decode
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 
 
-type alias TextWord = {phrase: Word, grammemes: Grammemes, translation: Maybe String}
+type alias TextWord = {phrase: Phrase, grammemes: List (String, String), translation: Maybe String}
 
-type alias Flashcards = Dict Word TextWord
-type alias TextWords = Dict Word TextWord
+type alias Flashcards = Dict Phrase TextReader.TextWord.TextWord
+type alias TextWords = Dict Phrase TextWord
 
 type alias TextWordTranslationDeleteResp = {
     word: String
@@ -33,7 +37,7 @@ type alias TextWordMergeResp = {
 wordValuesDecoder : Json.Decode.Decoder WordValues
 wordValuesDecoder =
   decode WordValues
-    |> required "grammemes" grammemesDecoder
+    |> required "grammemes" (Json.Decode.map Dict.fromList grammemesDecoder)
     |> required "translations" (Json.Decode.nullable (Json.Decode.list Json.Decode.string))
 
 wordsDecoder : Json.Decode.Decoder Words
@@ -129,19 +133,14 @@ textWordInstanceDecoder =
     (Json.Decode.field "id" Json.Decode.int)
     (Json.Decode.field "instance" Json.Decode.int)
     (Json.Decode.field "phrase" Json.Decode.string)
-    (Json.Decode.field "grammemes" (Json.Decode.nullable grammemesDecoder))
+    (Json.Decode.field "grammemes" (Json.Decode.nullable (Json.Decode.map Dict.fromList grammemesDecoder)))
     (Json.Decode.field "translations" (Json.Decode.nullable (Json.Decode.list textWordTranslationsDecoder)))
     wordDecoder
     (Json.Decode.field "endpoints" textWordEndpointsDecoder)
 
-grammemesDecoder : Json.Decode.Decoder Text.Translations.Grammemes
+grammemesDecoder : Json.Decode.Decoder (List (String, String))
 grammemesDecoder =
-  decode Text.Translations.Grammemes
-    |> required "pos" (Json.Decode.nullable Json.Decode.string)
-    |> required "tense" (Json.Decode.nullable Json.Decode.string)
-    |> required "aspect" (Json.Decode.nullable Json.Decode.string)
-    |> required "form" (Json.Decode.nullable Json.Decode.string)
-    |> required "mood" (Json.Decode.nullable Json.Decode.string)
+  Json.Decode.list Util.stringTupleDecoder
 
 textWordDecoder : Json.Decode.Decoder TextWord
 textWordDecoder =

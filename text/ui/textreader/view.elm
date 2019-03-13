@@ -9,16 +9,15 @@ import Dict exposing (Dict)
 
 import User.Profile exposing (Profile)
 
-import Text.Model
-import Text.Translations exposing (Word)
-
-import Text.Translations.View
 import Text.Section.Words.Tag
 
+import TextReader.TextWord
 import TextReader.Model exposing (..)
 
+import TextReader.TextWord
+
 import TextReader.Text.Model exposing (Text)
-import TextReader.Section.Model exposing (Section)
+import TextReader.Section.Model exposing (Section, Words)
 import TextReader.Question.Model exposing (TextQuestion)
 import TextReader.Answer.Model exposing (TextAnswer)
 import TextReader.Msg exposing (Msg(..))
@@ -34,22 +33,24 @@ tagWord model text_reader_section instance token =
   let
     id = String.join "_" [toString instance, token]
     reader_word = TextReaderWord id (String.toLower token)
-    translations = (TextReader.Section.Model.translations text_reader_section)
+    textreader_textword = (TextReader.Section.Model.getTextWord text_reader_section instance token)
   in
     case token == " " of
         True ->
           span [class "space"] []
 
         False ->
-          if (Dict.member (String.toLower token) translations) then
-            Html.node "span" [classList [("defined_word", True), ("cursor", True)], onClick (Gloss reader_word)] [
-              span [classList [("highlighted", TextReader.Model.glossed reader_word model.gloss)] ] [
-                VirtualDom.text token
+          case textreader_textword of
+            Just text_word ->
+              Html.node "span" [classList [("defined_word", True), ("cursor", True)], onClick (Gloss reader_word)] [
+                span [classList [("highlighted", TextReader.Model.glossed reader_word model.gloss)] ] [
+                  VirtualDom.text token
+                ]
+              , view_gloss model reader_word text_word
               ]
-            , view_gloss translations model reader_word
-            ]
-          else
-            VirtualDom.text token
+
+            Nothing ->
+              VirtualDom.text token
 
 view_answer : Section -> TextQuestion -> TextAnswer -> Html Msg
 view_answer text_section text_question text_answer =
@@ -106,11 +107,11 @@ view_questions section =
     div [class "questions"] (Array.toList <| Array.map (view_question section) text_reader_questions)
 
 
-view_translation : Text.Translations.Translation -> Html Msg
+view_translation : TextReader.TextWord.Translation -> Html Msg
 view_translation translation =
-  div [class "translation"] [ Html.text translation ]
+  div [class "translation"] [ Html.text translation.text ]
 
-view_translations : Maybe (List Text.Translations.Translation) -> Html Msg
+view_translations : Maybe (List TextReader.TextWord.Translation) -> Html Msg
 view_translations defs =
   div [class "translations"]
     (case defs of
@@ -120,10 +121,10 @@ view_translations defs =
       Nothing ->
         [])
 
-view_word_and_grammemes : TextReaderWord -> Text.Model.WordValues -> Html Msg
-view_word_and_grammemes reader_word values =
+view_word_and_grammemes : TextReaderWord -> TextReader.TextWord.TextWord -> Html Msg
+view_word_and_grammemes reader_word text_word =
   div [] [
-    Html.text <| reader_word.word ++ " (" ++ Text.Translations.View.view_grammemes_as_string values.grammemes ++ ")"
+    Html.text <| reader_word.word ++ " (" ++ TextReader.TextWord.grammemesToString text_word ++ ")"
   ]
 
 view_flashcard_words : Model -> Html Msg
@@ -139,35 +140,48 @@ view_flashcard_options model reader_word =
     add = div [class "cursor", onClick (AddToFlashcards reader_word)] [ Html.text "Add to Flashcards" ]
     remove = div [class "cursor", onClick (RemoveFromFlashcards reader_word)] [ Html.text "Remove from Flashcards" ]
   in
-    div [class "gloss_flashcard_options"] (if Dict.member reader_word.word flashcards then [remove] else [add])
+    --TODO(andrew): re-add once i've fixed flashcards for textphrases
+    --div [class "gloss_flashcard_options"] (if Dict.member reader_word.word flashcards then [remove] else [add])
+    div  [class "gloss_flashcard_options"] []
 
-view_gloss : Text.Model.Words -> Model -> TextReaderWord -> Html Msg
-view_gloss dictionary model reader_word =
-  let
-    word_values = Dict.get reader_word.word dictionary
-  in
-    case word_values of
-      Just values ->
-        div [] [
-          div [ classList [("gloss_overlay", True), ("gloss_menu", True)]
-              , onMouseLeave (UnGloss reader_word)
-              , classList [("hidden", not (TextReader.Model.selected reader_word model.gloss))]
-              ] [
-            view_word_and_grammemes reader_word values
-          , view_translations values.translations
+view_gloss : Model -> TextReaderWord -> TextReader.TextWord.TextWord -> Html Msg
+view_gloss model reader_word text_word =
+  div [] [
+    div [ classList [("gloss_overlay", True), ("gloss_menu", True)]
+        , onMouseLeave (UnGloss reader_word)
+        , classList [("hidden", not (TextReader.Model.selected reader_word model.gloss))]
+        ] [
+            view_word_and_grammemes reader_word text_word
+          , view_translations (TextReader.TextWord.translations text_word)
           , view_flashcard_options model reader_word
           ]
-        ]
+  ]
 
-      Nothing ->
-        div [] []
+is_part_of_compound_word : Section -> Int -> String -> Maybe (Int, Int, Int)
+is_part_of_compound_word section instance word =
+  case TextReader.Section.Model.getTextWord section instance word of
+    Just text_word ->
+      case (TextReader.TextWord.group text_word) of
+        Just group ->
+          Just (group.instance, group.pos, group.length)
+
+        Nothing ->
+          Nothing
+
+    Nothing ->
+      Nothing
 
 view_text_section : Model -> Section -> Html Msg
 view_text_section model text_reader_section =
   let
     text_section = TextReader.Section.Model.textSection text_reader_section
+
     text_body_vdom =
-      Text.Section.Words.Tag.tagWordsAndToVDOM (tagWord model text_reader_section) (HtmlParser.parse text_section.body)
+      Text.Section.Words.Tag.tagWordsAndToVDOM
+        (tagWord model text_reader_section)
+        (is_part_of_compound_word text_reader_section)
+        (HtmlParser.parse text_section.body)
+
     section_title = ("Section " ++ (toString (text_section.order +1)) ++ "/" ++ (toString text_section.num_of_sections))
   in
     div [class "text_section"] <| [
