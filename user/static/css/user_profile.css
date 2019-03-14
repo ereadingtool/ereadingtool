@@ -15,12 +15,12 @@ table td {
 .profile {
     display: grid;
 
-    grid-template-columns: 4% 10% auto 15% 4%;
+    grid-template-columns: 4% 10% [content] auto 15% 4%;
 }
 
 .profile_items {
     display: grid;
-    grid-column: 3;
+    grid-column: content;
 
     padding: 25px;
     margin-top: 100px;
@@ -206,10 +206,13 @@ table td {
     background-color: #ffeeee;
 }
 
-@media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
-    .header {
-        display: flex;
-        font-size: 12px;
+@media only screen and (min-device-width: 320px) and (max-device-width: 768px) {
+    #header {
+        padding-left: 10px;
+    }
+
+    #lower-menu {
+        margin-top: 15px;
     }
 
     .profile {
@@ -217,7 +220,15 @@ table td {
         font-size: 11px;
     }
 
+    .footer_items {
+        margin-top: 0;
+    }
+
     .profile_items {
+        display: flex;
+        flex-direction: column;
+
+        margin-top: 15px;
         grid-template-columns: 50% 50%;
     }
 
