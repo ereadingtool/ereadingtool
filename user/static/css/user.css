@@ -1,15 +1,22 @@
+.help_msgs, .button, .signup_submit, select, input {
+    width: 60%;
+}
+
 .login, .signup {
     display: grid;
 
     grid-auto-rows: minmax(65px, auto);
 
-    margin-top: 50px;
     margin-bottom: 0;
-    grid-template-columns: 4% 13% 10% auto 10% 13% 4%;
+    grid-template-columns: 7% 13% [content] auto 13% 7%;
+}
+
+.login {
+     grid-template-columns: 30% [content] auto 1fr;
 }
 
 .login_box, .signup_box {
-    grid-column: 4;
+    grid-column: content;
     display: grid;
 
     grid-template-columns: auto;
@@ -23,7 +30,7 @@
 }
 
 .login_type {
-    grid-column: 4;
+    grid-column: content;
     font-size: x-large;
 }
 
@@ -43,7 +50,7 @@
 }
 
 .signup_title {
-    grid-column: 4;
+    grid-column: content;
     font-size: x-large;
 }
 
@@ -59,8 +66,6 @@ select {
 
 .errors {
     display: grid;
-    align-content: center;
-    justify-content: center;
 }
 
 .help_msgs {
@@ -70,7 +75,7 @@ select {
 }
 
 .welcome_msg {
-    grid-column: 4;
+    grid-column: content;
     display: grid;
     margin-bottom: 10px;
     font-size: larger;
@@ -80,14 +85,51 @@ select {
     padding-bottom: 15px;
 }
 
-@media only screen and (max-width:480px) {
-    .header {
-        display: flex;
+@media only screen and (max-width:768px) {
+    .help_msgs, .button, .signup_submit, select, input {
+        width: 100%;
+    }
+
+    #header {
+        padding-left: 10px;
+    }
+
+    select {
+        height: 50px;
+    }
+
+    #lower-menu {
+        margin-top: 0;
+        padding: 0;
+    }
+
+    .signup_title {
+        font-family: "Open Sans";
+        font-size: 21px;
+    }
+
+    .headline {
+        padding-top: 25px;
+    }
+
+    .welcome_msg > .headline {
+        padding-bottom: 0;
+    }
+
+    .signup {
+        margin-top: 15px;
     }
 
     .login, .signup, .login_box, .signup_box {
         display: flex;
         flex-direction: column;
+
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    .signup_submit {
+        margin-top: 50px;
     }
 
     .signup_box > input, .login_box > input {

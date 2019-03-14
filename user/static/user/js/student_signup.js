@@ -13530,7 +13530,6 @@ var _user$project$SignUp$view = F6(
 	});
 
 var _user$project$Main$view_student_welcome_msg = function () {
-	var welcome_msg = '\n     The purpose of this site is to help students improve their reading proficiency in Flagship language that they\n     are studying. This site includes a wide range of texts at different proficiency levels.\n     You will select texts to read by proficiency level and by topic.\n     Before reading the Russian texts, you will get a brief contextualizing message in English.\n     Then you will see the first part of the text followed by comprehension questions.\n     Once you’ve read the text and selected the best answer, you will get feedback telling you if your choice is\n     correct, and why or why not. The format of this site resembles the Flagship proficiency tests, and our goal is to\n      help you build your reading skills for those tests. Any particular reading should take you between 5-15 minutes\n      to complete, and we envision that you can use these texts on the go, when commuting, when waiting for a bus, etc.\n      You can come back to texts at any time.  If this is your first time using the website, pop-up boxes will help\n      you learn how to use the site.';
 	var welcome_title = 'Welcome to The Language Flagship’s Steps To Advanced Reading (STAR) website.';
 	return A2(
 		_elm_lang$html$Html$div,
@@ -13564,8 +13563,37 @@ var _user$project$Main$view_student_welcome_msg = function () {
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(welcome_msg),
-						_1: {ctor: '[]'}
+						_0: A2(
+							_elm_lang$html$Html$p,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('The purpose of this site is to help students improve their reading proficiency in Flagship\n            language that they are studying. This site includes a wide range of texts at different proficiency levels.\n            You will select texts to read by proficiency level and by topic.'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$p,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('Before reading the Russian texts, you will get a brief contextualizing message in English.\n            Then you will see the first part of the text followed by comprehension questions. Once you’ve read the text\n            and selected the best answer, you will get feedback telling you if your choice is correct, and why or why\n            not.'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$p,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('The format of this site resembles the Flagship proficiency tests, and our goal is to\n            help you build your reading skills for those tests. Any particular reading should take you between 5-15\n            minutes to complete, and we envision that you can use these texts on the go, when commuting, when waiting\n            for a bus, etc.  You can come back to texts at any time.  If this is your first time using the website,\n            pop-up boxes will help you learn how to use the site.'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}
 					}),
 				_1: {ctor: '[]'}
 			}

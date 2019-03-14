@@ -147,29 +147,40 @@ view_student_welcome_msg =
   let
     welcome_title =
       """Welcome to The Language Flagship’s Steps To Advanced Reading (STAR) website."""
-    welcome_msg =
-     """
-     The purpose of this site is to help students improve their reading proficiency in Flagship language that they
-     are studying. This site includes a wide range of texts at different proficiency levels.
-     You will select texts to read by proficiency level and by topic.
-     Before reading the Russian texts, you will get a brief contextualizing message in English.
-     Then you will see the first part of the text followed by comprehension questions.
-     Once you’ve read the text and selected the best answer, you will get feedback telling you if your choice is
-     correct, and why or why not. The format of this site resembles the Flagship proficiency tests, and our goal is to
-      help you build your reading skills for those tests. Any particular reading should take you between 5-15 minutes
-      to complete, and we envision that you can use these texts on the go, when commuting, when waiting for a bus, etc.
-      You can come back to texts at any time.  If this is your first time using the website, pop-up boxes will help
-      you learn how to use the site."""
   in
     div [class "welcome_msg"] [
       span [class "headline"] [ Html.text welcome_title ]
-    , div [class "msg"] [Html.text welcome_msg]
+    , div [class "msg"] [
+        Html.p [] [
+          Html.text
+            """The purpose of this site is to help students improve their reading proficiency in Flagship
+            language that they are studying. This site includes a wide range of texts at different proficiency levels.
+            You will select texts to read by proficiency level and by topic."""
+        ]
+      , Html.p [] [
+          Html.text
+            """Before reading the Russian texts, you will get a brief contextualizing message in English.
+            Then you will see the first part of the text followed by comprehension questions. Once you’ve read the text
+            and selected the best answer, you will get feedback telling you if your choice is correct, and why or why
+            not."""
+        ]
+      , Html.p [] [
+          Html.text
+            """The format of this site resembles the Flagship proficiency tests, and our goal is to
+            help you build your reading skills for those tests. Any particular reading should take you between 5-15
+            minutes to complete, and we envision that you can use these texts on the go, when commuting, when waiting
+            for a bus, etc.  You can come back to texts at any time.  If this is your first time using the website,
+            pop-up boxes will help you learn how to use the site."""
+        ]
+      ]
     ]
 
 view_content : Model -> Html Msg
 view_content model =
   div [ classList [("signup", True)] ] [
-    div [class "signup_title"] [Html.text "Student Signup"]
+    div [class "signup_title"] [
+      Html.text "Student Signup"
+    ]
   , view_student_welcome_msg
   , div [classList [("signup_box", True)] ] <|
       (SignUp.view_email_input UpdateEmail model) ++
