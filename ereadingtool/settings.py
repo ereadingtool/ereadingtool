@@ -110,8 +110,10 @@ ALLOWED_HOSTS = ['0.0.0.0',
 CSP_DEFAULT_SRC = ("'self'",)
 CSP_SCRIPT_SRC = ("'self'",)
 CSP_CONNECT_SRC = ("'self'",)
-CSP_IMG_SRC = ("'self'",)
+CSP_IMG_SRC = ("'self'", "https://www.google-analytics.com",)
 CSP_STYLE_SRC = ("'self'",)
+
+CSP_INCLUDE_NONCE_IN = ['script-src']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
