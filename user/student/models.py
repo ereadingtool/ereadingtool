@@ -4,9 +4,9 @@ from django.db import models
 from django.template import loader
 from django.urls import reverse_lazy, reverse
 
-from flashcards.models import StudentFlashcards
 from report.models import StudentPerformanceReport
 from text.models import TextDifficulty, Text
+from text.phrase.models import TextPhrase
 from user.mixins.models import Profile, TextReadings
 from user.models import ReaderUser
 
@@ -15,9 +15,6 @@ class Student(Profile, TextReadings, models.Model):
     user = models.OneToOneField(ReaderUser, on_delete=models.CASCADE)
     difficulty_preference = models.ForeignKey(TextDifficulty, null=True, on_delete=models.SET_NULL,
                                               related_name='students')
-
-    flashcards = models.OneToOneField(StudentFlashcards, null=True, blank=True, related_name='student',
-                                      on_delete=models.CASCADE)
 
     login_url = reverse_lazy('student-login')
 
@@ -72,3 +69,13 @@ class Student(Profile, TextReadings, models.Model):
     def __str__(self):
         return self.user.username
 
+    def has_flashcard_for_phrase(self, text_phrase: TextPhrase) -> bool:
+        return self.flashcards.filter(text_phrase=text_phrase).exists()
+
+    def add_to_flashcards(self, text_phrase: TextPhrase):
+        flashcard, created = self.flashcards.objects.get_or_create(student=self, phrase=text_phrase)
+
+        return flashcard
+
+    def remove_from_flashcards(self, text_phrase: TextPhrase):
+        self.flashcards.filter(text_phrase=text_phrase).delete()

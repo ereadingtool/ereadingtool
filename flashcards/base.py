@@ -1,14 +1,21 @@
+from typing import Dict
+
 from django.db import models
 
 from text.phrase.models import TextPhrase
 
 
-class Flashcards(models.Model):
+class Flashcard(models.Model):
     class Meta:
         abstract = True
 
-    phrases = models.ManyToManyField(TextPhrase, related_name='flashcards')
+    phrase = models.ForeignKey(TextPhrase, related_name='flashcards', on_delete=models.CASCADE)
 
-    def to_dict(self):
-        return [(text_phrase.phrase, text_phrase.child_instance.to_text_reading_dict())
-                for text_phrase in self.phrases.all()]
+    repetitions = models.IntegerField(default=0)
+    interval = models.IntegerField(default=0)
+    easiness = models.IntegerField(default=0)
+
+    def to_dict(self) -> Dict:
+        return {
+            'phrase': self.phrase.phrase,
+        }
