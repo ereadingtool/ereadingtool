@@ -98,9 +98,7 @@ LOGGING = {
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
+DEBUG = False
 DEV = False
 
 ALLOWED_HOSTS = ['0.0.0.0',
@@ -147,9 +145,6 @@ AUTH_USER_MODEL = 'user.ReaderUser'
 EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
 
 SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
-
-# TODO(andrew): disable this when we're ready for a prod env
-SENDGRID_SANDBOX_MODE_IN_DEBUG = False
 
 ASGI_APPLICATION = 'ereadingtool.routing.application'
 # CHANNEL_LAYERS = {}
@@ -249,3 +244,8 @@ STATIC_ROOT = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'ereadingtool/static')
 ]
+
+try:
+    from local_settings import *
+except ImportError:
+    pass

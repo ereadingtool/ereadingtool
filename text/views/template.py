@@ -75,8 +75,16 @@ class TextView(TemplateView):
     def dispatch(self, request, *args, **kwargs):
         return super(TextView, self).dispatch(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super(TextView, self).get_context_data()
+
+        context['pk'] = kwargs['pk']
+        context['text'] = self.model.objects.get(pk=kwargs['pk'])
+
+        return context
+
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        if not self.model.objects.filter(pk=kwargs['pk']):
+        if not self.model.objects.filter(pk=kwargs['pk']).exists():
             raise Http404('text does not exist')
 
         return super(TextView, self).get(request, *args, **kwargs)
