@@ -79,7 +79,7 @@ LOGGING = {
             'level': 'INFO',
             'class': 'django.utils.log.AdminEmailHandler',
             'include_html': True,
-            'filters': ['require_debug_true']
+            'filters': []
         }
     },
     'loggers': {
