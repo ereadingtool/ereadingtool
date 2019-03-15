@@ -30,7 +30,7 @@ class StudentTextReaderConsumer(TextReaderConsumer):
 
     @database_sync_to_async
     def phrase_exists_in_flashcards(self, flashcards: Flashcards, text_phrase: TextPhrase):
-        return flashcards.words.filter(pk=text_phrase.pk).exists()
+        return flashcards.phrases.filter(pk=text_phrase.pk).exists()
 
     @database_sync_to_async
     def get_text_phrase_in_definitions(self, phrase: AnyStr, instance: int):
@@ -40,12 +40,12 @@ class StudentTextReaderConsumer(TextReaderConsumer):
 
     @database_sync_to_async
     def add_phrase_to_flashcards(self, flashcards: Flashcards, text_phrase: TextPhrase):
-        flashcards.words.add(text_phrase)
+        flashcards.phrases.add(text_phrase)
         flashcards.save()
 
     @database_sync_to_async
     def remove_phrase_from_flashcards(self, flashcards: Flashcards, text_phrase: TextPhrase):
-        flashcards.words.remove(text_phrase)
+        flashcards.phrases.remove(text_phrase)
 
     @database_sync_to_async
     def get_flashcards_for_student(self, student: Student):

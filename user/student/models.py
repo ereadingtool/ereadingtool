@@ -4,7 +4,7 @@ from django.db import models
 from django.template import loader
 from django.urls import reverse_lazy, reverse
 
-from flashcards.models import Flashcards
+from flashcards.models import StudentFlashcards
 from report.models import StudentPerformanceReport
 from text.models import TextDifficulty, Text
 from user.mixins.models import Profile, TextReadings
@@ -16,25 +16,25 @@ class Student(Profile, TextReadings, models.Model):
     difficulty_preference = models.ForeignKey(TextDifficulty, null=True, on_delete=models.SET_NULL,
                                               related_name='students')
 
-    flashcards = models.OneToOneField(Flashcards, null=True, blank=True, related_name='student',
+    flashcards = models.OneToOneField(StudentFlashcards, null=True, blank=True, related_name='student',
                                       on_delete=models.CASCADE)
 
     login_url = reverse_lazy('student-login')
 
     @property
-    def text_search_queryset(self):
+    def text_search_queryset(self) -> models.QuerySet:
         return Text.objects_with_student_readings
 
     @property
-    def text_search_queryset_for_user(self):
+    def text_search_queryset_for_user(self) -> models.QuerySet:
         return self.text_search_queryset.where_student(self)
 
     @property
-    def unread_text_queryset(self):
+    def unread_text_queryset(self) -> models.QuerySet:
         return self.text_search_queryset.exclude(studenttextreading__student=self)
 
     @property
-    def performance(self):
+    def performance(self) -> 'StudentPerformanceReport':
         return StudentPerformanceReport(student=self)
 
     def to_dict(self):
