@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List, Tuple
 
 from django.db import models
 from django.template import loader
@@ -34,6 +34,11 @@ class Student(Profile, TextReadings, models.Model):
     def performance(self) -> 'StudentPerformanceReport':
         return StudentPerformanceReport(student=self)
 
+    def serialized_flashcards(self) -> List[Tuple]:
+        return [
+            (flashcard.phrase, flashcard.to_dict()) for flashcard in self.flashcards.all()
+        ]
+
     def to_dict(self):
         difficulties = [(text_difficulty.slug, text_difficulty.name)
                         for text_difficulty in TextDifficulty.objects.all()]
@@ -54,7 +59,7 @@ class Student(Profile, TextReadings, models.Model):
             if self.difficulty_preference else None,
             'difficulties': difficulties,
             'performance_report': {'html': performance_report_html, 'pdf_link': performance_report_pdf_link},
-            'flashcards': self.flashcards.to_dict() if self.flashcards else None
+            'flashcards': self.serialized_flashcards()
         }
 
     def to_text_summary_dict(self, text: Text) -> Dict:
