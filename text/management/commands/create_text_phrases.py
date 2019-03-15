@@ -45,9 +45,13 @@ class Command(BaseCommand):
                     if total_translated_words >= options['run_cron']:
                         break
 
-                    text_section_words = list(text_section.words)
+                    text_section_phrases = list(text_section.words)
+                    text_section_phrases_count = len(text_section_phrases)
 
-                    if len(text_section_words) + total_translated_words > options['run_cron']:
+                    logger.debug(
+                        f'text section pk: {text_section.pk} has {text_section_phrases_count} defined phrases.')
+
+                    if text_section_phrases_count + total_translated_words > options['run_cron']:
                         continue
 
                     consumer.text_section_parse_word_definitions({'text_section_pk': text_section.pk})
