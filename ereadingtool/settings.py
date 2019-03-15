@@ -65,7 +65,7 @@ LOGGING = {
         },
         'console_debug': {
             'level': 'DEBUG',
-            'filters': ['require_debug_true'],
+            'filters': [],
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
         },
