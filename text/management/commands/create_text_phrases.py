@@ -49,7 +49,7 @@ class Command(BaseCommand):
                     text_section_phrases_count = len(text_section_phrases)
 
                     logger.debug(
-                        f'text section pk: {text_section.pk} has {text_section_phrases_count} defined phrases.')
+                        f'text section pk: {text_section.pk} has {text_section_phrases_count} phrases.')
 
                     if text_section_phrases_count + total_translated_words > options['run_cron']:
                         continue
