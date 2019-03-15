@@ -13,6 +13,11 @@
     {% block scripts %}
     {% endblock %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async
+            src="https://www.googletagmanager.com/gtag/js?id=UA-136348667-1" nonce="{{request.csp_nonce}}"></script>
+    <script src="{% static 'js/ga.js' %}"></script>
 </head>
 <body>
 
