@@ -15,6 +15,9 @@ class Flashcard(models.Model):
     interval = models.IntegerField(default=0)
     easiness = models.IntegerField(default=0)
 
+    def to_answer_dict(self) -> Dict:
+        return self.to_dict()
+
     def to_dict(self) -> Dict:
         return {
             'phrase': self.phrase.phrase,
