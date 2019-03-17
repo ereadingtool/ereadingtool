@@ -106,7 +106,7 @@ class TestText(TestUser, TestCase):
         # process the message and test the output
         text_parse_consumer = ParseTextSectionForDefinitions(scope=ret)
 
-        text_section = text_parse_consumer.text_section_parse_word_definitions(
+        text_section, _ = text_parse_consumer.text_section_parse_word_definitions(
             {'text_section_pk': ret['text_section_pk']})
 
         self.assertEquals(text_section.translated_words.count(), num_of_words)

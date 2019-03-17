@@ -1,3 +1,7 @@
+from typing import AnyStr, List
+
+import pytz
+
 import logging
 
 from django.core.management.base import BaseCommand, CommandError
@@ -34,7 +38,18 @@ class Command(BaseCommand):
                 raise CommandError(f"Can't find text section pk: {options['text_section']}")
 
         if options['run_cron']:
-            logger.info(f'Began cron run for collecting translations.')
+            pac_tz = pytz.timezone('America/Los_Angeles')
+
+            def log(msg, msgs: List[AnyStr]) -> List[AnyStr]:
+                logger.debug(msg)
+
+                if msgs is not None:
+                    msgs.append(msg)
+
+                return msgs
+
+            log_msgs = log(f'Began cron run for collecting translations on '
+                           f'{timezone.now().astimezone(pac_tz).isoformat()}.', [])
 
             total_translated_words = 0
 
@@ -54,12 +69,15 @@ class Command(BaseCommand):
                     if text_section_phrases_count + total_translated_words > options['run_cron']:
                         continue
 
-                    consumer.text_section_parse_word_definitions({'text_section_pk': text_section.pk})
+                    _, log_msgs = consumer.text_section_parse_word_definitions({'text_section_pk': text_section.pk},
+                                                                               log_msgs=log_msgs)
 
                     translated_word_count = text_section.translated_words.count()
 
                     total_translated_words += translated_word_count
 
-                logger.info(f'Finished cron run.  Translated {total_translated_words} words.')
+                log_msgs = log(f'Finished cron run.  Translated {total_translated_words} words.', log_msgs)
+
+                logger.info("\n".join(log_msgs))
             except Exception:
                 logger.exception(msg='Exception')
