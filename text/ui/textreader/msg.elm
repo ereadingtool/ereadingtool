@@ -14,7 +14,6 @@ import Menu.Msg as MenuMsg
 import Menu.Logout
 
 
--- UPDATE
 type Msg =
     Select TextAnswer
   | ViewFeedback Section TextQuestion TextAnswer Bool

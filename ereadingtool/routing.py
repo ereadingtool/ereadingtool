@@ -22,8 +22,7 @@ flashcard_session_router = URLRouter([
 application = ProtocolTypeRouter({
     # web socket textreader handler
     'websocket': AllowedHostsOriginValidator(AuthMiddlewareStack(
-        text_reading_url_router,
-        flashcard_session_router
+        [text_reading_url_router, flashcard_session_router]
     )),
     'channel': ChannelNameRouter({
         'text': ParseTextSectionForDefinitions

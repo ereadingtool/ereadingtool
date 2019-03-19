@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, AnyStr, TypeVar
 
 from django.db import models
 from django.template import loader
@@ -39,7 +39,7 @@ class Student(Profile, TextReadings, models.Model):
             (flashcard.phrase, flashcard.to_dict()) for flashcard in self.flashcards.all()
         ]
 
-    def to_dict(self):
+    def to_dict(self) -> Dict:
         difficulties = [(text_difficulty.slug, text_difficulty.name)
                         for text_difficulty in TextDifficulty.objects.all()]
 
@@ -71,7 +71,7 @@ class Student(Profile, TextReadings, models.Model):
 
         return text_student_summary
 
-    def __str__(self):
+    def __str__(self) -> AnyStr:
         return self.user.username
 
     def has_flashcard_for_phrase(self, text_phrase: TextPhrase) -> bool:

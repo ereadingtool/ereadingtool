@@ -1,21 +1,17 @@
 import Html exposing (Html, div)
 
-import Dict exposing (Dict)
-
 import Views
 import User.Profile
 
 import WebSocket
 
 import Flashcard.Encode
-import Flashcard.Text.Model
+import Flashcard.Model
 
 import Flashcard.View exposing (..)
 import Flashcard.Model exposing (..)
 import Flashcard.Msg exposing (Msg(..))
 import Flashcard.Update exposing (..)
-
-import Config
 
 
 init : Flags -> (Model, Cmd Msg)
@@ -24,11 +20,14 @@ init flags =
     profile = User.Profile.init_profile flags
   in
     ({ exception=Nothing
+     , flags=flags
+     , profile=profile
+     , session=Init
      } , Cmd.none)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  WebSocket.listen model.flags.text_reader_ws_addr WebSocketResp
+  WebSocket.listen model.flags.flashcard_ws_addr WebSocketResp
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =

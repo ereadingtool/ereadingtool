@@ -12,5 +12,9 @@ text:
 user:
 	for f in user/ui/{instructor,student,forgot_password}/*.elm; do ${ELM_MAKE} $$f --warn --output=user/static/user/js/$$(basename -s .elm $$f).js; done;
 
+.PHONY: flashcard
+flashcard:
+	for f in flashcards/ui/*.elm; do ${ELM_MAKE} $$f --warn --output=flashcards/static/flashcards/js/$$(basename -s .elm $$f).js; done;
+
 .PHONY: all
-all: admin text user
+all: admin text user flashcard

@@ -20,12 +20,9 @@ class FlashcardSessionConsumer(AsyncJsonWebsocketConsumer):
 
     @database_sync_to_async
     def start(self, user: ReaderUser):
-        self.flashcard_session = self.get_or_create_flashcard_session(user=user)
+        self.flashcard_session, started = self.get_or_create_flashcard_session(user=user)
 
-        self.send_json({
-            'command': 'review_card',
-            'result': self.flashcard_session.next_flashcard.to_review_dict()
-        })
+        self.send_json(self.flashcard_session.to_dict())
 
     @database_sync_to_async
     def get_or_create_flashcard_session(self, user: ReaderUser):
@@ -33,35 +30,30 @@ class FlashcardSessionConsumer(AsyncJsonWebsocketConsumer):
 
         return profile.get_or_create_flashcard_session()
 
-    def flip_card(self, current_flashcard: Flashcard):
-        self.send_json({
-            'command': 'flipped_card',
-            'result': current_flashcard.to_answer_dict()
-        })
+    def flip_card(self, user: ReaderUser):
+        if not user.is_authenticated:
+            raise Unauthorized
+
+        self.send_json(self.flashcard_session.flip_card().to_dict())
 
     @database_sync_to_async
     def answer(self, user: ReaderUser, answer: AnyStr):
         if not user.is_authenticated:
             raise Unauthorized
 
-        current_flashcard = self.flashcard_session.current_flashcard.answer(answer)
-
-        self.flip_card(current_flashcard)
+        self.send_json(self.flashcard_session.answer(answer).to_dict())
 
     async def next(self, user: ReaderUser):
         if not user.is_authenticated:
             raise Unauthorized
 
-        await self.send_json({
-            'command': 'review_card',
-            'result': self.flashcard_session.next_flashcard.to_review_dict()
-        })
+        await self.send_json(self.flashcard_session.next().to_dict())
 
     async def flip(self, user: ReaderUser):
         if not user.is_authenticated:
             raise Unauthorized
 
-        self.flip_card(self.flashcard_session.current_flashcard)
+        self.flip_card(self.flashcard_session.flip().to_dict())
 
     async def connect(self):
         if self.scope['user'].is_anonymous:
