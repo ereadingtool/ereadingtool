@@ -5,8 +5,6 @@ from enum import Enum, unique
 from statemachine import StateMachine, State
 from statemachine.exceptions import StateMachineError
 
-from flashcards.models import Flashcard
-
 
 @unique
 class Mode(Enum):
@@ -16,7 +14,7 @@ class Mode(Enum):
 
 class FlashcardSessionStateMachine(StateMachine):
     def __init__(self, *args, state: Optional[AnyStr] = None, mode: Optional[AnyStr] = None,
-                 current_flashcard: Optional[Flashcard] = None, **kwargs):
+                 current_flashcard: Optional['Flashcard'] = None, **kwargs):
         super(FlashcardSessionStateMachine, self).__init__(*args, **kwargs)
 
         self.mode = getattr(self, mode, Mode.review)

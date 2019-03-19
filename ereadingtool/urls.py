@@ -29,6 +29,7 @@ urlpatterns = [
     path('', include('user.urls.student')),
     path('', include('user.urls.forgot_pass')),
 
+    path('', include('flashcards.urls')),
     path('', include('text.urls')),
 
     path('api/username/', username, name='username-api'),

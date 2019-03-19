@@ -19,7 +19,8 @@ class FlashcardSession(models.Model):
     """
     state = models.CharField(max_length=64, null=False, default=state_machine_cls.begin.name)
 
-    mode = models.CharField(choices=((mode.name, mode.value) for mode in list(Mode)), default=Mode.review.name)
+    mode = models.CharField(max_length=32, choices=((mode.name, mode.value) for mode in list(Mode)),
+                            default=Mode.review.name)
 
     start_dt = models.DateTimeField(null=False, auto_now_add=True)
     end_dt = models.DateTimeField(null=True)
