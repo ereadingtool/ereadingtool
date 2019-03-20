@@ -1,0 +1,33 @@
+#flashcard {
+    padding-top: 35px;
+}
+
+#content {
+    display: grid;
+
+    padding: 50px;
+    grid-template-columns: 20% [card] auto 20%;
+    grid-template-rows: [card] minmax(400px, auto) [card-controls] auto;
+}
+
+#card {
+    display: grid;
+    grid-column: card;
+
+    border: 1px solid grey;
+    background: #f8f8f8;
+
+    text-decoration-line: underline;
+
+    align-content: center;
+    justify-content: center;
+}
+
+#controls {
+    padding-top: 15px;
+
+    display: grid;
+    grid-area: card-controls / card;
+
+    grid-template-columns: auto auto;
+}

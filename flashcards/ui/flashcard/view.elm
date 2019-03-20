@@ -19,9 +19,8 @@ view_content model =
       (case model.session of
         Init ->
           [
-            div [class "nav"] [
-              div [class "start_btn"] [ ]
-            ]
+            div [id "card"] [Html.text "card"]
+          , div [id "controls"] [Html.text "controls"]
           ]
 
         _ ->
