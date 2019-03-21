@@ -1,11 +1,12 @@
-from typing import List, AnyStr
+from typing import Dict, List, AnyStr
 
 from django.core.exceptions import ValidationError
 
 from django.db import models
 from flashcards.base import Flashcard
 
-from flashcards.state.models import FlashcardSessionStateMachine, Mode, StateMachineError
+from flashcards.state.exceptions import StateMachineError
+from flashcards.state.models import FlashcardSessionStateMachine, State, Mode
 
 
 class FlashcardSession(models.Model):

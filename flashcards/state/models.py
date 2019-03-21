@@ -3,11 +3,7 @@ from typing import TypeVar, Optional, AnyStr, Dict, List, Tuple
 from enum import Enum, unique
 
 from statemachine import StateMachine, State
-from statemachine.exceptions import StateMachineError
-
-
-class InvalidStateName(StateMachineError):
-    pass
+from flashcards.state.exceptions import InvalidStateName, FlashcardStateMachineNoDefFoundException
 
 
 @unique
@@ -22,7 +18,8 @@ class FlashcardSessionStateMachine(StateMachine):
                  current_flashcard: Optional['Flashcard'] = None, **kwargs):
         super(FlashcardSessionStateMachine, self).__init__(*args, **kwargs)
 
-        self.mode = getattr(self, mode, Mode.review)
+        if mode:
+            self.mode = getattr(self, mode, Mode.review)
 
         if state:
             if not hasattr(self.__class__, state):
@@ -39,21 +36,47 @@ class FlashcardSessionStateMachine(StateMachine):
     review_and_answer_card = State('review_answer_card')
 
     reviewed_card = State('reviewed_card')
-    answered_card = State('answered_card')
+
+    correctly_answered_card = State('correctly_answered_card')
+    incorrectly_answered_card = State('incorrectly_answered_card')
+
     rated_your_answer_for_card = State('rate_your_answer_for_card')
 
     choose_mode = mode_choice.to.itself()
 
-    start = mode_choice.to(review_and_answer_card) | mode_choice.to(review_card)
+    start_review = mode_choice.to(review_card)
+    start_review_and_answer = mode_choice.to(review_and_answer_card)
 
-    answer_card = review_and_answer_card.to(answered_card)
-    rate_answer = answered_card.to(rated_your_answer_for_card)
+    rate_answer = correctly_answered_card.to(rated_your_answer_for_card)
+
+    # internal states used by answer_card()
+    _answered_card_correctly = review_and_answer_card.to(correctly_answered_card)
+    _answered_card_incorrectly = review_and_answer_card.to(incorrectly_answered_card)
 
     review = review_card.to(reviewed_card)
 
-    next_card = reviewed_card.to(review_card) | rated_your_answer_for_card.to(review_and_answer_card)
+    next_card = reviewed_card.to(
+        review_card
+    ) | rated_your_answer_for_card.to(
+        review_and_answer_card
+    ) | incorrectly_answered_card.to(
+        review_and_answer_card
+    )
 
     finish = reviewed_card.to(finished) | rated_your_answer_for_card.to(finished)
+
+    def answer_card(self, answer: AnyStr):
+        try:
+            translation = self.current_flashcard.phrase.translations.filter()[0]
+        except IndexError:
+            raise FlashcardStateMachineNoDefFoundException(code='no_definition_found',
+                                                           error_msg=f'No definition is currently set for flashcard pk:'
+                                                           f'{self.current_flashcard.pk}')
+
+        if translation.phrase == answer:
+            self._answered_card_correctly()
+        else:
+            self._answered_card_incorrectly()
 
     def set_mode_from_string(self, mode: AnyStr):
         try:

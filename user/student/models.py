@@ -78,7 +78,7 @@ class Student(Profile, TextReadings, models.Model):
         return self.flashcards.filter(text_phrase=text_phrase).exists()
 
     def add_to_flashcards(self, text_phrase: TextPhrase):
-        flashcard, created = self.flashcards.objects.get_or_create(student=self, phrase=text_phrase)
+        flashcard, created = self.flashcards.get_or_create(student=self, phrase=text_phrase)
 
         return flashcard
 

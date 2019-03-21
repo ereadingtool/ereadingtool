@@ -86,12 +86,7 @@ class TestText(TestUser, TestCase):
         self.assertNotIn('2', words)
         self.assertIn('руб', words)
 
-    def test_word_definition_background_job(self):
-        test_data = self.get_test_data()
-
-        test_data['text_sections'][0]['body'] = 'заявление неделю'
-        test_data['text_sections'][1]['body'] = 'заявление неделю'
-
+    def test_run_definition_background_job(self, test_data: Dict) -> Tuple[int, TextSection]:
         num_of_words = len(test_data['text_sections'][0]['body'].split())
 
         self.test_post_text(test_data=test_data)
@@ -108,6 +103,16 @@ class TestText(TestUser, TestCase):
 
         text_section = text_parse_consumer.text_section_parse_word_definitions(
             {'text_section_pk': ret['text_section_pk']})
+
+        return num_of_words, text_section
+
+    def test_word_definition_background_job(self):
+        test_data = self.get_test_data()
+
+        test_data['text_sections'][0]['body'] = 'заявление неделю'
+        test_data['text_sections'][1]['body'] = 'заявление неделю'
+
+        num_of_words, text_section = self.test_run_definition_background_job(test_data)
 
         self.assertEquals(text_section.translated_words.count(), num_of_words)
 

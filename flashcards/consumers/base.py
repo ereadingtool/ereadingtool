@@ -37,12 +37,6 @@ class FlashcardSessionConsumer(AsyncJsonWebsocketConsumer):
     def start(self, user: ReaderUser):
         return self.get_or_create_flashcard_session(profile=user.profile)
 
-    def flip_card(self, user: ReaderUser):
-        if not user.is_authenticated:
-            raise Unauthorized
-
-        self.send_json(self.flashcard_session.flip_card().to_dict())
-
     @database_sync_to_async
     def answer(self, user: ReaderUser, answer: AnyStr):
         if not user.is_authenticated:
@@ -55,12 +49,6 @@ class FlashcardSessionConsumer(AsyncJsonWebsocketConsumer):
             raise Unauthorized
 
         await self.send_json(self.flashcard_session.next().to_dict())
-
-    async def flip(self, user: ReaderUser):
-        if not user.is_authenticated:
-            raise Unauthorized
-
-        self.flip_card(self.flashcard_session.flip().to_dict())
 
     async def send_serialized_session_command(self):
         await self.send_json({
@@ -96,9 +84,6 @@ class FlashcardSessionConsumer(AsyncJsonWebsocketConsumer):
             if cmd in available_cmds:
                 if cmd == 'choose_mode':
                     await self.choose_mode(mode=content.get('mode', None), user=user)
-
-                if cmd == 'flip':
-                    await self.flip(user=user)
 
                 if cmd == 'next':
                     await self.next(user=user)
