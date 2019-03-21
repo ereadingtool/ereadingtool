@@ -5,12 +5,29 @@ import Html exposing (Html, div, span)
 import Html.Attributes exposing (id, class, classList, attribute, property)
 import Html.Events exposing (onClick, onDoubleClick, onMouseLeave)
 
-import Array exposing (Array)
-import Dict exposing (Dict)
-
 import Flashcard.Model exposing (..)
 import Flashcard.Msg exposing (Msg(..))
 
+import Flashcard.Mode
+
+
+view_mode_choice : Model -> Flashcard.Mode.ModeChoiceDesc -> Html Msg
+view_mode_choice model choice =
+  div [ classList [("mode-choice", True), ("cursor", True), ("selected", choice.selected)]
+      , onClick (SelectMode choice.mode)] [
+     div [class "name"] [ Html.text (Flashcard.Mode.modeName choice.mode) ]
+  ,  div [class "desc"] [ Html.text choice.desc ]
+  ,  div [class "select"] [
+       Html.img [
+          attribute "src" "/static/img/circle_check.svg"
+        , attribute "height" "40px"
+        , attribute "width" "50px"] []
+     ]
+  ]
+
+view_mode_choices : Model -> List Flashcard.Mode.ModeChoiceDesc -> Html Msg
+view_mode_choices model mode_choices =
+  div [id "mode-choices"] (List.map (view_mode_choice model) mode_choices)
 
 view_content : Model -> Html Msg
 view_content model =
@@ -18,13 +35,10 @@ view_content model =
     content =
       (case model.session of
         Init ->
-          [
-            div [id "card"] [Html.text "card"]
-          , div [id "controls"] [Html.text "controls"]
-          ]
+          [ div [id "loading"] [ Html.text "" ] ]
 
-        _ ->
-          [])
+        ViewModeChoices choices ->
+          [ view_mode_choices model choices ])
   in
     div [id "flashcard"] [
       div [id "content"] content

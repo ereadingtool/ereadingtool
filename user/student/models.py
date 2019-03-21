@@ -84,6 +84,3 @@ class Student(Profile, TextReadings, models.Model):
 
     def remove_from_flashcards(self, text_phrase: TextPhrase):
         self.flashcards.filter(text_phrase=text_phrase).delete()
-
-    def get_or_create_flashcard_session(self):
-        return self.flashcard_session.objects.get_or_create(student=self)

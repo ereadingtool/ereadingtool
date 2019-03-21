@@ -7,6 +7,8 @@ from flashcards.models import Flashcard
 from flashcards.consumers.exceptions import FlashcardSessionException
 from user.models import ReaderUser
 
+from user.mixins.models import Profile
+
 
 class Unauthorized(Exception):
     pass
@@ -18,17 +20,22 @@ class FlashcardSessionConsumer(AsyncJsonWebsocketConsumer):
 
         self.flashcard_session = None
 
+    def get_or_create_flashcard_session(self, profile: Profile):
+        raise NotImplementedError
+
+    async def choose_mode(self, mode: AnyStr, user: ReaderUser):
+        if not user.is_authenticated:
+            raise Unauthorized
+
+        self.flashcard_session.set_mode(mode)
+
+        await database_sync_to_async(self.flashcard_session.save)()
+
+        await self.send_serialized_session_command()
+
     @database_sync_to_async
     def start(self, user: ReaderUser):
-        self.flashcard_session, started = self.get_or_create_flashcard_session(user=user)
-
-        self.send_json(self.flashcard_session.to_dict())
-
-    @database_sync_to_async
-    def get_or_create_flashcard_session(self, user: ReaderUser):
-        profile = user.profile
-
-        return profile.get_or_create_flashcard_session()
+        return self.get_or_create_flashcard_session(profile=user.profile)
 
     def flip_card(self, user: ReaderUser):
         if not user.is_authenticated:
@@ -55,6 +62,12 @@ class FlashcardSessionConsumer(AsyncJsonWebsocketConsumer):
 
         self.flip_card(self.flashcard_session.flip().to_dict())
 
+    async def send_serialized_session_command(self):
+        await self.send_json({
+            'command': self.flashcard_session.state_name,
+            'result': self.flashcard_session.serialize()
+        })
+
     async def connect(self):
         if self.scope['user'].is_anonymous:
             await self.close()
@@ -63,12 +76,15 @@ class FlashcardSessionConsumer(AsyncJsonWebsocketConsumer):
 
             user = self.scope['user']
 
-            await self.start(user)
+            self.flashcard_session, started = await self.start(user)
+
+            await self.send_serialized_session_command()
 
     async def receive_json(self, content, **kwargs):
         user = self.scope['user']
 
         available_cmds = {
+            'choose_mode': 1,
             'flip': 1,
             'next': 1,
             'answer': 1,
@@ -78,6 +94,9 @@ class FlashcardSessionConsumer(AsyncJsonWebsocketConsumer):
             cmd = content.get('command', None)
 
             if cmd in available_cmds:
+                if cmd == 'choose_mode':
+                    await self.choose_mode(mode=content.get('mode', None), user=user)
+
                 if cmd == 'flip':
                     await self.flip(user=user)
 

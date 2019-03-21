@@ -1,7 +1,5 @@
 module Flashcard.Update exposing (..)
 
-import User.Profile exposing (Profile(..))
-
 import Json.Decode
 
 
@@ -17,6 +15,9 @@ route_cmd_resp model cmd_resp =
   case cmd_resp of
     InitResp _ ->
       ({ model | exception=Nothing, session=Init }, Cmd.none)
+
+    ChooseModeChoice choices ->
+      ({ model | session=ViewModeChoices choices }, Cmd.none)
 
     ExceptionResp exception ->
       ({ model | exception = Just exception }, Cmd.none)

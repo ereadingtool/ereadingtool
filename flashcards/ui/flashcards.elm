@@ -38,6 +38,12 @@ update msg model =
         (Flashcard.Encode.jsonToString <| Flashcard.Encode.send_command cmd))
   in
     case msg of
+      WebSocketResp str ->
+        Flashcard.Update.handle_ws_resp model str
+
+      SelectMode mode ->
+        (model, send_command (ChooseMode mode))
+
       _ ->
         (model, Cmd.none)
 

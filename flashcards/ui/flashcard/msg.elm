@@ -5,9 +5,11 @@ import Http
 import Menu.Msg as MenuMsg
 import Menu.Logout
 
+import Flashcard.Mode
+
 
 type Msg =
-    SelectMode String
+    SelectMode Flashcard.Mode.ModeChoice
   | WebSocketResp String
   | LogOut MenuMsg.Msg
   | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
