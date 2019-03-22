@@ -19,6 +19,11 @@ class Flashcard(models.Model):
         return self.to_dict()
 
     def to_dict(self) -> Dict:
-        return {
+        # TODO(andrew.silvernail): start gathering example sentences from the surrounding text section
+        # TODO(andrew.silvernail): or else gather from Yandex
+        flashcard_dict = {
             'phrase': self.phrase.phrase,
+            'example': ''
         }
+
+        return flashcard_dict

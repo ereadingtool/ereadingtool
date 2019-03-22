@@ -1,30 +1,31 @@
 #flashcard {
-    padding-top: 35px;
+    padding-top: 100px;
 }
 
 #content {
     display: grid;
 
     padding: 10px;
-    grid-template-columns: 20% [card] auto 20%;
-    grid-template-rows: [card] minmax(200px, auto) [card-controls] auto;
+    grid-template-columns: 30% [card-col] auto 30%;
+    grid-template-rows: [card-row] minmax(200px, auto) 150px [card-controls] auto;
 }
 
 #loading {
     display: grid;
-    grid-column: card;
+    grid-column: card-col;
     
     justify-content: center;
 }
 
 #card {
     display: grid;
-    grid-column: card;
+    grid-column: card-col;
 
     border: 1px solid grey;
     background: #f8f8f8;
 
     text-decoration-line: underline;
+    font-size: x-large;
 
     align-content: center;
     justify-content: center;
@@ -32,7 +33,7 @@
 
 #mode-choices {
     display: grid;
-    grid-column: card;
+    grid-column: card-col;
 
     align-content: center;
     justify-content: center;
@@ -74,11 +75,33 @@
     outline: solid black 1px;
 }
 
+#nav {
+    display: grid;
+
+    grid-template-columns: 25% [nav] auto 25%;
+    grid-template-rows: minmax(25px, auto);
+
+    grid-column: card-col;
+    grid-row: card-controls;
+
+    align-content: center;
+    justify-content: center;
+    text-align: center;
+}
+
+#nav #start {
+    grid-column: nav;
+
+    padding: 15px;
+
+    outline: solid black 0.5px;
+}
+
 #controls {
     padding-top: 15px;
 
     display: grid;
-    grid-area: card-controls / card;
+    grid-area: card-controls / card-col;
 
     grid-template-columns: auto auto;
 }

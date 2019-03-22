@@ -39,6 +39,9 @@ class FlashcardSession(models.Model):
     def serialize(self):
         return self.state_machine.serialize()
 
+    def start(self):
+        self.state_machine.start()
+
     @property
     def flashcards(self) -> List[Flashcard]:
         raise NotImplementedError
@@ -65,7 +68,6 @@ class FlashcardSession(models.Model):
         """
         Deserialize the state from the db.
         """
-
         super(FlashcardSession, self).__init__(*args, **kwargs)
 
         self.state_machine = self.state_machine_cls(state=self.state, mode=self.mode,

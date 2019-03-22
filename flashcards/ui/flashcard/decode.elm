@@ -17,12 +17,32 @@ command_resp_decoder cmd_str =
     "mode_choice" ->
       modeChoicesDecoder
 
+    "review_card" ->
+      reviewCardDecoder
+
+    "review_card_and_answer" ->
+      reviewCardDecoder
+
     _ ->
       Json.Decode.fail ("Command " ++ cmd_str ++ " not supported")
 
+
+flashcardDecoder : Json.Decode.Decoder Flashcard
+flashcardDecoder =
+  Json.Decode.map2 Flashcard.Model.newFlashcard
+    (Json.Decode.field "phrase" Json.Decode.string) (Json.Decode.field "example" Json.Decode.string)
+
+reviewCardDecoder : Json.Decode.Decoder CmdResp
+reviewCardDecoder =
+  Json.Decode.map ReviewCardResp (Json.Decode.field "result" flashcardDecoder)
+
+reviewCardAndAnswerDecoder : Json.Decode.Decoder CmdResp
+reviewCardAndAnswerDecoder =
+  Json.Decode.map ReviewCardAndAnswerResp (Json.Decode.field "result" flashcardDecoder)
+
 modeChoicesDecoder : Json.Decode.Decoder CmdResp
 modeChoicesDecoder =
-  Json.Decode.map ChooseModeChoice (Json.Decode.field "result" modeChoicesDescDecoder)
+  Json.Decode.map ChooseModeChoiceResp (Json.Decode.field "result" modeChoicesDescDecoder)
 
 modeDecoder : Json.Decode.Decoder Flashcard.Mode.ModeChoice
 modeDecoder =
@@ -40,9 +60,14 @@ modeChoicesDescDecoder : Json.Decode.Decoder (List Flashcard.Mode.ModeChoiceDesc
 modeChoicesDescDecoder =
   Json.Decode.list modeChoiceDescDecoder
 
+initRespDecoder : Json.Decode.Decoder InitRespRec
+initRespDecoder =
+  decode InitRespRec
+    |> required "flashcards" (Json.Decode.list Json.Decode.string)
+
 startDecoder : Json.Decode.Decoder CmdResp
 startDecoder =
-  Json.Decode.map InitResp (Json.Decode.field "result" Json.Decode.string)
+  Json.Decode.map InitResp (Json.Decode.field "result" initRespDecoder)
 
 exceptionDecoder : Json.Decode.Decoder Exception
 exceptionDecoder =

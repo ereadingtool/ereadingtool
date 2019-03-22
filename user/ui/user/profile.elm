@@ -43,7 +43,7 @@ init_profile flags =
     Nothing ->
       case flags.student_profile of
         Just student_profile_params ->
-          Student (Student.Profile.init_profile student_profile_params)
+          Student (Student.Profile.init_profile student_profile_params Nothing Nothing)
 
         Nothing ->
           EmptyProfile

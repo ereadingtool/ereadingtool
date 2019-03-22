@@ -22,7 +22,7 @@ init flags =
     ({ exception=Nothing
      , flags=flags
      , profile=profile
-     , session=Init
+     , session_state=Loading
      } , Cmd.none)
 
 subscriptions : Model -> Sub Msg
@@ -42,7 +42,10 @@ update msg model =
         Flashcard.Update.handle_ws_resp model str
 
       SelectMode mode ->
-        (model, send_command (ChooseMode mode))
+        (model, send_command (ChooseModeReq mode))
+
+      Start ->
+        (model, send_command StartReq)
 
       _ ->
         (model, Cmd.none)

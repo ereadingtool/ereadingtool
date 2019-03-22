@@ -28,6 +28,10 @@ class Profile(URIs):
     def login_url(cls) -> AnyStr:
         raise NotImplementedError
 
+    @property
+    def flashcards(self):
+        raise NotImplementedError
+
 
 class TextReadings(models.Model):
     class Meta:

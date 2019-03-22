@@ -3,8 +3,6 @@ module TextReader.Encode exposing (..)
 import TextReader.Model exposing (..)
 import TextReader.Answer.Model
 
-import TextReader.TextWord
-
 import Json.Encode
 
 

@@ -3,7 +3,8 @@ from typing import TypeVar, Optional, AnyStr, Dict, List, Tuple
 from enum import Enum, unique
 
 from statemachine import StateMachine, State
-from flashcards.state.exceptions import InvalidStateName, FlashcardStateMachineNoDefFoundException
+from flashcards.state.exceptions import (InvalidStateName, FlashcardStateMachineException,
+                                         FlashcardStateMachineNoDefFoundException)
 
 
 @unique
@@ -15,11 +16,11 @@ class Mode(Enum):
 
 class FlashcardSessionStateMachine(StateMachine):
     def __init__(self, *args, state: Optional[AnyStr] = None, mode: Optional[AnyStr] = None,
-                 current_flashcard: Optional['Flashcard'] = None, **kwargs):
+                 current_flashcard: 'Flashcard', **kwargs):
         super(FlashcardSessionStateMachine, self).__init__(*args, **kwargs)
 
         if mode:
-            self.mode = getattr(self, mode, Mode.review)
+            self.mode = getattr(Mode, mode, Mode.review)
 
         if state:
             if not hasattr(self.__class__, state):
@@ -44,8 +45,8 @@ class FlashcardSessionStateMachine(StateMachine):
 
     choose_mode = mode_choice.to.itself()
 
-    start_review = mode_choice.to(review_card)
-    start_review_and_answer = mode_choice.to(review_and_answer_card)
+    _start_review = mode_choice.to(review_card)
+    _start_review_and_answer = mode_choice.to(review_and_answer_card)
 
     rate_answer = correctly_answered_card.to(rated_your_answer_for_card)
 
@@ -64,6 +65,18 @@ class FlashcardSessionStateMachine(StateMachine):
     )
 
     finish = reviewed_card.to(finished) | rated_your_answer_for_card.to(finished)
+
+    def start(self):
+        mode_to_start_transition = {
+            Mode.review.name: self._start_review,
+            Mode.review_and_answer.name: self._start_review_and_answer
+        }
+
+        try:
+            mode_to_start_transition[self.mode.name]()
+        except KeyError:
+            raise FlashcardStateMachineException(code='invalid_mode',
+                                                 error_msg=f'Mode {self.mode.name} does not have a start transition.')
 
     def answer_card(self, answer: AnyStr):
         try:
@@ -90,6 +103,17 @@ class FlashcardSessionStateMachine(StateMachine):
 
     def serialize_mode_choice_state(self) -> List[Dict]:
         return [{'mode': mode.name, 'desc': mode.value, 'selected': self.mode == mode} for mode in list(Mode)]
+
+    def serialize_review_card_state(self) -> Dict:
+        flashcard_dict = self.current_flashcard.to_dict()
+
+        if 'student' in flashcard_dict:
+            del flashcard_dict['student']
+
+        return flashcard_dict
+
+    def serialize_review_and_answer_card_state(self) -> Dict:
+        return self.serialize_review_card_state()
 
     def serialize(self):
         return getattr(self, '_'.join(['serialize', self.current_state.name, 'state']))()

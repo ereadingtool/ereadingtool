@@ -35,9 +35,11 @@ class Student(Profile, TextReadings, models.Model):
         return StudentPerformanceReport(student=self)
 
     def serialized_flashcards(self) -> List[Tuple]:
-        return [
-            (flashcard.phrase, flashcard.to_dict()) for flashcard in self.flashcards.all()
+        serialized_flashcards = [
+            (flashcard.phrase.phrase, flashcard.to_dict()) for flashcard in self.flashcards.all()
         ]
+
+        return serialized_flashcards
 
     def to_dict(self) -> Dict:
         difficulties = [(text_difficulty.slug, text_difficulty.name)

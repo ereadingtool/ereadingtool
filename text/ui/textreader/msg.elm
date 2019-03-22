@@ -4,8 +4,6 @@ import Http
 
 import TextReader.Model exposing (TextReaderWord)
 
-import TextReader.TextWord
-
 import TextReader.Section.Model exposing (Section)
 import TextReader.Question.Model exposing (TextQuestion)
 import TextReader.Answer.Model exposing (TextAnswer)

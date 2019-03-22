@@ -30,6 +30,7 @@ textWordParamsDecoder =
     |> required "id" Json.Decode.int
     |> required "instance" Json.Decode.int
     |> required "phrase" Json.Decode.string
+    |> required "example" Json.Decode.string
     |> required "grammemes" (Json.Decode.nullable (Json.Decode.list stringTupleDecoder))
     |> required "translations" TextReader.Section.Decode.textWordTranslationsDecoder
     |> required "word"
@@ -59,9 +60,9 @@ studentProfileParamsDecoder =
     |> required "email" Json.Decode.string
     |> required "difficulty_preference" (Json.Decode.nullable stringTupleDecoder)
     |> required "difficulties" (Json.Decode.list stringTupleDecoder)
-    |> required "performance_report" performanceReportDecoder
-    |> required "flashcards" wordTextWordDecoder
 
 studentProfileDecoder : Json.Decode.Decoder Student.Profile.StudentProfile
 studentProfileDecoder =
-  Json.Decode.map Student.Profile.init_profile studentProfileParamsDecoder
+  Json.Decode.map3
+    Student.Profile.init_profile
+      studentProfileParamsDecoder (Json.Decode.nullable performanceReportDecoder) wordTextWordDecoder

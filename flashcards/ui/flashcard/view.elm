@@ -29,16 +29,65 @@ view_mode_choices : Model -> List Flashcard.Mode.ModeChoiceDesc -> Html Msg
 view_mode_choices model mode_choices =
   div [id "mode-choices"] (List.map (view_mode_choice model) mode_choices)
 
+
+view_start_nav : Model -> Html Msg
+view_start_nav model =
+  div [id "start", class "cursor", onClick Start] [
+    Html.text "Start"
+  ]
+
+view_nav : List (Html Msg) -> Html Msg
+view_nav content =
+  div [id "nav"] content
+
+
+view_card : Model -> Flashcard -> Html Msg
+view_card model card =
+  div [id "card", class "cursor"] [
+    Html.text (Flashcard.Model.phrase card)
+  , Html.text (Flashcard.Model.example card)
+  ]
+
 view_content : Model -> Html Msg
 view_content model =
   let
     content =
-      (case model.session of
-        Init ->
-          [ div [id "loading"] [ Html.text "" ] ]
+      (case model.session_state of
+        Loading ->
+          [ div [id "loading"] [
+              Html.text ""
+            ]
+          ]
+
+        Init resp ->
+          [ div [id "loading"] [
+              (if (List.length resp.flashcards) == 0 then
+                Html.text "You do not have any flashcards.  Read some more texts and add flashcards before continuing."
+               else
+                Html.text "An error has occurred.")
+            ]
+          ]
 
         ViewModeChoices choices ->
-          [ view_mode_choices model choices ])
+          [ view_mode_choices model choices
+          , view_nav [
+              view_start_nav model
+            ]
+          ]
+
+        ReviewCard card ->
+          [ view_card model card
+          , view_nav [
+
+            ]
+          ]
+
+        ReviewCardAndAnswer card ->
+          [ view_card model card
+          , view_nav [
+
+            ]
+          ])
   in
     div [id "flashcard"] [
       div [id "content"] content

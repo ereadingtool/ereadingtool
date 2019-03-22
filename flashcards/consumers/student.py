@@ -12,13 +12,17 @@ from user.mixins.models import Profile
 
 class StudentFlashcardSessionConsumer(FlashcardSessionConsumer):
     def get_or_create_flashcard_session(self, profile: Profile) -> FlashcardSession:
-        return StudentFlashcardSession.objects.get_or_create(student=profile)
+        return StudentFlashcardSession.objects.get_or_create(student=profile,
+                                                             current_flashcard=self.get_current_flashcard(profile))
+
+    def get_current_flashcard(self, profile: Profile):
+        return self.get_flashcards(profile)[0]
+
+    def get_flashcards(self, profile: Profile):
+        return profile.flashcards.all()
 
     def answer(self, user: ReaderUser, answer: AnyStr):
         super(StudentFlashcardSessionConsumer, self).answer(user, answer)
 
     def next(self, user: ReaderUser):
         super(StudentFlashcardSessionConsumer, self).next(user)
-
-    def flip(self, user: ReaderUser):
-        super(StudentFlashcardSessionConsumer, self).flip(user)

@@ -9,28 +9,55 @@ import Flashcard.Mode
 
 type alias Exception = { code: String, error_msg: String }
 
+type alias Example = String
+type alias Phrase = String
 type alias WebSocketAddress = String
 
 type alias Flags = Flags.Flags { profile_id : Int, flashcard_ws_addr: WebSocketAddress }
 
-type Session = Init | ViewModeChoices (List Flashcard.Mode.ModeChoiceDesc)
+type alias InitRespRec = {
+  flashcards: List String
+ }
 
+type SessionState =
+    Loading
+  | Init InitRespRec
+  | ViewModeChoices (List Flashcard.Mode.ModeChoiceDesc)
+  | ReviewCard Flashcard
+  | ReviewCardAndAnswer Flashcard
+
+
+type Flashcard = Flashcard Phrase Example
+
+
+newFlashcard : Phrase -> Example -> Flashcard
+newFlashcard phrase example =
+  Flashcard phrase example
+
+example : Flashcard -> Example
+example (Flashcard _ example) =
+  example
+
+phrase : Flashcard -> Phrase
+phrase (Flashcard phrase _) =
+  phrase
 
 type alias Model = {
     profile : User.Profile.Profile
-  , session: Session
+  , session_state: SessionState
   , exception : Maybe Exception
   , flags : Flags }
 
-
 type CmdReq =
-    ChooseMode Flashcard.Mode.ModeChoice
+    ChooseModeReq Flashcard.Mode.ModeChoice
+  | StartReq
   | NextReq
-  | PrevReq
   | AnswerReq String
   | RateAnswerReq Int
 
 type CmdResp =
-    InitResp String
-  | ChooseModeChoice (List Flashcard.Mode.ModeChoiceDesc)
+    InitResp InitRespRec
+  | ChooseModeChoiceResp (List Flashcard.Mode.ModeChoiceDesc)
+  | ReviewCardResp Flashcard
+  | ReviewCardAndAnswerResp Flashcard
   | ExceptionResp Exception

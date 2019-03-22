@@ -1,4 +1,4 @@
-from typing import AnyStr
+from typing import AnyStr, List
 
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
@@ -23,6 +23,9 @@ class FlashcardSessionConsumer(AsyncJsonWebsocketConsumer):
     def get_or_create_flashcard_session(self, profile: Profile):
         raise NotImplementedError
 
+    def get_flashcards(self, profile: Profile) -> List[Flashcard]:
+        raise NotImplementedError
+
     async def choose_mode(self, mode: AnyStr, user: ReaderUser):
         if not user.is_authenticated:
             raise Unauthorized
@@ -34,7 +37,7 @@ class FlashcardSessionConsumer(AsyncJsonWebsocketConsumer):
         await self.send_serialized_session_command()
 
     @database_sync_to_async
-    def start(self, user: ReaderUser):
+    def create_session(self, user: ReaderUser):
         return self.get_or_create_flashcard_session(profile=user.profile)
 
     @database_sync_to_async
@@ -56,6 +59,16 @@ class FlashcardSessionConsumer(AsyncJsonWebsocketConsumer):
             'result': self.flashcard_session.serialize()
         })
 
+    async def start(self, user: ReaderUser):
+        if not user.is_authenticated:
+            raise Unauthorized
+
+        self.flashcard_session.start()
+
+        await database_sync_to_async(self.flashcard_session.save)()
+
+        await self.send_serialized_session_command()
+
     async def connect(self):
         if self.scope['user'].is_anonymous:
             await self.close()
@@ -64,16 +77,26 @@ class FlashcardSessionConsumer(AsyncJsonWebsocketConsumer):
 
             user = self.scope['user']
 
-            self.flashcard_session, started = await self.start(user)
+            flashcards = await database_sync_to_async(self.get_flashcards)(user.profile)
 
-            await self.send_serialized_session_command()
+            if not flashcards:
+                await self.send_json({
+                    'command': 'init',
+                    'result': {
+                        'flashcards': [flashcard.phrase.phrase for flashcard in flashcards]
+                    }
+                })
+            else:
+                self.flashcard_session, started = await self.create_session(user)
+
+                await self.send_serialized_session_command()
 
     async def receive_json(self, content, **kwargs):
         user = self.scope['user']
 
         available_cmds = {
+            'start': 1,
             'choose_mode': 1,
-            'flip': 1,
             'next': 1,
             'answer': 1,
         }
@@ -82,6 +105,9 @@ class FlashcardSessionConsumer(AsyncJsonWebsocketConsumer):
             cmd = content.get('command', None)
 
             if cmd in available_cmds:
+                if cmd == 'start':
+                    await self.start(user=user)
+
                 if cmd == 'choose_mode':
                     await self.choose_mode(mode=content.get('mode', None), user=user)
 
