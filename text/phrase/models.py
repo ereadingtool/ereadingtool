@@ -1,4 +1,6 @@
-from typing import Dict, AnyStr, Optional
+import re
+
+from typing import Dict, AnyStr, Optional, Union
 
 from django.db import models
 
@@ -16,6 +18,17 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
     instance = models.IntegerField(default=0)
 
     phrase = models.CharField(max_length=128, blank=False)
+
+    @property
+    def sentence(self) -> Union[AnyStr, None]:
+        matches = re.match(r'(?P<sentence>(.+)' + self.phrase + '(.+?)\\.)',
+                           self.text_section.body_text,
+                           re.DOTALL | re.MULTILINE)
+
+        try:
+            return matches[self.instance]
+        except IndexError:
+            return None
 
     @property
     def child_instance(self):

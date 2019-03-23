@@ -49,6 +49,9 @@ class FlashcardSession(models.Model):
     def next_flashcard(self) -> Flashcard:
         return self.flashcards[0]
 
+    def review(self):
+        self.state_machine.review()
+
     def clean(self):
         try:
             self.state_machine.check()

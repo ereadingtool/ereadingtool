@@ -2,9 +2,9 @@ module Flashcard.Mode exposing (..)
 
 type alias ModeId = String
 
-type ModeChoice = ReviewOnly ModeId | ReviewAndAnswer ModeId
+type Mode = ReviewOnly ModeId | ReviewAndAnswer ModeId
 
-modeName : ModeChoice -> String
+modeName : Mode -> String
 modeName mode_choice =
   case mode_choice of
     ReviewOnly _ ->
@@ -14,7 +14,7 @@ modeName mode_choice =
       "Review and Answer"
 
 
-modeId : ModeChoice -> ModeId
+modeId : Mode -> ModeId
 modeId mode_choice =
   case mode_choice of
     ReviewOnly id ->
@@ -23,7 +23,7 @@ modeId mode_choice =
     ReviewAndAnswer id ->
       id
 
-modeFromString : String -> ModeChoice
+modeFromString : String -> Mode
 modeFromString str =
   case str of
     "review" as id ->
@@ -36,4 +36,4 @@ modeFromString str =
       ReviewOnly "review"
 
 
-type alias ModeChoiceDesc = { mode: ModeChoice, desc: String, selected: Bool }
+type alias ModeChoiceDesc = { mode: Mode, desc: String, selected: Bool }

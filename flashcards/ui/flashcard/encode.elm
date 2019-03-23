@@ -30,5 +30,10 @@ send_command cmd_req =
         ("command", Json.Encode.string  "start")
       ]
 
+    ReviewAnswerReq ->
+      Json.Encode.object [
+        ("command", Json.Encode.string "review_answer")
+      ]
+
     _ ->
       Json.Encode.object []

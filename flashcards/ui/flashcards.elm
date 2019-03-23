@@ -22,6 +22,7 @@ init flags =
     ({ exception=Nothing
      , flags=flags
      , profile=profile
+     , mode=Nothing
      , session_state=Loading
      } , Cmd.none)
 
@@ -46,6 +47,12 @@ update msg model =
 
       Start ->
         (model, send_command StartReq)
+
+      ReviewAnswer ->
+        (model, send_command ReviewAnswerReq)
+
+      Next ->
+        (model, send_command NextReq)
 
       _ ->
         (model, Cmd.none)

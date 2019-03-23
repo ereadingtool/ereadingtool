@@ -3,7 +3,7 @@ module Flashcard.Decode exposing (..)
 import Json.Decode
 import Flashcard.Model exposing (..)
 
-import Flashcard.Mode
+import Flashcard.Mode exposing (Mode)
 
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 
@@ -23,14 +23,22 @@ command_resp_decoder cmd_str =
     "review_card_and_answer" ->
       reviewCardDecoder
 
+    "reviewed_card" ->
+      reviewedCardDecoder
+
     _ ->
       Json.Decode.fail ("Command " ++ cmd_str ++ " not supported")
 
 
+reviewedCardDecoder : Json.Decode.Decoder CmdResp
+reviewedCardDecoder =
+  Json.Decode.map ReviewedCardResp (Json.Decode.field "result" flashcardDecoder)
+
 flashcardDecoder : Json.Decode.Decoder Flashcard
 flashcardDecoder =
-  Json.Decode.map2 Flashcard.Model.newFlashcard
+  Json.Decode.map3 Flashcard.Model.newFlashcard
     (Json.Decode.field "phrase" Json.Decode.string) (Json.Decode.field "example" Json.Decode.string)
+    (Json.Decode.field "translation" (Json.Decode.nullable (Json.Decode.string)))
 
 reviewCardDecoder : Json.Decode.Decoder CmdResp
 reviewCardDecoder =
@@ -44,7 +52,7 @@ modeChoicesDecoder : Json.Decode.Decoder CmdResp
 modeChoicesDecoder =
   Json.Decode.map ChooseModeChoiceResp (Json.Decode.field "result" modeChoicesDescDecoder)
 
-modeDecoder : Json.Decode.Decoder Flashcard.Mode.ModeChoice
+modeDecoder : Json.Decode.Decoder Mode
 modeDecoder =
   Json.Decode.map Flashcard.Mode.modeFromString Json.Decode.string
 
@@ -75,6 +83,8 @@ exceptionDecoder =
     |> required "code" (Json.Decode.string)
     |> required "error_msg" (Json.Decode.string)
 
-ws_resp_decoder : Json.Decode.Decoder CmdResp
+ws_resp_decoder : Json.Decode.Decoder (Mode, CmdResp)
 ws_resp_decoder =
-  Json.Decode.field "command" Json.Decode.string |> Json.Decode.andThen command_resp_decoder
+  Json.Decode.map2 (,)
+    (Json.Decode.field "mode" modeDecoder)
+    (Json.Decode.field "command" Json.Decode.string |> Json.Decode.andThen command_resp_decoder)

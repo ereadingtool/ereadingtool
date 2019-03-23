@@ -7,7 +7,7 @@
 
     padding: 10px;
     grid-template-columns: 30% [card-col] auto 30%;
-    grid-template-rows: [card-row] minmax(200px, auto) 150px [card-controls] auto;
+    grid-template-rows: [card-row] minmax(200px, auto) 35px [card-controls] auto;
 }
 
 #loading {
@@ -21,14 +21,64 @@
     display: grid;
     grid-column: card-col;
 
+    grid-template-columns: 15px auto 15px;
+    grid-template-rows: 35px auto 15px;
+
     border: 1px solid grey;
     background: #f8f8f8;
 
-    text-decoration-line: underline;
-    font-size: x-large;
-
     align-content: center;
     justify-content: center;
+
+    box-shadow: 5px 5px 5px #dfdfdf;
+}
+
+#phrase {
+    grid-column: 2;
+}
+
+#example {
+    grid-column: 2;
+}
+
+.flip {
+    transform-style: preserve-3d;
+    transition: all 1.0s linear;
+
+    transform: rotateY(180deg);
+}
+
+.flip > #phrase, .flip > #example {
+    transform:rotateY(180deg);
+
+    unicode-bidi: bidi-override;
+}
+
+.unflip {
+    transform-style: preserve-3d;
+    transition: all 1.0s linear;
+
+    transform: rotateY(180deg);
+}
+
+.unflip > #phrase, .unflip > #example {
+    transform:rotateY(180deg);
+
+    unicode-bidi: bidi-override;
+}
+
+#card #phrase {
+    font-size: x-large;
+
+    text-decoration-line: underline;
+    padding-bottom: 5px;
+}
+
+#example #sentence {
+    padding: 15px;
+
+    font-size: larger;
+    font-style: italic;
 }
 
 #mode-choices {
@@ -75,21 +125,7 @@
     outline: solid black 1px;
 }
 
-#nav {
-    display: grid;
-
-    grid-template-columns: 25% [nav] auto 25%;
-    grid-template-rows: minmax(25px, auto);
-
-    grid-column: card-col;
-    grid-row: card-controls;
-
-    align-content: center;
-    justify-content: center;
-    text-align: center;
-}
-
-#nav #start {
+#nav #start, #nav #next {
     grid-column: nav;
 
     padding: 15px;
@@ -97,11 +133,23 @@
     outline: solid black 0.5px;
 }
 
-#controls {
-    padding-top: 15px;
-
+#footer {
     display: grid;
     grid-area: card-controls / card-col;
 
-    grid-template-columns: auto auto;
+    grid-template-columns: [mode-col] auto auto [nav-col] auto;
+    grid-template-rows: auto auto;
+
+    grid-column-gap: 15px;
+}
+
+#footer .mode {
+    position: relative;
+    bottom: 0;
+}
+
+#nav {
+    grid-column: nav;
+
+    text-align: center;
 }

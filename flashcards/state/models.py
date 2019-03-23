@@ -1,10 +1,12 @@
-from typing import TypeVar, Optional, AnyStr, Dict, List, Tuple
+from typing import TypeVar, Optional, AnyStr, Dict, List, Tuple, Union
 
 from enum import Enum, unique
 
 from statemachine import StateMachine, State
 from flashcards.state.exceptions import (InvalidStateName, FlashcardStateMachineException,
                                          FlashcardStateMachineNoDefFoundException)
+
+from text.phrase.models import TextPhrase
 
 
 @unique
@@ -45,6 +47,7 @@ class FlashcardSessionStateMachine(StateMachine):
 
     choose_mode = mode_choice.to.itself()
 
+    # internal states used by start()
     _start_review = mode_choice.to(review_card)
     _start_review_and_answer = mode_choice.to(review_and_answer_card)
 
@@ -78,15 +81,15 @@ class FlashcardSessionStateMachine(StateMachine):
             raise FlashcardStateMachineException(code='invalid_mode',
                                                  error_msg=f'Mode {self.mode.name} does not have a start transition.')
 
-    def answer_card(self, answer: AnyStr):
+    @property
+    def translation_for_current_flashcard(self) -> Union[TextPhrase, None]:
         try:
-            translation = self.current_flashcard.phrase.translations.filter()[0]
+            return self.current_flashcard.phrase.translations.filter(correct_for_context=True)[0]
         except IndexError:
-            raise FlashcardStateMachineNoDefFoundException(code='no_definition_found',
-                                                           error_msg=f'No definition is currently set for flashcard pk:'
-                                                           f'{self.current_flashcard.pk}')
+            return None
 
-        if translation.phrase == answer:
+    def answer_card(self, answer: AnyStr):
+        if self.translation_for_current_flashcard.phrase == answer:
             self._answered_card_correctly()
         else:
             self._answered_card_incorrectly()
@@ -101,6 +104,13 @@ class FlashcardSessionStateMachine(StateMachine):
 
         self.choose_mode()
 
+    def serialize_reviewed_card_state(self) -> Dict:
+        flashcard_dict = self.serialize_review_card_state()
+
+        flashcard_dict['translation'] = self.translation_for_current_flashcard.phrase
+
+        return flashcard_dict
+
     def serialize_mode_choice_state(self) -> List[Dict]:
         return [{'mode': mode.name, 'desc': mode.value, 'selected': self.mode == mode} for mode in list(Mode)]
 
@@ -109,6 +119,8 @@ class FlashcardSessionStateMachine(StateMachine):
 
         if 'student' in flashcard_dict:
             del flashcard_dict['student']
+
+        flashcard_dict['translation'] = None
 
         return flashcard_dict
 
