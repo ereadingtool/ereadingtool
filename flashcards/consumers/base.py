@@ -24,7 +24,7 @@ class FlashcardSessionConsumer(AsyncJsonWebsocketConsumer):
         raise NotImplementedError
 
     def get_flashcards(self, profile: Profile) -> List[Flashcard]:
-        raise NotImplementedError
+        return profile.flashcards.filter()
 
     async def review_answer(self, user: ReaderUser):
         if not user.is_authenticated:
@@ -44,22 +44,21 @@ class FlashcardSessionConsumer(AsyncJsonWebsocketConsumer):
 
         await self.send_serialized_session_command()
 
-    @database_sync_to_async
-    def create_session(self, user: ReaderUser):
-        return self.get_or_create_flashcard_session(profile=user.profile)
-
-    @database_sync_to_async
-    def answer(self, user: ReaderUser, answer: AnyStr):
+    async def answer(self, user: ReaderUser, answer: AnyStr):
         if not user.is_authenticated:
             raise Unauthorized
 
-        self.send_json(self.flashcard_session.answer(answer).to_dict())
+        await database_sync_to_async(self.flashcard_session.answer)(answer)
+
+        await self.send_serialized_session_command()
 
     async def next(self, user: ReaderUser):
         if not user.is_authenticated:
             raise Unauthorized
 
-        await self.send_json(self.flashcard_session.next().to_dict())
+        await database_sync_to_async(self.flashcard_session.next)()
+
+        await self.send_serialized_session_command()
 
     async def send_serialized_session_command(self):
         await self.send_json({
@@ -89,14 +88,18 @@ class FlashcardSessionConsumer(AsyncJsonWebsocketConsumer):
             flashcards = await database_sync_to_async(self.get_flashcards)(user.profile)
 
             if not flashcards:
+                # init state
+                # could be useful for other things, but for now we just use it to communicate that the user has no
+                # flashcards
                 await self.send_json({
                     'command': 'init',
                     'result': {
-                        'flashcards': [flashcard.phrase.phrase for flashcard in flashcards]
+                        'flashcards': []
                     }
                 })
             else:
-                self.flashcard_session, started = await self.create_session(user)
+                self.flashcard_session, started = await database_sync_to_async(self.get_or_create_flashcard_session)(
+                    profile=user.profile)
 
                 await self.send_serialized_session_command()
 

@@ -46,10 +46,6 @@ view_nav : List (Html Msg) -> Html Msg
 view_nav content =
   div [id "nav"] content
 
-view_footer : List (Html Msg) -> Html Msg
-view_footer content =
-  div [id "footer"] content
-
 view_review_only_card : Model -> Flashcard -> Html Msg
 view_review_only_card model flashcard =
   view_card model flashcard (Just [onDoubleClick ReviewAnswer])
@@ -105,27 +101,24 @@ view_content model =
 
         ViewModeChoices choices -> [
             view_mode_choices model choices
-          , view_footer [
-              view_nav [
+          , view_nav [
                 view_start_nav model
-              ]
             ]
           ]
 
         ReviewCard card -> [
             view_review_only_card model card
-          , view_footer [
+          , view_nav [
               view_mode model
             , view_state model.session_state
-            , view_nav [
-                view_next_nav model
-              ]
+            , view_next_nav model
             ]
           ]
 
+
         ReviewCardAndAnswer card -> [
             view_review_and_answer_card model card
-          , view_footer [
+          , view_nav [
               view_mode model
             , view_state model.session_state
             , view_nav [
@@ -136,12 +129,10 @@ view_content model =
 
         ReviewedCard card -> [
             view_review_and_answer_card model card
-          , view_footer [
+          , view_nav [
               view_mode model
             , view_state model.session_state
-            , view_nav [
-                view_next_nav model
-              ]
+            , view_next_nav model
             ]
           ])
   in

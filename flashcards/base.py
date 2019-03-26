@@ -9,6 +9,8 @@ class Flashcard(models.Model):
     class Meta:
         abstract = True
 
+    created_dt = models.DateTimeField(auto_now_add=True)
+
     phrase = models.ForeignKey(TextPhrase, related_name='flashcards', on_delete=models.CASCADE)
 
     repetitions = models.IntegerField(default=0)

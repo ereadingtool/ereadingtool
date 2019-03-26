@@ -7,7 +7,7 @@
 
     padding: 10px;
     grid-template-columns: 30% [card-col] auto 30%;
-    grid-template-rows: [card-row] minmax(200px, auto) 35px [card-controls] auto;
+    grid-template-rows: [card-row] minmax(200px, auto) 135px [card-controls] auto;
 }
 
 #loading {
@@ -43,7 +43,7 @@
 
 .flip {
     transform-style: preserve-3d;
-    transition: all 1.0s linear;
+    transition: all 0.25s linear;
 
     transform: rotateY(180deg);
 }
@@ -125,31 +125,54 @@
     outline: solid black 1px;
 }
 
-#nav #start, #nav #next {
-    grid-column: nav;
+#nav #start {
+    grid-column: start-col;
+}
 
+#nav #next {
+    grid-column: nav-col;
+}
+
+#nav #next, #nav #start {
     padding: 15px;
 
     outline: solid black 0.5px;
 }
 
-#footer {
+#nav {
     display: grid;
     grid-area: card-controls / card-col;
 
-    grid-template-columns: [mode-col] auto auto [nav-col] auto;
+    grid-auto-flow: row;
+
+    grid-template-columns: [mode-col] 150px [start-col] auto [nav-col] auto;
     grid-template-rows: auto auto;
 
     grid-column-gap: 15px;
 }
 
-#footer .mode {
+#nav .mode {
     position: relative;
     bottom: 0;
 }
 
 #nav {
-    grid-column: nav;
-
     text-align: center;
+}
+
+@media only screen and (max-width:720px) {
+    #content {
+        grid-template-columns: 30px [card-col] auto 30px;
+    }
+
+    #mode-choices {
+        grid-auto-flow: row;
+        grid-auto-rows: auto;
+        grid-auto-columns: auto;
+        grid-row-gap: 15px;
+    }
+
+    #nav {
+        grid-template-columns: [mode-col] auto [start-col] auto [nav-col] auto;
+    }
 }

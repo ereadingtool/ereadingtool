@@ -13254,16 +13254,6 @@ var _user$project$Flashcard_View$view_review_only_card = F2(
 					_1: {ctor: '[]'}
 				}));
 	});
-var _user$project$Flashcard_View$view_footer = function (content) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$id('footer'),
-			_1: {ctor: '[]'}
-		},
-		content);
-};
 var _user$project$Flashcard_View$view_nav = function (content) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -13464,15 +13454,10 @@ var _user$project$Flashcard_View$view_content = function (model) {
 					_0: A2(_user$project$Flashcard_View$view_mode_choices, model, _p1._0),
 					_1: {
 						ctor: '::',
-						_0: _user$project$Flashcard_View$view_footer(
+						_0: _user$project$Flashcard_View$view_nav(
 							{
 								ctor: '::',
-								_0: _user$project$Flashcard_View$view_nav(
-									{
-										ctor: '::',
-										_0: _user$project$Flashcard_View$view_start_nav(model),
-										_1: {ctor: '[]'}
-									}),
+								_0: _user$project$Flashcard_View$view_start_nav(model),
 								_1: {ctor: '[]'}
 							}),
 						_1: {ctor: '[]'}
@@ -13484,7 +13469,7 @@ var _user$project$Flashcard_View$view_content = function (model) {
 					_0: A2(_user$project$Flashcard_View$view_review_only_card, model, _p1._0),
 					_1: {
 						ctor: '::',
-						_0: _user$project$Flashcard_View$view_footer(
+						_0: _user$project$Flashcard_View$view_nav(
 							{
 								ctor: '::',
 								_0: _user$project$Flashcard_View$view_mode(model),
@@ -13493,12 +13478,7 @@ var _user$project$Flashcard_View$view_content = function (model) {
 									_0: _user$project$Flashcard_View$view_state(model.session_state),
 									_1: {
 										ctor: '::',
-										_0: _user$project$Flashcard_View$view_nav(
-											{
-												ctor: '::',
-												_0: _user$project$Flashcard_View$view_next_nav(model),
-												_1: {ctor: '[]'}
-											}),
+										_0: _user$project$Flashcard_View$view_next_nav(model),
 										_1: {ctor: '[]'}
 									}
 								}
@@ -13512,7 +13492,7 @@ var _user$project$Flashcard_View$view_content = function (model) {
 					_0: A2(_user$project$Flashcard_View$view_review_and_answer_card, model, _p1._0),
 					_1: {
 						ctor: '::',
-						_0: _user$project$Flashcard_View$view_footer(
+						_0: _user$project$Flashcard_View$view_nav(
 							{
 								ctor: '::',
 								_0: _user$project$Flashcard_View$view_mode(model),
@@ -13540,7 +13520,7 @@ var _user$project$Flashcard_View$view_content = function (model) {
 					_0: A2(_user$project$Flashcard_View$view_review_and_answer_card, model, _p1._0),
 					_1: {
 						ctor: '::',
-						_0: _user$project$Flashcard_View$view_footer(
+						_0: _user$project$Flashcard_View$view_nav(
 							{
 								ctor: '::',
 								_0: _user$project$Flashcard_View$view_mode(model),
@@ -13549,12 +13529,7 @@ var _user$project$Flashcard_View$view_content = function (model) {
 									_0: _user$project$Flashcard_View$view_state(model.session_state),
 									_1: {
 										ctor: '::',
-										_0: _user$project$Flashcard_View$view_nav(
-											{
-												ctor: '::',
-												_0: _user$project$Flashcard_View$view_next_nav(model),
-												_1: {ctor: '[]'}
-											}),
+										_0: _user$project$Flashcard_View$view_next_nav(model),
 										_1: {ctor: '[]'}
 									}
 								}

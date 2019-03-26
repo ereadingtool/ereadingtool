@@ -2,9 +2,11 @@ from typing import TypeVar, Optional, AnyStr, Dict, List, Tuple, Union
 
 from enum import Enum, unique
 
+from django.db import models
+
 from statemachine import StateMachine, State
 from flashcards.state.exceptions import (InvalidStateName, FlashcardStateMachineException,
-                                         FlashcardStateMachineNoDefFoundException)
+                                         FlashcardStateMachineNoDefFoundException, FlashcardStateMachineMustReview)
 
 from text.phrase.models import TextPhrase
 
@@ -17,8 +19,8 @@ class Mode(Enum):
 
 
 class FlashcardSessionStateMachine(StateMachine):
-    def __init__(self, *args, state: Optional[AnyStr] = None, mode: Optional[AnyStr] = None,
-                 current_flashcard: 'Flashcard', **kwargs):
+    def __init__(self, *args, flashcards_queryset: models.QuerySet, state: Optional[AnyStr] = None,
+                 mode: Optional[AnyStr] = None, current_flashcard: Optional['Flashcard'], **kwargs):
         super(FlashcardSessionStateMachine, self).__init__(*args, **kwargs)
 
         if mode:
@@ -30,10 +32,20 @@ class FlashcardSessionStateMachine(StateMachine):
 
             self.current_state = getattr(self.__class__, state)
 
+        self.flashcards = flashcards_queryset
+
+        if not current_flashcard:
+            try:
+                self.current_flashcard = self.flashcards[0]
+            except IndexError:
+                pass
+
         self.current_flashcard = current_flashcard
 
     mode_choice = State('mode_choice', initial=True)
-    finished = State('finished')
+
+    finished_review = State('finished_review')
+    finished_review_and_answer = State('finished_review')
 
     review_card = State('review_card')
     review_and_answer_card = State('review_answer_card')
@@ -67,7 +79,13 @@ class FlashcardSessionStateMachine(StateMachine):
         review_and_answer_card
     )
 
-    finish = reviewed_card.to(finished) | rated_your_answer_for_card.to(finished)
+    finish_review = reviewed_card.to(finished_review)
+
+    finish_review_and_answer = rated_your_answer_for_card.to(
+        finished_review_and_answer
+    ) | incorrectly_answered_card.to(
+        finished_review_and_answer
+    )
 
     def start(self):
         mode_to_start_transition = {
@@ -80,6 +98,41 @@ class FlashcardSessionStateMachine(StateMachine):
         except KeyError:
             raise FlashcardStateMachineException(code='invalid_mode',
                                                  error_msg=f'Mode {self.mode.name} does not have a start transition.')
+
+    def next_for_review_mode(self):
+        flashcard = None
+
+        try:
+            flashcard = self.flashcards.filter(created_dt__gt=self.current_flashcard.created_dt)[0]
+        except IndexError:
+            return None
+
+        if flashcard:
+            self.current_flashcard = flashcard
+            self.next_card()
+        else:
+            self.finish_review()
+
+    def next_for_review_and_answer_mode(self):
+        flashcard = None
+
+        try:
+            flashcard = self.flashcards.filter(created_dt__gt=self.current_flashcard.created_dt)[0]
+        except IndexError:
+            return None
+
+        if flashcard:
+            self.current_flashcard = flashcard
+            self.next_card()
+        else:
+            self.finish_review_and_answer()
+
+    def next(self):
+        if self.current_state == self.reviewed_card:
+            self.next_for_review_mode()
+
+        if self.current_state in [self.rated_your_answer_for_card, self.incorrectly_answered_card]:
+            self.next_for_review_and_answer_mode()
 
     @property
     def translation_for_current_flashcard(self) -> Union[TextPhrase, None]:
@@ -103,6 +156,10 @@ class FlashcardSessionStateMachine(StateMachine):
             pass
 
         self.choose_mode()
+
+    # TODO(andrew.silvernail):
+    def serialize_finished_review_state(self) -> Dict:
+        return {}
 
     def serialize_reviewed_card_state(self) -> Dict:
         flashcard_dict = self.serialize_review_card_state()

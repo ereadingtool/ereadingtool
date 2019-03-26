@@ -1,4 +1,4 @@
-from typing import Dict, List, AnyStr
+from typing import Dict, List, AnyStr, Union
 
 from django.core.exceptions import ValidationError
 
@@ -33,24 +33,21 @@ class FlashcardSession(models.Model):
     def state_name(self) -> AnyStr:
         return self.state_machine.current_state.name
 
-    def current_flashcard(self):
-        raise NotImplementedError
-
     def serialize(self):
         return self.state_machine.serialize()
 
     def start(self):
         self.state_machine.start()
 
-    @property
-    def flashcards(self) -> List[Flashcard]:
-        raise NotImplementedError
-
-    def next_flashcard(self) -> Flashcard:
-        return self.flashcards[0]
-
     def review(self):
         self.state_machine.review()
+
+    def next(self):
+        self.state_machine.next()
+
+    @property
+    def flashcards(self):
+        raise NotImplementedError
 
     def clean(self):
         try:
@@ -73,7 +70,11 @@ class FlashcardSession(models.Model):
         """
         super(FlashcardSession, self).__init__(*args, **kwargs)
 
+        if not self.current_flashcard:
+            self.current_flashcard = self.flashcards[0]
+
         self.state_machine = self.state_machine_cls(state=self.state, mode=self.mode,
+                                                    flashcards_queryset=self.flashcards,
                                                     current_flashcard=self.current_flashcard)
 
         self.state_machine.check()
