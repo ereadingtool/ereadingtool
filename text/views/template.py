@@ -71,9 +71,9 @@ class TextView(TemplateView):
 
     # for text reading, relax connect-src CSP
     # since websockets are not the same origin as the HTTP requests (https://github.com/w3c/webappsec/issues/489)
-    @csp_replace(CONNECT_SRC=("ws://*" if settings.DEV else "wss://*", "'self'"))
     # also relax style-src, since these come from CkEditor
-    @csp_replace(STYLE_SRC=("'self'", "'unsafe-inline'",))
+    @csp_replace(CONNECT_SRC=("ws://*" if settings.DEV else "wss://*", "'self'"),
+                 STYLE_SRC=("'self'", "'unsafe-inline'",))
     def dispatch(self, request, *args, **kwargs):
         return super(TextView, self).dispatch(request, *args, **kwargs)
 
