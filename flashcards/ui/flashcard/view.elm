@@ -28,7 +28,6 @@ view_mode_choices : Model -> List Flashcard.Mode.ModeChoiceDesc -> Html Msg
 view_mode_choices model mode_choices =
   div [id "mode-choices"] (List.map (view_mode_choice model) mode_choices)
 
-
 view_start_nav : Model -> Html Msg
 view_start_nav model =
   div [id "start", class "cursor", onClick Start] [
