@@ -6,7 +6,7 @@ from django.db import models
 
 from statemachine import StateMachine, State
 from flashcards.state.exceptions import (InvalidStateName, FlashcardStateMachineException,
-                                         FlashcardStateMachineNoDefFoundException, FlashcardStateMachineMustReview)
+                                         FlashcardStateMachineNoDefFoundException)
 
 from text.phrase.models import TextPhrase
 
@@ -48,7 +48,7 @@ class FlashcardSessionStateMachine(StateMachine):
     finished_review_and_answer = State('finished_review')
 
     review_card = State('review_card')
-    review_and_answer_card = State('review_answer_card')
+    review_and_answer_card = State('review_and_answer_card')
 
     reviewed_card = State('reviewed_card')
 
@@ -59,13 +59,13 @@ class FlashcardSessionStateMachine(StateMachine):
 
     choose_mode = mode_choice.to.itself()
 
-    # internal states used by start()
+    # internal transitions used by start()
     _start_review = mode_choice.to(review_card)
     _start_review_and_answer = mode_choice.to(review_and_answer_card)
 
     rate_answer = correctly_answered_card.to(rated_your_answer_for_card)
 
-    # internal states used by answer_card()
+    # internal transitions used by answer_card()
     _answered_card_correctly = review_and_answer_card.to(correctly_answered_card)
     _answered_card_incorrectly = review_and_answer_card.to(incorrectly_answered_card)
 
@@ -79,9 +79,25 @@ class FlashcardSessionStateMachine(StateMachine):
         review_and_answer_card
     )
 
-    finish_review = reviewed_card.to(finished_review)
+    prev_card = reviewed_card.to(
+        review_card
+    ) | rated_your_answer_for_card.to(
+        review_and_answer_card
+    ) | incorrectly_answered_card.to(
+        review_and_answer_card
+    )
 
-    finish_review_and_answer = rated_your_answer_for_card.to(
+    back_to_mode_choice = reviewed_card.to(
+        mode_choice
+    ) | rated_your_answer_for_card.to(
+        mode_choice
+    ) | incorrectly_answered_card.to(
+        mode_choice
+    )
+
+    finish = reviewed_card.to(
+        finished_review
+    ) | rated_your_answer_for_card.to(
         finished_review_and_answer
     ) | incorrectly_answered_card.to(
         finished_review_and_answer
@@ -99,40 +115,37 @@ class FlashcardSessionStateMachine(StateMachine):
             raise FlashcardStateMachineException(code='invalid_mode',
                                                  error_msg=f'Mode {self.mode.name} does not have a start transition.')
 
-    def next_for_review_mode(self):
-        flashcard = None
-
+    @property
+    def prev_flashcard(self):
         try:
-            flashcard = self.flashcards.filter(created_dt__gt=self.current_flashcard.created_dt)[0]
+            return self.flashcards.filter(created_dt__lt=self.current_flashcard.created_dt)[0]
         except IndexError:
             return None
 
-        if flashcard:
-            self.current_flashcard = flashcard
-            self.next_card()
-        else:
-            self.finish_review()
-
-    def next_for_review_and_answer_mode(self):
-        flashcard = None
-
+    @property
+    def next_flashcard(self):
         try:
-            flashcard = self.flashcards.filter(created_dt__gt=self.current_flashcard.created_dt)[0]
+            return self.flashcards.filter(created_dt__gt=self.current_flashcard.created_dt)[0]
         except IndexError:
             return None
 
-        if flashcard:
-            self.current_flashcard = flashcard
-            self.next_card()
+    def prev(self):
+        prev_flashcard = self.prev_flashcard
+
+        if prev_flashcard:
+            self.current_flashcard = prev_flashcard
+            self.prev_card()
         else:
-            self.finish_review_and_answer()
+            self.back_to_mode_choice()
 
     def next(self):
-        if self.current_state == self.reviewed_card:
-            self.next_for_review_mode()
+        next_flashcard = self.next_flashcard
 
-        if self.current_state in [self.rated_your_answer_for_card, self.incorrectly_answered_card]:
-            self.next_for_review_and_answer_mode()
+        if next_flashcard:
+            self.current_flashcard = next_flashcard
+            self.next_card()
+        else:
+            self.finish()
 
     @property
     def translation_for_current_flashcard(self) -> Union[TextPhrase, None]:
@@ -159,6 +172,9 @@ class FlashcardSessionStateMachine(StateMachine):
 
     # TODO(andrew.silvernail):
     def serialize_finished_review_state(self) -> Dict:
+        return {}
+
+    def serialize_finished_review_and_answer_state(self) -> Dict:
         return {}
 
     def serialize_reviewed_card_state(self) -> Dict:

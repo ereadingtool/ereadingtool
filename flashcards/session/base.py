@@ -3,9 +3,11 @@ from typing import Dict, List, AnyStr, Union
 from django.core.exceptions import ValidationError
 
 from django.db import models
-from flashcards.base import Flashcard
+from flashcards.consumers.exceptions import FlashcardSessionException
 
-from flashcards.state.exceptions import StateMachineError
+from statemachine.exceptions import TransitionNotAllowed
+
+from flashcards.state.exceptions import FlashcardStateMachineException, StateMachineError
 from flashcards.state.models import FlashcardSessionStateMachine, State, Mode
 
 
@@ -42,8 +44,26 @@ class FlashcardSession(models.Model):
     def review(self):
         self.state_machine.review()
 
+    def on_finish(self):
+        self.delete()
+        self.deleted = True
+
+    def prev(self):
+        try:
+            self.state_machine.prev()
+        except TransitionNotAllowed:
+            raise FlashcardSessionException(code='prev', error_msg='Cant go back to previous card.')
+
+        self.save()
+
     def next(self):
-        self.state_machine.next()
+        try:
+            self.state_machine.next()
+        except TransitionNotAllowed:
+            raise FlashcardSessionException(code='next', error_msg='Must review or answer this card before continuing.')
+
+        if not self.deleted:
+            self.save()
 
     @property
     def flashcards(self):
@@ -70,11 +90,15 @@ class FlashcardSession(models.Model):
         """
         super(FlashcardSession, self).__init__(*args, **kwargs)
 
+        self.deleted = False
+
         if not self.current_flashcard:
             self.current_flashcard = self.flashcards[0]
 
         self.state_machine = self.state_machine_cls(state=self.state, mode=self.mode,
                                                     flashcards_queryset=self.flashcards,
                                                     current_flashcard=self.current_flashcard)
+
+        self.state_machine.on_finish = self.on_finish
 
         self.state_machine.check()

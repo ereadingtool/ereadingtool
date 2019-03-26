@@ -20,11 +20,17 @@ command_resp_decoder cmd_str =
     "review_card" ->
       reviewCardDecoder
 
-    "review_card_and_answer" ->
-      reviewCardDecoder
+    "review_and_answer_card" ->
+      reviewCardAndAnswerDecoder
 
     "reviewed_card" ->
       reviewedCardDecoder
+
+    "exception" ->
+      Json.Decode.map ExceptionResp (Json.Decode.field "result" exceptionDecoder)
+
+    "finished_review" ->
+      Json.Decode.succeed FinishedReviewResp
 
     _ ->
       Json.Decode.fail ("Command " ++ cmd_str ++ " not supported")

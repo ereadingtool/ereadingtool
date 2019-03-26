@@ -24,11 +24,17 @@ init flags =
      , profile=profile
      , mode=Nothing
      , session_state=Loading
+     , connect=True
      } , Cmd.none)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  WebSocket.listen model.flags.flashcard_ws_addr WebSocketResp
+  case model.connect of
+    True ->
+      WebSocket.listen model.flags.flashcard_ws_addr WebSocketResp
+
+    False ->
+      Sub.none
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -50,6 +56,9 @@ update msg model =
 
       ReviewAnswer ->
         (model, send_command ReviewAnswerReq)
+
+      Prev ->
+        (model, send_command PrevReq)
 
       Next ->
         (model, send_command NextReq)

@@ -13,25 +13,31 @@ import Flashcard.Msg exposing (Msg(..))
 
 
 route_cmd_resp : Model -> Mode -> CmdResp -> (Model, Cmd Msg)
-route_cmd_resp model mode cmd_resp =
-  case cmd_resp of
-    InitResp resp ->
-      ({ model | exception=Nothing, session_state=Init resp }, Cmd.none)
+route_cmd_resp orig_model mode cmd_resp =
+  let
+    model = Flashcard.Model.setMode orig_model (Just mode)
+  in
+    case cmd_resp of
+      InitResp resp ->
+        (Flashcard.Model.setSessionState model (Init resp), Cmd.none)
 
-    ChooseModeChoiceResp choices ->
-      ({ model | mode=Just mode, session_state=ViewModeChoices choices }, Cmd.none)
+      ChooseModeChoiceResp choices ->
+        (Flashcard.Model.setSessionState model (ViewModeChoices choices), Cmd.none)
 
-    ReviewCardAndAnswerResp card ->
-      ({ model | mode=Just mode, session_state=ReviewCardAndAnswer card }, Cmd.none)
+      ReviewCardAndAnswerResp card ->
+        (Flashcard.Model.setSessionState model (ReviewCardAndAnswer card), Cmd.none)
 
-    ReviewCardResp card ->
-      ({ model | mode=Just mode, session_state=ReviewCard card }, Cmd.none)
+      ReviewCardResp card ->
+        (Flashcard.Model.setSessionState model (ReviewCard card), Cmd.none)
 
-    ReviewedCardResp card ->
-      ({ model | mode=Just mode, session_state=ReviewedCard card }, Cmd.none)
+      ReviewedCardResp card ->
+        (Flashcard.Model.setSessionState model (ReviewedCard card), Cmd.none)
 
-    ExceptionResp exception ->
-      ({ model | exception = Just exception }, Cmd.none)
+      FinishedReviewResp ->
+        (Flashcard.Model.disconnect (Flashcard.Model.setSessionState model FinishedReview), Cmd.none)
+
+      ExceptionResp exception ->
+        (Flashcard.Model.setException model (Just exception), Cmd.none)
 
 handle_ws_resp : Model -> String -> (Model, Cmd Msg)
 handle_ws_resp model str =

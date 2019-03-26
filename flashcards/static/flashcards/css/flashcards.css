@@ -6,8 +6,8 @@
     display: grid;
 
     padding: 10px;
-    grid-template-columns: 30% [card-col] auto 30%;
-    grid-template-rows: [card-row] minmax(200px, auto) 135px [card-controls] auto;
+    grid-template-columns: 23% [card-col] auto 23%;
+    grid-template-rows: [card-row] minmax(250px, auto) 135px [card-controls] auto;
 }
 
 #loading {
@@ -21,16 +21,41 @@
     display: grid;
     grid-column: card-col;
 
-    grid-template-columns: 15px auto 15px;
-    grid-template-rows: 35px auto 15px;
+    grid-template-columns: 15px [card-content-col] auto 15px;
 
-    border: 1px solid grey;
+    outline: 1px solid grey;
     background: #f8f8f8;
 
     align-content: center;
     justify-content: center;
 
     box-shadow: 5px 5px 5px #dfdfdf;
+}
+
+#answer_input {
+    grid-column: card-content-col;
+    display: grid;
+
+    grid-auto-columns: auto;
+    grid-template-rows: auto;
+
+    grid-row-gap: 15px;
+}
+
+#answer_input #submit {
+    display: grid;
+    grid-template-columns: 2fr 1fr auto 1fr 2fr;
+}
+
+#answer_input #submit #button {
+    outline: solid black 0.5px;
+
+    text-align: center;
+    background: #ffe7e4;
+}
+
+#answer_input #submit .filled {
+    background: #e4fff9;
 }
 
 #phrase {
@@ -143,21 +168,37 @@
     display: grid;
     grid-area: card-controls / card-col;
 
+    text-align: center;
+
     grid-auto-flow: row;
 
-    grid-template-columns: [mode-col] 150px [start-col] auto [nav-col] auto;
-    grid-template-rows: auto auto;
+    grid-template-columns: [mode-col] 150px [start-col] auto [nav-col] 150px;
+    grid-template-rows: [nav-row] minmax(auto, 45px) [exception-row] auto;
 
     grid-column-gap: 15px;
+}
+
+#finished {
+    display: grid;
+
+    grid-column: card-col;
+
+    align-content: center;
+    justify-content: center;
+
+}
+
+#nav #exception {
+    display: grid;
+
+    text-align: center;
+
+    grid-area: mode-col / exception-row;
 }
 
 #nav .mode {
     position: relative;
     bottom: 0;
-}
-
-#nav {
-    text-align: center;
 }
 
 @media only screen and (max-width:720px) {
