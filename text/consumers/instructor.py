@@ -1,6 +1,6 @@
 import logging
 
-from typing import Dict
+from typing import Dict, AnyStr, List, Tuple, Union
 
 from django.db import transaction
 
@@ -41,13 +41,22 @@ class ParseTextSectionForDefinitions(SyncConsumer):
 
             text_section.update_definitions()
 
-    def text_section_parse_word_definitions(self, message: Dict):
+    def text_section_parse_word_definitions(self, message: Dict, *args, log_msgs: List[AnyStr] = None,
+                                            **kwargs) -> Tuple[TextSection, List[AnyStr]]:
         text_section = TextSection.objects.get(pk=message['text_section_pk'])
 
         text_section_words = list(text_section.words)
 
-        logger.debug(f'Parsing {len(text_section_words)} word definitions '
-                     f'for text section pk={message["text_section_pk"]}')
+        def log(msg: AnyStr, msgs: Union[List[AnyStr], None]) -> List[AnyStr]:
+            logger.debug(msg)
+
+            if msgs:
+                msgs.append(msg)
+
+            return msgs
+
+        log_msgs = log(f'Parsing {len(text_section_words)} word definitions for '
+                       f'text section pk={message["text_section_pk"]}', log_msgs)
 
         word_data, word_freqs = text_section.parse_word_definitions()
 
@@ -62,9 +71,9 @@ class ParseTextSectionForDefinitions(SyncConsumer):
 
                     if text_word_created:
                         # populate translations
-                        logger.debug(f'created a new word "{text_word.phrase}" '
-                                     f'(pk: {text_word.pk}, instance: {text_word.instance}) '
-                                     f'for section pk {text_section.pk}')
+                        log_msgs = log(f'created a new word "{text_word.phrase}" '
+                                       f'(pk: {text_word.pk}, instance: {text_word.instance}) '
+                                       f'for section pk {text_section.pk}', log_msgs)
 
                         text_word.save()
 
@@ -78,12 +87,12 @@ class ParseTextSectionForDefinitions(SyncConsumer):
 
                                     text_word_definition.save()
 
-                            logger.debug(f'created '
-                                         f'{len(word_instance["translations"])} translations '
-                                         f'for text word pk {text_word.pk}')
+                            log_msgs = log(f'created '
+                                           f'{len(word_instance["translations"])} translations '
+                                           f'for text word pk {text_word.pk}', log_msgs)
 
-        logger.debug(f'Finished parsing translations for text section pk={message["text_section_pk"]}')
+        log_msgs = log(f'Finished parsing translations for text section pk={message["text_section_pk"]}', log_msgs)
 
         text_section.save()
 
-        return text_section
+        return text_section, log_msgs
