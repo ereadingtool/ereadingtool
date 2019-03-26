@@ -5,7 +5,12 @@ import Array
 
 import Fuzz exposing (Fuzzer, int, list, string)
 
-import Html
+import Html exposing (..)
+import Html.Attributes exposing (class, classList)
+
+import VirtualDom
+import HtmlParser
+
 import Html.Attributes as Attr
 import Dict exposing (Dict)
 
@@ -19,6 +24,7 @@ import Instructor.Profile
 import Text.Component
 import Text.Section.Component
 import Text.Section.Component.Group exposing (TextSectionComponentGroup)
+import Text.Section.Words.Tag
 
 import Text.View
 import Text.Section.View
@@ -86,7 +92,7 @@ test_text_difficulties =
 
 test_profile : Instructor.Profile.InstructorProfile
 test_profile =
-  Instructor.Profile.init_profile {id=Just 1, username="an_instructor@ereadingtool.com"}
+  Instructor.Profile.init_profile {id=Just 1, texts=[], invites=Nothing, username="an_instructor@ereadingtool.com"}
 
 test_text_view_params : Text.Component.TextComponent -> TextViewParams
 test_text_view_params text_component = {
@@ -95,9 +101,12 @@ test_text_view_params text_component = {
   , text_fields=Text.Component.text_fields text_component
   , tags=test_tags
   , profile=test_profile
+  , selected_tab=TextTab
   , write_locked=False
   , mode=CreateMode
-  , text_difficulties=test_text_difficulties }
+  , text_difficulties=test_text_difficulties
+  , text_translations_model=Nothing
+  , text_translation_msg=TextTranslationMsg }
 
 test_answer_field_mutual_exclusion : Expectation
 test_answer_field_mutual_exclusion =
@@ -167,7 +176,7 @@ test_text_section_update_body : Expectation
 test_text_section_update_body =
   let
     group =
-      Text.Section.Component.Group.update_body_for_section_index test_text_section_component_group "textsection_0_body" "foobar"
+      Text.Section.Component.Group.update_body_for_section_index test_text_section_component_group 0 "foobar"
   in
     case Text.Section.Component.Group.text_section_component group 0 of
       Just section ->
@@ -177,6 +186,49 @@ test_text_section_update_body =
           Expect.equal "foobar" text_section.body
       _ ->
         Expect.pass
+
+
+test_text_section_body : String
+test_text_section_body =
+  """
+<p style="margin-left:0in; margin-right:0in"><span style="font-family:Arial,Helvetica,sans-serif">
+<span style="font-size:12pt"><span style="color:black">С</span> <span style="color:black">такой</span>
+<span style="color:black">инициативой</span> <span style="color:black">выступила Мария дель Пилар-дель-Олмо,
+советник по вопросам экономики и финансов сообщества Кастилия и Леон. По ее словам, на этот шаг власти решились
+из-за хитрости самих клиентов: покупатели выбирают понравившуюся вещь в обычном магазине, примеряют ее, а затем
+делают онлайн-заказы в других местах.</span></span></span></p>\n\n<p style="margin-left:0in; margin-right:0in">
+<span style="font-family:Arial,Helvetica,sans-serif"><span style="font-size:12pt">
+<span style="color:black">&laquo;Если ничего не предпринимать, покупатели будут и дальше заказывать выбранные
+вещи онлайн&raquo;, &mdash; заявила она.</span></span></span></p>\n\n<p>
+<span style="font-family:Arial,Helvetica,sans-serif"><span style="font-size:12.0pt">
+<span style="color:black">Она также добавила,</span></span>&nbsp;<span style="font-size:12.0pt">
+<span style="color:black">что стране</span></span>&nbsp;<span style="font-size:12.0pt">
+<span style="color:black">пора внедрять &laquo;инновационные идеи&raquo; и &laquo;стимулы&raquo;
+для защиты малого бизнеса от действий крупных корпораций, работающих через интернет.</span></span></span></p>
+  """
+
+tagWord : Int -> String -> Html msg
+tagWord instance token =
+  let
+    id = String.join "_" [toString instance, token]
+  in
+    case token == " " of
+      True ->
+        span [class "span"] []
+
+      False ->
+        Html.node "span" [
+            Html.Attributes.id id
+          , classList [("defined_word", True), ("cursor", True)]
+          ] [
+            span [classList []] [
+              VirtualDom.text token
+            ]
+          ]
+
+is_part_of_compound_word : Int -> String -> Maybe (Int, Int, Int)
+is_part_of_compound_word instance word =
+  Nothing
 
 test_text_section_add_then_delete : Expectation
 test_text_section_add_then_delete =
@@ -188,7 +240,7 @@ test_text_section_add_then_delete =
 
     group =
       Text.Section.Component.Group.update_body_for_section_index
-        (gen_text_component_group_with_sections num_of_new_sections) ckeditor_id updated_text_section_body
+        (gen_text_component_group_with_sections num_of_new_sections) 4 updated_text_section_body
 
     text_sections = Text.Section.Component.Group.toArray group
   in
@@ -205,11 +257,18 @@ test_text_section_add_then_delete =
             ) new_group_sections))
       _ -> Expect.pass
 
+test_parse_text_body : String -> (Int -> String -> Html msg) -> (Int -> String -> Maybe (Int, Int, Int)) -> Expectation
+test_parse_text_body body tag_word is_compound_word =
+  let
+    text_body_vdom =
+      Text.Section.Words.Tag.tagWordsAndToVDOM tagWord is_part_of_compound_word (HtmlParser.parse body)
+  in
+    Expect.pass
 
 suite : Test
 suite =
       describe "text" [
-        describe "questions" [
+      describe "questions" [
           describe "answers" [
             test "radio buttons can be selected mutually exclusively (same name attributes)" <|
               \() -> test_answer_field_mutual_exclusion
@@ -223,4 +282,7 @@ suite =
             test "add text sections" <| \() -> test_text_section_add
           , test "add then delete text sections" <| \() -> test_text_section_add_then_delete
         ]
+      , describe "text section body parse" [
+        test "parse text body" <| \() -> test_parse_text_body test_text_section_body tagWord is_part_of_compound_word
+      ]
     ]
