@@ -30,7 +30,6 @@
     justify-content: center;
 
     box-shadow: 5px 5px 5px #dfdfdf;
-    grid-auto-rows: 100px;
 }
 
 #answer_input {
@@ -167,10 +166,17 @@
     grid-column: nav-col;
 }
 
+#next img {
+    width: 35px;
+    height: 35px;
+}
+
 #nav #next, #nav #start {
     padding: 15px;
+}
 
-    outline: solid black 0.5px;
+#nav #start {
+    outline: solid 0.5px black;
 }
 
 #nav {
@@ -194,7 +200,6 @@
 
     align-content: center;
     justify-content: center;
-
 }
 
 #nav #exception {
@@ -202,7 +207,8 @@
 
     text-align: center;
 
-    grid-area: mode-col / exception-row;
+    grid-column: mode-col;
+    grid-row: exception-row;
 }
 
 #nav .mode {

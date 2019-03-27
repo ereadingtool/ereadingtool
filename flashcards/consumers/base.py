@@ -137,4 +137,5 @@ class FlashcardSessionConsumer(AsyncJsonWebsocketConsumer):
                 await self.send_json({'error': f'{cmd} is not a valid command.'})
 
         except FlashcardSessionException as e:
-            await self.send_json({'error': {'code': e.code, 'error_msg': e.error_msg}})
+            await self.send_json({'mode': self.flashcard_session.mode,
+                                  'command': 'exception', 'result': {'code': e.code, 'error_msg': e.error_msg}})

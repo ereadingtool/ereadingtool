@@ -28,11 +28,25 @@ type SessionState =
   | ReviewCard Flashcard
   | ReviewedCard Flashcard
   | ReviewCardAndAnswer Flashcard
+  | ReviewedCardAndAnsweredCorrectly Flashcard
+  | ReviewedCardAndAnsweredIncorrectly Flashcard
   | FinishedReview
 
 
 type Flashcard = Flashcard Phrase Example (Maybe TranslatedPhrase)
 
+
+answered : Model -> Bool
+answered model =
+  case model.session_state of
+    ReviewedCardAndAnsweredCorrectly _ ->
+      True
+
+    ReviewedCardAndAnsweredIncorrectly _ ->
+      True
+
+    _ ->
+      False
 
 disconnect : Model -> Model
 disconnect model =
@@ -43,8 +57,11 @@ setMode model mode =
   { model | mode = mode }
 
 setSessionState : Model -> SessionState -> Model
-setSessionState model session_state =
-  { model | session_state = session_state }
+setSessionState original_model session_state =
+  let
+    model = setException original_model Nothing
+  in
+    { model | session_state = session_state }
 
 setException : Model -> Maybe Exception -> Model
 setException model exception =
@@ -97,6 +114,7 @@ type alias Model = {
   , session_state: SessionState
   , exception : Maybe Exception
   , connect : Bool
+  , answer : String
   , flags : Flags }
 
 type CmdReq =
@@ -113,6 +131,8 @@ type CmdResp =
   | ChooseModeChoiceResp (List Flashcard.Mode.ModeChoiceDesc)
   | ReviewCardResp Flashcard
   | ReviewCardAndAnswerResp Flashcard
+  | ReviewedCardAndAnsweredCorrectlyResp Flashcard
+  | ReviewedCardAndAnsweredIncorrectlyResp Flashcard
   | ReviewedCardResp Flashcard
   | ExceptionResp Exception
   | FinishedReviewResp

@@ -3,6 +3,8 @@ import Html exposing (Html, div)
 import Views
 import User.Profile
 
+import Ports
+
 import WebSocket
 
 import Flashcard.Encode
@@ -25,6 +27,7 @@ init flags =
      , mode=Nothing
      , session_state=Loading
      , connect=True
+     , answer=""
      } , Cmd.none)
 
 subscriptions : Model -> Sub Msg
@@ -63,9 +66,20 @@ update msg model =
       Next ->
         (model, send_command NextReq)
 
-      _ ->
-        (model, Cmd.none)
+      InputAnswer str ->
+        ({ model | answer = str }, Cmd.none)
 
+      SubmitAnswer ->
+        (model, send_command (AnswerReq model.answer))
+
+      LogOut msg ->
+        (model, User.Profile.logout model.profile model.flags.csrftoken LoggedOut)
+
+      LoggedOut (Ok logout_resp) ->
+        (model, Ports.redirect logout_resp.redirect)
+
+      LoggedOut (Err err) ->
+        (model, Cmd.none)
 
 main : Program Flags Model Msg
 main =

@@ -2,7 +2,7 @@ module Flashcard.View exposing (..)
 
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (id, class, classList, attribute, property)
-import Html.Events exposing (onClick, onDoubleClick, onMouseLeave, onMouseEnter)
+import Html.Events exposing (onClick, onDoubleClick, onInput)
 
 import Flashcard.Model exposing (..)
 import Flashcard.Msg exposing (Msg(..))
@@ -34,10 +34,16 @@ view_start_nav model =
     Html.text "Start"
   ]
 
+view_prev_nav : Model -> Html Msg
+view_prev_nav model =
+  div [id "prev", class "cursor", onClick Prev] [
+    Html.img [attribute "src" "/static/img/angle-left.svg"] []
+  ]
+
 view_next_nav : Model -> Html Msg
 view_next_nav model =
   div [id "next", class "cursor", onClick Next] [
-    Html.text "Next Card"
+    Html.img [attribute "src" "/static/img/angle-right.svg"] []
   ]
 
 view_exception : Model -> Html Msg
@@ -76,17 +82,21 @@ view_review_only_card model card =
 view_input_answer : Model -> Flashcard -> Html Msg
 view_input_answer model card =
   div [id "answer_input"] [
-    Html.input [attribute "placeholder" "Type an answer.."] []
-  , div [id "submit"] [ div [id "button"] [ Html.text "Submit" ] ]
+    Html.input [onInput InputAnswer, attribute "placeholder" "Type an answer.."] []
+  , div [id "submit"] [
+      div [onClick SubmitAnswer, id "button"] [ Html.text "Submit" ]
+    ]
   ]
 
 view_review_and_answer_card : Model -> Flashcard -> Html Msg
 view_review_and_answer_card model card =
-  view_card model card Nothing [
-    view_phrase model card
-  , view_example model card
-  , view_input_answer model card
-  ]
+  let
+    not_answered = not (Flashcard.Model.answered model)
+  in
+    view_card model card Nothing <| [
+      view_phrase model card
+    , view_example model card
+    ] ++ (if not_answered then [view_input_answer model card] else [])
 
 view_card : Model -> Flashcard -> Maybe (List (Html.Attribute Msg)) -> List (Html Msg) -> Html Msg
 view_card model card evts content =
@@ -150,6 +160,24 @@ view_content model =
           ]
 
         ReviewCardAndAnswer card -> [
+            view_review_and_answer_card model card
+          , view_nav model [
+              view_mode model
+            , view_state model.session_state
+            , view_next_nav model
+            ]
+          ]
+
+        ReviewedCardAndAnsweredIncorrectly card -> [
+            view_review_and_answer_card model card
+          , view_nav model [
+              view_mode model
+            , view_state model.session_state
+            , view_next_nav model
+            ]
+          ]
+
+        ReviewedCardAndAnsweredCorrectly card -> [
             view_review_and_answer_card model card
           , view_nav model [
               view_mode model

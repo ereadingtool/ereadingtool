@@ -48,19 +48,25 @@ class FlashcardSession(models.Model):
         self.delete()
         self.deleted = True
 
+    def answer(self, answer: AnyStr):
+        try:
+            self.state_machine.answer_card(answer)
+        except FlashcardStateMachineException as e:
+            raise FlashcardSessionException(code=e.code, error_msg=e.error_msg)
+
     def prev(self):
         try:
             self.state_machine.prev()
-        except TransitionNotAllowed:
-            raise FlashcardSessionException(code='prev', error_msg='Cant go back to previous card.')
+        except FlashcardStateMachineException as e:
+            raise FlashcardSessionException(code=e.code, error_msg=e.error_msg)
 
         self.save()
 
     def next(self):
         try:
             self.state_machine.next()
-        except TransitionNotAllowed:
-            raise FlashcardSessionException(code='next', error_msg='Must review or answer this card before continuing.')
+        except FlashcardStateMachineException as e:
+            raise FlashcardSessionException(code=e.code, error_msg=e.error_msg)
 
         if not self.deleted:
             self.save()

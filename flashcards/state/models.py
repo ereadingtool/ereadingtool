@@ -5,6 +5,7 @@ from enum import Enum, unique
 from django.db import models
 
 from statemachine import StateMachine, State
+from statemachine.exceptions import TransitionNotAllowed
 from flashcards.state.exceptions import (InvalidStateName, FlashcardStateMachineException,
                                          FlashcardStateMachineNoDefFoundException)
 
@@ -132,20 +133,42 @@ class FlashcardSessionStateMachine(StateMachine):
     def prev(self):
         prev_flashcard = self.prev_flashcard
 
-        if prev_flashcard:
-            self.current_flashcard = prev_flashcard
-            self.prev_card()
-        else:
-            self.back_to_mode_choice()
+        try:
+            if prev_flashcard:
+                self.prev_card()
+                self.current_flashcard = prev_flashcard
+            else:
+                self.back_to_mode_choice()
+        except TransitionNotAllowed as transition_exception:
+            raise FlashcardStateMachineException(code=transition_exception.transition.identifier,
+                                                 error_msg=str(transition_exception))
 
     def next(self):
         next_flashcard = self.next_flashcard
 
         if next_flashcard:
+            try:
+                self.next_card()
+            except TransitionNotAllowed as transition_exception:
+                if self.current_state == self.correctly_answered_card:
+                    raise FlashcardStateMachineException(code=transition_exception.transition.identifier,
+                                                         error_msg='Rate your answer before continuing.')
+
+                elif self.current_state in [self.review_and_answer_card, self.review_card]:
+                    raise FlashcardStateMachineException(
+                        code=transition_exception.transition.identifier,
+                        error_msg='Must review or answer this card before continuing.')
+
+                raise FlashcardStateMachineException(code=transition_exception.transition.identifier,
+                                                     error_msg=str(transition_exception))
+
             self.current_flashcard = next_flashcard
-            self.next_card()
         else:
-            self.finish()
+            try:
+                self.finish()
+            except TransitionNotAllowed as transition_exception:
+                raise FlashcardStateMachineException(code=transition_exception.transition.identifier,
+                                                     error_msg=str(transition_exception))
 
     @property
     def translation_for_current_flashcard(self) -> Union[TextPhrase, None]:
@@ -170,7 +193,6 @@ class FlashcardSessionStateMachine(StateMachine):
 
         self.choose_mode()
 
-    # TODO(andrew.silvernail):
     def serialize_finished_review_state(self) -> Dict:
         return {}
 
@@ -199,6 +221,12 @@ class FlashcardSessionStateMachine(StateMachine):
 
     def serialize_review_and_answer_card_state(self) -> Dict:
         return self.serialize_review_card_state()
+
+    def serialize_correctly_answered_card_state(self) -> Dict:
+        return self.serialize_reviewed_card_state()
+
+    def serialize_incorrectly_answered_card_state(self) -> Dict:
+        return self.serialize_reviewed_card_state()
 
     def serialize(self):
         return getattr(self, '_'.join(['serialize', self.current_state.name, 'state']))()

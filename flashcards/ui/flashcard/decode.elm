@@ -23,6 +23,12 @@ command_resp_decoder cmd_str =
     "review_and_answer_card" ->
       reviewCardAndAnswerDecoder
 
+    "correctly_answered_card" ->
+      reviewedCardAndAnsweredCorrectlyDecoder
+
+    "incorrectly_answered_card" ->
+      reviewedCardAndAnsweredIncorrectlyDecoder
+
     "reviewed_card" ->
       reviewedCardDecoder
 
@@ -53,6 +59,14 @@ reviewCardDecoder =
 reviewCardAndAnswerDecoder : Json.Decode.Decoder CmdResp
 reviewCardAndAnswerDecoder =
   Json.Decode.map ReviewCardAndAnswerResp (Json.Decode.field "result" flashcardDecoder)
+
+reviewedCardAndAnsweredCorrectlyDecoder : Json.Decode.Decoder CmdResp
+reviewedCardAndAnsweredCorrectlyDecoder =
+  Json.Decode.map ReviewedCardAndAnsweredCorrectlyResp (Json.Decode.field "result" flashcardDecoder)
+
+reviewedCardAndAnsweredIncorrectlyDecoder : Json.Decode.Decoder CmdResp
+reviewedCardAndAnsweredIncorrectlyDecoder =
+  Json.Decode.map ReviewedCardAndAnsweredIncorrectlyResp (Json.Decode.field "result" flashcardDecoder)
 
 modeChoicesDecoder : Json.Decode.Decoder CmdResp
 modeChoicesDecoder =

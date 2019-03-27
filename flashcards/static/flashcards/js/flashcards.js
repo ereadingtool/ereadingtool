@@ -12812,7 +12812,8 @@ var _user$project$Flashcard_Model$setException = F2(
 			{exception: exception});
 	});
 var _user$project$Flashcard_Model$setSessionState = F2(
-	function (model, session_state) {
+	function (original_model, session_state) {
+		var model = A2(_user$project$Flashcard_Model$setException, original_model, _elm_lang$core$Maybe$Nothing);
 		return _elm_lang$core$Native_Utils.update(
 			model,
 			{session_state: session_state});
@@ -12828,6 +12829,17 @@ var _user$project$Flashcard_Model$disconnect = function (model) {
 		model,
 		{connect: false});
 };
+var _user$project$Flashcard_Model$answered = function (model) {
+	var _p9 = model.session_state;
+	switch (_p9.ctor) {
+		case 'ReviewedCardAndAnsweredCorrectly':
+			return true;
+		case 'ReviewedCardAndAnsweredIncorrectly':
+			return true;
+		default:
+			return false;
+	}
+};
 var _user$project$Flashcard_Model$Exception = F2(
 	function (a, b) {
 		return {code: a, error_msg: b};
@@ -12835,11 +12847,17 @@ var _user$project$Flashcard_Model$Exception = F2(
 var _user$project$Flashcard_Model$InitRespRec = function (a) {
 	return {flashcards: a};
 };
-var _user$project$Flashcard_Model$Model = F6(
-	function (a, b, c, d, e, f) {
-		return {profile: a, mode: b, session_state: c, exception: d, connect: e, flags: f};
+var _user$project$Flashcard_Model$Model = F7(
+	function (a, b, c, d, e, f, g) {
+		return {profile: a, mode: b, session_state: c, exception: d, connect: e, answer: f, flags: g};
 	});
 var _user$project$Flashcard_Model$FinishedReview = {ctor: 'FinishedReview'};
+var _user$project$Flashcard_Model$ReviewedCardAndAnsweredIncorrectly = function (a) {
+	return {ctor: 'ReviewedCardAndAnsweredIncorrectly', _0: a};
+};
+var _user$project$Flashcard_Model$ReviewedCardAndAnsweredCorrectly = function (a) {
+	return {ctor: 'ReviewedCardAndAnsweredCorrectly', _0: a};
+};
 var _user$project$Flashcard_Model$ReviewCardAndAnswer = function (a) {
 	return {ctor: 'ReviewCardAndAnswer', _0: a};
 };
@@ -12883,6 +12901,12 @@ var _user$project$Flashcard_Model$ExceptionResp = function (a) {
 };
 var _user$project$Flashcard_Model$ReviewedCardResp = function (a) {
 	return {ctor: 'ReviewedCardResp', _0: a};
+};
+var _user$project$Flashcard_Model$ReviewedCardAndAnsweredIncorrectlyResp = function (a) {
+	return {ctor: 'ReviewedCardAndAnsweredIncorrectlyResp', _0: a};
+};
+var _user$project$Flashcard_Model$ReviewedCardAndAnsweredCorrectlyResp = function (a) {
+	return {ctor: 'ReviewedCardAndAnsweredCorrectlyResp', _0: a};
 };
 var _user$project$Flashcard_Model$ReviewCardAndAnswerResp = function (a) {
 	return {ctor: 'ReviewCardAndAnswerResp', _0: a};
@@ -12944,6 +12968,14 @@ var _user$project$Flashcard_Decode$reviewCardAndAnswerDecoder = A2(
 	_elm_lang$core$Json_Decode$map,
 	_user$project$Flashcard_Model$ReviewCardAndAnswerResp,
 	A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$Flashcard_Decode$flashcardDecoder));
+var _user$project$Flashcard_Decode$reviewedCardAndAnsweredCorrectlyDecoder = A2(
+	_elm_lang$core$Json_Decode$map,
+	_user$project$Flashcard_Model$ReviewedCardAndAnsweredCorrectlyResp,
+	A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$Flashcard_Decode$flashcardDecoder));
+var _user$project$Flashcard_Decode$reviewedCardAndAnsweredIncorrectlyDecoder = A2(
+	_elm_lang$core$Json_Decode$map,
+	_user$project$Flashcard_Model$ReviewedCardAndAnsweredIncorrectlyResp,
+	A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$Flashcard_Decode$flashcardDecoder));
 var _user$project$Flashcard_Decode$reviewedCardDecoder = A2(
 	_elm_lang$core$Json_Decode$map,
 	_user$project$Flashcard_Model$ReviewedCardResp,
@@ -12959,6 +12991,10 @@ var _user$project$Flashcard_Decode$command_resp_decoder = function (cmd_str) {
 			return _user$project$Flashcard_Decode$reviewCardDecoder;
 		case 'review_and_answer_card':
 			return _user$project$Flashcard_Decode$reviewCardAndAnswerDecoder;
+		case 'correctly_answered_card':
+			return _user$project$Flashcard_Decode$reviewedCardAndAnsweredCorrectlyDecoder;
+		case 'incorrectly_answered_card':
+			return _user$project$Flashcard_Decode$reviewedCardAndAnsweredIncorrectlyDecoder;
 		case 'reviewed_card':
 			return _user$project$Flashcard_Decode$reviewedCardDecoder;
 		case 'exception':
@@ -13044,6 +13080,25 @@ var _user$project$Flashcard_Encode$send_command = function (cmd_req) {
 					},
 					_1: {ctor: '[]'}
 				});
+		case 'AnswerReq':
+			return _elm_lang$core$Json_Encode$object(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'command',
+						_1: _elm_lang$core$Json_Encode$string('answer')
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'answer',
+							_1: _elm_lang$core$Json_Encode$string(_p0._0)
+						},
+						_1: {ctor: '[]'}
+					}
+				});
 		default:
 			return _elm_lang$core$Json_Encode$object(
 				{ctor: '[]'});
@@ -13059,6 +13114,10 @@ var _user$project$Flashcard_Msg$LogOut = function (a) {
 };
 var _user$project$Flashcard_Msg$WebSocketResp = function (a) {
 	return {ctor: 'WebSocketResp', _0: a};
+};
+var _user$project$Flashcard_Msg$SubmitAnswer = {ctor: 'SubmitAnswer'};
+var _user$project$Flashcard_Msg$InputAnswer = function (a) {
+	return {ctor: 'InputAnswer', _0: a};
 };
 var _user$project$Flashcard_Msg$Prev = {ctor: 'Prev'};
 var _user$project$Flashcard_Msg$Next = {ctor: 'Next'};
@@ -13101,6 +13160,24 @@ var _user$project$Flashcard_Update$route_cmd_resp = F3(
 						_user$project$Flashcard_Model$setSessionState,
 						model,
 						_user$project$Flashcard_Model$ReviewCardAndAnswer(_p0._0)),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'ReviewedCardAndAnsweredCorrectlyResp':
+				return {
+					ctor: '_Tuple2',
+					_0: A2(
+						_user$project$Flashcard_Model$setSessionState,
+						model,
+						_user$project$Flashcard_Model$ReviewedCardAndAnsweredCorrectly(_p0._0)),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'ReviewedCardAndAnsweredIncorrectlyResp':
+				return {
+					ctor: '_Tuple2',
+					_0: A2(
+						_user$project$Flashcard_Model$setSessionState,
+						model,
+						_user$project$Flashcard_Model$ReviewedCardAndAnsweredIncorrectly(_p0._0)),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'ReviewCardResp':
@@ -13261,8 +13338,12 @@ var _user$project$Flashcard_View$view_input_answer = F2(
 					_elm_lang$html$Html$input,
 					{
 						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Type an answer..'),
-						_1: {ctor: '[]'}
+						_0: _elm_lang$html$Html_Events$onInput(_user$project$Flashcard_Msg$InputAnswer),
+						_1: {
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Type an answer..'),
+							_1: {ctor: '[]'}
+						}
 					},
 					{ctor: '[]'}),
 				_1: {
@@ -13280,8 +13361,12 @@ var _user$project$Flashcard_View$view_input_answer = F2(
 								_elm_lang$html$Html$div,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$id('button'),
-									_1: {ctor: '[]'}
+									_0: _elm_lang$html$Html_Events$onClick(_user$project$Flashcard_Msg$SubmitAnswer),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$id('button'),
+										_1: {ctor: '[]'}
+									}
 								},
 								{
 									ctor: '::',
@@ -13372,24 +13457,28 @@ var _user$project$Flashcard_View$view_review_only_card = F2(
 	});
 var _user$project$Flashcard_View$view_review_and_answer_card = F2(
 	function (model, card) {
+		var not_answered = !_user$project$Flashcard_Model$answered(model);
 		return A4(
 			_user$project$Flashcard_View$view_card,
 			model,
 			card,
 			_elm_lang$core$Maybe$Nothing,
-			{
-				ctor: '::',
-				_0: A2(_user$project$Flashcard_View$view_phrase, model, card),
-				_1: {
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				{
 					ctor: '::',
-					_0: A2(_user$project$Flashcard_View$view_example, model, card),
+					_0: A2(_user$project$Flashcard_View$view_phrase, model, card),
 					_1: {
 						ctor: '::',
-						_0: A2(_user$project$Flashcard_View$view_input_answer, model, card),
+						_0: A2(_user$project$Flashcard_View$view_example, model, card),
 						_1: {ctor: '[]'}
 					}
-				}
-			});
+				},
+				not_answered ? {
+					ctor: '::',
+					_0: A2(_user$project$Flashcard_View$view_input_answer, model, card),
+					_1: {ctor: '[]'}
+				} : {ctor: '[]'}));
 	});
 var _user$project$Flashcard_View$view_exception = function (model) {
 	return A2(
@@ -13449,7 +13538,43 @@ var _user$project$Flashcard_View$view_next_nav = function (model) {
 		},
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html$text('Next Card'),
+			_0: A2(
+				_elm_lang$html$Html$img,
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/angle-right.svg'),
+					_1: {ctor: '[]'}
+				},
+				{ctor: '[]'}),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Flashcard_View$view_prev_nav = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('prev'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('cursor'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(_user$project$Flashcard_Msg$Prev),
+					_1: {ctor: '[]'}
+				}
+			}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$img,
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/angle-left.svg'),
+					_1: {ctor: '[]'}
+				},
+				{ctor: '[]'}),
 			_1: {ctor: '[]'}
 		});
 };
@@ -13658,6 +13783,56 @@ var _user$project$Flashcard_View$view_content = function (model) {
 					}
 				};
 			case 'ReviewCardAndAnswer':
+				return {
+					ctor: '::',
+					_0: A2(_user$project$Flashcard_View$view_review_and_answer_card, model, _p2._0),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_user$project$Flashcard_View$view_nav,
+							model,
+							{
+								ctor: '::',
+								_0: _user$project$Flashcard_View$view_mode(model),
+								_1: {
+									ctor: '::',
+									_0: _user$project$Flashcard_View$view_state(model.session_state),
+									_1: {
+										ctor: '::',
+										_0: _user$project$Flashcard_View$view_next_nav(model),
+										_1: {ctor: '[]'}
+									}
+								}
+							}),
+						_1: {ctor: '[]'}
+					}
+				};
+			case 'ReviewedCardAndAnsweredIncorrectly':
+				return {
+					ctor: '::',
+					_0: A2(_user$project$Flashcard_View$view_review_and_answer_card, model, _p2._0),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_user$project$Flashcard_View$view_nav,
+							model,
+							{
+								ctor: '::',
+								_0: _user$project$Flashcard_View$view_mode(model),
+								_1: {
+									ctor: '::',
+									_0: _user$project$Flashcard_View$view_state(model.session_state),
+									_1: {
+										ctor: '::',
+										_0: _user$project$Flashcard_View$view_next_nav(model),
+										_1: {ctor: '[]'}
+									}
+								}
+							}),
+						_1: {ctor: '[]'}
+					}
+				};
+			case 'ReviewedCardAndAnsweredCorrectly':
 				return {
 					ctor: '::',
 					_0: A2(_user$project$Flashcard_View$view_review_and_answer_card, model, _p2._0),
@@ -14219,8 +14394,37 @@ var _user$project$Main$update = F2(
 					_0: model,
 					_1: send_command(_user$project$Flashcard_Model$NextReq)
 				};
+			case 'InputAnswer':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{answer: _p0._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'SubmitAnswer':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: send_command(
+						_user$project$Flashcard_Model$AnswerReq(model.answer))
+				};
+			case 'LogOut':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: A3(_user$project$User_Profile$logout, model.profile, model.flags.csrftoken, _user$project$Flashcard_Msg$LoggedOut)
+				};
 			default:
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				if (_p0._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: model,
+						_1: _user$project$Ports$redirect(_p0._0._0.redirect)
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
 		}
 	});
 var _user$project$Main$subscriptions = function (model) {
@@ -14235,7 +14439,7 @@ var _user$project$Main$init = function (flags) {
 	var profile = _user$project$User_Profile$init_profile(flags);
 	return {
 		ctor: '_Tuple2',
-		_0: {exception: _elm_lang$core$Maybe$Nothing, flags: flags, profile: profile, mode: _elm_lang$core$Maybe$Nothing, session_state: _user$project$Flashcard_Model$Loading, connect: true},
+		_0: {exception: _elm_lang$core$Maybe$Nothing, flags: flags, profile: profile, mode: _elm_lang$core$Maybe$Nothing, session_state: _user$project$Flashcard_Model$Loading, connect: true, answer: ''},
 		_1: _elm_lang$core$Platform_Cmd$none
 	};
 };
