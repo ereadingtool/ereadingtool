@@ -1,7 +1,7 @@
 import json
 from typing import Dict
 
-from csp.decorators import csp_replace
+from csp.decorators import csp_exempt
 
 from django.middleware.csrf import get_token
 from django.urls import reverse
@@ -72,8 +72,9 @@ class AdminCreateEditTextView(AdminView):
 
         return super(AdminCreateEditTextView, self).get(request, *args, **kwargs)
 
-    # for CkEditor, allow exceptions to the CSP rules for unsafe-inline code and styles.
-    @csp_replace(STYLE_SRC=("'self'", "'unsafe-inline'",), SCRIPT_SRC=("'self'", "'unsafe-inline'",))
+    # GA's nonce CSP policy conflicts with previously used unsafe-inline
+    # attempts at using nonce with CkEditor failed so making this csp_exempt for now
+    @csp_exempt
     def dispatch(self, request, *args, **kwargs):
         return super(AdminCreateEditTextView, self).dispatch(request, *args, **kwargs)
 
