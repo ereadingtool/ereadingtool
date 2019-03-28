@@ -7,7 +7,7 @@
 
     padding: 10px;
     grid-template-columns: 23% [card-col] auto 23%;
-    grid-template-rows: [card-row] minmax(250px, auto) 135px [card-controls] auto;
+    grid-template-rows: [card-row] minmax(250px, auto) 80px [card-controls] auto;
 }
 
 #loading {
@@ -159,23 +159,6 @@
 }
 
 #nav #start {
-    grid-column: start-col;
-}
-
-#nav #next {
-    grid-column: nav-col;
-}
-
-#next img {
-    width: 35px;
-    height: 35px;
-}
-
-#nav #next, #nav #start {
-    padding: 15px;
-}
-
-#nav #start {
     outline: solid 0.5px black;
 }
 
@@ -185,12 +168,45 @@
 
     text-align: center;
 
-    grid-auto-flow: row;
+    grid-template-columns: [nav-start-col] auto [nav-middle-col] auto [nav-end-col] auto;
+    grid-template-rows: [exception-row] auto [mode-row] auto [nav-row] auto [nav-footer-row] auto;
 
-    grid-template-columns: [mode-col] 150px [start-col] auto [nav-col] 150px;
-    grid-template-rows: [nav-row] minmax(auto, 45px) [exception-row] auto;
+    grid-row-gap: 15px;
+}
 
-    grid-column-gap: 15px;
+#state {
+    grid-row: nav-footer-row;
+    grid-column: nav-start-col / nav-end-col;
+}
+
+#next img, #prev img {
+    width: 35px;
+    height: 35px;
+}
+
+#nav #next, #nav #prev, #nav #start {
+    padding: 15px;
+}
+
+#nav #start {
+    grid-column: nav-middle-col;
+}
+
+#nav #next {
+    grid-column: nav-end-col;
+    grid-row: nav-row;
+}
+
+#nav #prev {
+    grid-column: nav-start-col;
+    grid-row: nav-row;
+}
+
+#mode {
+    grid-row: mode-row;
+    grid-column: nav-start-col / nav-end-col;
+
+    font-weight: 500;
 }
 
 #finished {
@@ -207,8 +223,10 @@
 
     text-align: center;
 
-    grid-column: mode-col;
+    color: red;
+
     grid-row: exception-row;
+    grid-column: nav-start-col / nav-end-col;
 }
 
 #nav .mode {
@@ -236,7 +254,7 @@
     }
 
     #nav {
-        grid-template-columns: [mode-col] auto [start-col] auto [nav-col] auto;
+        grid-template-columns: [mode-col] auto [nav-middle-col] auto [nav-end-col] auto;
         text-align: center;
 
         grid-template-rows: 70px;

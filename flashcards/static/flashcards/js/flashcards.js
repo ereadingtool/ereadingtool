@@ -13246,13 +13246,13 @@ var _user$project$Flashcard_View$view_mode = function (model) {
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('mode'),
+			_0: _elm_lang$html$Html_Attributes$id('mode'),
 			_1: {ctor: '[]'}
 		},
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html$text(
-				A2(_elm_lang$core$Basics_ops['++'], 'Mode: ', mode_name)),
+				A2(_elm_lang$core$Basics_ops['++'], mode_name, ' Mode')),
 			_1: {ctor: '[]'}
 		});
 };
@@ -13578,6 +13578,39 @@ var _user$project$Flashcard_View$view_prev_nav = function (model) {
 			_1: {ctor: '[]'}
 		});
 };
+var _user$project$Flashcard_View$view_review_nav = function (model) {
+	var in_review = function () {
+		var _p2 = model.session_state;
+		if (_p2.ctor === 'FinishedReview') {
+			return false;
+		} else {
+			return true;
+		}
+	}();
+	return A2(
+		_user$project$Flashcard_View$view_nav,
+		model,
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			{
+				ctor: '::',
+				_0: _user$project$Flashcard_View$view_mode(model),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Flashcard_View$view_state(model.session_state),
+					_1: {ctor: '[]'}
+				}
+			},
+			in_review ? {
+				ctor: '::',
+				_0: _user$project$Flashcard_View$view_prev_nav(model),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Flashcard_View$view_next_nav(model),
+					_1: {ctor: '[]'}
+				}
+			} : {ctor: '[]'}));
+};
 var _user$project$Flashcard_View$view_start_nav = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -13706,8 +13739,8 @@ var _user$project$Flashcard_View$view_mode_choices = F2(
 	});
 var _user$project$Flashcard_View$view_content = function (model) {
 	var content = function () {
-		var _p2 = model.session_state;
-		switch (_p2.ctor) {
+		var _p3 = model.session_state;
+		switch (_p3.ctor) {
 			case 'Loading':
 				return {
 					ctor: '::',
@@ -13734,7 +13767,7 @@ var _user$project$Flashcard_View$view_content = function (model) {
 						{
 							ctor: '::',
 							_0: _elm_lang$core$Native_Utils.eq(
-								_elm_lang$core$List$length(_p2._0.flashcards),
+								_elm_lang$core$List$length(_p3._0.flashcards),
 								0) ? _elm_lang$html$Html$text('You do not have any flashcards.  Read some more texts and add flashcards before continuing.') : _elm_lang$html$Html$text(''),
 							_1: {ctor: '[]'}
 						}),
@@ -13743,7 +13776,7 @@ var _user$project$Flashcard_View$view_content = function (model) {
 			case 'ViewModeChoices':
 				return {
 					ctor: '::',
-					_0: A2(_user$project$Flashcard_View$view_mode_choices, model, _p2._0),
+					_0: A2(_user$project$Flashcard_View$view_mode_choices, model, _p3._0),
 					_1: {
 						ctor: '::',
 						_0: A2(
@@ -13760,125 +13793,50 @@ var _user$project$Flashcard_View$view_content = function (model) {
 			case 'ReviewCard':
 				return {
 					ctor: '::',
-					_0: A2(_user$project$Flashcard_View$view_review_only_card, model, _p2._0),
+					_0: A2(_user$project$Flashcard_View$view_review_only_card, model, _p3._0),
 					_1: {
 						ctor: '::',
-						_0: A2(
-							_user$project$Flashcard_View$view_nav,
-							model,
-							{
-								ctor: '::',
-								_0: _user$project$Flashcard_View$view_mode(model),
-								_1: {
-									ctor: '::',
-									_0: _user$project$Flashcard_View$view_state(model.session_state),
-									_1: {
-										ctor: '::',
-										_0: _user$project$Flashcard_View$view_next_nav(model),
-										_1: {ctor: '[]'}
-									}
-								}
-							}),
+						_0: _user$project$Flashcard_View$view_review_nav(model),
 						_1: {ctor: '[]'}
 					}
 				};
 			case 'ReviewCardAndAnswer':
 				return {
 					ctor: '::',
-					_0: A2(_user$project$Flashcard_View$view_review_and_answer_card, model, _p2._0),
+					_0: A2(_user$project$Flashcard_View$view_review_and_answer_card, model, _p3._0),
 					_1: {
 						ctor: '::',
-						_0: A2(
-							_user$project$Flashcard_View$view_nav,
-							model,
-							{
-								ctor: '::',
-								_0: _user$project$Flashcard_View$view_mode(model),
-								_1: {
-									ctor: '::',
-									_0: _user$project$Flashcard_View$view_state(model.session_state),
-									_1: {
-										ctor: '::',
-										_0: _user$project$Flashcard_View$view_next_nav(model),
-										_1: {ctor: '[]'}
-									}
-								}
-							}),
+						_0: _user$project$Flashcard_View$view_review_nav(model),
 						_1: {ctor: '[]'}
 					}
 				};
 			case 'ReviewedCardAndAnsweredIncorrectly':
 				return {
 					ctor: '::',
-					_0: A2(_user$project$Flashcard_View$view_review_and_answer_card, model, _p2._0),
+					_0: A2(_user$project$Flashcard_View$view_review_and_answer_card, model, _p3._0),
 					_1: {
 						ctor: '::',
-						_0: A2(
-							_user$project$Flashcard_View$view_nav,
-							model,
-							{
-								ctor: '::',
-								_0: _user$project$Flashcard_View$view_mode(model),
-								_1: {
-									ctor: '::',
-									_0: _user$project$Flashcard_View$view_state(model.session_state),
-									_1: {
-										ctor: '::',
-										_0: _user$project$Flashcard_View$view_next_nav(model),
-										_1: {ctor: '[]'}
-									}
-								}
-							}),
+						_0: _user$project$Flashcard_View$view_review_nav(model),
 						_1: {ctor: '[]'}
 					}
 				};
 			case 'ReviewedCardAndAnsweredCorrectly':
 				return {
 					ctor: '::',
-					_0: A2(_user$project$Flashcard_View$view_review_and_answer_card, model, _p2._0),
+					_0: A2(_user$project$Flashcard_View$view_review_and_answer_card, model, _p3._0),
 					_1: {
 						ctor: '::',
-						_0: A2(
-							_user$project$Flashcard_View$view_nav,
-							model,
-							{
-								ctor: '::',
-								_0: _user$project$Flashcard_View$view_mode(model),
-								_1: {
-									ctor: '::',
-									_0: _user$project$Flashcard_View$view_state(model.session_state),
-									_1: {
-										ctor: '::',
-										_0: _user$project$Flashcard_View$view_next_nav(model),
-										_1: {ctor: '[]'}
-									}
-								}
-							}),
+						_0: _user$project$Flashcard_View$view_review_nav(model),
 						_1: {ctor: '[]'}
 					}
 				};
 			case 'ReviewedCard':
 				return {
 					ctor: '::',
-					_0: A2(_user$project$Flashcard_View$view_review_and_answer_card, model, _p2._0),
+					_0: A2(_user$project$Flashcard_View$view_review_and_answer_card, model, _p3._0),
 					_1: {
 						ctor: '::',
-						_0: A2(
-							_user$project$Flashcard_View$view_nav,
-							model,
-							{
-								ctor: '::',
-								_0: _user$project$Flashcard_View$view_mode(model),
-								_1: {
-									ctor: '::',
-									_0: _user$project$Flashcard_View$view_state(model.session_state),
-									_1: {
-										ctor: '::',
-										_0: _user$project$Flashcard_View$view_next_nav(model),
-										_1: {ctor: '[]'}
-									}
-								}
-							}),
+						_0: _user$project$Flashcard_View$view_review_nav(model),
 						_1: {ctor: '[]'}
 					}
 				};

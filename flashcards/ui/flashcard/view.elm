@@ -61,6 +61,21 @@ view_nav : Model -> List (Html Msg) -> Html Msg
 view_nav model content =
   div [id "nav"] (content ++ (if Flashcard.Model.hasException model then [view_exception model] else []))
 
+view_review_nav : Model -> Html Msg
+view_review_nav model =
+  let
+     in_review =
+       (case model.session_state of
+         FinishedReview ->
+           False
+
+         _ -> True)
+  in
+    view_nav model <| [
+      view_mode model
+    , view_state model.session_state
+    ] ++ (if in_review then [view_prev_nav model, view_next_nav model] else [])
+
 view_example : Model -> Flashcard -> Html Msg
 view_example model card =
   div [id "example"] [
@@ -126,7 +141,7 @@ view_mode model =
          Nothing ->
            "None")
   in
-    div [class "mode"] [ Html.text ("Mode: " ++ mode_name) ]
+    div [id "mode"] [ Html.text (mode_name ++ " Mode") ]
 
 view_content : Model -> Html Msg
 view_content model =
@@ -152,47 +167,27 @@ view_content model =
 
         ReviewCard card -> [
             view_review_only_card model card
-          , view_nav model [
-              view_mode model
-            , view_state model.session_state
-            , view_next_nav model
-            ]
+          , view_review_nav model
           ]
 
         ReviewCardAndAnswer card -> [
             view_review_and_answer_card model card
-          , view_nav model [
-              view_mode model
-            , view_state model.session_state
-            , view_next_nav model
-            ]
+          , view_review_nav model
           ]
 
         ReviewedCardAndAnsweredIncorrectly card -> [
             view_review_and_answer_card model card
-          , view_nav model [
-              view_mode model
-            , view_state model.session_state
-            , view_next_nav model
-            ]
+          , view_review_nav model
           ]
 
         ReviewedCardAndAnsweredCorrectly card -> [
             view_review_and_answer_card model card
-          , view_nav model [
-              view_mode model
-            , view_state model.session_state
-            , view_next_nav model
-            ]
+          , view_review_nav model
           ]
 
         ReviewedCard card -> [
             view_review_and_answer_card model card
-          , view_nav model [
-              view_mode model
-            , view_state model.session_state
-            , view_next_nav model
-            ]
+          , view_review_nav model
           ]
 
         FinishedReview -> [
