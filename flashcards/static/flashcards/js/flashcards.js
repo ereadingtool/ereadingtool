@@ -12805,6 +12805,14 @@ var _user$project$Flashcard_Model$hasException = function (model) {
 		return false;
 	}
 };
+var _user$project$Flashcard_Model$inReview = function (model) {
+	var _p9 = model.session_state;
+	if (_p9.ctor === 'FinishedReview') {
+		return false;
+	} else {
+		return true;
+	}
+};
 var _user$project$Flashcard_Model$setException = F2(
 	function (model, exception) {
 		return _elm_lang$core$Native_Utils.update(
@@ -12818,6 +12826,12 @@ var _user$project$Flashcard_Model$setSessionState = F2(
 			model,
 			{session_state: session_state});
 	});
+var _user$project$Flashcard_Model$setQuality = F2(
+	function (model, rating) {
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{selected_quality: rating});
+	});
 var _user$project$Flashcard_Model$setMode = F2(
 	function (model, mode) {
 		return _elm_lang$core$Native_Utils.update(
@@ -12830,8 +12844,8 @@ var _user$project$Flashcard_Model$disconnect = function (model) {
 		{connect: false});
 };
 var _user$project$Flashcard_Model$answered = function (model) {
-	var _p9 = model.session_state;
-	switch (_p9.ctor) {
+	var _p10 = model.session_state;
+	switch (_p10.ctor) {
 		case 'ReviewedCardAndAnsweredCorrectly':
 			return true;
 		case 'ReviewedCardAndAnsweredIncorrectly':
@@ -12847,11 +12861,14 @@ var _user$project$Flashcard_Model$Exception = F2(
 var _user$project$Flashcard_Model$InitRespRec = function (a) {
 	return {flashcards: a};
 };
-var _user$project$Flashcard_Model$Model = F7(
-	function (a, b, c, d, e, f, g) {
-		return {profile: a, mode: b, session_state: c, exception: d, connect: e, answer: f, flags: g};
+var _user$project$Flashcard_Model$Model = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {profile: a, mode: b, session_state: c, exception: d, connect: e, answer: f, selected_quality: g, flags: h};
 	});
 var _user$project$Flashcard_Model$FinishedReview = {ctor: 'FinishedReview'};
+var _user$project$Flashcard_Model$RatedCard = function (a) {
+	return {ctor: 'RatedCard', _0: a};
+};
 var _user$project$Flashcard_Model$ReviewedCardAndAnsweredIncorrectly = function (a) {
 	return {ctor: 'ReviewedCardAndAnsweredIncorrectly', _0: a};
 };
@@ -12882,8 +12899,8 @@ var _user$project$Flashcard_Model$newFlashcard = F3(
 	function (phrase, example, translation) {
 		return A3(_user$project$Flashcard_Model$Flashcard, phrase, example, translation);
 	});
-var _user$project$Flashcard_Model$RateAnswerReq = function (a) {
-	return {ctor: 'RateAnswerReq', _0: a};
+var _user$project$Flashcard_Model$RateQualityReq = function (a) {
+	return {ctor: 'RateQualityReq', _0: a};
 };
 var _user$project$Flashcard_Model$AnswerReq = function (a) {
 	return {ctor: 'AnswerReq', _0: a};
@@ -12901,6 +12918,9 @@ var _user$project$Flashcard_Model$ExceptionResp = function (a) {
 };
 var _user$project$Flashcard_Model$ReviewedCardResp = function (a) {
 	return {ctor: 'ReviewedCardResp', _0: a};
+};
+var _user$project$Flashcard_Model$RatedCardResp = function (a) {
+	return {ctor: 'RatedCardResp', _0: a};
 };
 var _user$project$Flashcard_Model$ReviewedCardAndAnsweredIncorrectlyResp = function (a) {
 	return {ctor: 'ReviewedCardAndAnsweredIncorrectlyResp', _0: a};
@@ -12976,6 +12996,10 @@ var _user$project$Flashcard_Decode$reviewedCardAndAnsweredIncorrectlyDecoder = A
 	_elm_lang$core$Json_Decode$map,
 	_user$project$Flashcard_Model$ReviewedCardAndAnsweredIncorrectlyResp,
 	A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$Flashcard_Decode$flashcardDecoder));
+var _user$project$Flashcard_Decode$ratedQualityDecoder = A2(
+	_elm_lang$core$Json_Decode$map,
+	_user$project$Flashcard_Model$RatedCardResp,
+	A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$Flashcard_Decode$flashcardDecoder));
 var _user$project$Flashcard_Decode$reviewedCardDecoder = A2(
 	_elm_lang$core$Json_Decode$map,
 	_user$project$Flashcard_Model$ReviewedCardResp,
@@ -12995,6 +13019,8 @@ var _user$project$Flashcard_Decode$command_resp_decoder = function (cmd_str) {
 			return _user$project$Flashcard_Decode$reviewedCardAndAnsweredCorrectlyDecoder;
 		case 'incorrectly_answered_card':
 			return _user$project$Flashcard_Decode$reviewedCardAndAnsweredIncorrectlyDecoder;
+		case 'rated_your_answer_for_card':
+			return _user$project$Flashcard_Decode$ratedQualityDecoder;
 		case 'reviewed_card':
 			return _user$project$Flashcard_Decode$reviewedCardDecoder;
 		case 'exception':
@@ -13099,6 +13125,25 @@ var _user$project$Flashcard_Encode$send_command = function (cmd_req) {
 						_1: {ctor: '[]'}
 					}
 				});
+		case 'RateQualityReq':
+			return _elm_lang$core$Json_Encode$object(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'command',
+						_1: _elm_lang$core$Json_Encode$string('rate_quality')
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'rating',
+							_1: _elm_lang$core$Json_Encode$int(_p0._0)
+						},
+						_1: {ctor: '[]'}
+					}
+				});
 		default:
 			return _elm_lang$core$Json_Encode$object(
 				{ctor: '[]'});
@@ -13114,6 +13159,9 @@ var _user$project$Flashcard_Msg$LogOut = function (a) {
 };
 var _user$project$Flashcard_Msg$WebSocketResp = function (a) {
 	return {ctor: 'WebSocketResp', _0: a};
+};
+var _user$project$Flashcard_Msg$RateQuality = function (a) {
+	return {ctor: 'RateQuality', _0: a};
 };
 var _user$project$Flashcard_Msg$SubmitAnswer = {ctor: 'SubmitAnswer'};
 var _user$project$Flashcard_Msg$InputAnswer = function (a) {
@@ -13178,6 +13226,15 @@ var _user$project$Flashcard_Update$route_cmd_resp = F3(
 						_user$project$Flashcard_Model$setSessionState,
 						model,
 						_user$project$Flashcard_Model$ReviewedCardAndAnsweredIncorrectly(_p0._0)),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'RatedCardResp':
+				return {
+					ctor: '_Tuple2',
+					_0: A2(
+						_user$project$Flashcard_Model$setSessionState,
+						model,
+						_user$project$Flashcard_Model$RatedCard(_p0._0)),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'ReviewCardResp':
@@ -13292,9 +13349,8 @@ var _user$project$Flashcard_View$view_finish_review = function (model) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Flashcard_View$view_card = F4(
-	function (model, card, evts, content) {
-		var has_tr = _user$project$Flashcard_Model$hasTranslation(card);
+var _user$project$Flashcard_View$view_card = F5(
+	function (model, card, addl_classes, addl_attrs, content) {
 		return A2(
 			_elm_lang$html$Html$div,
 			A2(
@@ -13305,23 +13361,103 @@ var _user$project$Flashcard_View$view_card = F4(
 					_1: {
 						ctor: '::',
 						_0: _elm_lang$html$Html_Attributes$classList(
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'cursor', _1: true},
-								_1: {
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								{
 									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'flip', _1: has_tr},
+									_0: {ctor: '_Tuple2', _0: 'cursor', _1: true},
 									_1: {ctor: '[]'}
-								}
-							}),
+								},
+								A2(
+									_elm_lang$core$Maybe$withDefault,
+									{ctor: '[]'},
+									addl_classes))),
 						_1: {ctor: '[]'}
 					}
 				},
 				A2(
 					_elm_lang$core$Maybe$withDefault,
 					{ctor: '[]'},
-					evts)),
+					addl_attrs)),
 			content);
+	});
+var _user$project$Flashcard_View$view_quality = F3(
+	function (model, card, q) {
+		var selected = function () {
+			var _p1 = model.selected_quality;
+			if (_p1.ctor === 'Just') {
+				return _elm_lang$core$Native_Utils.eq(_p1._0, q);
+			} else {
+				return false;
+			}
+		}();
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'choice', _1: true},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'select', _1: selected},
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(
+						_user$project$Flashcard_Msg$RateQuality(q)),
+					_1: {ctor: '[]'}
+				}
+			},
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(
+						_elm_lang$core$Basics$toString(q)),
+					_1: {ctor: '[]'}
+				},
+				_elm_lang$core$Native_Utils.eq(q, 0) ? {
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(' - easiest'),
+					_1: {ctor: '[]'}
+				} : (_elm_lang$core$Native_Utils.eq(q, 5) ? {
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(' - most difficult'),
+					_1: {ctor: '[]'}
+				} : {ctor: '[]'})));
+	});
+var _user$project$Flashcard_View$view_rate_answer = F2(
+	function (model, card) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$id('answer_quality'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('Rate the difficulty of this card.'),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$id('choices'),
+							_1: {ctor: '[]'}
+						},
+						A2(
+							_elm_lang$core$List$map,
+							A2(_user$project$Flashcard_View$view_quality, model, card),
+							A2(_elm_lang$core$List$range, 0, 5))),
+					_1: {ctor: '[]'}
+				}
+			});
 	});
 var _user$project$Flashcard_View$view_input_answer = F2(
 	function (model, card) {
@@ -13435,10 +13571,11 @@ var _user$project$Flashcard_View$view_example = F2(
 	});
 var _user$project$Flashcard_View$view_review_only_card = F2(
 	function (model, card) {
-		return A4(
+		return A5(
 			_user$project$Flashcard_View$view_card,
 			model,
 			card,
+			_elm_lang$core$Maybe$Nothing,
 			_elm_lang$core$Maybe$Just(
 				{
 					ctor: '::',
@@ -13455,13 +13592,83 @@ var _user$project$Flashcard_View$view_review_only_card = F2(
 				}
 			});
 	});
-var _user$project$Flashcard_View$view_review_and_answer_card = F2(
+var _user$project$Flashcard_View$view_reviewed_only_card = F2(
 	function (model, card) {
-		var not_answered = !_user$project$Flashcard_Model$answered(model);
-		return A4(
+		return A5(
 			_user$project$Flashcard_View$view_card,
 			model,
 			card,
+			_elm_lang$core$Maybe$Just(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'flip', _1: true},
+					_1: {ctor: '[]'}
+				}),
+			_elm_lang$core$Maybe$Nothing,
+			{
+				ctor: '::',
+				_0: A2(_user$project$Flashcard_View$view_phrase, model, card),
+				_1: {
+					ctor: '::',
+					_0: A2(_user$project$Flashcard_View$view_example, model, card),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$Flashcard_View$view_rated_card = F2(
+	function (model, card) {
+		var rating = function () {
+			var _p2 = model.selected_quality;
+			if (_p2.ctor === 'Just') {
+				return _elm_lang$core$Basics$toString(_p2._0);
+			} else {
+				return 'none';
+			}
+		}();
+		return A5(
+			_user$project$Flashcard_View$view_card,
+			model,
+			card,
+			_elm_lang$core$Maybe$Nothing,
+			_elm_lang$core$Maybe$Nothing,
+			{
+				ctor: '::',
+				_0: A2(_user$project$Flashcard_View$view_phrase, model, card),
+				_1: {
+					ctor: '::',
+					_0: A2(_user$project$Flashcard_View$view_example, model, card),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$id('card_rating'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(
+									A2(_elm_lang$core$Basics_ops['++'], 'Rated ', rating)),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+	});
+var _user$project$Flashcard_View$view_reviewed_and_answered_card = F3(
+	function (model, card, answered_correctly) {
+		return A5(
+			_user$project$Flashcard_View$view_card,
+			model,
+			card,
+			_elm_lang$core$Maybe$Just(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'flip', _1: true},
+					_1: {ctor: '[]'}
+				}),
 			_elm_lang$core$Maybe$Nothing,
 			A2(
 				_elm_lang$core$Basics_ops['++'],
@@ -13474,11 +13681,33 @@ var _user$project$Flashcard_View$view_review_and_answer_card = F2(
 						_1: {ctor: '[]'}
 					}
 				},
-				not_answered ? {
+				answered_correctly ? {
 					ctor: '::',
-					_0: A2(_user$project$Flashcard_View$view_input_answer, model, card),
+					_0: A2(_user$project$Flashcard_View$view_rate_answer, model, card),
 					_1: {ctor: '[]'}
 				} : {ctor: '[]'}));
+	});
+var _user$project$Flashcard_View$view_review_and_answer_card = F2(
+	function (model, card) {
+		return A5(
+			_user$project$Flashcard_View$view_card,
+			model,
+			card,
+			_elm_lang$core$Maybe$Nothing,
+			_elm_lang$core$Maybe$Nothing,
+			{
+				ctor: '::',
+				_0: A2(_user$project$Flashcard_View$view_phrase, model, card),
+				_1: {
+					ctor: '::',
+					_0: A2(_user$project$Flashcard_View$view_example, model, card),
+					_1: {
+						ctor: '::',
+						_0: A2(_user$project$Flashcard_View$view_input_answer, model, card),
+						_1: {ctor: '[]'}
+					}
+				}
+			});
 	});
 var _user$project$Flashcard_View$view_exception = function (model) {
 	return A2(
@@ -13492,9 +13721,9 @@ var _user$project$Flashcard_View$view_exception = function (model) {
 			ctor: '::',
 			_0: _elm_lang$html$Html$text(
 				function () {
-					var _p1 = model.exception;
-					if (_p1.ctor === 'Just') {
-						return _p1._0.error_msg;
+					var _p3 = model.exception;
+					if (_p3.ctor === 'Just') {
+						return _p3._0.error_msg;
 					} else {
 						return '';
 					}
@@ -13549,6 +13778,27 @@ var _user$project$Flashcard_View$view_next_nav = function (model) {
 			_1: {ctor: '[]'}
 		});
 };
+var _user$project$Flashcard_View$view_review_and_answer_nav = function (model) {
+	return A2(
+		_user$project$Flashcard_View$view_nav,
+		model,
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			{
+				ctor: '::',
+				_0: _user$project$Flashcard_View$view_mode(model),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Flashcard_View$view_state(model.session_state),
+					_1: {ctor: '[]'}
+				}
+			},
+			_user$project$Flashcard_Model$inReview(model) ? {
+				ctor: '::',
+				_0: _user$project$Flashcard_View$view_next_nav(model),
+				_1: {ctor: '[]'}
+			} : {ctor: '[]'}));
+};
 var _user$project$Flashcard_View$view_prev_nav = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -13579,14 +13829,6 @@ var _user$project$Flashcard_View$view_prev_nav = function (model) {
 		});
 };
 var _user$project$Flashcard_View$view_review_nav = function (model) {
-	var in_review = function () {
-		var _p2 = model.session_state;
-		if (_p2.ctor === 'FinishedReview') {
-			return false;
-		} else {
-			return true;
-		}
-	}();
 	return A2(
 		_user$project$Flashcard_View$view_nav,
 		model,
@@ -13601,7 +13843,7 @@ var _user$project$Flashcard_View$view_review_nav = function (model) {
 					_1: {ctor: '[]'}
 				}
 			},
-			in_review ? {
+			_user$project$Flashcard_Model$inReview(model) ? {
 				ctor: '::',
 				_0: _user$project$Flashcard_View$view_prev_nav(model),
 				_1: {
@@ -13739,8 +13981,8 @@ var _user$project$Flashcard_View$view_mode_choices = F2(
 	});
 var _user$project$Flashcard_View$view_content = function (model) {
 	var content = function () {
-		var _p3 = model.session_state;
-		switch (_p3.ctor) {
+		var _p4 = model.session_state;
+		switch (_p4.ctor) {
 			case 'Loading':
 				return {
 					ctor: '::',
@@ -13767,7 +14009,7 @@ var _user$project$Flashcard_View$view_content = function (model) {
 						{
 							ctor: '::',
 							_0: _elm_lang$core$Native_Utils.eq(
-								_elm_lang$core$List$length(_p3._0.flashcards),
+								_elm_lang$core$List$length(_p4._0.flashcards),
 								0) ? _elm_lang$html$Html$text('You do not have any flashcards.  Read some more texts and add flashcards before continuing.') : _elm_lang$html$Html$text(''),
 							_1: {ctor: '[]'}
 						}),
@@ -13776,7 +14018,7 @@ var _user$project$Flashcard_View$view_content = function (model) {
 			case 'ViewModeChoices':
 				return {
 					ctor: '::',
-					_0: A2(_user$project$Flashcard_View$view_mode_choices, model, _p3._0),
+					_0: A2(_user$project$Flashcard_View$view_mode_choices, model, _p4._0),
 					_1: {
 						ctor: '::',
 						_0: A2(
@@ -13793,7 +14035,7 @@ var _user$project$Flashcard_View$view_content = function (model) {
 			case 'ReviewCard':
 				return {
 					ctor: '::',
-					_0: A2(_user$project$Flashcard_View$view_review_only_card, model, _p3._0),
+					_0: A2(_user$project$Flashcard_View$view_review_only_card, model, _p4._0),
 					_1: {
 						ctor: '::',
 						_0: _user$project$Flashcard_View$view_review_nav(model),
@@ -13803,37 +14045,47 @@ var _user$project$Flashcard_View$view_content = function (model) {
 			case 'ReviewCardAndAnswer':
 				return {
 					ctor: '::',
-					_0: A2(_user$project$Flashcard_View$view_review_and_answer_card, model, _p3._0),
+					_0: A2(_user$project$Flashcard_View$view_review_and_answer_card, model, _p4._0),
 					_1: {
 						ctor: '::',
-						_0: _user$project$Flashcard_View$view_review_nav(model),
-						_1: {ctor: '[]'}
-					}
-				};
-			case 'ReviewedCardAndAnsweredIncorrectly':
-				return {
-					ctor: '::',
-					_0: A2(_user$project$Flashcard_View$view_review_and_answer_card, model, _p3._0),
-					_1: {
-						ctor: '::',
-						_0: _user$project$Flashcard_View$view_review_nav(model),
+						_0: _user$project$Flashcard_View$view_review_and_answer_nav(model),
 						_1: {ctor: '[]'}
 					}
 				};
 			case 'ReviewedCardAndAnsweredCorrectly':
 				return {
 					ctor: '::',
-					_0: A2(_user$project$Flashcard_View$view_review_and_answer_card, model, _p3._0),
+					_0: A3(_user$project$Flashcard_View$view_reviewed_and_answered_card, model, _p4._0, true),
 					_1: {
 						ctor: '::',
-						_0: _user$project$Flashcard_View$view_review_nav(model),
+						_0: _user$project$Flashcard_View$view_review_and_answer_nav(model),
+						_1: {ctor: '[]'}
+					}
+				};
+			case 'ReviewedCardAndAnsweredIncorrectly':
+				return {
+					ctor: '::',
+					_0: A3(_user$project$Flashcard_View$view_reviewed_and_answered_card, model, _p4._0, false),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Flashcard_View$view_review_and_answer_nav(model),
+						_1: {ctor: '[]'}
+					}
+				};
+			case 'RatedCard':
+				return {
+					ctor: '::',
+					_0: A2(_user$project$Flashcard_View$view_rated_card, model, _p4._0),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Flashcard_View$view_review_and_answer_nav(model),
 						_1: {ctor: '[]'}
 					}
 				};
 			case 'ReviewedCard':
 				return {
 					ctor: '::',
-					_0: A2(_user$project$Flashcard_View$view_review_and_answer_card, model, _p3._0),
+					_0: A2(_user$project$Flashcard_View$view_reviewed_only_card, model, _p4._0),
 					_1: {
 						ctor: '::',
 						_0: _user$project$Flashcard_View$view_review_nav(model),
@@ -13844,22 +14096,7 @@ var _user$project$Flashcard_View$view_content = function (model) {
 				return {
 					ctor: '::',
 					_0: _user$project$Flashcard_View$view_finish_review(model),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_user$project$Flashcard_View$view_nav,
-							model,
-							{
-								ctor: '::',
-								_0: _user$project$Flashcard_View$view_mode(model),
-								_1: {
-									ctor: '::',
-									_0: _user$project$Flashcard_View$view_state(model.session_state),
-									_1: {ctor: '[]'}
-								}
-							}),
-						_1: {ctor: '[]'}
-					}
+					_1: {ctor: '[]'}
 				};
 		}
 	}();
@@ -14343,13 +14580,13 @@ var _user$project$Main$update = F2(
 			case 'Prev':
 				return {
 					ctor: '_Tuple2',
-					_0: model,
+					_0: A2(_user$project$Flashcard_Model$setQuality, model, _elm_lang$core$Maybe$Nothing),
 					_1: send_command(_user$project$Flashcard_Model$PrevReq)
 				};
 			case 'Next':
 				return {
 					ctor: '_Tuple2',
-					_0: model,
+					_0: A2(_user$project$Flashcard_Model$setQuality, model, _elm_lang$core$Maybe$Nothing),
 					_1: send_command(_user$project$Flashcard_Model$NextReq)
 				};
 			case 'InputAnswer':
@@ -14366,6 +14603,17 @@ var _user$project$Main$update = F2(
 					_0: model,
 					_1: send_command(
 						_user$project$Flashcard_Model$AnswerReq(model.answer))
+				};
+			case 'RateQuality':
+				var _p1 = _p0._0;
+				return {
+					ctor: '_Tuple2',
+					_0: A2(
+						_user$project$Flashcard_Model$setQuality,
+						model,
+						_elm_lang$core$Maybe$Just(_p1)),
+					_1: send_command(
+						_user$project$Flashcard_Model$RateQualityReq(_p1))
 				};
 			case 'LogOut':
 				return {
@@ -14386,8 +14634,8 @@ var _user$project$Main$update = F2(
 		}
 	});
 var _user$project$Main$subscriptions = function (model) {
-	var _p1 = model.connect;
-	if (_p1 === true) {
+	var _p2 = model.connect;
+	if (_p2 === true) {
 		return A2(_elm_lang$websocket$WebSocket$listen, model.flags.flashcard_ws_addr, _user$project$Flashcard_Msg$WebSocketResp);
 	} else {
 		return _elm_lang$core$Platform_Sub$none;
@@ -14397,7 +14645,7 @@ var _user$project$Main$init = function (flags) {
 	var profile = _user$project$User_Profile$init_profile(flags);
 	return {
 		ctor: '_Tuple2',
-		_0: {exception: _elm_lang$core$Maybe$Nothing, flags: flags, profile: profile, mode: _elm_lang$core$Maybe$Nothing, session_state: _user$project$Flashcard_Model$Loading, connect: true, answer: ''},
+		_0: {exception: _elm_lang$core$Maybe$Nothing, flags: flags, profile: profile, mode: _elm_lang$core$Maybe$Nothing, session_state: _user$project$Flashcard_Model$Loading, connect: true, answer: '', selected_quality: _elm_lang$core$Maybe$Nothing},
 		_1: _elm_lang$core$Platform_Cmd$none
 	};
 };

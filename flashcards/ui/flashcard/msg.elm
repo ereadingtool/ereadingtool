@@ -15,6 +15,7 @@ type Msg =
   | Prev
   | InputAnswer String
   | SubmitAnswer
+  | RateQuality Int
   | WebSocketResp String
   | LogOut MenuMsg.Msg
   | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)

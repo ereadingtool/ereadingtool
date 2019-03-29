@@ -2,7 +2,7 @@ module Flashcard.View exposing (..)
 
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (id, class, classList, attribute, property)
-import Html.Events exposing (onClick, onDoubleClick, onInput)
+import Html.Events exposing (onWithOptions, defaultOptions, onClick, onDoubleClick, onInput)
 
 import Flashcard.Model exposing (..)
 import Flashcard.Msg exposing (Msg(..))
@@ -61,20 +61,19 @@ view_nav : Model -> List (Html Msg) -> Html Msg
 view_nav model content =
   div [id "nav"] (content ++ (if Flashcard.Model.hasException model then [view_exception model] else []))
 
+view_review_and_answer_nav : Model -> Html Msg
+view_review_and_answer_nav model =
+  view_nav model <| [
+    view_mode model
+  , view_state model.session_state
+  ] ++ (if (Flashcard.Model.inReview model) then [view_next_nav model] else [])
+
 view_review_nav : Model -> Html Msg
 view_review_nav model =
-  let
-     in_review =
-       (case model.session_state of
-         FinishedReview ->
-           False
-
-         _ -> True)
-  in
-    view_nav model <| [
-      view_mode model
-    , view_state model.session_state
-    ] ++ (if in_review then [view_prev_nav model, view_next_nav model] else [])
+  view_nav model <| [
+    view_mode model
+  , view_state model.session_state
+  ] ++ (if (Flashcard.Model.inReview model) then [view_prev_nav model, view_next_nav model] else [])
 
 view_example : Model -> Flashcard -> Html Msg
 view_example model card =
@@ -89,7 +88,14 @@ view_phrase model card =
 
 view_review_only_card : Model -> Flashcard -> Html Msg
 view_review_only_card model card =
-  view_card model card (Just [onDoubleClick ReviewAnswer]) [
+  view_card model card Nothing (Just [onDoubleClick ReviewAnswer]) [
+    view_phrase model card
+  , view_example model card
+  ]
+
+view_reviewed_only_card : Model -> Flashcard -> Html Msg
+view_reviewed_only_card model card =
+  view_card model card (Just [("flip", True)]) Nothing [
     view_phrase model card
   , view_example model card
   ]
@@ -103,22 +109,68 @@ view_input_answer model card =
     ]
   ]
 
-view_review_and_answer_card : Model -> Flashcard -> Html Msg
-view_review_and_answer_card model card =
+view_quality : Model -> Flashcard -> Int -> Html Msg
+view_quality model card q =
   let
-    not_answered = not (Flashcard.Model.answered model)
+    selected =
+      (case model.selected_quality of
+         Just quality ->
+           quality == q
+
+         Nothing ->
+           False)
   in
-    view_card model card Nothing <| [
+    div [classList [("choice", True), ("select", selected)], onClick (RateQuality q)] <| [
+      Html.text (toString q)
+    ] ++ (if q == 0 then [Html.text " - easiest"] else (if q == 5 then [Html.text " - most difficult"] else []))
+
+view_rate_answer : Model -> Flashcard -> Html Msg
+view_rate_answer model card =
+  div [id "answer_quality"] [
+    Html.text """Rate the difficulty of this card."""
+  , div [id "choices"] (List.map (view_quality model card) (List.range 0 5))
+  ]
+
+view_rated_card : Model -> Flashcard -> Html Msg
+view_rated_card model card =
+  let
+    rating =
+      (case model.selected_quality of
+        Just r ->
+          toString r
+
+        Nothing ->
+          "none")
+  in
+    view_card model card Nothing Nothing [
       view_phrase model card
     , view_example model card
-    ] ++ (if not_answered then [view_input_answer model card] else [])
+    , div [id "card_rating"] [Html.text ("Rated " ++ rating)]
+    ]
 
-view_card : Model -> Flashcard -> Maybe (List (Html.Attribute Msg)) -> List (Html Msg) -> Html Msg
-view_card model card evts content =
-  let
-    has_tr = Flashcard.Model.hasTranslation card
-  in
-    div ([id "card", classList [("cursor", True), ("flip", has_tr)]] ++ Maybe.withDefault [] evts) content
+view_reviewed_and_answered_card : Model -> Flashcard -> Bool -> Html Msg
+view_reviewed_and_answered_card model card answered_correctly =
+  view_card model card (Just [("flip", True)]) Nothing <| [
+    view_phrase model card
+  , view_example model card
+  ] ++ (if answered_correctly then [view_rate_answer model card] else [])
+
+view_review_and_answer_card : Model -> Flashcard -> Html Msg
+view_review_and_answer_card model card =
+  view_card model card Nothing Nothing [
+    view_phrase model card
+  , view_example model card
+  , view_input_answer model card
+  ]
+
+view_card :
+  Model -> Flashcard -> Maybe (List (String, Bool)) -> Maybe (List (Html.Attribute Msg)) -> List (Html Msg) -> Html Msg
+view_card model card addl_classes addl_attrs content =
+  div (
+       [id "card", classList ([("cursor", True)]
+    ++ (Maybe.withDefault [] addl_classes))]
+    ++ Maybe.withDefault [] addl_attrs
+  ) content
 
 view_finish_review : Model -> Html Msg
 view_finish_review model =
@@ -172,30 +224,32 @@ view_content model =
 
         ReviewCardAndAnswer card -> [
             view_review_and_answer_card model card
-          , view_review_nav model
-          ]
-
-        ReviewedCardAndAnsweredIncorrectly card -> [
-            view_review_and_answer_card model card
-          , view_review_nav model
+          , view_review_and_answer_nav model
           ]
 
         ReviewedCardAndAnsweredCorrectly card -> [
-            view_review_and_answer_card model card
-          , view_review_nav model
+            view_reviewed_and_answered_card model card True
+          , view_review_and_answer_nav model
           ]
 
+        ReviewedCardAndAnsweredIncorrectly card -> [
+            view_reviewed_and_answered_card model card False
+          , view_review_and_answer_nav model
+          ]
+
+        RatedCard card -> [
+           view_rated_card model card
+         , view_review_and_answer_nav model
+         ]
+
         ReviewedCard card -> [
-            view_review_and_answer_card model card
+            view_reviewed_only_card model card
           , view_review_nav model
           ]
 
         FinishedReview -> [
           view_finish_review model
-          , view_nav model [
-              view_mode model
-            , view_state model.session_state
-          ]])
+          ])
   in
     div [id "flashcard"] [
       div [id "content"] content

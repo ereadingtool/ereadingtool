@@ -1,5 +1,5 @@
 #flashcard {
-    padding-top: 100px;
+    padding-top: 50px;
 }
 
 #content {
@@ -47,6 +47,15 @@
     justify-content: center;
 }
 
+#card_rating {
+    grid-column: card-content-col;
+
+    align-content: center;
+    justify-content: center;
+
+    text-align: center;
+}
+
 #answer_input #submit {
     display: grid;
     grid-template-columns: 15px [submit-btn-col] auto 15px;
@@ -66,6 +75,31 @@
     background: #e4fff9;
 }
 
+#answer_quality {
+    grid-column: card-content-col;
+    display: grid;
+}
+
+#answer_quality > #choices {
+    padding-top: 20px;
+    font-family: monospace;
+
+    display: grid;
+    grid-auto-flow: column;
+
+    grid-column-gap: 15px;
+    text-align: center;
+}
+
+#choices > .choice {
+    outline: 0.5px solid black;
+    padding: 5px;
+}
+
+#choices > .select {
+    background: #e7f8f6;
+}
+
 #phrase {
     grid-column: 2;
 }
@@ -81,7 +115,7 @@
     transform: rotateY(180deg);
 }
 
-.flip > #phrase, .flip > #example {
+.flip > #phrase, .flip > #example, .flip > #answer_quality {
     transform:rotateY(180deg);
 
     unicode-bidi: bidi-override;
@@ -172,6 +206,7 @@
     grid-template-rows: [exception-row] auto [mode-row] auto [nav-row] auto [nav-footer-row] auto;
 
     grid-row-gap: 15px;
+    padding-top: 15px;
 }
 
 #state {

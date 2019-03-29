@@ -28,6 +28,7 @@ init flags =
      , session_state=Loading
      , connect=True
      , answer=""
+     , selected_quality=Nothing
      } , Cmd.none)
 
 subscriptions : Model -> Sub Msg
@@ -61,16 +62,19 @@ update msg model =
         (model, send_command ReviewAnswerReq)
 
       Prev ->
-        (model, send_command PrevReq)
+        (Flashcard.Model.setQuality model Nothing, send_command PrevReq)
 
       Next ->
-        (model, send_command NextReq)
+        (Flashcard.Model.setQuality model Nothing, send_command NextReq)
 
       InputAnswer str ->
         ({ model | answer = str }, Cmd.none)
 
       SubmitAnswer ->
         (model, send_command (AnswerReq model.answer))
+
+      RateQuality q ->
+        (Flashcard.Model.setQuality model (Just q), send_command (RateQualityReq q))
 
       LogOut msg ->
         (model, User.Profile.logout model.profile model.flags.csrftoken LoggedOut)

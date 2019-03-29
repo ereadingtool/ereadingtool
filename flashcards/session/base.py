@@ -5,8 +5,6 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from flashcards.consumers.exceptions import FlashcardSessionException
 
-from statemachine.exceptions import TransitionNotAllowed
-
 from flashcards.state.exceptions import FlashcardStateMachineException, StateMachineError
 from flashcards.state.models import FlashcardSessionStateMachine, State, Mode
 
@@ -43,6 +41,9 @@ class FlashcardSession(models.Model):
 
     def review(self):
         self.state_machine.review()
+
+    def rate_quality(self, rating: int):
+        self.state_machine.rate_quality(rating)
 
     def on_finish(self):
         self.delete()

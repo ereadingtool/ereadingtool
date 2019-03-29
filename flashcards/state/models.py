@@ -1,8 +1,15 @@
+import math
+
 from typing import TypeVar, Optional, AnyStr, Dict, List, Tuple, Union
 
 from enum import Enum, unique
 
 from django.db import models
+
+from django.utils import timezone
+from django.db.utils import cached_property
+
+from django.db import DatabaseError, transaction
 
 from statemachine import StateMachine, State
 from statemachine.exceptions import TransitionNotAllowed
@@ -37,7 +44,7 @@ class FlashcardSessionStateMachine(StateMachine):
 
         if not current_flashcard:
             try:
-                self.current_flashcard = self.flashcards[0]
+                self.current_flashcard = self.next_flashcard
             except IndexError:
                 pass
 
@@ -56,7 +63,7 @@ class FlashcardSessionStateMachine(StateMachine):
     correctly_answered_card = State('correctly_answered_card')
     incorrectly_answered_card = State('incorrectly_answered_card')
 
-    rated_your_answer_for_card = State('rate_your_answer_for_card')
+    rated_your_answer_for_card = State('rated_your_answer_for_card')
 
     choose_mode = mode_choice.to.itself()
 
@@ -116,19 +123,52 @@ class FlashcardSessionStateMachine(StateMachine):
             raise FlashcardStateMachineException(code='invalid_mode',
                                                  error_msg=f'Mode {self.mode.name} does not have a start transition.')
 
+    @cached_property
+    def flashcards_for_review(self):
+        return self.flashcards.filter(next_review_dt__gt=timezone.now()).order_by('repetitions', 'next_review_dt')
+
     @property
-    def prev_flashcard(self):
+    def prev_review_only_flashcard(self):
+        if not self.current_flashcard:
+            try:
+                return self.flashcards.filter(created_dt__lt=self.current_flashcard.created_dt)[-1]
+            except IndexError:
+                return None
+
         try:
             return self.flashcards.filter(created_dt__lt=self.current_flashcard.created_dt)[0]
         except IndexError:
             return None
 
     @property
-    def next_flashcard(self):
+    def next_review_only_flashcard(self):
+        if not self.current_flashcard:
+            self.current_flashcard = self.flashcards[0]
+
+            return self.current_flashcard
+
         try:
             return self.flashcards.filter(created_dt__gt=self.current_flashcard.created_dt)[0]
         except IndexError:
             return None
+
+    @property
+    def prev_flashcard(self):
+        if self.mode == self.mode.review:
+            return self.prev_review_only_flashcard
+        else:
+            # no previous flashcard in review and answer mode
+            return None
+
+    @property
+    def next_flashcard(self):
+        if self.mode == self.mode.review:
+            return self.next_review_only_flashcard
+        else:
+            try:
+                return next(self.flashcards_for_review)
+            except StopIteration:
+                return None
 
     def prev(self):
         prev_flashcard = self.prev_flashcard
@@ -139,6 +179,7 @@ class FlashcardSessionStateMachine(StateMachine):
                 self.current_flashcard = prev_flashcard
             else:
                 self.back_to_mode_choice()
+
         except TransitionNotAllowed as transition_exception:
             raise FlashcardStateMachineException(code=transition_exception.transition.identifier,
                                                  error_msg=str(transition_exception))
@@ -149,6 +190,7 @@ class FlashcardSessionStateMachine(StateMachine):
         if next_flashcard:
             try:
                 self.next_card()
+
             except TransitionNotAllowed as transition_exception:
                 if self.current_state == self.correctly_answered_card:
                     raise FlashcardStateMachineException(code=transition_exception.transition.identifier,
@@ -166,6 +208,7 @@ class FlashcardSessionStateMachine(StateMachine):
         else:
             try:
                 self.finish()
+
             except TransitionNotAllowed as transition_exception:
                 raise FlashcardStateMachineException(code=transition_exception.transition.identifier,
                                                      error_msg=str(transition_exception))
@@ -176,6 +219,36 @@ class FlashcardSessionStateMachine(StateMachine):
             return self.current_flashcard.phrase.translations.filter(correct_for_context=True)[0]
         except IndexError:
             return None
+
+    def rate_quality(self, rating: int):
+        # SM-2
+        if rating in range(0, 6):
+            card = self.current_flashcard
+
+            card.easiness = max(1.3, card.easiness + 0.1 - (5.0 - rating) * (0.08 + (5.0 - rating) * 0.02))
+
+            if rating < 3:
+                card.repetitions = 0
+            else:
+                card.repetitions += 1
+
+            if card.repetitions == 1:
+                card.interval = 1
+            elif card.repetitions == 2:
+                card.interval = 6
+            else:
+                card.interval *= card.easiness
+
+            card.next_review_dt = (timezone.now().replace(second=0, microsecond=0) +
+                                   timezone.timedelta(days=math.ceil(card.interval)))
+
+            self.current_flashcard = card
+
+            try:
+                self.current_flashcard.save()
+                self.rate_answer()
+            except DatabaseError:
+                pass
 
     def answer_card(self, answer: AnyStr):
         if self.translation_for_current_flashcard.phrase == answer:
@@ -192,6 +265,9 @@ class FlashcardSessionStateMachine(StateMachine):
             pass
 
         self.choose_mode()
+
+    def serialize_rated_your_answer_for_card_state(self) -> Dict:
+        return self.serialize_reviewed_card_state()
 
     def serialize_finished_review_state(self) -> Dict:
         return {}

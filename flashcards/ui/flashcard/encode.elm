@@ -41,5 +41,11 @@ send_command cmd_req =
       , ("answer", Json.Encode.string answer)
       ]
 
+    RateQualityReq q ->
+      Json.Encode.object [
+        ("command", Json.Encode.string "rate_quality")
+      , ("rating", Json.Encode.int q)
+      ]
+
     _ ->
       Json.Encode.object []

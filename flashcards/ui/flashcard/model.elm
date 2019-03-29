@@ -14,6 +14,7 @@ type alias Phrase = String
 type alias WebSocketAddress = String
 
 type alias TranslatedPhrase = String
+type alias Rating = Int
 
 type alias Flags = Flags.Flags { profile_id : Int, flashcard_ws_addr: WebSocketAddress }
 
@@ -30,6 +31,7 @@ type SessionState =
   | ReviewCardAndAnswer Flashcard
   | ReviewedCardAndAnsweredCorrectly Flashcard
   | ReviewedCardAndAnsweredIncorrectly Flashcard
+  | RatedCard Flashcard
   | FinishedReview
 
 
@@ -56,6 +58,10 @@ setMode : Model -> Maybe Mode -> Model
 setMode model mode =
   { model | mode = mode }
 
+setQuality : Model -> Maybe Rating -> Model
+setQuality model rating =
+  { model | selected_quality = rating }
+
 setSessionState : Model -> SessionState -> Model
 setSessionState original_model session_state =
   let
@@ -66,6 +72,15 @@ setSessionState original_model session_state =
 setException : Model -> Maybe Exception -> Model
 setException model exception =
   { model | exception = exception }
+
+inReview : Model -> Bool
+inReview model =
+  case model.session_state of
+    FinishedReview ->
+      False
+
+    _ ->
+      True
 
 hasException : Model -> Bool
 hasException model =
@@ -115,6 +130,7 @@ type alias Model = {
   , exception : Maybe Exception
   , connect : Bool
   , answer : String
+  , selected_quality : Maybe Int
   , flags : Flags }
 
 type CmdReq =
@@ -124,7 +140,7 @@ type CmdReq =
   | PrevReq
   | ReviewAnswerReq
   | AnswerReq String
-  | RateAnswerReq Int
+  | RateQualityReq Int
 
 type CmdResp =
     InitResp InitRespRec
@@ -133,6 +149,7 @@ type CmdResp =
   | ReviewCardAndAnswerResp Flashcard
   | ReviewedCardAndAnsweredCorrectlyResp Flashcard
   | ReviewedCardAndAnsweredIncorrectlyResp Flashcard
+  | RatedCardResp Flashcard
   | ReviewedCardResp Flashcard
   | ExceptionResp Exception
   | FinishedReviewResp

@@ -29,6 +29,9 @@ command_resp_decoder cmd_str =
     "incorrectly_answered_card" ->
       reviewedCardAndAnsweredIncorrectlyDecoder
 
+    "rated_your_answer_for_card" ->
+      ratedQualityDecoder
+
     "reviewed_card" ->
       reviewedCardDecoder
 
@@ -49,7 +52,8 @@ reviewedCardDecoder =
 flashcardDecoder : Json.Decode.Decoder Flashcard
 flashcardDecoder =
   Json.Decode.map3 Flashcard.Model.newFlashcard
-    (Json.Decode.field "phrase" Json.Decode.string) (Json.Decode.field "example" Json.Decode.string)
+    (Json.Decode.field "phrase" Json.Decode.string)
+    (Json.Decode.field "example" Json.Decode.string)
     (Json.Decode.field "translation" (Json.Decode.nullable (Json.Decode.string)))
 
 reviewCardDecoder : Json.Decode.Decoder CmdResp
@@ -67,6 +71,10 @@ reviewedCardAndAnsweredCorrectlyDecoder =
 reviewedCardAndAnsweredIncorrectlyDecoder : Json.Decode.Decoder CmdResp
 reviewedCardAndAnsweredIncorrectlyDecoder =
   Json.Decode.map ReviewedCardAndAnsweredIncorrectlyResp (Json.Decode.field "result" flashcardDecoder)
+
+ratedQualityDecoder : Json.Decode.Decoder CmdResp
+ratedQualityDecoder =
+  Json.Decode.map RatedCardResp (Json.Decode.field "result" flashcardDecoder)
 
 modeChoicesDecoder : Json.Decode.Decoder CmdResp
 modeChoicesDecoder =

@@ -26,6 +26,14 @@ class FlashcardSessionConsumer(AsyncJsonWebsocketConsumer):
     def get_flashcards(self, profile: Profile) -> List[Flashcard]:
         return profile.flashcards.filter()
 
+    async def rate_quality(self, user: ReaderUser, rating: int):
+        if not user.is_authenticated:
+            raise Unauthorized
+
+        await database_sync_to_async(self.flashcard_session.rate_quality)(rating)
+
+        await self.send_serialized_session_command()
+
     async def review_answer(self, user: ReaderUser):
         if not user.is_authenticated:
             raise Unauthorized
@@ -112,6 +120,7 @@ class FlashcardSessionConsumer(AsyncJsonWebsocketConsumer):
             'next': 1,
             'answer': 1,
             'review_answer': 1,
+            'rate_quality': 1
         }
 
         try:
@@ -132,6 +141,9 @@ class FlashcardSessionConsumer(AsyncJsonWebsocketConsumer):
 
                 if cmd == 'review_answer':
                     await self.review_answer(user=user)
+
+                if cmd == 'rate_quality':
+                    await self.rate_quality(user=user, rating=content.get('rating', None))
 
             else:
                 await self.send_json({'error': f'{cmd} is not a valid command.'})

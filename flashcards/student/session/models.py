@@ -15,4 +15,4 @@ class StudentFlashcardSession(FlashcardSession):
 
     @property
     def flashcards(self) -> List[StudentFlashcard]:
-        return self.student.flashcards.filter().order_by('created_dt')
+        return self.student.flashcards.filter()

@@ -33,6 +33,9 @@ route_cmd_resp orig_model mode cmd_resp =
       ReviewedCardAndAnsweredIncorrectlyResp card ->
         (Flashcard.Model.setSessionState model (ReviewedCardAndAnsweredIncorrectly card), Cmd.none)
 
+      RatedCardResp card ->
+        (Flashcard.Model.setSessionState model (RatedCard card), Cmd.none)
+
       ReviewCardResp card ->
         (Flashcard.Model.setSessionState model (ReviewCard card), Cmd.none)
 
