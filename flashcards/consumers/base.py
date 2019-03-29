@@ -101,6 +101,7 @@ class FlashcardSessionConsumer(AsyncJsonWebsocketConsumer):
                 # flashcards
                 await self.send_json({
                     'command': 'init',
+                    'mode': None,
                     'result': {
                         'flashcards': []
                     }

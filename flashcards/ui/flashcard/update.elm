@@ -12,10 +12,10 @@ import Flashcard.Mode exposing (Mode)
 import Flashcard.Msg exposing (Msg(..))
 
 
-route_cmd_resp : Model -> Mode -> CmdResp -> (Model, Cmd Msg)
+route_cmd_resp : Model -> Maybe Mode -> CmdResp -> (Model, Cmd Msg)
 route_cmd_resp orig_model mode cmd_resp =
   let
-    model = Flashcard.Model.setMode orig_model (Just mode)
+    model = Flashcard.Model.setMode orig_model mode
   in
     case cmd_resp of
       InitResp resp ->

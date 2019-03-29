@@ -12578,7 +12578,7 @@ var _user$project$Student_View$view_flashcard_menu_item = F2(
 					_elm_lang$html$Html$a,
 					{
 						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', ''),
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/student/flashcards/'),
 						_1: {ctor: '[]'}
 					},
 					{
@@ -13044,7 +13044,10 @@ var _user$project$Flashcard_Decode$ws_resp_decoder = A3(
 		function (v0, v1) {
 			return {ctor: '_Tuple2', _0: v0, _1: v1};
 		}),
-	A2(_elm_lang$core$Json_Decode$field, 'mode', _user$project$Flashcard_Decode$modeDecoder),
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'mode',
+		_elm_lang$core$Json_Decode$nullable(_user$project$Flashcard_Decode$modeDecoder)),
 	A2(
 		_elm_lang$core$Json_Decode$andThen,
 		_user$project$Flashcard_Decode$command_resp_decoder,
@@ -13177,10 +13180,7 @@ var _user$project$Flashcard_Msg$SelectMode = function (a) {
 
 var _user$project$Flashcard_Update$route_cmd_resp = F3(
 	function (orig_model, mode, cmd_resp) {
-		var model = A2(
-			_user$project$Flashcard_Model$setMode,
-			orig_model,
-			_elm_lang$core$Maybe$Just(mode));
+		var model = A2(_user$project$Flashcard_Model$setMode, orig_model, mode);
 		var _p0 = cmd_resp;
 		switch (_p0.ctor) {
 			case 'InitResp':

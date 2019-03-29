@@ -111,8 +111,8 @@ exceptionDecoder =
     |> required "code" (Json.Decode.string)
     |> required "error_msg" (Json.Decode.string)
 
-ws_resp_decoder : Json.Decode.Decoder (Mode, CmdResp)
+ws_resp_decoder : Json.Decode.Decoder (Maybe Mode, CmdResp)
 ws_resp_decoder =
   Json.Decode.map2 (,)
-    (Json.Decode.field "mode" modeDecoder)
+    (Json.Decode.field "mode" (Json.Decode.nullable modeDecoder))
     (Json.Decode.field "command" Json.Decode.string |> Json.Decode.andThen command_resp_decoder)
