@@ -13436,7 +13436,7 @@ var _user$project$Flashcard_View$view_rate_answer = F2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$id('answer_quality'),
+				_0: _elm_lang$html$Html_Attributes$id('answer-quality'),
 				_1: {ctor: '[]'}
 			},
 			{
@@ -13787,11 +13787,7 @@ var _user$project$Flashcard_View$view_review_and_answer_nav = function (model) {
 			{
 				ctor: '::',
 				_0: _user$project$Flashcard_View$view_mode(model),
-				_1: {
-					ctor: '::',
-					_0: _user$project$Flashcard_View$view_state(model.session_state),
-					_1: {ctor: '[]'}
-				}
+				_1: {ctor: '[]'}
 			},
 			_user$project$Flashcard_Model$inReview(model) ? {
 				ctor: '::',
@@ -13837,11 +13833,7 @@ var _user$project$Flashcard_View$view_review_nav = function (model) {
 			{
 				ctor: '::',
 				_0: _user$project$Flashcard_View$view_mode(model),
-				_1: {
-					ctor: '::',
-					_0: _user$project$Flashcard_View$view_state(model.session_state),
-					_1: {ctor: '[]'}
-				}
+				_1: {ctor: '[]'}
 			},
 			_user$project$Flashcard_Model$inReview(model) ? {
 				ctor: '::',

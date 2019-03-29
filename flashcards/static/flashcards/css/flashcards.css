@@ -75,12 +75,12 @@
     background: #e4fff9;
 }
 
-#answer_quality {
+#answer-quality {
     grid-column: card-content-col;
     display: grid;
 }
 
-#answer_quality > #choices {
+#answer-quality > #choices {
     padding-top: 20px;
     font-family: monospace;
 
@@ -115,7 +115,7 @@
     transform: rotateY(180deg);
 }
 
-.flip > #phrase, .flip > #example, .flip > #answer_quality {
+.flip > #phrase, .flip > #example, .flip > #answer-quality {
     transform:rotateY(180deg);
 
     unicode-bidi: bidi-override;
@@ -274,11 +274,17 @@
         padding-top: 50px;
     }
 
-    #content {
-        grid-template-columns: 30px [card-col] auto 30px;
-        grid-template-rows: auto;
+    #answer-quality > #choices {
+        padding: 20px;
+        grid-auto-flow: row;
+        grid-row-gap: 10px;
+        grid-column-gap: 0;
+    }
 
-        grid-row-gap: 25px;
+    #content {
+        padding: 0;
+        grid-template-columns: 30px [card-col] auto 30px;
+        grid-auto-columns: auto;
     }
 
     #mode-choices {
@@ -288,15 +294,19 @@
         grid-row-gap: 15px;
     }
 
-    #nav {
-        grid-template-columns: [mode-col] auto [nav-middle-col] auto [nav-end-col] auto;
-        text-align: center;
-
-        grid-template-rows: 70px;
-    }
-
     #card {
         grid-auto-rows: auto;
+    }
+
+    #mode {
+        padding-top: 15px;
+        grid-column: nav-middle-col / nav-end-col;
+    }
+
+    #nav {
+        grid-template-columns: [nav-start-col] 50px [nav-middle-col] auto [nav-end-col] 50px;
+        grid-row-gap: 0;
+        padding-top: 0;
     }
 
     #card #answer_input {

@@ -65,14 +65,12 @@ view_review_and_answer_nav : Model -> Html Msg
 view_review_and_answer_nav model =
   view_nav model <| [
     view_mode model
-  , view_state model.session_state
   ] ++ (if (Flashcard.Model.inReview model) then [view_next_nav model] else [])
 
 view_review_nav : Model -> Html Msg
 view_review_nav model =
   view_nav model <| [
     view_mode model
-  , view_state model.session_state
   ] ++ (if (Flashcard.Model.inReview model) then [view_prev_nav model, view_next_nav model] else [])
 
 view_example : Model -> Flashcard -> Html Msg
@@ -126,7 +124,7 @@ view_quality model card q =
 
 view_rate_answer : Model -> Flashcard -> Html Msg
 view_rate_answer model card =
-  div [id "answer_quality"] [
+  div [id "answer-quality"] [
     Html.text """Rate the difficulty of this card."""
   , div [id "choices"] (List.map (view_quality model card) (List.range 0 5))
   ]

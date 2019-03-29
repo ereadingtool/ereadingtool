@@ -123,10 +123,6 @@ class FlashcardSessionStateMachine(StateMachine):
             raise FlashcardStateMachineException(code='invalid_mode',
                                                  error_msg=f'Mode {self.mode.name} does not have a start transition.')
 
-    @cached_property
-    def flashcards_for_review(self):
-        return self.flashcards.filter(next_review_dt__gt=timezone.now()).order_by('repetitions', 'next_review_dt')
-
     @property
     def prev_review_only_flashcard(self):
         if not self.current_flashcard:
@@ -153,6 +149,14 @@ class FlashcardSessionStateMachine(StateMachine):
             return None
 
     @property
+    def next_review_and_answer_flashcard(self):
+        try:
+            return self.flashcards.filter(next_review_dt__lt=timezone.now()).order_by('repetitions',
+                                                                                      'next_review_dt')[0]
+        except IndexError:
+            return None
+
+    @property
     def prev_flashcard(self):
         if self.mode == self.mode.review:
             return self.prev_review_only_flashcard
@@ -165,10 +169,7 @@ class FlashcardSessionStateMachine(StateMachine):
         if self.mode == self.mode.review:
             return self.next_review_only_flashcard
         else:
-            try:
-                return next(self.flashcards_for_review)
-            except StopIteration:
-                return None
+            return self.next_review_and_answer_flashcard
 
     def prev(self):
         prev_flashcard = self.prev_flashcard
