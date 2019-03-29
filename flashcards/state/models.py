@@ -1,21 +1,14 @@
 import math
-
-from typing import TypeVar, Optional, AnyStr, Dict, List, Tuple, Union
-
 from enum import Enum, unique
+from typing import Optional, AnyStr, Dict, List, Union
 
+from django.db import DatabaseError
 from django.db import models
-
 from django.utils import timezone
-from django.db.utils import cached_property
-
-from django.db import DatabaseError, transaction
-
 from statemachine import StateMachine, State
 from statemachine.exceptions import TransitionNotAllowed
-from flashcards.state.exceptions import (InvalidStateName, FlashcardStateMachineException,
-                                         FlashcardStateMachineNoDefFoundException)
 
+from flashcards.state.exceptions import (InvalidStateName, FlashcardStateMachineException)
 from text.phrase.models import TextPhrase
 
 
@@ -28,7 +21,7 @@ class Mode(Enum):
 
 class FlashcardSessionStateMachine(StateMachine):
     def __init__(self, *args, flashcards_queryset: models.QuerySet, state: Optional[AnyStr] = None,
-                 mode: Optional[AnyStr] = None, current_flashcard: Optional['Flashcard'], **kwargs):
+                 mode: Optional[AnyStr] = None, current_flashcard: Optional['Flashcard'] = None, **kwargs):
         super(FlashcardSessionStateMachine, self).__init__(*args, **kwargs)
 
         if mode:
@@ -46,9 +39,7 @@ class FlashcardSessionStateMachine(StateMachine):
             try:
                 self.current_flashcard = self.next_flashcard
             except IndexError:
-                pass
-
-        self.current_flashcard = current_flashcard
+                self.current_flashcard = None
 
     mode_choice = State('mode_choice', initial=True)
 
@@ -151,8 +142,9 @@ class FlashcardSessionStateMachine(StateMachine):
     @property
     def next_review_and_answer_flashcard(self):
         try:
-            return self.flashcards.filter(next_review_dt__lt=timezone.now()).order_by('repetitions',
-                                                                                      'next_review_dt')[0]
+            return self.flashcards.filter(
+                models.Q(next_review_dt__lt=timezone.now()) |
+                models.Q(repetitions=0)).order_by('repetitions', 'next_review_dt')[0]
         except IndexError:
             return None
 
