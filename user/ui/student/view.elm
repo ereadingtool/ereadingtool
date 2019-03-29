@@ -13,7 +13,7 @@ import Config
 view_flashcard_menu_item : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> Html msg
 view_flashcard_menu_item student_profile top_level_menu_msg =
   div [classList [("lower-menu-item", True)]] [
-      Html.a [attribute "href" ""] [ Html.text "Flashcards" ]
+      Html.a [attribute "href" "/student/flashcards/"] [ Html.text "Flashcards" ]
   ]
 
 view_student_profile_page_link : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> Html msg

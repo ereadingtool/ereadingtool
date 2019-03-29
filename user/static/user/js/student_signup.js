@@ -12696,7 +12696,7 @@ var _user$project$Student_View$view_flashcard_menu_item = F2(
 					_elm_lang$html$Html$a,
 					{
 						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', ''),
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/student/flashcards/'),
 						_1: {ctor: '[]'}
 					},
 					{
