@@ -91,7 +91,17 @@ class StudentAPIView(LoginRequiredMixin, APIView):
         if student.user != self.request.user:
             return HttpResponseForbidden()
 
-        return HttpResponse(json.dumps(student.to_dict()))
+        student_dict = student.to_dict()
+        student_flashcards = student_dict.pop('flashcards')
+        student_performance_report = student_dict.pop('performance_report')
+
+        # TODO(andrew.silvernail): frontend on the student profile page is expecting text word dicts
+        # refactor later
+
+        return HttpResponse(json.dumps({
+            'profile': student_dict,
+            'performance_report': student_performance_report,
+        }))
 
     def post_success(self, request: HttpRequest, form: Form) -> HttpResponse:
         raise NotImplementedError

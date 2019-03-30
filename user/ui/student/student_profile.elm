@@ -59,7 +59,8 @@ view_content model =
     , Student.Profile.View.view_user_email model
     , Student.Profile.View.view_student_performance model
     , Student.Profile.View.view_feedback_links model
-    , Student.Profile.View.view_flashcards model
+    -- TODO(andrew.silvernail): breaking change with StudentProfile type, needs refactor
+    --, Student.Profile.View.view_flashcards model
     , (if not (String.isEmpty model.err_str) then
         span [attribute "class" "error"] [ Html.text "error: ", Html.text model.err_str ]
        else Html.text "")

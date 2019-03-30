@@ -11890,9 +11890,12 @@ var _user$project$Student_Profile_Decode$wordTextWordDecoder = _elm_lang$core$Js
 var _user$project$Student_Profile_Decode$studentProfileDecoder = A4(
 	_elm_lang$core$Json_Decode$map3,
 	_user$project$Student_Profile$init_profile,
-	_user$project$Student_Profile_Decode$studentProfileParamsDecoder,
-	_elm_lang$core$Json_Decode$nullable(_user$project$Student_Profile_Decode$performanceReportDecoder),
-	_user$project$Student_Profile_Decode$wordTextWordDecoder);
+	A2(_elm_lang$core$Json_Decode$field, 'profile', _user$project$Student_Profile_Decode$studentProfileParamsDecoder),
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'performance_report',
+		_elm_lang$core$Json_Decode$nullable(_user$project$Student_Profile_Decode$performanceReportDecoder)),
+	A2(_elm_lang$core$Json_Decode$field, 'flashcards', _user$project$Student_Profile_Decode$wordTextWordDecoder));
 var _user$project$Student_Profile_Decode$username_valid_decoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'msg',

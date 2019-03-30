@@ -89,16 +89,16 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
 
         return schema
 
-    def to_translations_dict(self):
-        word_type = 'single'
-
+    @property
+    def word_type(self):
         try:
             if self.textwordgroup:
-                word_type = 'compound'
+                return 'compound'
 
         except (AttributeError, models.ObjectDoesNotExist):
-            pass
+            return 'single'
 
+    def to_translations_dict(self):
         translation_dict = {
             'id': self.pk,
             # phrase.instance is the phrase instance within a particular section
@@ -108,7 +108,7 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
             'translations': [translation.to_dict() for translation in
                              self.translations.all()] or None,
             'group': None,
-            'word_type': word_type,
+            'word_type': self.word_type,
             'endpoints': {
                 'text_word': reverse('text-word-api', kwargs={'pk': self.pk}),
                 'translations': reverse('text-word-translation-api', kwargs={'pk': self.pk})

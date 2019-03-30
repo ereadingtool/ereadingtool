@@ -65,4 +65,6 @@ studentProfileDecoder : Json.Decode.Decoder Student.Profile.StudentProfile
 studentProfileDecoder =
   Json.Decode.map3
     Student.Profile.init_profile
-      studentProfileParamsDecoder (Json.Decode.nullable performanceReportDecoder) wordTextWordDecoder
+      (Json.Decode.field "profile" studentProfileParamsDecoder)
+      (Json.Decode.field "performance_report" (Json.Decode.nullable performanceReportDecoder))
+      (Json.Decode.succeed Nothing)

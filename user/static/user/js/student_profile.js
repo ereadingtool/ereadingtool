@@ -23177,6 +23177,15 @@ var _user$project$Student_Profile_Decode$performanceReportDecoder = A3(
 		'html',
 		_elm_lang$core$Json_Decode$string,
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Student_Profile$PerformanceReport)));
+var _user$project$Student_Profile_Decode$studentProfileDecoder = A4(
+	_elm_lang$core$Json_Decode$map3,
+	_user$project$Student_Profile$init_profile,
+	A2(_elm_lang$core$Json_Decode$field, 'profile', _user$project$Student_Profile_Decode$studentProfileParamsDecoder),
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'performance_report',
+		_elm_lang$core$Json_Decode$nullable(_user$project$Student_Profile_Decode$performanceReportDecoder)),
+	_elm_lang$core$Json_Decode$succeed(_elm_lang$core$Maybe$Nothing));
 var _user$project$Student_Profile_Decode$textWordParamsDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'word',
@@ -23227,12 +23236,6 @@ var _user$project$Student_Profile_Decode$wordTextWordDecoder = _elm_lang$core$Js
 				}),
 			A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string),
 			A2(_elm_lang$core$Json_Decode$index, 1, _user$project$Student_Profile_Decode$textWordParamsDecoder))));
-var _user$project$Student_Profile_Decode$studentProfileDecoder = A4(
-	_elm_lang$core$Json_Decode$map3,
-	_user$project$Student_Profile$init_profile,
-	_user$project$Student_Profile_Decode$studentProfileParamsDecoder,
-	_elm_lang$core$Json_Decode$nullable(_user$project$Student_Profile_Decode$performanceReportDecoder),
-	_user$project$Student_Profile_Decode$wordTextWordDecoder);
 var _user$project$Student_Profile_Decode$username_valid_decoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'msg',
@@ -25330,27 +25333,23 @@ var _user$project$Main$view_content = function (model) {
 									_0: _user$project$Student_Profile_View$view_feedback_links(model),
 									_1: {
 										ctor: '::',
-										_0: _user$project$Student_Profile_View$view_flashcards(model),
-										_1: {
-											ctor: '::',
-											_0: (!_elm_lang$core$String$isEmpty(model.err_str)) ? A2(
-												_elm_lang$html$Html$span,
-												{
+										_0: (!_elm_lang$core$String$isEmpty(model.err_str)) ? A2(
+											_elm_lang$html$Html$span,
+											{
+												ctor: '::',
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'error'),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text('error: '),
+												_1: {
 													ctor: '::',
-													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'error'),
+													_0: _elm_lang$html$Html$text(model.err_str),
 													_1: {ctor: '[]'}
-												},
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html$text('error: '),
-													_1: {
-														ctor: '::',
-														_0: _elm_lang$html$Html$text(model.err_str),
-														_1: {ctor: '[]'}
-													}
-												}) : _elm_lang$html$Html$text(''),
-											_1: {ctor: '[]'}
-										}
+												}
+											}) : _elm_lang$html$Html$text(''),
+										_1: {ctor: '[]'}
 									}
 								}
 							}

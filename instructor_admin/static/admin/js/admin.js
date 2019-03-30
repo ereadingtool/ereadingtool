@@ -12188,6 +12188,15 @@ var _user$project$Student_Profile_Decode$performanceReportDecoder = A3(
 		'html',
 		_elm_lang$core$Json_Decode$string,
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Student_Profile$PerformanceReport)));
+var _user$project$Student_Profile_Decode$studentProfileDecoder = A4(
+	_elm_lang$core$Json_Decode$map3,
+	_user$project$Student_Profile$init_profile,
+	A2(_elm_lang$core$Json_Decode$field, 'profile', _user$project$Student_Profile_Decode$studentProfileParamsDecoder),
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'performance_report',
+		_elm_lang$core$Json_Decode$nullable(_user$project$Student_Profile_Decode$performanceReportDecoder)),
+	_elm_lang$core$Json_Decode$succeed(_elm_lang$core$Maybe$Nothing));
 var _user$project$Student_Profile_Decode$textWordParamsDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'word',
@@ -12238,12 +12247,6 @@ var _user$project$Student_Profile_Decode$wordTextWordDecoder = _elm_lang$core$Js
 				}),
 			A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string),
 			A2(_elm_lang$core$Json_Decode$index, 1, _user$project$Student_Profile_Decode$textWordParamsDecoder))));
-var _user$project$Student_Profile_Decode$studentProfileDecoder = A4(
-	_elm_lang$core$Json_Decode$map3,
-	_user$project$Student_Profile$init_profile,
-	_user$project$Student_Profile_Decode$studentProfileParamsDecoder,
-	_elm_lang$core$Json_Decode$nullable(_user$project$Student_Profile_Decode$performanceReportDecoder),
-	_user$project$Student_Profile_Decode$wordTextWordDecoder);
 var _user$project$Student_Profile_Decode$username_valid_decoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'msg',
@@ -12390,7 +12393,7 @@ var _user$project$Student_View$view_flashcard_menu_item = F2(
 					_elm_lang$html$Html$a,
 					{
 						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', ''),
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/student/flashcards/'),
 						_1: {ctor: '[]'}
 					},
 					{

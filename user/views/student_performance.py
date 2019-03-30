@@ -1,13 +1,9 @@
-import json
-
 import pdfkit
-
-from django.template import loader
-from django.core.files.base import ContentFile
-
-from django.utils import timezone as dt
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.files.base import ContentFile
 from django.http import HttpResponse, HttpRequest, HttpResponseForbidden
+from django.template import loader
+from django.utils import timezone as dt
 from django.views.generic import View
 
 from user.student.models import Student
