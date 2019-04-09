@@ -15,6 +15,7 @@ import TextReader exposing (TextItemAttributes, WebSocketAddress)
 import Profile.Flags as Flags
 
 import User.Profile
+import User.Profile.TextReader.Flashcards
 
 
 type Progress = Init | ViewIntro | ViewSection Section | Complete TextScores
@@ -84,11 +85,16 @@ type alias TextScores = {
   , possible_section_scores: Int }
 
 
-type alias Flags = Flags.Flags { text_id : Int, text_reader_ws_addr: WebSocketAddress }
+type alias Flags =
+  Flags.Flags {
+    text_id : Int
+  , flashcards : List TextReader.TextWord.TextWordParams
+  , text_reader_ws_addr: WebSocketAddress }
 
 type alias Model = {
     text : Text
   , profile : User.Profile.Profile
+  , flashcard: User.Profile.TextReader.Flashcards.ProfileFlashcards
   , progress: Progress
   , gloss : Gloss
   , exception : Maybe Exception

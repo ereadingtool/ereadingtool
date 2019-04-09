@@ -79,7 +79,15 @@ table td {
     grid-template-rows: 25px 35px;
 }
 
-.flashcards {
+#flashcards {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: 25px 150px;
+    margin-bottom: 15px;
+}
+
+#flashcards > .profile_item_value {
+    overflow: scroll;
 }
 
 .performance_report {
@@ -119,7 +127,6 @@ table td {
 
 .profile_item_title {
     border-bottom: solid 0.5px grey;
-    padding-bottom: 10px;
 }
 
 .profile_item_value {

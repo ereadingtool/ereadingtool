@@ -7,7 +7,7 @@ import Html.Events exposing (onClick, onDoubleClick, onMouseLeave)
 import Array exposing (Array)
 import Dict exposing (Dict)
 
-import User.Profile exposing (Profile)
+import User.Profile.TextReader.Flashcards
 
 import Text.Section.Words.Tag
 
@@ -118,7 +118,7 @@ view_translations defs =
   div [class "translations"]
     (case defs of
       Just translations ->
-        (List.map view_translation translations)
+        (List.map view_translation (List.filter (\tr -> tr.correct_for_context) translations))
 
       Nothing ->
         [])
@@ -133,13 +133,13 @@ view_flashcard_words : Model -> Html Msg
 view_flashcard_words model =
   div []
     (List.map (\(normal_form, text_word) -> div [] [ Html.text normal_form ])
-    (Dict.toList <| Maybe.withDefault Dict.empty <| User.Profile.flashcards model.profile))
+    (Dict.toList <| Maybe.withDefault Dict.empty <| User.Profile.TextReader.Flashcards.flashcards model.flashcard))
 
 view_flashcard_options : Model -> TextReaderWord -> Html Msg
 view_flashcard_options model reader_word =
   let
     phrase = TextReader.Model.phrase reader_word
-    flashcards = Maybe.withDefault Dict.empty (User.Profile.flashcards model.profile)
+    flashcards = Maybe.withDefault Dict.empty (User.Profile.TextReader.Flashcards.flashcards model.flashcard)
     add = div [class "cursor", onClick (AddToFlashcards reader_word)] [ Html.text "Add to Flashcards" ]
     remove = div [class "cursor", onClick (RemoveFromFlashcards reader_word)] [ Html.text "Remove from Flashcards" ]
 

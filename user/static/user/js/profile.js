@@ -9662,9 +9662,9 @@ var _user$project$TextReader_TextWord$Translation = F2(
 	function (a, b) {
 		return {correct_for_context: a, text: b};
 	});
-var _user$project$TextReader_TextWord$TextWordParams = F7(
-	function (a, b, c, d, e, f, g) {
-		return {id: a, instance: b, phrase: c, example: d, grammemes: e, translations: f, word: g};
+var _user$project$TextReader_TextWord$TextWordParams = F6(
+	function (a, b, c, d, e, f) {
+		return {id: a, instance: b, phrase: c, grammemes: d, translations: e, word: f};
 	});
 var _user$project$TextReader_TextWord$TextWord = F6(
 	function (a, b, c, d, e, f) {
@@ -9918,21 +9918,17 @@ var _user$project$Student_Profile$logout = F3(
 			_user$project$Menu_Logout$logoutRespDecoder);
 		return A2(_elm_lang$http$Http$send, logout_msg, request);
 	});
-var _user$project$Student_Profile$studentFlashcards = function (_p0) {
+var _user$project$Student_Profile$studentEmail = function (_p0) {
 	var _p1 = _p0;
 	return _p1._2;
 };
-var _user$project$Student_Profile$studentEmail = function (_p2) {
+var _user$project$Student_Profile$studentUserName = function (_p2) {
 	var _p3 = _p2;
-	return _p3._0.email;
+	return _p3._1;
 };
-var _user$project$Student_Profile$studentUserName = function (_p4) {
+var _user$project$Student_Profile$studentDifficulties = function (_p4) {
 	var _p5 = _p4;
-	return _p5._0.username;
-};
-var _user$project$Student_Profile$studentDifficulties = function (_p6) {
-	var _p7 = _p6;
-	return _p7._0.difficulties;
+	return _p5._4;
 };
 var _user$project$Student_Profile$studentUpdateURI = function (id) {
 	return A2(
@@ -9952,119 +9948,41 @@ var _user$project$Student_Profile$studentUpdateURI = function (id) {
 			}
 		});
 };
-var _user$project$Student_Profile$studentID = function (_p8) {
+var _user$project$Student_Profile$studentID = function (_p6) {
+	var _p7 = _p6;
+	return _p7._0;
+};
+var _user$project$Student_Profile$studentDifficultyPreference = function (_p8) {
 	var _p9 = _p8;
-	return _p9._0.id;
+	return _p9._3;
 };
-var _user$project$Student_Profile$studentDifficultyPreference = function (_p10) {
-	var _p11 = _p10;
-	return _p11._0.difficulty_preference;
-};
-var _user$project$Student_Profile$emptyPerformanceReport = {html: '<div>No results found.</div>', pdf_link: ''};
-var _user$project$Student_Profile$studentPerformanceReport = function (_p12) {
-	var _p13 = _p12;
-	return A2(_elm_lang$core$Maybe$withDefault, _user$project$Student_Profile$emptyPerformanceReport, _p13._1);
-};
-var _user$project$Student_Profile$PerformanceReport = F2(
-	function (a, b) {
-		return {html: a, pdf_link: b};
-	});
 var _user$project$Student_Profile$StudentProfileParams = F5(
 	function (a, b, c, d, e) {
 		return {id: a, username: b, email: c, difficulty_preference: d, difficulties: e};
 	});
-var _user$project$Student_Profile$StudentProfile = F3(
-	function (a, b, c) {
-		return {ctor: 'StudentProfile', _0: a, _1: b, _2: c};
+var _user$project$Student_Profile$StudentProfile = F5(
+	function (a, b, c, d, e) {
+		return {ctor: 'StudentProfile', _0: a, _1: b, _2: c, _3: d, _4: e};
 	});
-var _user$project$Student_Profile$emptyStudentProfile = A3(
-	_user$project$Student_Profile$StudentProfile,
-	{
-		id: _elm_lang$core$Maybe$Nothing,
-		username: '',
-		email: '',
-		difficulty_preference: _elm_lang$core$Maybe$Nothing,
-		difficulties: {ctor: '[]'}
-	},
-	_elm_lang$core$Maybe$Nothing,
-	_elm_lang$core$Maybe$Nothing);
 var _user$project$Student_Profile$setStudentDifficultyPreference = F2(
-	function (_p14, preference) {
-		var _p15 = _p14;
-		return A3(
+	function (_p10, preference) {
+		var _p11 = _p10;
+		return A5(
 			_user$project$Student_Profile$StudentProfile,
-			_elm_lang$core$Native_Utils.update(
-				_p15._0,
-				{
-					difficulty_preference: _elm_lang$core$Maybe$Just(preference)
-				}),
-			_p15._1,
-			_p15._2);
+			_p11._0,
+			_p11._1,
+			_p11._2,
+			_elm_lang$core$Maybe$Just(preference),
+			_p11._4);
 	});
 var _user$project$Student_Profile$setUserName = F2(
-	function (_p16, new_username) {
-		var _p17 = _p16;
-		return A3(
-			_user$project$Student_Profile$StudentProfile,
-			_elm_lang$core$Native_Utils.update(
-				_p17._0,
-				{username: new_username}),
-			_p17._1,
-			_p17._2);
+	function (_p12, new_username) {
+		var _p13 = _p12;
+		return A5(_user$project$Student_Profile$StudentProfile, _p13._0, new_username, _p13._2, _p13._3, _p13._4);
 	});
-var _user$project$Student_Profile$addFlashcard = F2(
-	function (_p18, text_word) {
-		var _p19 = _p18;
-		var phrase = _user$project$TextReader_TextWord$phrase(text_word);
-		return A3(
-			_user$project$Student_Profile$StudentProfile,
-			_p19._0,
-			_p19._1,
-			_elm_lang$core$Maybe$Just(
-				A3(
-					_elm_lang$core$Dict$insert,
-					phrase,
-					text_word,
-					A2(_elm_lang$core$Maybe$withDefault, _elm_lang$core$Dict$empty, _p19._2))));
-	});
-var _user$project$Student_Profile$removeFlashcard = F2(
-	function (_p20, text_word) {
-		var _p21 = _p20;
-		var phrase = _user$project$TextReader_TextWord$phrase(text_word);
-		var new_flashcards = _elm_lang$core$Maybe$Just(
-			A2(
-				_elm_lang$core$Dict$remove,
-				phrase,
-				A2(_elm_lang$core$Maybe$withDefault, _elm_lang$core$Dict$empty, _p21._2)));
-		return A3(_user$project$Student_Profile$StudentProfile, _p21._0, _p21._1, new_flashcards);
-	});
-var _user$project$Student_Profile$init_profile = F3(
-	function (params, performance_report, flashcards) {
-		var new_flashcards = function () {
-			var _p22 = flashcards;
-			if (_p22.ctor === 'Just') {
-				return _elm_lang$core$Dict$fromList(
-					A2(
-						_elm_lang$core$List$map,
-						function (_p23) {
-							var _p24 = _p23;
-							return {
-								ctor: '_Tuple2',
-								_0: _p24._0,
-								_1: _user$project$TextReader_TextWord$newFromParams(_p24._1)
-							};
-						},
-						_p22._0));
-			} else {
-				return _elm_lang$core$Dict$empty;
-			}
-		}();
-		return A3(
-			_user$project$Student_Profile$StudentProfile,
-			params,
-			performance_report,
-			_elm_lang$core$Maybe$Just(new_flashcards));
-	});
+var _user$project$Student_Profile$initProfile = function (params) {
+	return A5(_user$project$Student_Profile$StudentProfile, params.id, params.username, params.email, params.difficulty_preference, params.difficulties);
+};
 
 var Elm = {};
 Elm['Student'] = Elm['Student'] || {};

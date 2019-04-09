@@ -3,7 +3,9 @@ module Student.Profile.Decode exposing (..)
 import Json.Decode
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 
-import Student.Profile exposing (StudentProfileParams, PerformanceReport)
+import Student.Profile exposing (StudentProfileParams)
+
+import Student.Performance.Report exposing (PerformanceReport)
 
 import Student.Profile.Model
 
@@ -23,14 +25,12 @@ username_valid_decoder =
     |> required "valid" (Json.Decode.nullable Json.Decode.bool)
     |> required "msg" (Json.Decode.nullable Json.Decode.string)
 
-
 textWordParamsDecoder : Json.Decode.Decoder TextReader.TextWord.TextWordParams
 textWordParamsDecoder =
   decode TextReader.TextWord.TextWordParams
     |> required "id" Json.Decode.int
     |> required "instance" Json.Decode.int
     |> required "phrase" Json.Decode.string
-    |> required "example" Json.Decode.string
     |> required "grammemes" (Json.Decode.nullable (Json.Decode.list stringTupleDecoder))
     |> required "translations" TextReader.Section.Decode.textWordTranslationsDecoder
     |> required "word"
@@ -63,8 +63,6 @@ studentProfileParamsDecoder =
 
 studentProfileDecoder : Json.Decode.Decoder Student.Profile.StudentProfile
 studentProfileDecoder =
-  Json.Decode.map3
-    Student.Profile.init_profile
+  Json.Decode.map
+    Student.Profile.initProfile
       (Json.Decode.field "profile" studentProfileParamsDecoder)
-      (Json.Decode.field "performance_report" (Json.Decode.nullable performanceReportDecoder))
-      (Json.Decode.succeed Nothing)

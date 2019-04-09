@@ -38,7 +38,7 @@ type alias Filter = List String
 init : Flags -> (Model, Cmd Msg)
 init flags = ({
       texts=[]
-    , profile=User.Profile.init_profile flags
+    , profile=User.Profile.initProfile flags
     , flags=flags
     , loading=True
   }, updateTexts [])

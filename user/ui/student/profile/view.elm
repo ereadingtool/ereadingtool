@@ -277,12 +277,17 @@ view_preferred_difficulty model =
 
 view_flashcards : Model -> Html Msg
 view_flashcards model =
-  div [class "flashcards"] [
+  div [id "flashcards", class "profile_item"] [
     span [class "profile_item_title"] [ Html.text "Flashcard Words" ]
   , span [class "profile_item_value"] [
-      div [] (List.map (\(normal_form, text_word) ->
-        div [] [ span [] [ Html.text normal_form ] ]
-       ) (Dict.toList <| Maybe.withDefault Dict.empty <| Student.Profile.studentFlashcards model.profile))
+      div []
+        (case model.flashcards of
+           Just words ->
+             List.map (\word -> div [] [ span [] [ Html.text word ] ]) words
+
+           Nothing ->
+             []
+       )
     ]
   ]
 
@@ -322,16 +327,16 @@ view_feedback_links model =
 view_student_performance : Model -> Html Msg
 view_student_performance model =
   let
-    performance_report_attrs = Student.Profile.studentPerformanceReport model.profile
+    performance_report = model.performance_report
   in
     div [class "performance"] <| (view_my_performance_hint model) ++ [
       span [class "profile_item_title"] [ Html.text "My Performance: " ]
     , span [class "profile_item_value"] [
         div [class "performance_report"]
-         (HtmlParser.Util.toVirtualDom <| HtmlParser.parse performance_report_attrs.html)
+         (HtmlParser.Util.toVirtualDom <| HtmlParser.parse performance_report.html)
       ]
     , div [class "performance_download_link"] [
-        Html.a [attribute "href" performance_report_attrs.pdf_link] [
+        Html.a [attribute "href" performance_report.pdf_link] [
           Html.text "Download as PDF"
         ]
       ]

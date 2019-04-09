@@ -32,6 +32,10 @@ class Profile(URIs):
     def flashcards(self):
         raise NotImplementedError
 
+    @property
+    def serialized_flashcards(self):
+        raise NotImplementedError
+
 
 class TextReadings(models.Model):
     class Meta:

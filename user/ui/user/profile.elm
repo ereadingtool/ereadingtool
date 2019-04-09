@@ -16,10 +16,6 @@ import Student.Profile.Decode
 
 import Student.View
 
-import Text.Translations.Decode exposing (TextWord, Flashcards)
-
-import TextReader.TextWord
-
 import Menu.Msg exposing (Msg)
 
 import Menu.Logout
@@ -32,18 +28,19 @@ fromStudentProfile student_profile = Student student_profile
 fromInstructorProfile : InstructorProfile -> Profile
 fromInstructorProfile instructor_profile = Instructor instructor_profile
 
-init_profile:
- { a | instructor_profile : Maybe InstructorProfileParams, student_profile : Maybe Student.Profile.StudentProfileParams }
+initProfile:
+ { a | instructor_profile : Maybe InstructorProfileParams
+     , student_profile : Maybe Student.Profile.StudentProfileParams }
     -> Profile
-init_profile flags =
+initProfile flags =
   case flags.instructor_profile of
     Just instructor_profile_params ->
-      Instructor (Instructor.Profile.init_profile instructor_profile_params)
+      Instructor (Instructor.Profile.initProfile instructor_profile_params)
 
     Nothing ->
       case flags.student_profile of
         Just student_profile_params ->
-          Student (Student.Profile.init_profile student_profile_params Nothing Nothing)
+          Student (Student.Profile.initProfile student_profile_params)
 
         Nothing ->
           EmptyProfile
@@ -96,31 +93,3 @@ logout profile csrftoken logout_msg =
 
     EmptyProfile ->
       Cmd.none
-
-
-flashcards : Profile -> Maybe Flashcards
-flashcards profile =
-  case profile of
-    Student profile ->
-      Student.Profile.studentFlashcards profile
-
-    _ ->
-      Nothing
-
-addFlashcard : Profile -> TextReader.TextWord.TextWord -> Profile
-addFlashcard profile text_word =
-  case profile of
-    Student profile ->
-      fromStudentProfile (Student.Profile.addFlashcard profile text_word)
-
-    _ ->
-      profile
-
-removeFlashcard : Profile -> TextReader.TextWord.TextWord -> Profile
-removeFlashcard profile text_word =
-  case profile of
-    Student profile ->
-      fromStudentProfile (Student.Profile.removeFlashcard profile text_word)
-
-    _ ->
-      profile

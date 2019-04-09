@@ -1,10 +1,13 @@
 module Student.Profile.Flags exposing (..)
 
 import Flags
-import Profile
+import Student.Profile
 
+import Student.Performance.Report
 
 type alias Flags = {
     csrftoken : Flags.CSRFToken
-  , profile_id : Profile.ProfileID
+  , student_profile : Student.Profile.StudentProfileParams
+  , flashcards : Maybe (List String)
+  , performance_report : Student.Performance.Report.PerformanceReport
   , welcome: Bool }

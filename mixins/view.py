@@ -24,6 +24,8 @@ class ElmLoadJsBaseView(TemplateView):
 
         response.content = jsmin(response.content.decode('utf8'))
 
+        response['Content-Type'] = 'application/javascript'
+
         return response
 
     def get_context_data(self, **kwargs) -> Dict:

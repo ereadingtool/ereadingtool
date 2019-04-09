@@ -3,8 +3,6 @@ import Html.Attributes exposing (id, class, classList, attribute)
 
 import Dict exposing (Dict)
 
-import User.Profile
-
 import Views
 
 import Student.Profile exposing (StudentProfileParams)
@@ -22,19 +20,19 @@ init : Flags -> (Model, Cmd Msg)
 init flags =
   let
     student_help = Student.Profile.Help.init
+    student_profile = Student.Profile.initProfile flags.student_profile
   in
     ({
       flags = flags
-    , profile = Student.Profile.emptyStudentProfile
+    , profile = student_profile
+    , flashcards = flags.flashcards
+    , performance_report = flags.performance_report
     , editing = Dict.empty
     , username_update = {username = "", valid = Nothing, msg = Nothing}
     , help = student_help
     , err_str = "", errors = Dict.empty
     }
-    , Cmd.batch [
-        User.Profile.retrieve_student_profile RetrieveStudentProfile flags.profile_id
-      , Student.Profile.Help.scrollToFirstMsg student_help
-      ])
+    , Student.Profile.Help.scrollToFirstMsg student_help)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -59,8 +57,7 @@ view_content model =
     , Student.Profile.View.view_user_email model
     , Student.Profile.View.view_student_performance model
     , Student.Profile.View.view_feedback_links model
-    -- TODO(andrew.silvernail): breaking change with StudentProfile type, needs refactor
-    --, Student.Profile.View.view_flashcards model
+    , Student.Profile.View.view_flashcards model
     , (if not (String.isEmpty model.err_str) then
         span [attribute "class" "error"] [ Html.text "error: ", Html.text model.err_str ]
        else Html.text "")

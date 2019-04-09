@@ -4,9 +4,11 @@ import Dict exposing (Dict)
 
 import Views
 import User.Profile
+import User.Profile.TextReader.Flashcards
 
 import WebSocket
 
+import TextReader.TextWord
 import TextReader.Encode
 import TextReader.Text.Model
 
@@ -22,11 +24,19 @@ import Config
 init : Flags -> (Model, Cmd Msg)
 init flags =
   let
-    profile = User.Profile.init_profile flags
+    profile = User.Profile.initProfile flags
+    text_words_with_flashcards = List.map TextReader.TextWord.newFromParams flags.flashcards
+
+    flashcards =
+      User.Profile.TextReader.Flashcards.initFlashcards
+        profile
+        (  Dict.fromList
+        <| List.map (\text_word -> (TextReader.TextWord.phrase text_word, text_word)) text_words_with_flashcards)
   in
     ({ text=TextReader.Text.Model.emptyText
      , gloss=Dict.empty
      , profile=profile
+     , flashcard=flashcards
      , progress=Init
      , flags=flags
      , exception=Nothing

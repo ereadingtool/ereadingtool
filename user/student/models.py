@@ -34,6 +34,7 @@ class Student(Profile, TextReadings, models.Model):
     def performance(self) -> 'StudentPerformanceReport':
         return StudentPerformanceReport(student=self)
 
+    @property
     def serialized_flashcards(self) -> List[Tuple]:
         serialized_flashcards = [
             (flashcard.phrase.phrase, flashcard.to_dict()) for flashcard in self.flashcards.all()
@@ -42,16 +43,11 @@ class Student(Profile, TextReadings, models.Model):
         return serialized_flashcards
 
     def to_dict(self) -> Dict:
-        difficulties = [(text_difficulty.slug, text_difficulty.name)
+        difficulties = [[text_difficulty.slug, text_difficulty.name]
                         for text_difficulty in TextDifficulty.objects.all()]
 
         # difficulty_preference can be null
-        difficulties.append(('', ''))
-
-        performance_report_html = loader.render_to_string('student_performance_report.html',
-                                                          {'performance_report': self.performance.to_dict()})
-
-        performance_report_pdf_link = reverse('student-performance-pdf-link', kwargs={'pk': self.pk})
+        difficulties.append(['', ''])
 
         return {
             'id': self.pk,
@@ -60,8 +56,6 @@ class Student(Profile, TextReadings, models.Model):
             'difficulty_preference': [self.difficulty_preference.slug, self.difficulty_preference.name]
             if self.difficulty_preference else None,
             'difficulties': difficulties,
-            'performance_report': {'html': performance_report_html, 'pdf_link': performance_report_pdf_link},
-            'flashcards': self.serialized_flashcards()
         }
 
     def to_text_summary_dict(self, text: Text) -> Dict:
@@ -77,7 +71,7 @@ class Student(Profile, TextReadings, models.Model):
         return self.user.username
 
     def has_flashcard_for_phrase(self, text_phrase: TextPhrase) -> bool:
-        return self.flashcards.filter(text_phrase=text_phrase).exists()
+        return self.flashcards.filter(phrase=text_phrase).exists()
 
     def add_to_flashcards(self, text_phrase: TextPhrase):
         flashcard, created = self.flashcards.get_or_create(student=self, phrase=text_phrase)
@@ -85,4 +79,4 @@ class Student(Profile, TextReadings, models.Model):
         return flashcard
 
     def remove_from_flashcards(self, text_phrase: TextPhrase):
-        self.flashcards.filter(text_phrase=text_phrase).delete()
+        self.flashcards.filter(phrase=text_phrase).delete()

@@ -17,7 +17,6 @@ type alias TextWordParams = {
     id: Int
   , instance: Int
   , phrase: String
-  , example: String
   , grammemes: Maybe (List (String, String))
   , translations: Maybe Translations
   , word: (String, Maybe TextGroupDetails)

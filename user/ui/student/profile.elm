@@ -16,13 +16,6 @@ import Http
 
 import Menu.Logout
 
-type alias PerformanceReport = {html: String, pdf_link: String}
-
-
-emptyPerformanceReport : PerformanceReport
-emptyPerformanceReport =
-  {html="<div>No results found.</div>", pdf_link=""}
-
 type alias StudentProfileParams = {
     id: Maybe Int
   , username: String
@@ -32,83 +25,39 @@ type alias StudentProfileParams = {
   }
 
 type StudentProfile =
-  StudentProfile StudentProfileParams (Maybe PerformanceReport) (Maybe Text.Translations.Decode.Flashcards)
-
-
-emptyStudentProfile : StudentProfile
-emptyStudentProfile = StudentProfile {
-    id = Nothing
-  , username = ""
-  , email = ""
-  , difficulty_preference = Nothing
-  , difficulties = [] } Nothing Nothing
-
+  StudentProfile (Maybe Int) String String (Maybe Text.TextDifficulty) (List Text.TextDifficulty)
 
 studentDifficultyPreference : StudentProfile -> Maybe Text.TextDifficulty
-studentDifficultyPreference (StudentProfile attrs _ _) = attrs.difficulty_preference
+studentDifficultyPreference (StudentProfile id username email diff_pref diffs) = diff_pref
 
 setStudentDifficultyPreference : StudentProfile -> Text.TextDifficulty -> StudentProfile
-setStudentDifficultyPreference (StudentProfile attrs report flashcards) preference =
-  StudentProfile { attrs | difficulty_preference = Just preference } report flashcards
+setStudentDifficultyPreference (StudentProfile id username email _ diffs) preference =
+  StudentProfile id username email (Just preference) diffs
 
 setUserName : StudentProfile -> String -> StudentProfile
-setUserName (StudentProfile attrs report flashcards) new_username =
-  StudentProfile { attrs | username = new_username } report flashcards
+setUserName (StudentProfile id _ email diff_pref diffs) new_username =
+  StudentProfile id new_username email diff_pref diffs
 
 studentID : StudentProfile -> Maybe Int
-studentID (StudentProfile attrs _ _) = attrs.id
+studentID (StudentProfile id _ _ _ _) = id
 
 studentUpdateURI : Int -> String
 studentUpdateURI id =
   String.join "" [student_api_endpoint, toString id, "/"]
 
 studentDifficulties : StudentProfile -> List Text.TextDifficulty
-studentDifficulties (StudentProfile attrs _ _) = attrs.difficulties
+studentDifficulties (StudentProfile _ _ _ _ diffs) = diffs
 
 studentUserName : StudentProfile -> String
-studentUserName (StudentProfile attrs _ _) = attrs.username
+studentUserName (StudentProfile _ username _ _ _) = username
 
 studentEmail : StudentProfile -> String
-studentEmail (StudentProfile attrs _ _) = attrs.email
+studentEmail (StudentProfile _ _ email _ _) = email
 
-studentPerformanceReport : StudentProfile -> PerformanceReport
-studentPerformanceReport (StudentProfile _ performance_report _ ) =
-  Maybe.withDefault emptyPerformanceReport performance_report
-
-studentFlashcards : StudentProfile -> Maybe Flashcards
-studentFlashcards (StudentProfile attrs report flashcards) = flashcards
-
-addFlashcard : StudentProfile -> TextReader.TextWord.TextWord -> StudentProfile
-addFlashcard (StudentProfile attrs report flashcards) text_word =
-  let
-    phrase = TextReader.TextWord.phrase text_word
-  in
-    StudentProfile attrs report (Just <| Dict.insert phrase text_word (Maybe.withDefault Dict.empty flashcards))
-
-removeFlashcard : StudentProfile -> TextReader.TextWord.TextWord -> StudentProfile
-removeFlashcard (StudentProfile attrs report flashcards) text_word =
-  let
-    phrase = TextReader.TextWord.phrase text_word
-    new_flashcards = Just <| Dict.remove phrase (Maybe.withDefault Dict.empty flashcards)
-  in
-    StudentProfile attrs report new_flashcards
-
-init_profile :
-     StudentProfileParams
-  -> Maybe PerformanceReport
-  -> Maybe (List (Phrase, TextReader.TextWord.TextWordParams)) -> StudentProfile
-init_profile params performance_report flashcards =
-  let
-    new_flashcards =
-      (case flashcards of
-        Just fcards ->
-             Dict.fromList
-          <| List.map (\(phrase, text_word) -> (phrase, TextReader.TextWord.newFromParams text_word)) fcards
-
-        Nothing ->
-          Dict.empty)
-  in
-    StudentProfile params performance_report (Just new_flashcards)
+initProfile : StudentProfileParams -> StudentProfile
+initProfile params =
+  StudentProfile
+    params.id params.username params.email params.difficulty_preference params.difficulties
 
 logout : StudentProfile -> String -> (Result Http.Error Menu.Logout.LogOutResp -> msg) -> Cmd msg
 logout student_profile csrftoken logout_msg =

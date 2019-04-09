@@ -17,6 +17,8 @@ from user.views.mixin import ProfileView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from mixins.view import ElmLoadJsBaseView, NoAuthElmLoadJsView
 
+from django.template import loader
+
 
 Form = TypeVar('Form', bound=forms.Form)
 
@@ -32,7 +34,22 @@ class ElmLoadJsStudentView(LoginRequiredMixin, ElmLoadJsBaseView):
         except Student.DoesNotExist:
             pass
 
-        context['elm']['profile_id'] = {'quote': False, 'safe': True, 'value': profile.id or 'null'}
+        performance_report_html = loader.render_to_string('student_performance_report.html', {
+            'performance_report': profile.performance.to_dict()
+        })
+
+        performance_report_pdf_link = reverse('student-performance-pdf-link', kwargs={'pk': profile.pk})
+
+        context['elm']['student_profile'] = {'quote': False, 'safe': True, 'value': profile.to_dict()}
+
+        context['elm']['performance_report'] = {'quote': False, 'safe': True, 'value': {
+            'html': performance_report_html,
+            'pdf_link': performance_report_pdf_link,
+        }}
+
+        context['elm']['flashcards'] = {'quote': False, 'safe': True, 'value': [
+            card.phrase.phrase for card in profile.flashcards.all()
+        ] if profile.flashcards else None}
 
         try:
             welcome = self.request.session['welcome']['student_profile']

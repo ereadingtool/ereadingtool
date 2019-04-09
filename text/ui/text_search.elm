@@ -78,7 +78,7 @@ init flags =
     difficulty_search =
       Text.Search.Difficulty.new "text_difficulty_search" (Text.Search.Option.newOptions flags.text_difficulties)
 
-    profile=User.Profile.init_profile flags
+    profile=User.Profile.initProfile flags
 
     status_search =
       Text.Search.ReadingStatus.new "text_status_search" (Text.Search.Option.newOptions flags.text_statuses)

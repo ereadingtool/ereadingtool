@@ -57,7 +57,7 @@ type alias Model = {
 init : Flags -> (Model, Cmd Msg)
 init flags = ({
     flags = flags
-  , profile = Instructor.Profile.init_profile flags.instructor_profile
+  , profile = Instructor.Profile.initProfile flags.instructor_profile
   , new_invite = {email=""}
   , errors = Dict.empty }, Cmd.none)
 

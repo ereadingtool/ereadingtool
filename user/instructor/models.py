@@ -49,5 +49,10 @@ class Instructor(Profile, TextReadings, models.Model):
 
         return text_instructor_summary
 
+    @property
+    def serialized_flashcards(self):
+        # not currently implemented for instructors
+        return []
+
     def __str__(self):
         return self.user.username

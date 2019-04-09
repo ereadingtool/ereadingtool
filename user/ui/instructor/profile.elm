@@ -41,8 +41,8 @@ type alias InstructorProfileParams = {
 
 type InstructorProfile = InstructorProfile InstructorProfileParams
 
-init_profile : InstructorProfileParams -> InstructorProfile
-init_profile params =
+initProfile : InstructorProfileParams -> InstructorProfile
+initProfile params =
   InstructorProfile params
 
 addInvite : InstructorProfile -> Invite -> InstructorProfile

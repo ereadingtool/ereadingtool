@@ -19,7 +19,7 @@ import Flashcard.Update exposing (..)
 init : Flags -> (Model, Cmd Msg)
 init flags =
   let
-    profile = User.Profile.init_profile flags
+    profile = User.Profile.initProfile flags
   in
     ({ exception=Nothing
      , flags=flags
