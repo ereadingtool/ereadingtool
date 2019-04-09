@@ -27,11 +27,7 @@ intTupleDecoder =
 
 onEnterUp : msg -> Html.Attribute msg
 onEnterUp msg =
-  Html.Events.on "keyup"
-    (Html.Events.keyCode
-  |> Json.Decode.andThen (\key ->
-       case key of
-         13 ->
-           Json.Decode.succeed msg
-         _ ->
-           Json.Decode.fail "not enter key" ))
+  Html.Events.on
+    "keyup"
+    (  Html.Events.keyCode
+    |> Json.Decode.andThen (\key -> if key == 13 then Json.Decode.succeed msg else Json.Decode.fail "not enter key"))

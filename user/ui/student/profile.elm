@@ -1,15 +1,8 @@
 module Student.Profile exposing (..)
 
-import Dict exposing (Dict)
-
 import Text.Model as Text
 
 import Config exposing (student_api_endpoint, student_logout_api_endpoint)
-
-import Text.Translations exposing (Phrase, Grammemes)
-import Text.Translations.Decode exposing (TextWord, Flashcards)
-
-import TextReader.TextWord
 
 import HttpHelpers
 import Http

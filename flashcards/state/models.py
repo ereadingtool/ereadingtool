@@ -40,6 +40,8 @@ class FlashcardSessionStateMachine(StateMachine):
                 self.current_flashcard = self.next_flashcard
             except IndexError:
                 self.current_flashcard = None
+        else:
+            self.current_flashcard = current_flashcard
 
     mode_choice = State('mode_choice', initial=True)
 

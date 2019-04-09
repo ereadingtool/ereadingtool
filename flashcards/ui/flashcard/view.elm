@@ -9,6 +9,8 @@ import Flashcard.Msg exposing (Msg(..))
 
 import Flashcard.Mode
 
+import Util
+
 
 view_mode_choice : Model -> Flashcard.Mode.ModeChoiceDesc -> Html Msg
 view_mode_choice model choice =
@@ -100,10 +102,10 @@ view_reviewed_only_card model card =
 
 view_input_answer : Model -> Flashcard -> Html Msg
 view_input_answer model card =
-  div [id "answer_input"] [
+  div [id "answer_input", Util.onEnterUp SubmitAnswer] [
     Html.input [onInput InputAnswer, attribute "placeholder" "Type an answer.."] []
   , div [id "submit"] [
-      div [onClick SubmitAnswer, id "button"] [ Html.text "Submit" ]
+      div [id "button", onClick SubmitAnswer] [ Html.text "Submit" ]
     ]
   ]
 
@@ -165,7 +167,7 @@ view_card :
   Model -> Flashcard -> Maybe (List (String, Bool)) -> Maybe (List (Html.Attribute Msg)) -> List (Html Msg) -> Html Msg
 view_card model card addl_classes addl_attrs content =
   div (
-       [id "card", classList ([("cursor", True)]
+       [id "card", classList ([("cursor", True), ("noselect", True)]
     ++ (Maybe.withDefault [] addl_classes))]
     ++ Maybe.withDefault [] addl_attrs
   ) content

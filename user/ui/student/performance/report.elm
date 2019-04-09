@@ -1,7 +1,5 @@
 module Student.Performance.Report exposing (..)
 
-import Student.Profile exposing (StudentProfile)
-
 type alias PerformanceReport = {html: String, pdf_link: String}
 
 
