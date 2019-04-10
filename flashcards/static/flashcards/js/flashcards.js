@@ -12728,17 +12728,6 @@ var _user$project$Flashcard_Model$disconnect = function (model) {
 		model,
 		{connect: false});
 };
-var _user$project$Flashcard_Model$answered = function (model) {
-	var _p10 = model.session_state;
-	switch (_p10.ctor) {
-		case 'ReviewedCardAndAnsweredCorrectly':
-			return true;
-		case 'ReviewedCardAndAnsweredIncorrectly':
-			return true;
-		default:
-			return false;
-	}
-};
 var _user$project$Flashcard_Model$Exception = F2(
 	function (a, b) {
 		return {code: a, error_msg: b};

@@ -38,18 +38,6 @@ type SessionState =
 type Flashcard = Flashcard Phrase Example (Maybe TranslatedPhrase)
 
 
-answered : Model -> Bool
-answered model =
-  case model.session_state of
-    ReviewedCardAndAnsweredCorrectly _ ->
-      True
-
-    ReviewedCardAndAnsweredIncorrectly _ ->
-      True
-
-    _ ->
-      False
-
 disconnect : Model -> Model
 disconnect model =
   { model | connect = False }
