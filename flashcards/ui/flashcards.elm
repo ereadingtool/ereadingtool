@@ -2,6 +2,7 @@ import Html exposing (Html, div)
 
 import Views
 import User.Profile
+import Menu.Items
 
 import Ports
 
@@ -20,10 +21,12 @@ init : Flags -> (Model, Cmd Msg)
 init flags =
   let
     profile = User.Profile.initProfile flags
+    menu_items = Menu.Items.initMenuItems flags
   in
     ({ exception=Nothing
      , flags=flags
      , profile=profile
+     , menu_items=menu_items
      , mode=Nothing
      , session_state=Loading
      , connect=True
@@ -97,7 +100,7 @@ main =
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    (Views.view_authed_header model.profile Nothing LogOut)
+    (Views.view_authed_header model.profile model.menu_items LogOut)
   , (Flashcard.View.view_content model)
   , (Views.view_footer)
   ]

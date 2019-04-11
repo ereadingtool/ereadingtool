@@ -8,7 +8,7 @@ import Text.Model exposing (TextListItem)
 import Text.Decode
 
 import Config exposing (..)
-import Profile.Flags
+import Flags
 
 import Views
 import User.Profile
@@ -24,7 +24,7 @@ type Msg =
   | LogOut MenuMsg.Msg
   | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
 
-type alias Flags = Profile.Flags.Flags {}
+type alias Flags = Flags {}
 
 type alias Model = {
     texts : List TextListItem

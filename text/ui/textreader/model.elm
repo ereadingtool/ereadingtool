@@ -12,7 +12,7 @@ import TextReader.Answer.Model exposing (TextAnswer, Answer, AnswerCorrect)
 
 import TextReader exposing (TextItemAttributes, WebSocketAddress)
 
-import Profile.Flags as Flags
+import Flags
 
 import User.Profile
 import User.Profile.TextReader.Flashcards
@@ -86,7 +86,7 @@ type alias TextScores = {
 
 
 type alias Flags =
-  Flags.Flags {
+  Flags.AuthedFlags {
     text_id : Int
   , flashcards : List TextReader.TextWord.TextWordParams
   , text_reader_ws_addr: WebSocketAddress }

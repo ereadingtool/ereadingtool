@@ -26,7 +26,7 @@ import User.Profile
 
 import Config exposing (..)
 
-import Profile.Flags as Flags
+import Flags
 
 import Help.View exposing (ArrowPlacement(..), ArrowPosition(..), view_hint_overlay)
 
@@ -54,7 +54,7 @@ type Msg =
 
 
 type alias Flags =
-  Flags.Flags {
+  Flags.AuthedFlags {
     text_difficulties: List Text.Model.TextDifficulty
   , text_statuses: List (String, String)
   , welcome: Bool

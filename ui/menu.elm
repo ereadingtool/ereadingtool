@@ -1,6 +1,18 @@
 module Menu exposing (..)
 
-type alias Selected = Bool
-type alias URI = String
-type alias LinkText = String
-type alias SelectedMenuItem = Int
+type Select = Select Bool
+type URI = URI String
+type LinkText = LinkText String
+
+
+selected : Select -> Bool
+selected (Select selected) =
+  selected
+
+uriToString : URI -> String
+uriToString (URI uri) =
+  uri
+
+linkTextToString : LinkText -> String
+linkTextToString (LinkText text) =
+  text

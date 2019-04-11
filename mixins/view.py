@@ -7,6 +7,8 @@ from django.views.decorators.vary import vary_on_cookie
 from django.views.generic import TemplateView
 from rjsmin import jsmin
 
+from ereadingtool.menu import student_menu_items
+
 
 class ElmLoadJsBaseView(TemplateView):
     template_name = "load_elm_base.html"
@@ -67,6 +69,12 @@ class ElmLoadJsView(LoginRequiredMixin, ElmLoadJsBaseView):
             'quote': True,
             'safe': True,
             'value': profile.__class__.__name__.lower()
+        }
+
+        context['elm']['menu_items'] = {
+            'quote': False,
+            'safe': True,
+            'value': json.dumps(student_menu_items().to_dict())
         }
 
         return context
