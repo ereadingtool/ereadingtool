@@ -389,23 +389,19 @@ view_search_menu_item_hint model help_msgs =
     else
       []
 
-
 view_menu_item : Model -> HelpMsgs msg -> Menu.Item.MenuItem -> Html msg
 view_menu_item model help_msgs menu_item =
   let
-    selected = Menu.Item.selected menu_item
-    uri = Menu.Item.uri menu_item
-    link_text = Menu.Item.linkText menu_item
+    link_text = Menu.Item.linkTextToString menu_item
     addl_view =
-      (case link_text == "Search Texts" of
-      True ->
-        Just (view_search_menu_item_hint model help_msgs)
+      (case link_text == "Find a text to read" of
+         True ->
+            Just (view_search_menu_item_hint model help_msgs)
 
-      False ->
-        Nothing)
+         False ->
+            Nothing)
   in
-    Menu.View.view_lower_menu_item selected uri link_text addl_view
-
+    Menu.View.view_lower_menu_item menu_item addl_view
 
 view_student_profile_page_link : Model -> HelpMsgs msg -> Html msg
 view_student_profile_page_link model help_msgs =
@@ -430,13 +426,12 @@ view_top_level_menu model menu_items top_level_menu_msg help_msgs =
 
 view_lower_level_menu : Model -> Menu.Items.MenuItems -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> List (Html msg)
 view_lower_level_menu model menu_items top_level_menu_msg help_msgs =
-     (Array.toList
+    (Array.toList
   <| Array.map (view_menu_item model help_msgs)
-  <| (Menu.Items.items menu_items)) ++
-     (Student.View.view_student_profile_menu_items model.profile top_level_menu_msg)
+  <| (Menu.Items.items menu_items))
 
 view_header : Model -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> Html msg
 view_header model top_level_menu_msg help_msgs =
   Views.view_header
-    (view_top_level_menu model Menu.Items.menu_items top_level_menu_msg help_msgs)
-    (view_lower_level_menu model Menu.Items.menu_items top_level_menu_msg help_msgs)
+    (view_top_level_menu model model.menu_items top_level_menu_msg help_msgs)
+    (view_lower_level_menu model model.menu_items top_level_menu_msg help_msgs)

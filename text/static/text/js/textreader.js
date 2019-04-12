@@ -3168,6 +3168,22 @@ var _elm_lang$core$Platform$Task = {ctor: 'Task'};
 var _elm_lang$core$Platform$ProcessId = {ctor: 'ProcessId'};
 var _elm_lang$core$Platform$Router = {ctor: 'Router'};
 
+var _user$project$TextReader$webSocketAddrToString = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0;
+};
+var _user$project$TextReader$Selected = function (a) {
+	return {ctor: 'Selected', _0: a};
+};
+var _user$project$TextReader$AnsweredCorrectly = function (a) {
+	return {ctor: 'AnsweredCorrectly', _0: a};
+};
+var _user$project$TextReader$FeedbackViewable = function (a) {
+	return {ctor: 'FeedbackViewable', _0: a};
+};
+var _user$project$TextReader$WebSocketAddress = function (a) {
+	return {ctor: 'WebSocketAddress', _0: a};
+};
 
 var Elm = {};
 Elm['TextReader'] = Elm['TextReader'] || {};

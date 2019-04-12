@@ -9386,6 +9386,136 @@ var _user$project$Config$text_translation_api_match_endpoint = '/api/text/transl
 var _user$project$Config$text_api_endpoint = '/api/text/';
 var _user$project$Config$username_validation_api_endpoint = '/api/username/';
 
+var _user$project$Menu$linkTextToString = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0;
+};
+var _user$project$Menu$uriToString = function (_p2) {
+	var _p3 = _p2;
+	return _p3._0;
+};
+var _user$project$Menu$selected = function (_p4) {
+	var _p5 = _p4;
+	return _p5._0;
+};
+var _user$project$Menu$Select = function (a) {
+	return {ctor: 'Select', _0: a};
+};
+var _user$project$Menu$URI = function (a) {
+	return {ctor: 'URI', _0: a};
+};
+var _user$project$Menu$LinkText = function (a) {
+	return {ctor: 'LinkText', _0: a};
+};
+
+var _user$project$Menu_Item_Link$text = function (_p0) {
+	var _p1 = _p0;
+	return _p1._1;
+};
+var _user$project$Menu_Item_Link$uri = function (_p2) {
+	var _p3 = _p2;
+	return _p3._0;
+};
+var _user$project$Menu_Item_Link$MenuItemLink = F2(
+	function (a, b) {
+		return {ctor: 'MenuItemLink', _0: a, _1: b};
+	});
+var _user$project$Menu_Item_Link$new = F2(
+	function (uri, link_text) {
+		return A2(_user$project$Menu_Item_Link$MenuItemLink, uri, link_text);
+	});
+
+var _user$project$Menu_Item$linkText = function (_p0) {
+	var _p1 = _p0;
+	return _user$project$Menu_Item_Link$text(_p1._0);
+};
+var _user$project$Menu_Item$linkTextToString = function (menu_item) {
+	return _user$project$Menu$linkTextToString(
+		_user$project$Menu_Item$linkText(menu_item));
+};
+var _user$project$Menu_Item$uri = function (_p2) {
+	var _p3 = _p2;
+	return _user$project$Menu_Item_Link$uri(_p3._0);
+};
+var _user$project$Menu_Item$uriToString = function (menu_item) {
+	return _user$project$Menu$uriToString(
+		_user$project$Menu_Item$uri(menu_item));
+};
+var _user$project$Menu_Item$selected = function (_p4) {
+	var _p5 = _p4;
+	return _user$project$Menu$selected(_p5._1);
+};
+var _user$project$Menu_Item$MenuItem = F2(
+	function (a, b) {
+		return {ctor: 'MenuItem', _0: a, _1: b};
+	});
+var _user$project$Menu_Item$new = F2(
+	function (link, select) {
+		return A2(_user$project$Menu_Item$MenuItem, link, select);
+	});
+var _user$project$Menu_Item$setSelected = F2(
+	function (_p6, select) {
+		var _p7 = _p6;
+		return A2(
+			_user$project$Menu_Item$MenuItem,
+			_p7._0,
+			_user$project$Menu$Select(select));
+	});
+
+var _user$project$Menu_Items$getItem = F2(
+	function (_p0, index) {
+		var _p1 = _p0;
+		return A2(_elm_lang$core$Array$get, index, _p1._0);
+	});
+var _user$project$Menu_Items$items = function (_p2) {
+	var _p3 = _p2;
+	return _p3._0;
+};
+var _user$project$Menu_Items$initMenuItemFromParams = function (param) {
+	var menu_link = A2(
+		_user$project$Menu_Item_Link$new,
+		_user$project$Menu$URI(param.link),
+		_user$project$Menu$LinkText(param.link_text));
+	return A2(
+		_user$project$Menu_Item$new,
+		menu_link,
+		_user$project$Menu$Select(param.selected));
+};
+var _user$project$Menu_Items$MenuItemParams = F3(
+	function (a, b, c) {
+		return {link: a, link_text: b, selected: c};
+	});
+var _user$project$Menu_Items$MenuItems = function (a) {
+	return {ctor: 'MenuItems', _0: a};
+};
+var _user$project$Menu_Items$initMenuItems = function (flags) {
+	return _user$project$Menu_Items$MenuItems(
+		_elm_lang$core$Array$fromList(
+			A2(_elm_lang$core$List$map, _user$project$Menu_Items$initMenuItemFromParams, flags.menu_items)));
+};
+var _user$project$Menu_Items$setItem = F3(
+	function (_p4, item, index) {
+		var _p5 = _p4;
+		return _user$project$Menu_Items$MenuItems(
+			A3(_elm_lang$core$Array$set, index, item, _p5._0));
+	});
+var _user$project$Menu_Items$setSelected = F3(
+	function (_p6, index, select) {
+		var _p7 = _p6;
+		var _p9 = _p7._0;
+		var _p8 = A2(_elm_lang$core$Array$get, index, _p9);
+		if (_p8.ctor === 'Just') {
+			return _user$project$Menu_Items$MenuItems(
+				A3(
+					_elm_lang$core$Array$set,
+					index,
+					A2(_user$project$Menu_Item$setSelected, _p8._0, select),
+					_p9));
+		} else {
+			return _user$project$Menu_Items$MenuItems(_p9);
+		}
+	});
+
 var _user$project$Flags$UnAuthedFlags = function (a) {
 	return {csrftoken: a};
 };
@@ -9913,45 +10043,6 @@ var _user$project$Student_View$view_student_profile_header = F2(
 		return {
 			ctor: '::',
 			_0: A2(_user$project$Student_View$view_profile_link, student_profile, top_level_menu_msg),
-			_1: {ctor: '[]'}
-		};
-	});
-var _user$project$Student_View$view_flashcard_menu_item = F2(
-	function (student_profile, top_level_menu_msg) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$classList(
-					{
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'lower-menu-item', _1: true},
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$a,
-					{
-						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', '/student/flashcards/'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('Flashcards'),
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			});
-	});
-var _user$project$Student_View$view_student_profile_menu_items = F2(
-	function (student_profile, top_level_menu_msg) {
-		return {
-			ctor: '::',
-			_0: A2(_user$project$Student_View$view_flashcard_menu_item, student_profile, top_level_menu_msg),
 			_1: {ctor: '[]'}
 		};
 	});

@@ -60,18 +60,6 @@ view_profile_header profile top_level_msg =
     EmptyProfile ->
       Nothing
 
-view_profile_menu_items : Profile -> (Msg -> msg) -> Maybe (List (Html msg))
-view_profile_menu_items profile top_level_msg =
-  case profile of
-    (Instructor instructor_profile) ->
-      Just (Instructor.View.view_instructor_profile_menu_items instructor_profile top_level_msg)
-
-    (Student student_profile) ->
-      Just (Student.View.view_student_profile_menu_items student_profile top_level_msg)
-
-    EmptyProfile ->
-      Nothing
-
 retrieve_student_profile : (Result Error Student.Profile.StudentProfile -> msg) -> ProfileID -> Cmd msg
 retrieve_student_profile msg profile_id =
   let

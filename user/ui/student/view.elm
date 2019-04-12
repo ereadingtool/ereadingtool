@@ -10,12 +10,6 @@ import Menu.Msg exposing (Msg(..))
 import Config
 
 
-view_flashcard_menu_item : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> Html msg
-view_flashcard_menu_item student_profile top_level_menu_msg =
-  div [classList [("lower-menu-item", True)]] [
-      Html.a [attribute "href" "/student/flashcards/"] [ Html.text "Flashcards" ]
-  ]
-
 view_student_profile_page_link : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> Html msg
 view_student_profile_page_link student_profile top_level_menu_msg =
   div [] [
@@ -47,13 +41,6 @@ view_profile_link student_profile top_level_msg =
      ]
   in
     view_profile_dropdown_menu student_profile top_level_msg items
-
-
-view_student_profile_menu_items : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> List (Html msg)
-view_student_profile_menu_items student_profile top_level_menu_msg =
-  [
-    view_flashcard_menu_item student_profile top_level_menu_msg
-  ]
 
 view_student_profile_header : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> List (Html msg)
 view_student_profile_header student_profile top_level_menu_msg =

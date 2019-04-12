@@ -1,21 +1,15 @@
 from typing import Dict
 
-from django.conf import settings
 from csp.decorators import csp_replace
-
+from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseRedirect
 from django.urls import reverse
-
-from django.http import Http404
-from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
-
 from django.views.generic import TemplateView
 
-from django.contrib.auth.mixins import LoginRequiredMixin
-
 from mixins.view import ElmLoadJsView
-
-from user.student.models import Student
 from user.instructor.models import Instructor
+from user.student.models import Student
 
 
 class FlashcardView(LoginRequiredMixin, TemplateView):

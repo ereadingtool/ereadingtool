@@ -17,6 +17,7 @@ import Instructor.Profile
 import Json.Encode
 import Json.Decode
 
+import Menu.Items
 import Menu.Msg as MenuMsg
 import Menu.Logout
 
@@ -34,9 +35,7 @@ type Msg =
  | LogOut MenuMsg.Msg
  | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
 
-type alias Flags = {
-   csrftoken : Flags.CSRFToken
- , instructor_profile : Instructor.Profile.InstructorProfileParams }
+type alias Flags = Flags.AuthedFlags { instructor_profile : Instructor.Profile.InstructorProfileParams }
 
 type alias Email = String
 
@@ -51,15 +50,17 @@ type alias NewInvite = {
 type alias Model = {
     flags : Flags
   , profile : Instructor.Profile.InstructorProfile
+  , menu_items : Menu.Items.MenuItems
   , new_invite : NewInvite
   , errors : Dict String String }
 
 init : Flags -> (Model, Cmd Msg)
 init flags = ({
-    flags = flags
-  , profile = Instructor.Profile.initProfile flags.instructor_profile
-  , new_invite = {email=""}
-  , errors = Dict.empty }, Cmd.none)
+    flags=flags
+  , profile=Instructor.Profile.initProfile flags.instructor_profile
+  , menu_items=Menu.Items.initMenuItems flags
+  , new_invite={email=""}
+  , errors=Dict.empty }, Cmd.none)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -256,7 +257,7 @@ view_content model =
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    (Views.view_authed_header (User.Profile.fromInstructorProfile model.profile) Nothing LogOut)
+    (Views.view_authed_header (User.Profile.fromInstructorProfile model.profile) model.menu_items LogOut)
   , (view_content model)
   , (Views.view_footer)
   ]

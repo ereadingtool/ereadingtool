@@ -8,13 +8,14 @@ import Text.Model exposing (TextListItem)
 import Text.Decode
 
 import Config exposing (..)
-import Profile.Flags
+import Profile.Flags as Flags
 
 import Views
 import User.Profile
 
 import Ports
 
+import Menu.Items
 import Menu.Msg as MenuMsg
 import Menu.Logout
 
@@ -24,11 +25,12 @@ type Msg =
   | LogOut MenuMsg.Msg
   | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
 
-type alias Flags = Profile.Flags.Flags {}
+type alias Flags = Flags.Flags {}
 
 type alias Model = {
     texts : List TextListItem
   , profile : User.Profile.Profile
+  , menu_items : Menu.Items.MenuItems
   , flags : Flags
   , loading : Bool
   }
@@ -39,6 +41,7 @@ init : Flags -> (Model, Cmd Msg)
 init flags = ({
       texts=[]
     , profile=User.Profile.initProfile flags
+    , menu_items=Menu.Items.initMenuItems flags
     , flags=flags
     , loading=True
   }, updateTexts [])
@@ -47,14 +50,12 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
-
 updateTexts : Filter -> Cmd Msg
 updateTexts filter =
   let
     request = Http.get text_api_endpoint Text.Decode.textListDecoder
   in
     Http.send Update request
-
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -75,7 +76,6 @@ update msg model =
     LoggedOut (Err err) ->
       (model, Cmd.none)
 
-
 main : Program Flags Model Msg
 main =
   Html.programWithFlags
@@ -85,11 +85,9 @@ main =
     , update = update
     }
 
-
 month_day_year_fmt : Date -> String
 month_day_year_fmt date = List.foldr (++) ""
     [(toString <| Date.month date) ++ " ", (toString <| Date.day date) ++ "," ++ " ", toString <| Date.year date]
-
 
 view_text : TextListItem -> Html Msg
 view_text text_list_item =
@@ -164,7 +162,7 @@ view_footer model = div [classList [("footer_items", True)] ] [
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    Views.view_authed_header model.profile Nothing LogOut
+    Views.view_authed_header model.profile model.menu_items LogOut
   , view_texts model
   , view_footer model
   ]

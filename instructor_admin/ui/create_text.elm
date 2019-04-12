@@ -7,6 +7,8 @@ import HttpHelpers exposing (post_with_headers, put_with_headers, delete_with_he
 import Config exposing (text_api_endpoint, text_api_endpoint)
 import Flags
 
+import Menu.Items
+
 import Text.Model
 import Text.Component exposing (TextComponent)
 import Text.Field
@@ -53,6 +55,7 @@ init flags = ({
       , success_msg=Nothing
       , error_msg=Nothing
       , profile=Instructor.Profile.initProfile flags.instructor_profile
+      , menu_items=Menu.Items.initMenuItems flags
       , text_component=Text.Component.emptyTextComponent
       , text_difficulties=[]
       , text_translations_model=Nothing
@@ -514,7 +517,7 @@ view model =
       , text_difficulties=model.text_difficulties }
   in
     div [] [
-        Views.view_authed_header (User.Profile.fromInstructorProfile model.profile) Nothing Text.Create.LogOut
+        Views.view_authed_header (User.Profile.fromInstructorProfile model.profile) model.menu_items Text.Create.LogOut
       , view_msgs model
       , Text.View.view_text text_view_params
     ]

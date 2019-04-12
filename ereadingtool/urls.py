@@ -22,9 +22,8 @@ from mixins.view import (ElmLoadJsView, NoAuthElmLoadJsView)
 from user.views.username import username
 
 urlpatterns = [
-    path('load_elm.js', ElmLoadJsView.as_view(content_type='application/javascript'), name='load-elm'),
-    path('load_elm_unauth.js', NoAuthElmLoadJsView.as_view(content_type='application/javascript'),
-         name='load-elm-unauth'),
+    path('load_elm.js', ElmLoadJsView.as_view(), name='load-elm'),
+    path('load_elm_unauth.js', NoAuthElmLoadJsView.as_view(), name='load-elm-unauth'),
 
     path('', include('user.urls.instructor')),
     path('', include('user.urls.student')),

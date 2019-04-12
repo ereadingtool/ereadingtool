@@ -12,6 +12,8 @@ from text.models import Text, TextDifficulty, text_statuses
 from user.instructor.models import Instructor
 from django.conf import settings
 
+from ereadingtool.menu import MenuItems
+
 
 class TextSearchView(TemplateView):
     template_name = 'text_search.html'
@@ -20,6 +22,20 @@ class TextSearchView(TemplateView):
 
 
 class TextSearchLoadElm(ElmLoadJsView):
+    def get_instructor_menu_items(self) -> MenuItems:
+        instructor_menu_items = super(TextSearchLoadElm, self).get_instructor_menu_items()
+
+        instructor_menu_items.select('text-search')
+
+        return instructor_menu_items
+
+    def get_student_menu_items(self) -> MenuItems:
+        student_menu_items = super(TextSearchLoadElm, self).get_student_menu_items()
+
+        student_menu_items.select('text-search')
+
+        return student_menu_items
+
     def get_context_data(self, **kwargs) -> Dict:
         context = super(TextSearchLoadElm, self).get_context_data(**kwargs)
 

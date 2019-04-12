@@ -2,16 +2,31 @@ module Menu.Items exposing (..)
 
 import Array exposing (Array)
 
-import Menu.Item exposing (MenuItem(..))
+import Menu exposing (..)
+
+import Menu.Item exposing (MenuItem)
+import Menu.Item.Link
 
 
 type MenuItems = MenuItems (Array MenuItem)
 
-menu_items : MenuItems
-menu_items =
-  MenuItems <| Array.fromList [
-    MenuItem "/text/search" "Search Texts" False
-  ]
+
+type alias MenuItemParams = {
+   link: String
+ , link_text: String
+ , selected: Bool }
+
+
+initMenuItemFromParams : MenuItemParams -> MenuItem
+initMenuItemFromParams param =
+  let
+    menu_link = Menu.Item.Link.new (Menu.URI param.link) (Menu.LinkText param.link_text)
+  in
+    Menu.Item.new menu_link (Menu.Select param.selected)
+
+initMenuItems : { a | menu_items: List MenuItemParams } -> MenuItems
+initMenuItems flags =
+  MenuItems (Array.fromList <| List.map initMenuItemFromParams flags.menu_items)
 
 items : MenuItems -> Array MenuItem
 items (MenuItems menu_items) =

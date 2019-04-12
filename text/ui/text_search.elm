@@ -37,6 +37,8 @@ import Text.Search.ReadingStatus exposing (TextReadStatus)
 import Menu.Msg as MenuMsg
 import Menu.Logout
 
+import Menu.Items
+
 
 -- UPDATE
 type Msg =
@@ -53,8 +55,7 @@ type Msg =
  | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
 
 
-type alias Flags =
-  Flags.Flags {
+type alias Flags = Flags.Flags {
     text_difficulties: List Text.Model.TextDifficulty
   , text_statuses: List (String, String)
   , welcome: Bool
@@ -63,6 +64,7 @@ type alias Flags =
 type alias Model = {
     results : List Text.Model.TextListItem
   , profile : User.Profile.Profile
+  , menu_items : Menu.Items.MenuItems
   , text_search : TextSearch
   , help : TextSearch.Help.TextSearchHelp
   , error_msg : Maybe String
@@ -99,10 +101,13 @@ init flags =
           default_search)
 
     text_search_help = TextSearch.Help.init
+
+    menu_items = Menu.Items.initMenuItems flags
   in
     ({
       results=[]
     , profile=profile
+    , menu_items=menu_items
     , text_search=text_search
     , help=text_search_help
     , error_msg=Nothing
@@ -447,7 +452,7 @@ view_content model =
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    Views.view_authed_header model.profile (Just 0) LogOut
+    Views.view_authed_header model.profile model.menu_items LogOut
   , view_content model
   , Views.view_footer
   ]

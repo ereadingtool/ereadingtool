@@ -1,9 +1,11 @@
 module TextReader exposing (..)
 
+type Selected = Selected Bool
+type AnsweredCorrectly = AnsweredCorrectly Bool
+type FeedbackViewable = FeedbackViewable Bool
+type WebSocketAddress = WebSocketAddress String
 
-type alias Selected = Bool
-type alias AnsweredCorrectly = Bool
-type alias FeedbackViewable = Bool
-type alias WebSocketAddress = String
 
-type alias TextItemAttributes a = { a | index : Int }
+webSocketAddrToString : WebSocketAddress -> String
+webSocketAddrToString (WebSocketAddress addr) = addr
+

@@ -3,7 +3,6 @@ module Views exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (id, class, classList, attribute)
 
-import Menu
 import Menu.Items
 
 import Menu.View
@@ -36,20 +35,11 @@ view_unauthed_header : Html msg
 view_unauthed_header =
   view_header [] []
 
-view_authed_header : User.Profile.Profile -> Maybe Menu.SelectedMenuItem -> (Menu.Msg.Msg -> msg) -> Html msg
-view_authed_header profile selected_menu_item top_level_menu_msg =
-  let
-    m_items =
-      case selected_menu_item of
-        Just selected_index ->
-          (Menu.Items.setSelected Menu.Items.menu_items selected_index True)
-
-        _ ->
-          Menu.Items.menu_items
-  in
-    view_header
-      (Menu.View.view_top_menu m_items profile top_level_menu_msg)
-      (Menu.View.view_lower_menu m_items profile top_level_menu_msg)
+view_authed_header : User.Profile.Profile -> Menu.Items.MenuItems -> (Menu.Msg.Msg -> msg) -> Html msg
+view_authed_header profile menu_items top_level_menu_msg =
+  view_header
+    (Menu.View.view_top_menu menu_items profile top_level_menu_msg)
+    (Menu.View.view_lower_menu menu_items profile top_level_menu_msg)
 
 view_give_feedback : Html msg
 view_give_feedback =

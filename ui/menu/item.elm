@@ -1,22 +1,35 @@
 module Menu.Item exposing (..)
 
-import Html
-
 import Menu exposing (..)
+import Menu.Item.Link
+
+type MenuItem = MenuItem Menu.Item.Link.MenuItemLink Select
 
 
-type MenuItem = MenuItem URI LinkText Selected
+new : Menu.Item.Link.MenuItemLink -> Select -> MenuItem
+new link select =
+  MenuItem link select
 
-
-selected : MenuItem -> Selected
-selected (MenuItem _ _ selected) = selected
+selected : MenuItem -> Bool
+selected (MenuItem _ selected) =
+  Menu.selected selected
 
 uri : MenuItem -> URI
-uri (MenuItem uri_str _ _) = uri_str
+uri (MenuItem link _) =
+  Menu.Item.Link.uri link
+
+uriToString : MenuItem -> String
+uriToString menu_item =
+  Menu.uriToString (uri menu_item)
 
 linkText : MenuItem -> LinkText
-linkText (MenuItem _ link_text _) = link_text
+linkText (MenuItem link _) =
+  Menu.Item.Link.text link
+
+linkTextToString : MenuItem -> String
+linkTextToString menu_item =
+  Menu.linkTextToString (linkText menu_item)
 
 setSelected : MenuItem -> Bool -> MenuItem
-setSelected (MenuItem uri link_text _) selected =
-  MenuItem uri link_text selected
+setSelected (MenuItem link _) select =
+  MenuItem link (Select select)

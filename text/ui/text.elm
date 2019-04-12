@@ -8,6 +8,10 @@ import User.Profile.TextReader.Flashcards
 
 import WebSocket
 
+import Menu.Items
+
+import TextReader
+
 import TextReader.TextWord
 import TextReader.Encode
 import TextReader.Text.Model
@@ -27,6 +31,8 @@ init flags =
     profile = User.Profile.initProfile flags
     text_words_with_flashcards = List.map TextReader.TextWord.newFromParams flags.flashcards
 
+    menu_items = Menu.Items.initMenuItems flags
+
     flashcards =
       User.Profile.TextReader.Flashcards.initFlashcards
         profile
@@ -36,6 +42,8 @@ init flags =
     ({ text=TextReader.Text.Model.emptyText
      , gloss=Dict.empty
      , profile=profile
+     , menu_items=menu_items
+     , text_reader_ws_addr=TextReader.WebSocketAddress flags.text_reader_ws_addr
      , flashcard=flashcards
      , progress=Init
      , flags=flags
@@ -44,14 +52,14 @@ init flags =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  WebSocket.listen model.flags.text_reader_ws_addr WebSocketResp
+  WebSocket.listen (TextReader.webSocketAddrToString model.text_reader_ws_addr) WebSocketResp
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   let
     send_command = (\cmd ->
       WebSocket.send
-        model.flags.text_reader_ws_addr
+        (TextReader.webSocketAddrToString model.text_reader_ws_addr)
         (TextReader.Encode.jsonToString <| TextReader.Encode.send_command cmd))
   in
     case msg of
@@ -107,7 +115,7 @@ main =
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    (Views.view_authed_header model.profile Nothing LogOut)
+    (Views.view_authed_header model.profile model.menu_items LogOut)
   , (TextReader.View.view_content model)
   , (Views.view_footer)
   ]

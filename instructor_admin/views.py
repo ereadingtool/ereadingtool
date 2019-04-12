@@ -13,6 +13,8 @@ from mixins.view import ElmLoadJsView
 from text.models import Text
 from user.views.instructor import InstructorView
 
+from ereadingtool.menu import MenuItems, instructor_create_a_text_menu_item
+
 
 class AdminView(InstructorView, TemplateView):
     pass
@@ -21,6 +23,17 @@ class AdminView(InstructorView, TemplateView):
 class TextAdminView(AdminView):
     model = Text
     template_name = 'instructor_admin/admin.html'
+
+
+class TextAdminElmLoadView(ElmLoadJsView):
+    def get_instructor_menu_items(self) -> MenuItems:
+        instructor_menu_items = super(TextAdminElmLoadView, self).get_instructor_menu_items()
+
+        instructor_menu_items.append(instructor_create_a_text_menu_item())
+
+        instructor_menu_items.select('admin-text-search')
+
+        return instructor_menu_items
 
 
 class TextDefinitionElmLoadView(ElmLoadJsView):

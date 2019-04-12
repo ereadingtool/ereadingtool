@@ -1,6 +1,7 @@
 module Flashcard.Model exposing (..)
 
 import User.Profile
+import Menu.Items
 
 import Profile.Flags as Flags
 
@@ -113,6 +114,7 @@ translationOrPhrase flashcard =
 
 type alias Model = {
     profile : User.Profile.Profile
+  , menu_items : Menu.Items.MenuItems
   , mode: Maybe Mode
   , session_state: SessionState
   , exception : Maybe Exception
