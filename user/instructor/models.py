@@ -1,4 +1,5 @@
-from typing import Dict
+from typing import Dict, List, Tuple
+
 from django.db import models
 from django.db.models import Q
 from django.urls import reverse_lazy
@@ -17,6 +18,14 @@ class Instructor(Profile, TextReadings, models.Model):
     @property
     def is_admin(self):
         return self.admin or False
+
+    @property
+    def serialized_flashcards(self) -> List[Tuple]:
+        serialized_flashcards = [
+            (flashcard.phrase.phrase, flashcard.to_dict()) for flashcard in self.flashcards.all()
+        ]
+
+        return serialized_flashcards
 
     @property
     def text_search_queryset(self):

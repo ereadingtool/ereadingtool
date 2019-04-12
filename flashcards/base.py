@@ -2,17 +2,17 @@ from typing import Dict
 
 from django.db import models
 
-from text.phrase.models import TextPhrase
-
 
 class Flashcard(models.Model):
     class Meta:
         abstract = True
 
+    @property
+    def phrase(self):
+        raise NotImplementedError
+
     created_dt = models.DateTimeField(auto_now_add=True)
     next_review_dt = models.DateTimeField(null=True)
-
-    phrase = models.ForeignKey(TextPhrase, related_name='flashcards', on_delete=models.CASCADE)
 
     repetitions = models.IntegerField(default=0)
     interval = models.FloatField(default=1)

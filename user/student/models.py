@@ -1,8 +1,7 @@
-from typing import Dict, List, Tuple, AnyStr, TypeVar
+from typing import Dict, List, Tuple, AnyStr
 
 from django.db import models
-from django.template import loader
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 
 from report.models import StudentPerformanceReport
 from text.models import TextDifficulty, Text
