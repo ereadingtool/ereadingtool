@@ -8,13 +8,14 @@ import Text.Model exposing (TextListItem)
 import Text.Decode
 
 import Config exposing (..)
-import Flags
+import Profile.Flags as Flags
 
 import Views
 import User.Profile
 
 import Ports
 
+import Menu.Items
 import Menu.Msg as MenuMsg
 import Menu.Logout
 
@@ -24,11 +25,12 @@ type Msg =
   | LogOut MenuMsg.Msg
   | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
 
-type alias Flags = Flags {}
+type alias Flags = Flags.Flags {}
 
 type alias Model = {
     texts : List TextListItem
   , profile : User.Profile.Profile
+  , menu_items : Menu.Items.MenuItems
   , flags : Flags
   , loading : Bool
   }
@@ -39,6 +41,7 @@ init : Flags -> (Model, Cmd Msg)
 init flags = ({
       texts=[]
     , profile=User.Profile.initProfile flags
+    , menu_items=Menu.Items.initMenuItems flags
     , flags=flags
     , loading=True
   }, updateTexts [])
@@ -164,7 +167,7 @@ view_footer model = div [classList [("footer_items", True)] ] [
 -- VIEW
 view : Model -> Html Msg
 view model = div [] [
-    Views.view_authed_header model.profile Nothing LogOut
+    Views.view_authed_header model.profile model.menu_items LogOut
   , view_texts model
   , view_footer model
   ]

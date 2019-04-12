@@ -3,7 +3,7 @@ from instructor_admin.views import (TextAdminView, AdminCreateEditTextView, Admi
                                     TextDefinitionView, TextDefinitionElmLoadView)
 
 urlpatterns = [
-    path('texts/', TextAdminView.as_view(), name='admin'),
+    path('texts/', TextAdminView.as_view(), name='admin-text-search'),
 
     # template loads "load_elm.js" from either /text/<int:pk>/ or /text/
     # e.g. /text/<int:pk>/load_elm.js or /text/load_elm.js

@@ -46,4 +46,4 @@ view_lower_menu (Menu.Items.MenuItems menu_items) profile top_level_menu_msg =
      (Array.toList
   <| Array.map (\item ->
        view_lower_menu_item item Nothing
-     ) menu_items) ++ Maybe.withDefault [] (User.Profile.view_profile_menu_items profile top_level_menu_msg)
+     ) menu_items)

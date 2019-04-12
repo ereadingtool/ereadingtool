@@ -2,6 +2,8 @@ module TextReader.Model exposing (..)
 
 import Dict exposing (Dict)
 
+import TextReader
+
 import TextReader.TextWord
 
 import Text.Translations exposing (Id, Phrase, Instance)
@@ -10,9 +12,9 @@ import TextReader.Text.Model exposing (Text)
 import TextReader.Section.Model exposing (Section)
 import TextReader.Answer.Model exposing (TextAnswer, Answer, AnswerCorrect)
 
-import TextReader exposing (TextItemAttributes, WebSocketAddress)
+import Menu.Items
 
-import Flags
+import Profile.Flags as Flags
 
 import User.Profile
 import User.Profile.TextReader.Flashcards
@@ -86,14 +88,16 @@ type alias TextScores = {
 
 
 type alias Flags =
-  Flags.AuthedFlags {
+  Flags.Flags {
     text_id : Int
   , flashcards : List TextReader.TextWord.TextWordParams
-  , text_reader_ws_addr: WebSocketAddress }
+  , text_reader_ws_addr: String }
 
 type alias Model = {
     text : Text
   , profile : User.Profile.Profile
+  , menu_items : Menu.Items.MenuItems
+  , text_reader_ws_addr : TextReader.WebSocketAddress
   , flashcard: User.Profile.TextReader.Flashcards.ProfileFlashcards
   , progress: Progress
   , gloss : Gloss

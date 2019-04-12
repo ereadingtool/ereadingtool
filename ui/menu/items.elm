@@ -4,7 +4,7 @@ import Array exposing (Array)
 
 import Menu exposing (..)
 
-import Menu.Item exposing (MenuItem(..))
+import Menu.Item exposing (MenuItem)
 import Menu.Item.Link
 
 

@@ -7,7 +7,11 @@ from django.views.decorators.vary import vary_on_cookie
 from django.views.generic import TemplateView
 from rjsmin import jsmin
 
-from ereadingtool.menu import student_menu_items
+from ereadingtool.menu import student_menu_items, instructor_menu_items, MenuItems
+from user.mixins.models import Profile
+
+from user.student.models import Student
+from user.instructor.models import Instructor
 
 
 class ElmLoadJsBaseView(TemplateView):
@@ -39,6 +43,17 @@ class ElmLoadJsBaseView(TemplateView):
 
 
 class ElmLoadJsView(LoginRequiredMixin, ElmLoadJsBaseView):
+    def __init__(self, *args, **kwargs):
+        super(ElmLoadJsView, self).__init__(*args, **kwargs)
+
+        self.profile = None
+
+    def get_instructor_menu_items(self) -> MenuItems:
+        return instructor_menu_items()
+
+    def get_student_menu_items(self) -> MenuItems:
+        return student_menu_items()
+
     def get_context_data(self, **kwargs) -> Dict:
         context = super(ElmLoadJsView, self).get_context_data(**kwargs)
 
@@ -51,6 +66,12 @@ class ElmLoadJsView(LoginRequiredMixin, ElmLoadJsBaseView):
                                                  'value': json.dumps(profile.to_dict())}
             context['elm']['instructor_profile'] = {'quote': False, 'safe': True,
                                                     'value': 'null'}
+
+            context['elm']['menu_items'] = {
+                'quote': False,
+                'safe': True,
+                'value': json.dumps(self.get_student_menu_items().to_dict())
+            }
         except ObjectDoesNotExist:
             profile = self.request.user.instructor
 
@@ -58,6 +79,12 @@ class ElmLoadJsView(LoginRequiredMixin, ElmLoadJsBaseView):
                                                     'value': json.dumps(profile.to_dict())}
             context['elm']['student_profile'] = {'quote': False, 'safe': True,
                                                  'value': 'null'}
+
+            context['elm']['menu_items'] = {
+                'quote': False,
+                'safe': True,
+                'value': json.dumps(self.get_instructor_menu_items().to_dict())
+            }
 
         context['elm']['profile_id'] = {
             'quote': False,
@@ -71,11 +98,7 @@ class ElmLoadJsView(LoginRequiredMixin, ElmLoadJsBaseView):
             'value': profile.__class__.__name__.lower()
         }
 
-        context['elm']['menu_items'] = {
-            'quote': False,
-            'safe': True,
-            'value': json.dumps(student_menu_items().to_dict())
-        }
+        self.profile = profile
 
         return context
 

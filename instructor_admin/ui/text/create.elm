@@ -3,6 +3,8 @@ module Text.Create exposing (Flags, Mode(..), Msg(..), TextField(..), Model, Tex
 import Time
 import Dict exposing (Dict)
 
+import Menu.Items
+
 import Json.Encode
 
 import Http
@@ -28,9 +30,8 @@ import Instructor.Profile
 import Menu.Msg as MenuMsg
 import Menu.Logout
 
-type alias Flags = {
+type alias Flags = Flags.AuthedFlags {
     instructor_profile : Instructor.Profile.InstructorProfileParams
-  , csrftoken: Flags.CSRFToken
   , text: Maybe Json.Encode.Value
   , translation_flags: Text.Translations.Flags
   , tags: List String }
@@ -83,6 +84,7 @@ type alias Model = {
     flags : Flags
   , mode : Mode
   , profile : Instructor.Profile.InstructorProfile
+  , menu_items : Menu.Items.MenuItems
   , success_msg : Maybe String
   , error_msg : Maybe String
   , text_component : TextComponent

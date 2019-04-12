@@ -5,6 +5,8 @@ import Dict exposing (Dict)
 
 import Views
 
+import Menu.Items
+
 import Student.Profile exposing (StudentProfileParams)
 
 import Student.Profile.Msg exposing (..)
@@ -25,6 +27,7 @@ init flags =
     ({
       flags = flags
     , profile = student_profile
+    , menu_items = Menu.Items.initMenuItems flags
     , flashcards = flags.flashcards
     , performance_report = flags.performance_report
     , editing = Dict.empty

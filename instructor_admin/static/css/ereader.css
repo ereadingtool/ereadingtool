@@ -91,7 +91,7 @@ body {
     grid-column: 2;
     display: grid;
 
-    grid-template-columns: repeat(auto-fit, minmax(35px, 100px));
+    grid-template-columns: repeat(auto-fit, minmax(35px, 150px));
     grid-column-gap: 15px;
 }
 
