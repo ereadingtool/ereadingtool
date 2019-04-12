@@ -1,8 +1,11 @@
 from django.urls import path
-from instructor_admin.views import (TextAdminView, AdminCreateEditTextView, AdminCreateEditElmLoadView,
+from instructor_admin.views import (TextAdminView, TextAdminElmLoadView,
+                                    AdminCreateEditTextView, AdminCreateEditElmLoadView,
                                     TextDefinitionView, TextDefinitionElmLoadView)
 
+
 urlpatterns = [
+    path('texts/load_elm.js', TextAdminElmLoadView.as_view(), name='admin-text-search-load-elm'),
     path('texts/', TextAdminView.as_view(), name='admin-text-search'),
 
     # template loads "load_elm.js" from either /text/<int:pk>/ or /text/

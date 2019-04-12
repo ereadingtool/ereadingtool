@@ -8,10 +8,6 @@ from django.views.generic import TemplateView
 from rjsmin import jsmin
 
 from ereadingtool.menu import student_menu_items, instructor_menu_items, MenuItems
-from user.mixins.models import Profile
-
-from user.student.models import Student
-from user.instructor.models import Instructor
 
 
 class ElmLoadJsBaseView(TemplateView):
@@ -42,12 +38,39 @@ class ElmLoadJsBaseView(TemplateView):
         return context
 
 
+class ElmLoadJsStudentBaseView(LoginRequiredMixin, ElmLoadJsBaseView):
+    def get_student_menu_items(self) -> MenuItems:
+        return student_menu_items()
+
+    def get_context_data(self, **kwargs) -> Dict:
+        context = super(ElmLoadJsStudentBaseView, self).get_context_data(**kwargs)
+
+        context['elm']['menu_items'] = {
+            'quote': False,
+            'safe': True,
+            'value': json.dumps(self.get_student_menu_items().to_dict())
+        }
+
+        return context
+
+
+class ElmLoadJsInstructorBaseView(LoginRequiredMixin, ElmLoadJsBaseView):
+    def get_instructor_menu_items(self) -> MenuItems:
+        return instructor_menu_items()
+
+    def get_context_data(self, **kwargs) -> Dict:
+        context = super(ElmLoadJsInstructorBaseView, self).get_context_data(**kwargs)
+
+        context['elm']['menu_items'] = {
+            'quote': False,
+            'safe': True,
+            'value': json.dumps(self.get_instructor_menu_items().to_dict())
+        }
+
+        return context
+
+
 class ElmLoadJsView(LoginRequiredMixin, ElmLoadJsBaseView):
-    def __init__(self, *args, **kwargs):
-        super(ElmLoadJsView, self).__init__(*args, **kwargs)
-
-        self.profile = None
-
     def get_instructor_menu_items(self) -> MenuItems:
         return instructor_menu_items()
 
@@ -97,8 +120,6 @@ class ElmLoadJsView(LoginRequiredMixin, ElmLoadJsBaseView):
             'safe': True,
             'value': profile.__class__.__name__.lower()
         }
-
-        self.profile = profile
 
         return context
 

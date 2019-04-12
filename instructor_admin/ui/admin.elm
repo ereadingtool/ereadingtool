@@ -50,14 +50,12 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
-
 updateTexts : Filter -> Cmd Msg
 updateTexts filter =
   let
     request = Http.get text_api_endpoint Text.Decode.textListDecoder
   in
     Http.send Update request
-
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -78,7 +76,6 @@ update msg model =
     LoggedOut (Err err) ->
       (model, Cmd.none)
 
-
 main : Program Flags Model Msg
 main =
   Html.programWithFlags
@@ -88,11 +85,9 @@ main =
     , update = update
     }
 
-
 month_day_year_fmt : Date -> String
 month_day_year_fmt date = List.foldr (++) ""
     [(toString <| Date.month date) ++ " ", (toString <| Date.day date) ++ "," ++ " ", toString <| Date.year date]
-
 
 view_text : TextListItem -> Html Msg
 view_text text_list_item =

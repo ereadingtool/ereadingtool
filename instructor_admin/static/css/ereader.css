@@ -65,7 +65,7 @@ body {
     display: grid;
 
     margin-top: 35px;
-    grid-template-columns: 10% auto 4%;
+    grid-template-columns: 4% auto 4%;
 
     grid-column-gap: 0;
 
@@ -145,6 +145,7 @@ body {
 
     align-items: center;
     justify-items: center;
+    text-align: center;
 
     font-size: 23px;
     font-weight: 300;

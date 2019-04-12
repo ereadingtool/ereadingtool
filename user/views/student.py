@@ -15,7 +15,7 @@ from user.student.models import Student
 from user.views.api import APIView
 from user.views.mixin import ProfileView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from mixins.view import ElmLoadJsBaseView, NoAuthElmLoadJsView
+from mixins.view import ElmLoadJsStudentBaseView, NoAuthElmLoadJsView
 
 from django.template import loader
 
@@ -23,7 +23,7 @@ from django.template import loader
 Form = TypeVar('Form', bound=forms.Form)
 
 
-class ElmLoadJsStudentView(LoginRequiredMixin, ElmLoadJsBaseView):
+class ElmLoadJsStudentView(ElmLoadJsStudentBaseView):
     def get_context_data(self, **kwargs) -> Dict:
         context = super(ElmLoadJsStudentView, self).get_context_data(**kwargs)
 
