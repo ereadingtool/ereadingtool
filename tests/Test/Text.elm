@@ -92,7 +92,7 @@ test_text_difficulties =
 
 test_profile : Instructor.Profile.InstructorProfile
 test_profile =
-  Instructor.Profile.init_profile {id=Just 1, texts=[], invites=Nothing, username="an_instructor@ereadingtool.com"}
+  Instructor.Profile.initProfile {id=Just 1, texts=[], invites=Nothing, username="an_instructor@ereadingtool.com"}
 
 test_text_view_params : Text.Component.TextComponent -> TextViewParams
 test_text_view_params text_component = {
@@ -191,20 +191,14 @@ test_text_section_update_body =
 test_text_section_body : String
 test_text_section_body =
   """
-<p style="margin-left:0in; margin-right:0in"><span style="font-family:Arial,Helvetica,sans-serif">
-<span style="font-size:12pt"><span style="color:black">С</span> <span style="color:black">такой</span>
-<span style="color:black">инициативой</span> <span style="color:black">выступила Мария дель Пилар-дель-Олмо,
-советник по вопросам экономики и финансов сообщества Кастилия и Леон. По ее словам, на этот шаг власти решились
-из-за хитрости самих клиентов: покупатели выбирают понравившуюся вещь в обычном магазине, примеряют ее, а затем
-делают онлайн-заказы в других местах.</span></span></span></p>\n\n<p style="margin-left:0in; margin-right:0in">
-<span style="font-family:Arial,Helvetica,sans-serif"><span style="font-size:12pt">
-<span style="color:black">&laquo;Если ничего не предпринимать, покупатели будут и дальше заказывать выбранные
-вещи онлайн&raquo;, &mdash; заявила она.</span></span></span></p>\n\n<p>
-<span style="font-family:Arial,Helvetica,sans-serif"><span style="font-size:12.0pt">
-<span style="color:black">Она также добавила,</span></span>&nbsp;<span style="font-size:12.0pt">
-<span style="color:black">что стране</span></span>&nbsp;<span style="font-size:12.0pt">
-<span style="color:black">пора внедрять &laquo;инновационные идеи&raquo; и &laquo;стимулы&raquo;
-для защиты малого бизнеса от действий крупных корпораций, работающих через интернет.</span></span></span></p>
+<p>If you are reading a text and you come across an unfamiliar word, you can click on the word to receive a glossed
+definition. Try clicking on some of the words from the excerpt from
+Tolstoy&#39;s&nbsp;
+<em>Childhood&nbsp;</em>below:</p>\n\n<p>&quot;Пить&nbsp;чай&nbsp;в&nbsp;лесу&nbsp;на&nbsp;траве&nbsp;---&nbsp;
+считалось&nbsp;большим&nbsp;наслаждением.&quot;</p>\n\n<p>As you click the words, you will see the English equivalent
+and the part of speech pop up in a little box near the word. In that box, you will also see the option to add that
+word to your flashcards. Adding words to your flashcards will allow you to later review words that you learned in
+current text.&nbsp;</p>
   """
 
 tagWord : Int -> String -> Html msg

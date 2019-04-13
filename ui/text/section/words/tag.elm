@@ -1,4 +1,5 @@
-module Text.Section.Words.Tag exposing (tagWordsAndToVDOM)
+module Text.Section.Words.Tag exposing (tagWordsAndToVDOM, maybeParseWordWithPunctuation, countOccurrences,
+  intersperseWithWhitespace, parseCompoundWords)
 
 import Regex
 import Dict exposing (Dict)
