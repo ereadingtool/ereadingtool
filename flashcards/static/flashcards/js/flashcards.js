@@ -14011,7 +14011,7 @@ var _user$project$Flashcard_View$view_content = function (model) {
 				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$id('content'),
+					_0: _elm_lang$html$Html_Attributes$id('contents'),
 					_1: {ctor: '[]'}
 				},
 				content),

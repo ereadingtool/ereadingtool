@@ -25,14 +25,18 @@ maybeParseWordWithPunctuation : String -> List String
 maybeParseWordWithPunctuation str =
   let
     matches = Regex.find (Regex.AtMost 1) punctuation_re str
+    end_of_str_index = String.length str
   in
     case matches of
       match :: [] ->
         let
-          punctuation_char = String.slice match.index (match.index + 1) str
+          end_of_match_index = match.index + 1
+
+          punctuation_char = String.slice match.index end_of_match_index str
           word = String.slice 0 match.index str
+          rest_of_str = String.slice end_of_match_index end_of_str_index str
         in
-          [word, punctuation_char]
+          [word, String.join "" [punctuation_char, rest_of_str]]
 
       _ ->
         [str]
@@ -120,9 +124,9 @@ tagWordAndToVDOM tag_word is_part_of_compound_word node (html, occurrences) =
 
         counted_words = intersperseWithWhitespace (parseCompoundWords is_part_of_compound_word counted_occurrences)
 
-        new_node = span [] (List.map (\(token, instance) -> tag_word instance token) counted_words)
+        new_nodes = List.map (\(token, instance) -> tag_word instance token) counted_words
       in
-        (html ++ [new_node], token_occurrences)
+        (html ++ new_nodes, token_occurrences)
 
     HtmlParser.Element name attrs nodes ->
       let

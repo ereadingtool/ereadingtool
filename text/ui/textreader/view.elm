@@ -106,7 +106,7 @@ view_questions section =
   let
     text_reader_questions = TextReader.Section.Model.questions section
   in
-    div [class "questions"] (Array.toList <| Array.map (view_question section) text_reader_questions)
+    div [id "questions"] (Array.toList <| Array.map (view_question section) text_reader_questions)
 
 
 view_translation : TextReader.TextWord.Translation -> Html Msg
@@ -186,9 +186,9 @@ view_text_section model text_reader_section =
 
     section_title = ("Section " ++ (toString (text_section.order +1)) ++ "/" ++ (toString text_section.num_of_sections))
   in
-    div [class "text_section"] <| [
-        div [class "section_title"] [ Html.text section_title ]
-      , div [class "text_body"] text_body_vdom
+    div [id "text-body"] <| [
+        div [id "title"] [ Html.text section_title ]
+      , div [id "body"] text_body_vdom
       , view_questions text_reader_section
     ]
 
@@ -241,7 +241,6 @@ view_exceptions model =
     Nothing ->
       [])
 
-
 view_content : Model -> Html Msg
 view_content model =
   let
@@ -268,6 +267,4 @@ view_content model =
         _ ->
           [])
   in
-    div [id "text"] [
-      div [id "content"] content
-    ]
+    div [id "text-section"] content

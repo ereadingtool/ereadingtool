@@ -252,5 +252,5 @@ view_content model =
           ])
   in
     div [id "flashcard"] [
-      div [id "content"] content
+      div [id "contents"] content
     ]
