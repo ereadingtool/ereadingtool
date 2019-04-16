@@ -28194,7 +28194,7 @@ var _user$project$Text_Section_Words_Tag$countOccurrences = F2(
 			},
 			words);
 	});
-var _user$project$Text_Section_Words_Tag$punctuation_re = _elm_lang$core$Regex$regex('[?!.,]');
+var _user$project$Text_Section_Words_Tag$punctuation_re = _elm_lang$core$Regex$regex('[?!.,»«—-();]');
 var _user$project$Text_Section_Words_Tag$has_punctuation = _elm_lang$core$Regex$contains(_user$project$Text_Section_Words_Tag$punctuation_re);
 var _user$project$Text_Section_Words_Tag$intersperseWordsWith = F3(
 	function (str, _p15, tokens) {
@@ -28233,6 +28233,7 @@ var _user$project$Text_Section_Words_Tag$intersperseWithWhitespace = function (w
 		word_tokens);
 };
 var _user$project$Text_Section_Words_Tag$maybeParseWordWithPunctuation = function (str) {
+	var end_of_str_index = _elm_lang$core$String$length(str);
 	var matches = A3(
 		_elm_lang$core$Regex$find,
 		_elm_lang$core$Regex$AtMost(1),
@@ -28242,13 +28243,26 @@ var _user$project$Text_Section_Words_Tag$maybeParseWordWithPunctuation = functio
 	if ((_p19.ctor === '::') && (_p19._1.ctor === '[]')) {
 		var _p20 = _p19._0;
 		var word = A3(_elm_lang$core$String$slice, 0, _p20.index, str);
-		var punctuation_char = A3(_elm_lang$core$String$slice, _p20.index, _p20.index + 1, str);
+		var end_of_match_index = _p20.index + 1;
+		var punctuation_char = A3(_elm_lang$core$String$slice, _p20.index, end_of_match_index, str);
+		var rest_of_str = A3(_elm_lang$core$String$slice, end_of_match_index, end_of_str_index, str);
 		return {
 			ctor: '::',
 			_0: word,
 			_1: {
 				ctor: '::',
-				_0: punctuation_char,
+				_0: A2(
+					_elm_lang$core$String$join,
+					'',
+					{
+						ctor: '::',
+						_0: punctuation_char,
+						_1: {
+							ctor: '::',
+							_0: rest_of_str,
+							_1: {ctor: '[]'}
+						}
+					}),
 				_1: {ctor: '[]'}
 			}
 		};
@@ -28278,26 +28292,16 @@ var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F4(
 				var token_occurrences = _p24._1;
 				var counted_words = _user$project$Text_Section_Words_Tag$intersperseWithWhitespace(
 					A2(_user$project$Text_Section_Words_Tag$parseCompoundWords, is_part_of_compound_word, counted_occurrences));
-				var new_node = A2(
-					_elm_lang$html$Html$span,
-					{ctor: '[]'},
-					A2(
-						_elm_lang$core$List$map,
-						function (_p25) {
-							var _p26 = _p25;
-							return A2(tag_word, _p26._1, _p26._0);
-						},
-						counted_words));
+				var new_nodes = A2(
+					_elm_lang$core$List$map,
+					function (_p25) {
+						var _p26 = _p25;
+						return A2(tag_word, _p26._1, _p26._0);
+					},
+					counted_words);
 				return {
 					ctor: '_Tuple2',
-					_0: A2(
-						_elm_lang$core$Basics_ops['++'],
-						_p30,
-						{
-							ctor: '::',
-							_0: new_node,
-							_1: {ctor: '[]'}
-						}),
+					_0: A2(_elm_lang$core$Basics_ops['++'], _p30, new_nodes),
 					_1: token_occurrences
 				};
 			case 'Element':
