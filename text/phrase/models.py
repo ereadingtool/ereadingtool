@@ -27,7 +27,7 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
 
         try:
             return matches[self.instance]
-        except IndexError:
+        except (TypeError, IndexError):
             return None
 
     @property
