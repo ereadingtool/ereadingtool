@@ -21,12 +21,11 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
 
     @property
     def sentence(self) -> Union[AnyStr, None]:
-        matches = re.match(r'(?P<sentence>(.+)' + self.phrase + '(.+?)\\.)',
-                           self.text_section.body_text,
-                           re.DOTALL | re.MULTILINE)
+        matches = re.search(r'\s*(?P<sentence>[^?!.]+' + self.phrase + r'[^?!.]*?[?!.]+?)',
+                            self.text_section.body_text, re.DOTALL | re.MULTILINE)
 
         try:
-            return matches[self.instance]
+            return matches.group('sentence')
         except (TypeError, IndexError):
             return None
 

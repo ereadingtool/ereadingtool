@@ -26,6 +26,10 @@ from user.student.models import Student
 
 from user.instructor.models import Instructor
 
+from text.translations.models import TextWord
+
+from text.phrase.models import TextPhrase, TextPhraseTranslation
+
 from statemachine import State
 
 
@@ -85,6 +89,32 @@ class TestText(TestUser, TestCase):
 
         self.assertNotIn('2', words)
         self.assertIn('руб', words)
+
+    def test_example_sentence_re(self):
+        test_data = self.get_test_data()
+
+        test_body = """Мне 18 лет. Я — студентка Новосибирского пединститута. 
+        Две лекции, две пары подряд. Преподаватель немного опаздывает. Так хочется спать…"""
+
+        test_data['text_sections'][0]['body'] = test_body
+
+        self.test_post_text(test_data=test_data)
+
+        self.assertTrue(TextSection.objects.count())
+
+        text_section = TextSection.objects.all()[0]
+
+        TextPhraseTranslation.create(
+            text_phrase=TextWord.create(phrase='опаздывает', instance=0, text_section=text_section.pk),
+            phrase='be late',
+            correct_for_context=True
+        )
+
+        text_phrase = TextPhrase.objects.get(phrase='опаздывает', text_section=text_section)
+
+        self.assertTrue(text_phrase)
+
+        self.assertEquals('Преподаватель немного опаздывает.', text_phrase.sentence)
 
     def test_run_definition_background_job(self, test_data: Dict) -> Tuple[int, TextSection]:
         num_of_words = len(test_data['text_sections'][0]['body'].split())

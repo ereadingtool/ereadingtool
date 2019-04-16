@@ -65,7 +65,7 @@ class TextSectionDefinitionsMixin(models.Model):
 
     @cached_property
     def body_text(self):
-        return fragment_fromstring(self.body, create_parent='div').text_content()
+        return re.sub(r'\s+', ' ', fragment_fromstring(self.body, create_parent='div').text_content())
 
     @property
     def words(self):
