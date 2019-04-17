@@ -15,7 +15,7 @@ import Html exposing (Html, div, span)
 
 punctuation_re : Regex.Regex
 punctuation_re =
-  Regex.regex "[?!.,»«—-();]"
+  Regex.regex "[?!.,»«—\\-();]"
 
 has_punctuation : String -> Bool
 has_punctuation =

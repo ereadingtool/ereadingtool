@@ -24464,7 +24464,7 @@ var _user$project$Text_Section_Words_Tag$countOccurrences = F2(
 			},
 			words);
 	});
-var _user$project$Text_Section_Words_Tag$punctuation_re = _elm_lang$core$Regex$regex('[?!.,»«—-();]');
+var _user$project$Text_Section_Words_Tag$punctuation_re = _elm_lang$core$Regex$regex('[?!.,»«—\\-();]');
 var _user$project$Text_Section_Words_Tag$has_punctuation = _elm_lang$core$Regex$contains(_user$project$Text_Section_Words_Tag$punctuation_re);
 var _user$project$Text_Section_Words_Tag$intersperseWordsWith = F3(
 	function (str, _p15, tokens) {
