@@ -21,7 +21,7 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
 
     @property
     def sentence(self) -> Union[AnyStr, None]:
-        matches = re.search(r'\s*(?P<sentence>[^?!.]+' + self.phrase + r'[^?!.]*?[?!.]+?)',
+        matches = re.search(r'[^\w\s,—\-]?\s*(?P<sentence>[\w\s,]*' + self.phrase + r'[\w\s,]*[^\w\s,—\-]?)',
                             self.text_section.body_text, re.DOTALL | re.MULTILINE)
 
         try:
