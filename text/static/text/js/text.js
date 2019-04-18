@@ -24997,12 +24997,12 @@ var _user$project$TextReader_View$view_translations = function (defs) {
 var _user$project$TextReader_View$view_gloss = F3(
 	function (model, reader_word, text_word) {
 		return A2(
-			_elm_lang$html$Html$div,
+			_elm_lang$html$Html$span,
 			{ctor: '[]'},
 			{
 				ctor: '::',
 				_0: A2(
-					_elm_lang$html$Html$div,
+					_elm_lang$html$Html$span,
 					{
 						ctor: '::',
 						_0: _elm_lang$html$Html_Attributes$classList(

@@ -1,11 +1,11 @@
 span {
-    display: inline-block;
+    overflow-wrap: anywhere;
 }
 
 #text-section {
     display: grid;
 
-    grid-template-columns: 4% [body-col] auto 4%;
+    grid-template-columns: 20% [body-col] auto 20%;
     grid-template-rows: 10% [body-row] auto 10%;
 
     font-family: "Lora,Palatino,Times,Times New Roman,serif";
