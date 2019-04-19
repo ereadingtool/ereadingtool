@@ -1,4 +1,4 @@
-import ForgotPassword exposing (PassResetConfirmResp, Password, ResetPassURI, UserEmail, forgotPassConfirmRespDecoder)
+import ForgotPassword exposing (PassResetConfirmResp, ResetPassURI, UserEmail, forgotPassConfirmRespDecoder)
 
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (class, classList, attribute)
@@ -12,15 +12,14 @@ import Dict exposing (Dict)
 
 import Json.Encode as Encode
 
-import Config
-
 import Views
+
 import Flags
 
 import Navigation
 
 
-type alias Flags = { csrftoken : Flags.CSRFToken, uidb64: String, validlink : Bool }
+type alias Flags = Flags.UnAuthedFlags { reset_pass_endpoint: String, uidb64: String, validlink : Bool }
 
 type Msg =
     Submit
@@ -35,7 +34,13 @@ type alias Model = {
   , confirm_password : String
   , show_password : Bool
   , resp : PassResetConfirmResp
+  , reset_pass_uri : ForgotPassword.ResetPassURI
   , errors : Dict String String }
+
+
+flagsToResetPassURI : { a | reset_pass_endpoint: String } -> ResetPassURI
+flagsToResetPassURI flags =
+  ForgotPassword.ResetPassURI (ForgotPassword.URI flags.reset_pass_endpoint)
 
 init : Flags -> (Model, Cmd Msg)
 init flags = ({
@@ -44,31 +49,32 @@ init flags = ({
   , confirm_password = ""
   , show_password = False
   , resp = ForgotPassword.emptyPassResetResp
+  , reset_pass_uri = flagsToResetPassURI flags
   , errors = Dict.fromList [] }, Cmd.none)
 
-reset_pass_encoder : Password -> Encode.Value
+reset_pass_encoder : ForgotPassword.Password -> Encode.Value
 reset_pass_encoder password =
   Encode.object [
-    ("new_password1", Encode.string password.password)
-  , ("new_password2", Encode.string password.confirm_password)
-  , ("uidb64", Encode.string password.uidb64)
+    ("new_password1", Encode.string (ForgotPassword.password1toString (ForgotPassword.password1 password)))
+  , ("new_password2", Encode.string (ForgotPassword.password2toString (ForgotPassword.password2 password)))
+  , ("uidb64", Encode.string (ForgotPassword.uidb64toString (ForgotPassword.uidb64 password)))
   ]
 
-post_passwd_reset : ResetPassURI -> Flags.CSRFToken -> Password -> Cmd Msg
+post_passwd_reset : ResetPassURI -> Flags.CSRFToken -> ForgotPassword.Password -> Cmd Msg
 post_passwd_reset reset_pass_endpoint csrftoken password =
   let
     encoded_login_params = reset_pass_encoder password
     req =
       post_with_headers
-         reset_pass_endpoint
+         (ForgotPassword.uriToString (ForgotPassword.resetPassURI reset_pass_endpoint))
          [Http.header "X-CSRFToken" csrftoken]
          (Http.jsonBody encoded_login_params)
          forgotPassConfirmRespDecoder
   in
     Http.send Submitted req
 
-update : ResetPassURI -> Msg -> Model -> (Model, Cmd Msg)
-update endpoint msg model =
+update : Msg -> Model -> (Model, Cmd Msg)
+update msg model =
   case msg of
     ToggleShowPassword toggle ->
       ({ model | show_password = not model.show_password }, Cmd.none)
@@ -89,8 +95,11 @@ update endpoint msg model =
 
     Submit ->
       ({ model | errors = Dict.fromList [] }
-       , post_passwd_reset endpoint model.flags.csrftoken
-           (Password model.password model.confirm_password model.flags.uidb64))
+       , post_passwd_reset model.reset_pass_uri model.flags.csrftoken
+         (ForgotPassword.Password
+           (ForgotPassword.Password1 model.password)
+           (ForgotPassword.Password2 model.confirm_password)
+           (ForgotPassword.UIdb64 model.flags.uidb64)))
 
     Submitted (Ok resp) ->
       ({ model | resp = resp }, Navigation.load resp.redirect)
@@ -119,9 +128,9 @@ main : Program Flags Model Msg
 main =
   Html.programWithFlags
     { init = init
-    , view = view Config.reset_pass_endpoint
+    , view = view
     , subscriptions = subscriptions
-    , update = update Config.reset_pass_endpoint
+    , update = update
     }
 
 login_label : (List (Html.Attribute Msg)) -> Html Msg -> Html Msg
@@ -239,8 +248,8 @@ view_content model =
       view_submit model
   ]
 
-view : ResetPassURI -> Model -> Html Msg
-view reset_pass_uri model =
+view : Model -> Html Msg
+view model =
   div [] [
     Views.view_unauthed_header
   , view_content model

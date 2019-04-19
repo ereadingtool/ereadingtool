@@ -1,12 +1,14 @@
 import Html exposing (Html)
 
-import Config
 import User.Flags.UnAuthed exposing (UnAuthedUserFlags)
 
 import Login
 
 
-main : Program UnAuthedUserFlags Login.Model Login.Msg
+type alias Flags = UnAuthedUserFlags {}
+
+
+main : Program Flags Login.Model Login.Msg
 main =
   Html.programWithFlags
     { init = Login.init

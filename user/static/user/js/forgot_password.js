@@ -9899,23 +9899,12 @@ var _user$project$Config$text_page = function (text_id) {
 			_elm_lang$core$Basics$toString(text_id),
 			'/'));
 };
-var _user$project$Config$forgot_password_page = '/user/password_reset/';
-var _user$project$Config$instructor_login_page = '/login/instructor/';
-var _user$project$Config$student_login_page = '/login/student/';
 var _user$project$Config$instructor_invite_uri = '/api/instructor/invite/';
-var _user$project$Config$instructor_signup_page = '/signup/instructor/';
-var _user$project$Config$student_signup_page = '/signup/student/';
 var _user$project$Config$instructor_profile_page = '/profile/instructor/';
 var _user$project$Config$student_profile_page = '/profile/student/';
 var _user$project$Config$student_api_endpoint = '/api/student/';
-var _user$project$Config$reset_pass_endpoint = '/api/password/reset/confirm/';
-var _user$project$Config$forgot_pass_endpoint = '/api/password/reset/';
 var _user$project$Config$student_logout_api_endpoint = '/api/student/logout/';
-var _user$project$Config$student_login_api_endpoint = '/api/student/login/';
-var _user$project$Config$student_signup_api_endpoint = '/api/student/signup/';
 var _user$project$Config$instructor_logout_api_endpoint = '/api/instructor/logout/';
-var _user$project$Config$instructor_login_api_endpoint = '/api/instructor/login/';
-var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signup/';
 var _user$project$Config$question_api_endpoint = '/api/question/';
 var _user$project$Config$text_section_api_endpoint = '/api/section/';
 var _user$project$Config$text_translation_api_match_endpoint = '/api/text/translations/match/';
@@ -10052,9 +10041,6 @@ var _user$project$Menu_Items$setSelected = F3(
 		}
 	});
 
-var _user$project$Flags$UnAuthedFlags = function (a) {
-	return {csrftoken: a};
-};
 
 var _user$project$ForgotPassword$emptyForgotPassResp = {
 	errors: _elm_lang$core$Dict$fromList(
@@ -10067,10 +10053,50 @@ var _user$project$ForgotPassword$emptyPassResetResp = {
 	body: '',
 	redirect: ''
 };
-var _user$project$ForgotPassword$Password = F3(
-	function (a, b, c) {
-		return {password: a, confirm_password: b, uidb64: c};
-	});
+var _user$project$ForgotPassword$uidb64toString = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0;
+};
+var _user$project$ForgotPassword$uidb64 = function (_p2) {
+	var _p3 = _p2;
+	return _p3._2;
+};
+var _user$project$ForgotPassword$password2toString = function (_p4) {
+	var _p5 = _p4;
+	return _p5._0;
+};
+var _user$project$ForgotPassword$password1toString = function (_p6) {
+	var _p7 = _p6;
+	return _p7._0;
+};
+var _user$project$ForgotPassword$password2 = function (_p8) {
+	var _p9 = _p8;
+	return _p9._1;
+};
+var _user$project$ForgotPassword$password1 = function (_p10) {
+	var _p11 = _p10;
+	return _p11._0;
+};
+var _user$project$ForgotPassword$uriToString = function (_p12) {
+	var _p13 = _p12;
+	return _p13._0;
+};
+var _user$project$ForgotPassword$resetPassURI = function (_p14) {
+	var _p15 = _p14;
+	return _p15._0;
+};
+var _user$project$ForgotPassword$forgotPassURI = function (_p16) {
+	var _p17 = _p16;
+	return _p17._0;
+};
+var _user$project$ForgotPassword$userEmailtoString = function (_p18) {
+	var _p19 = _p18;
+	return _p19._0;
+};
+var _user$project$ForgotPassword$userEmailisEmpty = function (_p20) {
+	var _p21 = _p20;
+	return _elm_lang$core$String$isEmpty(_p21._0);
+};
 var _user$project$ForgotPassword$ForgotPassResp = F2(
 	function (a, b) {
 		return {errors: a, body: b};
@@ -10101,6 +10127,31 @@ var _user$project$ForgotPassword$forgotPassConfirmRespDecoder = A3(
 			'errors',
 			_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$ForgotPassword$PassResetConfirmResp))));
+var _user$project$ForgotPassword$URI = function (a) {
+	return {ctor: 'URI', _0: a};
+};
+var _user$project$ForgotPassword$ForgotPassURI = function (a) {
+	return {ctor: 'ForgotPassURI', _0: a};
+};
+var _user$project$ForgotPassword$ResetPassURI = function (a) {
+	return {ctor: 'ResetPassURI', _0: a};
+};
+var _user$project$ForgotPassword$UserEmail = function (a) {
+	return {ctor: 'UserEmail', _0: a};
+};
+var _user$project$ForgotPassword$Password1 = function (a) {
+	return {ctor: 'Password1', _0: a};
+};
+var _user$project$ForgotPassword$Password2 = function (a) {
+	return {ctor: 'Password2', _0: a};
+};
+var _user$project$ForgotPassword$UIdb64 = function (a) {
+	return {ctor: 'UIdb64', _0: a};
+};
+var _user$project$ForgotPassword$Password = F3(
+	function (a, b, c) {
+		return {ctor: 'Password', _0: a, _1: b, _2: c};
+	});
 
 
 var _user$project$Ports$selectAllInputText = _elm_lang$core$Native_Platform.outgoingPort(
@@ -12565,17 +12616,23 @@ var _user$project$Main$forgot_pass_encoder = function (user_email) {
 			_0: {
 				ctor: '_Tuple2',
 				_0: 'email',
-				_1: _elm_lang$core$Json_Encode$string(user_email)
+				_1: _elm_lang$core$Json_Encode$string(
+					_user$project$ForgotPassword$userEmailtoString(user_email))
 			},
 			_1: {ctor: '[]'}
 		});
+};
+var _user$project$Main$flagsToForgotPassURI = function (flags) {
+	return _user$project$ForgotPassword$ForgotPassURI(
+		_user$project$ForgotPassword$URI(flags.forgot_pass_endpoint));
 };
 var _user$project$Main$init = function (flags) {
 	return {
 		ctor: '_Tuple2',
 		_0: {
 			flags: flags,
-			user_email: '',
+			user_email: _user$project$ForgotPassword$UserEmail(''),
+			forgot_pass_uri: _user$project$Main$flagsToForgotPassURI(flags),
 			resp: _user$project$ForgotPassword$emptyForgotPassResp,
 			errors: _elm_lang$core$Dict$fromList(
 				{ctor: '[]'})
@@ -12583,9 +12640,9 @@ var _user$project$Main$init = function (flags) {
 		_1: _elm_lang$core$Platform_Cmd$none
 	};
 };
-var _user$project$Main$Model = F4(
-	function (a, b, c, d) {
-		return {flags: a, user_email: b, resp: c, errors: d};
+var _user$project$Main$Model = F5(
+	function (a, b, c, d, e) {
+		return {flags: a, user_email: b, forgot_pass_uri: c, resp: d, errors: e};
 	});
 var _user$project$Main$UpdateEmail = function (a) {
 	return {ctor: 'UpdateEmail', _0: a};
@@ -12664,7 +12721,8 @@ var _user$project$Main$post_forgot_pass = F3(
 		var encoded_login_params = _user$project$Main$forgot_pass_encoder(user_email);
 		var req = A4(
 			_user$project$HttpHelpers$post_with_headers,
-			forgot_pass_endpoint,
+			_user$project$ForgotPassword$uriToString(
+				_user$project$ForgotPassword$forgotPassURI(forgot_pass_endpoint)),
 			{
 				ctor: '::',
 				_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
@@ -12674,8 +12732,8 @@ var _user$project$Main$post_forgot_pass = F3(
 			_user$project$ForgotPassword$forgotPassRespDecoder);
 		return A2(_elm_lang$http$Http$send, _user$project$Main$Submitted, req);
 	});
-var _user$project$Main$update = F3(
-	function (endpoint, msg, model) {
+var _user$project$Main$update = F2(
+	function (msg, model) {
 		var _p2 = msg;
 		switch (_p2.ctor) {
 			case 'UpdateEmail':
@@ -12685,7 +12743,7 @@ var _user$project$Main$update = F3(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							user_email: _p3,
+							user_email: _user$project$ForgotPassword$UserEmail(_p3),
 							resp: _user$project$ForgotPassword$emptyForgotPassResp,
 							errors: (_user$project$Util$is_valid_email(_p3) || _elm_lang$core$Native_Utils.eq(_p3, '')) ? A2(_elm_lang$core$Dict$remove, 'email', model.errors) : A3(_elm_lang$core$Dict$insert, 'email', 'This e-mail is invalid', model.errors)
 						}),
@@ -12700,7 +12758,7 @@ var _user$project$Main$update = F3(
 							errors: _elm_lang$core$Dict$fromList(
 								{ctor: '[]'})
 						}),
-					_1: A3(_user$project$Main$post_forgot_pass, endpoint, model.flags.csrftoken, model.user_email)
+					_1: A3(_user$project$Main$post_forgot_pass, model.forgot_pass_uri, model.flags.csrftoken, model.user_email)
 				};
 			default:
 				if (_p2._0.ctor === 'Ok') {
@@ -12747,7 +12805,7 @@ var _user$project$Main$update = F3(
 var _user$project$Main$Submit = {ctor: 'Submit'};
 var _user$project$Main$view_submit = function (model) {
 	var has_error = A2(_elm_lang$core$Dict$member, 'email', model.errors);
-	var button_disabled = (has_error || _elm_lang$core$String$isEmpty(model.user_email)) ? {
+	var button_disabled = (has_error || _user$project$ForgotPassword$userEmailisEmpty(model.user_email)) ? {
 		ctor: '::',
 		_0: _elm_lang$html$Html_Attributes$class('disabled'),
 		_1: {ctor: '[]'}
@@ -12794,72 +12852,70 @@ var _user$project$Main$view_submit = function (model) {
 		_1: {ctor: '[]'}
 	};
 };
-var _user$project$Main$view_content = F2(
-	function (login, model) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$classList(
-					{
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'login', _1: true},
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('login_box'),
-						_1: {ctor: '[]'}
-					},
+var _user$project$Main$view_content = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$classList(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'login', _1: true},
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('login_box'),
+					_1: {ctor: '[]'}
+				},
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_user$project$Main$view_email_input(model),
 					A2(
 						_elm_lang$core$Basics_ops['++'],
-						_user$project$Main$view_email_input(model),
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							_user$project$Main$view_submit(model),
-							_user$project$Main$view_errors(model)))),
-				_1: {ctor: '[]'}
-			});
-	});
-var _user$project$Main$view = F2(
-	function (forgot_pass_uri, model) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
-			{
+						_user$project$Main$view_submit(model),
+						_user$project$Main$view_errors(model)))),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Main$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _user$project$Views$view_unauthed_header,
+			_1: {
 				ctor: '::',
-				_0: _user$project$Views$view_unauthed_header,
+				_0: _user$project$Main$view_content(model),
 				_1: {
 					ctor: '::',
-					_0: A2(_user$project$Main$view_content, forgot_pass_uri, model),
-					_1: {
-						ctor: '::',
-						_0: _user$project$Views$view_footer,
-						_1: {ctor: '[]'}
-					}
+					_0: _user$project$Views$view_footer,
+					_1: {ctor: '[]'}
 				}
-			});
-	});
+			}
+		});
+};
 var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
-	{
-		init: _user$project$Main$init,
-		view: _user$project$Main$view(_user$project$Config$forgot_pass_endpoint),
-		subscriptions: _user$project$Main$subscriptions,
-		update: _user$project$Main$update(_user$project$Config$forgot_pass_endpoint)
-	})(
+	{init: _user$project$Main$init, view: _user$project$Main$view, subscriptions: _user$project$Main$subscriptions, update: _user$project$Main$update})(
 	A2(
 		_elm_lang$core$Json_Decode$andThen,
-		function (csrftoken) {
-			return _elm_lang$core$Json_Decode$succeed(
-				{csrftoken: csrftoken});
+		function (forgot_pass_endpoint) {
+			return A2(
+				_elm_lang$core$Json_Decode$andThen,
+				function (csrftoken) {
+					return _elm_lang$core$Json_Decode$succeed(
+						{forgot_pass_endpoint: forgot_pass_endpoint, csrftoken: csrftoken});
+				},
+				A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string));
 		},
-		A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string)));
+		A2(_elm_lang$core$Json_Decode$field, 'forgot_pass_endpoint', _elm_lang$core$Json_Decode$string)));
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};

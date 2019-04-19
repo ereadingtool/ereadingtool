@@ -14,12 +14,12 @@ import Util exposing (is_valid_email)
 
 import Json.Encode as Encode
 
-import Config
-
 import Views
 import Flags
 
 import Util
+
+type alias Flags = Flags.UnAuthedFlags {forgot_pass_endpoint : String}
 
 
 type Msg =
@@ -28,22 +28,29 @@ type Msg =
   | UpdateEmail String
 
 type alias Model = {
-    flags : Flags.UnAuthedFlags
+    flags : Flags
   , user_email : UserEmail
+  , forgot_pass_uri : ForgotPassword.ForgotPassURI
   , resp : ForgotPassResp
   , errors : Dict String String }
 
-init : Flags.UnAuthedFlags -> (Model, Cmd Msg)
+
+flagsToForgotPassURI : { a | forgot_pass_endpoint: String } -> ForgotPassURI
+flagsToForgotPassURI flags =
+  ForgotPassword.ForgotPassURI (ForgotPassword.URI flags.forgot_pass_endpoint)
+
+init : Flags -> (Model, Cmd Msg)
 init flags = ({
     flags = flags
-  , user_email = ""
+  , user_email = ForgotPassword.UserEmail ""
+  , forgot_pass_uri = flagsToForgotPassURI flags
   , resp = ForgotPassword.emptyForgotPassResp
   , errors = Dict.fromList [] }, Cmd.none)
 
 forgot_pass_encoder : UserEmail -> Encode.Value
 forgot_pass_encoder user_email =
   Encode.object [
-    ("email", Encode.string user_email)
+    ("email", Encode.string (ForgotPassword.userEmailtoString user_email))
   ]
 
 post_forgot_pass : ForgotPassURI -> Flags.CSRFToken -> UserEmail -> Cmd Msg
@@ -52,18 +59,18 @@ post_forgot_pass forgot_pass_endpoint csrftoken user_email =
     encoded_login_params = forgot_pass_encoder user_email
     req =
       post_with_headers
-         forgot_pass_endpoint
+         (ForgotPassword.uriToString (ForgotPassword.forgotPassURI forgot_pass_endpoint))
          [Http.header "X-CSRFToken" csrftoken]
          (Http.jsonBody encoded_login_params)
          forgotPassRespDecoder
   in
     Http.send Submitted req
 
-update : ForgotPassURI -> Msg -> Model -> (Model, Cmd Msg)
-update endpoint msg model =
+update : Msg -> Model -> (Model, Cmd Msg)
+update msg model =
   case msg of
     UpdateEmail addr ->
-      ({ model | user_email = addr
+      ({ model | user_email = ForgotPassword.UserEmail addr
        , resp = ForgotPassword.emptyForgotPassResp
        , errors =
            (if (is_valid_email addr) || (addr == "") then
@@ -74,7 +81,7 @@ update endpoint msg model =
 
     Submit ->
       ({ model | errors = Dict.fromList [] }
-       , post_forgot_pass endpoint model.flags.csrftoken model.user_email)
+       , post_forgot_pass model.forgot_pass_uri model.flags.csrftoken model.user_email)
 
     Submitted (Ok resp) ->
       let
@@ -102,13 +109,13 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
-main : Program Flags.UnAuthedFlags Model Msg
+main : Program Flags Model Msg
 main =
   Html.programWithFlags
     { init = init
-    , view = view Config.forgot_pass_endpoint
+    , view = view
     , subscriptions = subscriptions
-    , update = update Config.forgot_pass_endpoint
+    , update = update
     }
 
 login_label : (List (Html.Attribute Msg)) -> Html Msg -> Html Msg
@@ -131,7 +138,7 @@ view_submit model =
     has_error = Dict.member "email" model.errors
 
     button_disabled =
-      if has_error || String.isEmpty model.user_email then
+      if has_error || ForgotPassword.userEmailisEmpty model.user_email then
         [class "disabled"]
       else
         [onClick Submit, class "cursor"]
@@ -174,8 +181,8 @@ view_email_input model =
       , view_resp model.resp
     ]
 
-view_content : ForgotPassURI -> Model -> Html Msg
-view_content login model =
+view_content : Model -> Html Msg
+view_content model =
   div [ classList [("login", True)] ] [
     div [class "login_box"] <|
       view_email_input model ++
@@ -183,10 +190,10 @@ view_content login model =
       view_errors model
   ]
 
-view : ForgotPassURI -> Model -> Html Msg
-view forgot_pass_uri model =
+view : Model -> Html Msg
+view model =
   div [] [
     Views.view_unauthed_header
-  , view_content forgot_pass_uri model
+  , view_content model
   , Views.view_footer
   ]

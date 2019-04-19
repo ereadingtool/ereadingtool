@@ -10491,23 +10491,12 @@ var _user$project$Config$text_page = function (text_id) {
 			_elm_lang$core$Basics$toString(text_id),
 			'/'));
 };
-var _user$project$Config$forgot_password_page = '/user/password_reset/';
-var _user$project$Config$instructor_login_page = '/login/instructor/';
-var _user$project$Config$student_login_page = '/login/student/';
 var _user$project$Config$instructor_invite_uri = '/api/instructor/invite/';
-var _user$project$Config$instructor_signup_page = '/signup/instructor/';
-var _user$project$Config$student_signup_page = '/signup/student/';
 var _user$project$Config$instructor_profile_page = '/profile/instructor/';
 var _user$project$Config$student_profile_page = '/profile/student/';
 var _user$project$Config$student_api_endpoint = '/api/student/';
-var _user$project$Config$reset_pass_endpoint = '/api/password/reset/confirm/';
-var _user$project$Config$forgot_pass_endpoint = '/api/password/reset/';
 var _user$project$Config$student_logout_api_endpoint = '/api/student/logout/';
-var _user$project$Config$student_login_api_endpoint = '/api/student/login/';
-var _user$project$Config$student_signup_api_endpoint = '/api/student/signup/';
 var _user$project$Config$instructor_logout_api_endpoint = '/api/instructor/logout/';
-var _user$project$Config$instructor_login_api_endpoint = '/api/instructor/login/';
-var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signup/';
 var _user$project$Config$question_api_endpoint = '/api/question/';
 var _user$project$Config$text_section_api_endpoint = '/api/section/';
 var _user$project$Config$text_translation_api_match_endpoint = '/api/text/translations/match/';
@@ -10644,9 +10633,6 @@ var _user$project$Menu_Items$setSelected = F3(
 		}
 	});
 
-var _user$project$Flags$UnAuthedFlags = function (a) {
-	return {csrftoken: a};
-};
 
 var _user$project$ForgotPassword$emptyForgotPassResp = {
 	errors: _elm_lang$core$Dict$fromList(
@@ -10659,10 +10645,50 @@ var _user$project$ForgotPassword$emptyPassResetResp = {
 	body: '',
 	redirect: ''
 };
-var _user$project$ForgotPassword$Password = F3(
-	function (a, b, c) {
-		return {password: a, confirm_password: b, uidb64: c};
-	});
+var _user$project$ForgotPassword$uidb64toString = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0;
+};
+var _user$project$ForgotPassword$uidb64 = function (_p2) {
+	var _p3 = _p2;
+	return _p3._2;
+};
+var _user$project$ForgotPassword$password2toString = function (_p4) {
+	var _p5 = _p4;
+	return _p5._0;
+};
+var _user$project$ForgotPassword$password1toString = function (_p6) {
+	var _p7 = _p6;
+	return _p7._0;
+};
+var _user$project$ForgotPassword$password2 = function (_p8) {
+	var _p9 = _p8;
+	return _p9._1;
+};
+var _user$project$ForgotPassword$password1 = function (_p10) {
+	var _p11 = _p10;
+	return _p11._0;
+};
+var _user$project$ForgotPassword$uriToString = function (_p12) {
+	var _p13 = _p12;
+	return _p13._0;
+};
+var _user$project$ForgotPassword$resetPassURI = function (_p14) {
+	var _p15 = _p14;
+	return _p15._0;
+};
+var _user$project$ForgotPassword$forgotPassURI = function (_p16) {
+	var _p17 = _p16;
+	return _p17._0;
+};
+var _user$project$ForgotPassword$userEmailtoString = function (_p18) {
+	var _p19 = _p18;
+	return _p19._0;
+};
+var _user$project$ForgotPassword$userEmailisEmpty = function (_p20) {
+	var _p21 = _p20;
+	return _elm_lang$core$String$isEmpty(_p21._0);
+};
 var _user$project$ForgotPassword$ForgotPassResp = F2(
 	function (a, b) {
 		return {errors: a, body: b};
@@ -10693,6 +10719,31 @@ var _user$project$ForgotPassword$forgotPassConfirmRespDecoder = A3(
 			'errors',
 			_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$ForgotPassword$PassResetConfirmResp))));
+var _user$project$ForgotPassword$URI = function (a) {
+	return {ctor: 'URI', _0: a};
+};
+var _user$project$ForgotPassword$ForgotPassURI = function (a) {
+	return {ctor: 'ForgotPassURI', _0: a};
+};
+var _user$project$ForgotPassword$ResetPassURI = function (a) {
+	return {ctor: 'ResetPassURI', _0: a};
+};
+var _user$project$ForgotPassword$UserEmail = function (a) {
+	return {ctor: 'UserEmail', _0: a};
+};
+var _user$project$ForgotPassword$Password1 = function (a) {
+	return {ctor: 'Password1', _0: a};
+};
+var _user$project$ForgotPassword$Password2 = function (a) {
+	return {ctor: 'Password2', _0: a};
+};
+var _user$project$ForgotPassword$UIdb64 = function (a) {
+	return {ctor: 'UIdb64', _0: a};
+};
+var _user$project$ForgotPassword$Password = F3(
+	function (a, b, c) {
+		return {ctor: 'Password', _0: a, _1: b, _2: c};
+	});
 
 
 var _user$project$Ports$selectAllInputText = _elm_lang$core$Native_Platform.outgoingPort(
@@ -13143,26 +13194,36 @@ var _user$project$Main$reset_pass_encoder = function (password) {
 			_0: {
 				ctor: '_Tuple2',
 				_0: 'new_password1',
-				_1: _elm_lang$core$Json_Encode$string(password.password)
+				_1: _elm_lang$core$Json_Encode$string(
+					_user$project$ForgotPassword$password1toString(
+						_user$project$ForgotPassword$password1(password)))
 			},
 			_1: {
 				ctor: '::',
 				_0: {
 					ctor: '_Tuple2',
 					_0: 'new_password2',
-					_1: _elm_lang$core$Json_Encode$string(password.confirm_password)
+					_1: _elm_lang$core$Json_Encode$string(
+						_user$project$ForgotPassword$password2toString(
+							_user$project$ForgotPassword$password2(password)))
 				},
 				_1: {
 					ctor: '::',
 					_0: {
 						ctor: '_Tuple2',
 						_0: 'uidb64',
-						_1: _elm_lang$core$Json_Encode$string(password.uidb64)
+						_1: _elm_lang$core$Json_Encode$string(
+							_user$project$ForgotPassword$uidb64toString(
+								_user$project$ForgotPassword$uidb64(password)))
 					},
 					_1: {ctor: '[]'}
 				}
 			}
 		});
+};
+var _user$project$Main$flagsToResetPassURI = function (flags) {
+	return _user$project$ForgotPassword$ResetPassURI(
+		_user$project$ForgotPassword$URI(flags.reset_pass_endpoint));
 };
 var _user$project$Main$init = function (flags) {
 	return {
@@ -13173,19 +13234,16 @@ var _user$project$Main$init = function (flags) {
 			confirm_password: '',
 			show_password: false,
 			resp: _user$project$ForgotPassword$emptyPassResetResp,
+			reset_pass_uri: _user$project$Main$flagsToResetPassURI(flags),
 			errors: _elm_lang$core$Dict$fromList(
 				{ctor: '[]'})
 		},
 		_1: _elm_lang$core$Platform_Cmd$none
 	};
 };
-var _user$project$Main$Flags = F3(
-	function (a, b, c) {
-		return {csrftoken: a, uidb64: b, validlink: c};
-	});
-var _user$project$Main$Model = F6(
-	function (a, b, c, d, e, f) {
-		return {flags: a, password: b, confirm_password: c, show_password: d, resp: e, errors: f};
+var _user$project$Main$Model = F7(
+	function (a, b, c, d, e, f, g) {
+		return {flags: a, password: b, confirm_password: c, show_password: d, resp: e, reset_pass_uri: f, errors: g};
 	});
 var _user$project$Main$ToggleShowPassword = function (a) {
 	return {ctor: 'ToggleShowPassword', _0: a};
@@ -13382,7 +13440,8 @@ var _user$project$Main$post_passwd_reset = F3(
 		var encoded_login_params = _user$project$Main$reset_pass_encoder(password);
 		var req = A4(
 			_user$project$HttpHelpers$post_with_headers,
-			reset_pass_endpoint,
+			_user$project$ForgotPassword$uriToString(
+				_user$project$ForgotPassword$resetPassURI(reset_pass_endpoint)),
 			{
 				ctor: '::',
 				_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
@@ -13392,8 +13451,8 @@ var _user$project$Main$post_passwd_reset = F3(
 			_user$project$ForgotPassword$forgotPassConfirmRespDecoder);
 		return A2(_elm_lang$http$Http$send, _user$project$Main$Submitted, req);
 	});
-var _user$project$Main$update = F3(
-	function (endpoint, msg, model) {
+var _user$project$Main$update = F2(
+	function (msg, model) {
 		var _p4 = msg;
 		switch (_p4.ctor) {
 			case 'ToggleShowPassword':
@@ -13451,9 +13510,13 @@ var _user$project$Main$update = F3(
 						}),
 					_1: A3(
 						_user$project$Main$post_passwd_reset,
-						endpoint,
+						model.reset_pass_uri,
 						model.flags.csrftoken,
-						A3(_user$project$ForgotPassword$Password, model.password, model.confirm_password, model.flags.uidb64))
+						A3(
+							_user$project$ForgotPassword$Password,
+							_user$project$ForgotPassword$Password1(model.password),
+							_user$project$ForgotPassword$Password2(model.confirm_password),
+							_user$project$ForgotPassword$UIdb64(model.flags.uidb64)))
 				};
 			default:
 				if (_p4._0.ctor === 'Ok') {
@@ -13582,49 +13645,48 @@ var _user$project$Main$view_content = function (model) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Main$view = F2(
-	function (reset_pass_uri, model) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
-			{
+var _user$project$Main$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _user$project$Views$view_unauthed_header,
+			_1: {
 				ctor: '::',
-				_0: _user$project$Views$view_unauthed_header,
+				_0: _user$project$Main$view_content(model),
 				_1: {
 					ctor: '::',
-					_0: _user$project$Main$view_content(model),
-					_1: {
-						ctor: '::',
-						_0: _user$project$Views$view_footer,
-						_1: {ctor: '[]'}
-					}
+					_0: _user$project$Views$view_footer,
+					_1: {ctor: '[]'}
 				}
-			});
-	});
+			}
+		});
+};
 var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
-	{
-		init: _user$project$Main$init,
-		view: _user$project$Main$view(_user$project$Config$reset_pass_endpoint),
-		subscriptions: _user$project$Main$subscriptions,
-		update: _user$project$Main$update(_user$project$Config$reset_pass_endpoint)
-	})(
+	{init: _user$project$Main$init, view: _user$project$Main$view, subscriptions: _user$project$Main$subscriptions, update: _user$project$Main$update})(
 	A2(
 		_elm_lang$core$Json_Decode$andThen,
-		function (csrftoken) {
+		function (reset_pass_endpoint) {
 			return A2(
 				_elm_lang$core$Json_Decode$andThen,
 				function (uidb64) {
 					return A2(
 						_elm_lang$core$Json_Decode$andThen,
 						function (validlink) {
-							return _elm_lang$core$Json_Decode$succeed(
-								{csrftoken: csrftoken, uidb64: uidb64, validlink: validlink});
+							return A2(
+								_elm_lang$core$Json_Decode$andThen,
+								function (csrftoken) {
+									return _elm_lang$core$Json_Decode$succeed(
+										{reset_pass_endpoint: reset_pass_endpoint, uidb64: uidb64, validlink: validlink, csrftoken: csrftoken});
+								},
+								A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string));
 						},
 						A2(_elm_lang$core$Json_Decode$field, 'validlink', _elm_lang$core$Json_Decode$bool));
 				},
 				A2(_elm_lang$core$Json_Decode$field, 'uidb64', _elm_lang$core$Json_Decode$string));
 		},
-		A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string)));
+		A2(_elm_lang$core$Json_Decode$field, 'reset_pass_endpoint', _elm_lang$core$Json_Decode$string)));
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};

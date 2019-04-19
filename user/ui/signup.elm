@@ -1,5 +1,4 @@
-module SignUp exposing (  view, UserID, URI, toggle_show_password, update_email, update_password, submit, signup_label
-                        , update_confirm_password, view_email_input, view_password_input, view_submit)
+module SignUp exposing (..)
 
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (classList, class, attribute)
@@ -12,9 +11,16 @@ import Views
 import Menu.Msg as MenuMsg
 
 
+type UserID = UserID Int
+type RedirectURI = RedirectURI URI
+type URI = URI String
 
-type alias UserID = Int
-type alias URI = String
+
+redirectURI : RedirectURI -> URI
+redirectURI (RedirectURI uri) = uri
+
+uriToString : URI -> String
+uriToString (URI uri) = uri
 
 signup_label : Html msg -> Html msg
 signup_label html = Html.div [attribute "class" "signup_label"] [ html ]

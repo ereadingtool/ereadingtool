@@ -10491,23 +10491,12 @@ var _user$project$Config$text_page = function (text_id) {
 			_elm_lang$core$Basics$toString(text_id),
 			'/'));
 };
-var _user$project$Config$forgot_password_page = '/user/password_reset/';
-var _user$project$Config$instructor_login_page = '/login/instructor/';
-var _user$project$Config$student_login_page = '/login/student/';
 var _user$project$Config$instructor_invite_uri = '/api/instructor/invite/';
-var _user$project$Config$instructor_signup_page = '/signup/instructor/';
-var _user$project$Config$student_signup_page = '/signup/student/';
 var _user$project$Config$instructor_profile_page = '/profile/instructor/';
 var _user$project$Config$student_profile_page = '/profile/student/';
 var _user$project$Config$student_api_endpoint = '/api/student/';
-var _user$project$Config$reset_pass_endpoint = '/api/password/reset/confirm/';
-var _user$project$Config$forgot_pass_endpoint = '/api/password/reset/';
 var _user$project$Config$student_logout_api_endpoint = '/api/student/logout/';
-var _user$project$Config$student_login_api_endpoint = '/api/student/login/';
-var _user$project$Config$student_signup_api_endpoint = '/api/student/signup/';
 var _user$project$Config$instructor_logout_api_endpoint = '/api/instructor/logout/';
-var _user$project$Config$instructor_login_api_endpoint = '/api/instructor/login/';
-var _user$project$Config$instructor_signup_api_endpoint = '/api/instructor/signup/';
 var _user$project$Config$question_api_endpoint = '/api/question/';
 var _user$project$Config$text_section_api_endpoint = '/api/section/';
 var _user$project$Config$text_translation_api_match_endpoint = '/api/text/translations/match/';
@@ -10644,9 +10633,6 @@ var _user$project$Menu_Items$setSelected = F3(
 		}
 	});
 
-var _user$project$Flags$UnAuthedFlags = function (a) {
-	return {csrftoken: a};
-};
 
 
 var _user$project$Ports$selectAllInputText = _elm_lang$core$Native_Platform.outgoingPort(
@@ -11447,6 +11433,7 @@ var _user$project$Instructor_View$view_instructor_profile_header = F2(
 			_1: {ctor: '[]'}
 		};
 	});
+
 
 var _user$project$Util$onEnterUp = function (msg) {
 	return A2(
@@ -13374,6 +13361,23 @@ var _user$project$SignUp$view = F6(
 				}
 			});
 	});
+var _user$project$SignUp$uriToString = function (_p5) {
+	var _p6 = _p5;
+	return _p6._0;
+};
+var _user$project$SignUp$redirectURI = function (_p7) {
+	var _p8 = _p7;
+	return _p8._0;
+};
+var _user$project$SignUp$UserID = function (a) {
+	return {ctor: 'UserID', _0: a};
+};
+var _user$project$SignUp$RedirectURI = function (a) {
+	return {ctor: 'RedirectURI', _0: a};
+};
+var _user$project$SignUp$URI = function (a) {
+	return {ctor: 'URI', _0: a};
+};
 
 var _user$project$Main$view_student_welcome_msg = function () {
 	var welcome_title = 'Welcome to The Language Flagship’s Steps To Advanced Reading (STAR) website.';
@@ -13445,31 +13449,6 @@ var _user$project$Main$view_student_welcome_msg = function () {
 			}
 		});
 }();
-var _user$project$Main$init = function (flags) {
-	return {
-		ctor: '_Tuple2',
-		_0: {
-			flags: flags,
-			signup_params: {
-				email: '',
-				password: '',
-				confirm_password: '',
-				difficulty: function () {
-					var _p0 = _elm_lang$core$List$head(flags.difficulties);
-					if ((_p0.ctor === 'Just') && (_p0._0.ctor === '_Tuple2')) {
-						return _p0._0._0;
-					} else {
-						return '';
-					}
-				}()
-			},
-			show_passwords: false,
-			errors: _elm_lang$core$Dict$fromList(
-				{ctor: '[]'})
-		},
-		_1: _elm_lang$core$Platform_Cmd$none
-	};
-};
 var _user$project$Main$signUpEncoder = function (signup_params) {
 	return _elm_lang$core$Json_Encode$object(
 		{
@@ -13509,6 +13488,10 @@ var _user$project$Main$signUpEncoder = function (signup_params) {
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
+var _user$project$Main$studentSignUpURI = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0;
+};
 var _user$project$Main$SignUpResp = F2(
 	function (a, b) {
 		return {id: a, redirect: b};
@@ -13516,24 +13499,59 @@ var _user$project$Main$SignUpResp = F2(
 var _user$project$Main$signUpRespDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'redirect',
-	_elm_lang$core$Json_Decode$string,
+	A2(
+		_elm_lang$core$Json_Decode$map,
+		function (_p2) {
+			return _user$project$SignUp$RedirectURI(
+				_user$project$SignUp$URI(_p2));
+		},
+		_elm_lang$core$Json_Decode$string),
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'id',
-		_elm_lang$core$Json_Decode$int,
+		A2(_elm_lang$core$Json_Decode$map, _user$project$SignUp$UserID, _elm_lang$core$Json_Decode$int),
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Main$SignUpResp)));
-var _user$project$Main$Flags = F2(
-	function (a, b) {
-		return {csrftoken: a, difficulties: b};
-	});
 var _user$project$Main$SignUpParams = F4(
 	function (a, b, c, d) {
 		return {email: a, password: b, confirm_password: c, difficulty: d};
 	});
-var _user$project$Main$Model = F4(
-	function (a, b, c, d) {
-		return {flags: a, signup_params: b, show_passwords: c, errors: d};
+var _user$project$Main$Model = F5(
+	function (a, b, c, d, e) {
+		return {flags: a, signup_params: b, student_signup_uri: c, show_passwords: d, errors: e};
 	});
+var _user$project$Main$StudentSignUpURI = function (a) {
+	return {ctor: 'StudentSignUpURI', _0: a};
+};
+var _user$project$Main$flagsToStudentSignUpURI = function (flags) {
+	return _user$project$Main$StudentSignUpURI(
+		_user$project$SignUp$URI(flags.student_signup_uri));
+};
+var _user$project$Main$init = function (flags) {
+	return {
+		ctor: '_Tuple2',
+		_0: {
+			flags: flags,
+			signup_params: {
+				email: '',
+				password: '',
+				confirm_password: '',
+				difficulty: function () {
+					var _p3 = _elm_lang$core$List$head(flags.difficulties);
+					if ((_p3.ctor === 'Just') && (_p3._0.ctor === '_Tuple2')) {
+						return _p3._0._0;
+					} else {
+						return '';
+					}
+				}()
+			},
+			show_passwords: false,
+			student_signup_uri: _user$project$Main$flagsToStudentSignUpURI(flags),
+			errors: _elm_lang$core$Dict$fromList(
+				{ctor: '[]'})
+		},
+		_1: _elm_lang$core$Platform_Cmd$none
+	};
+};
 var _user$project$Main$Logout = function (a) {
 	return {ctor: 'Logout', _0: a};
 };
@@ -13541,12 +13559,13 @@ var _user$project$Main$Submit = {ctor: 'Submit'};
 var _user$project$Main$Submitted = function (a) {
 	return {ctor: 'Submitted', _0: a};
 };
-var _user$project$Main$postSignup = F2(
-	function (csrftoken, signup_params) {
+var _user$project$Main$postSignup = F3(
+	function (csrftoken, signup_uri, signup_params) {
 		var encoded_signup_params = _user$project$Main$signUpEncoder(signup_params);
 		var req = A4(
 			_user$project$HttpHelpers$post_with_headers,
-			_user$project$Config$student_signup_api_endpoint,
+			_user$project$SignUp$uriToString(
+				_user$project$Main$studentSignUpURI(signup_uri)),
 			{
 				ctor: '::',
 				_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
@@ -13558,8 +13577,8 @@ var _user$project$Main$postSignup = F2(
 	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p1 = msg;
-		switch (_p1.ctor) {
+		var _p4 = msg;
+		switch (_p4.ctor) {
 			case 'ToggleShowPassword':
 				return {
 					ctor: '_Tuple2',
@@ -13569,19 +13588,19 @@ var _user$project$Main$update = F2(
 			case 'UpdatePassword':
 				return {
 					ctor: '_Tuple2',
-					_0: A2(_user$project$SignUp$update_password, model, _p1._0),
+					_0: A2(_user$project$SignUp$update_password, model, _p4._0),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'UpdateConfirmPassword':
 				return {
 					ctor: '_Tuple2',
-					_0: A2(_user$project$SignUp$update_confirm_password, model, _p1._0),
+					_0: A2(_user$project$SignUp$update_confirm_password, model, _p4._0),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'UpdateEmail':
 				return {
 					ctor: '_Tuple2',
-					_0: A2(_user$project$SignUp$update_email, model, _p1._0),
+					_0: A2(_user$project$SignUp$update_email, model, _p4._0),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'UpdateDifficulty':
@@ -13593,7 +13612,7 @@ var _user$project$Main$update = F2(
 						{
 							signup_params: _elm_lang$core$Native_Utils.update(
 								signup_params,
-								{difficulty: _p1._0})
+								{difficulty: _p4._0})
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -13601,29 +13620,31 @@ var _user$project$Main$update = F2(
 				return {
 					ctor: '_Tuple2',
 					_0: _user$project$SignUp$submit(model),
-					_1: A2(_user$project$Main$postSignup, model.flags.csrftoken, model.signup_params)
+					_1: A3(_user$project$Main$postSignup, model.flags.csrftoken, model.student_signup_uri, model.signup_params)
 				};
 			case 'Submitted':
-				if (_p1._0.ctor === 'Ok') {
+				if (_p4._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: model,
-						_1: _elm_lang$navigation$Navigation$load(_p1._0._0.redirect)
+						_1: _elm_lang$navigation$Navigation$load(
+							_user$project$SignUp$uriToString(
+								_user$project$SignUp$redirectURI(_p4._0._0.redirect)))
 					};
 				} else {
-					var _p2 = _p1._0._0;
-					switch (_p2.ctor) {
+					var _p5 = _p4._0._0;
+					switch (_p5.ctor) {
 						case 'BadStatus':
-							var _p3 = A2(
+							var _p6 = A2(
 								_elm_lang$core$Json_Decode$decodeString,
 								_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
-								_p2._0.body);
-							if (_p3.ctor === 'Ok') {
+								_p5._0.body);
+							if (_p6.ctor === 'Ok') {
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
 										model,
-										{errors: _p3._0}),
+										{errors: _p6._0}),
 									_1: _elm_lang$core$Platform_Cmd$none
 								};
 							} else {
@@ -13663,26 +13684,26 @@ var _user$project$Main$view_difficulty_choices = function (model) {
 						{ctor: '[]'},
 						A2(
 							_elm_lang$core$List$map,
-							function (_p4) {
-								var _p5 = _p4;
-								var _p6 = _p5._1;
+							function (_p7) {
+								var _p8 = _p7;
+								var _p9 = _p8._1;
 								return A2(
 									_elm_lang$html$Html$option,
 									A2(
 										_elm_lang$core$Basics_ops['++'],
 										{
 											ctor: '::',
-											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', _p5._0),
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', _p8._0),
 											_1: {ctor: '[]'}
 										},
-										_elm_lang$core$Native_Utils.eq(_p6, model.signup_params.difficulty) ? {
+										_elm_lang$core$Native_Utils.eq(_p9, model.signup_params.difficulty) ? {
 											ctor: '::',
 											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'selected', ''),
 											_1: {ctor: '[]'}
 										} : {ctor: '[]'}),
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text(_p6),
+										_0: _elm_lang$html$Html$text(_p9),
 										_1: {ctor: '[]'}
 									});
 							},
@@ -13787,31 +13808,76 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 	{init: _user$project$Main$init, view: _user$project$Main$view, subscriptions: _user$project$Main$subscriptions, update: _user$project$Main$update})(
 	A2(
 		_elm_lang$core$Json_Decode$andThen,
-		function (csrftoken) {
+		function (difficulties) {
 			return A2(
 				_elm_lang$core$Json_Decode$andThen,
-				function (difficulties) {
-					return _elm_lang$core$Json_Decode$succeed(
-						{csrftoken: csrftoken, difficulties: difficulties});
+				function (student_signup_uri) {
+					return A2(
+						_elm_lang$core$Json_Decode$andThen,
+						function (forgot_pass_endpoint) {
+							return A2(
+								_elm_lang$core$Json_Decode$andThen,
+								function (forgot_password_url) {
+									return A2(
+										_elm_lang$core$Json_Decode$andThen,
+										function (login_page_url) {
+											return A2(
+												_elm_lang$core$Json_Decode$andThen,
+												function (login_uri) {
+													return A2(
+														_elm_lang$core$Json_Decode$andThen,
+														function (reset_pass_endpoint) {
+															return A2(
+																_elm_lang$core$Json_Decode$andThen,
+																function (signup_page_url) {
+																	return A2(
+																		_elm_lang$core$Json_Decode$andThen,
+																		function (signup_uri) {
+																			return A2(
+																				_elm_lang$core$Json_Decode$andThen,
+																				function (user_type) {
+																					return A2(
+																						_elm_lang$core$Json_Decode$andThen,
+																						function (csrftoken) {
+																							return _elm_lang$core$Json_Decode$succeed(
+																								{difficulties: difficulties, student_signup_uri: student_signup_uri, forgot_pass_endpoint: forgot_pass_endpoint, forgot_password_url: forgot_password_url, login_page_url: login_page_url, login_uri: login_uri, reset_pass_endpoint: reset_pass_endpoint, signup_page_url: signup_page_url, signup_uri: signup_uri, user_type: user_type, csrftoken: csrftoken});
+																						},
+																						A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string));
+																				},
+																				A2(_elm_lang$core$Json_Decode$field, 'user_type', _elm_lang$core$Json_Decode$string));
+																		},
+																		A2(_elm_lang$core$Json_Decode$field, 'signup_uri', _elm_lang$core$Json_Decode$string));
+																},
+																A2(_elm_lang$core$Json_Decode$field, 'signup_page_url', _elm_lang$core$Json_Decode$string));
+														},
+														A2(_elm_lang$core$Json_Decode$field, 'reset_pass_endpoint', _elm_lang$core$Json_Decode$string));
+												},
+												A2(_elm_lang$core$Json_Decode$field, 'login_uri', _elm_lang$core$Json_Decode$string));
+										},
+										A2(_elm_lang$core$Json_Decode$field, 'login_page_url', _elm_lang$core$Json_Decode$string));
+								},
+								A2(_elm_lang$core$Json_Decode$field, 'forgot_password_url', _elm_lang$core$Json_Decode$string));
+						},
+						A2(_elm_lang$core$Json_Decode$field, 'forgot_pass_endpoint', _elm_lang$core$Json_Decode$string));
 				},
-				A2(
-					_elm_lang$core$Json_Decode$field,
-					'difficulties',
-					_elm_lang$core$Json_Decode$list(
-						A2(
-							_elm_lang$core$Json_Decode$andThen,
-							function (x0) {
-								return A2(
-									_elm_lang$core$Json_Decode$andThen,
-									function (x1) {
-										return _elm_lang$core$Json_Decode$succeed(
-											{ctor: '_Tuple2', _0: x0, _1: x1});
-									},
-									A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
-							},
-							A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string)))));
+				A2(_elm_lang$core$Json_Decode$field, 'student_signup_uri', _elm_lang$core$Json_Decode$string));
 		},
-		A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string)));
+		A2(
+			_elm_lang$core$Json_Decode$field,
+			'difficulties',
+			_elm_lang$core$Json_Decode$list(
+				A2(
+					_elm_lang$core$Json_Decode$andThen,
+					function (x0) {
+						return A2(
+							_elm_lang$core$Json_Decode$andThen,
+							function (x1) {
+								return _elm_lang$core$Json_Decode$succeed(
+									{ctor: '_Tuple2', _0: x0, _1: x1});
+							},
+							A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
+					},
+					A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string))))));
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};

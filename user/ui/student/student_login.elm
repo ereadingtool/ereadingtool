@@ -1,13 +1,15 @@
 import Html exposing (Html)
 
-import Config
-import Flags
+import User.Flags.UnAuthed exposing (UnAuthedUserFlags)
 
 import Login
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (class, classList, attribute)
 
 import Views
+
+
+type alias Flags = UnAuthedUserFlags {}
 
 
 view_help_msgs : Login.Model -> List (Html Login.Msg)
@@ -38,7 +40,7 @@ view model =
   ]
 
 
-main : Program Flags.UnAuthedFlags Login.Model Login.Msg
+main : Program Flags Login.Model Login.Msg
 main =
   Html.programWithFlags
     { init = Login.init

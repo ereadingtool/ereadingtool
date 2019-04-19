@@ -1,10 +1,9 @@
-import User
-
 import Html exposing (Html, div)
 import Html.Attributes exposing (classList, class, attribute)
 import Html.Events exposing (onInput)
 
 import Flags
+
 import User.Flags.UnAuthed exposing (UnAuthedUserFlags)
 
 import SignUp
@@ -22,7 +21,15 @@ import Views
 
 import Menu.Msg as MenuMsg
 
-type alias SignUpResp = { id: SignUp.UserID, redirect: SignUp.URI }
+
+type InstructorSignUpURI = InstructorSignUpURI SignUp.URI
+
+instructorSignUpURI : InstructorSignUpURI -> SignUp.URI
+instructorSignUpURI (InstructorSignUpURI uri) = uri
+
+type alias SignUpResp = { id: SignUp.UserID, redirect: SignUp.RedirectURI }
+
+type alias Flags = UnAuthedUserFlags {instructor_signup_uri : String}
 
 type alias InviteCode = String
 
@@ -44,8 +51,9 @@ type Msg =
 
 
 type alias Model = {
-    flags : UnAuthedUserFlags
+    flags : Flags
   , signup_params : SignUpParams
+  , signup_uri : InstructorSignUpURI
   , show_passwords : Bool
   , errors : Dict String String }
 
@@ -65,23 +73,31 @@ signUpEncoder signup_params = Encode.object [
 signUpRespDecoder : Decode.Decoder (SignUpResp)
 signUpRespDecoder =
   decode SignUpResp
-    |> required "id" Decode.int
-    |> required "redirect" Decode.string
+    |> required "id" (Decode.map SignUp.UserID Decode.int)
+    |> required "redirect" (Decode.map (SignUp.URI >> SignUp.RedirectURI) Decode.string)
 
-post_signup : Flags.CSRFToken -> User.SignUpURI -> SignUpParams -> Cmd Msg
-post_signup csrftoken instructor_signup_api_endpoint signup_params =
+redirect : SignUp.RedirectURI -> Cmd msg
+redirect redirect_uri =
+  Navigation.load (SignUp.uriToString (SignUp.redirectURI redirect_uri))
+
+postSignup : Flags.CSRFToken -> InstructorSignUpURI -> SignUpParams -> Cmd Msg
+postSignup csrftoken instructor_signup_api_endpoint signup_params =
   let
     encoded_signup_params = signUpEncoder signup_params
     req =
       post_with_headers
-       instructor_signup_api_endpoint
+       (SignUp.uriToString (instructorSignUpURI instructor_signup_api_endpoint))
        [Http.header "X-CSRFToken" csrftoken]
        (Http.jsonBody encoded_signup_params)
        signUpRespDecoder
   in
     Http.send Submitted req
 
-init : UnAuthedUserFlags -> (Model, Cmd Msg)
+flagsToInstructorSignUpURI : { a | instructor_signup_uri : String } -> InstructorSignUpURI
+flagsToInstructorSignUpURI flags =
+  InstructorSignUpURI (SignUp.URI flags.instructor_signup_uri)
+
+init : Flags -> (Model, Cmd Msg)
 init flags = ({
     flags = flags
   , signup_params = {
@@ -90,6 +106,7 @@ init flags = ({
     , confirm_password=""
     , invite_code=""
   }
+  , signup_uri = flagsToInstructorSignUpURI flags
   , show_passwords = False
   , errors = Dict.fromList [] }, Cmd.none)
 
@@ -112,10 +129,10 @@ update msg model =
       (updateInviteCode model invite_code, Cmd.none)
 
     Submit ->
-      (model, post_signup model.flags.csrftoken model.signup_params)
+      (model, postSignup model.flags.csrftoken model.signup_uri model.signup_params)
 
     Submitted (Ok resp) ->
-      (model, Navigation.load resp.redirect)
+      (model, redirect resp.redirect)
 
     Submitted (Err err) ->
       case err of
@@ -196,7 +213,7 @@ instructor_signup_view model =
   , Views.view_footer
   ]
 
-main : Program UnAuthedUserFlags Model Msg
+main : Program Flags Model Msg
 main =
   Html.programWithFlags
     { init = init
