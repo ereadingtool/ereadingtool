@@ -1,8 +1,11 @@
+import User
+
 import Html exposing (Html, div)
 import Html.Attributes exposing (classList, class, attribute)
 import Html.Events exposing (onInput)
 
 import Flags
+import User.Flags.UnAuthed exposing (UnAuthedUserFlags)
 
 import SignUp
 import Navigation
@@ -12,7 +15,7 @@ import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardc
 import Json.Decode as Decode
 
 import HttpHelpers exposing (post_with_headers)
-import Config exposing (instructor_signup_api_endpoint)
+
 import Http exposing (..)
 
 import Views
@@ -41,7 +44,7 @@ type Msg =
 
 
 type alias Model = {
-    flags : Flags.UnAuthedFlags
+    flags : UnAuthedUserFlags
   , signup_params : SignUpParams
   , show_passwords : Bool
   , errors : Dict String String }
@@ -65,8 +68,8 @@ signUpRespDecoder =
     |> required "id" Decode.int
     |> required "redirect" Decode.string
 
-post_signup : Flags.CSRFToken -> SignUpParams -> Cmd Msg
-post_signup csrftoken signup_params =
+post_signup : Flags.CSRFToken -> User.SignUpURI -> SignUpParams -> Cmd Msg
+post_signup csrftoken instructor_signup_api_endpoint signup_params =
   let
     encoded_signup_params = signUpEncoder signup_params
     req =
@@ -78,7 +81,7 @@ post_signup csrftoken signup_params =
   in
     Http.send Submitted req
 
-init : Flags.UnAuthedFlags -> (Model, Cmd Msg)
+init : UnAuthedUserFlags -> (Model, Cmd Msg)
 init flags = ({
     flags = flags
   , signup_params = {
@@ -133,19 +136,19 @@ update msg model =
     Logout msg ->
       (model, Cmd.none)
 
-isValidInviteCodeLength : InviteCode -> (Bool, String)
+isValidInviteCodeLength : InviteCode -> (Bool, Maybe String)
 isValidInviteCodeLength invite_code =
   case String.length invite_code > 64 of
     True ->
-      (False, "too long")
+      (False, Just "too long")
 
     False ->
       case String.length invite_code < 64 of
         True ->
-          (False, "too short")
+          (False, Just "too short")
 
         False ->
-          (True, "")
+          (True, Nothing)
 
 updateInviteCode : Model -> InviteCode -> Model
 updateInviteCode model invite_code =
@@ -159,7 +162,8 @@ updateInviteCode model invite_code =
         (if (valid_invite_code) || (invite_code == "") then
           Dict.remove "invite_code" model.errors
          else
-          Dict.insert "invite_code" ("This invite code is " ++ invite_code_err ++ ".") model.errors)
+          Dict.insert
+            "invite_code" ("This invite code is " ++ (Maybe.withDefault "" invite_code_err) ++ ".") model.errors)
     }
 
 view_invite_code_input : Model -> List (Html Msg)
@@ -192,7 +196,7 @@ instructor_signup_view model =
   , Views.view_footer
   ]
 
-main : Program Flags.UnAuthedFlags Model Msg
+main : Program UnAuthedUserFlags Model Msg
 main =
   Html.programWithFlags
     { init = init

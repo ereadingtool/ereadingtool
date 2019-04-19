@@ -13380,15 +13380,23 @@ var _user$project$Main$isValidInviteCodeLength = function (invite_code) {
 		_elm_lang$core$String$length(invite_code),
 		64) > 0;
 	if (_p0 === true) {
-		return {ctor: '_Tuple2', _0: false, _1: 'too long'};
+		return {
+			ctor: '_Tuple2',
+			_0: false,
+			_1: _elm_lang$core$Maybe$Just('too long')
+		};
 	} else {
 		var _p1 = _elm_lang$core$Native_Utils.cmp(
 			_elm_lang$core$String$length(invite_code),
 			64) < 0;
 		if (_p1 === true) {
-			return {ctor: '_Tuple2', _0: false, _1: 'too short'};
+			return {
+				ctor: '_Tuple2',
+				_0: false,
+				_1: _elm_lang$core$Maybe$Just('too short')
+			};
 		} else {
-			return {ctor: '_Tuple2', _0: true, _1: ''};
+			return {ctor: '_Tuple2', _0: true, _1: _elm_lang$core$Maybe$Nothing};
 		}
 	}
 };
@@ -13410,7 +13418,10 @@ var _user$project$Main$updateInviteCode = F2(
 					A2(
 						_elm_lang$core$Basics_ops['++'],
 						'This invite code is ',
-						A2(_elm_lang$core$Basics_ops['++'], invite_code_err, '.')),
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							A2(_elm_lang$core$Maybe$withDefault, '', invite_code_err),
+							'.')),
 					model.errors)
 			});
 	});

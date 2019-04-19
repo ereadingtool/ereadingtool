@@ -1,5 +1,7 @@
 module Login exposing (..)
 
+import User
+
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (class, classList, attribute)
 import Html.Events exposing (on, onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
@@ -18,17 +20,13 @@ import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardc
 
 import Views
 import Flags
+import User.Flags.UnAuthed exposing (UnAuthedUserFlags)
 
 import Util
 import Config
 
 
-type alias UserID = Int
-type alias URI = String
-type alias SignUpURI = String
-type alias LoginURI = String
-
-type alias LoginResp = { id: UserID, redirect : URI }
+type alias LoginResp = { id: User.UserID, redirect : User.URI }
 
 -- UPDATE
 type Msg =
@@ -38,8 +36,8 @@ type Msg =
   | UpdatePassword String
 
 type Login =
-    StudentLogin SignUpURI LoginURI Int
-  | InstructorLogin SignUpURI LoginURI Int
+    StudentLogin User.SignUpURI User.LoginURI User.LoginPageURL
+  | InstructorLogin User.SignUpURI User.LoginURI User.LoginPageURL
 
 type alias LoginParams = {
     username : String
@@ -48,42 +46,70 @@ type alias LoginParams = {
 type alias Model = {
     flags : Flags.UnAuthedFlags
   , login_params : LoginParams
+  , login: Login
   , errors : Dict String String }
 
-signup_uri : Login -> URI
+
+flagsToLogin : UnAuthedUserFlags -> Login
+flagsToLogin flags =
+  case flags.user_type of
+    "student" ->
+      StudentLogin
+        (User.SignUpURI flags.signup_uri)
+        (User.LoginURI flags.login_uri)
+        (User.LoginPageURL (User.URL flags.login_page_url))
+
+    "instructor" ->
+      InstructorLogin
+        (User.SignUpURI flags.signup_uri)
+        (User.LoginURI flags.login_uri)
+        (User.LoginPageURL (User.URL flags.login_page_url))
+
+signup_uri : Login -> User.URI
 signup_uri login =
   case login of
-    StudentLogin uri _ _ ->
+    StudentLogin uri _ ->
       uri
 
-    InstructorLogin uri _ _ ->
+    InstructorLogin uri _ ->
       uri
+
+forgotPassURL : Login -> User.ForgotPassURL
+forgotPassURL login =
+  case login of
+    StudentLogin _ _ login_page_url ->
+      User.forgotPassURL login_page_url
+
+    InstructorLogin _ _ login_page_url ->
+      User.forgotPassURL login_page_url
+
+
+loginPageURL : Login -> User.LoginPageURL
+loginPageURL login =
+  case login of
+    StudentLogin _ _ login_page_url ->
+      User.loginPageURL login_page_url
+
+    InstructorLogin _ _ login_page_url ->
+      User.loginPageURL login_page_url
+
 
 label : Login -> String
 label login =
   case login of
-    StudentLogin _ _ _ ->
+    StudentLogin _ _ ->
       "Student Login"
 
-    InstructorLogin _ _ _ ->
+    InstructorLogin _ _ ->
       "Instructor Login"
 
-menu_index : Login -> Int
-menu_index login =
-  case login of
-    StudentLogin _ _ menu_index ->
-      menu_index
+student_login : User.URI -> User.URI -> Login
+student_login signup_uri login_uri =
+  StudentLogin signup_uri login_uri
 
-    InstructorLogin _ _ menu_index ->
-      menu_index
-
-student_login : URI -> URI -> Int -> Login
-student_login signup_uri login_uri menu_index =
-  StudentLogin signup_uri login_uri menu_index
-
-instructor_login : URI -> URI -> Int -> Login
-instructor_login signup_uri login_uri menu_index =
-  InstructorLogin signup_uri login_uri menu_index
+instructor_login : User.URI -> User.URI -> Login
+instructor_login signup_uri login_uri =
+  InstructorLogin signup_uri login_uri
 
 loginEncoder : LoginParams -> Encode.Value
 loginEncoder login_params =
@@ -99,10 +125,15 @@ loginRespDecoder =
     |> required "redirect" Decode.string
 
 init : Flags.UnAuthedFlags -> (Model, Cmd Msg)
-init flags = ({
-    flags = flags
-  , login_params = (LoginParams "" "")
-  , errors = Dict.fromList [] }, Cmd.none)
+init flags =
+  let
+    login = flagsToLogin flags
+  in
+    ({
+      flags = flags
+    , login_params = (LoginParams "" "")
+    , login = login
+    , errors = Dict.fromList [] }, Cmd.none)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -120,8 +151,8 @@ post_login endpoint csrftoken login_params =
   in
     Http.send Submitted req
 
-update : String -> Msg -> Model -> (Model, Cmd Msg)
-update endpoint msg model =
+update : User.LoginURI -> Msg -> Model -> (Model, Cmd Msg)
+update login_endpoint msg model =
   case msg of
     UpdatePassword password ->
       let
@@ -143,7 +174,7 @@ update endpoint msg model =
 
     Submit ->
       ({ model | errors = Dict.fromList [] }
-       , post_login endpoint model.flags.csrftoken model.login_params)
+       , post_login login_endpoint model.flags.csrftoken model.login_params)
 
     Submitted (Ok resp) ->
       (model, Navigation.load resp.redirect)
@@ -231,19 +262,20 @@ view_submit model = [
 view_other_login_option : Login -> Html Msg
 view_other_login_option login =
   case login of
-    StudentLogin _ _ _ ->
+    StudentLogin _ _ ->
       div [] [
         Html.text "Are you an instructor? "
-      , Html.a [attribute "href" Config.instructor_login_page] [
+      , Html.a [attribute "href" (User.urlToString (loginPageURL login))] [
           span [attribute "class" "cursor"] [
             Html.text "Login as an instructor"
           ]
         ]
       ]
-    InstructorLogin _ _ _ ->
+
+    InstructorLogin _ _ ->
       div [] [
         Html.text "Are you a student? "
-      , Html.a [attribute "href" Config.student_login_page] [
+      , Html.a [attribute "href" (User.urlToString (loginPageURL login))] [
           span [attribute "class" "cursor"] [
             Html.text "Login as an student"
           ]
@@ -260,7 +292,7 @@ view_login login =
       ]
     , div [] [
         Html.text "Forgot Password? "
-      , Html.a [attribute "href" Config.forgot_password_page] [
+      , Html.a [attribute "href" (User.urlToString (forgotPassURL login))] [
           span [attribute "class" "cursor"] [
             Html.text "Reset Password"
           ]
@@ -282,7 +314,7 @@ view_content login model =
   ]
 
 -- VIEW
-view : Login -> Model -> Html Msg
+view : Model -> Html Msg
 view login model =
   div [] [
     Views.view_unauthed_header

@@ -11,10 +11,6 @@
     grid-template-columns: 7% 13% [content] auto 13% 7%;
 }
 
-.login {
-     grid-template-columns: 30% [content] auto 1fr;
-}
-
 .login_box, .signup_box {
     grid-column: content;
     display: grid;

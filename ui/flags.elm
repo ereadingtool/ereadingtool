@@ -4,7 +4,7 @@ import Menu.Items
 
 type alias CSRFToken = String
 
-type alias UnAuthedFlags = {
+type alias UnAuthedFlags a = { a |
     csrftoken : CSRFToken }
 
 
