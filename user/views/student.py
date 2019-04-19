@@ -87,6 +87,29 @@ class ElmLoadStudentSignUpView(NoAuthElmLoadJsView):
         return context
 
 
+class ElmLoadJsStudentNoAuthView(NoAuthElmLoadJsView):
+    def get_context_data(self, **kwargs) -> Dict:
+        context = super(ElmLoadJsStudentNoAuthView, self).get_context_data(**kwargs)
+
+        def url_elm_value(url):
+            return {'quote': True, 'safe': True, 'value': url}
+
+        context['elm'].update({
+            'user_type': {'quote': True, 'safe': True, 'value': 'student'},
+            'signup_uri': url_elm_value(reverse('api-student-signup')),
+            'signup_page_url': url_elm_value(reverse('student-signup')),
+
+            'login_uri': url_elm_value(reverse('api-student-login')),
+            'login_page_url': url_elm_value(reverse('instructor-login')),
+
+            'reset_pass_endpoint': url_elm_value(reverse('api-password-reset')),
+            'forgot_pass_endpoint': url_elm_value(reverse('api-password-reset-confirm')),
+            'forgot_password_url': url_elm_value(reverse('password-reset')),
+        })
+
+        return context
+
+
 class StudentView(ProfileView):
     profile_model = Student
     login_url = Student.login_url

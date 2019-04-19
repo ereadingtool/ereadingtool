@@ -5,7 +5,7 @@ type UserID = UserID Int
 type URI = URI String
 type RedirectURI = RedirectURI URI
 
-type SignUpURI = SignUpURI URI
+type SignUpURL = SignUpURL URL
 type LoginURI = LoginURI URI
 
 type URL = URL String
@@ -18,8 +18,8 @@ type ForgotPassURL = ForgotPassURL URL
 redirectURI : RedirectURI -> URI
 redirectURI (RedirectURI uri) = uri
 
-signupURI : SignUpURI -> URI
-signupURI (SignUpURI uri) = uri
+signupURL : SignUpURL -> URL
+signupURL (SignUpURL url) = url
 
 forgotPassURL : ForgotPassURL -> URL
 forgotPassURL (ForgotPassURL url) =

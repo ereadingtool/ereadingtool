@@ -16,7 +16,7 @@ from user.instructor.models import Instructor
 from user.views.api import APIView
 from user.views.mixin import ProfileView
 
-from mixins.view import ElmLoadJsBaseView
+from mixins.view import ElmLoadJsBaseView, NoAuthElmLoadJsView
 
 
 Form = TypeVar('Form', bound=forms.Form)
@@ -34,6 +34,29 @@ class ElmLoadJsInstructorView(LoginRequiredMixin, ElmLoadJsBaseView):
             pass
 
         context['elm']['instructor_profile'] = {'quote': False, 'safe': True, 'value': profile or 'null'}
+
+        return context
+
+
+class ElmLoadJsInstructorNoAuthView(NoAuthElmLoadJsView):
+    def get_context_data(self, **kwargs) -> Dict:
+        context = super(ElmLoadJsInstructorNoAuthView, self).get_context_data(**kwargs)
+
+        def url_elm_value(url):
+            return {'quote': True, 'safe': True, 'value': url}
+
+        context['elm'].update({
+            'user_type': {'quote': True, 'safe': True, 'value': 'instructor'},
+            'signup_uri': url_elm_value(reverse('api-instructor-signup')),
+            'signup_page_url': url_elm_value(reverse('instructor-signup')),
+
+            'login_uri': url_elm_value(reverse('api-instructor-login')),
+            'login_page_url': url_elm_value(reverse('student-login')),
+
+            'reset_pass_endpoint': url_elm_value(reverse('api-password-reset')),
+            'forgot_pass_endpoint': url_elm_value(reverse('api-password-reset-confirm')),
+            'forgot_password_url': url_elm_value(reverse('password-reset')),
+        })
 
         return context
 

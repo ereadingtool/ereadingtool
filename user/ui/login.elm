@@ -39,8 +39,8 @@ type Msg =
   | UpdatePassword String
 
 type Login =
-    StudentLogin User.SignUpURI User.LoginURI User.LoginPageURL User.ForgotPassURL
-  | InstructorLogin User.SignUpURI User.LoginURI User.LoginPageURL User.ForgotPassURL
+    StudentLogin User.SignUpURL User.LoginURI User.LoginPageURL User.ForgotPassURL
+  | InstructorLogin User.SignUpURL User.LoginURI User.LoginPageURL User.ForgotPassURL
 
 type alias LoginParams = {
     username : String
@@ -57,13 +57,13 @@ flagsToLogin : Flags -> Login
 flagsToLogin flags =
   if flags.user_type == "instructor" then
     InstructorLogin
-      (User.SignUpURI (User.URI flags.signup_uri))
+      (User.SignUpURL (User.URL flags.signup_page_url))
       (User.LoginURI (User.URI flags.login_uri))
       (User.LoginPageURL (User.URL flags.login_page_url))
       (User.ForgotPassURL (User.URL flags.forgot_password_url))
   else
     StudentLogin
-      (User.SignUpURI (User.URI flags.signup_uri))
+      (User.SignUpURL (User.URL flags.signup_page_url))
       (User.LoginURI (User.URI flags.login_uri))
       (User.LoginPageURL (User.URL flags.login_page_url))
       (User.ForgotPassURL (User.URL flags.forgot_password_url))
@@ -77,7 +77,7 @@ loginURI login =
     InstructorLogin _ login_uri _ _ ->
       login_uri
 
-signupURI : Login -> User.SignUpURI
+signupURI : Login -> User.SignUpURL
 signupURI login =
   case login of
     StudentLogin signup_uri _ _ _ ->
@@ -115,11 +115,11 @@ label login =
     InstructorLogin _ _ _ _ ->
       "Instructor Login"
 
-student_login : User.SignUpURI -> User.LoginURI -> User.LoginPageURL -> User.ForgotPassURL -> Login
+student_login : User.SignUpURL -> User.LoginURI -> User.LoginPageURL -> User.ForgotPassURL -> Login
 student_login signup_uri login_uri login_page_url forgot_pass_url =
   StudentLogin signup_uri login_uri login_page_url forgot_pass_url
 
-instructor_login : User.SignUpURI-> User.LoginURI -> User.LoginPageURL -> User.ForgotPassURL -> Login
+instructor_login : User.SignUpURL-> User.LoginURI -> User.LoginPageURL -> User.ForgotPassURL -> Login
 instructor_login signup_uri login_uri login_page_url forgot_pass_url =
   InstructorLogin signup_uri login_uri login_page_url forgot_pass_url
 
@@ -311,11 +311,11 @@ view_login login =
     ]
   ]
 
-view_not_registered : User.SignUpURI -> Html Msg
+view_not_registered : User.SignUpURL -> Html Msg
 view_not_registered signup_uri =
   div [] [
     Html.text "Not registered? "
-  , Html.a [attribute "href" (User.uriToString (User.signupURI signup_uri))] [
+  , Html.a [attribute "href" (User.urlToString (User.signupURL signup_uri))] [
       span [attribute "class" "cursor"] [Html.text "Sign Up"]
     ]
   ]

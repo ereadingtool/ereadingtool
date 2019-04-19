@@ -11454,7 +11454,7 @@ var _user$project$User$forgotPassURL = function (_p8) {
 	var _p9 = _p8;
 	return _p9._0;
 };
-var _user$project$User$signupURI = function (_p10) {
+var _user$project$User$signupURL = function (_p10) {
 	var _p11 = _p10;
 	return _p11._0;
 };
@@ -11471,8 +11471,8 @@ var _user$project$User$URI = function (a) {
 var _user$project$User$RedirectURI = function (a) {
 	return {ctor: 'RedirectURI', _0: a};
 };
-var _user$project$User$SignUpURI = function (a) {
-	return {ctor: 'SignUpURI', _0: a};
+var _user$project$User$SignUpURL = function (a) {
+	return {ctor: 'SignUpURL', _0: a};
 };
 var _user$project$User$LoginURI = function (a) {
 	return {ctor: 'LoginURI', _0: a};
@@ -13114,8 +13114,8 @@ var _user$project$Login$view_not_registered = function (signup_uri) {
 						_0: A2(
 							_elm_lang$html$Html_Attributes$attribute,
 							'href',
-							_user$project$User$uriToString(
-								_user$project$User$signupURI(signup_uri))),
+							_user$project$User$urlToString(
+								_user$project$User$signupURL(signup_uri))),
 						_1: {ctor: '[]'}
 					},
 					{
@@ -13775,8 +13775,8 @@ var _user$project$Login$StudentLogin = F4(
 var _user$project$Login$flagsToLogin = function (flags) {
 	return _elm_lang$core$Native_Utils.eq(flags.user_type, 'instructor') ? A4(
 		_user$project$Login$InstructorLogin,
-		_user$project$User$SignUpURI(
-			_user$project$User$URI(flags.signup_uri)),
+		_user$project$User$SignUpURL(
+			_user$project$User$URL(flags.signup_page_url)),
 		_user$project$User$LoginURI(
 			_user$project$User$URI(flags.login_uri)),
 		_user$project$User$LoginPageURL(
@@ -13784,8 +13784,8 @@ var _user$project$Login$flagsToLogin = function (flags) {
 		_user$project$User$ForgotPassURL(
 			_user$project$User$URL(flags.forgot_password_url))) : A4(
 		_user$project$Login$StudentLogin,
-		_user$project$User$SignUpURI(
-			_user$project$User$URI(flags.signup_uri)),
+		_user$project$User$SignUpURL(
+			_user$project$User$URL(flags.signup_page_url)),
 		_user$project$User$LoginURI(
 			_user$project$User$URI(flags.login_uri)),
 		_user$project$User$LoginPageURL(
@@ -13932,21 +13932,16 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 												function (signup_page_url) {
 													return A2(
 														_elm_lang$core$Json_Decode$andThen,
-														function (signup_uri) {
+														function (user_type) {
 															return A2(
 																_elm_lang$core$Json_Decode$andThen,
-																function (user_type) {
-																	return A2(
-																		_elm_lang$core$Json_Decode$andThen,
-																		function (csrftoken) {
-																			return _elm_lang$core$Json_Decode$succeed(
-																				{forgot_pass_endpoint: forgot_pass_endpoint, forgot_password_url: forgot_password_url, login_page_url: login_page_url, login_uri: login_uri, reset_pass_endpoint: reset_pass_endpoint, signup_page_url: signup_page_url, signup_uri: signup_uri, user_type: user_type, csrftoken: csrftoken});
-																		},
-																		A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string));
+																function (csrftoken) {
+																	return _elm_lang$core$Json_Decode$succeed(
+																		{forgot_pass_endpoint: forgot_pass_endpoint, forgot_password_url: forgot_password_url, login_page_url: login_page_url, login_uri: login_uri, reset_pass_endpoint: reset_pass_endpoint, signup_page_url: signup_page_url, user_type: user_type, csrftoken: csrftoken});
 																},
-																A2(_elm_lang$core$Json_Decode$field, 'user_type', _elm_lang$core$Json_Decode$string));
+																A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string));
 														},
-														A2(_elm_lang$core$Json_Decode$field, 'signup_uri', _elm_lang$core$Json_Decode$string));
+														A2(_elm_lang$core$Json_Decode$field, 'user_type', _elm_lang$core$Json_Decode$string));
 												},
 												A2(_elm_lang$core$Json_Decode$field, 'signup_page_url', _elm_lang$core$Json_Decode$string));
 										},
