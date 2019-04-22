@@ -84,12 +84,28 @@ class ElmLoadStudentSignUpView(NoAuthElmLoadJsView):
                                               json.dumps([(text_difficulty.slug, text_difficulty.name)
                                                           for text_difficulty in TextDifficulty.objects.all()])}
 
+        def url_elm_value(url):
+            return {'quote': True, 'safe': True, 'value': url}
+
+        context['elm'].update({
+            'user_type': {'quote': True, 'safe': True, 'value': 'student'},
+            'student_signup_uri': url_elm_value(reverse('api-student-signup')),
+            'signup_page_url': url_elm_value(reverse('student-signup')),
+
+            'login_uri': url_elm_value(reverse('api-student-login')),
+            'login_page_url': url_elm_value(reverse('instructor-login')),
+
+            'reset_pass_endpoint': url_elm_value(reverse('api-password-reset')),
+            'forgot_pass_endpoint': url_elm_value(reverse('api-password-reset-confirm')),
+            'forgot_password_url': url_elm_value(reverse('password-reset')),
+        })
+
         return context
 
 
-class ElmLoadJsStudentNoAuthView(NoAuthElmLoadJsView):
+class ElmLoadJsStudentLoginView(NoAuthElmLoadJsView):
     def get_context_data(self, **kwargs) -> Dict:
-        context = super(ElmLoadJsStudentNoAuthView, self).get_context_data(**kwargs)
+        context = super(ElmLoadJsStudentLoginView, self).get_context_data(**kwargs)
 
         def url_elm_value(url):
             return {'quote': True, 'safe': True, 'value': url}

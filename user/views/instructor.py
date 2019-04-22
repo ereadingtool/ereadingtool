@@ -47,7 +47,7 @@ class ElmLoadJsInstructorNoAuthView(NoAuthElmLoadJsView):
 
         context['elm'].update({
             'user_type': {'quote': True, 'safe': True, 'value': 'instructor'},
-            'signup_uri': url_elm_value(reverse('api-instructor-signup')),
+            'instructor_signup_uri': url_elm_value(reverse('api-instructor-signup')),
             'signup_page_url': url_elm_value(reverse('instructor-signup')),
 
             'login_uri': url_elm_value(reverse('api-instructor-login')),
