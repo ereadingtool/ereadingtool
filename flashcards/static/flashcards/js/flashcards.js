@@ -13759,6 +13759,20 @@ var _user$project$Flashcard_View$view_start_nav = function (model) {
 			_1: {ctor: '[]'}
 		});
 };
+var _user$project$Flashcard_View$view_additional_notes = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('notes'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text('Note: In review mode double-click a flashcard in order to reveal the answer.'),
+			_1: {ctor: '[]'}
+		});
+};
 var _user$project$Flashcard_View$view_mode_choice = F2(
 	function (model, choice) {
 		return A2(
@@ -13905,15 +13919,19 @@ var _user$project$Flashcard_View$view_content = function (model) {
 					_0: A2(_user$project$Flashcard_View$view_mode_choices, model, _p4._0),
 					_1: {
 						ctor: '::',
-						_0: A2(
-							_user$project$Flashcard_View$view_nav,
-							model,
-							{
-								ctor: '::',
-								_0: _user$project$Flashcard_View$view_start_nav(model),
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
+						_0: _user$project$Flashcard_View$view_additional_notes(model),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_user$project$Flashcard_View$view_nav,
+								model,
+								{
+									ctor: '::',
+									_0: _user$project$Flashcard_View$view_start_nav(model),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
 					}
 				};
 			case 'ReviewCard':

@@ -2,6 +2,8 @@ import math
 from enum import Enum, unique
 from typing import Optional, AnyStr, Dict, List, Union
 
+from django.utils.translation import gettext as _
+
 from django.db import DatabaseError
 from django.db import models
 from django.utils import timezone
@@ -14,9 +16,9 @@ from text.phrase.models import TextPhrase
 
 @unique
 class Mode(Enum):
-    review = """Review Only Mode.  This mode allows you to review your flashcards without submitting answers."""
-    review_and_answer = """Review and Answer Mode.  This mode requires you to answer each flashcard as well as 
-    self-assess your performance."""
+    review = _("""Review Only Mode.  This mode allows you to review your flashcards without submitting answers.""")
+    review_and_answer = _("""Review and Answer Mode.  This mode requires you to answer each flashcard as well as 
+    self-assess your performance.""")
 
 
 class FlashcardSessionStateMachine(StateMachine):
