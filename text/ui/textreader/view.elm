@@ -148,8 +148,8 @@ view_flashcard_options model reader_word =
 
 view_gloss : Model -> TextReaderWord -> TextReader.TextWord.TextWord -> Html Msg
 view_gloss model reader_word text_word =
-  div [] [
-    div [ classList [("gloss_overlay", True), ("gloss_menu", True)]
+  span [] [
+    span [ classList [("gloss_overlay", True), ("gloss_menu", True)]
         , onMouseLeave (UnGloss reader_word)
         , classList [("hidden", not (TextReader.Model.selected reader_word model.gloss))]
         ] [
