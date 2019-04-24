@@ -215,13 +215,15 @@ view_next_btn =
 
 view_text_complete : Model -> TextScores -> Html Msg
 view_text_complete model scores =
-  div [class "complete"] [
+  div [id "complete"] [
     div [attribute "id" "text_score"] [
-      Html.text
-        ("Sections complete: " ++ (toString scores.complete_sections) ++ "/" ++ (toString scores.num_of_sections))
-    , div [] [
+      div [] [
         Html.text
-          ("Score: " ++ (toString scores.section_scores) ++ " out of " ++ (toString scores.possible_section_scores))
+          (  "You answered "
+          ++ (toString scores.section_scores)
+          ++ " out of "
+          ++ (toString scores.possible_section_scores)
+          ++ " questions correctly for this text.")
       ]
     ]
   , view_text_conclusion model.text

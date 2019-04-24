@@ -24723,7 +24723,7 @@ var _user$project$TextReader_View$view_text_complete = F2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('complete'),
+				_0: _elm_lang$html$Html_Attributes$id('complete'),
 				_1: {ctor: '[]'}
 			},
 			{
@@ -24737,39 +24737,28 @@ var _user$project$TextReader_View$view_text_complete = F2(
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								'Sections complete: ',
-								A2(
-									_elm_lang$core$Basics_ops['++'],
-									_elm_lang$core$Basics$toString(scores.complete_sections),
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(
 									A2(
 										_elm_lang$core$Basics_ops['++'],
-										'/',
-										_elm_lang$core$Basics$toString(scores.num_of_sections))))),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{ctor: '[]'},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text(
+										'You answered ',
 										A2(
 											_elm_lang$core$Basics_ops['++'],
-											'Score: ',
+											_elm_lang$core$Basics$toString(scores.section_scores),
 											A2(
 												_elm_lang$core$Basics_ops['++'],
-												_elm_lang$core$Basics$toString(scores.section_scores),
+												' out of ',
 												A2(
 													_elm_lang$core$Basics_ops['++'],
-													' out of ',
-													_elm_lang$core$Basics$toString(scores.possible_section_scores))))),
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}
+													_elm_lang$core$Basics$toString(scores.possible_section_scores),
+													' questions correctly for this text.'))))),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
 					}),
 				_1: {
 					ctor: '::',

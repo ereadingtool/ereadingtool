@@ -16,6 +16,10 @@ span {
     padding-top: 50px;
 }
 
+#complete {
+    grid-column: body-col;
+}
+
 #text-body {
     grid-column: body-col;
     grid-row: body-row;
