@@ -148,11 +148,10 @@ class StudentAPIView(LoginRequiredMixin, APIView):
             return HttpResponseForbidden()
 
         student_dict = student.to_dict()
-        student_flashcards = student_dict.pop('flashcards')
-        student_performance_report = student_dict.pop('performance_report')
 
-        # TODO(andrew.silvernail): frontend on the student profile page is expecting text word dicts
-        # refactor later
+        student_dict.pop('flashcards')
+
+        student_performance_report = student_dict.pop('performance_report')
 
         return HttpResponse(json.dumps({
             'profile': student_dict,

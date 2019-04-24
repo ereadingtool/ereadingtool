@@ -125,7 +125,7 @@ class InstructorSignUpForm(SignUpForm):
 class StudentSignUpForm(SignUpForm):
     class Meta:
         model = Student
-        exclude = ('user', 'difficulty_preference', 'flashcards',)
+        exclude = ('user', 'difficulty_preference', 'flashcards', 'research_consent',)
 
     difficulty = forms.CharField(required=True)
 
@@ -173,6 +173,7 @@ class StudentForm(forms.ModelForm):
         model = Student
         exclude = ('user',)
 
+    research_consent = forms.BooleanField(required=False)
     username = forms.CharField(validators=[ReaderUser.username_validator], required=False)
 
     def __init__(self, *args, **kwargs):
@@ -185,5 +186,8 @@ class StudentForm(forms.ModelForm):
 
         student.user.username = self.cleaned_data['username']
         student.user.save()
+
+        if 'research_consent' in self.cleaned_data:
+            student.consent_to_research(self.cleaned_data['research_consent'])
 
         return student

@@ -83,3 +83,11 @@ class Student(Profile, TextReadings, models.Model):
 
     def remove_from_flashcards(self, text_phrase: TextPhrase):
         self.flashcards.filter(phrase=text_phrase).delete()
+
+    def consent_to_research(self, consented: bool):
+        research_consent = self.research_consent.__class__.objects.get_or_create()
+
+        if consented:
+            research_consent.on()
+        else:
+            research_consent.off()
