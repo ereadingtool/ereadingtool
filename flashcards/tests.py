@@ -6,16 +6,30 @@ from django.utils import timezone
 
 from flashcards.state.models import FlashcardSessionStateMachine
 
+from ereadingtool.test.user import TestUser
+from ereadingtool.test.data import TestData
+
 from text.tests import TestText
+
 from text.translations.models import TextWord
 from text.phrase.models import TextPhrase, TextPhraseTranslation
+from django.test.client import Client
+
 
 from user.student.models import Student
 
 
-class TestFlashcardStateMachine(TestText, TestCase):
+class TestFlashcardStateMachine(TestData, TestUser, TestCase):
     def setUp(self):
         super(TestFlashcardStateMachine, self).setUp()
+
+        self.instructor = self.new_instructor_client(Client())
+        self.student = self.new_student_client(Client())
+
+        self.text_test = TestText()
+
+        self.text_test.instructor = self.instructor
+        self.text_test.student = self.student
 
         self.test_student = Student.objects.filter()[0]
 
@@ -24,7 +38,7 @@ class TestFlashcardStateMachine(TestText, TestCase):
         test_data['text_sections'][0]['body'] = 'заявление неделю Число'
         test_data['text_sections'][1]['body'] = 'заявление неделю стрельбы вещи'
 
-        self.text = self.test_post_text(test_data=test_data)
+        self.text = self.text_test.test_post_text(test_data=test_data)
 
         text_sections = self.text.sections.all()
 
@@ -147,7 +161,7 @@ class TestFlashcardStateMachine(TestText, TestCase):
         state_machine = FlashcardSessionStateMachine(mode='review_and_answer',
                                                      flashcards_queryset=self.test_student.flashcards)
 
-        self.assertEquals(state_machine.current_flashcard, self.test_flashcard)
+        self.assertEquals(state_machine.current_flashcard, self.test_flashcards[0])
 
         self.assertEquals([tr.target.identifier for tr in state_machine.allowed_transitions], [
             'choose_mode',

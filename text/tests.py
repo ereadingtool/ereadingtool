@@ -1,39 +1,30 @@
-import json
 import collections
-from unittest import skip
-from typing import Dict, AnyStr, Optional, List, Tuple
+import json
+from typing import Dict, Optional, List, Tuple
 
 import channels.layers
 from asgiref.sync import async_to_sync
 from django.test import TestCase
 from django.test.client import Client
-from hypothesis.strategies import just, one_of
-
-from ereadingtool.test.user import TestUser
-from ereadingtool.urls import reverse_lazy
-
-from question.models import Answer
-from tag.models import Tag
-from text.consumers.instructor import ParseTextSectionForDefinitions
-
-from text.yandex.api.definition import (YandexDefinition, YandexDefinitions, YandexDefinitionAPI, YandexTranslations,
-                                        YandexTranslation, YandexPhrase)
-
-from text.models import TextDifficulty, Text, TextSection
-from text_reading.base import TextReadingNotAllQuestionsAnswered
-from text_reading.models import StudentTextReading, InstructorTextReading
-from user.student.models import Student
-
-from user.instructor.models import Instructor
-
-from text.translations.models import TextWord
-
-from text.phrase.models import TextPhrase, TextPhraseTranslation
-
 from statemachine import State
 
+from ereadingtool.test.data import TestData
+from ereadingtool.test.user import TestUser
+from ereadingtool.urls import reverse_lazy
+from question.models import Answer
+from text.consumers.instructor import ParseTextSectionForDefinitions
+from text.models import Text, TextSection
+from tag.models import Tag
+from text.phrase.models import TextPhrase, TextPhraseTranslation
+from text.translations.models import TextWord
+from text.yandex.api.definition import (YandexDefinition, YandexDefinitions, YandexDefinitionAPI, YandexTranslations,
+                                        YandexTranslation, YandexPhrase)
+from text_reading.base import TextReadingNotAllQuestionsAnswered
+from text_reading.models import StudentTextReading
+from user.student.models import Student
 
-class TestText(TestUser, TestCase):
+
+class TestText(TestData, TestUser, TestCase):
     def __init__(self, *args, **kwargs):
         super(TestText, self).__init__(*args, **kwargs)
 
@@ -41,9 +32,6 @@ class TestText(TestUser, TestCase):
 
     def setUp(self):
         super(TestText, self).setUp()
-
-        Tag.setup_default()
-        TextDifficulty.setup_default()
 
         self.instructor = self.new_instructor_client(Client())
         self.student = self.new_student_client(Client())
@@ -116,7 +104,7 @@ class TestText(TestUser, TestCase):
 
         self.assertEquals('Преподаватель немного опаздывает.', text_phrase.sentence)
 
-    def test_run_definition_background_job(self, test_data: Dict) -> Tuple[int, TextSection]:
+    def run_definition_background_job(self, test_data: Dict) -> Tuple[int, TextSection]:
         num_of_words = len(test_data['text_sections'][0]['body'].split())
 
         self.test_post_text(test_data=test_data)
@@ -142,7 +130,7 @@ class TestText(TestUser, TestCase):
         test_data['text_sections'][0]['body'] = 'заявление неделю'
         test_data['text_sections'][1]['body'] = 'заявление неделю'
 
-        num_of_words, text_section = self.test_run_definition_background_job(test_data)
+        num_of_words, text_section = self.run_definition_background_job(test_data)
 
         self.assertEquals(text_section.translated_words.count(), num_of_words)
 
@@ -609,7 +597,7 @@ class TestText(TestUser, TestCase):
 
         self.assertEquals(len(text_section.body), test_text_section_body_size)
 
-    def test_post_text(self, test_data: Optional[Dict]=None) -> Text:
+    def test_post_text(self, test_data: Optional[Dict] = None) -> Text:
         test_data = test_data or self.get_test_data()
 
         num_of_sections = len(test_data['text_sections'])
@@ -673,76 +661,3 @@ class TestText(TestUser, TestCase):
         self.assertTrue(resp_content)
 
         self.assertTrue('deleted' in resp_content)
-
-    def generate_text_params(self, sections: List[Dict[AnyStr, int]]) -> Dict:
-        section_num = 0
-        section_params = []
-
-        for section in sections:
-            questions_for_section = [self.gen_text_section_question_params(i)
-                                     for i in range(0, section['num_of_questions'])]
-
-            section_params.append(self.gen_text_section_params(section_num, question_params=questions_for_section))
-
-            section_num += 1
-
-        test_data = self.get_test_data(section_params=section_params)
-
-        return test_data
-
-    @classmethod
-    def gen_question_type(cls) -> AnyStr:
-        return one_of([just('main_idea'), just('detail')]).example()
-
-    @classmethod
-    def gen_text_section_question_params(cls, order: int) -> Dict:
-        return {'body': f'Question {order+1}?',
-                'order': order,
-                'answers': [
-                    {'text': 'Click to write choice 1',
-                     'correct': False,
-                     'order': 0,
-                     'feedback': 'Answer 1 Feedback.'},
-                    {'text': 'Click to write choice 2',
-                     'correct': False,
-                     'order': 1,
-                     'feedback': 'Answer 2 Feedback.'},
-                    {'text': 'Click to write choice 3',
-                     'correct': False,
-                     'order': 2,
-                     'feedback': 'Answer 3 Feedback.'},
-                    {'text': 'Click to write choice 4',
-                     'correct': True,
-                     'order': 3, 'feedback': 'Answer 4 Feedback.'}
-                ], 'question_type': cls.gen_question_type()}
-
-    def add_questions_to_test_data(self, test_data: Dict, section: int, num_of_questions: int) -> Dict:
-        first_question = test_data['text_sections'][section]['questions'][0]
-        end_index = first_question['order'] + 1 + num_of_questions
-
-        for i in range(first_question['order']+1, end_index):
-            test_data['text_sections'][section]['questions'].append(self.gen_text_section_question_params(order=i))
-
-        return test_data
-
-    @classmethod
-    def gen_text_section_params(cls, order: int, question_params: Optional[List[Dict]] = None) -> Dict:
-        return {
-            'order': order,
-            'body': f'<p style="text-align:center">section {order}</p>\n',
-            'questions': question_params or [cls.gen_text_section_question_params(order=0),
-                                             cls.gen_text_section_question_params(order=1)]
-        }
-
-    @classmethod
-    def get_test_data(cls, section_params: Optional[List[Dict]] = None) -> Dict:
-        return {
-            'title': 'text title',
-            'introduction': 'an introduction to the text',
-            'difficulty': 'intermediate_mid',
-            'conclusion': 'a conclusion to the text',
-            'tags': ['Sports', 'Science/Technology', 'Other'],
-            'author': 'author',
-            'source': 'source',
-            'text_sections': section_params or [cls.gen_text_section_params(0), cls.gen_text_section_params(1)]
-        }

@@ -179,7 +179,7 @@ class TextAPIView(LoginRequiredMixin, View):
                 return HttpResponse(json.dumps({
                     'id': kwargs['pk'],
                     'deleted': True,
-                    'redirect': str(reverse_lazy('admin'))}))
+                    'redirect': str(reverse_lazy('admin-text-search'))}))
             except WriteLocked:
                 return HttpResponseServerError(json.dumps({'errors': 'text {0} is locked.'.format(kwargs['pk'])}))
 
