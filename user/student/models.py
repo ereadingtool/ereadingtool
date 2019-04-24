@@ -9,9 +9,13 @@ from text.phrase.models import TextPhrase
 from user.mixins.models import Profile, TextReadings
 from user.models import ReaderUser
 
+from user.student.research_consent.models import StudentResearchConsent
+
 
 class Student(Profile, TextReadings, models.Model):
     user = models.OneToOneField(ReaderUser, on_delete=models.CASCADE)
+    research_consent = models.OneToOneField(StudentResearchConsent, null=True, on_delete=models.SET_NULL)
+
     difficulty_preference = models.ForeignKey(TextDifficulty, null=True, on_delete=models.SET_NULL,
                                               related_name='students')
 
