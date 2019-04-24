@@ -71,7 +71,7 @@ class Student(Profile, TextReadings, models.Model):
         return text_student_summary
 
     def __str__(self) -> AnyStr:
-        return self.user.username
+        return self.user.username or self.user.email
 
     def has_flashcard_for_phrase(self, text_phrase: TextPhrase) -> bool:
         return self.flashcards.filter(phrase=text_phrase).exists()
@@ -85,9 +85,11 @@ class Student(Profile, TextReadings, models.Model):
         self.flashcards.filter(phrase=text_phrase).delete()
 
     def consent_to_research(self, consented: bool):
-        research_consent = self.research_consent.__class__.objects.get_or_create()
+        if not self.research_consent:
+            self.research_consent = StudentResearchConsent.objects.create()
+            self.save()
 
         if consented:
-            research_consent.on()
+            self.research_consent.on()
         else:
-            research_consent.off()
+            self.research_consent.off()

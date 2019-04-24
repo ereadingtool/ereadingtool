@@ -172,7 +172,7 @@ class StudentAPIView(LoginRequiredMixin, APIView):
     def put(self, request, *args, **kwargs) -> HttpResponse:
         errors = params = {}
 
-        if not Student.objects.filter(pk=kwargs['pk']).count():
+        if not Student.objects.filter(pk=kwargs['pk']).exists():
             return HttpResponse(status=400)
 
         student = Student.objects.get(pk=kwargs['pk'])

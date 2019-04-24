@@ -16,6 +16,9 @@ from text.models import Text, TextDifficulty
 from text.tests import TestText
 from text_reading.models import StudentTextReading, InstructorTextReading
 
+from user.student.models import Student
+
+
 SectionSpec = List[Dict[AnyStr, int]]
 Reading = Union[StudentTextReading, InstructorTextReading]
 
@@ -344,8 +347,12 @@ class TestStudentUser(TestData, TestUser, TestCase):
         self.assertTrue(new_pass)
 
     def test_student_research_consent(self):
+        student = Student.objects.get(pk=self.student_profile.pk)
+
+        self.assertIsNone(student.research_consent)
+
         resp = self.student_client.put(self.student_api_endpoint,
-                                       data=json.dumps({'research_consent': True}), content_type='application/json')
+                                       data=json.dumps({'consent_to_research': True}), content_type='application/json')
 
         self.assertTrue(resp)
 
@@ -353,3 +360,10 @@ class TestStudentUser(TestData, TestUser, TestCase):
 
         self.assertEquals(resp.status_code, 200, resp_content)
 
+        student = Student.objects.get(pk=self.student_profile.pk)
+
+        self.assertIsNotNone(student.research_consent)
+        self.assertIsNotNone(student.research_consent.latest_consent_range)
+
+        self.assertIsNotNone(student.research_consent.latest_consent_range.start_dt)
+        self.assertIsNone(student.research_consent.latest_consent_range.end_dt)

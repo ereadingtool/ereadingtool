@@ -171,9 +171,9 @@ class StudentLoginForm(AuthenticationForm):
 class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
-        exclude = ('user',)
+        exclude = ('user', 'research_consent',)
 
-    research_consent = forms.BooleanField(required=False)
+    consent_to_research = forms.BooleanField(required=False)
     username = forms.CharField(validators=[ReaderUser.username_validator], required=False)
 
     def __init__(self, *args, **kwargs):
@@ -187,7 +187,7 @@ class StudentForm(forms.ModelForm):
         student.user.username = self.cleaned_data['username']
         student.user.save()
 
-        if 'research_consent' in self.cleaned_data:
-            student.consent_to_research(self.cleaned_data['research_consent'])
+        if 'consent_to_research' in self.cleaned_data:
+            student.consent_to_research(self.cleaned_data['consent_to_research'])
 
         return student
