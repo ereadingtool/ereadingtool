@@ -1,7 +1,7 @@
 from typing import Dict, List, Tuple, AnyStr
 
 from django.db import models
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 
 from report.models import StudentPerformanceReport
 from text.models import TextDifficulty, Text
@@ -59,6 +59,7 @@ class Student(Profile, TextReadings, models.Model):
             'difficulty_preference': [self.difficulty_preference.slug, self.difficulty_preference.name]
             if self.difficulty_preference else None,
             'difficulties': difficulties,
+            'logout_uri': reverse('api-student-logout')
         }
 
     def to_text_summary_dict(self, text: Text) -> Dict:

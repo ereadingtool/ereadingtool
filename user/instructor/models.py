@@ -2,7 +2,7 @@ from typing import Dict, List, Tuple
 
 from django.db import models
 from django.db.models import Q
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 
 from text.models import Text
 from user.mixins.models import Profile, TextReadings
@@ -46,7 +46,8 @@ class Instructor(Profile, TextReadings, models.Model):
             'texts': [text.to_instructor_summary_dict()
                       for text in self.created_texts.model.objects.filter(
                     Q(created_by=self) | Q(last_modified_by=self))],
-            'invites': [invite.to_dict() for invite in self.invite_set.all()] if self.invite_set.exists() else None
+            'invites': [invite.to_dict() for invite in self.invite_set.all()] if self.invite_set.exists() else None,
+            'logout_uri': reverse('api-instructor-logout')
         }
 
     def to_text_summary_dict(self, text: Text) -> Dict:
@@ -57,11 +58,6 @@ class Instructor(Profile, TextReadings, models.Model):
         text_instructor_summary['questions_correct'] = self.last_read_questions_correct(text)
 
         return text_instructor_summary
-
-    @property
-    def serialized_flashcards(self):
-        # not currently implemented for instructors
-        return []
 
     def __str__(self):
         return self.user.username

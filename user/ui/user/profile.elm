@@ -12,6 +12,7 @@ import Instructor.View
 
 import Student.Profile
 import Student.Resource
+import Student.Profile.Resource
 import Student.Profile.Decode
 
 import Student.View
@@ -83,7 +84,7 @@ logout : Profile -> Flags.CSRFToken -> (Result Http.Error Menu.Logout.LogOutResp
 logout profile csrftoken logout_msg =
   case profile of
     Student student_profile ->
-      Student.Profile.logout student_profile csrftoken logout_msg
+      Student.Profile.Resource.logout student_profile csrftoken logout_msg
 
     Instructor instructor_profile ->
       Instructor.Profile.logout instructor_profile csrftoken logout_msg

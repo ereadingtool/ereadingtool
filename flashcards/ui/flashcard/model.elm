@@ -17,7 +17,7 @@ type alias WebSocketAddress = String
 type alias TranslatedPhrase = String
 type alias Rating = Int
 
-type alias Flags = Flags.Flags { profile_id : Int, flashcard_ws_addr: WebSocketAddress }
+type alias Flags = Flags.Flags { flashcard_ws_addr: WebSocketAddress }
 
 type alias InitRespRec = {
   flashcards: List String

@@ -2,10 +2,10 @@ module Student.Resource exposing (..)
 
 import Profile
 
+
 type URI = URI String
 
 type StudentEndpointURI = StudentEndpointURI URI
-type StudentResearchConsentURI = StudentResearchConsentURI URI
 type StudentUsernameValidURI = StudentUsernameValidURI URI
 type StudentLogoutURI = StudentLogoutURI URI
 
@@ -19,9 +19,6 @@ profileIDToStudentEndpointURI student_endpoint_uri profile_id =
 
 studentEndpointURI : StudentEndpointURI -> URI
 studentEndpointURI (StudentEndpointURI uri) = uri
-
-studentConsentURI : StudentResearchConsentURI -> URI
-studentConsentURI (StudentResearchConsentURI uri) = uri
 
 studentUsernameValidURI : StudentUsernameValidURI -> URI
 studentUsernameValidURI (StudentUsernameValidURI uri) = uri

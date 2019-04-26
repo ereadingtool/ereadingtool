@@ -23,9 +23,9 @@ from django.template import loader
 Form = TypeVar('Form', bound=forms.Form)
 
 
-class ElmLoadJsStudentView(ElmLoadJsStudentBaseView):
+class ElmLoadJsStudentProfileView(ElmLoadJsStudentBaseView):
     def get_context_data(self, **kwargs) -> Dict:
-        context = super(ElmLoadJsStudentView, self).get_context_data(**kwargs)
+        context = super(ElmLoadJsStudentProfileView, self).get_context_data(**kwargs)
 
         student_profile = None
 
@@ -77,6 +77,19 @@ class ElmLoadJsStudentView(ElmLoadJsStudentBaseView):
             'safe': True,
             'value': json.dumps(student_profile.research_consent.active if student_profile.research_consent else False)
         }
+
+        def uri_to_elm(url):
+            return {
+                'quote': True,
+                'safe': True,
+                'value': url
+            }
+
+        context['elm'].update({
+            'student_endpoint': uri_to_elm(reverse('api-student', kwargs={'pk': student_profile.pk})),
+            'logout_uri': uri_to_elm(reverse('api-student-logout')),
+            'student_username_validation_uri': uri_to_elm(reverse('username-api'))
+        })
 
         return context
 

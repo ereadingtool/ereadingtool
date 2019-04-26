@@ -11289,13 +11289,9 @@ var _user$project$Student_Resource$studentUsernameValidURI = function (_p4) {
 	var _p5 = _p4;
 	return _p5._0;
 };
-var _user$project$Student_Resource$studentConsentURI = function (_p6) {
+var _user$project$Student_Resource$studentEndpointURI = function (_p6) {
 	var _p7 = _p6;
 	return _p7._0;
-};
-var _user$project$Student_Resource$studentEndpointURI = function (_p8) {
-	var _p9 = _p8;
-	return _p9._0;
 };
 var _user$project$Student_Resource$URI = function (a) {
 	return {ctor: 'URI', _0: a};
@@ -11326,9 +11322,6 @@ var _user$project$Student_Resource$profileIDToStudentEndpointURI = F2(
 						}
 					})));
 	});
-var _user$project$Student_Resource$StudentResearchConsentURI = function (a) {
-	return {ctor: 'StudentResearchConsentURI', _0: a};
-};
 var _user$project$Student_Resource$StudentUsernameValidURI = function (a) {
 	return {ctor: 'StudentUsernameValidURI', _0: a};
 };
@@ -11340,22 +11333,6 @@ var _user$project$Student_Profile$studentLogoutURI = function (_p0) {
 	var _p1 = _p0;
 	return _p1._5;
 };
-var _user$project$Student_Profile$logout = F3(
-	function (student_profile, csrftoken, logout_msg) {
-		var request = A4(
-			_user$project$HttpHelpers$post_with_headers,
-			_user$project$Student_Resource$uriToString(
-				_user$project$Student_Resource$studentLogoutURI(
-					_user$project$Student_Profile$studentLogoutURI(student_profile))),
-			{
-				ctor: '::',
-				_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
-				_1: {ctor: '[]'}
-			},
-			_elm_lang$http$Http$emptyBody,
-			_user$project$Menu_Logout$logoutRespDecoder);
-		return A2(_elm_lang$http$Http$send, logout_msg, request);
-	});
 var _user$project$Student_Profile$studentEmail = function (_p2) {
 	var _p3 = _p2;
 	return _p3._2;
@@ -11700,17 +11677,15 @@ var _user$project$Student_Profile_Model$UsernameUpdate = F3(
 var _user$project$Student_Profile_Model$StudentConsentResp = function (a) {
 	return {consented: a};
 };
-var _user$project$Student_Profile_Model$StudentEndpoints = F3(
-	function (a, b, c) {
-		return {student_endpoint_uri: a, student_research_consent_uri: b, student_username_validation_uri: c};
+var _user$project$Student_Profile_Model$StudentEndpoints = F2(
+	function (a, b) {
+		return {student_endpoint_uri: a, student_username_validation_uri: b};
 	});
 var _user$project$Student_Profile_Model$flagsToEndpoints = function (flags) {
-	return A3(
+	return A2(
 		_user$project$Student_Profile_Model$StudentEndpoints,
 		_user$project$Student_Resource$StudentEndpointURI(
 			_user$project$Student_Resource$URI(flags.student_endpoint)),
-		_user$project$Student_Resource$StudentResearchConsentURI(
-			_user$project$Student_Resource$URI(flags.student_research_consent_uri)),
 		_user$project$Student_Resource$StudentUsernameValidURI(
 			_user$project$Student_Resource$URI(flags.student_username_validation_uri)));
 };
@@ -12590,6 +12565,167 @@ var _user$project$Student_Profile_Decode$username_valid_decoder = A3(
 			_elm_lang$core$Json_Decode$string,
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Student_Profile_Model$UsernameUpdate))));
 
+var _user$project$Student_Profile_Encode$consentEncoder = function (consented) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'consent_to_research',
+				_1: _elm_lang$core$Json_Encode$bool(consented)
+			},
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Student_Profile_Encode$username_valid_encode = function (username) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'username',
+				_1: _elm_lang$core$Json_Encode$string(username)
+			},
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Student_Profile_Encode$profileEncoder = function (student_profile) {
+	var username = _elm_lang$core$Json_Encode$string(
+		_user$project$Student_Profile$studentUserName(student_profile));
+	var encode_pref = function () {
+		var _p0 = _user$project$Student_Profile$studentDifficultyPreference(student_profile);
+		if (_p0.ctor === 'Just') {
+			return _elm_lang$core$Json_Encode$string(
+				_elm_lang$core$Tuple$first(_p0._0));
+		} else {
+			return _elm_lang$core$Json_Encode$null;
+		}
+	}();
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {ctor: '_Tuple2', _0: 'difficulty_preference', _1: encode_pref},
+			_1: {
+				ctor: '::',
+				_0: {ctor: '_Tuple2', _0: 'username', _1: username},
+				_1: {ctor: '[]'}
+			}
+		});
+};
+
+var _user$project$Student_Profile_Msg$HelpMsgs = F3(
+	function (a, b, c) {
+		return {next: a, prev: b, close: c};
+	});
+var _user$project$Student_Profile_Msg$LoggedOut = function (a) {
+	return {ctor: 'LoggedOut', _0: a};
+};
+var _user$project$Student_Profile_Msg$Logout = function (a) {
+	return {ctor: 'Logout', _0: a};
+};
+var _user$project$Student_Profile_Msg$NextHelp = {ctor: 'NextHelp'};
+var _user$project$Student_Profile_Msg$PrevHelp = {ctor: 'PrevHelp'};
+var _user$project$Student_Profile_Msg$CloseHelp = function (a) {
+	return {ctor: 'CloseHelp', _0: a};
+};
+var _user$project$Student_Profile_Msg$SubmittedConsent = function (a) {
+	return {ctor: 'SubmittedConsent', _0: a};
+};
+var _user$project$Student_Profile_Msg$Submitted = function (a) {
+	return {ctor: 'Submitted', _0: a};
+};
+var _user$project$Student_Profile_Msg$CancelUsernameUpdate = {ctor: 'CancelUsernameUpdate'};
+var _user$project$Student_Profile_Msg$SubmitUsernameUpdate = {ctor: 'SubmitUsernameUpdate'};
+var _user$project$Student_Profile_Msg$UpdateUsername = function (a) {
+	return {ctor: 'UpdateUsername', _0: a};
+};
+var _user$project$Student_Profile_Msg$ValidUsername = function (a) {
+	return {ctor: 'ValidUsername', _0: a};
+};
+var _user$project$Student_Profile_Msg$ToggleResearchConsent = {ctor: 'ToggleResearchConsent'};
+var _user$project$Student_Profile_Msg$ToggleUsernameUpdate = {ctor: 'ToggleUsernameUpdate'};
+var _user$project$Student_Profile_Msg$UpdateDifficulty = function (a) {
+	return {ctor: 'UpdateDifficulty', _0: a};
+};
+var _user$project$Student_Profile_Msg$RetrieveStudentProfile = function (a) {
+	return {ctor: 'RetrieveStudentProfile', _0: a};
+};
+
+var _user$project$Student_Profile_Resource$logout = F3(
+	function (student_profile, csrftoken, logout_msg) {
+		var request = A4(
+			_user$project$HttpHelpers$post_with_headers,
+			_user$project$Student_Resource$uriToString(
+				_user$project$Student_Resource$studentLogoutURI(
+					_user$project$Student_Profile$studentLogoutURI(student_profile))),
+			{
+				ctor: '::',
+				_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
+				_1: {ctor: '[]'}
+			},
+			_elm_lang$http$Http$emptyBody,
+			_user$project$Menu_Logout$logoutRespDecoder);
+		return A2(_elm_lang$http$Http$send, logout_msg, request);
+	});
+var _user$project$Student_Profile_Resource$toggleResearchConsent = F4(
+	function (csrftoken, consent_method_uri, student_profile, consent) {
+		var _p0 = _user$project$Student_Profile$studentID(student_profile);
+		if (_p0.ctor === 'Just') {
+			var encoded_consent = _user$project$Student_Profile_Encode$consentEncoder(consent);
+			var req = A4(
+				_user$project$HttpHelpers$put_with_headers,
+				_user$project$Student_Resource$uriToString(
+					_user$project$Student_Resource$studentEndpointURI(consent_method_uri)),
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
+					_1: {ctor: '[]'}
+				},
+				_elm_lang$http$Http$jsonBody(encoded_consent),
+				_user$project$Student_Profile_Decode$studentConsentRespDecoder);
+			return A2(_elm_lang$http$Http$send, _user$project$Student_Profile_Msg$SubmittedConsent, req);
+		} else {
+			return _elm_lang$core$Platform_Cmd$none;
+		}
+	});
+var _user$project$Student_Profile_Resource$updateProfile = F3(
+	function (csrftoken, student_endpoint_uri, student_profile) {
+		var _p1 = _user$project$Student_Profile$studentID(student_profile);
+		if (_p1.ctor === 'Just') {
+			var encoded_profile = _user$project$Student_Profile_Encode$profileEncoder(student_profile);
+			var req = A4(
+				_user$project$HttpHelpers$put_with_headers,
+				_user$project$Student_Resource$uriToString(
+					_user$project$Student_Resource$studentEndpointURI(student_endpoint_uri)),
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
+					_1: {ctor: '[]'}
+				},
+				_elm_lang$http$Http$jsonBody(encoded_profile),
+				_user$project$Student_Profile_Decode$studentProfileDecoder);
+			return A2(_elm_lang$http$Http$send, _user$project$Student_Profile_Msg$Submitted, req);
+		} else {
+			return _elm_lang$core$Platform_Cmd$none;
+		}
+	});
+var _user$project$Student_Profile_Resource$validateUsername = F3(
+	function (csrftoken, username_valid_uri, username) {
+		var req = A4(
+			_user$project$HttpHelpers$post_with_headers,
+			_user$project$Student_Resource$uriToString(
+				_user$project$Student_Resource$studentUsernameValidURI(username_valid_uri)),
+			{
+				ctor: '::',
+				_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
+				_1: {ctor: '[]'}
+			},
+			_elm_lang$http$Http$jsonBody(
+				_user$project$Student_Profile_Encode$username_valid_encode(username)),
+			_user$project$Student_Profile_Decode$username_valid_decoder);
+		return A2(_elm_lang$http$Http$send, _user$project$Student_Profile_Msg$ValidUsername, req);
+	});
+
 var _user$project$Student_View$view_profile_dropdown_menu = F3(
 	function (student_profile, top_level_msg, items) {
 		return A2(
@@ -12708,7 +12844,7 @@ var _user$project$User_Profile$logout = F3(
 		var _p0 = profile;
 		switch (_p0.ctor) {
 			case 'Student':
-				return A3(_user$project$Student_Profile$logout, _p0._0, csrftoken, logout_msg);
+				return A3(_user$project$Student_Profile_Resource$logout, _p0._0, csrftoken, logout_msg);
 			case 'Instructor':
 				return A3(_user$project$Instructor_Profile$logout, _p0._0, csrftoken, logout_msg);
 			default:

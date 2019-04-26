@@ -7231,13 +7231,9 @@ var _user$project$Student_Resource$studentUsernameValidURI = function (_p4) {
 	var _p5 = _p4;
 	return _p5._0;
 };
-var _user$project$Student_Resource$studentConsentURI = function (_p6) {
+var _user$project$Student_Resource$studentEndpointURI = function (_p6) {
 	var _p7 = _p6;
 	return _p7._0;
-};
-var _user$project$Student_Resource$studentEndpointURI = function (_p8) {
-	var _p9 = _p8;
-	return _p9._0;
 };
 var _user$project$Student_Resource$URI = function (a) {
 	return {ctor: 'URI', _0: a};
@@ -7268,9 +7264,6 @@ var _user$project$Student_Resource$profileIDToStudentEndpointURI = F2(
 						}
 					})));
 	});
-var _user$project$Student_Resource$StudentResearchConsentURI = function (a) {
-	return {ctor: 'StudentResearchConsentURI', _0: a};
-};
 var _user$project$Student_Resource$StudentUsernameValidURI = function (a) {
 	return {ctor: 'StudentUsernameValidURI', _0: a};
 };
@@ -7282,22 +7275,6 @@ var _user$project$Student_Profile$studentLogoutURI = function (_p0) {
 	var _p1 = _p0;
 	return _p1._5;
 };
-var _user$project$Student_Profile$logout = F3(
-	function (student_profile, csrftoken, logout_msg) {
-		var request = A4(
-			_user$project$HttpHelpers$post_with_headers,
-			_user$project$Student_Resource$uriToString(
-				_user$project$Student_Resource$studentLogoutURI(
-					_user$project$Student_Profile$studentLogoutURI(student_profile))),
-			{
-				ctor: '::',
-				_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
-				_1: {ctor: '[]'}
-			},
-			_elm_lang$http$Http$emptyBody,
-			_user$project$Menu_Logout$logoutRespDecoder);
-		return A2(_elm_lang$http$Http$send, logout_msg, request);
-	});
 var _user$project$Student_Profile$studentEmail = function (_p2) {
 	var _p3 = _p2;
 	return _p3._2;

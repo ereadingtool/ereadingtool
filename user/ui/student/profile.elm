@@ -2,12 +2,6 @@ module Student.Profile exposing (..)
 
 import Text.Model as Text
 
-import HttpHelpers
-import Http
-
-import Flags
-import Menu.Logout
-
 import Student.Resource
 
 
@@ -23,6 +17,7 @@ type alias StudentProfileParams = {
 type StudentProfile =
   StudentProfile
     (Maybe Int) String String (Maybe Text.TextDifficulty) (List Text.TextDifficulty) Student.Resource.StudentLogoutURI
+
 
 studentDifficultyPreference : StudentProfile -> Maybe Text.TextDifficulty
 studentDifficultyPreference (StudentProfile id username email diff_pref diffs _) = diff_pref
@@ -59,17 +54,3 @@ initProfile params =
     params.difficulty_preference
     params.difficulties
     (Student.Resource.StudentLogoutURI (Student.Resource.URI params.logout_uri))
-
-logout :
-     StudentProfile
-  -> Flags.CSRFToken
-  -> (Result Http.Error Menu.Logout.LogOutResp -> msg)
-  -> Cmd msg
-logout student_profile csrftoken logout_msg =
-  let
-    request =
-      HttpHelpers.post_with_headers
-        (Student.Resource.uriToString (Student.Resource.studentLogoutURI (studentLogoutURI student_profile)))
-        [Http.header "X-CSRFToken" csrftoken] Http.emptyBody Menu.Logout.logoutRespDecoder
-  in
-    Http.send logout_msg request

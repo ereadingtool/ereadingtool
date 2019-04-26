@@ -17,7 +17,6 @@ type alias StudentConsentResp = { consented : Bool }
 
 type alias StudentEndpoints = {
     student_endpoint_uri : StudentEndpointURI
-  , student_research_consent_uri : StudentResearchConsentURI
   , student_username_validation_uri : StudentUsernameValidURI
   }
 
@@ -26,7 +25,6 @@ flagsToEndpoints : Flags -> StudentEndpoints
 flagsToEndpoints flags =
   StudentEndpoints
     (StudentEndpointURI (URI flags.student_endpoint))
-    (StudentResearchConsentURI (URI flags.student_research_consent_uri))
     (StudentUsernameValidURI (URI flags.student_username_validation_uri))
 
 
