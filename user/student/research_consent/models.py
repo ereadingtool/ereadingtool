@@ -18,9 +18,11 @@ class StudentResearchConsent(models.Model):
 
     def off(self):
         if self.latest_consent_range and self.latest_consent_range.end_dt is None:
-            self.latest_consent_range.end_dt = timezone.now()
+            latest_consent_range = self.latest_consent_range
 
-            self.latest_consent_range.save()
+            latest_consent_range.end_dt = timezone.now()
+
+            latest_consent_range.save()
 
     @property
     def active(self):
