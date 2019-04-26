@@ -85,6 +85,16 @@ class Student(Profile, TextReadings, models.Model):
     def remove_from_flashcards(self, text_phrase: TextPhrase):
         self.flashcards.filter(phrase=text_phrase).delete()
 
+    @property
+    def is_consenting_to_research(self):
+        try:
+            if self.research_consent:
+                return self.research_consent.active
+            else:
+                return False
+        except StudentResearchConsent.DoesNotExist:
+            return False
+
     def consent_to_research(self, consented: bool):
         if not self.research_consent:
             self.research_consent = StudentResearchConsent.objects.create()

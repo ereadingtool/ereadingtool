@@ -47,7 +47,7 @@ updateProfile csrftoken student_endpoint_uri student_profile =
 
 toggleResearchConsent :
      Flags.CSRFToken
-  -> Student.Resource.StudentEndpointURI
+  -> Student.Resource.StudentResearchConsentURI
   -> Student.Profile.StudentProfile
   -> Bool
   -> Cmd Msg
@@ -58,7 +58,7 @@ toggleResearchConsent csrftoken consent_method_uri student_profile consent =
         encoded_consent = Student.Profile.Encode.consentEncoder consent
         req =
           HttpHelpers.put_with_headers
-           (Student.Resource.uriToString (Student.Resource.studentEndpointURI consent_method_uri))
+           (Student.Resource.uriToString (Student.Resource.studentConsentURI consent_method_uri))
            [Http.header "X-CSRFToken" csrftoken]
            (Http.jsonBody encoded_consent) Student.Profile.Decode.studentConsentRespDecoder
       in

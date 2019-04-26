@@ -10807,9 +10807,13 @@ var _user$project$Student_Resource$studentUsernameValidURI = function (_p4) {
 	var _p5 = _p4;
 	return _p5._0;
 };
-var _user$project$Student_Resource$studentEndpointURI = function (_p6) {
+var _user$project$Student_Resource$studentConsentURI = function (_p6) {
 	var _p7 = _p6;
 	return _p7._0;
+};
+var _user$project$Student_Resource$studentEndpointURI = function (_p8) {
+	var _p9 = _p8;
+	return _p9._0;
 };
 var _user$project$Student_Resource$URI = function (a) {
 	return {ctor: 'URI', _0: a};
@@ -10840,6 +10844,9 @@ var _user$project$Student_Resource$profileIDToStudentEndpointURI = F2(
 						}
 					})));
 	});
+var _user$project$Student_Resource$StudentResearchConsentURI = function (a) {
+	return {ctor: 'StudentResearchConsentURI', _0: a};
+};
 var _user$project$Student_Resource$StudentUsernameValidURI = function (a) {
 	return {ctor: 'StudentUsernameValidURI', _0: a};
 };
@@ -11194,15 +11201,17 @@ var _user$project$Student_Profile_Model$UsernameUpdate = F3(
 var _user$project$Student_Profile_Model$StudentConsentResp = function (a) {
 	return {consented: a};
 };
-var _user$project$Student_Profile_Model$StudentEndpoints = F2(
-	function (a, b) {
-		return {student_endpoint_uri: a, student_username_validation_uri: b};
+var _user$project$Student_Profile_Model$StudentEndpoints = F3(
+	function (a, b, c) {
+		return {student_endpoint_uri: a, student_research_consent_uri: b, student_username_validation_uri: c};
 	});
 var _user$project$Student_Profile_Model$flagsToEndpoints = function (flags) {
-	return A2(
+	return A3(
 		_user$project$Student_Profile_Model$StudentEndpoints,
 		_user$project$Student_Resource$StudentEndpointURI(
 			_user$project$Student_Resource$URI(flags.student_endpoint)),
+		_user$project$Student_Resource$StudentResearchConsentURI(
+			_user$project$Student_Resource$URI(flags.student_research_consent_uri)),
 		_user$project$Student_Resource$StudentUsernameValidURI(
 			_user$project$Student_Resource$URI(flags.student_username_validation_uri)));
 };
@@ -12192,7 +12201,7 @@ var _user$project$Student_Profile_Resource$toggleResearchConsent = F4(
 			var req = A4(
 				_user$project$HttpHelpers$put_with_headers,
 				_user$project$Student_Resource$uriToString(
-					_user$project$Student_Resource$studentEndpointURI(consent_method_uri)),
+					_user$project$Student_Resource$studentConsentURI(consent_method_uri)),
 				{
 					ctor: '::',
 					_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),

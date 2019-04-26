@@ -37,7 +37,7 @@ update msg model =
 
     toggleResearchConsent =
       Student.Profile.Resource.toggleResearchConsent
-        model.flags.csrftoken model.student_endpoints.student_endpoint_uri model.profile
+        model.flags.csrftoken model.student_endpoints.student_research_consent_uri model.profile
   in
     case msg of
       RetrieveStudentProfile (Ok profile) ->
@@ -118,7 +118,7 @@ update msg model =
             (model, Cmd.none)
 
       SubmittedConsent (Ok resp) ->
-        (model, Cmd.none)
+        ({ model | consenting_to_research = resp.consented }, Cmd.none)
 
       SubmittedConsent (Err err) -> let _ = Debug.log "submitted error" err in
         case err of

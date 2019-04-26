@@ -296,8 +296,9 @@ view_research_consent model =
   div [id "research_consent", class "profile_item"] [
     span [class "profile_item_title"] [ Html.text "Research Consent" ]
   , span [class "profile_item_value"] [
-        div [class "check_box", onClick ToggleResearchConsent] []
-      , Html.text "I consent to research"
+        div [ classList [("check-box", True), ("check-box-selected", model.consenting_to_research)]
+            , onClick ToggleResearchConsent] []
+      , div [class "check-box-text"] [ Html.text "I consent to research." ]
     ]
   ]
 

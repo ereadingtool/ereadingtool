@@ -6077,9 +6077,13 @@ var _user$project$Student_Resource$studentUsernameValidURI = function (_p4) {
 	var _p5 = _p4;
 	return _p5._0;
 };
-var _user$project$Student_Resource$studentEndpointURI = function (_p6) {
+var _user$project$Student_Resource$studentConsentURI = function (_p6) {
 	var _p7 = _p6;
 	return _p7._0;
+};
+var _user$project$Student_Resource$studentEndpointURI = function (_p8) {
+	var _p9 = _p8;
+	return _p9._0;
 };
 var _user$project$Student_Resource$URI = function (a) {
 	return {ctor: 'URI', _0: a};
@@ -6110,6 +6114,9 @@ var _user$project$Student_Resource$profileIDToStudentEndpointURI = F2(
 						}
 					})));
 	});
+var _user$project$Student_Resource$StudentResearchConsentURI = function (a) {
+	return {ctor: 'StudentResearchConsentURI', _0: a};
+};
 var _user$project$Student_Resource$StudentUsernameValidURI = function (a) {
 	return {ctor: 'StudentUsernameValidURI', _0: a};
 };

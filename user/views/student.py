@@ -40,7 +40,11 @@ class ElmLoadJsStudentProfileView(ElmLoadJsStudentBaseView):
 
         performance_report_pdf_link = reverse('student-performance-pdf-link', kwargs={'pk': student_profile.pk})
 
-        context['elm']['student_profile'] = {'quote': False, 'safe': True, 'value': student_profile.to_dict()}
+        context['elm']['student_profile'] = {
+            'quote': False,
+            'safe': True,
+            'value': json.dumps(student_profile.to_dict())
+        }
 
         context['elm']['performance_report'] = {'quote': False, 'safe': True, 'value': {
             'html': performance_report_html,
@@ -75,7 +79,7 @@ class ElmLoadJsStudentProfileView(ElmLoadJsStudentBaseView):
         context['elm']['consenting_to_research'] = {
             'quote': False,
             'safe': True,
-            'value': json.dumps(student_profile.research_consent.active if student_profile.research_consent else False)
+            'value': json.dumps(student_profile.is_consenting_to_research)
         }
 
         def uri_to_elm(url):
@@ -88,7 +92,9 @@ class ElmLoadJsStudentProfileView(ElmLoadJsStudentBaseView):
         context['elm'].update({
             'student_endpoint': uri_to_elm(reverse('api-student', kwargs={'pk': student_profile.pk})),
             'logout_uri': uri_to_elm(reverse('api-student-logout')),
-            'student_username_validation_uri': uri_to_elm(reverse('username-api'))
+            'student_username_validation_uri': uri_to_elm(reverse('username-api')),
+            'student_research_consent_uri': uri_to_elm(reverse('api-student-research-consent',
+                                                               kwargs={'pk': student_profile.pk}))
         })
 
         return context
@@ -148,6 +154,54 @@ class ElmLoadJsStudentLoginView(NoAuthElmLoadJsView):
 class StudentView(ProfileView):
     profile_model = Student
     login_url = Student.login_url
+
+
+class StudentAPIConsentToResearchView(LoginRequiredMixin, APIView):
+    # returns permission denied HTTP message rather than redirect to login
+    raise_exception = True
+
+    def form(self, request: HttpRequest, params: dict, **kwargs) -> forms.ModelForm:
+        return StudentForm(params, **kwargs)
+
+    def put_error(self, errors: dict) -> HttpResponse:
+        return HttpResponse(json.dumps(errors), status=400)
+
+    def put_success(self, request: HttpRequest, student_form: Union[Form, forms.ModelForm]) -> HttpResponse:
+        student = student_form.save()
+
+        return HttpResponse(json.dumps({'consented': student.is_consenting_to_research}))
+
+    def put(self, request, *args, **kwargs) -> HttpResponse:
+        errors = params = {}
+
+        if not Student.objects.filter(pk=kwargs['pk']).exists():
+            return HttpResponse(status=400)
+
+        student = Student.objects.get(pk=kwargs['pk'])
+
+        if student.user != self.request.user:
+            return HttpResponseForbidden()
+
+        try:
+            params = json.loads(request.body.decode('utf8'))
+        except json.JSONDecodeError as e:
+            return self.put_json_error(e)
+
+        if 'difficulty_preference' in params:
+            try:
+                params['difficulty_preference'] = TextDifficulty.objects.get(slug=params['difficulty_preference']).pk
+            except TextDifficulty.DoesNotExist:
+                pass
+
+        form = self.form(request, params, instance=student)
+
+        if not form.is_valid():
+            errors = self.format_form_errors(form)
+
+        if errors:
+            return self.put_error(errors)
+        else:
+            return self.put_success(request, form)
 
 
 class StudentAPIView(LoginRequiredMixin, APIView):

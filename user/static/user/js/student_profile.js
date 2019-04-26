@@ -22036,9 +22036,13 @@ var _user$project$Student_Resource$studentUsernameValidURI = function (_p4) {
 	var _p5 = _p4;
 	return _p5._0;
 };
-var _user$project$Student_Resource$studentEndpointURI = function (_p6) {
+var _user$project$Student_Resource$studentConsentURI = function (_p6) {
 	var _p7 = _p6;
 	return _p7._0;
+};
+var _user$project$Student_Resource$studentEndpointURI = function (_p8) {
+	var _p9 = _p8;
+	return _p9._0;
 };
 var _user$project$Student_Resource$URI = function (a) {
 	return {ctor: 'URI', _0: a};
@@ -22069,6 +22073,9 @@ var _user$project$Student_Resource$profileIDToStudentEndpointURI = F2(
 						}
 					})));
 	});
+var _user$project$Student_Resource$StudentResearchConsentURI = function (a) {
+	return {ctor: 'StudentResearchConsentURI', _0: a};
+};
 var _user$project$Student_Resource$StudentUsernameValidURI = function (a) {
 	return {ctor: 'StudentUsernameValidURI', _0: a};
 };
@@ -22390,15 +22397,17 @@ var _user$project$Student_Profile_Model$UsernameUpdate = F3(
 var _user$project$Student_Profile_Model$StudentConsentResp = function (a) {
 	return {consented: a};
 };
-var _user$project$Student_Profile_Model$StudentEndpoints = F2(
-	function (a, b) {
-		return {student_endpoint_uri: a, student_username_validation_uri: b};
+var _user$project$Student_Profile_Model$StudentEndpoints = F3(
+	function (a, b, c) {
+		return {student_endpoint_uri: a, student_research_consent_uri: b, student_username_validation_uri: c};
 	});
 var _user$project$Student_Profile_Model$flagsToEndpoints = function (flags) {
-	return A2(
+	return A3(
 		_user$project$Student_Profile_Model$StudentEndpoints,
 		_user$project$Student_Resource$StudentEndpointURI(
 			_user$project$Student_Resource$URI(flags.student_endpoint)),
+		_user$project$Student_Resource$StudentResearchConsentURI(
+			_user$project$Student_Resource$URI(flags.student_research_consent_uri)),
 		_user$project$Student_Resource$StudentUsernameValidURI(
 			_user$project$Student_Resource$URI(flags.student_username_validation_uri)));
 };
@@ -23421,7 +23430,7 @@ var _user$project$Student_Profile_Resource$toggleResearchConsent = F4(
 			var req = A4(
 				_user$project$HttpHelpers$put_with_headers,
 				_user$project$Student_Resource$uriToString(
-					_user$project$Student_Resource$studentEndpointURI(consent_method_uri)),
+					_user$project$Student_Resource$studentConsentURI(consent_method_uri)),
 				{
 					ctor: '::',
 					_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
@@ -23997,7 +24006,7 @@ var _user$project$Student_Profile_Update$toggleUsernameUpdate = function (model)
 };
 var _user$project$Student_Profile_Update$update = F2(
 	function (msg, model) {
-		var toggleResearchConsent = A3(_user$project$Student_Profile_Resource$toggleResearchConsent, model.flags.csrftoken, model.student_endpoints.student_endpoint_uri, model.profile);
+		var toggleResearchConsent = A3(_user$project$Student_Profile_Resource$toggleResearchConsent, model.flags.csrftoken, model.student_endpoints.student_research_consent_uri, model.profile);
 		var updateProfile = A2(_user$project$Student_Profile_Resource$updateProfile, model.flags.csrftoken, model.student_endpoints.student_endpoint_uri);
 		var validateUsername = A2(_user$project$Student_Profile_Resource$validateUsername, model.flags.csrftoken, model.student_endpoints.student_username_validation_uri);
 		var _p0 = msg;
@@ -24155,7 +24164,13 @@ var _user$project$Student_Profile_Update$update = F2(
 				}
 			case 'SubmittedConsent':
 				if (_p0._0.ctor === 'Ok') {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{consenting_to_research: _p0._0._0.consented}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
 				} else {
 					var _p14 = _p0._0._0;
 					var _p11 = A2(_elm_lang$core$Debug$log, 'submitted error', _p14);
@@ -24601,7 +24616,16 @@ var _user$project$Student_Profile_View$view_research_consent = function (model) 
 							_elm_lang$html$Html$div,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('check_box'),
+								_0: _elm_lang$html$Html_Attributes$classList(
+									{
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'check-box', _1: true},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'check-box-selected', _1: model.consenting_to_research},
+											_1: {ctor: '[]'}
+										}
+									}),
 								_1: {
 									ctor: '::',
 									_0: _elm_lang$html$Html_Events$onClick(_user$project$Student_Profile_Msg$ToggleResearchConsent),
@@ -24611,7 +24635,18 @@ var _user$project$Student_Profile_View$view_research_consent = function (model) 
 							{ctor: '[]'}),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('I consent to research'),
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('check-box-text'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('I consent to research.'),
+									_1: {ctor: '[]'}
+								}),
 							_1: {ctor: '[]'}
 						}
 					}),
@@ -25487,46 +25522,51 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 										function (student_profile) {
 											return A2(
 												_elm_lang$core$Json_Decode$andThen,
-												function (student_username_validation_uri) {
+												function (student_research_consent_uri) {
 													return A2(
 														_elm_lang$core$Json_Decode$andThen,
-														function (welcome) {
+														function (student_username_validation_uri) {
 															return A2(
 																_elm_lang$core$Json_Decode$andThen,
-																function (csrftoken) {
+																function (welcome) {
 																	return A2(
 																		_elm_lang$core$Json_Decode$andThen,
-																		function (menu_items) {
-																			return _elm_lang$core$Json_Decode$succeed(
-																				{consenting_to_research: consenting_to_research, flashcards: flashcards, performance_report: performance_report, student_endpoint: student_endpoint, student_profile: student_profile, student_username_validation_uri: student_username_validation_uri, welcome: welcome, csrftoken: csrftoken, menu_items: menu_items});
-																		},
-																		A2(
-																			_elm_lang$core$Json_Decode$field,
-																			'menu_items',
-																			_elm_lang$core$Json_Decode$list(
+																		function (csrftoken) {
+																			return A2(
+																				_elm_lang$core$Json_Decode$andThen,
+																				function (menu_items) {
+																					return _elm_lang$core$Json_Decode$succeed(
+																						{consenting_to_research: consenting_to_research, flashcards: flashcards, performance_report: performance_report, student_endpoint: student_endpoint, student_profile: student_profile, student_research_consent_uri: student_research_consent_uri, student_username_validation_uri: student_username_validation_uri, welcome: welcome, csrftoken: csrftoken, menu_items: menu_items});
+																				},
 																				A2(
-																					_elm_lang$core$Json_Decode$andThen,
-																					function (link) {
-																						return A2(
+																					_elm_lang$core$Json_Decode$field,
+																					'menu_items',
+																					_elm_lang$core$Json_Decode$list(
+																						A2(
 																							_elm_lang$core$Json_Decode$andThen,
-																							function (link_text) {
+																							function (link) {
 																								return A2(
 																									_elm_lang$core$Json_Decode$andThen,
-																									function (selected) {
-																										return _elm_lang$core$Json_Decode$succeed(
-																											{link: link, link_text: link_text, selected: selected});
+																									function (link_text) {
+																										return A2(
+																											_elm_lang$core$Json_Decode$andThen,
+																											function (selected) {
+																												return _elm_lang$core$Json_Decode$succeed(
+																													{link: link, link_text: link_text, selected: selected});
+																											},
+																											A2(_elm_lang$core$Json_Decode$field, 'selected', _elm_lang$core$Json_Decode$bool));
 																									},
-																									A2(_elm_lang$core$Json_Decode$field, 'selected', _elm_lang$core$Json_Decode$bool));
+																									A2(_elm_lang$core$Json_Decode$field, 'link_text', _elm_lang$core$Json_Decode$string));
 																							},
-																							A2(_elm_lang$core$Json_Decode$field, 'link_text', _elm_lang$core$Json_Decode$string));
-																					},
-																					A2(_elm_lang$core$Json_Decode$field, 'link', _elm_lang$core$Json_Decode$string)))));
+																							A2(_elm_lang$core$Json_Decode$field, 'link', _elm_lang$core$Json_Decode$string)))));
+																		},
+																		A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string));
 																},
-																A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string));
+																A2(_elm_lang$core$Json_Decode$field, 'welcome', _elm_lang$core$Json_Decode$bool));
 														},
-														A2(_elm_lang$core$Json_Decode$field, 'welcome', _elm_lang$core$Json_Decode$bool));
+														A2(_elm_lang$core$Json_Decode$field, 'student_username_validation_uri', _elm_lang$core$Json_Decode$string));
 												},
-												A2(_elm_lang$core$Json_Decode$field, 'student_username_validation_uri', _elm_lang$core$Json_Decode$string));
+												A2(_elm_lang$core$Json_Decode$field, 'student_research_consent_uri', _elm_lang$core$Json_Decode$string));
 										},
 										A2(
 											_elm_lang$core$Json_Decode$field,

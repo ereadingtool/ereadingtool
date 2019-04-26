@@ -9,7 +9,7 @@ class StudentResearchConsent(models.Model):
     def latest_consent_range(self):
         try:
             return self.consent_ranges.order_by('-start_dt').filter()[0]
-        except StudentResearchConsentRange.DoesNotExist:
+        except IndexError:
             return None
 
     def on(self):
@@ -24,7 +24,7 @@ class StudentResearchConsent(models.Model):
 
     @property
     def active(self):
-        if self.latest_consent_range and self.latest_consent_range.end_dt is not None:
+        if self.latest_consent_range and self.latest_consent_range.end_dt is None:
             return True
         else:
             return False
