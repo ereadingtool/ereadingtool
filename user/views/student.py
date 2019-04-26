@@ -27,20 +27,20 @@ class ElmLoadJsStudentView(ElmLoadJsStudentBaseView):
     def get_context_data(self, **kwargs) -> Dict:
         context = super(ElmLoadJsStudentView, self).get_context_data(**kwargs)
 
-        profile = None
+        student_profile = None
 
         try:
-            profile = self.request.user.student
+            student_profile = self.request.user.student
         except Student.DoesNotExist:
             pass
 
         performance_report_html = loader.render_to_string('student_performance_report.html', {
-            'performance_report': profile.performance.to_dict()
+            'performance_report': student_profile.performance.to_dict()
         })
 
-        performance_report_pdf_link = reverse('student-performance-pdf-link', kwargs={'pk': profile.pk})
+        performance_report_pdf_link = reverse('student-performance-pdf-link', kwargs={'pk': student_profile.pk})
 
-        context['elm']['student_profile'] = {'quote': False, 'safe': True, 'value': profile.to_dict()}
+        context['elm']['student_profile'] = {'quote': False, 'safe': True, 'value': student_profile.to_dict()}
 
         context['elm']['performance_report'] = {'quote': False, 'safe': True, 'value': {
             'html': performance_report_html,
@@ -48,8 +48,8 @@ class ElmLoadJsStudentView(ElmLoadJsStudentBaseView):
         }}
 
         context['elm']['flashcards'] = {'quote': False, 'safe': True, 'value': [
-            card.phrase.phrase for card in profile.flashcards.all()
-        ] if profile.flashcards else None}
+            card.phrase.phrase for card in student_profile.flashcards.all()
+        ] if student_profile.flashcards else None}
 
         try:
             welcome = self.request.session['welcome']['student_profile']
@@ -70,6 +70,12 @@ class ElmLoadJsStudentView(ElmLoadJsStudentBaseView):
             'quote': False,
             'safe': True,
             'value': json.dumps(welcome)
+        }
+
+        context['elm']['consenting_to_research'] = {
+            'quote': False,
+            'safe': True,
+            'value': json.dumps(student_profile.research_consent.active if student_profile.research_consent else False)
         }
 
         return context

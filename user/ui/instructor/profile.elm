@@ -3,6 +3,10 @@ module Instructor.Profile exposing (..)
 import Http
 import HttpHelpers
 
+import Flags
+
+import Instructor.Resource
+
 import Config exposing (..)
 
 import Menu.Logout
@@ -37,7 +41,8 @@ type alias InstructorProfileParams = {
     id: Maybe Int
   , texts: List Text
   , invites : Maybe (List Invite)
-  , username: String }
+  , username: String
+  , logout_uri : String }
 
 type InstructorProfile = InstructorProfile InstructorProfileParams
 
@@ -75,16 +80,24 @@ username instructor_profile =
 attrs : InstructorProfile -> InstructorProfileParams
 attrs (InstructorProfile attrs) = attrs
 
+logoutUri : InstructorProfile -> Instructor.Resource.InstructorLogoutURI
+logoutUri instructor_profile =
+  Instructor.Resource.InstructorLogoutURI (Instructor.Resource.URI (attrs instructor_profile).logout_uri)
+
 texts : InstructorProfile -> List Text
 texts instructor_profile =
   (attrs instructor_profile).texts
 
-logout : InstructorProfile -> String -> (Result Http.Error Menu.Logout.LogOutResp -> msg) -> Cmd msg
+logout :
+     InstructorProfile
+  -> Flags.CSRFToken
+  -> (Result Http.Error Menu.Logout.LogOutResp -> msg)
+  -> Cmd msg
 logout instructor_profile csrftoken logout_msg =
   let
     request =
       HttpHelpers.post_with_headers
-        Config.instructor_logout_api_endpoint
+        (Instructor.Resource.uriToString (Instructor.Resource.instructorLogoutURI (logoutUri instructor_profile)))
         [Http.header "X-CSRFToken" csrftoken] Http.emptyBody Menu.Logout.logoutRespDecoder
   in
     Http.send logout_msg request

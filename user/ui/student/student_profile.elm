@@ -12,7 +12,7 @@ import Student.Profile exposing (StudentProfileParams)
 import Student.Profile.Msg exposing (..)
 import Student.Profile.Flags exposing (Flags)
 import Student.Profile.Update
-import Student.Profile.Model exposing (Model)
+import Student.Profile.Model exposing (..)
 import Student.Profile.View
 
 import Student.Profile.Help
@@ -26,10 +26,12 @@ init flags =
   in
     ({
       flags = flags
+    , student_endpoints = Student.Profile.Model.flagsToEndpoints flags
     , profile = student_profile
     , menu_items = Menu.Items.initMenuItems flags
     , flashcards = flags.flashcards
     , performance_report = flags.performance_report
+    , consenting_to_research = flags.consenting_to_research
     , editing = Dict.empty
     , username_update = {username = "", valid = Nothing, msg = Nothing}
     , help = student_help
@@ -61,6 +63,7 @@ view_content model =
     , Student.Profile.View.view_student_performance model
     , Student.Profile.View.view_feedback_links model
     , Student.Profile.View.view_flashcards model
+    , Student.Profile.View.view_research_consent model
     , (if not (String.isEmpty model.err_str) then
         span [attribute "class" "error"] [ Html.text "error: ", Html.text model.err_str ]
        else Html.text "")

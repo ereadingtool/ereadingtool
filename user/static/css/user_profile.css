@@ -90,6 +90,10 @@ table td {
     overflow: scroll;
 }
 
+#research_consent > .profile_item_value > .check_box {
+    margin-right: 0.5em;
+}
+
 .performance_report {
     margin-top: 10px;
 }

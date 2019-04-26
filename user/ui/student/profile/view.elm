@@ -291,6 +291,16 @@ view_flashcards model =
     ]
   ]
 
+view_research_consent : Model -> Html Msg
+view_research_consent model =
+  div [id "research_consent", class "profile_item"] [
+    span [class "profile_item_title"] [ Html.text "Research Consent" ]
+  , span [class "profile_item_value"] [
+        div [class "check_box", onClick ToggleResearchConsent] []
+      , Html.text "I consent to research"
+    ]
+  ]
+
 view_my_performance_hint : Model -> List (Html Msg)
 view_my_performance_hint model =
   let
