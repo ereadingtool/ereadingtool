@@ -10441,7 +10441,6 @@ var _user$project$Config$text_page = function (text_id) {
 var _user$project$Config$instructor_invite_uri = '/api/instructor/invite/';
 var _user$project$Config$instructor_profile_page = '/profile/instructor/';
 var _user$project$Config$student_profile_page = '/profile/student/';
-var _user$project$Config$instructor_logout_api_endpoint = '/api/instructor/logout/';
 var _user$project$Config$question_api_endpoint = '/api/question/';
 var _user$project$Config$text_section_api_endpoint = '/api/section/';
 var _user$project$Config$text_translation_api_match_endpoint = '/api/text/translations/match/';

@@ -13,9 +13,6 @@ text_section_api_endpoint = "/api/section/"
 question_api_endpoint : String
 question_api_endpoint = "/api/question/"
 
-instructor_logout_api_endpoint : String
-instructor_logout_api_endpoint = "/api/instructor/logout/"
-
 student_profile_page : String
 student_profile_page = "/profile/student/"
 
