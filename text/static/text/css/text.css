@@ -200,6 +200,10 @@ span {
         display: flex;
     }
 
+    #text-section {
+        grid-template-columns: 2% [body-col] auto 2%;
+    }
+
     .menu {
         display: flex;
         flex-wrap: wrap;
