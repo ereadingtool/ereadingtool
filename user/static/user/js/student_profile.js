@@ -24576,6 +24576,9 @@ var _user$project$Student_Profile_View$view_student_performance = function (mode
 			}));
 };
 var _user$project$Student_Profile_View$view_research_consent = function (model) {
+	var no_consent_tooltip = 'You have not consented to be a part of a research study.';
+	var consented_tooltip = 'You\'ve consented to be a part of a research study.';
+	var consented = model.consenting_to_research;
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -24622,14 +24625,21 @@ var _user$project$Student_Profile_View$view_research_consent = function (model) 
 										_0: {ctor: '_Tuple2', _0: 'check-box', _1: true},
 										_1: {
 											ctor: '::',
-											_0: {ctor: '_Tuple2', _0: 'check-box-selected', _1: model.consenting_to_research},
+											_0: {ctor: '_Tuple2', _0: 'check-box-selected', _1: consented},
 											_1: {ctor: '[]'}
 										}
 									}),
 								_1: {
 									ctor: '::',
 									_0: _elm_lang$html$Html_Events$onClick(_user$project$Student_Profile_Msg$ToggleResearchConsent),
-									_1: {ctor: '[]'}
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html_Attributes$attribute,
+											'title',
+											consented ? consented_tooltip : no_consent_tooltip),
+										_1: {ctor: '[]'}
+									}
 								}
 							},
 							{ctor: '[]'}),
