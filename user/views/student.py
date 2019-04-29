@@ -23,24 +23,28 @@ from django.template import loader
 Form = TypeVar('Form', bound=forms.Form)
 
 
-class ElmLoadJsStudentView(ElmLoadJsStudentBaseView):
+class ElmLoadJsStudentProfileView(ElmLoadJsStudentBaseView):
     def get_context_data(self, **kwargs) -> Dict:
-        context = super(ElmLoadJsStudentView, self).get_context_data(**kwargs)
+        context = super(ElmLoadJsStudentProfileView, self).get_context_data(**kwargs)
 
-        profile = None
+        student_profile = None
 
         try:
-            profile = self.request.user.student
+            student_profile = self.request.user.student
         except Student.DoesNotExist:
             pass
 
         performance_report_html = loader.render_to_string('student_performance_report.html', {
-            'performance_report': profile.performance.to_dict()
+            'performance_report': student_profile.performance.to_dict()
         })
 
-        performance_report_pdf_link = reverse('student-performance-pdf-link', kwargs={'pk': profile.pk})
+        performance_report_pdf_link = reverse('student-performance-pdf-link', kwargs={'pk': student_profile.pk})
 
-        context['elm']['student_profile'] = {'quote': False, 'safe': True, 'value': profile.to_dict()}
+        context['elm']['student_profile'] = {
+            'quote': False,
+            'safe': True,
+            'value': json.dumps(student_profile.to_dict())
+        }
 
         context['elm']['performance_report'] = {'quote': False, 'safe': True, 'value': {
             'html': performance_report_html,
@@ -48,8 +52,8 @@ class ElmLoadJsStudentView(ElmLoadJsStudentBaseView):
         }}
 
         context['elm']['flashcards'] = {'quote': False, 'safe': True, 'value': [
-            card.phrase.phrase for card in profile.flashcards.all()
-        ] if profile.flashcards else None}
+            card.phrase.phrase for card in student_profile.flashcards.all()
+        ] if student_profile.flashcards else None}
 
         try:
             welcome = self.request.session['welcome']['student_profile']
@@ -71,6 +75,27 @@ class ElmLoadJsStudentView(ElmLoadJsStudentBaseView):
             'safe': True,
             'value': json.dumps(welcome)
         }
+
+        context['elm']['consenting_to_research'] = {
+            'quote': False,
+            'safe': True,
+            'value': json.dumps(student_profile.is_consenting_to_research)
+        }
+
+        def uri_to_elm(url):
+            return {
+                'quote': True,
+                'safe': True,
+                'value': url
+            }
+
+        context['elm'].update({
+            'student_endpoint': uri_to_elm(reverse('api-student', kwargs={'pk': student_profile.pk})),
+            'logout_uri': uri_to_elm(reverse('api-student-logout')),
+            'student_username_validation_uri': uri_to_elm(reverse('username-api')),
+            'student_research_consent_uri': uri_to_elm(reverse('api-student-research-consent',
+                                                               kwargs={'pk': student_profile.pk}))
+        })
 
         return context
 
@@ -131,6 +156,54 @@ class StudentView(ProfileView):
     login_url = Student.login_url
 
 
+class StudentAPIConsentToResearchView(LoginRequiredMixin, APIView):
+    # returns permission denied HTTP message rather than redirect to login
+    raise_exception = True
+
+    def form(self, request: HttpRequest, params: dict, **kwargs) -> forms.ModelForm:
+        return StudentForm(params, **kwargs)
+
+    def put_error(self, errors: dict) -> HttpResponse:
+        return HttpResponse(json.dumps(errors), status=400)
+
+    def put_success(self, request: HttpRequest, student_form: Union[Form, forms.ModelForm]) -> HttpResponse:
+        student = student_form.save()
+
+        return HttpResponse(json.dumps({'consented': student.is_consenting_to_research}))
+
+    def put(self, request, *args, **kwargs) -> HttpResponse:
+        errors = params = {}
+
+        if not Student.objects.filter(pk=kwargs['pk']).exists():
+            return HttpResponse(status=400)
+
+        student = Student.objects.get(pk=kwargs['pk'])
+
+        if student.user != self.request.user:
+            return HttpResponseForbidden()
+
+        try:
+            params = json.loads(request.body.decode('utf8'))
+        except json.JSONDecodeError as e:
+            return self.put_json_error(e)
+
+        if 'difficulty_preference' in params:
+            try:
+                params['difficulty_preference'] = TextDifficulty.objects.get(slug=params['difficulty_preference']).pk
+            except TextDifficulty.DoesNotExist:
+                pass
+
+        form = self.form(request, params, instance=student)
+
+        if not form.is_valid():
+            errors = self.format_form_errors(form)
+
+        if errors:
+            return self.put_error(errors)
+        else:
+            return self.put_success(request, form)
+
+
 class StudentAPIView(LoginRequiredMixin, APIView):
     # returns permission denied HTTP message rather than redirect to login
     raise_exception = True
@@ -148,11 +221,10 @@ class StudentAPIView(LoginRequiredMixin, APIView):
             return HttpResponseForbidden()
 
         student_dict = student.to_dict()
-        student_flashcards = student_dict.pop('flashcards')
-        student_performance_report = student_dict.pop('performance_report')
 
-        # TODO(andrew.silvernail): frontend on the student profile page is expecting text word dicts
-        # refactor later
+        student_dict.pop('flashcards')
+
+        student_performance_report = student_dict.pop('performance_report')
 
         return HttpResponse(json.dumps({
             'profile': student_dict,
@@ -173,7 +245,7 @@ class StudentAPIView(LoginRequiredMixin, APIView):
     def put(self, request, *args, **kwargs) -> HttpResponse:
         errors = params = {}
 
-        if not Student.objects.filter(pk=kwargs['pk']).count():
+        if not Student.objects.filter(pk=kwargs['pk']).exists():
             return HttpResponse(status=400)
 
         student = Student.objects.get(pk=kwargs['pk'])

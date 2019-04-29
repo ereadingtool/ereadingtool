@@ -9,20 +9,23 @@ from django.test.client import Client
 from django.urls import reverse
 from django.utils import timezone as dt
 
-from ereadingtool.test.user import TestUser as TestUserBase
+from ereadingtool.test.user import TestUser
+from ereadingtool.test.data import TestData
+
 from text.models import Text, TextDifficulty
 from text.tests import TestText
 from text_reading.models import StudentTextReading, InstructorTextReading
+
+from user.student.models import Student
+
 
 SectionSpec = List[Dict[AnyStr, int]]
 Reading = Union[StudentTextReading, InstructorTextReading]
 
 
-class TestStudentUser(TestUserBase, TestCase):
+class TestStudentUser(TestData, TestUser, TestCase):
     def setUp(self):
         super(TestStudentUser, self).setUp()
-
-        TextDifficulty.setup_default()
 
         self.anonymous_client = Client()
 
@@ -342,3 +345,25 @@ class TestStudentUser(TestUserBase, TestCase):
         new_pass = self.student_user.check_password('a new pass')
 
         self.assertTrue(new_pass)
+
+    def test_student_research_consent(self):
+        student = Student.objects.get(pk=self.student_profile.pk)
+
+        self.assertIsNone(student.research_consent)
+
+        resp = self.student_client.put(self.student_api_endpoint,
+                                       data=json.dumps({'consent_to_research': True}), content_type='application/json')
+
+        self.assertTrue(resp)
+
+        resp_content = json.loads(resp.content)
+
+        self.assertEquals(resp.status_code, 200, resp_content)
+
+        student = Student.objects.get(pk=self.student_profile.pk)
+
+        self.assertIsNotNone(student.research_consent)
+        self.assertIsNotNone(student.research_consent.latest_consent_range)
+
+        self.assertIsNotNone(student.research_consent.latest_consent_range.start_dt)
+        self.assertIsNone(student.research_consent.latest_consent_range.end_dt)

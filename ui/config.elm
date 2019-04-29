@@ -1,9 +1,6 @@
 module Config exposing (..)
 
 
-username_validation_api_endpoint : String
-username_validation_api_endpoint = "/api/username/"
-
 text_api_endpoint : String
 text_api_endpoint = "/api/text/"
 
@@ -15,15 +12,6 @@ text_section_api_endpoint = "/api/section/"
 
 question_api_endpoint : String
 question_api_endpoint = "/api/question/"
-
-instructor_logout_api_endpoint : String
-instructor_logout_api_endpoint = "/api/instructor/logout/"
-
-student_logout_api_endpoint : String
-student_logout_api_endpoint = "/api/student/logout/"
-
-student_api_endpoint : String
-student_api_endpoint = "/api/student/"
 
 student_profile_page : String
 student_profile_page = "/profile/student/"

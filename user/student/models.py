@@ -1,7 +1,7 @@
 from typing import Dict, List, Tuple, AnyStr
 
 from django.db import models
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 
 from report.models import StudentPerformanceReport
 from text.models import TextDifficulty, Text
@@ -9,9 +9,13 @@ from text.phrase.models import TextPhrase
 from user.mixins.models import Profile, TextReadings
 from user.models import ReaderUser
 
+from user.student.research_consent.models import StudentResearchConsent
+
 
 class Student(Profile, TextReadings, models.Model):
     user = models.OneToOneField(ReaderUser, on_delete=models.CASCADE)
+    research_consent = models.OneToOneField(StudentResearchConsent, null=True, on_delete=models.SET_NULL)
+
     difficulty_preference = models.ForeignKey(TextDifficulty, null=True, on_delete=models.SET_NULL,
                                               related_name='students')
 
@@ -55,6 +59,7 @@ class Student(Profile, TextReadings, models.Model):
             'difficulty_preference': [self.difficulty_preference.slug, self.difficulty_preference.name]
             if self.difficulty_preference else None,
             'difficulties': difficulties,
+            'logout_uri': reverse('api-student-logout')
         }
 
     def to_text_summary_dict(self, text: Text) -> Dict:
@@ -67,7 +72,7 @@ class Student(Profile, TextReadings, models.Model):
         return text_student_summary
 
     def __str__(self) -> AnyStr:
-        return self.user.username
+        return self.user.username or self.user.email
 
     def has_flashcard_for_phrase(self, text_phrase: TextPhrase) -> bool:
         return self.flashcards.filter(phrase=text_phrase).exists()
@@ -79,3 +84,23 @@ class Student(Profile, TextReadings, models.Model):
 
     def remove_from_flashcards(self, text_phrase: TextPhrase):
         self.flashcards.filter(phrase=text_phrase).delete()
+
+    @property
+    def is_consenting_to_research(self):
+        try:
+            if self.research_consent:
+                return self.research_consent.active
+            else:
+                return False
+        except StudentResearchConsent.DoesNotExist:
+            return False
+
+    def consent_to_research(self, consented: bool):
+        if not self.research_consent:
+            self.research_consent = StudentResearchConsent.objects.create()
+            self.save()
+
+        if consented:
+            self.research_consent.on()
+        else:
+            self.research_consent.off()

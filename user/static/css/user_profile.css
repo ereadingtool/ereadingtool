@@ -90,6 +90,25 @@ table td {
     overflow: scroll;
 }
 
+#research_consent > .profile_item_value > .check-box {
+    display: inline-block;
+    cursor: pointer;
+    border: solid black 0.5px;
+    width: 25px;
+    height: 25px;
+    margin-right: 0.5em;
+}
+
+#research_consent > .profile_item_value > .check-box-text {
+    display: inline-block;
+    vertical-align: top;
+    font-size: larger;
+}
+
+.check-box-selected {
+    background: darkgrey;
+}
+
 .performance_report {
     margin-top: 10px;
 }

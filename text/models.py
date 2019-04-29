@@ -40,8 +40,9 @@ class TextDifficulty(models.Model):
     def setup_default(cls):
         for params in [('intermediate_mid', 'Intermediate-Mid'), ('intermediate_high', 'Intermediate-High'),
                        ('advanced_low', 'Advanced-Low'), ('advanced_mid', 'Advanced-Mid')]:
-            if not TextDifficulty.objects.filter(slug=params[0], name=params[1]).count():
-                difficulty = TextDifficulty.objects.create(slug=params[0], name=params[1])
+            difficulty, created = TextDifficulty.objects.get_or_create(slug=params[0], name=params[1])
+
+            if created:
                 difficulty.save()
 
 

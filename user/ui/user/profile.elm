@@ -1,17 +1,18 @@
 module User.Profile exposing (..)
 
 import Profile exposing (..)
-
-import Config exposing (student_api_endpoint)
+import Flags
 
 import Html exposing (Html, div)
 
 import Http exposing (..)
 
-import Instructor.Profile exposing (InstructorProfile, InstructorProfileParams)
+import Instructor.Profile
 import Instructor.View
 
 import Student.Profile
+import Student.Resource
+import Student.Profile.Resource
 import Student.Profile.Decode
 
 import Student.View
@@ -20,16 +21,21 @@ import Menu.Msg exposing (Msg)
 
 import Menu.Logout
 
-type Profile = Student Student.Profile.StudentProfile | Instructor InstructorProfile | EmptyProfile
+type Profile =
+    Student Student.Profile.StudentProfile
+  | Instructor Instructor.Profile.InstructorProfile
+  | EmptyProfile
 
 fromStudentProfile : Student.Profile.StudentProfile -> Profile
-fromStudentProfile student_profile = Student student_profile
+fromStudentProfile student_profile =
+  Student student_profile
 
-fromInstructorProfile : InstructorProfile -> Profile
-fromInstructorProfile instructor_profile = Instructor instructor_profile
+fromInstructorProfile : Instructor.Profile.InstructorProfile -> Profile
+fromInstructorProfile instructor_profile =
+  Instructor instructor_profile
 
 initProfile:
- { a | instructor_profile : Maybe InstructorProfileParams
+ { a | instructor_profile : Maybe Instructor.Profile.InstructorProfileParams
      , student_profile : Maybe Student.Profile.StudentProfileParams }
     -> Profile
 initProfile flags =
@@ -60,21 +66,25 @@ view_profile_header profile top_level_msg =
     EmptyProfile ->
       Nothing
 
-retrieve_student_profile : (Result Error Student.Profile.StudentProfile -> msg) -> ProfileID -> Cmd msg
-retrieve_student_profile msg profile_id =
+retrieveStudentProfile :
+     (Result Error Student.Profile.StudentProfile -> msg)
+  -> ProfileID
+  -> Student.Resource.StudentEndpointURI
+  -> Cmd msg
+retrieveStudentProfile msg profile_id student_endpoint_uri =
   let
     request =
       Http.get
-        (String.join "" [student_api_endpoint, (toString profile_id) ++ "/"])
+        (Student.Resource.uriToString (Student.Resource.studentEndpointURI student_endpoint_uri))
         Student.Profile.Decode.studentProfileDecoder
   in
     Http.send msg request
 
-logout : Profile -> String -> (Result Http.Error Menu.Logout.LogOutResp -> msg) -> Cmd msg
+logout : Profile -> Flags.CSRFToken -> (Result Http.Error Menu.Logout.LogOutResp -> msg) -> Cmd msg
 logout profile csrftoken logout_msg =
   case profile of
     Student student_profile ->
-      Student.Profile.logout student_profile csrftoken logout_msg
+      Student.Profile.Resource.logout student_profile csrftoken logout_msg
 
     Instructor instructor_profile ->
       Instructor.Profile.logout instructor_profile csrftoken logout_msg

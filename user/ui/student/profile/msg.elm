@@ -23,12 +23,14 @@ type Msg =
   | UpdateDifficulty String
   -- username
   | ToggleUsernameUpdate
+  | ToggleResearchConsent
   | ValidUsername (Result Error Student.Profile.Model.UsernameUpdate)
   | UpdateUsername String
   | SubmitUsernameUpdate
   | CancelUsernameUpdate
   -- profile update submission
   | Submitted (Result Error Student.Profile.StudentProfile)
+  | SubmittedConsent (Result Error Student.Profile.Model.StudentConsentResp)
   -- help messages
   | CloseHelp Student.Profile.Help.StudentHelp
   | PrevHelp

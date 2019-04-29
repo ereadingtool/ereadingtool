@@ -291,6 +291,23 @@ view_flashcards model =
     ]
   ]
 
+view_research_consent : Model -> Html Msg
+view_research_consent model =
+  let
+    consented = model.consenting_to_research
+    consented_tooltip = "You've consented to be a part of a research study."
+    no_consent_tooltip = "You have not consented to be a part of a research study."
+  in
+    div [id "research_consent", class "profile_item"] [
+     span [class "profile_item_title"] [ Html.text "Research Consent" ]
+    ,  span [class "profile_item_value"] [
+          div [ classList [("check-box", True), ("check-box-selected", consented)]
+              , onClick ToggleResearchConsent
+              , attribute "title" (if consented then consented_tooltip else no_consent_tooltip)] []
+        , div [class "check-box-text"] [ Html.text "I consent to research." ]
+      ]
+    ]
+
 view_my_performance_hint : Model -> List (Html Msg)
 view_my_performance_hint model =
   let

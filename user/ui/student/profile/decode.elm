@@ -60,9 +60,15 @@ studentProfileParamsDecoder =
     |> required "email" Json.Decode.string
     |> required "difficulty_preference" (Json.Decode.nullable stringTupleDecoder)
     |> required "difficulties" (Json.Decode.list stringTupleDecoder)
+    |> required "logout_uri" (Json.Decode.string)
 
 studentProfileDecoder : Json.Decode.Decoder Student.Profile.StudentProfile
 studentProfileDecoder =
   Json.Decode.map
     Student.Profile.initProfile
       (Json.Decode.field "profile" studentProfileParamsDecoder)
+
+studentConsentRespDecoder : Json.Decode.Decoder Student.Profile.Model.StudentConsentResp
+studentConsentRespDecoder =
+  Json.Decode.map
+    Student.Profile.Model.StudentConsentResp (Json.Decode.field "consented" Json.Decode.bool)

@@ -1,4 +1,9 @@
 module Profile exposing (..)
 
-type alias ProfileID = Int
-type alias ProfileType = String
+type ProfileID = ProfileID Int
+type ProfileType = ProfileType String
+
+
+profileIDtoString : ProfileID -> String
+profileIDtoString (ProfileID id) =
+  toString id
