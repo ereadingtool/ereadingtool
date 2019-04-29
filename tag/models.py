@@ -13,8 +13,10 @@ class Tag(models.Model):
                             'History', 'Biography', 'News Briefs', 'Economics/Business', 'Medicine/Health Care',
                             'Science/Technology', 'Human Interest', 'Society and Societal Trends',
                             'International Relations', 'Public Policy', 'Other', 'Kazakhstan']:
-            tag = Tag.objects.create(name=default_tag)
-            tag.save()
+            tag, created = Tag.objects.get_or_create(name=default_tag)
+
+            if created:
+                tag.save()
 
     def __str__(self):
         return self.name
