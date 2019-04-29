@@ -16,6 +16,10 @@ span {
     padding-top: 50px;
 }
 
+#complete {
+    grid-column: body-col;
+}
+
 #text-body {
     grid-column: body-col;
     grid-row: body-row;
@@ -194,6 +198,10 @@ span {
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
     .header {
         display: flex;
+    }
+
+    #text-section {
+        grid-template-columns: 2% [body-col] auto 2%;
     }
 
     .menu {
