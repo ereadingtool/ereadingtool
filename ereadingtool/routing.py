@@ -19,7 +19,7 @@ application = ProtocolTypeRouter({
 
             # flashcards
             url(r'^student/flashcards/$', StudentFlashcardSessionConsumer),
-            # url(r'^instructor/flashcard/$', InstructorTextReaderConsumer),
+            # url(r'^instructor/flashcard/$', InstructorFlashcardSessionConsumer),
         ])
     )),
     'channel': ChannelNameRouter({

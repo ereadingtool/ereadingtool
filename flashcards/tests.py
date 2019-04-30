@@ -147,7 +147,7 @@ class TestFlashcardStateMachine(TestData, TestUser, TestCase):
 
         self.assertEquals(state_machine.current_state, state_machine.finished_review_and_answer)
 
-        # tweaking SM-2 constants leads to different review dates so we just check the year for sanity + repetitions
+        # tweaking SM-2 leads to different review dates so we just check the year for sanity + repetitions
         self.assertEquals(
             [[c.next_review_dt.year, c.repetitions]
              for c in self.test_student.flashcards.all()], [

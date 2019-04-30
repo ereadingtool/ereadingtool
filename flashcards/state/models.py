@@ -301,5 +301,5 @@ class FlashcardSessionStateMachine(StateMachine):
     def serialize_incorrectly_answered_card_state(self) -> Dict:
         return self.serialize_reviewed_card_state()
 
-    def serialize(self):
+    def serialize(self) -> Dict:
         return getattr(self, '_'.join(['serialize', self.current_state.name, 'state']))()

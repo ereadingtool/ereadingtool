@@ -2,6 +2,8 @@ from typing import AnyStr
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
+
 
 from flashcards.consumers.exceptions import FlashcardSessionException
 from flashcards.state.exceptions import FlashcardStateMachineException, StateMachineError
@@ -45,8 +47,8 @@ class FlashcardSession(models.Model):
         self.state_machine.rate_quality(rating)
 
     def on_finish(self):
-        self.delete()
-        self.deleted = True
+        self.end_dt = timezone.now()
+        self.save()
 
     def answer(self, answer: AnyStr):
         try:
@@ -68,8 +70,7 @@ class FlashcardSession(models.Model):
         except FlashcardStateMachineException as e:
             raise FlashcardSessionException(code=e.code, error_msg=e.error_msg)
 
-        if not self.deleted:
-            self.save()
+        self.save()
 
     @property
     def flashcards(self):
@@ -95,8 +96,6 @@ class FlashcardSession(models.Model):
         Deserialize the state from the db.
         """
         super(FlashcardSession, self).__init__(*args, **kwargs)
-
-        self.deleted = False
 
         if not self.current_flashcard:
             self.current_flashcard = self.flashcards[0]
