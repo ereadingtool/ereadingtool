@@ -6,6 +6,8 @@ import Json.Decode
 
 import Dict exposing (Dict)
 
+import Student.Resource
+
 import Student.Profile.Msg exposing (..)
 
 import Student.Profile.Model exposing (Model)
@@ -43,7 +45,7 @@ update msg model =
       RetrieveStudentProfile (Ok profile) ->
         let
           username_update = model.username_update
-          new_username_update = { username_update | username = Student.Profile.studentUserName profile }
+          new_username_update = { username_update | username = (Just (Student.Profile.studentUserName profile)) }
         in
           ({ model | profile = profile, username_update = new_username_update }, Cmd.none)
 
@@ -54,7 +56,8 @@ update msg model =
       UpdateUsername value ->
         let
           username_update = model.username_update
-          new_username_update = { username_update | username = value }
+
+          new_username_update = { username_update | username = (Just (Student.Resource.StudentUsername value)) }
         in
           ( { model | username_update = new_username_update }, validateUsername value)
 
@@ -90,10 +93,15 @@ update msg model =
         ( model, toggleResearchConsent (not model.consenting_to_research))
 
       SubmitUsernameUpdate ->
-        let
-          profile = Student.Profile.setUserName model.profile model.username_update.username
-        in
-          ( { model | profile = profile }, updateProfile profile)
+        case model.username_update.username of
+          Just username ->
+            let
+              profile = Student.Profile.setUserName model.profile username
+            in
+              ( { model | profile = profile }, updateProfile profile)
+
+          Nothing ->
+             (model, Cmd.none)
 
       CancelUsernameUpdate ->
         (toggleUsernameUpdate model, Cmd.none)

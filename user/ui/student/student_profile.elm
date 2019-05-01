@@ -33,7 +33,7 @@ init flags =
     , performance_report = flags.performance_report
     , consenting_to_research = flags.consenting_to_research
     , editing = Dict.empty
-    , username_update = {username = "", valid = Nothing, msg = Nothing}
+    , username_update = {username = Nothing, valid = Nothing, msg = Nothing}
     , help = student_help
     , err_str = "", errors = Dict.empty
     }

@@ -15,14 +15,15 @@ profileEncoder student_profile =
 
         _ ->
           Json.Encode.null)
-    username = Json.Encode.string (Student.Profile.studentUserName student_profile)
+
+    username =
+      Json.Encode.string (Student.Profile.studentUserNameToString (Student.Profile.studentUserName student_profile))
   in
     Json.Encode.object [ ("difficulty_preference", encode_pref), ("username", username) ]
 
 username_valid_encode : String -> Json.Encode.Value
 username_valid_encode username =
   Json.Encode.object [("username", Json.Encode.string username)]
-
 
 consentEncoder : Bool -> Json.Encode.Value
 consentEncoder consented =

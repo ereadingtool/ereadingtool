@@ -14,6 +14,8 @@ import Instructor.Invite.Decode
 import Menu.Logout
 
 
+type alias Tag = String
+
 type alias Text = {
     id: Int
   , title: String
@@ -45,7 +47,6 @@ type alias InstructorProfileParams = {
   , uris : InstructorURIParams }
 
 type InstructorUsername = InstructorUsername String
-
 
 type InstructorProfileURIs =
   InstructorProfileURIs Instructor.Resource.InstructorLogoutURI Instructor.Resource.InstructorProfileURI

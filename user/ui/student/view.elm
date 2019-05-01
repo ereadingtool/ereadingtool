@@ -7,14 +7,12 @@ import Html.Events exposing (onClick)
 import Student.Profile
 import Menu.Msg exposing (Msg(..))
 
-import Config
-
 
 view_student_profile_page_link : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> Html msg
 view_student_profile_page_link student_profile top_level_menu_msg =
   div [] [
-    Html.a [attribute "href" Config.student_profile_page] [
-      Html.text (Student.Profile.studentUserName student_profile)
+    Html.a [attribute "href" (Student.Profile.profileUriToString student_profile)] [
+      Html.text (Student.Profile.studentUserNameToString (Student.Profile.studentUserName student_profile))
     ]
   ]
 

@@ -6085,6 +6085,14 @@ var _user$project$Student_Resource$studentEndpointURI = function (_p8) {
 	var _p9 = _p8;
 	return _p9._0;
 };
+var _user$project$Student_Resource$studentProfileURI = function (_p10) {
+	var _p11 = _p10;
+	return _p11._0;
+};
+var _user$project$Student_Resource$studentUserNameToString = function (_p12) {
+	var _p13 = _p12;
+	return _p13._0;
+};
 var _user$project$Student_Resource$URI = function (a) {
 	return {ctor: 'URI', _0: a};
 };
@@ -6123,66 +6131,112 @@ var _user$project$Student_Resource$StudentUsernameValidURI = function (a) {
 var _user$project$Student_Resource$StudentLogoutURI = function (a) {
 	return {ctor: 'StudentLogoutURI', _0: a};
 };
+var _user$project$Student_Resource$StudentProfileURI = function (a) {
+	return {ctor: 'StudentProfileURI', _0: a};
+};
+var _user$project$Student_Resource$StudentEmail = function (a) {
+	return {ctor: 'StudentEmail', _0: a};
+};
+var _user$project$Student_Resource$StudentUsername = function (a) {
+	return {ctor: 'StudentUsername', _0: a};
+};
 
-var _user$project$Student_Profile$studentLogoutURI = function (_p0) {
+var _user$project$Student_Profile$profileURI = function (_p0) {
 	var _p1 = _p0;
-	return _p1._5;
+	return _p1._1;
 };
-var _user$project$Student_Profile$studentEmail = function (_p2) {
+var _user$project$Student_Profile$logoutURI = function (_p2) {
 	var _p3 = _p2;
-	return _p3._2;
+	return _p3._0;
 };
-var _user$project$Student_Profile$studentUserName = function (_p4) {
+var _user$project$Student_Profile$uris = function (_p4) {
 	var _p5 = _p4;
-	return _p5._1;
+	return _p5._5;
 };
-var _user$project$Student_Profile$studentDifficulties = function (_p6) {
+var _user$project$Student_Profile$profileUriToString = function (student_profile) {
+	return _user$project$Student_Resource$uriToString(
+		_user$project$Student_Resource$studentProfileURI(
+			_user$project$Student_Profile$profileURI(
+				_user$project$Student_Profile$uris(student_profile))));
+};
+var _user$project$Student_Profile$studentLogoutURI = function (student_profile) {
+	return _user$project$Student_Profile$logoutURI(
+		_user$project$Student_Profile$uris(student_profile));
+};
+var _user$project$Student_Profile$studentEmailToString = function (_p6) {
 	var _p7 = _p6;
-	return _p7._4;
+	return _p7._0;
 };
-var _user$project$Student_Profile$studentID = function (_p8) {
+var _user$project$Student_Profile$studentEmail = function (_p8) {
 	var _p9 = _p8;
-	return _p9._0;
+	return _p9._2;
 };
-var _user$project$Student_Profile$studentDifficultyPreference = function (_p10) {
+var _user$project$Student_Profile$studentUserNameToString = function (student_username) {
+	return _user$project$Student_Resource$studentUserNameToString(student_username);
+};
+var _user$project$Student_Profile$studentUserName = function (_p10) {
 	var _p11 = _p10;
-	return _p11._3;
+	return _p11._1;
 };
+var _user$project$Student_Profile$studentDifficulties = function (_p12) {
+	var _p13 = _p12;
+	return _p13._4;
+};
+var _user$project$Student_Profile$studentID = function (_p14) {
+	var _p15 = _p14;
+	return _p15._0;
+};
+var _user$project$Student_Profile$studentDifficultyPreference = function (_p16) {
+	var _p17 = _p16;
+	return _p17._3;
+};
+var _user$project$Student_Profile$StudentURIParams = F2(
+	function (a, b) {
+		return {logout_uri: a, profile_uri: b};
+	});
 var _user$project$Student_Profile$StudentProfileParams = F6(
 	function (a, b, c, d, e, f) {
-		return {id: a, username: b, email: c, difficulty_preference: d, difficulties: e, logout_uri: f};
+		return {id: a, username: b, email: c, difficulty_preference: d, difficulties: e, uris: f};
+	});
+var _user$project$Student_Profile$StudentURIs = F2(
+	function (a, b) {
+		return {ctor: 'StudentURIs', _0: a, _1: b};
 	});
 var _user$project$Student_Profile$StudentProfile = F6(
 	function (a, b, c, d, e, f) {
 		return {ctor: 'StudentProfile', _0: a, _1: b, _2: c, _3: d, _4: e, _5: f};
 	});
 var _user$project$Student_Profile$setStudentDifficultyPreference = F2(
-	function (_p12, preference) {
-		var _p13 = _p12;
+	function (_p18, preference) {
+		var _p19 = _p18;
 		return A6(
 			_user$project$Student_Profile$StudentProfile,
-			_p13._0,
-			_p13._1,
-			_p13._2,
+			_p19._0,
+			_p19._1,
+			_p19._2,
 			_elm_lang$core$Maybe$Just(preference),
-			_p13._4,
-			_p13._5);
+			_p19._4,
+			_p19._5);
 	});
 var _user$project$Student_Profile$setUserName = F2(
-	function (_p14, new_username) {
-		var _p15 = _p14;
-		return A6(_user$project$Student_Profile$StudentProfile, _p15._0, new_username, _p15._2, _p15._3, _p15._4, _p15._5);
+	function (_p20, new_username) {
+		var _p21 = _p20;
+		return A6(_user$project$Student_Profile$StudentProfile, _p21._0, new_username, _p21._2, _p21._3, _p21._4, _p21._5);
 	});
 var _user$project$Student_Profile$initProfile = function (params) {
 	return A6(
 		_user$project$Student_Profile$StudentProfile,
 		params.id,
-		params.username,
-		params.email,
+		_user$project$Student_Resource$StudentUsername(params.username),
+		_user$project$Student_Resource$StudentEmail(params.email),
 		params.difficulty_preference,
 		params.difficulties,
-		_user$project$Student_Resource$StudentLogoutURI(
-			_user$project$Student_Resource$URI(params.logout_uri)));
+		A2(
+			_user$project$Student_Profile$StudentURIs,
+			_user$project$Student_Resource$StudentLogoutURI(
+				_user$project$Student_Resource$URI(params.uris.logout_uri)),
+			_user$project$Student_Resource$StudentProfileURI(
+				_user$project$Student_Resource$URI(params.uris.profile_uri))));
 };
 
 var Elm = {};

@@ -3,6 +3,8 @@ module Student.Profile.Decode exposing (..)
 import Json.Decode
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
 
+import Student.Resource
+
 import Student.Profile exposing (StudentProfileParams)
 
 import Student.Performance.Report exposing (PerformanceReport)
@@ -21,7 +23,7 @@ import TextReader.TextWord
 username_valid_decoder : Json.Decode.Decoder Student.Profile.Model.UsernameUpdate
 username_valid_decoder =
   decode Student.Profile.Model.UsernameUpdate
-    |> required "username" Json.Decode.string
+    |> required "username" (Json.Decode.map (Student.Resource.StudentUsername >> Just) Json.Decode.string)
     |> required "valid" (Json.Decode.nullable Json.Decode.bool)
     |> required "msg" (Json.Decode.nullable Json.Decode.string)
 
@@ -52,6 +54,12 @@ performanceReportDecoder =
     |> required "html" Json.Decode.string
     |> required "pdf_link" Json.Decode.string
 
+studentProfileURIParamsDecoder : Json.Decode.Decoder Student.Profile.StudentURIParams
+studentProfileURIParamsDecoder =
+  decode Student.Profile.StudentURIParams
+    |> required "logout_uri" (Json.Decode.string)
+    |> required "profile_uri" (Json.Decode.string)
+
 studentProfileParamsDecoder : Json.Decode.Decoder StudentProfileParams
 studentProfileParamsDecoder =
   decode StudentProfileParams
@@ -60,7 +68,7 @@ studentProfileParamsDecoder =
     |> required "email" Json.Decode.string
     |> required "difficulty_preference" (Json.Decode.nullable stringTupleDecoder)
     |> required "difficulties" (Json.Decode.list stringTupleDecoder)
-    |> required "logout_uri" (Json.Decode.string)
+    |> required "uris" studentProfileURIParamsDecoder
 
 studentProfileDecoder : Json.Decode.Decoder Student.Profile.StudentProfile
 studentProfileDecoder =

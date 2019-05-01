@@ -10215,6 +10215,14 @@ var _user$project$Student_Resource$studentEndpointURI = function (_p8) {
 	var _p9 = _p8;
 	return _p9._0;
 };
+var _user$project$Student_Resource$studentProfileURI = function (_p10) {
+	var _p11 = _p10;
+	return _p11._0;
+};
+var _user$project$Student_Resource$studentUserNameToString = function (_p12) {
+	var _p13 = _p12;
+	return _p13._0;
+};
 var _user$project$Student_Resource$URI = function (a) {
 	return {ctor: 'URI', _0: a};
 };
@@ -10253,66 +10261,112 @@ var _user$project$Student_Resource$StudentUsernameValidURI = function (a) {
 var _user$project$Student_Resource$StudentLogoutURI = function (a) {
 	return {ctor: 'StudentLogoutURI', _0: a};
 };
+var _user$project$Student_Resource$StudentProfileURI = function (a) {
+	return {ctor: 'StudentProfileURI', _0: a};
+};
+var _user$project$Student_Resource$StudentEmail = function (a) {
+	return {ctor: 'StudentEmail', _0: a};
+};
+var _user$project$Student_Resource$StudentUsername = function (a) {
+	return {ctor: 'StudentUsername', _0: a};
+};
 
-var _user$project$Student_Profile$studentLogoutURI = function (_p0) {
+var _user$project$Student_Profile$profileURI = function (_p0) {
 	var _p1 = _p0;
-	return _p1._5;
+	return _p1._1;
 };
-var _user$project$Student_Profile$studentEmail = function (_p2) {
+var _user$project$Student_Profile$logoutURI = function (_p2) {
 	var _p3 = _p2;
-	return _p3._2;
+	return _p3._0;
 };
-var _user$project$Student_Profile$studentUserName = function (_p4) {
+var _user$project$Student_Profile$uris = function (_p4) {
 	var _p5 = _p4;
-	return _p5._1;
+	return _p5._5;
 };
-var _user$project$Student_Profile$studentDifficulties = function (_p6) {
+var _user$project$Student_Profile$profileUriToString = function (student_profile) {
+	return _user$project$Student_Resource$uriToString(
+		_user$project$Student_Resource$studentProfileURI(
+			_user$project$Student_Profile$profileURI(
+				_user$project$Student_Profile$uris(student_profile))));
+};
+var _user$project$Student_Profile$studentLogoutURI = function (student_profile) {
+	return _user$project$Student_Profile$logoutURI(
+		_user$project$Student_Profile$uris(student_profile));
+};
+var _user$project$Student_Profile$studentEmailToString = function (_p6) {
 	var _p7 = _p6;
-	return _p7._4;
+	return _p7._0;
 };
-var _user$project$Student_Profile$studentID = function (_p8) {
+var _user$project$Student_Profile$studentEmail = function (_p8) {
 	var _p9 = _p8;
-	return _p9._0;
+	return _p9._2;
 };
-var _user$project$Student_Profile$studentDifficultyPreference = function (_p10) {
+var _user$project$Student_Profile$studentUserNameToString = function (student_username) {
+	return _user$project$Student_Resource$studentUserNameToString(student_username);
+};
+var _user$project$Student_Profile$studentUserName = function (_p10) {
 	var _p11 = _p10;
-	return _p11._3;
+	return _p11._1;
 };
+var _user$project$Student_Profile$studentDifficulties = function (_p12) {
+	var _p13 = _p12;
+	return _p13._4;
+};
+var _user$project$Student_Profile$studentID = function (_p14) {
+	var _p15 = _p14;
+	return _p15._0;
+};
+var _user$project$Student_Profile$studentDifficultyPreference = function (_p16) {
+	var _p17 = _p16;
+	return _p17._3;
+};
+var _user$project$Student_Profile$StudentURIParams = F2(
+	function (a, b) {
+		return {logout_uri: a, profile_uri: b};
+	});
 var _user$project$Student_Profile$StudentProfileParams = F6(
 	function (a, b, c, d, e, f) {
-		return {id: a, username: b, email: c, difficulty_preference: d, difficulties: e, logout_uri: f};
+		return {id: a, username: b, email: c, difficulty_preference: d, difficulties: e, uris: f};
+	});
+var _user$project$Student_Profile$StudentURIs = F2(
+	function (a, b) {
+		return {ctor: 'StudentURIs', _0: a, _1: b};
 	});
 var _user$project$Student_Profile$StudentProfile = F6(
 	function (a, b, c, d, e, f) {
 		return {ctor: 'StudentProfile', _0: a, _1: b, _2: c, _3: d, _4: e, _5: f};
 	});
 var _user$project$Student_Profile$setStudentDifficultyPreference = F2(
-	function (_p12, preference) {
-		var _p13 = _p12;
+	function (_p18, preference) {
+		var _p19 = _p18;
 		return A6(
 			_user$project$Student_Profile$StudentProfile,
-			_p13._0,
-			_p13._1,
-			_p13._2,
+			_p19._0,
+			_p19._1,
+			_p19._2,
 			_elm_lang$core$Maybe$Just(preference),
-			_p13._4,
-			_p13._5);
+			_p19._4,
+			_p19._5);
 	});
 var _user$project$Student_Profile$setUserName = F2(
-	function (_p14, new_username) {
-		var _p15 = _p14;
-		return A6(_user$project$Student_Profile$StudentProfile, _p15._0, new_username, _p15._2, _p15._3, _p15._4, _p15._5);
+	function (_p20, new_username) {
+		var _p21 = _p20;
+		return A6(_user$project$Student_Profile$StudentProfile, _p21._0, new_username, _p21._2, _p21._3, _p21._4, _p21._5);
 	});
 var _user$project$Student_Profile$initProfile = function (params) {
 	return A6(
 		_user$project$Student_Profile$StudentProfile,
 		params.id,
-		params.username,
-		params.email,
+		_user$project$Student_Resource$StudentUsername(params.username),
+		_user$project$Student_Resource$StudentEmail(params.email),
 		params.difficulty_preference,
 		params.difficulties,
-		_user$project$Student_Resource$StudentLogoutURI(
-			_user$project$Student_Resource$URI(params.logout_uri)));
+		A2(
+			_user$project$Student_Profile$StudentURIs,
+			_user$project$Student_Resource$StudentLogoutURI(
+				_user$project$Student_Resource$URI(params.uris.logout_uri)),
+			_user$project$Student_Resource$StudentProfileURI(
+				_user$project$Student_Resource$URI(params.uris.profile_uri))));
 };
 
 var _user$project$Menu_Msg$StudentLogout = function (a) {
@@ -10322,115 +10376,128 @@ var _user$project$Menu_Msg$InstructorLogout = function (a) {
 	return {ctor: 'InstructorLogout', _0: a};
 };
 
-var _user$project$Instructor_View$view_instructor_profile_link = F2(
-	function (instructor_profile, top_level_msg) {
+var _user$project$Student_View$view_profile_dropdown_menu = F3(
+	function (student_profile, top_level_msg, items) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('profile_dropdown_menu'),
+				_0: _elm_lang$html$Html_Attributes$id('profile-link'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$classList(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('profile_dropdown_menu'),
+						_1: {ctor: '[]'}
+					},
+					items),
+				_1: {ctor: '[]'}
+			});
+	});
+var _user$project$Student_View$view_student_profile_logout_link = F2(
+	function (student_profile, top_level_menu_msg) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'profile_dropdown_menu_overlay', _1: true},
+						_1: {ctor: '[]'}
+					}),
 				_1: {ctor: '[]'}
 			},
 			{
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$div,
-					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('profile_dropdown_menu_item'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(
+								top_level_menu_msg(
+									_user$project$Menu_Msg$StudentLogout(student_profile))),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Logout'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			});
+	});
+var _user$project$Student_View$view_student_profile_page_link = F2(
+	function (student_profile, top_level_menu_msg) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$a,
 					{
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$a,
-							{
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html_Attributes$attribute,
-									'href',
-									_user$project$Instructor_Profile$profileUriToString(instructor_profile)),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text(
-									_user$project$Instructor_Profile$usernameToString(
-										_user$project$Instructor_Profile$username(instructor_profile))),
-								_1: {ctor: '[]'}
-							}),
+							_elm_lang$html$Html_Attributes$attribute,
+							'href',
+							_user$project$Student_Profile$profileUriToString(student_profile)),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(
+							_user$project$Student_Profile$studentUserNameToString(
+								_user$project$Student_Profile$studentUserName(student_profile))),
 						_1: {ctor: '[]'}
 					}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$classList(
-								{
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'profile_dropdown_menu_overlay', _1: true},
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('profile_dropdown_menu_item'),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Events$onClick(
-											top_level_msg(
-												_user$project$Menu_Msg$InstructorLogout(instructor_profile))),
-										_1: {ctor: '[]'}
-									}
-								},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text('Logout'),
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				}
+				_1: {ctor: '[]'}
 			});
 	});
-var _user$project$Instructor_View$view_instructor_profile_header = F2(
-	function (instructor_profile, top_level_msg) {
+var _user$project$Student_View$view_profile_link = F2(
+	function (student_profile, top_level_msg) {
+		var items = {
+			ctor: '::',
+			_0: A2(_user$project$Student_View$view_student_profile_page_link, student_profile, top_level_msg),
+			_1: {
+				ctor: '::',
+				_0: A2(_user$project$Student_View$view_student_profile_logout_link, student_profile, top_level_msg),
+				_1: {ctor: '[]'}
+			}
+		};
+		return A3(_user$project$Student_View$view_profile_dropdown_menu, student_profile, top_level_msg, items);
+	});
+var _user$project$Student_View$view_student_profile_header = F2(
+	function (student_profile, top_level_menu_msg) {
 		return {
 			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$id('profile-link'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$classList(
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					}
-				},
-				{
-					ctor: '::',
-					_0: A2(_user$project$Instructor_View$view_instructor_profile_link, instructor_profile, top_level_msg),
-					_1: {ctor: '[]'}
-				}),
+			_0: A2(_user$project$Student_View$view_profile_link, student_profile, top_level_menu_msg),
 			_1: {ctor: '[]'}
 		};
 	});
 
 var Elm = {};
-Elm['Instructor'] = Elm['Instructor'] || {};
-Elm['Instructor']['View'] = Elm['Instructor']['View'] || {};
-if (typeof _user$project$Instructor_View$main !== 'undefined') {
-    _user$project$Instructor_View$main(Elm['Instructor']['View'], 'Instructor.View', undefined);
+Elm['Student'] = Elm['Student'] || {};
+Elm['Student']['View'] = Elm['Student']['View'] || {};
+if (typeof _user$project$Student_View$main !== 'undefined') {
+    _user$project$Student_View$main(Elm['Student']['View'], 'Student.View', undefined);
 }
 
 if (typeof define === "function" && define['amd'])

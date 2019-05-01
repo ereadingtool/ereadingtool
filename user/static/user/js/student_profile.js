@@ -21035,8 +21035,6 @@ var _user$project$Config$text_page = function (text_id) {
 			_elm_lang$core$Basics$toString(text_id),
 			'/'));
 };
-var _user$project$Config$instructor_profile_page = '/profile/instructor/';
-var _user$project$Config$student_profile_page = '/profile/student/';
 var _user$project$Config$question_api_endpoint = '/api/question/';
 var _user$project$Config$text_section_api_endpoint = '/api/section/';
 var _user$project$Config$text_translation_api_match_endpoint = '/api/text/translations/match/';
@@ -21836,8 +21834,15 @@ var _user$project$Instructor_Resource$instructorLogoutURI = function (_p4) {
 	var _p5 = _p4;
 	return _p5._0;
 };
+var _user$project$Instructor_Resource$instructorProfileURI = function (_p6) {
+	var _p7 = _p6;
+	return _p7._0;
+};
 var _user$project$Instructor_Resource$URI = function (a) {
 	return {ctor: 'URI', _0: a};
+};
+var _user$project$Instructor_Resource$InstructorProfileURI = function (a) {
+	return {ctor: 'InstructorProfileURI', _0: a};
 };
 var _user$project$Instructor_Resource$InstructorLogoutURI = function (a) {
 	return {ctor: 'InstructorLogoutURI', _0: a};
@@ -21884,9 +21889,47 @@ var _user$project$Instructor_Profile$texts = function (_p1) {
 	var _p2 = _p1;
 	return _p2._1;
 };
-var _user$project$Instructor_Profile$logoutUri = function (_p3) {
+var _user$project$Instructor_Profile$uris = function (_p3) {
 	var _p4 = _p3;
 	return _p4._4;
+};
+var _user$project$Instructor_Profile$usernameToString = function (_p5) {
+	var _p6 = _p5;
+	return _p6._0;
+};
+var _user$project$Instructor_Profile$username = function (_p7) {
+	var _p8 = _p7;
+	return _p8._3;
+};
+var _user$project$Instructor_Profile$invites = function (_p9) {
+	var _p10 = _p9;
+	return _p10._2;
+};
+var _user$project$Instructor_Profile$urisToProfileUri = function (_p11) {
+	var _p12 = _p11;
+	return _p12._1;
+};
+var _user$project$Instructor_Profile$profileUri = function (instructor_profile) {
+	return _user$project$Instructor_Profile$urisToProfileUri(
+		_user$project$Instructor_Profile$uris(instructor_profile));
+};
+var _user$project$Instructor_Profile$profileUriToString = function (instructor_profile) {
+	return _user$project$Instructor_Resource$uriToString(
+		_user$project$Instructor_Resource$instructorProfileURI(
+			_user$project$Instructor_Profile$profileUri(instructor_profile)));
+};
+var _user$project$Instructor_Profile$urisToLogoutUri = function (_p13) {
+	var _p14 = _p13;
+	return _p14._0;
+};
+var _user$project$Instructor_Profile$logoutUri = function (instructor_profile) {
+	return _user$project$Instructor_Profile$urisToLogoutUri(
+		_user$project$Instructor_Profile$uris(instructor_profile));
+};
+var _user$project$Instructor_Profile$logoutUriToString = function (instructor_profile) {
+	return _user$project$Instructor_Resource$uriToString(
+		_user$project$Instructor_Resource$instructorLogoutURI(
+			_user$project$Instructor_Profile$logoutUri(instructor_profile)));
 };
 var _user$project$Instructor_Profile$logout = F3(
 	function (instructor_profile, csrftoken, logout_msg) {
@@ -21904,18 +21947,6 @@ var _user$project$Instructor_Profile$logout = F3(
 			_user$project$Menu_Logout$logoutRespDecoder);
 		return A2(_elm_lang$http$Http$send, logout_msg, request);
 	});
-var _user$project$Instructor_Profile$usernameToString = function (_p5) {
-	var _p6 = _p5;
-	return _p6._0;
-};
-var _user$project$Instructor_Profile$username = function (_p7) {
-	var _p8 = _p7;
-	return _p8._3;
-};
-var _user$project$Instructor_Profile$invites = function (_p9) {
-	var _p10 = _p9;
-	return _p10._2;
-};
 var _user$project$Instructor_Profile$Text = function (a) {
 	return function (b) {
 		return function (c) {
@@ -21949,12 +21980,28 @@ var _user$project$Instructor_Profile$Text = function (a) {
 		};
 	};
 };
+var _user$project$Instructor_Profile$InstructorURIParams = F2(
+	function (a, b) {
+		return {logout_uri: a, profile_uri: b};
+	});
 var _user$project$Instructor_Profile$InstructorProfileParams = F5(
 	function (a, b, c, d, e) {
-		return {id: a, texts: b, invites: c, username: d, logout_uri: e};
+		return {id: a, texts: b, invites: c, username: d, uris: e};
 	});
 var _user$project$Instructor_Profile$InstructorUsername = function (a) {
 	return {ctor: 'InstructorUsername', _0: a};
+};
+var _user$project$Instructor_Profile$InstructorProfileURIs = F2(
+	function (a, b) {
+		return {ctor: 'InstructorProfileURIs', _0: a, _1: b};
+	});
+var _user$project$Instructor_Profile$initProfileURIs = function (params) {
+	return A2(
+		_user$project$Instructor_Profile$InstructorProfileURIs,
+		_user$project$Instructor_Resource$InstructorLogoutURI(
+			_user$project$Instructor_Resource$URI(params.logout_uri)),
+		_user$project$Instructor_Resource$InstructorProfileURI(
+			_user$project$Instructor_Resource$URI(params.profile_uri)));
 };
 var _user$project$Instructor_Profile$InstructorProfile = F5(
 	function (a, b, c, d, e) {
@@ -21966,28 +22013,27 @@ var _user$project$Instructor_Profile$initProfile = function (params) {
 		params.id,
 		params.texts,
 		function () {
-			var _p11 = params.invites;
-			if (_p11.ctor === 'Just') {
+			var _p15 = params.invites;
+			if (_p15.ctor === 'Just') {
 				return _elm_lang$core$Maybe$Just(
-					A2(_elm_lang$core$List$map, _user$project$Instructor_Invite$new, _p11._0));
+					A2(_elm_lang$core$List$map, _user$project$Instructor_Invite$new, _p15._0));
 			} else {
 				return _elm_lang$core$Maybe$Nothing;
 			}
 		}(),
 		_user$project$Instructor_Profile$InstructorUsername(params.username),
-		_user$project$Instructor_Resource$InstructorLogoutURI(
-			_user$project$Instructor_Resource$URI(params.logout_uri)));
+		_user$project$Instructor_Profile$initProfileURIs(params.uris));
 };
 var _user$project$Instructor_Profile$addInvite = F2(
-	function (_p12, invite) {
-		var _p13 = _p12;
+	function (_p16, invite) {
+		var _p17 = _p16;
 		var new_invites = function () {
-			var _p14 = _p13._2;
-			if (_p14.ctor === 'Just') {
+			var _p18 = _p17._2;
+			if (_p18.ctor === 'Just') {
 				return _elm_lang$core$Maybe$Just(
 					A2(
 						_elm_lang$core$Basics_ops['++'],
-						_p14._0,
+						_p18._0,
 						{
 							ctor: '::',
 							_0: invite,
@@ -21997,7 +22043,7 @@ var _user$project$Instructor_Profile$addInvite = F2(
 				return _elm_lang$core$Maybe$Nothing;
 			}
 		}();
-		return A5(_user$project$Instructor_Profile$InstructorProfile, _p13._0, _p13._1, new_invites, _p13._3, _p13._4);
+		return A5(_user$project$Instructor_Profile$InstructorProfile, _p17._0, _p17._1, new_invites, _p17._3, _p17._4);
 	});
 
 var _user$project$Question_Model$new_question = function (i) {
@@ -22209,6 +22255,14 @@ var _user$project$Student_Resource$studentEndpointURI = function (_p8) {
 	var _p9 = _p8;
 	return _p9._0;
 };
+var _user$project$Student_Resource$studentProfileURI = function (_p10) {
+	var _p11 = _p10;
+	return _p11._0;
+};
+var _user$project$Student_Resource$studentUserNameToString = function (_p12) {
+	var _p13 = _p12;
+	return _p13._0;
+};
 var _user$project$Student_Resource$URI = function (a) {
 	return {ctor: 'URI', _0: a};
 };
@@ -22247,66 +22301,112 @@ var _user$project$Student_Resource$StudentUsernameValidURI = function (a) {
 var _user$project$Student_Resource$StudentLogoutURI = function (a) {
 	return {ctor: 'StudentLogoutURI', _0: a};
 };
+var _user$project$Student_Resource$StudentProfileURI = function (a) {
+	return {ctor: 'StudentProfileURI', _0: a};
+};
+var _user$project$Student_Resource$StudentEmail = function (a) {
+	return {ctor: 'StudentEmail', _0: a};
+};
+var _user$project$Student_Resource$StudentUsername = function (a) {
+	return {ctor: 'StudentUsername', _0: a};
+};
 
-var _user$project$Student_Profile$studentLogoutURI = function (_p0) {
+var _user$project$Student_Profile$profileURI = function (_p0) {
 	var _p1 = _p0;
-	return _p1._5;
+	return _p1._1;
 };
-var _user$project$Student_Profile$studentEmail = function (_p2) {
+var _user$project$Student_Profile$logoutURI = function (_p2) {
 	var _p3 = _p2;
-	return _p3._2;
+	return _p3._0;
 };
-var _user$project$Student_Profile$studentUserName = function (_p4) {
+var _user$project$Student_Profile$uris = function (_p4) {
 	var _p5 = _p4;
-	return _p5._1;
+	return _p5._5;
 };
-var _user$project$Student_Profile$studentDifficulties = function (_p6) {
+var _user$project$Student_Profile$profileUriToString = function (student_profile) {
+	return _user$project$Student_Resource$uriToString(
+		_user$project$Student_Resource$studentProfileURI(
+			_user$project$Student_Profile$profileURI(
+				_user$project$Student_Profile$uris(student_profile))));
+};
+var _user$project$Student_Profile$studentLogoutURI = function (student_profile) {
+	return _user$project$Student_Profile$logoutURI(
+		_user$project$Student_Profile$uris(student_profile));
+};
+var _user$project$Student_Profile$studentEmailToString = function (_p6) {
 	var _p7 = _p6;
-	return _p7._4;
+	return _p7._0;
 };
-var _user$project$Student_Profile$studentID = function (_p8) {
+var _user$project$Student_Profile$studentEmail = function (_p8) {
 	var _p9 = _p8;
-	return _p9._0;
+	return _p9._2;
 };
-var _user$project$Student_Profile$studentDifficultyPreference = function (_p10) {
+var _user$project$Student_Profile$studentUserNameToString = function (student_username) {
+	return _user$project$Student_Resource$studentUserNameToString(student_username);
+};
+var _user$project$Student_Profile$studentUserName = function (_p10) {
 	var _p11 = _p10;
-	return _p11._3;
+	return _p11._1;
 };
+var _user$project$Student_Profile$studentDifficulties = function (_p12) {
+	var _p13 = _p12;
+	return _p13._4;
+};
+var _user$project$Student_Profile$studentID = function (_p14) {
+	var _p15 = _p14;
+	return _p15._0;
+};
+var _user$project$Student_Profile$studentDifficultyPreference = function (_p16) {
+	var _p17 = _p16;
+	return _p17._3;
+};
+var _user$project$Student_Profile$StudentURIParams = F2(
+	function (a, b) {
+		return {logout_uri: a, profile_uri: b};
+	});
 var _user$project$Student_Profile$StudentProfileParams = F6(
 	function (a, b, c, d, e, f) {
-		return {id: a, username: b, email: c, difficulty_preference: d, difficulties: e, logout_uri: f};
+		return {id: a, username: b, email: c, difficulty_preference: d, difficulties: e, uris: f};
+	});
+var _user$project$Student_Profile$StudentURIs = F2(
+	function (a, b) {
+		return {ctor: 'StudentURIs', _0: a, _1: b};
 	});
 var _user$project$Student_Profile$StudentProfile = F6(
 	function (a, b, c, d, e, f) {
 		return {ctor: 'StudentProfile', _0: a, _1: b, _2: c, _3: d, _4: e, _5: f};
 	});
 var _user$project$Student_Profile$setStudentDifficultyPreference = F2(
-	function (_p12, preference) {
-		var _p13 = _p12;
+	function (_p18, preference) {
+		var _p19 = _p18;
 		return A6(
 			_user$project$Student_Profile$StudentProfile,
-			_p13._0,
-			_p13._1,
-			_p13._2,
+			_p19._0,
+			_p19._1,
+			_p19._2,
 			_elm_lang$core$Maybe$Just(preference),
-			_p13._4,
-			_p13._5);
+			_p19._4,
+			_p19._5);
 	});
 var _user$project$Student_Profile$setUserName = F2(
-	function (_p14, new_username) {
-		var _p15 = _p14;
-		return A6(_user$project$Student_Profile$StudentProfile, _p15._0, new_username, _p15._2, _p15._3, _p15._4, _p15._5);
+	function (_p20, new_username) {
+		var _p21 = _p20;
+		return A6(_user$project$Student_Profile$StudentProfile, _p21._0, new_username, _p21._2, _p21._3, _p21._4, _p21._5);
 	});
 var _user$project$Student_Profile$initProfile = function (params) {
 	return A6(
 		_user$project$Student_Profile$StudentProfile,
 		params.id,
-		params.username,
-		params.email,
+		_user$project$Student_Resource$StudentUsername(params.username),
+		_user$project$Student_Resource$StudentEmail(params.email),
 		params.difficulty_preference,
 		params.difficulties,
-		_user$project$Student_Resource$StudentLogoutURI(
-			_user$project$Student_Resource$URI(params.logout_uri)));
+		A2(
+			_user$project$Student_Profile$StudentURIs,
+			_user$project$Student_Resource$StudentLogoutURI(
+				_user$project$Student_Resource$URI(params.uris.logout_uri)),
+			_user$project$Student_Resource$StudentProfileURI(
+				_user$project$Student_Resource$URI(params.uris.profile_uri))));
 };
 
 var _user$project$Menu_Msg$StudentLogout = function (a) {
@@ -22336,7 +22436,10 @@ var _user$project$Instructor_View$view_instructor_profile_link = F2(
 							_elm_lang$html$Html$a,
 							{
 								ctor: '::',
-								_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', _user$project$Config$instructor_profile_page),
+								_0: A2(
+									_elm_lang$html$Html_Attributes$attribute,
+									'href',
+									_user$project$Instructor_Profile$profileUriToString(instructor_profile)),
 								_1: {ctor: '[]'}
 							},
 							{
@@ -23355,10 +23458,19 @@ var _user$project$Student_Profile_Decode$studentConsentRespDecoder = A2(
 	_elm_lang$core$Json_Decode$map,
 	_user$project$Student_Profile_Model$StudentConsentResp,
 	A2(_elm_lang$core$Json_Decode$field, 'consented', _elm_lang$core$Json_Decode$bool));
+var _user$project$Student_Profile_Decode$studentProfileURIParamsDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'profile_uri',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'logout_uri',
+		_elm_lang$core$Json_Decode$string,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Student_Profile$StudentURIParams)));
 var _user$project$Student_Profile_Decode$studentProfileParamsDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'logout_uri',
-	_elm_lang$core$Json_Decode$string,
+	'uris',
+	_user$project$Student_Profile_Decode$studentProfileURIParamsDecoder,
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 		'difficulties',
@@ -23450,7 +23562,13 @@ var _user$project$Student_Profile_Decode$username_valid_decoder = A3(
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 			'username',
-			_elm_lang$core$Json_Decode$string,
+			A2(
+				_elm_lang$core$Json_Decode$map,
+				function (_p0) {
+					return _elm_lang$core$Maybe$Just(
+						_user$project$Student_Resource$StudentUsername(_p0));
+				},
+				_elm_lang$core$Json_Decode$string),
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Student_Profile_Model$UsernameUpdate))));
 
 var _user$project$Student_Profile_Encode$consentEncoder = function (consented) {
@@ -23479,7 +23597,8 @@ var _user$project$Student_Profile_Encode$username_valid_encode = function (usern
 };
 var _user$project$Student_Profile_Encode$profileEncoder = function (student_profile) {
 	var username = _elm_lang$core$Json_Encode$string(
-		_user$project$Student_Profile$studentUserName(student_profile));
+		_user$project$Student_Profile$studentUserNameToString(
+			_user$project$Student_Profile$studentUserName(student_profile)));
 	var encode_pref = function () {
 		var _p0 = _user$project$Student_Profile$studentDifficultyPreference(student_profile);
 		if (_p0.ctor === 'Just') {
@@ -23693,13 +23812,17 @@ var _user$project$Student_View$view_student_profile_page_link = F2(
 					_elm_lang$html$Html$a,
 					{
 						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', _user$project$Config$student_profile_page),
+						_0: A2(
+							_elm_lang$html$Html_Attributes$attribute,
+							'href',
+							_user$project$Student_Profile$profileUriToString(student_profile)),
 						_1: {ctor: '[]'}
 					},
 					{
 						ctor: '::',
 						_0: _elm_lang$html$Html$text(
-							_user$project$Student_Profile$studentUserName(student_profile)),
+							_user$project$Student_Profile$studentUserNameToString(
+								_user$project$Student_Profile$studentUserName(student_profile))),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
@@ -24151,7 +24274,8 @@ var _user$project$Student_Profile_Update$update = F2(
 					var new_username_update = _elm_lang$core$Native_Utils.update(
 						username_update,
 						{
-							username: _user$project$Student_Profile$studentUserName(_p1)
+							username: _elm_lang$core$Maybe$Just(
+								_user$project$Student_Profile$studentUserName(_p1))
 						});
 					return {
 						ctor: '_Tuple2',
@@ -24176,7 +24300,10 @@ var _user$project$Student_Profile_Update$update = F2(
 				var username_update = model.username_update;
 				var new_username_update = _elm_lang$core$Native_Utils.update(
 					username_update,
-					{username: _p2});
+					{
+						username: _elm_lang$core$Maybe$Just(
+							_user$project$Student_Resource$StudentUsername(_p2))
+					});
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -24241,14 +24368,19 @@ var _user$project$Student_Profile_Update$update = F2(
 					_1: toggleResearchConsent(!model.consenting_to_research)
 				};
 			case 'SubmitUsernameUpdate':
-				var profile = A2(_user$project$Student_Profile$setUserName, model.profile, model.username_update.username);
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{profile: profile}),
-					_1: updateProfile(profile)
-				};
+				var _p7 = model.username_update.username;
+				if (_p7.ctor === 'Just') {
+					var profile = A2(_user$project$Student_Profile$setUserName, model.profile, _p7._0);
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{profile: profile}),
+						_1: updateProfile(profile)
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
 			case 'CancelUsernameUpdate':
 				return {
 					ctor: '_Tuple2',
@@ -24269,21 +24401,21 @@ var _user$project$Student_Profile_Update$update = F2(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p10 = _p0._0._0;
-					var _p7 = A2(_elm_lang$core$Debug$log, 'submitted error', _p10);
-					var _p8 = _p10;
-					switch (_p8.ctor) {
+					var _p11 = _p0._0._0;
+					var _p8 = A2(_elm_lang$core$Debug$log, 'submitted error', _p11);
+					var _p9 = _p11;
+					switch (_p9.ctor) {
 						case 'BadStatus':
-							var _p9 = A2(
+							var _p10 = A2(
 								_elm_lang$core$Json_Decode$decodeString,
 								_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
-								_p8._0.body);
-							if (_p9.ctor === 'Ok') {
+								_p9._0.body);
+							if (_p10.ctor === 'Ok') {
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
 										model,
-										{errors: _p9._0}),
+										{errors: _p10._0}),
 									_1: _elm_lang$core$Platform_Cmd$none
 								};
 							} else {
@@ -24305,21 +24437,21 @@ var _user$project$Student_Profile_Update$update = F2(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p14 = _p0._0._0;
-					var _p11 = A2(_elm_lang$core$Debug$log, 'submitted error', _p14);
-					var _p12 = _p14;
-					switch (_p12.ctor) {
+					var _p15 = _p0._0._0;
+					var _p12 = A2(_elm_lang$core$Debug$log, 'submitted error', _p15);
+					var _p13 = _p15;
+					switch (_p13.ctor) {
 						case 'BadStatus':
-							var _p13 = A2(
+							var _p14 = A2(
 								_elm_lang$core$Json_Decode$decodeString,
 								_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
-								_p12._0.body);
-							if (_p13.ctor === 'Ok') {
+								_p13._0.body);
+							if (_p14.ctor === 'Ok') {
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
 										model,
-										{errors: _p13._0}),
+										{errors: _p14._0}),
 									_1: _elm_lang$core$Platform_Cmd$none
 								};
 							} else {
@@ -24375,7 +24507,7 @@ var _user$project$Student_Profile_Update$update = F2(
 						_1: _user$project$Ports$redirect(_p0._0._0.redirect)
 					};
 				} else {
-					var _p15 = A2(_elm_lang$core$Debug$log, 'log out error', _p0._0._0);
+					var _p16 = A2(_elm_lang$core$Debug$log, 'log out error', _p0._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 		}
@@ -24444,13 +24576,17 @@ var _user$project$Student_Profile_View$view_student_profile_page_link = F2(
 					_elm_lang$html$Html$a,
 					{
 						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', _user$project$Config$student_profile_page),
+						_0: A2(
+							_elm_lang$html$Html_Attributes$attribute,
+							'href',
+							_user$project$Student_Profile$profileUriToString(model.profile)),
 						_1: {ctor: '[]'}
 					},
 					{
 						ctor: '::',
 						_0: _elm_lang$html$Html$text(
-							_user$project$Student_Profile$studentUserName(model.profile)),
+							_user$project$Student_Profile$studentUserNameToString(
+								_user$project$Student_Profile$studentUserName(model.profile))),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
@@ -24928,7 +25064,8 @@ var _user$project$Student_Profile_View$view_user_email = function (model) {
 					{
 						ctor: '::',
 						_0: _elm_lang$html$Html$text(
-							_user$project$Student_Profile$studentEmail(model.profile)),
+							_user$project$Student_Profile$studentEmailToString(
+								_user$project$Student_Profile$studentEmail(model.profile))),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
@@ -25125,7 +25262,8 @@ var _user$project$Student_Profile_View$view_username = function (model) {
 								{
 									ctor: '::',
 									_0: _elm_lang$html$Html$text(
-										_user$project$Student_Profile$studentUserName(model.profile)),
+										_user$project$Student_Profile$studentUserNameToString(
+											_user$project$Student_Profile$studentUserName(model.profile))),
 									_1: {
 										ctor: '::',
 										_0: A2(
@@ -25173,7 +25311,10 @@ var _user$project$Student_Profile_View$view_username = function (model) {
 													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Username'),
 													_1: {
 														ctor: '::',
-														_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', username),
+														_0: A2(
+															_elm_lang$html$Html_Attributes$attribute,
+															'value',
+															_user$project$Student_Profile$studentUserNameToString(username)),
 														_1: {
 															ctor: '::',
 															_0: A2(_elm_lang$html$Html_Attributes$attribute, 'maxlength', '150'),
@@ -25638,7 +25779,7 @@ var _user$project$Main$init = function (flags) {
 			performance_report: flags.performance_report,
 			consenting_to_research: flags.consenting_to_research,
 			editing: _elm_lang$core$Dict$empty,
-			username_update: {username: '', valid: _elm_lang$core$Maybe$Nothing, msg: _elm_lang$core$Maybe$Nothing},
+			username_update: {username: _elm_lang$core$Maybe$Nothing, valid: _elm_lang$core$Maybe$Nothing, msg: _elm_lang$core$Maybe$Nothing},
 			help: student_help,
 			err_str: '',
 			errors: _elm_lang$core$Dict$empty
@@ -25728,16 +25869,30 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 																		function (id) {
 																			return A2(
 																				_elm_lang$core$Json_Decode$andThen,
-																				function (logout_uri) {
+																				function (uris) {
 																					return A2(
 																						_elm_lang$core$Json_Decode$andThen,
 																						function (username) {
 																							return _elm_lang$core$Json_Decode$succeed(
-																								{difficulties: difficulties, difficulty_preference: difficulty_preference, email: email, id: id, logout_uri: logout_uri, username: username});
+																								{difficulties: difficulties, difficulty_preference: difficulty_preference, email: email, id: id, uris: uris, username: username});
 																						},
 																						A2(_elm_lang$core$Json_Decode$field, 'username', _elm_lang$core$Json_Decode$string));
 																				},
-																				A2(_elm_lang$core$Json_Decode$field, 'logout_uri', _elm_lang$core$Json_Decode$string));
+																				A2(
+																					_elm_lang$core$Json_Decode$field,
+																					'uris',
+																					A2(
+																						_elm_lang$core$Json_Decode$andThen,
+																						function (logout_uri) {
+																							return A2(
+																								_elm_lang$core$Json_Decode$andThen,
+																								function (profile_uri) {
+																									return _elm_lang$core$Json_Decode$succeed(
+																										{logout_uri: logout_uri, profile_uri: profile_uri});
+																								},
+																								A2(_elm_lang$core$Json_Decode$field, 'profile_uri', _elm_lang$core$Json_Decode$string));
+																						},
+																						A2(_elm_lang$core$Json_Decode$field, 'logout_uri', _elm_lang$core$Json_Decode$string))));
 																		},
 																		A2(
 																			_elm_lang$core$Json_Decode$field,

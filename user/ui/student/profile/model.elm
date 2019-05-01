@@ -11,7 +11,7 @@ import Student.Performance.Report
 
 import Student.Resource exposing (..)
 
-type alias UsernameUpdate = { username: String, valid: Maybe Bool, msg: Maybe String }
+type alias UsernameUpdate = { username: Maybe Student.Resource.StudentUsername, valid: Maybe Bool, msg: Maybe String }
 
 type alias StudentConsentResp = { consented : Bool }
 

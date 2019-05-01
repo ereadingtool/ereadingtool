@@ -2,8 +2,13 @@ module Student.Profile exposing (..)
 
 import Text.Model as Text
 
-import Student.Resource
+import Student.Resource exposing (..)
 
+
+type alias StudentURIParams = {
+   logout_uri : String
+ , profile_uri : String
+ }
 
 type alias StudentProfileParams = {
     id: Maybe Int
@@ -11,12 +16,19 @@ type alias StudentProfileParams = {
   , email: String
   , difficulty_preference: Maybe Text.TextDifficulty
   , difficulties: List Text.TextDifficulty
-  , logout_uri: String
+  , uris : StudentURIParams
   }
+
+type StudentURIs = StudentURIs Student.Resource.StudentLogoutURI Student.Resource.StudentProfileURI
 
 type StudentProfile =
   StudentProfile
-    (Maybe Int) String String (Maybe Text.TextDifficulty) (List Text.TextDifficulty) Student.Resource.StudentLogoutURI
+    (Maybe Int)
+    StudentUsername
+    StudentEmail
+    (Maybe Text.TextDifficulty)
+    (List Text.TextDifficulty)
+    StudentURIs
 
 
 studentDifficultyPreference : StudentProfile -> Maybe Text.TextDifficulty
@@ -26,7 +38,7 @@ setStudentDifficultyPreference : StudentProfile -> Text.TextDifficulty -> Studen
 setStudentDifficultyPreference (StudentProfile id username email _ diffs logout_uri) preference =
   StudentProfile id username email (Just preference) diffs logout_uri
 
-setUserName : StudentProfile -> String -> StudentProfile
+setUserName : StudentProfile -> StudentUsername -> StudentProfile
 setUserName (StudentProfile id _ email diff_pref diffs logout_uri) new_username =
   StudentProfile id new_username email diff_pref diffs logout_uri
 
@@ -36,21 +48,50 @@ studentID (StudentProfile id _ _ _ _ _) = id
 studentDifficulties : StudentProfile -> List Text.TextDifficulty
 studentDifficulties (StudentProfile _ _ _ _ diffs _) = diffs
 
-studentUserName : StudentProfile -> String
-studentUserName (StudentProfile _ username _ _ _ _) = username
+studentUserName : StudentProfile -> StudentUsername
+studentUserName (StudentProfile _ username _ _ _ _) =
+  username
 
-studentEmail : StudentProfile -> String
-studentEmail (StudentProfile _ _ email _ _ _) = email
+studentUserNameToString : StudentUsername -> String
+studentUserNameToString student_username =
+  Student.Resource.studentUserNameToString student_username
+
+studentEmail : StudentProfile -> StudentEmail
+studentEmail (StudentProfile _ _ email _ _ _) =
+  email
+
+studentEmailToString : StudentEmail -> String
+studentEmailToString (StudentEmail email) =
+  email
+
+uris : StudentProfile -> StudentURIs
+uris (StudentProfile _ _ _ _ _ uris) = uris
+
+logoutURI : StudentURIs -> Student.Resource.StudentLogoutURI
+logoutURI (StudentURIs logout _) =
+  logout
+
+profileURI : StudentURIs -> Student.Resource.StudentProfileURI
+profileURI (StudentURIs _ profile) =
+  profile
+
+profileUriToString : StudentProfile -> String
+profileUriToString student_profile =
+  Student.Resource.uriToString (Student.Resource.studentProfileURI (profileURI (uris student_profile)))
 
 studentLogoutURI : StudentProfile -> Student.Resource.StudentLogoutURI
-studentLogoutURI (StudentProfile _ _ _ _ _ logout_uri) = logout_uri
+studentLogoutURI student_profile =
+  logoutURI (uris student_profile)
+
 
 initProfile : StudentProfileParams -> StudentProfile
 initProfile params =
   StudentProfile
     params.id
-    params.username
-    params.email
+    (StudentUsername params.username)
+    (StudentEmail params.email)
     params.difficulty_preference
     params.difficulties
-    (Student.Resource.StudentLogoutURI (Student.Resource.URI params.logout_uri))
+    (StudentURIs
+      (Student.Resource.StudentLogoutURI (Student.Resource.URI params.uris.logout_uri))
+      (Student.Resource.StudentProfileURI (Student.Resource.URI params.uris.profile_uri)))
