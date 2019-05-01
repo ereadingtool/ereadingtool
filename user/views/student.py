@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.views.generic import TemplateView, View
 
 from text.models import TextDifficulty
-from user.forms import StudentSignUpForm, StudentLoginForm, StudentForm
+from user.forms import StudentSignUpForm, StudentLoginForm, StudentForm, StudentConsentForm
 from user.student.models import Student
 from user.views.api import APIView
 from user.views.mixin import ProfileView
@@ -160,7 +160,7 @@ class StudentAPIConsentToResearchView(LoginRequiredMixin, APIView):
     raise_exception = True
 
     def form(self, request: HttpRequest, params: dict, **kwargs) -> forms.ModelForm:
-        return StudentForm(params, **kwargs)
+        return StudentConsentForm(params, **kwargs)
 
     def put_error(self, errors: dict) -> HttpResponse:
         return HttpResponse(json.dumps(errors), status=400)

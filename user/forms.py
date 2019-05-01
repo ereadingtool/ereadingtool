@@ -168,6 +168,20 @@ class StudentLoginForm(AuthenticationForm):
     pass
 
 
+class StudentConsentForm(forms.ModelForm):
+    class Meta:
+        model = Student
+        exclude = ('user', 'research_consent', 'difficulty_preference', )
+
+    consent_to_research = forms.BooleanField(required=False)
+
+    def save(self, commit=True):
+        student = super(StudentConsentForm, self).save(commit=commit)
+
+        if 'consent_to_research' in self.cleaned_data:
+            student.consent_to_research(self.cleaned_data['consent_to_research'])
+
+
 class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
