@@ -5,7 +5,7 @@ span {
 #text-section {
     display: grid;
 
-    grid-template-columns: 20% [body-col] auto 20%;
+    grid-template-columns: 5% [body-col] auto 5%;
     grid-template-rows: 10% [body-row] auto 10%;
 
     font-family: "Lora,Palatino,Times,Times New Roman,serif";
@@ -14,6 +14,8 @@ span {
     letter-spacing: 0;
 
     padding-top: 50px;
+
+    overflow-wrap: anywhere;
 }
 
 #complete {
@@ -198,10 +200,6 @@ span {
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
     .header {
         display: flex;
-    }
-
-    #text-section {
-        grid-template-columns: 2% [body-col] auto 2%;
     }
 
     .menu {
