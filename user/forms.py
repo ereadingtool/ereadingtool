@@ -181,6 +181,8 @@ class StudentConsentForm(forms.ModelForm):
         if 'consent_to_research' in self.cleaned_data:
             student.consent_to_research(self.cleaned_data['consent_to_research'])
 
+        return student
+
 
 class StudentForm(forms.ModelForm):
     class Meta:
