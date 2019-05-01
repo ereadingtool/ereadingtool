@@ -59,7 +59,10 @@ class Student(Profile, TextReadings, models.Model):
             'difficulty_preference': [self.difficulty_preference.slug, self.difficulty_preference.name]
             if self.difficulty_preference else None,
             'difficulties': difficulties,
-            'logout_uri': reverse('api-student-logout')
+            'uris': {
+                'logout_uri': reverse('api-student-logout'),
+                'profile_uri': reverse('student-profile')
+            }
         }
 
     def to_text_summary_dict(self, text: Text) -> Dict:

@@ -31,7 +31,9 @@ view_text_date params =
           Just last_modified_by ->
             [ span [] [ Html.text
               ("Last Modified by " ++ last_modified_by ++ " on " ++ Date.Utils.month_day_year_fmt modified_dt) ]]
+
           _ -> []
+
       _ -> []) ++
         (case params.text.created_dt of
           Just created_dt ->
@@ -39,7 +41,9 @@ view_text_date params =
               Just created_by ->
                 [ span [] [ Html.text
                   ("Created by " ++ created_by ++ " on " ++ Date.Utils.month_day_year_fmt created_dt) ] ]
+
               _ -> []
+
           _ -> [])
 
 view_text_title : TextViewParams -> (TextViewParams -> TextTitle -> Html Msg) -> TextTitle -> Html Msg
@@ -143,10 +147,12 @@ view_text_lock : TextViewParams -> Html Msg
 view_text_lock params =
   case params.mode of
     EditMode -> view_edit_text_lock params
+
     ReadOnlyMode write_locker ->
-      case write_locker == Instructor.Profile.username params.profile of
+      case write_locker == Instructor.Profile.usernameToString (Instructor.Profile.username params.profile) of
         True -> view_edit_text_lock params
         _ -> div [] []
+
     _ -> div [] []
 
 view_author : TextViewParams -> (TextViewParams -> TextAuthor -> Html Msg) -> TextAuthor -> Html Msg

@@ -135,7 +135,7 @@ update msg model = case msg of
           in
             case text.write_locker of
               Just write_locker ->
-                case write_locker /= (Instructor.Profile.username model.profile) of
+                case write_locker /= Instructor.Profile.usernameToString (Instructor.Profile.username model.profile) of
                   True ->
                     ({ model |
                          text_component=text_component
