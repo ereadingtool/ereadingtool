@@ -2,8 +2,6 @@ import Html exposing (Html, div, span)
 import Html.Attributes exposing (id, class, classList, attribute)
 import Html.Events exposing (onClick, onInput)
 
-import HttpHelpers
-
 import Dict exposing (Dict)
 
 import Http
@@ -12,10 +10,11 @@ import Views
 import Flags
 
 import User.Profile
-import Instructor.Profile
 
-import Json.Encode
-import Json.Decode
+import Instructor.Invite exposing (InstructorInvite, Email)
+
+import Instructor.Resource
+import Instructor.Profile
 
 import Menu.Items
 import Menu.Msg as MenuMsg
@@ -25,41 +24,35 @@ import Ports
 
 import Http
 
-import Util exposing (is_valid_email)
-
 -- UPDATE
 type Msg =
    UpdateNewInviteEmail Email
- | SubmittedNewInvite (Result Http.Error Instructor.Profile.Invite)
+ | SubmittedNewInvite (Result Http.Error InstructorInvite)
  | SubmitNewInvite
  | LogOut MenuMsg.Msg
  | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
 
-type alias Flags = Flags.AuthedFlags { instructor_profile : Instructor.Profile.InstructorProfileParams }
+type alias Flags =
+  Flags.AuthedFlags {
+    instructor_invite_uri: String
+  , instructor_profile : Instructor.Profile.InstructorProfileParams }
 
-type alias Email = String
-
-type alias NewInviteResp = {
-   email : Email
- , invite_code : String
- }
-
-type alias NewInvite = {
-  email : Email }
 
 type alias Model = {
     flags : Flags
   , profile : Instructor.Profile.InstructorProfile
+  , instructor_invite_uri : Instructor.Resource.InstructorInviteURI
   , menu_items : Menu.Items.MenuItems
-  , new_invite : NewInvite
+  , new_invite_email : Maybe Email
   , errors : Dict String String }
 
 init : Flags -> (Model, Cmd Msg)
 init flags = ({
     flags=flags
+  , instructor_invite_uri=Instructor.Resource.flagsToInstructorURI flags
   , profile=Instructor.Profile.initProfile flags.instructor_profile
   , menu_items=Menu.Items.initMenuItems flags
-  , new_invite={email=""}
+  , new_invite_email=Nothing
   , errors=Dict.empty }, Cmd.none)
 
 subscriptions : Model -> Sub Msg
@@ -69,70 +62,48 @@ subscriptions model =
 updateNewInviteEmail : Model -> Email -> Model
 updateNewInviteEmail model email =
   let
-    new_invite = model.new_invite
-
     validated_errors =
-      (if (is_valid_email email) || (email == "") then
+      (if (Instructor.Invite.isValidEmail email) || (Instructor.Invite.isEmptyEmail email) then
         Dict.remove "invite" model.errors
-      else
+
+       else
         Dict.insert "invite" "This e-mail is invalid." model.errors)
   in
-    { model | new_invite = {new_invite | email = email}, errors = validated_errors }
-
-newInviteEncoder : NewInvite -> Json.Encode.Value
-newInviteEncoder new_invite =
-  Json.Encode.object [
-    ("email", Json.Encode.string new_invite.email)
-  ]
-
-newInviteRespDecoder : Json.Decode.Decoder Instructor.Profile.Invite
-newInviteRespDecoder =
-  Json.Decode.map3 Instructor.Profile.Invite
-    (Json.Decode.field "email" Json.Decode.string)
-    (Json.Decode.field "invite_code" Json.Decode.string)
-    (Json.Decode.field "expiration" Json.Decode.string)
-
-submitNewInvite : Model -> Cmd Msg
-submitNewInvite model =
-  case is_valid_email model.new_invite.email of
-    True ->
-      let
-        encoded_new_invite = newInviteEncoder model.new_invite
-
-        req =
-          HttpHelpers.post_with_headers
-           Instructor.Profile.inviteURI
-           [Http.header "X-CSRFToken" model.flags.csrftoken]
-           (Http.jsonBody encoded_new_invite) newInviteRespDecoder
-      in
-        Http.send SubmittedNewInvite req
-
-    False ->
-      Cmd.none
+    { model | new_invite_email = Just email, errors = validated_errors }
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-  case msg of
-    UpdateNewInviteEmail email -> let _ = Debug.log "erorrs" model.errors in
-      (updateNewInviteEmail model email, Cmd.none)
+  let
+    submitInvite =
+      Instructor.Profile.submitNewInvite model.flags.csrftoken model.instructor_invite_uri SubmittedNewInvite
+  in
+    case msg of
+      UpdateNewInviteEmail email -> let _ = Debug.log "erorrs" model.errors in
+        (updateNewInviteEmail model email, Cmd.none)
 
-    SubmitNewInvite ->
-      (model, submitNewInvite model)
+      SubmitNewInvite ->
+        (model
+        ,(case model.new_invite_email of
+            Just email ->
+              submitInvite email
 
-    SubmittedNewInvite (Ok invite) ->
-      ({ model | profile = Instructor.Profile.addInvite model.profile invite}, Cmd.none)
+            Nothing ->
+              Cmd.none))
 
-    SubmittedNewInvite (Err err) -> let _ = Debug.log "error inviting" err in
-      ({ model | errors = (Dict.insert "invite" "Something went wrong." model.errors)}, Cmd.none)
+      SubmittedNewInvite (Ok invite) ->
+        ({ model | profile = Instructor.Profile.addInvite model.profile invite}, Cmd.none)
 
-    LogOut msg ->
-      (model, Instructor.Profile.logout model.profile model.flags.csrftoken LoggedOut)
+      SubmittedNewInvite (Err err) -> let _ = Debug.log "error inviting" err in
+        ({ model | errors = (Dict.insert "invite" "Something went wrong." model.errors)}, Cmd.none)
 
-    LoggedOut (Ok logout_resp) ->
-      (model, Ports.redirect logout_resp.redirect)
+      LogOut msg ->
+        (model, Instructor.Profile.logout model.profile model.flags.csrftoken LoggedOut)
 
-    LoggedOut (Err err) ->
-      (model, Cmd.none)
+      LoggedOut (Ok logout_resp) ->
+        (model, Ports.redirect logout_resp.redirect)
+
+      LoggedOut (Err err) ->
+        (model, Cmd.none)
 
 main : Program Flags Model Msg
 main =
@@ -150,7 +121,7 @@ view_tags tags =
 view_text : Instructor.Profile.InstructorProfile -> Instructor.Profile.Text -> Html Msg
 view_text instructor_profile text =
   let
-    instructor_username = Instructor.Profile.username instructor_profile
+    instructor_username = Instructor.Profile.usernameToString (Instructor.Profile.username instructor_profile)
   in
     div [class "text"] [
       div [class "text_label"] [ Html.text "Title" ]
@@ -167,6 +138,7 @@ view_text instructor_profile text =
       (case text.created_by == instructor_username of
          True ->
            div [] [ Html.text "Created by you"]
+
          False ->
            div [] [ Html.text "Last modified by you on ", div [] [ Html.text text.modified_dt ] ])
       ]
@@ -177,15 +149,15 @@ view_text instructor_profile text =
     , div [] []
     ]
 
-view_instructor_invite : Instructor.Profile.Invite -> Html Msg
+view_instructor_invite : InstructorInvite -> Html Msg
 view_instructor_invite invite =
   div [class "invite"] [
     div [class "label"] [ Html.text "Email: " ]
-  , div [class "value"] [ Html.text invite.email ]
+  , div [class "value"] [ Html.text (Instructor.Invite.emailToString (Instructor.Invite.email invite)) ]
   , div [class "label"] [ Html.text "Invite Code: " ]
-  , div [class "value"] [ Html.text invite.invite_code ]
+  , div [class "value"] [ Html.text (Instructor.Invite.codeToString (Instructor.Invite.inviteCode invite)) ]
   , div [class "label"] [ Html.text "Expiration: " ]
-  , div [class "value"] [ Html.text invite.expiration ]
+  , div [class "value"] [ Html.text (Instructor.Invite.expirationToString (Instructor.Invite.inviteExpiration invite)) ]
   ]
 
 view_instructor_invite_create : Model -> Html Msg
@@ -206,7 +178,7 @@ view_instructor_invite_create model =
       div [id "input"] <| [
         Html.input
           ([attribute "size" "25"
-          , onInput UpdateNewInviteEmail
+          , onInput (Instructor.Invite.Email >> UpdateNewInviteEmail)
           , attribute "placeholder" "Invite an instructor"] ++ (error_attrs)) []
       ] ++ (if has_error then [error_msg] else [])
     , div [id "submit"] [
@@ -240,7 +212,9 @@ view_content model =
     div [classList [("profile_items", True)] ] <| [
       div [class "profile_item"] [
         span [class "profile_item_title"] [ Html.text "Username" ]
-      , span [class "profile_item_value"] [ Html.text (Instructor.Profile.username model.profile) ]
+      , span [class "profile_item_value"] [
+          Html.text (Instructor.Profile.usernameToString (Instructor.Profile.username model.profile))
+        ]
       ]
     , div [class "profile_item"] [
         span [class "profile_item_title"] [ Html.text "Texts" ]

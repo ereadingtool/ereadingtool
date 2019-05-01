@@ -1,7 +1,8 @@
 from django.urls import path
 from user.views.instructor import (InstructorSignupAPIView, InstructorLoginAPIView, InstructorLogoutAPIView,
                                    InstructorSignUpView, InstructorLoginView, InstructorProfileView,
-                                   InstructorInviteAPIView, ElmLoadJsInstructorView, ElmLoadJsInstructorNoAuthView)
+                                   InstructorInviteAPIView, ElmLoadJsInstructorProfileView,
+                                   ElmLoadJsInstructorNoAuthView)
 
 
 api_urlpatterns = [
@@ -12,7 +13,9 @@ api_urlpatterns = [
 ]
 
 elm_load_urlpatterns = [
-    path('load_elm.js', ElmLoadJsInstructorView.as_view(), name='load-elm-instructor'),
+    path('load_instructor_profile_elm.js', ElmLoadJsInstructorProfileView.as_view(),
+         name='load-elm-instructor-profile'),
+
     path('load_elm_unauth_instructor.js', ElmLoadJsInstructorNoAuthView.as_view(), name='load-elm-unauth-instructor'),
 ]
 

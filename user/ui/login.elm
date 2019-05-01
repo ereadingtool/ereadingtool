@@ -13,7 +13,7 @@ import Navigation
 
 import Dict exposing (Dict)
 
-import Util exposing (is_valid_email)
+import Util exposing (isValidEmail)
 
 import Json.Encode as Encode
 import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
@@ -182,7 +182,7 @@ update msg model =
       in
         ({ model | login_params = { login_params | username = addr }
          , errors =
-             (if (is_valid_email addr) || (addr == "") then
+             (if (isValidEmail addr) || (addr == "") then
                Dict.remove "email" model.errors
               else
                Dict.insert "email" "This e-mail is invalid" model.errors)

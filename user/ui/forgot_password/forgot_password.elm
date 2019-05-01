@@ -10,7 +10,7 @@ import Json.Decode as Decode
 
 import Dict exposing (Dict)
 
-import Util exposing (is_valid_email)
+import Util exposing (isValidEmail)
 
 import Json.Encode as Encode
 
@@ -73,7 +73,7 @@ update msg model =
       ({ model | user_email = ForgotPassword.UserEmail addr
        , resp = ForgotPassword.emptyForgotPassResp
        , errors =
-           (if (is_valid_email addr) || (addr == "") then
+           (if (isValidEmail addr) || (addr == "") then
              Dict.remove "email" model.errors
             else
               Dict.insert "email" "This e-mail is invalid" model.errors)

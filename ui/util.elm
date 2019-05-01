@@ -13,8 +13,8 @@ import Html.Events
 valid_email_regex : Regex.Regex
 valid_email_regex = Regex.regex "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$" |> Regex.caseInsensitive
 
-is_valid_email : String -> Bool
-is_valid_email addr = Regex.contains valid_email_regex addr
+isValidEmail : String -> Bool
+isValidEmail addr = Regex.contains valid_email_regex addr
 
 stringTupleDecoder : Json.Decode.Decoder ( String, String )
 stringTupleDecoder =

@@ -16,15 +16,15 @@ from user.instructor.models import Instructor
 from user.views.api import APIView
 from user.views.mixin import ProfileView
 
-from mixins.view import ElmLoadJsBaseView, NoAuthElmLoadJsView
+from mixins.view import ElmLoadJsBaseView, NoAuthElmLoadJsView, ElmLoadJsInstructorBaseView
 
 
 Form = TypeVar('Form', bound=forms.Form)
 
 
-class ElmLoadJsInstructorView(LoginRequiredMixin, ElmLoadJsBaseView):
+class ElmLoadJsInstructorProfileView(ElmLoadJsInstructorBaseView):
     def get_context_data(self, **kwargs) -> Dict:
-        context = super(ElmLoadJsInstructorView, self).get_context_data(**kwargs)
+        context = super(ElmLoadJsInstructorProfileView, self).get_context_data(**kwargs)
 
         profile = None
 
@@ -33,7 +33,11 @@ class ElmLoadJsInstructorView(LoginRequiredMixin, ElmLoadJsBaseView):
         except Instructor.DoesNotExist:
             pass
 
-        context['elm']['instructor_profile'] = {'quote': False, 'safe': True, 'value': profile or 'null'}
+        context['elm']['instructor_profile'] = {'quote': False, 'safe': True,
+                                                'value': json.dumps(profile.to_dict()) or 'null'}
+
+        context['elm']['instructor_invite_uri'] = {'quote': True, 'safe': True,
+                                                   'value': reverse('api-instructor-invite')}
 
         return context
 

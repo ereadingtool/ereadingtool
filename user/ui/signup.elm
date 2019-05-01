@@ -5,7 +5,7 @@ import Html.Attributes exposing (classList, class, attribute)
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
 
 import Dict exposing (Dict)
-import Util exposing (is_valid_email)
+import Util exposing (isValidEmail)
 import Views
 
 import Menu.Msg as MenuMsg
@@ -40,7 +40,7 @@ update_email model addr =
   in
     { model | signup_params = { signup_params | email = addr }
     , errors =
-        (if (is_valid_email addr) || (addr == "") then
+        (if (isValidEmail addr) || (addr == "") then
           Dict.remove "email" model.errors
         else
           Dict.insert "email" "This e-mail is invalid" model.errors) }

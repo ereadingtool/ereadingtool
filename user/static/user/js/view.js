@@ -3168,6 +3168,143 @@ var _elm_lang$core$Platform$Task = {ctor: 'Task'};
 var _elm_lang$core$Platform$ProcessId = {ctor: 'ProcessId'};
 var _elm_lang$core$Platform$Router = {ctor: 'Router'};
 
+//import Maybe, Native.List //
+
+var _elm_lang$core$Native_Regex = function() {
+
+function escape(str)
+{
+	return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+}
+function caseInsensitive(re)
+{
+	return new RegExp(re.source, 'gi');
+}
+function regex(raw)
+{
+	return new RegExp(raw, 'g');
+}
+
+function contains(re, string)
+{
+	return string.match(re) !== null;
+}
+
+function find(n, re, str)
+{
+	n = n.ctor === 'All' ? Infinity : n._0;
+	var out = [];
+	var number = 0;
+	var string = str;
+	var lastIndex = re.lastIndex;
+	var prevLastIndex = -1;
+	var result;
+	while (number++ < n && (result = re.exec(string)))
+	{
+		if (prevLastIndex === re.lastIndex) break;
+		var i = result.length - 1;
+		var subs = new Array(i);
+		while (i > 0)
+		{
+			var submatch = result[i];
+			subs[--i] = submatch === undefined
+				? _elm_lang$core$Maybe$Nothing
+				: _elm_lang$core$Maybe$Just(submatch);
+		}
+		out.push({
+			match: result[0],
+			submatches: _elm_lang$core$Native_List.fromArray(subs),
+			index: result.index,
+			number: number
+		});
+		prevLastIndex = re.lastIndex;
+	}
+	re.lastIndex = lastIndex;
+	return _elm_lang$core$Native_List.fromArray(out);
+}
+
+function replace(n, re, replacer, string)
+{
+	n = n.ctor === 'All' ? Infinity : n._0;
+	var count = 0;
+	function jsReplacer(match)
+	{
+		if (count++ >= n)
+		{
+			return match;
+		}
+		var i = arguments.length - 3;
+		var submatches = new Array(i);
+		while (i > 0)
+		{
+			var submatch = arguments[i];
+			submatches[--i] = submatch === undefined
+				? _elm_lang$core$Maybe$Nothing
+				: _elm_lang$core$Maybe$Just(submatch);
+		}
+		return replacer({
+			match: match,
+			submatches: _elm_lang$core$Native_List.fromArray(submatches),
+			index: arguments[arguments.length - 2],
+			number: count
+		});
+	}
+	return string.replace(re, jsReplacer);
+}
+
+function split(n, re, str)
+{
+	n = n.ctor === 'All' ? Infinity : n._0;
+	if (n === Infinity)
+	{
+		return _elm_lang$core$Native_List.fromArray(str.split(re));
+	}
+	var string = str;
+	var result;
+	var out = [];
+	var start = re.lastIndex;
+	var restoreLastIndex = re.lastIndex;
+	while (n--)
+	{
+		if (!(result = re.exec(string))) break;
+		out.push(string.slice(start, result.index));
+		start = re.lastIndex;
+	}
+	out.push(string.slice(start));
+	re.lastIndex = restoreLastIndex;
+	return _elm_lang$core$Native_List.fromArray(out);
+}
+
+return {
+	regex: regex,
+	caseInsensitive: caseInsensitive,
+	escape: escape,
+
+	contains: F2(contains),
+	find: F3(find),
+	replace: F4(replace),
+	split: F3(split)
+};
+
+}();
+
+var _elm_lang$core$Regex$split = _elm_lang$core$Native_Regex.split;
+var _elm_lang$core$Regex$replace = _elm_lang$core$Native_Regex.replace;
+var _elm_lang$core$Regex$find = _elm_lang$core$Native_Regex.find;
+var _elm_lang$core$Regex$contains = _elm_lang$core$Native_Regex.contains;
+var _elm_lang$core$Regex$caseInsensitive = _elm_lang$core$Native_Regex.caseInsensitive;
+var _elm_lang$core$Regex$regex = _elm_lang$core$Native_Regex.regex;
+var _elm_lang$core$Regex$escape = _elm_lang$core$Native_Regex.escape;
+var _elm_lang$core$Regex$Match = F4(
+	function (a, b, c, d) {
+		return {match: a, submatches: b, index: c, number: d};
+	});
+var _elm_lang$core$Regex$Regex = {ctor: 'Regex'};
+var _elm_lang$core$Regex$AtMost = function (a) {
+	return {ctor: 'AtMost', _0: a};
+};
+var _elm_lang$core$Regex$All = {ctor: 'All'};
+
 //import Native.List //
 
 var _elm_lang$core$Native_Array = function() {
@@ -9353,24 +9490,6 @@ var _user$project$Answer_Model$Answer = F6(
 		return {id: a, question_id: b, text: c, correct: d, order: e, feedback: f};
 	});
 
-var _user$project$Config$answer_feedback_limit = 2048;
-var _user$project$Config$text_page = function (text_id) {
-	return A2(
-		_elm_lang$core$Basics_ops['++'],
-		'/text/',
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			_elm_lang$core$Basics$toString(text_id),
-			'/'));
-};
-var _user$project$Config$instructor_invite_uri = '/api/instructor/invite/';
-var _user$project$Config$instructor_profile_page = '/profile/instructor/';
-var _user$project$Config$student_profile_page = '/profile/student/';
-var _user$project$Config$question_api_endpoint = '/api/question/';
-var _user$project$Config$text_section_api_endpoint = '/api/section/';
-var _user$project$Config$text_translation_api_match_endpoint = '/api/text/translations/match/';
-var _user$project$Config$text_api_endpoint = '/api/text/';
-
 var _user$project$Menu$linkTextToString = function (_p0) {
 	var _p1 = _p0;
 	return _p1._0;
@@ -9542,30 +9661,158 @@ var _user$project$HttpHelpers$put_with_headers = F4(
 			});
 	});
 
-var _user$project$Profile$profileIDtoString = function (_p0) {
+var _user$project$Util$onEnterUp = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'keyup',
+		A2(
+			_elm_lang$core$Json_Decode$andThen,
+			function (key) {
+				return _elm_lang$core$Native_Utils.eq(key, 13) ? _elm_lang$core$Json_Decode$succeed(msg) : _elm_lang$core$Json_Decode$fail('not enter key');
+			},
+			_elm_lang$html$Html_Events$keyCode));
+};
+var _user$project$Util$intTupleDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	F2(
+		function (v0, v1) {
+			return {ctor: '_Tuple2', _0: v0, _1: v1};
+		}),
+	A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$int),
+	A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$int));
+var _user$project$Util$stringTupleDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	F2(
+		function (v0, v1) {
+			return {ctor: '_Tuple2', _0: v0, _1: v1};
+		}),
+	A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
+var _user$project$Util$valid_email_regex = _elm_lang$core$Regex$caseInsensitive(
+	_elm_lang$core$Regex$regex('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$'));
+var _user$project$Util$isValidEmail = function (addr) {
+	return A2(_elm_lang$core$Regex$contains, _user$project$Util$valid_email_regex, addr);
+};
+
+var _user$project$Instructor_Invite$emailToString = function (_p0) {
 	var _p1 = _p0;
-	return _elm_lang$core$Basics$toString(_p1._0);
+	return _p1._0;
 };
-var _user$project$Profile$ProfileID = function (a) {
-	return {ctor: 'ProfileID', _0: a};
+var _user$project$Instructor_Invite$isValidEmail = function (email) {
+	return _user$project$Util$isValidEmail(
+		_user$project$Instructor_Invite$emailToString(email));
 };
-var _user$project$Profile$ProfileType = function (a) {
-	return {ctor: 'ProfileType', _0: a};
+var _user$project$Instructor_Invite$isEmptyEmail = function (email) {
+	return _elm_lang$core$Native_Utils.eq(
+		_user$project$Instructor_Invite$emailToString(email),
+		'');
+};
+var _user$project$Instructor_Invite$codeToString = function (_p2) {
+	var _p3 = _p2;
+	return _p3._0;
+};
+var _user$project$Instructor_Invite$expirationToString = function (_p4) {
+	var _p5 = _p4;
+	return _p5._0;
+};
+var _user$project$Instructor_Invite$email = function (_p6) {
+	var _p7 = _p6;
+	return _p7._0;
+};
+var _user$project$Instructor_Invite$inviteCode = function (_p8) {
+	var _p9 = _p8;
+	return _p9._1;
+};
+var _user$project$Instructor_Invite$inviteExpiration = function (_p10) {
+	var _p11 = _p10;
+	return _p11._2;
+};
+var _user$project$Instructor_Invite$InviteParams = F3(
+	function (a, b, c) {
+		return {email: a, invite_code: b, expiration: c};
+	});
+var _user$project$Instructor_Invite$Email = function (a) {
+	return {ctor: 'Email', _0: a};
+};
+var _user$project$Instructor_Invite$InviteCode = function (a) {
+	return {ctor: 'InviteCode', _0: a};
+};
+var _user$project$Instructor_Invite$InviteExpiration = function (a) {
+	return {ctor: 'InviteExpiration', _0: a};
+};
+var _user$project$Instructor_Invite$InstructorInvite = F3(
+	function (a, b, c) {
+		return {ctor: 'InstructorInvite', _0: a, _1: b, _2: c};
+	});
+var _user$project$Instructor_Invite$new = function (params) {
+	return A3(
+		_user$project$Instructor_Invite$InstructorInvite,
+		_user$project$Instructor_Invite$Email(params.email),
+		_user$project$Instructor_Invite$InviteCode(params.invite_code),
+		_user$project$Instructor_Invite$InviteExpiration(params.expiration));
+};
+
+var _user$project$Instructor_Invite_Decode$newInviteRespDecoder = A4(
+	_elm_lang$core$Json_Decode$map3,
+	_user$project$Instructor_Invite$InstructorInvite,
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'email',
+		A2(_elm_lang$core$Json_Decode$map, _user$project$Instructor_Invite$Email, _elm_lang$core$Json_Decode$string)),
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'invite_code',
+		A2(_elm_lang$core$Json_Decode$map, _user$project$Instructor_Invite$InviteCode, _elm_lang$core$Json_Decode$string)),
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'expiration',
+		A2(_elm_lang$core$Json_Decode$map, _user$project$Instructor_Invite$InviteExpiration, _elm_lang$core$Json_Decode$string)));
+
+var _user$project$Instructor_Invite_Encode$newInviteEncoder = function (email) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'email',
+				_1: _elm_lang$core$Json_Encode$string(
+					_user$project$Instructor_Invite$emailToString(email))
+			},
+			_1: {ctor: '[]'}
+		});
 };
 
 var _user$project$Instructor_Resource$uriToString = function (_p0) {
 	var _p1 = _p0;
 	return _p1._0;
 };
-var _user$project$Instructor_Resource$instructorLogoutURI = function (_p2) {
+var _user$project$Instructor_Resource$instructorInviteURI = function (_p2) {
 	var _p3 = _p2;
 	return _p3._0;
+};
+var _user$project$Instructor_Resource$instructorLogoutURI = function (_p4) {
+	var _p5 = _p4;
+	return _p5._0;
+};
+var _user$project$Instructor_Resource$instructorProfileURI = function (_p6) {
+	var _p7 = _p6;
+	return _p7._0;
 };
 var _user$project$Instructor_Resource$URI = function (a) {
 	return {ctor: 'URI', _0: a};
 };
+var _user$project$Instructor_Resource$InstructorProfileURI = function (a) {
+	return {ctor: 'InstructorProfileURI', _0: a};
+};
 var _user$project$Instructor_Resource$InstructorLogoutURI = function (a) {
 	return {ctor: 'InstructorLogoutURI', _0: a};
+};
+var _user$project$Instructor_Resource$InstructorInviteURI = function (a) {
+	return {ctor: 'InstructorInviteURI', _0: a};
+};
+var _user$project$Instructor_Resource$flagsToInstructorURI = function (flags) {
+	return _user$project$Instructor_Resource$InstructorInviteURI(
+		_user$project$Instructor_Resource$URI(flags.instructor_invite_uri));
 };
 
 var _user$project$Menu_Logout$LogOutResp = function (a) {
@@ -9577,14 +9824,72 @@ var _user$project$Menu_Logout$logoutRespDecoder = A3(
 	_elm_lang$core$Json_Decode$string,
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Menu_Logout$LogOutResp));
 
-var _user$project$Instructor_Profile$attrs = function (_p0) {
-	var _p1 = _p0;
-	return _p1._0;
+var _user$project$Instructor_Profile$submitNewInvite = F4(
+	function (csrftoken, instructor_invite_uri, msg, email) {
+		var _p0 = _user$project$Instructor_Invite$isValidEmail(email);
+		if (_p0 === true) {
+			var encoded_new_invite = _user$project$Instructor_Invite_Encode$newInviteEncoder(email);
+			var req = A4(
+				_user$project$HttpHelpers$post_with_headers,
+				_user$project$Instructor_Resource$uriToString(
+					_user$project$Instructor_Resource$instructorInviteURI(instructor_invite_uri)),
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
+					_1: {ctor: '[]'}
+				},
+				_elm_lang$http$Http$jsonBody(encoded_new_invite),
+				_user$project$Instructor_Invite_Decode$newInviteRespDecoder);
+			return A2(_elm_lang$http$Http$send, msg, req);
+		} else {
+			return _elm_lang$core$Platform_Cmd$none;
+		}
+	});
+var _user$project$Instructor_Profile$texts = function (_p1) {
+	var _p2 = _p1;
+	return _p2._1;
+};
+var _user$project$Instructor_Profile$uris = function (_p3) {
+	var _p4 = _p3;
+	return _p4._4;
+};
+var _user$project$Instructor_Profile$usernameToString = function (_p5) {
+	var _p6 = _p5;
+	return _p6._0;
+};
+var _user$project$Instructor_Profile$username = function (_p7) {
+	var _p8 = _p7;
+	return _p8._3;
+};
+var _user$project$Instructor_Profile$invites = function (_p9) {
+	var _p10 = _p9;
+	return _p10._2;
+};
+var _user$project$Instructor_Profile$urisToProfileUri = function (_p11) {
+	var _p12 = _p11;
+	return _p12._1;
+};
+var _user$project$Instructor_Profile$profileUri = function (instructor_profile) {
+	return _user$project$Instructor_Profile$urisToProfileUri(
+		_user$project$Instructor_Profile$uris(instructor_profile));
+};
+var _user$project$Instructor_Profile$profileUriToString = function (instructor_profile) {
+	return _user$project$Instructor_Resource$uriToString(
+		_user$project$Instructor_Resource$instructorProfileURI(
+			_user$project$Instructor_Profile$profileUri(instructor_profile)));
+};
+var _user$project$Instructor_Profile$urisToLogoutUri = function (_p13) {
+	var _p14 = _p13;
+	return _p14._0;
 };
 var _user$project$Instructor_Profile$logoutUri = function (instructor_profile) {
-	return _user$project$Instructor_Resource$InstructorLogoutURI(
-		_user$project$Instructor_Resource$URI(
-			_user$project$Instructor_Profile$attrs(instructor_profile).logout_uri));
+	return _user$project$Instructor_Profile$urisToLogoutUri(
+		_user$project$Instructor_Profile$uris(instructor_profile));
+};
+var _user$project$Instructor_Profile$logoutUriToString = function (instructor_profile) {
+	return _user$project$Instructor_Resource$uriToString(
+		_user$project$Instructor_Resource$instructorLogoutURI(
+			_user$project$Instructor_Profile$logoutUri(instructor_profile)));
 };
 var _user$project$Instructor_Profile$logout = F3(
 	function (instructor_profile, csrftoken, logout_msg) {
@@ -9602,16 +9907,6 @@ var _user$project$Instructor_Profile$logout = F3(
 			_user$project$Menu_Logout$logoutRespDecoder);
 		return A2(_elm_lang$http$Http$send, logout_msg, request);
 	});
-var _user$project$Instructor_Profile$texts = function (instructor_profile) {
-	return _user$project$Instructor_Profile$attrs(instructor_profile).texts;
-};
-var _user$project$Instructor_Profile$username = function (instructor_profile) {
-	return _user$project$Instructor_Profile$attrs(instructor_profile).username;
-};
-var _user$project$Instructor_Profile$invites = function (instructor_profile) {
-	return _user$project$Instructor_Profile$attrs(instructor_profile).invites;
-};
-var _user$project$Instructor_Profile$inviteURI = _user$project$Config$instructor_invite_uri;
 var _user$project$Instructor_Profile$Text = function (a) {
 	return function (b) {
 		return function (c) {
@@ -9645,29 +9940,60 @@ var _user$project$Instructor_Profile$Text = function (a) {
 		};
 	};
 };
-var _user$project$Instructor_Profile$Invite = F3(
-	function (a, b, c) {
-		return {email: a, invite_code: b, expiration: c};
+var _user$project$Instructor_Profile$InstructorURIParams = F2(
+	function (a, b) {
+		return {logout_uri: a, profile_uri: b};
 	});
 var _user$project$Instructor_Profile$InstructorProfileParams = F5(
 	function (a, b, c, d, e) {
-		return {id: a, texts: b, invites: c, username: d, logout_uri: e};
+		return {id: a, texts: b, invites: c, username: d, uris: e};
 	});
-var _user$project$Instructor_Profile$InstructorProfile = function (a) {
-	return {ctor: 'InstructorProfile', _0: a};
+var _user$project$Instructor_Profile$InstructorUsername = function (a) {
+	return {ctor: 'InstructorUsername', _0: a};
 };
+var _user$project$Instructor_Profile$InstructorProfileURIs = F2(
+	function (a, b) {
+		return {ctor: 'InstructorProfileURIs', _0: a, _1: b};
+	});
+var _user$project$Instructor_Profile$initProfileURIs = function (params) {
+	return A2(
+		_user$project$Instructor_Profile$InstructorProfileURIs,
+		_user$project$Instructor_Resource$InstructorLogoutURI(
+			_user$project$Instructor_Resource$URI(params.logout_uri)),
+		_user$project$Instructor_Resource$InstructorProfileURI(
+			_user$project$Instructor_Resource$URI(params.profile_uri)));
+};
+var _user$project$Instructor_Profile$InstructorProfile = F5(
+	function (a, b, c, d, e) {
+		return {ctor: 'InstructorProfile', _0: a, _1: b, _2: c, _3: d, _4: e};
+	});
 var _user$project$Instructor_Profile$initProfile = function (params) {
-	return _user$project$Instructor_Profile$InstructorProfile(params);
+	return A5(
+		_user$project$Instructor_Profile$InstructorProfile,
+		params.id,
+		params.texts,
+		function () {
+			var _p15 = params.invites;
+			if (_p15.ctor === 'Just') {
+				return _elm_lang$core$Maybe$Just(
+					A2(_elm_lang$core$List$map, _user$project$Instructor_Invite$new, _p15._0));
+			} else {
+				return _elm_lang$core$Maybe$Nothing;
+			}
+		}(),
+		_user$project$Instructor_Profile$InstructorUsername(params.username),
+		_user$project$Instructor_Profile$initProfileURIs(params.uris));
 };
 var _user$project$Instructor_Profile$addInvite = F2(
-	function (instructor_profile, invite) {
+	function (_p16, invite) {
+		var _p17 = _p16;
 		var new_invites = function () {
-			var _p2 = _user$project$Instructor_Profile$invites(instructor_profile);
-			if (_p2.ctor === 'Just') {
+			var _p18 = _p17._2;
+			if (_p18.ctor === 'Just') {
 				return _elm_lang$core$Maybe$Just(
 					A2(
 						_elm_lang$core$Basics_ops['++'],
-						_p2._0,
+						_p18._0,
 						{
 							ctor: '::',
 							_0: invite,
@@ -9677,11 +10003,7 @@ var _user$project$Instructor_Profile$addInvite = F2(
 				return _elm_lang$core$Maybe$Nothing;
 			}
 		}();
-		var new_attrs = _user$project$Instructor_Profile$attrs(instructor_profile);
-		return _user$project$Instructor_Profile$InstructorProfile(
-			_elm_lang$core$Native_Utils.update(
-				new_attrs,
-				{invites: new_invites}));
+		return A5(_user$project$Instructor_Profile$InstructorProfile, _p17._0, _p17._1, new_invites, _p17._3, _p17._4);
 	});
 
 var _user$project$Question_Model$new_question = function (i) {
@@ -9862,6 +10184,17 @@ var _user$project$Text_Model$TextListItem = function (a) {
 	};
 };
 
+var _user$project$Profile$profileIDtoString = function (_p0) {
+	var _p1 = _p0;
+	return _elm_lang$core$Basics$toString(_p1._0);
+};
+var _user$project$Profile$ProfileID = function (a) {
+	return {ctor: 'ProfileID', _0: a};
+};
+var _user$project$Profile$ProfileType = function (a) {
+	return {ctor: 'ProfileType', _0: a};
+};
+
 var _user$project$Student_Resource$uriToString = function (_p0) {
 	var _p1 = _p0;
 	return _p1._0;
@@ -9989,124 +10322,115 @@ var _user$project$Menu_Msg$InstructorLogout = function (a) {
 	return {ctor: 'InstructorLogout', _0: a};
 };
 
-var _user$project$Student_View$view_profile_dropdown_menu = F3(
-	function (student_profile, top_level_msg, items) {
+var _user$project$Instructor_View$view_instructor_profile_link = F2(
+	function (instructor_profile, top_level_msg) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$id('profile-link'),
+				_0: _elm_lang$html$Html_Attributes$class('profile_dropdown_menu'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$a,
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html_Attributes$attribute,
+									'href',
+									_user$project$Instructor_Profile$profileUriToString(instructor_profile)),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(
+									_user$project$Instructor_Profile$usernameToString(
+										_user$project$Instructor_Profile$username(instructor_profile))),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$classList(
+					_0: A2(
+						_elm_lang$html$Html$div,
 						{
 							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
+							_0: _elm_lang$html$Html_Attributes$classList(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'profile_dropdown_menu_overlay', _1: true},
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('profile_dropdown_menu_item'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onClick(
+											top_level_msg(
+												_user$project$Menu_Msg$InstructorLogout(instructor_profile))),
+										_1: {ctor: '[]'}
+									}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('Logout'),
+									_1: {ctor: '[]'}
+								}),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}
 				}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('profile_dropdown_menu'),
-						_1: {ctor: '[]'}
-					},
-					items),
-				_1: {ctor: '[]'}
 			});
 	});
-var _user$project$Student_View$view_student_profile_logout_link = F2(
-	function (student_profile, top_level_menu_msg) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$classList(
-					{
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'profile_dropdown_menu_overlay', _1: true},
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('profile_dropdown_menu_item'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onClick(
-								top_level_menu_msg(
-									_user$project$Menu_Msg$StudentLogout(student_profile))),
-							_1: {ctor: '[]'}
-						}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('Logout'),
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			});
-	});
-var _user$project$Student_View$view_student_profile_page_link = F2(
-	function (student_profile, top_level_menu_msg) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$a,
-					{
-						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', _user$project$Config$student_profile_page),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text(
-							_user$project$Student_Profile$studentUserName(student_profile)),
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			});
-	});
-var _user$project$Student_View$view_profile_link = F2(
-	function (student_profile, top_level_msg) {
-		var items = {
-			ctor: '::',
-			_0: A2(_user$project$Student_View$view_student_profile_page_link, student_profile, top_level_msg),
-			_1: {
-				ctor: '::',
-				_0: A2(_user$project$Student_View$view_student_profile_logout_link, student_profile, top_level_msg),
-				_1: {ctor: '[]'}
-			}
-		};
-		return A3(_user$project$Student_View$view_profile_dropdown_menu, student_profile, top_level_msg, items);
-	});
-var _user$project$Student_View$view_student_profile_header = F2(
-	function (student_profile, top_level_menu_msg) {
+var _user$project$Instructor_View$view_instructor_profile_header = F2(
+	function (instructor_profile, top_level_msg) {
 		return {
 			ctor: '::',
-			_0: A2(_user$project$Student_View$view_profile_link, student_profile, top_level_menu_msg),
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$id('profile-link'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$classList(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'menu_item', _1: true},
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				},
+				{
+					ctor: '::',
+					_0: A2(_user$project$Instructor_View$view_instructor_profile_link, instructor_profile, top_level_msg),
+					_1: {ctor: '[]'}
+				}),
 			_1: {ctor: '[]'}
 		};
 	});
 
 var Elm = {};
-Elm['Student'] = Elm['Student'] || {};
-Elm['Student']['View'] = Elm['Student']['View'] || {};
-if (typeof _user$project$Student_View$main !== 'undefined') {
-    _user$project$Student_View$main(Elm['Student']['View'], 'Student.View', undefined);
+Elm['Instructor'] = Elm['Instructor'] || {};
+Elm['Instructor']['View'] = Elm['Instructor']['View'] || {};
+if (typeof _user$project$Instructor_View$main !== 'undefined') {
+    _user$project$Instructor_View$main(Elm['Instructor']['View'], 'Instructor.View', undefined);
 }
 
 if (typeof define === "function" && define['amd'])
