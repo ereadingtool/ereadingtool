@@ -10,11 +10,21 @@ import Menu.Msg exposing (Msg(..))
 
 view_student_profile_page_link : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> Html msg
 view_student_profile_page_link student_profile top_level_menu_msg =
-  div [] [
-    Html.a [attribute "href" (Student.Profile.profileUriToString student_profile)] [
-      Html.text (Student.Profile.studentUserNameToString (Student.Profile.studentUserName student_profile))
+  let
+    display_name =
+      (case Student.Profile.studentUserName student_profile of
+         Just username ->
+           Student.Profile.studentUserNameToString username
+
+         Nothing ->
+           Student.Profile.studentEmailToString (Student.Profile.studentEmail student_profile)
+      )
+  in
+    div [] [
+      Html.a [attribute "href" (Student.Profile.profileUriToString student_profile)] [
+        Html.text display_name
+      ]
     ]
-  ]
 
 view_student_profile_logout_link : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> Html msg
 view_student_profile_logout_link student_profile top_level_menu_msg =

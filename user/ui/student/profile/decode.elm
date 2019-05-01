@@ -64,7 +64,7 @@ studentProfileParamsDecoder : Json.Decode.Decoder StudentProfileParams
 studentProfileParamsDecoder =
   decode StudentProfileParams
     |> required "id" (Json.Decode.nullable Json.Decode.int)
-    |> required "username" Json.Decode.string
+    |> required "username" (Json.Decode.nullable Json.Decode.string)
     |> required "email" Json.Decode.string
     |> required "difficulty_preference" (Json.Decode.nullable stringTupleDecoder)
     |> required "difficulties" (Json.Decode.list stringTupleDecoder)

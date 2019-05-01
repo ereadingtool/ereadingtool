@@ -12,7 +12,7 @@ type alias StudentURIParams = {
 
 type alias StudentProfileParams = {
     id: Maybe Int
-  , username: String
+  , username: Maybe String
   , email: String
   , difficulty_preference: Maybe Text.TextDifficulty
   , difficulties: List Text.TextDifficulty
@@ -24,7 +24,7 @@ type StudentURIs = StudentURIs Student.Resource.StudentLogoutURI Student.Resourc
 type StudentProfile =
   StudentProfile
     (Maybe Int)
-    StudentUsername
+    (Maybe StudentUsername)
     StudentEmail
     (Maybe Text.TextDifficulty)
     (List Text.TextDifficulty)
@@ -40,7 +40,7 @@ setStudentDifficultyPreference (StudentProfile id username email _ diffs logout_
 
 setUserName : StudentProfile -> StudentUsername -> StudentProfile
 setUserName (StudentProfile id _ email diff_pref diffs logout_uri) new_username =
-  StudentProfile id new_username email diff_pref diffs logout_uri
+  StudentProfile id (Just new_username) email diff_pref diffs logout_uri
 
 studentID : StudentProfile -> Maybe Int
 studentID (StudentProfile id _ _ _ _ _) = id
@@ -48,7 +48,7 @@ studentID (StudentProfile id _ _ _ _ _) = id
 studentDifficulties : StudentProfile -> List Text.TextDifficulty
 studentDifficulties (StudentProfile _ _ _ _ diffs _) = diffs
 
-studentUserName : StudentProfile -> StudentUsername
+studentUserName : StudentProfile -> Maybe StudentUsername
 studentUserName (StudentProfile _ username _ _ _ _) =
   username
 
@@ -83,12 +83,20 @@ studentLogoutURI : StudentProfile -> Student.Resource.StudentLogoutURI
 studentLogoutURI student_profile =
   logoutURI (uris student_profile)
 
+initProfileUsername : Maybe String -> Maybe StudentUsername
+initProfileUsername name =
+  case name of
+    Just username ->
+      Just (StudentUsername username)
+
+    Nothing ->
+      Nothing
 
 initProfile : StudentProfileParams -> StudentProfile
 initProfile params =
   StudentProfile
     params.id
-    (StudentUsername params.username)
+    (initProfileUsername params.username)
     (StudentEmail params.email)
     params.difficulty_preference
     params.difficulties

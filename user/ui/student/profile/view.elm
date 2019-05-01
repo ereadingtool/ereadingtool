@@ -190,7 +190,13 @@ view_username_hint model =
 view_username : Model -> Html Msg
 view_username model =
   let
-    username = Student.Profile.studentUserName model.profile
+    username =
+      (case Student.Profile.studentUserName model.profile of
+        Just username ->
+          Student.Profile.studentUserNameToString username
+
+        Nothing ->
+          "")
 
     username_valid_attrs =
       (case model.username_update.valid of
@@ -215,7 +221,7 @@ view_username model =
     , case Dict.member "username" model.editing of
         False ->
           span [class "profile_item_value"] [
-            Html.text (Student.Profile.studentUserNameToString (Student.Profile.studentUserName model.profile))
+            Html.text username
           , div [class "update_username", class "cursor", onClick ToggleUsernameUpdate] [ Html.text "Update" ]
           ]
 
@@ -224,7 +230,7 @@ view_username model =
             Html.input [
               class "username_input"
             , attribute "placeholder" "Username"
-            , attribute "value" (Student.Profile.studentUserNameToString username)
+            , attribute "value" username
             , attribute "maxlength" "150"
             , attribute "minlength" "8"
             , onInput UpdateUsername] []
@@ -422,11 +428,21 @@ view_menu_item model help_msgs menu_item =
 
 view_student_profile_page_link : Model -> HelpMsgs msg -> Html msg
 view_student_profile_page_link model help_msgs =
-  div [] [
-    Html.a [attribute "href" (Student.Profile.profileUriToString model.profile)] [
-      Html.text (Student.Profile.studentUserNameToString (Student.Profile.studentUserName model.profile))
+  let
+    display_name =
+      (case Student.Profile.studentUserName model.profile of
+         Just username ->
+           Student.Profile.studentUserNameToString username
+
+         Nothing ->
+           Student.Profile.studentEmailToString (Student.Profile.studentEmail model.profile)
+      )
+  in
+    div [] [
+      Html.a [attribute "href" (Student.Profile.profileUriToString model.profile)] [
+        Html.text display_name
+      ]
     ]
-  ]
 
 view_student_profile_header : Model -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> List (Html msg)
 view_student_profile_header model top_level_menu_msg help_msgs =

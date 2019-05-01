@@ -13,11 +13,16 @@ profileEncoder student_profile =
         Just difficulty ->
           Json.Encode.string (Tuple.first difficulty)
 
-        _ ->
+        Nothing ->
           Json.Encode.null)
 
     username =
-      Json.Encode.string (Student.Profile.studentUserNameToString (Student.Profile.studentUserName student_profile))
+      (case Student.Profile.studentUserName student_profile of
+         Just username ->
+           Json.Encode.string (Student.Profile.studentUserNameToString username)
+
+         Nothing ->
+           Json.Encode.null)
   in
     Json.Encode.object [ ("difficulty_preference", encode_pref), ("username", username) ]
 

@@ -22311,17 +22311,26 @@ var _user$project$Student_Resource$StudentUsername = function (a) {
 	return {ctor: 'StudentUsername', _0: a};
 };
 
-var _user$project$Student_Profile$profileURI = function (_p0) {
-	var _p1 = _p0;
-	return _p1._1;
+var _user$project$Student_Profile$initProfileUsername = function (name) {
+	var _p0 = name;
+	if (_p0.ctor === 'Just') {
+		return _elm_lang$core$Maybe$Just(
+			_user$project$Student_Resource$StudentUsername(_p0._0));
+	} else {
+		return _elm_lang$core$Maybe$Nothing;
+	}
 };
-var _user$project$Student_Profile$logoutURI = function (_p2) {
-	var _p3 = _p2;
-	return _p3._0;
+var _user$project$Student_Profile$profileURI = function (_p1) {
+	var _p2 = _p1;
+	return _p2._1;
 };
-var _user$project$Student_Profile$uris = function (_p4) {
-	var _p5 = _p4;
-	return _p5._5;
+var _user$project$Student_Profile$logoutURI = function (_p3) {
+	var _p4 = _p3;
+	return _p4._0;
+};
+var _user$project$Student_Profile$uris = function (_p5) {
+	var _p6 = _p5;
+	return _p6._5;
 };
 var _user$project$Student_Profile$profileUriToString = function (student_profile) {
 	return _user$project$Student_Resource$uriToString(
@@ -22333,32 +22342,32 @@ var _user$project$Student_Profile$studentLogoutURI = function (student_profile) 
 	return _user$project$Student_Profile$logoutURI(
 		_user$project$Student_Profile$uris(student_profile));
 };
-var _user$project$Student_Profile$studentEmailToString = function (_p6) {
-	var _p7 = _p6;
-	return _p7._0;
+var _user$project$Student_Profile$studentEmailToString = function (_p7) {
+	var _p8 = _p7;
+	return _p8._0;
 };
-var _user$project$Student_Profile$studentEmail = function (_p8) {
-	var _p9 = _p8;
-	return _p9._2;
+var _user$project$Student_Profile$studentEmail = function (_p9) {
+	var _p10 = _p9;
+	return _p10._2;
 };
 var _user$project$Student_Profile$studentUserNameToString = function (student_username) {
 	return _user$project$Student_Resource$studentUserNameToString(student_username);
 };
-var _user$project$Student_Profile$studentUserName = function (_p10) {
-	var _p11 = _p10;
-	return _p11._1;
+var _user$project$Student_Profile$studentUserName = function (_p11) {
+	var _p12 = _p11;
+	return _p12._1;
 };
-var _user$project$Student_Profile$studentDifficulties = function (_p12) {
-	var _p13 = _p12;
-	return _p13._4;
+var _user$project$Student_Profile$studentDifficulties = function (_p13) {
+	var _p14 = _p13;
+	return _p14._4;
 };
-var _user$project$Student_Profile$studentID = function (_p14) {
-	var _p15 = _p14;
-	return _p15._0;
+var _user$project$Student_Profile$studentID = function (_p15) {
+	var _p16 = _p15;
+	return _p16._0;
 };
-var _user$project$Student_Profile$studentDifficultyPreference = function (_p16) {
-	var _p17 = _p16;
-	return _p17._3;
+var _user$project$Student_Profile$studentDifficultyPreference = function (_p17) {
+	var _p18 = _p17;
+	return _p18._3;
 };
 var _user$project$Student_Profile$StudentURIParams = F2(
 	function (a, b) {
@@ -22377,27 +22386,34 @@ var _user$project$Student_Profile$StudentProfile = F6(
 		return {ctor: 'StudentProfile', _0: a, _1: b, _2: c, _3: d, _4: e, _5: f};
 	});
 var _user$project$Student_Profile$setStudentDifficultyPreference = F2(
-	function (_p18, preference) {
-		var _p19 = _p18;
+	function (_p19, preference) {
+		var _p20 = _p19;
 		return A6(
 			_user$project$Student_Profile$StudentProfile,
-			_p19._0,
-			_p19._1,
-			_p19._2,
+			_p20._0,
+			_p20._1,
+			_p20._2,
 			_elm_lang$core$Maybe$Just(preference),
-			_p19._4,
-			_p19._5);
+			_p20._4,
+			_p20._5);
 	});
 var _user$project$Student_Profile$setUserName = F2(
-	function (_p20, new_username) {
-		var _p21 = _p20;
-		return A6(_user$project$Student_Profile$StudentProfile, _p21._0, new_username, _p21._2, _p21._3, _p21._4, _p21._5);
+	function (_p21, new_username) {
+		var _p22 = _p21;
+		return A6(
+			_user$project$Student_Profile$StudentProfile,
+			_p22._0,
+			_elm_lang$core$Maybe$Just(new_username),
+			_p22._2,
+			_p22._3,
+			_p22._4,
+			_p22._5);
 	});
 var _user$project$Student_Profile$initProfile = function (params) {
 	return A6(
 		_user$project$Student_Profile$StudentProfile,
 		params.id,
-		_user$project$Student_Resource$StudentUsername(params.username),
+		_user$project$Student_Profile$initProfileUsername(params.username),
 		_user$project$Student_Resource$StudentEmail(params.email),
 		params.difficulty_preference,
 		params.difficulties,
@@ -23486,7 +23502,7 @@ var _user$project$Student_Profile_Decode$studentProfileParamsDecoder = A3(
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 					'username',
-					_elm_lang$core$Json_Decode$string,
+					_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 					A3(
 						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 						'id',
@@ -23596,14 +23612,20 @@ var _user$project$Student_Profile_Encode$username_valid_encode = function (usern
 		});
 };
 var _user$project$Student_Profile_Encode$profileEncoder = function (student_profile) {
-	var username = _elm_lang$core$Json_Encode$string(
-		_user$project$Student_Profile$studentUserNameToString(
-			_user$project$Student_Profile$studentUserName(student_profile)));
-	var encode_pref = function () {
-		var _p0 = _user$project$Student_Profile$studentDifficultyPreference(student_profile);
+	var username = function () {
+		var _p0 = _user$project$Student_Profile$studentUserName(student_profile);
 		if (_p0.ctor === 'Just') {
 			return _elm_lang$core$Json_Encode$string(
-				_elm_lang$core$Tuple$first(_p0._0));
+				_user$project$Student_Profile$studentUserNameToString(_p0._0));
+		} else {
+			return _elm_lang$core$Json_Encode$null;
+		}
+	}();
+	var encode_pref = function () {
+		var _p1 = _user$project$Student_Profile$studentDifficultyPreference(student_profile);
+		if (_p1.ctor === 'Just') {
+			return _elm_lang$core$Json_Encode$string(
+				_elm_lang$core$Tuple$first(_p1._0));
 		} else {
 			return _elm_lang$core$Json_Encode$null;
 		}
@@ -23803,6 +23825,15 @@ var _user$project$Student_View$view_student_profile_logout_link = F2(
 	});
 var _user$project$Student_View$view_student_profile_page_link = F2(
 	function (student_profile, top_level_menu_msg) {
+		var display_name = function () {
+			var _p0 = _user$project$Student_Profile$studentUserName(student_profile);
+			if (_p0.ctor === 'Just') {
+				return _user$project$Student_Profile$studentUserNameToString(_p0._0);
+			} else {
+				return _user$project$Student_Profile$studentEmailToString(
+					_user$project$Student_Profile$studentEmail(student_profile));
+			}
+		}();
 		return A2(
 			_elm_lang$html$Html$div,
 			{ctor: '[]'},
@@ -23820,9 +23851,7 @@ var _user$project$Student_View$view_student_profile_page_link = F2(
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(
-							_user$project$Student_Profile$studentUserNameToString(
-								_user$project$Student_Profile$studentUserName(student_profile))),
+						_0: _elm_lang$html$Html$text(display_name),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
@@ -24274,8 +24303,7 @@ var _user$project$Student_Profile_Update$update = F2(
 					var new_username_update = _elm_lang$core$Native_Utils.update(
 						username_update,
 						{
-							username: _elm_lang$core$Maybe$Just(
-								_user$project$Student_Profile$studentUserName(_p1))
+							username: _user$project$Student_Profile$studentUserName(_p1)
 						});
 					return {
 						ctor: '_Tuple2',
@@ -24567,6 +24595,15 @@ var _user$project$Text_Reading_Model$textReadingsDecoder = _elm_lang$core$Json_D
 
 var _user$project$Student_Profile_View$view_student_profile_page_link = F2(
 	function (model, help_msgs) {
+		var display_name = function () {
+			var _p0 = _user$project$Student_Profile$studentUserName(model.profile);
+			if (_p0.ctor === 'Just') {
+				return _user$project$Student_Profile$studentUserNameToString(_p0._0);
+			} else {
+				return _user$project$Student_Profile$studentEmailToString(
+					_user$project$Student_Profile$studentEmail(model.profile));
+			}
+		}();
 		return A2(
 			_elm_lang$html$Html$div,
 			{ctor: '[]'},
@@ -24584,9 +24621,7 @@ var _user$project$Student_Profile_View$view_student_profile_page_link = F2(
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(
-							_user$project$Student_Profile$studentUserNameToString(
-								_user$project$Student_Profile$studentUserName(model.profile))),
+						_0: _elm_lang$html$Html$text(display_name),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
@@ -24621,8 +24656,8 @@ var _user$project$Student_Profile_View$view_menu_item = F3(
 	function (model, help_msgs, menu_item) {
 		var link_text = _user$project$Menu_Item$linkTextToString(menu_item);
 		var addl_view = function () {
-			var _p0 = _elm_lang$core$Native_Utils.eq(link_text, 'Find a text to read');
-			if (_p0 === true) {
+			var _p1 = _elm_lang$core$Native_Utils.eq(link_text, 'Find a text to read');
+			if (_p1 === true) {
 				return _elm_lang$core$Maybe$Just(
 					A2(_user$project$Student_Profile_View$view_search_menu_item_hint, model, help_msgs));
 			} else {
@@ -24974,8 +25009,8 @@ var _user$project$Student_Profile_View$view_flashcards = function (model) {
 							_elm_lang$html$Html$div,
 							{ctor: '[]'},
 							function () {
-								var _p1 = model.flashcards;
-								if (_p1.ctor === 'Just') {
+								var _p2 = model.flashcards;
+								if (_p2.ctor === 'Just') {
 									return A2(
 										_elm_lang$core$List$map,
 										function (word) {
@@ -24995,7 +25030,7 @@ var _user$project$Student_Profile_View$view_flashcards = function (model) {
 													_1: {ctor: '[]'}
 												});
 										},
-										_p1._0);
+										_p2._0);
 								} else {
 									return {ctor: '[]'};
 								}
@@ -25131,10 +25166,10 @@ var _user$project$Student_Profile_View$view_username_submit = function (username
 			_0: _elm_lang$html$Html$text('Cancel'),
 			_1: {ctor: '[]'}
 		});
-	var _p2 = username.valid;
-	if (_p2.ctor === 'Just') {
-		var _p3 = _p2._0;
-		if (_p3 === false) {
+	var _p3 = username.valid;
+	if (_p3.ctor === 'Just') {
+		var _p4 = _p3._0;
+		if (_p4 === false) {
 			return {ctor: '[]'};
 		} else {
 			return {
@@ -25183,8 +25218,8 @@ var _user$project$Student_Profile_View$view_username_submit = function (username
 };
 var _user$project$Student_Profile_View$view_username = function (model) {
 	var username_msgs = function () {
-		var _p4 = model.username_update.msg;
-		if (_p4.ctor === 'Just') {
+		var _p5 = model.username_update.msg;
+		if (_p5.ctor === 'Just') {
 			return {
 				ctor: '::',
 				_0: A2(
@@ -25192,7 +25227,7 @@ var _user$project$Student_Profile_View$view_username = function (model) {
 					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(_p4._0),
+						_0: _elm_lang$html$Html$text(_p5._0),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
@@ -25202,10 +25237,10 @@ var _user$project$Student_Profile_View$view_username = function (model) {
 		}
 	}();
 	var username_valid_attrs = function () {
-		var _p5 = model.username_update.valid;
-		if (_p5.ctor === 'Just') {
-			var _p6 = _p5._0;
-			if (_p6 === true) {
+		var _p6 = model.username_update.valid;
+		if (_p6.ctor === 'Just') {
+			var _p7 = _p6._0;
+			if (_p7 === true) {
 				return {
 					ctor: '::',
 					_0: _elm_lang$html$Html_Attributes$class('valid_username'),
@@ -25222,7 +25257,14 @@ var _user$project$Student_Profile_View$view_username = function (model) {
 			return {ctor: '[]'};
 		}
 	}();
-	var username = _user$project$Student_Profile$studentUserName(model.profile);
+	var username = function () {
+		var _p8 = _user$project$Student_Profile$studentUserName(model.profile);
+		if (_p8.ctor === 'Just') {
+			return _user$project$Student_Profile$studentUserNameToString(_p8._0);
+		} else {
+			return '';
+		}
+	}();
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -25250,8 +25292,8 @@ var _user$project$Student_Profile_View$view_username = function (model) {
 				_1: {
 					ctor: '::',
 					_0: function () {
-						var _p7 = A2(_elm_lang$core$Dict$member, 'username', model.editing);
-						if (_p7 === false) {
+						var _p9 = A2(_elm_lang$core$Dict$member, 'username', model.editing);
+						if (_p9 === false) {
 							return A2(
 								_elm_lang$html$Html$span,
 								{
@@ -25261,9 +25303,7 @@ var _user$project$Student_Profile_View$view_username = function (model) {
 								},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text(
-										_user$project$Student_Profile$studentUserNameToString(
-											_user$project$Student_Profile$studentUserName(model.profile))),
+									_0: _elm_lang$html$Html$text(username),
 									_1: {
 										ctor: '::',
 										_0: A2(
@@ -25311,10 +25351,7 @@ var _user$project$Student_Profile_View$view_username = function (model) {
 													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Username'),
 													_1: {
 														ctor: '::',
-														_0: A2(
-															_elm_lang$html$Html_Attributes$attribute,
-															'value',
-															_user$project$Student_Profile$studentUserNameToString(username)),
+														_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', username),
 														_1: {
 															ctor: '::',
 															_0: A2(_elm_lang$html$Html_Attributes$attribute, 'maxlength', '150'),
@@ -25408,8 +25445,8 @@ var _user$project$Student_Profile_View$view_help_text_for_difficulty = function 
 		});
 	var default_list = A2(
 		_elm_lang$core$List$map,
-		function (_p8) {
-			var _p9 = _p8;
+		function (_p10) {
+			var _p11 = _p10;
 			return A2(
 				_elm_lang$html$Html$div,
 				{
@@ -25419,26 +25456,26 @@ var _user$project$Student_Profile_View$view_help_text_for_difficulty = function 
 				},
 				{
 					ctor: '::',
-					_0: _p9._1,
+					_0: _p11._1,
 					_1: {ctor: '[]'}
 				});
 		},
 		_rnons$ordered_containers$OrderedDict$toList(difficulty_msgs));
 	var default_msg = '\n      Strategy: Select a reading level that matches your current comfort level.  Read broadly in those texts.\n      If you find that they are not particularly challenging after the 5-6th text, go back to your reader profile and\n      select the next higher proficiency level. Once you find a level that is challenging, but not impossible, read all\n      the texts on all the related topics for that level.  You will not need to select a difficulty level every time you\n      log in, but you can choose to change your difficulty level at any time.\n      ';
 	var help_msg = function () {
-		var _p10 = text_difficulty;
-		if (_p10.ctor === 'Just') {
-			var _p11 = A2(
+		var _p12 = text_difficulty;
+		if (_p12.ctor === 'Just') {
+			var _p13 = A2(
 				_rnons$ordered_containers$OrderedDict$get,
-				_elm_lang$core$Tuple$first(_p10._0),
+				_elm_lang$core$Tuple$first(_p12._0),
 				difficulty_msgs);
-			if (_p11.ctor === 'Just') {
+			if (_p13.ctor === 'Just') {
 				return A2(
 					_elm_lang$html$Html$div,
 					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _p11._0,
+						_0: _p13._0,
 						_1: {ctor: '[]'}
 					});
 			} else {
@@ -25494,8 +25531,8 @@ var _user$project$Student_Profile_View$view_help_text_for_difficulty = function 
 };
 var _user$project$Student_Profile_View$view_text_reading_actions = function (text_reading) {
 	var action_label = function () {
-		var _p12 = text_reading.status;
-		if (_p12 === 'complete') {
+		var _p14 = text_reading.status;
+		if (_p14 === 'complete') {
 			return 'Start Over';
 		} else {
 			return 'Resume';
@@ -25584,26 +25621,26 @@ var _user$project$Student_Profile_View$view_difficulty = function (model) {
 						{ctor: '[]'},
 						A2(
 							_elm_lang$core$List$map,
-							function (_p13) {
-								var _p14 = _p13;
-								var _p15 = _p14._0;
+							function (_p15) {
+								var _p16 = _p15;
+								var _p17 = _p16._0;
 								return A2(
 									_elm_lang$html$Html$option,
 									A2(
 										_elm_lang$core$Basics_ops['++'],
 										{
 											ctor: '::',
-											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', _p15),
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'value', _p17),
 											_1: {ctor: '[]'}
 										},
-										_elm_lang$core$Native_Utils.eq(_p15, pref) ? {
+										_elm_lang$core$Native_Utils.eq(_p17, pref) ? {
 											ctor: '::',
 											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'selected', ''),
 											_1: {ctor: '[]'}
 										} : {ctor: '[]'}),
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html$text(_p14._1),
+										_0: _elm_lang$html$Html$text(_p16._1),
 										_1: {ctor: '[]'}
 									});
 							},
@@ -25876,7 +25913,19 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 																							return _elm_lang$core$Json_Decode$succeed(
 																								{difficulties: difficulties, difficulty_preference: difficulty_preference, email: email, id: id, uris: uris, username: username});
 																						},
-																						A2(_elm_lang$core$Json_Decode$field, 'username', _elm_lang$core$Json_Decode$string));
+																						A2(
+																							_elm_lang$core$Json_Decode$field,
+																							'username',
+																							_elm_lang$core$Json_Decode$oneOf(
+																								{
+																									ctor: '::',
+																									_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																									_1: {
+																										ctor: '::',
+																										_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+																										_1: {ctor: '[]'}
+																									}
+																								})));
 																				},
 																				A2(
 																					_elm_lang$core$Json_Decode$field,

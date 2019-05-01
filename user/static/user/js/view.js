@@ -10271,17 +10271,26 @@ var _user$project$Student_Resource$StudentUsername = function (a) {
 	return {ctor: 'StudentUsername', _0: a};
 };
 
-var _user$project$Student_Profile$profileURI = function (_p0) {
-	var _p1 = _p0;
-	return _p1._1;
+var _user$project$Student_Profile$initProfileUsername = function (name) {
+	var _p0 = name;
+	if (_p0.ctor === 'Just') {
+		return _elm_lang$core$Maybe$Just(
+			_user$project$Student_Resource$StudentUsername(_p0._0));
+	} else {
+		return _elm_lang$core$Maybe$Nothing;
+	}
 };
-var _user$project$Student_Profile$logoutURI = function (_p2) {
-	var _p3 = _p2;
-	return _p3._0;
+var _user$project$Student_Profile$profileURI = function (_p1) {
+	var _p2 = _p1;
+	return _p2._1;
 };
-var _user$project$Student_Profile$uris = function (_p4) {
-	var _p5 = _p4;
-	return _p5._5;
+var _user$project$Student_Profile$logoutURI = function (_p3) {
+	var _p4 = _p3;
+	return _p4._0;
+};
+var _user$project$Student_Profile$uris = function (_p5) {
+	var _p6 = _p5;
+	return _p6._5;
 };
 var _user$project$Student_Profile$profileUriToString = function (student_profile) {
 	return _user$project$Student_Resource$uriToString(
@@ -10293,32 +10302,32 @@ var _user$project$Student_Profile$studentLogoutURI = function (student_profile) 
 	return _user$project$Student_Profile$logoutURI(
 		_user$project$Student_Profile$uris(student_profile));
 };
-var _user$project$Student_Profile$studentEmailToString = function (_p6) {
-	var _p7 = _p6;
-	return _p7._0;
+var _user$project$Student_Profile$studentEmailToString = function (_p7) {
+	var _p8 = _p7;
+	return _p8._0;
 };
-var _user$project$Student_Profile$studentEmail = function (_p8) {
-	var _p9 = _p8;
-	return _p9._2;
+var _user$project$Student_Profile$studentEmail = function (_p9) {
+	var _p10 = _p9;
+	return _p10._2;
 };
 var _user$project$Student_Profile$studentUserNameToString = function (student_username) {
 	return _user$project$Student_Resource$studentUserNameToString(student_username);
 };
-var _user$project$Student_Profile$studentUserName = function (_p10) {
-	var _p11 = _p10;
-	return _p11._1;
+var _user$project$Student_Profile$studentUserName = function (_p11) {
+	var _p12 = _p11;
+	return _p12._1;
 };
-var _user$project$Student_Profile$studentDifficulties = function (_p12) {
-	var _p13 = _p12;
-	return _p13._4;
+var _user$project$Student_Profile$studentDifficulties = function (_p13) {
+	var _p14 = _p13;
+	return _p14._4;
 };
-var _user$project$Student_Profile$studentID = function (_p14) {
-	var _p15 = _p14;
-	return _p15._0;
+var _user$project$Student_Profile$studentID = function (_p15) {
+	var _p16 = _p15;
+	return _p16._0;
 };
-var _user$project$Student_Profile$studentDifficultyPreference = function (_p16) {
-	var _p17 = _p16;
-	return _p17._3;
+var _user$project$Student_Profile$studentDifficultyPreference = function (_p17) {
+	var _p18 = _p17;
+	return _p18._3;
 };
 var _user$project$Student_Profile$StudentURIParams = F2(
 	function (a, b) {
@@ -10337,27 +10346,34 @@ var _user$project$Student_Profile$StudentProfile = F6(
 		return {ctor: 'StudentProfile', _0: a, _1: b, _2: c, _3: d, _4: e, _5: f};
 	});
 var _user$project$Student_Profile$setStudentDifficultyPreference = F2(
-	function (_p18, preference) {
-		var _p19 = _p18;
+	function (_p19, preference) {
+		var _p20 = _p19;
 		return A6(
 			_user$project$Student_Profile$StudentProfile,
-			_p19._0,
-			_p19._1,
-			_p19._2,
+			_p20._0,
+			_p20._1,
+			_p20._2,
 			_elm_lang$core$Maybe$Just(preference),
-			_p19._4,
-			_p19._5);
+			_p20._4,
+			_p20._5);
 	});
 var _user$project$Student_Profile$setUserName = F2(
-	function (_p20, new_username) {
-		var _p21 = _p20;
-		return A6(_user$project$Student_Profile$StudentProfile, _p21._0, new_username, _p21._2, _p21._3, _p21._4, _p21._5);
+	function (_p21, new_username) {
+		var _p22 = _p21;
+		return A6(
+			_user$project$Student_Profile$StudentProfile,
+			_p22._0,
+			_elm_lang$core$Maybe$Just(new_username),
+			_p22._2,
+			_p22._3,
+			_p22._4,
+			_p22._5);
 	});
 var _user$project$Student_Profile$initProfile = function (params) {
 	return A6(
 		_user$project$Student_Profile$StudentProfile,
 		params.id,
-		_user$project$Student_Resource$StudentUsername(params.username),
+		_user$project$Student_Profile$initProfileUsername(params.username),
 		_user$project$Student_Resource$StudentEmail(params.email),
 		params.difficulty_preference,
 		params.difficulties,
@@ -10446,6 +10462,15 @@ var _user$project$Student_View$view_student_profile_logout_link = F2(
 	});
 var _user$project$Student_View$view_student_profile_page_link = F2(
 	function (student_profile, top_level_menu_msg) {
+		var display_name = function () {
+			var _p0 = _user$project$Student_Profile$studentUserName(student_profile);
+			if (_p0.ctor === 'Just') {
+				return _user$project$Student_Profile$studentUserNameToString(_p0._0);
+			} else {
+				return _user$project$Student_Profile$studentEmailToString(
+					_user$project$Student_Profile$studentEmail(student_profile));
+			}
+		}();
 		return A2(
 			_elm_lang$html$Html$div,
 			{ctor: '[]'},
@@ -10463,9 +10488,7 @@ var _user$project$Student_View$view_student_profile_page_link = F2(
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(
-							_user$project$Student_Profile$studentUserNameToString(
-								_user$project$Student_Profile$studentUserName(student_profile))),
+						_0: _elm_lang$html$Html$text(display_name),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}

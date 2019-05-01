@@ -91,7 +91,6 @@ class ElmLoadJsStudentProfileView(ElmLoadJsStudentBaseView):
 
         context['elm'].update({
             'student_endpoint': uri_to_elm(reverse('api-student', kwargs={'pk': student_profile.pk})),
-            'logout_uri': uri_to_elm(reverse('api-student-logout')),
             'student_username_validation_uri': uri_to_elm(reverse('username-api')),
             'student_research_consent_uri': uri_to_elm(reverse('api-student-research-consent',
                                                                kwargs={'pk': student_profile.pk}))

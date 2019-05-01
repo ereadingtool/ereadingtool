@@ -45,7 +45,7 @@ update msg model =
       RetrieveStudentProfile (Ok profile) ->
         let
           username_update = model.username_update
-          new_username_update = { username_update | username = (Just (Student.Profile.studentUserName profile)) }
+          new_username_update = { username_update | username = (Student.Profile.studentUserName profile) }
         in
           ({ model | profile = profile, username_update = new_username_update }, Cmd.none)
 
