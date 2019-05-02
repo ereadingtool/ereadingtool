@@ -1,21 +1,17 @@
-span {
-    overflow-wrap: anywhere;
-}
-
 #text-section {
     display: grid;
 
-    grid-template-columns: 5% [body-col] auto 5%;
+    grid-template-columns: 10% [body-col] auto 10%;
     grid-template-rows: 10% [body-row] auto 10%;
 
     font-family: "Lora,Palatino,Times,Times New Roman,serif";
-    font-size: 16px;
-    line-height: 1.6;
+    font-size: 20px;
+    line-height: 1.7;
     letter-spacing: 0;
 
     padding-top: 50px;
 
-    overflow-wrap: anywhere;
+    word-break:break-all;
 }
 
 #complete {
