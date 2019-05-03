@@ -50,17 +50,26 @@ phrase (TextReaderWord _ _ phrase _) =
   phrase
 
 gloss : TextReaderWord -> Gloss -> Gloss
-gloss reader_word gloss =
-  Dict.insert (identifier reader_word) True (Dict.insert (String.toLower (phrase reader_word)) True gloss)
+gloss reader_word glosses =
+  Dict.insert (identifier reader_word) True (Dict.insert (String.toLower (phrase reader_word)) True glosses)
 
 ungloss : TextReaderWord -> Gloss -> Gloss
-ungloss reader_word gloss =
-  Dict.remove (identifier reader_word) (Dict.remove (String.toLower (phrase reader_word)) gloss)
+ungloss reader_word glosses =
+  Dict.remove (identifier reader_word) (Dict.remove (String.toLower (phrase reader_word)) glosses)
 
+toggleGloss : TextReaderWord -> Gloss -> Gloss
+toggleGloss reader_word glosses =
+  if (selected reader_word glosses) then
+    ungloss reader_word glosses
+  else
+    gloss reader_word glosses
+
+-- this is for any instance of a word
 glossed : TextReaderWord -> Gloss -> Bool
 glossed reader_word gloss =
   Dict.member (String.toLower (phrase reader_word)) gloss
 
+-- this is for a particular instance of a word (using `identifer`)
 selected : TextReaderWord -> Gloss -> Bool
 selected reader_word gloss =
   Dict.member (identifier reader_word) gloss

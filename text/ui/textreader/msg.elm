@@ -20,6 +20,7 @@ type Msg =
   | StartOver
   | Gloss TextReaderWord
   | UnGloss TextReaderWord
+  | ToggleGloss TextReaderWord
   | AddToFlashcards TextReaderWord
   | RemoveFromFlashcards TextReaderWord
   | WebSocketResp String
