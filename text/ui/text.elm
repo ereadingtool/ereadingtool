@@ -69,6 +69,9 @@ update msg model =
       UnGloss reader_word ->
         ({ model | gloss = TextReader.Model.ungloss reader_word model.gloss }, Cmd.none)
 
+      ToggleGloss reader_word ->
+        ({ model | gloss = TextReader.Model.toggleGloss reader_word model.gloss }, Cmd.none)
+
       AddToFlashcards reader_word ->
         (model, send_command <| AddToFlashcardsReq reader_word)
 

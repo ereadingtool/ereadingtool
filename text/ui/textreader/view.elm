@@ -44,7 +44,11 @@ tagWord model text_reader_section instance token =
         False ->
           case textreader_textword of
             Just text_word ->
-              Html.node "span" [classList [("defined_word", True), ("cursor", True)], onClick (Gloss reader_word)] [
+              Html.node "span" [
+                classList [("defined-word", True)
+              , ("cursor", True)]
+              , onClick (ToggleGloss reader_word)
+              ] [
                 span [classList [("highlighted", TextReader.Model.glossed reader_word model.gloss)] ] [
                   VirtualDom.text token
                 ]
@@ -73,7 +77,7 @@ view_answer text_section text_question text_answer =
   in
     div [ classList <| [
             ("answer", True)
-          , ("answer_selected", answer_selected)
+          , ("answer-selected", answer_selected)
           ] ++ (if (answer_selected || view_feedback) then
                   if is_correct then
                     [("correct", is_correct)]
@@ -83,9 +87,9 @@ view_answer text_section text_question text_answer =
                   []
                )
         , on_click] [
-      div [classList [("answer_text", True), ("bolder", answer_selected)]] [ Html.text answer.text ]
+      div [classList [("answer-text", True), ("bolder", answer_selected)]] [ Html.text answer.text ]
     , (if (answer_selected || view_feedback) then
-        div [class "answer_feedback"] [ Html.em [] [ Html.text answer.feedback ] ] else Html.text "")
+        div [class "answer-feedback"] [ Html.em [] [ Html.text answer.feedback ] ] else Html.text "")
     ]
 
 view_question : Section -> TextQuestion -> Html Msg
@@ -96,7 +100,7 @@ view_question text_section text_question =
     text_question_id = String.join "_" ["question", toString question.order]
   in
     div [class "question", attribute "id" text_question_id] [
-      div [class "question_body"] [ Html.text question.body ]
+      div [class "question-body"] [ Html.text question.body ]
     , div [class "answers"]
         (Array.toList <| Array.map (view_answer text_section text_question) answers)
     ]
@@ -144,12 +148,12 @@ view_flashcard_options model reader_word =
     remove = div [class "cursor", onClick (RemoveFromFlashcards reader_word)] [ Html.text "Remove from Flashcards" ]
 
   in
-    div [class "gloss_flashcard_options"] (if Dict.member phrase flashcards then [remove] else [add])
+    div [class "gloss-flashcard-options"] (if Dict.member phrase flashcards then [remove] else [add])
 
 view_gloss : Model -> TextReaderWord -> TextReader.TextWord.TextWord -> Html Msg
 view_gloss model reader_word text_word =
   span [] [
-    span [ classList [("gloss_overlay", True), ("gloss_menu", True)]
+    span [ classList [("gloss-overlay", True), ("gloss-menu", True)]
         , onMouseLeave (UnGloss reader_word)
         , classList [("hidden", not (TextReader.Model.selected reader_word model.gloss))]
         ] [
@@ -194,29 +198,29 @@ view_text_section model text_reader_section =
 
 view_text_introduction : Text -> Html Msg
 view_text_introduction text =
-  div [attribute "id" "text_intro"] (HtmlParser.Util.toVirtualDom <| HtmlParser.parse text.introduction)
+  div [attribute "id" "text-intro"] (HtmlParser.Util.toVirtualDom <| HtmlParser.parse text.introduction)
 
 view_text_conclusion : Text -> Html Msg
 view_text_conclusion text =
-  div [attribute "id" "text_conclusion"]
+  div [attribute "id" "text-conclusion"]
     (HtmlParser.Util.toVirtualDom <| HtmlParser.parse (Maybe.withDefault "" text.conclusion))
 
 view_prev_btn : Html Msg
 view_prev_btn =
-  div [onClick PrevSection, class "begin_btn"] [
+  div [onClick PrevSection, class "begin-btn"] [
     Html.text "Previous"
   ]
 
 view_next_btn : Html Msg
 view_next_btn =
-  div [onClick NextSection, class "begin_btn"] [
+  div [onClick NextSection, class "begin-btn"] [
     Html.text "Next"
   ]
 
 view_text_complete : Model -> TextScores -> Html Msg
 view_text_complete model scores =
   div [id "complete"] [
-    div [attribute "id" "text_score"] [
+    div [attribute "id" "text-score"] [
       div [] [
         Html.text
           (  "You answered "
@@ -252,7 +256,7 @@ view_content model =
           [
             view_text_introduction model.text
           , div [onClick NextSection, class "nav"] [
-              div [class "start_btn"] [ Html.text "Start" ]
+              div [class "start-btn"] [ Html.text "Start" ]
             ]
           ]
 

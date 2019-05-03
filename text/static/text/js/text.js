@@ -24633,7 +24633,7 @@ var _user$project$TextReader_Model$identifier = function (_p6) {
 	return _p7._0;
 };
 var _user$project$TextReader_Model$gloss = F2(
-	function (reader_word, gloss) {
+	function (reader_word, glosses) {
 		return A3(
 			_elm_lang$core$Dict$insert,
 			_user$project$TextReader_Model$identifier(reader_word),
@@ -24643,10 +24643,10 @@ var _user$project$TextReader_Model$gloss = F2(
 				_elm_lang$core$String$toLower(
 					_user$project$TextReader_Model$phrase(reader_word)),
 				true,
-				gloss));
+				glosses));
 	});
 var _user$project$TextReader_Model$ungloss = F2(
-	function (reader_word, gloss) {
+	function (reader_word, glosses) {
 		return A2(
 			_elm_lang$core$Dict$remove,
 			_user$project$TextReader_Model$identifier(reader_word),
@@ -24654,7 +24654,7 @@ var _user$project$TextReader_Model$ungloss = F2(
 				_elm_lang$core$Dict$remove,
 				_elm_lang$core$String$toLower(
 					_user$project$TextReader_Model$phrase(reader_word)),
-				gloss));
+				glosses));
 	});
 var _user$project$TextReader_Model$selected = F2(
 	function (reader_word, gloss) {
@@ -24662,6 +24662,10 @@ var _user$project$TextReader_Model$selected = F2(
 			_elm_lang$core$Dict$member,
 			_user$project$TextReader_Model$identifier(reader_word),
 			gloss);
+	});
+var _user$project$TextReader_Model$toggleGloss = F2(
+	function (reader_word, glosses) {
+		return A2(_user$project$TextReader_Model$selected, reader_word, glosses) ? A2(_user$project$TextReader_Model$ungloss, reader_word, glosses) : A2(_user$project$TextReader_Model$gloss, reader_word, glosses);
 	});
 var _user$project$TextReader_Model$Exception = F2(
 	function (a, b) {
@@ -25165,6 +25169,9 @@ var _user$project$TextReader_Msg$RemoveFromFlashcards = function (a) {
 var _user$project$TextReader_Msg$AddToFlashcards = function (a) {
 	return {ctor: 'AddToFlashcards', _0: a};
 };
+var _user$project$TextReader_Msg$ToggleGloss = function (a) {
+	return {ctor: 'ToggleGloss', _0: a};
+};
 var _user$project$TextReader_Msg$UnGloss = function (a) {
 	return {ctor: 'UnGloss', _0: a};
 };
@@ -25210,7 +25217,7 @@ var _user$project$TextReader_View$view_next_btn = A2(
 		_0: _elm_lang$html$Html_Events$onClick(_user$project$TextReader_Msg$NextSection),
 		_1: {
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('begin_btn'),
+			_0: _elm_lang$html$Html_Attributes$class('begin-btn'),
 			_1: {ctor: '[]'}
 		}
 	},
@@ -25226,7 +25233,7 @@ var _user$project$TextReader_View$view_prev_btn = A2(
 		_0: _elm_lang$html$Html_Events$onClick(_user$project$TextReader_Msg$PrevSection),
 		_1: {
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('begin_btn'),
+			_0: _elm_lang$html$Html_Attributes$class('begin-btn'),
 			_1: {ctor: '[]'}
 		}
 	},
@@ -25240,7 +25247,7 @@ var _user$project$TextReader_View$view_text_conclusion = function (text) {
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_conclusion'),
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text-conclusion'),
 			_1: {ctor: '[]'}
 		},
 		_jinjor$elm_html_parser$HtmlParser_Util$toVirtualDom(
@@ -25262,7 +25269,7 @@ var _user$project$TextReader_View$view_text_complete = F2(
 					_elm_lang$html$Html$div,
 					{
 						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_score'),
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text-score'),
 						_1: {ctor: '[]'}
 					},
 					{
@@ -25336,7 +25343,7 @@ var _user$project$TextReader_View$view_text_introduction = function (text) {
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text_intro'),
+			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'text-intro'),
 			_1: {ctor: '[]'}
 		},
 		_jinjor$elm_html_parser$HtmlParser_Util$toVirtualDom(
@@ -25403,7 +25410,7 @@ var _user$project$TextReader_View$view_flashcard_options = F2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('gloss_flashcard_options'),
+				_0: _elm_lang$html$Html_Attributes$class('gloss-flashcard-options'),
 				_1: {ctor: '[]'}
 			},
 			A2(_elm_lang$core$Dict$member, phrase, flashcards) ? {
@@ -25513,10 +25520,10 @@ var _user$project$TextReader_View$view_gloss = F3(
 						_0: _elm_lang$html$Html_Attributes$classList(
 							{
 								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'gloss_overlay', _1: true},
+								_0: {ctor: '_Tuple2', _0: 'gloss-overlay', _1: true},
 								_1: {
 									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'gloss_menu', _1: true},
+									_0: {ctor: '_Tuple2', _0: 'gloss-menu', _1: true},
 									_1: {ctor: '[]'}
 								}
 							}),
@@ -25579,7 +25586,7 @@ var _user$project$TextReader_View$view_answer = F3(
 							_0: {ctor: '_Tuple2', _0: 'answer', _1: true},
 							_1: {
 								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'answer_selected', _1: answer_selected},
+								_0: {ctor: '_Tuple2', _0: 'answer-selected', _1: answer_selected},
 								_1: {ctor: '[]'}
 							}
 						},
@@ -25607,7 +25614,7 @@ var _user$project$TextReader_View$view_answer = F3(
 						_0: _elm_lang$html$Html_Attributes$classList(
 							{
 								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'answer_text', _1: true},
+								_0: {ctor: '_Tuple2', _0: 'answer-text', _1: true},
 								_1: {
 									ctor: '::',
 									_0: {ctor: '_Tuple2', _0: 'bolder', _1: answer_selected},
@@ -25627,7 +25634,7 @@ var _user$project$TextReader_View$view_answer = F3(
 						_elm_lang$html$Html$div,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('answer_feedback'),
+							_0: _elm_lang$html$Html_Attributes$class('answer-feedback'),
 							_1: {ctor: '[]'}
 						},
 						{
@@ -25679,7 +25686,7 @@ var _user$project$TextReader_View$view_question = F2(
 					_elm_lang$html$Html$div,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('question_body'),
+						_0: _elm_lang$html$Html_Attributes$class('question-body'),
 						_1: {ctor: '[]'}
 					},
 					{
@@ -25757,7 +25764,7 @@ var _user$project$TextReader_View$tagWord = F4(
 						_0: _elm_lang$html$Html_Attributes$classList(
 							{
 								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'defined_word', _1: true},
+								_0: {ctor: '_Tuple2', _0: 'defined-word', _1: true},
 								_1: {
 									ctor: '::',
 									_0: {ctor: '_Tuple2', _0: 'cursor', _1: true},
@@ -25767,7 +25774,7 @@ var _user$project$TextReader_View$tagWord = F4(
 						_1: {
 							ctor: '::',
 							_0: _elm_lang$html$Html_Events$onClick(
-								_user$project$TextReader_Msg$Gloss(reader_word)),
+								_user$project$TextReader_Msg$ToggleGloss(reader_word)),
 							_1: {ctor: '[]'}
 						}
 					},
@@ -25889,7 +25896,7 @@ var _user$project$TextReader_View$view_content = function (model) {
 									_elm_lang$html$Html$div,
 									{
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('start_btn'),
+										_0: _elm_lang$html$Html_Attributes$class('start-btn'),
 										_1: {ctor: '[]'}
 									},
 									{
@@ -26201,6 +26208,16 @@ var _user$project$Main$update = F2(
 						model,
 						{
 							gloss: A2(_user$project$TextReader_Model$ungloss, _p0._0, model.gloss)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'ToggleGloss':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							gloss: A2(_user$project$TextReader_Model$toggleGloss, _p0._0, model.gloss)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
