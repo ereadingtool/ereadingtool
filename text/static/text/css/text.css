@@ -10,8 +10,6 @@
     letter-spacing: 0;
 
     padding-top: 50px;
-
-    word-break:break-all;
 }
 
 #complete {
@@ -25,6 +23,10 @@
     display: grid;
 
     grid-template-rows: auto auto auto;
+}
+
+#text-body > #body {
+    word-break:break-all;
 }
 
 .nav {
