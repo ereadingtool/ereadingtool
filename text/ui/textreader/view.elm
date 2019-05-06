@@ -39,7 +39,7 @@ tagWord model text_reader_section instance token =
   in
     case token == " " of
         True ->
-          span [class "space"] []
+          VirtualDom.text token
 
         False ->
           case textreader_textword of

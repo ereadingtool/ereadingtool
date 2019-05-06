@@ -25745,14 +25745,7 @@ var _user$project$TextReader_View$tagWord = F4(
 		var reader_word = A4(_user$project$TextReader_Model$new, id, instance, token, textreader_textword);
 		var _p7 = _elm_lang$core$Native_Utils.eq(token, ' ');
 		if (_p7 === true) {
-			return A2(
-				_elm_lang$html$Html$span,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('space'),
-					_1: {ctor: '[]'}
-				},
-				{ctor: '[]'});
+			return _elm_lang$virtual_dom$VirtualDom$text(token);
 		} else {
 			var _p8 = textreader_textword;
 			if (_p8.ctor === 'Just') {
