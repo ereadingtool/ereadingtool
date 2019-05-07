@@ -29,10 +29,23 @@
     word-break:break-all;
 }
 
-.nav {
+#nav {
     grid-column: 2;
     display: grid;
+
+    padding-top: 25px;
+
     grid-template-columns: 50% 50%;
+
+    grid-template-rows: minmax(25px, 50px);
+    align-items: center;
+}
+
+#nav > div {
+    text-align: center;
+    background: #f9f9f9;
+
+    margin-right: 5px;
 }
 
 .exception {
@@ -175,6 +188,8 @@
     display: grid;
     position: absolute;
 
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+
     grid-template-columns: auto;
     grid-template-rows: auto auto auto;
 
@@ -211,8 +226,8 @@
         margin-top: 0;
     }
 
-    .filter {
-        display: none;
+    #text-section {
+        padding-top: 0;
     }
 
 }

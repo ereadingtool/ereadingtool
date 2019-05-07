@@ -25217,7 +25217,7 @@ var _user$project$TextReader_View$view_next_btn = A2(
 		_0: _elm_lang$html$Html_Events$onClick(_user$project$TextReader_Msg$NextSection),
 		_1: {
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('begin-btn'),
+			_0: _elm_lang$html$Html_Attributes$class('next-btn'),
 			_1: {ctor: '[]'}
 		}
 	},
@@ -25233,7 +25233,7 @@ var _user$project$TextReader_View$view_prev_btn = A2(
 		_0: _elm_lang$html$Html_Events$onClick(_user$project$TextReader_Msg$PrevSection),
 		_1: {
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('begin-btn'),
+			_0: _elm_lang$html$Html_Attributes$class('prev-btn'),
 			_1: {ctor: '[]'}
 		}
 	},
@@ -25876,10 +25876,10 @@ var _user$project$TextReader_View$view_content = function (model) {
 							_elm_lang$html$Html$div,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(_user$project$TextReader_Msg$NextSection),
+								_0: _elm_lang$html$Html_Attributes$id('nav'),
 								_1: {
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('nav'),
+									_0: _elm_lang$html$Html_Events$onClick(_user$project$TextReader_Msg$NextSection),
 									_1: {ctor: '[]'}
 								}
 							},
@@ -25915,7 +25915,7 @@ var _user$project$TextReader_View$view_content = function (model) {
 								_elm_lang$html$Html$div,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('nav'),
+									_0: _elm_lang$html$Html_Attributes$id('nav'),
 									_1: {ctor: '[]'}
 								},
 								{

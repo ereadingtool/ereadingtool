@@ -34,7 +34,7 @@ tagWord : Model -> Section -> Int -> String -> Html Msg
 tagWord model text_reader_section instance token =
   let
     id = String.join "_" [toString instance, token]
-    textreader_textword = (TextReader.Section.Model.getTextWord text_reader_section instance token)
+    textreader_textword = TextReader.Section.Model.getTextWord text_reader_section instance token
     reader_word = TextReader.Model.new id instance token textreader_textword
   in
     case token == " " of
@@ -45,7 +45,8 @@ tagWord model text_reader_section instance token =
           case textreader_textword of
             Just text_word ->
               Html.node "span" [
-                classList [("defined-word", True)
+                classList [
+                ("defined-word", True)
               , ("cursor", True)]
               , onClick (ToggleGloss reader_word)
               ] [
@@ -207,13 +208,13 @@ view_text_conclusion text =
 
 view_prev_btn : Html Msg
 view_prev_btn =
-  div [onClick PrevSection, class "begin-btn"] [
+  div [onClick PrevSection, class "prev-btn"] [
     Html.text "Previous"
   ]
 
 view_next_btn : Html Msg
 view_next_btn =
-  div [onClick NextSection, class "begin-btn"] [
+  div [onClick NextSection, class "next-btn"] [
     Html.text "Next"
   ]
 
@@ -239,13 +240,14 @@ view_text_complete model scores =
 
 view_exceptions : Model -> Html Msg
 view_exceptions model =
-  div [class "exception"] (case model.exception of
-    Just exception ->
-      [
-        Html.text exception.error_msg
-      ]
-    Nothing ->
-      [])
+  div [class "exception"]
+    (case model.exception of
+      Just exception ->
+        [
+          Html.text exception.error_msg
+        ]
+      Nothing ->
+        [])
 
 view_content : Model -> Html Msg
 view_content model =
@@ -255,7 +257,7 @@ view_content model =
         ViewIntro ->
           [
             view_text_introduction model.text
-          , div [onClick NextSection, class "nav"] [
+          , div [id "nav", onClick NextSection] [
               div [class "start-btn"] [ Html.text "Start" ]
             ]
           ]
@@ -264,7 +266,7 @@ view_content model =
           [
             view_text_section model section
           , view_exceptions model
-          , div [class "nav"] [view_prev_btn, view_next_btn]
+          , div [id "nav"] [view_prev_btn, view_next_btn]
           ]
 
         Complete text_scores ->
