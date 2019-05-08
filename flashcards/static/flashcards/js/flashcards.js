@@ -13825,11 +13825,11 @@ var _user$project$Flashcard_View$view_quality = F3(
 				},
 				_elm_lang$core$Native_Utils.eq(q, 0) ? {
 					ctor: '::',
-					_0: _elm_lang$html$Html$text(' - easiest'),
+					_0: _elm_lang$html$Html$text(' - most difficult'),
 					_1: {ctor: '[]'}
 				} : (_elm_lang$core$Native_Utils.eq(q, 5) ? {
 					ctor: '::',
-					_0: _elm_lang$html$Html$text(' - most difficult'),
+					_0: _elm_lang$html$Html$text(' - easiest'),
 					_1: {ctor: '[]'}
 				} : {ctor: '[]'})));
 	});

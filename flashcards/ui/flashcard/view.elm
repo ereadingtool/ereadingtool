@@ -128,7 +128,7 @@ view_quality model card q =
   in
     div [classList [("choice", True), ("select", selected)], onClick (RateQuality q)] <| [
       Html.text (toString q)
-    ] ++ (if q == 0 then [Html.text " - easiest"] else (if q == 5 then [Html.text " - most difficult"] else []))
+    ] ++ (if q == 0 then [Html.text " - most difficult"] else (if q == 5 then [Html.text " - easiest"] else []))
 
 view_rate_answer : Model -> Flashcard -> Html Msg
 view_rate_answer model card =
