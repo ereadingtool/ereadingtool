@@ -164,11 +164,11 @@ view_gloss model reader_word text_word =
           ]
   ]
 
-is_part_of_compound_word : Section -> Int -> String -> Maybe (Int, Int, Int)
-is_part_of_compound_word section instance word =
+isPartOfCompoundWord : Section -> Int -> String -> Maybe (Int, Int, Int)
+isPartOfCompoundWord section instance word =
   case TextReader.Section.Model.getTextWord section instance word of
     Just text_word ->
-      case (TextReader.TextWord.group text_word) of
+      case TextReader.TextWord.group text_word of
         Just group ->
           Just (group.instance, group.pos, group.length)
 
@@ -186,10 +186,10 @@ view_text_section model text_reader_section =
     text_body_vdom =
       Text.Section.Words.Tag.tagWordsAndToVDOM
         (tagWord model text_reader_section)
-        (is_part_of_compound_word text_reader_section)
+        (isPartOfCompoundWord text_reader_section)
         (HtmlParser.parse text_section.body)
 
-    section_title = ("Section " ++ (toString (text_section.order +1)) ++ "/" ++ (toString text_section.num_of_sections))
+    section_title = "Section " ++ toString (text_section.order + 1) ++ "/" ++ toString text_section.num_of_sections
   in
     div [id "text-body"] <| [
         div [id "title"] [ Html.text section_title ]

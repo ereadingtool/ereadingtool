@@ -1,5 +1,3 @@
-from typing import Dict, AnyStr, Optional
-
 from django.db import models
 
 from text.models import TextSection

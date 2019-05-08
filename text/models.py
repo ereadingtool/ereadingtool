@@ -290,8 +290,7 @@ class TextSection(TextSectionDefinitionsMixin, Timestamped, models.Model):
 
         phrases = dict()
 
-        for text_phrase in self.translated_words.prefetch_related('translations').filter(
-                translations__correct_for_context=True):
+        for text_phrase in self.translated_words.prefetch_related('translations').filter():
             phrases.setdefault(text_phrase.phrase, [])
 
             text_word_dict = text_phrase.child_instance.to_translations_dict()
