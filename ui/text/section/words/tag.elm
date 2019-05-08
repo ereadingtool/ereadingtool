@@ -17,8 +17,8 @@ punctuation_re : Regex.Regex
 punctuation_re =
   Regex.regex "[?!.,»«—\\-();]"
 
-has_punctuation : String -> Bool
-has_punctuation =
+hasPunctuation : String -> Bool
+hasPunctuation =
   Regex.contains punctuation_re
 
 maybeParseWordWithPunctuation : String -> List String
@@ -43,7 +43,7 @@ maybeParseWordWithPunctuation str =
 
 intersperseWordsWith : String -> (String, Int) -> List (String, Int) -> List (String, Int)
 intersperseWordsWith str ((token, token_occurrence) as token_instance) tokens =
-  case has_punctuation token of
+  case hasPunctuation token of
     True ->
       tokens ++ [token_instance]
 
@@ -91,7 +91,7 @@ parseCompoundWord is_part_of_compound_word (token, instance) (token_occurrences,
               (token_occurrences, (pos+1, compound_token ++ [token]))
 
         False ->
-          -- token is part of a compound word but not the right position
+          -- token is part of a compound word but not in the right position
           (token_occurrences ++ [(token, instance)], (0, []))
 
     Nothing ->
@@ -122,7 +122,11 @@ tagWordAndToVDOM tag_word is_part_of_compound_word node (html, occurrences) =
 
         (counted_occurrences, token_occurrences) = countOccurrences word_tokens occurrences
 
+        _ = Debug.log "counted_occurrences" counted_occurrences
+
         counted_words = intersperseWithWhitespace (parseCompoundWords is_part_of_compound_word counted_occurrences)
+
+        _ = Debug.log "parse compound words" (parseCompoundWords is_part_of_compound_word counted_occurrences)
 
         new_nodes = List.map (\(token, instance) -> tag_word instance token) counted_words
       in

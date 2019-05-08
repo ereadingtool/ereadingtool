@@ -24985,12 +24985,12 @@ var _user$project$Text_Section_Words_Tag$countOccurrences = F2(
 			words);
 	});
 var _user$project$Text_Section_Words_Tag$punctuation_re = _elm_lang$core$Regex$regex('[?!.,»«—\\-();]');
-var _user$project$Text_Section_Words_Tag$has_punctuation = _elm_lang$core$Regex$contains(_user$project$Text_Section_Words_Tag$punctuation_re);
+var _user$project$Text_Section_Words_Tag$hasPunctuation = _elm_lang$core$Regex$contains(_user$project$Text_Section_Words_Tag$punctuation_re);
 var _user$project$Text_Section_Words_Tag$intersperseWordsWith = F3(
 	function (str, _p15, tokens) {
 		var _p16 = _p15;
 		var _p18 = _p16;
-		var _p17 = _user$project$Text_Section_Words_Tag$has_punctuation(_p16._0);
+		var _p17 = _user$project$Text_Section_Words_Tag$hasPunctuation(_p16._0);
 		if (_p17 === true) {
 			return A2(
 				_elm_lang$core$Basics_ops['++'],
@@ -25067,8 +25067,8 @@ var _user$project$Text_Section_Words_Tag$maybeParseWordWithPunctuation = functio
 var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F4(
 	function (tag_word, is_part_of_compound_word, node, _p21) {
 		var _p22 = _p21;
-		var _p31 = _p22._1;
-		var _p30 = _p22._0;
+		var _p33 = _p22._1;
+		var _p32 = _p22._0;
 		var _p23 = node;
 		switch (_p23.ctor) {
 			case 'Text':
@@ -25077,35 +25077,40 @@ var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F4(
 						_elm_lang$core$List$map,
 						_user$project$Text_Section_Words_Tag$maybeParseWordWithPunctuation,
 						_elm_lang$core$String$words(_p23._0)));
-				var _p24 = A2(_user$project$Text_Section_Words_Tag$countOccurrences, word_tokens, _p31);
+				var _p24 = A2(_user$project$Text_Section_Words_Tag$countOccurrences, word_tokens, _p33);
 				var counted_occurrences = _p24._0;
 				var token_occurrences = _p24._1;
+				var _p25 = A2(_elm_lang$core$Debug$log, 'counted_occurrences', counted_occurrences);
 				var counted_words = _user$project$Text_Section_Words_Tag$intersperseWithWhitespace(
 					A2(_user$project$Text_Section_Words_Tag$parseCompoundWords, is_part_of_compound_word, counted_occurrences));
 				var new_nodes = A2(
 					_elm_lang$core$List$map,
-					function (_p25) {
-						var _p26 = _p25;
-						return A2(tag_word, _p26._1, _p26._0);
+					function (_p26) {
+						var _p27 = _p26;
+						return A2(tag_word, _p27._1, _p27._0);
 					},
 					counted_words);
+				var _p28 = A2(
+					_elm_lang$core$Debug$log,
+					'parse compound words',
+					A2(_user$project$Text_Section_Words_Tag$parseCompoundWords, is_part_of_compound_word, counted_occurrences));
 				return {
 					ctor: '_Tuple2',
-					_0: A2(_elm_lang$core$Basics_ops['++'], _p30, new_nodes),
+					_0: A2(_elm_lang$core$Basics_ops['++'], _p32, new_nodes),
 					_1: token_occurrences
 				};
 			case 'Element':
-				var _p27 = A4(_user$project$Text_Section_Words_Tag$tagWordsToVDOMWithFreqs, tag_word, is_part_of_compound_word, _p31, _p23._2);
-				var new_msgs = _p27._0;
-				var new_occurrences = _p27._1;
+				var _p29 = A4(_user$project$Text_Section_Words_Tag$tagWordsToVDOMWithFreqs, tag_word, is_part_of_compound_word, _p33, _p23._2);
+				var new_msgs = _p29._0;
+				var new_occurrences = _p29._1;
 				var new_node = A3(
 					_elm_lang$html$Html$node,
 					_p23._0,
 					A2(
 						_elm_lang$core$List$map,
-						function (_p28) {
-							var _p29 = _p28;
-							return A2(_elm_lang$html$Html_Attributes$attribute, _p29._0, _p29._1);
+						function (_p30) {
+							var _p31 = _p30;
+							return A2(_elm_lang$html$Html_Attributes$attribute, _p31._0, _p31._1);
 						},
 						_p23._1),
 					new_msgs);
@@ -25113,7 +25118,7 @@ var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F4(
 					ctor: '_Tuple2',
 					_0: A2(
 						_elm_lang$core$Basics_ops['++'],
-						_p30,
+						_p32,
 						{
 							ctor: '::',
 							_0: new_node,
@@ -25126,13 +25131,13 @@ var _user$project$Text_Section_Words_Tag$tagWordAndToVDOM = F4(
 					ctor: '_Tuple2',
 					_0: A2(
 						_elm_lang$core$Basics_ops['++'],
-						_p30,
+						_p32,
 						{
 							ctor: '::',
 							_0: _elm_lang$virtual_dom$VirtualDom$text(''),
 							_1: {ctor: '[]'}
 						}),
-					_1: _p31
+					_1: _p33
 				};
 		}
 	});
@@ -25349,15 +25354,16 @@ var _user$project$TextReader_View$view_text_introduction = function (text) {
 		_jinjor$elm_html_parser$HtmlParser_Util$toVirtualDom(
 			_jinjor$elm_html_parser$HtmlParser$parse(text.introduction)));
 };
-var _user$project$TextReader_View$is_part_of_compound_word = F3(
+var _user$project$TextReader_View$isPartOfCompoundWord = F3(
 	function (section, instance, word) {
 		var _p1 = A3(_user$project$TextReader_Section_Model$getTextWord, section, instance, word);
 		if (_p1.ctor === 'Just') {
 			var _p2 = _user$project$TextReader_TextWord$group(_p1._0);
 			if (_p2.ctor === 'Just') {
-				var _p3 = _p2._0;
+				var _p4 = _p2._0;
+				var _p3 = A2(_elm_lang$core$Debug$log, 'group details', _p4);
 				return _elm_lang$core$Maybe$Just(
-					{ctor: '_Tuple3', _0: _p3.instance, _1: _p3.pos, _2: _p3.length});
+					{ctor: '_Tuple3', _0: _p4.instance, _1: _p4.pos, _2: _p4.length});
 			} else {
 				return _elm_lang$core$Maybe$Nothing;
 			}
@@ -25429,14 +25435,14 @@ var _user$project$TextReader_View$view_flashcard_words = function (model) {
 		{ctor: '[]'},
 		A2(
 			_elm_lang$core$List$map,
-			function (_p4) {
-				var _p5 = _p4;
+			function (_p5) {
+				var _p6 = _p5;
 				return A2(
 					_elm_lang$html$Html$div,
 					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text(_p5._0),
+						_0: _elm_lang$html$Html$text(_p6._0),
 						_1: {ctor: '[]'}
 					});
 			},
@@ -25490,8 +25496,8 @@ var _user$project$TextReader_View$view_translations = function (defs) {
 			_1: {ctor: '[]'}
 		},
 		function () {
-			var _p6 = defs;
-			if (_p6.ctor === 'Just') {
+			var _p7 = defs;
+			if (_p7.ctor === 'Just') {
 				return A2(
 					_elm_lang$core$List$map,
 					_user$project$TextReader_View$view_translation,
@@ -25500,7 +25506,7 @@ var _user$project$TextReader_View$view_translations = function (defs) {
 						function (tr) {
 							return tr.correct_for_context;
 						},
-						_p6._0));
+						_p7._0));
 			} else {
 				return {ctor: '[]'};
 			}
@@ -25743,12 +25749,12 @@ var _user$project$TextReader_View$tagWord = F4(
 				}
 			});
 		var reader_word = A4(_user$project$TextReader_Model$new, id, instance, token, textreader_textword);
-		var _p7 = _elm_lang$core$Native_Utils.eq(token, ' ');
-		if (_p7 === true) {
+		var _p8 = _elm_lang$core$Native_Utils.eq(token, ' ');
+		if (_p8 === true) {
 			return _elm_lang$virtual_dom$VirtualDom$text(token);
 		} else {
-			var _p8 = textreader_textword;
-			if (_p8.ctor === 'Just') {
+			var _p9 = textreader_textword;
+			if (_p9.ctor === 'Just') {
 				return A3(
 					_elm_lang$html$Html$node,
 					'span',
@@ -25796,7 +25802,7 @@ var _user$project$TextReader_View$tagWord = F4(
 							}),
 						_1: {
 							ctor: '::',
-							_0: A3(_user$project$TextReader_View$view_gloss, model, reader_word, _p8._0),
+							_0: A3(_user$project$TextReader_View$view_gloss, model, reader_word, _p9._0),
 							_1: {ctor: '[]'}
 						}
 					});
@@ -25811,7 +25817,7 @@ var _user$project$TextReader_View$view_text_section = F2(
 		var text_body_vdom = A3(
 			_user$project$Text_Section_Words_Tag$tagWordsAndToVDOM,
 			A2(_user$project$TextReader_View$tagWord, model, text_reader_section),
-			_user$project$TextReader_View$is_part_of_compound_word(text_reader_section),
+			_user$project$TextReader_View$isPartOfCompoundWord(text_reader_section),
 			_jinjor$elm_html_parser$HtmlParser$parse(text_section.body));
 		var section_title = A2(
 			_elm_lang$core$Basics_ops['++'],
@@ -25864,8 +25870,8 @@ var _user$project$TextReader_View$view_text_section = F2(
 	});
 var _user$project$TextReader_View$view_content = function (model) {
 	var content = function () {
-		var _p9 = model.progress;
-		switch (_p9.ctor) {
+		var _p10 = model.progress;
+		switch (_p10.ctor) {
 			case 'ViewIntro':
 				return {
 					ctor: '::',
@@ -25905,7 +25911,7 @@ var _user$project$TextReader_View$view_content = function (model) {
 			case 'ViewSection':
 				return {
 					ctor: '::',
-					_0: A2(_user$project$TextReader_View$view_text_section, model, _p9._0),
+					_0: A2(_user$project$TextReader_View$view_text_section, model, _p10._0),
 					_1: {
 						ctor: '::',
 						_0: _user$project$TextReader_View$view_exceptions(model),
@@ -25934,7 +25940,7 @@ var _user$project$TextReader_View$view_content = function (model) {
 			case 'Complete':
 				return {
 					ctor: '::',
-					_0: A2(_user$project$TextReader_View$view_text_complete, model, _p9._0),
+					_0: A2(_user$project$TextReader_View$view_text_complete, model, _p10._0),
 					_1: {ctor: '[]'}
 				};
 			default:
