@@ -122,11 +122,7 @@ tagWordAndToVDOM tag_word is_part_of_compound_word node (html, occurrences) =
 
         (counted_occurrences, token_occurrences) = countOccurrences word_tokens occurrences
 
-        _ = Debug.log "counted_occurrences" counted_occurrences
-
         counted_words = intersperseWithWhitespace (parseCompoundWords is_part_of_compound_word counted_occurrences)
-
-        _ = Debug.log "parse compound words" (parseCompoundWords is_part_of_compound_word counted_occurrences)
 
         new_nodes = List.map (\(token, instance) -> tag_word instance token) counted_words
       in
