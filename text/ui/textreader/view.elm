@@ -44,20 +44,27 @@ tagWord model text_reader_section instance token =
         False ->
           case textreader_textword of
             Just text_word ->
-              Html.node "span" [
-                classList [
-                ("defined-word", True)
-              , ("cursor", True)]
-              , onClick (ToggleGloss reader_word)
-              ] [
-                span [classList [("highlighted", TextReader.Model.glossed reader_word model.gloss)] ] [
-                  VirtualDom.text token
-                ]
-              , view_gloss model reader_word text_word
-              ]
+              if TextReader.TextWord.hasTranslations text_word then
+                view_defined_word model reader_word text_word token
+              else
+                VirtualDom.text token
 
             Nothing ->
               VirtualDom.text token
+
+view_defined_word : Model -> TextReader.Model.TextReaderWord -> TextReader.TextWord.TextWord -> String -> Html Msg
+view_defined_word model reader_word text_word token =
+  Html.node "span" [
+    classList [
+    ("defined-word", True)
+  , ("cursor", True)]
+  , onClick (ToggleGloss reader_word)
+  ] [
+    span [classList [("highlighted", TextReader.Model.glossed reader_word model.gloss)] ] [
+      VirtualDom.text token
+    ]
+  , view_gloss model reader_word text_word
+  ]
 
 view_answer : Section -> TextQuestion -> TextAnswer -> Html Msg
 view_answer text_section text_question text_answer =

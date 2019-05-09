@@ -61,6 +61,15 @@ grammemesToString text_word =
     Nothing ->
       ""
 
+hasTranslations : TextWord -> Bool
+hasTranslations text_word =
+  case translations text_word of
+    Just trs ->
+      True
+
+    Nothing ->
+      False
+
 translations : TextWord -> Maybe Translations
 translations (TextWord _ _ _ _ translations _) =
   translations
