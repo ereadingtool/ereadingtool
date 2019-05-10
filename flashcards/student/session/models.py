@@ -11,7 +11,7 @@ class StudentFlashcardSession(FlashcardSession):
     student = models.OneToOneField(Student, null=False, related_name='flashcard_session', on_delete=models.CASCADE)
 
     current_flashcard = models.OneToOneField(StudentFlashcard, null=True, blank=True, related_name='session',
-                                             on_delete=models.DO_NOTHING)
+                                             on_delete=models.CASCADE)
 
     @property
     def flashcards(self) -> List[StudentFlashcard]:

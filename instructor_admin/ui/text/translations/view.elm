@@ -60,7 +60,7 @@ tagWord model parent_msg instance token =
   in
     case token == " " of
       True ->
-        span [class "space"] []
+        VirtualDom.text token
 
       False ->
         let
