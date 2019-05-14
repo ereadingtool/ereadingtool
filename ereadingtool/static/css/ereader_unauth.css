@@ -1,0 +1,26 @@
+#body {
+    display: grid;
+
+    grid-template-columns: 15% [body-col] auto 15%;
+    font-size: 19px;
+}
+
+#acknowledgements {
+    padding-top: 5%;
+    grid-column: body-col;
+    display: grid;
+}
+
+#acknowledgements > #title {
+    padding-bottom: 3%;
+}
+
+#about {
+    padding-top: 5%;
+    grid-column: body-col;
+    display: grid;
+}
+
+#about > #title {
+    padding-bottom: 3%;
+}

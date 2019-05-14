@@ -17,6 +17,7 @@ view_logo event_attr =
   Html.img ([
       attribute "src" "/static/img/star_logo.png"
     , id "logo"
+    , attribute "alt" "Steps To Advanced Reading Logo"
     ] ++ event_attr) []
 
 view_header : List (Html msg) -> List (Html msg) -> Html msg

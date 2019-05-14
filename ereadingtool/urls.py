@@ -19,11 +19,16 @@ from django.views.generic import RedirectView, TemplateView
 
 from mixins.view import (ElmLoadJsView, NoAuthElmLoadJsView)
 
+from ereadingtool.views import AcknowledgementView, AboutView
+
 from user.views.username import username
 
 urlpatterns = [
     path('load_elm.js', ElmLoadJsView.as_view(), name='load-elm'),
     path('load_elm_unauth.js', NoAuthElmLoadJsView.as_view(), name='load-elm-unauth'),
+
+    path('acknowledgements/', AcknowledgementView.as_view()),
+    path('about/', AboutView.as_view()),
 
     path('', include('user.urls.instructor')),
     path('', include('user.urls.student')),
