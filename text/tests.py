@@ -655,27 +655,76 @@ class TestText(TestData, TestUser, TestCase):
 
         self.assertTrue('deleted' in resp_content)
 
-    def test_delete_text_with_student_flashcards(self):
+    def test_delete_text_with_one_student_flashcard(self):
         test_data = self.get_test_data()
 
         test_data['text_sections'][0]['body'] = 'заявление неделю Число'
 
-        self.text = self.create_text(test_data=test_data)
+        text = self.create_text(test_data=test_data)
 
-        text_sections = self.text.sections.all()
+        text_sections = text.sections.all()
+
+        заявление = TextWord.create(phrase='заявление', instance=0, text_section=text_sections[0].pk)
 
         TextPhraseTranslation.create(
-            text_phrase=TextWord.create(phrase='заявление', instance=0, text_section=text_sections[0].pk),
+            text_phrase=заявление,
             phrase='statement',
             correct_for_context=True
         )
 
-        self.test_student = Student.objects.filter()[0]
+        test_student = Student.objects.filter()[0]
 
-        text_phrase = TextPhrase.objects.get(phrase='заявление')
+        test_student.add_to_flashcards(заявление)
 
-        self.test_student.add_to_flashcards(text_phrase)
+        student_flashcard_session, _ = StudentFlashcardSession.objects.get_or_create(student=test_student)
 
-        StudentFlashcardSession.objects.get_or_create(student=self.test_student)
+        text.delete()
 
-        self.text.delete()
+        # session is deleted if there's a single flashcard
+        self.assertFalse(StudentFlashcardSession.objects.filter(pk=student_flashcard_session.pk).exists())
+
+    def test_delete_text_with_multiple_student_flashcards(self):
+        test_data_one = self.get_test_data()
+        test_data_two = self.get_test_data()
+
+        test_data_one['text_sections'][0]['body'] = 'заявление'
+        test_data_two['text_sections'][0]['body'] = 'неделю'
+
+        text_one = self.create_text(test_data=test_data_one)
+        text_two = self.create_text(test_data=test_data_two)
+
+        text_one_section = text_one.sections.all()
+        text_two_section = text_two.sections.all()
+
+        заявление = TextWord.create(phrase='заявление', instance=0, text_section=text_one_section[0].pk)
+        неделю = TextWord.create(phrase='неделю', instance=0, text_section=text_two_section[0].pk)
+
+        TextPhraseTranslation.create(
+            text_phrase=заявление,
+            phrase='statement',
+            correct_for_context=True
+        )
+
+        TextPhraseTranslation.create(
+            text_phrase=неделю,
+            phrase='a week',
+            correct_for_context=True
+        )
+
+        test_student = Student.objects.filter()[0]
+
+        test_student.add_to_flashcards(заявление)
+        test_student.add_to_flashcards(неделю)
+
+        student_flashcard_session, _ = StudentFlashcardSession.objects.get_or_create(student=test_student)
+
+        text_one.delete()
+
+        # session isn't deleted if there's more than one flashcard
+        self.assertTrue(StudentFlashcardSession.objects.filter(pk=student_flashcard_session.pk).exists())
+
+        student_flashcard_session.refresh_from_db()
+
+        self.assertTrue(student_flashcard_session.current_flashcard)
+
+        self.assertTrue(student_flashcard_session.current_flashcard.phrase, неделю)
