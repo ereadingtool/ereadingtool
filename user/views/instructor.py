@@ -60,6 +60,9 @@ class ElmLoadJsInstructorNoAuthView(NoAuthElmLoadJsView):
             'reset_pass_endpoint': url_elm_value(reverse('api-password-reset')),
             'forgot_pass_endpoint': url_elm_value(reverse('api-password-reset-confirm')),
             'forgot_password_url': url_elm_value(reverse('password-reset')),
+
+            'acknowledgements_url': url_elm_value(reverse('acknowledgements')),
+            'about_url': url_elm_value(reverse('about'))
         })
 
         return context

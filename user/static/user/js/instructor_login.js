@@ -11801,6 +11801,14 @@ var _user$project$User$redirectURI = function (_p12) {
 	var _p13 = _p12;
 	return _p13._0;
 };
+var _user$project$User$aboutPageURL = function (_p14) {
+	var _p15 = _p14;
+	return _p15._0;
+};
+var _user$project$User$acknowledgePageURL = function (_p16) {
+	var _p17 = _p16;
+	return _p17._0;
+};
 var _user$project$User$UserID = function (a) {
 	return {ctor: 'UserID', _0: a};
 };
@@ -11824,6 +11832,12 @@ var _user$project$User$LoginPageURL = function (a) {
 };
 var _user$project$User$ForgotPassURL = function (a) {
 	return {ctor: 'ForgotPassURL', _0: a};
+};
+var _user$project$User$AcknowledgePageURL = function (a) {
+	return {ctor: 'AcknowledgePageURL', _0: a};
+};
+var _user$project$User$AboutPageURL = function (a) {
+	return {ctor: 'AboutPageURL', _0: a};
 };
 
 var _user$project$Student_Performance_Report$emptyPerformanceReport = {html: '<div>No results found.</div>', pdf_link: ''};
@@ -13900,6 +13914,14 @@ var _user$project$Login$loginURI = function (login) {
 		return _p6._1;
 	}
 };
+var _user$project$Login$flagsToAcknowledgementURL = function (flags) {
+	return _user$project$User$AcknowledgePageURL(
+		_user$project$User$URL(flags.acknowledgements_url));
+};
+var _user$project$Login$flagsToAboutURL = function (flags) {
+	return _user$project$User$AboutPageURL(
+		_user$project$User$URL(flags.about_url));
+};
 var _user$project$Login$LoginResp = F2(
 	function (a, b) {
 		return {id: a, redirect: b};
@@ -13923,9 +13945,9 @@ var _user$project$Login$LoginParams = F2(
 	function (a, b) {
 		return {username: a, password: b};
 	});
-var _user$project$Login$Model = F4(
-	function (a, b, c, d) {
-		return {flags: a, login_params: b, login: c, errors: d};
+var _user$project$Login$Model = F6(
+	function (a, b, c, d, e, f) {
+		return {flags: a, login_params: b, login: c, acknowledgements_page_url: d, about_page_url: e, errors: f};
 	});
 var _user$project$Login$UpdatePassword = function (a) {
 	return {ctor: 'UpdatePassword', _0: a};
@@ -14328,6 +14350,8 @@ var _user$project$Login$init = function (flags) {
 			flags: flags,
 			login_params: A2(_user$project$Login$LoginParams, '', ''),
 			login: login,
+			about_page_url: _user$project$Login$flagsToAboutURL(flags),
+			acknowledgements_page_url: _user$project$Login$flagsToAcknowledgementURL(flags),
 			errors: _elm_lang$core$Dict$fromList(
 				{ctor: '[]'})
 		},
@@ -14343,46 +14367,56 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 	{init: _user$project$Login$init, view: _user$project$Login$view, subscriptions: _user$project$Login$subscriptions, update: _user$project$Login$update})(
 	A2(
 		_elm_lang$core$Json_Decode$andThen,
-		function (forgot_pass_endpoint) {
+		function (about_url) {
 			return A2(
 				_elm_lang$core$Json_Decode$andThen,
-				function (forgot_password_url) {
+				function (acknowledgements_url) {
 					return A2(
 						_elm_lang$core$Json_Decode$andThen,
-						function (login_page_url) {
+						function (forgot_pass_endpoint) {
 							return A2(
 								_elm_lang$core$Json_Decode$andThen,
-								function (login_uri) {
+								function (forgot_password_url) {
 									return A2(
 										_elm_lang$core$Json_Decode$andThen,
-										function (reset_pass_endpoint) {
+										function (login_page_url) {
 											return A2(
 												_elm_lang$core$Json_Decode$andThen,
-												function (signup_page_url) {
+												function (login_uri) {
 													return A2(
 														_elm_lang$core$Json_Decode$andThen,
-														function (user_type) {
+														function (reset_pass_endpoint) {
 															return A2(
 																_elm_lang$core$Json_Decode$andThen,
-																function (csrftoken) {
-																	return _elm_lang$core$Json_Decode$succeed(
-																		{forgot_pass_endpoint: forgot_pass_endpoint, forgot_password_url: forgot_password_url, login_page_url: login_page_url, login_uri: login_uri, reset_pass_endpoint: reset_pass_endpoint, signup_page_url: signup_page_url, user_type: user_type, csrftoken: csrftoken});
+																function (signup_page_url) {
+																	return A2(
+																		_elm_lang$core$Json_Decode$andThen,
+																		function (user_type) {
+																			return A2(
+																				_elm_lang$core$Json_Decode$andThen,
+																				function (csrftoken) {
+																					return _elm_lang$core$Json_Decode$succeed(
+																						{about_url: about_url, acknowledgements_url: acknowledgements_url, forgot_pass_endpoint: forgot_pass_endpoint, forgot_password_url: forgot_password_url, login_page_url: login_page_url, login_uri: login_uri, reset_pass_endpoint: reset_pass_endpoint, signup_page_url: signup_page_url, user_type: user_type, csrftoken: csrftoken});
+																				},
+																				A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string));
+																		},
+																		A2(_elm_lang$core$Json_Decode$field, 'user_type', _elm_lang$core$Json_Decode$string));
 																},
-																A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string));
+																A2(_elm_lang$core$Json_Decode$field, 'signup_page_url', _elm_lang$core$Json_Decode$string));
 														},
-														A2(_elm_lang$core$Json_Decode$field, 'user_type', _elm_lang$core$Json_Decode$string));
+														A2(_elm_lang$core$Json_Decode$field, 'reset_pass_endpoint', _elm_lang$core$Json_Decode$string));
 												},
-												A2(_elm_lang$core$Json_Decode$field, 'signup_page_url', _elm_lang$core$Json_Decode$string));
+												A2(_elm_lang$core$Json_Decode$field, 'login_uri', _elm_lang$core$Json_Decode$string));
 										},
-										A2(_elm_lang$core$Json_Decode$field, 'reset_pass_endpoint', _elm_lang$core$Json_Decode$string));
+										A2(_elm_lang$core$Json_Decode$field, 'login_page_url', _elm_lang$core$Json_Decode$string));
 								},
-								A2(_elm_lang$core$Json_Decode$field, 'login_uri', _elm_lang$core$Json_Decode$string));
+								A2(_elm_lang$core$Json_Decode$field, 'forgot_password_url', _elm_lang$core$Json_Decode$string));
 						},
-						A2(_elm_lang$core$Json_Decode$field, 'login_page_url', _elm_lang$core$Json_Decode$string));
+						A2(_elm_lang$core$Json_Decode$field, 'forgot_pass_endpoint', _elm_lang$core$Json_Decode$string));
 				},
-				A2(_elm_lang$core$Json_Decode$field, 'forgot_password_url', _elm_lang$core$Json_Decode$string));
+				A2(_elm_lang$core$Json_Decode$field, 'acknowledgements_url', _elm_lang$core$Json_Decode$string));
 		},
-		A2(_elm_lang$core$Json_Decode$field, 'forgot_pass_endpoint', _elm_lang$core$Json_Decode$string)));
+		A2(_elm_lang$core$Json_Decode$field, 'about_url', _elm_lang$core$Json_Decode$string)));
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};

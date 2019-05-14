@@ -14,6 +14,17 @@ type LoginPageURL = LoginPageURL URL
 
 type ForgotPassURL = ForgotPassURL URL
 
+type AcknowledgePageURL = AcknowledgePageURL URL
+type AboutPageURL = AboutPageURL URL
+
+
+acknowledgePageURL : AcknowledgePageURL -> URL
+acknowledgePageURL (AcknowledgePageURL url) =
+  url
+
+aboutPageURL : AboutPageURL -> URL
+aboutPageURL (AboutPageURL url) =
+  url
 
 redirectURI : RedirectURI -> URI
 redirectURI (RedirectURI uri) = uri

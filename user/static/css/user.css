@@ -81,6 +81,16 @@ select {
     padding-bottom: 15px;
 }
 
+#acknowledgements-and-about {
+    padding-top: 2%;
+
+    display: grid;
+
+    grid-template-columns: 150px 15px;
+
+    grid-column-gap: 2px;
+}
+
 @media only screen and (max-width:768px) {
     .help_msgs, .button, .signup_submit, select, input {
         width: 100%;
