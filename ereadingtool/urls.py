@@ -27,8 +27,8 @@ urlpatterns = [
     path('load_elm.js', ElmLoadJsView.as_view(), name='load-elm'),
     path('load_elm_unauth.js', NoAuthElmLoadJsView.as_view(), name='load-elm-unauth'),
 
-    path('acknowledgements/', AcknowledgementView.as_view()),
-    path('about/', AboutView.as_view()),
+    path('acknowledgements/', AcknowledgementView.as_view(), name='acknowledgements'),
+    path('about/', AboutView.as_view(), name='about'),
 
     path('', include('user.urls.instructor')),
     path('', include('user.urls.student')),
