@@ -96,8 +96,6 @@ class FlashcardSession(models.Model):
         """
         super(FlashcardSession, self).__init__(*args, **kwargs)
 
-        self.deleted = False
-
         if not self.current_flashcard:
             self.current_flashcard = self.flashcards[0]
 

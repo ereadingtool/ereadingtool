@@ -38,7 +38,7 @@ class TestFlashcardStateMachine(TestData, TestUser, TestCase):
         test_data['text_sections'][0]['body'] = 'заявление неделю Число'
         test_data['text_sections'][1]['body'] = 'заявление неделю стрельбы вещи'
 
-        self.text = self.text_test.test_post_text(test_data=test_data)
+        self.text = self.text_test.create_text(test_data=test_data)
 
         text_sections = self.text.sections.all()
 

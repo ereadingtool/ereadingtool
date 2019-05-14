@@ -8,6 +8,8 @@ from django.test import TestCase
 from django.test.client import Client
 from statemachine import State
 
+from flashcards.student.session.models import StudentFlashcardSession
+
 from ereadingtool.test.data import TestData
 from ereadingtool.test.user import TestUser
 from ereadingtool.urls import reverse_lazy
@@ -65,7 +67,7 @@ class TestText(TestData, TestUser, TestCase):
         test_data['text_sections'][0]['body'] = test_body
         test_data['text_sections'][1]['body'] = test_body
 
-        self.test_post_text(test_data=test_data)
+        self.create_text(test_data=test_data)
 
         self.assertTrue(TextSection.objects.count())
 
@@ -86,7 +88,7 @@ class TestText(TestData, TestUser, TestCase):
 
         test_data['text_sections'][0]['body'] = test_body
 
-        self.test_post_text(test_data=test_data)
+        self.create_text(test_data=test_data)
 
         self.assertTrue(TextSection.objects.count())
 
@@ -107,7 +109,7 @@ class TestText(TestData, TestUser, TestCase):
     def run_definition_background_job(self, test_data: Dict) -> Tuple[int, TextSection]:
         num_of_words = len(test_data['text_sections'][0]['body'].split())
 
-        self.test_post_text(test_data=test_data)
+        self.create_text(test_data=test_data)
 
         # receive one message from the channel layer
         channel_layer = channels.layers.get_channel_layer()
@@ -223,24 +225,6 @@ class TestText(TestData, TestUser, TestCase):
             self.assertEquals(text_reading.current_state, final_state)
 
         return text_reading
-
-    def create_text(self, test_data: Dict = None, diff_data: Dict = None) -> Text:
-        text_data = test_data or self.get_test_data()
-
-        if diff_data:
-            text_data.update(diff_data)
-
-        resp = self.instructor.post(reverse_lazy('text-api'),
-                                    json.dumps(text_data),
-                                    content_type='application/json')
-
-        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
-
-        resp_content = json.loads(resp.content.decode('utf8'))
-
-        text = Text.objects.get(pk=resp_content['id'])
-
-        return text
 
     def test_set_difficulty(self):
         text = self.create_text(diff_data={'difficulty': 'advanced_mid'})
@@ -597,6 +581,24 @@ class TestText(TestData, TestUser, TestCase):
 
         self.assertEquals(len(text_section.body), test_text_section_body_size)
 
+    def create_text(self, test_data: Dict = None, diff_data: Dict = None) -> Text:
+        text_data = test_data or self.get_test_data()
+
+        if diff_data:
+            text_data.update(diff_data)
+
+        resp = self.instructor.post(reverse_lazy('text-api'),
+                                    json.dumps(text_data),
+                                    content_type='application/json')
+
+        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        resp_content = json.loads(resp.content.decode('utf8'))
+
+        text = Text.objects.get(pk=resp_content['id'])
+
+        return text
+
     def test_post_text(self, test_data: Optional[Dict] = None) -> Text:
         test_data = test_data or self.get_test_data()
 
@@ -638,20 +640,11 @@ class TestText(TestData, TestUser, TestCase):
 
         return text
 
-    def test_delete_text(self):
-        resp = self.instructor.post(reverse_lazy('text-api'),
-                                    json.dumps(self.get_test_data()),
-                                    content_type='application/json')
+    def test_delete_text(self, text: Optional[Text] = None):
+        if text is None:
+            text = self.create_text()
 
-        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
-
-        self.assertEquals(Text.objects.count(), 1)
-
-        resp_content = json.loads(resp.content.decode('utf8'))
-
-        self.assertIn('id', resp_content)
-
-        resp = self.instructor.delete(reverse_lazy('text-item-api', kwargs={'pk': resp_content['id']}),
+        resp = self.instructor.delete(reverse_lazy('text-item-api', kwargs={'pk': text.pk}),
                                       content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
@@ -661,3 +654,77 @@ class TestText(TestData, TestUser, TestCase):
         self.assertTrue(resp_content)
 
         self.assertTrue('deleted' in resp_content)
+
+    def test_delete_text_with_one_student_flashcard(self):
+        test_data = self.get_test_data()
+
+        test_data['text_sections'][0]['body'] = 'заявление неделю Число'
+
+        text = self.create_text(test_data=test_data)
+
+        text_sections = text.sections.all()
+
+        заявление = TextWord.create(phrase='заявление', instance=0, text_section=text_sections[0].pk)
+
+        TextPhraseTranslation.create(
+            text_phrase=заявление,
+            phrase='statement',
+            correct_for_context=True
+        )
+
+        test_student = Student.objects.filter()[0]
+
+        test_student.add_to_flashcards(заявление)
+
+        student_flashcard_session, _ = StudentFlashcardSession.objects.get_or_create(student=test_student)
+
+        text.delete()
+
+        # session is deleted if there's a single flashcard
+        self.assertFalse(StudentFlashcardSession.objects.filter(pk=student_flashcard_session.pk).exists())
+
+    def test_delete_text_with_multiple_student_flashcards(self):
+        test_data_one = self.get_test_data()
+        test_data_two = self.get_test_data()
+
+        test_data_one['text_sections'][0]['body'] = 'заявление'
+        test_data_two['text_sections'][0]['body'] = 'неделю'
+
+        text_one = self.create_text(test_data=test_data_one)
+        text_two = self.create_text(test_data=test_data_two)
+
+        text_one_section = text_one.sections.all()
+        text_two_section = text_two.sections.all()
+
+        заявление = TextWord.create(phrase='заявление', instance=0, text_section=text_one_section[0].pk)
+        неделю = TextWord.create(phrase='неделю', instance=0, text_section=text_two_section[0].pk)
+
+        TextPhraseTranslation.create(
+            text_phrase=заявление,
+            phrase='statement',
+            correct_for_context=True
+        )
+
+        TextPhraseTranslation.create(
+            text_phrase=неделю,
+            phrase='a week',
+            correct_for_context=True
+        )
+
+        test_student = Student.objects.filter()[0]
+
+        test_student.add_to_flashcards(заявление)
+        test_student.add_to_flashcards(неделю)
+
+        student_flashcard_session, _ = StudentFlashcardSession.objects.get_or_create(student=test_student)
+
+        text_one.delete()
+
+        # session isn't deleted if there's more than one flashcard
+        self.assertTrue(StudentFlashcardSession.objects.filter(pk=student_flashcard_session.pk).exists())
+
+        student_flashcard_session.refresh_from_db()
+
+        self.assertTrue(student_flashcard_session.current_flashcard)
+
+        self.assertTrue(student_flashcard_session.current_flashcard.phrase, неделю)
