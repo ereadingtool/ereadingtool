@@ -44,7 +44,7 @@
                     Instructors who want to add or edit texts on this site can access the instructor log in from this page.
                     {% endblocktrans %}
                 </p>
-                    <img src="{% static "img/tutorial/1.jpg" %}" alt="Screenshot of login page">
+                <img src="{% static "img/tutorial/1.jpg" %}" alt="{{ alt_txt_1 }}" title="{{ alt_txt1 }}">
             </li>
 
             <li>
@@ -57,8 +57,7 @@
                     level and create their own username (which is shown at the top right corner of the page).
                     {% endblocktrans %}
                 </p>
-                    <img src="{% static "img/tutorial/2.jpg" %}"
-                         alt="Screenshot of profile page with difficulty level options">
+                <img src="{% static "img/tutorial/2.jpg" %}" alt="{{ alt_txt_2 }}" title="{{ alt_txt_2 }}">
             </li>
 
             <li>
@@ -70,7 +69,7 @@
                     information as a PDF which they can choose to share with an advisor.
                     {% endblocktrans %}
                 </p>
-                    <img src="{% static "img/tutorial/3.jpg" %}" alt="Screenshot of student performance table">
+                <img src="{% static "img/tutorial/3.jpg" %}" alt="{{ alt_txt_3 }}" title="{{ alt_txt_3 }}">
             </li>
 
             <li>
@@ -82,8 +81,7 @@
                     will be pre-selected in this filter. Students can easily select and deselect levels.
                     {% endblocktrans %}
                 </p>
-                    <img src="{% static "img/tutorial/4.jpg" %}"
-                         alt="Screenshot of search filter for text difficulty level">
+                <img src="{% static "img/tutorial/4.jpg" %}" alt="{{ alt_txt_4 }}" title="{{ alt_txt_4 }}">
             </li>
 
             <li>
@@ -93,7 +91,7 @@
                     can select what sounds interesting to them. There are 19 subject area tags.
                     {% endblocktrans %}
                 </p>
-                    <img src="{% static "img/tutorial/5.jpg" %}" alt="Screenshot of search filter for text topics">
+                <img src="{% static "img/tutorial/5.jpg" %}" alt="{{ alt_txt_5 }}" title="{{ alt_txt_5 }}">
             </li>
 
             <li>
@@ -106,7 +104,7 @@
                     last time the text was read and the number of questions answered correctly.
                     {% endblocktrans %}
                 </p>
-                    <img src="{% static "img/tutorial/6.jpg" %}" alt="Screenshot of search filter for text read status">
+                <img src="{% static "img/tutorial/6.jpg" %}" alt="{{ alt_txt_6 }}" title="{{ alt_txt_6 }}">
                 <p>
                     {% blocktrans %}
                     If students do not use any of the filters (i.e., difficulty, topic tags, and read status),
@@ -122,9 +120,8 @@
                     that orients them to the genre and type of text.
                     {% endblocktrans %}
                 </p>
-                    <img src="{% static "img/tutorial/7.jpg" %}" alt="Screenshot of search filter for text read status">
+                <img src="{% static "img/tutorial/7.jpg" %}" alt="{{ alt_txt_7 }}" title="{{ alt_txt_7 }}">
             </li>
-
 
             <li>
                 <p>
@@ -133,8 +130,7 @@
                     longer texts will be broken up into multiple sections.
                     {% endblocktrans %}
                 </p>
-                    <img src="{% static "img/tutorial/8.jpg" %}"
-                         alt="Screenshot of one section of a text">
+                <img src="{% static "img/tutorial/8.jpg" %}" alt="{{ alt_txt_8 }}" title="{{ alt_txt_8 }}">
             </li>
 
             <li>
@@ -145,8 +141,7 @@
                     to their flashcards for later review.
                     {% endblocktrans %}
                 </p>
-                    <img src="{% static "img/tutorial/9.jpg" %}"
-                         alt="Screenshot of a text with a word glossed">
+                <img src="{% static "img/tutorial/9.jpg" %}" alt="{{ alt_txt_9 }}" title="{{ alt_txt_9 }}">
             </li>
 
             <li>
@@ -157,8 +152,7 @@
                     questions before proceeding to the next section of the text.
                     {% endblocktrans %}
                 </p>
-                    <img src="{% static "img/tutorial/10.jpg" %}"
-                         alt="Screenshot of a multiple-choice comprehension question">
+                <img src="{% static "img/tutorial/10.jpg" %}" alt="{{ alt_txt_10 }}" title="{{ alt_txt_10 }}">
             </li>
 
             <li>
@@ -170,12 +164,12 @@
                     feedback also tells which answer was correct and why. The feedback boxes provide a parsed bilingual
                     guide to the part of the text related to the question.
                     {% endblocktrans %}
-                </p>
-                    <img src="{% static "img/tutorial/11_left.jpg" %}"
-                         alt="Screenshot of a text comprehension question answered correctly with feedback">
+                    </p>
+                    <img src="{% static "img/tutorial/11_left.jpg" %}" alt="{{ alt_txt_11_left }}"
+                         title="{{ all_txt_11_left }}">
 
-                    <img src="{% static "img/tutorial/11_right.jpg" %}"
-                         alt="Screenshot of a text comprehension question answered incorrectly with feedback">
+                    <img src="{% static "img/tutorial/11_right.jpg" %}" alt="{{ alt_txt_11_right }}"
+                         title="{{ alt_txt_11_right }}">
             </li>
 
             <li>
@@ -186,8 +180,7 @@
                     a message directing them back to the Search Texts page.
                     {% endblocktrans %}
                 </p>
-                    <img src="{% static "img/tutorial/12.jpg" %}"
-                         alt="Screenshot of a text comprehension question answered correctly with feedback">
+                <img src="{% static "img/tutorial/12.jpg" %}" alt="{{ alt_txt_12 }}" title="{{ alt_txt_12 }}">
             </li>
 
             <li>
@@ -197,9 +190,7 @@
                     with flashcards in two modes “Review Only” and “Review and Answer”.
                     {% endblocktrans %}
                 </p>
-                    <img src="{% static "img/tutorial/13.jpg" %}"
-                         alt="Screenshot of the two mode options for flashcards, which are “Review Only” mode and
-                         “Review and Answer” mode">
+                <img src="{% static "img/tutorial/13.jpg" %}" alt="{{ alt_txt_13 }}" title="{{ alt_txt_13 }}">
             </li>
 
             <li>
@@ -210,13 +201,11 @@
                     flashcard to flip it over and see if their guess was correct.
                     {% endblocktrans %}
                 </p>
-                    <img src="{% static "img/tutorial/14_left.jpg" %}"
-                         alt="Screenshot of the front of a flashcard in “Review only” mode, with the Russian word and its
-                         context">
+                <img src="{% static "img/tutorial/14_left.jpg" %}" alt="{{ alt_txt_14_left }}"
+                     title="{{ alt_txt_14_left }}">
 
-                    <img src="{% static "img/tutorial/14_right.jpg" %}"
-                         alt="Screenshot of the back of a flashcard in “Review only” mode, with the English translation of
-                         the Russian word, and the word’s context">
+                <img src="{% static "img/tutorial/14_right.jpg" %}" alt="{{ alt_txt_14_right }}"
+                     title="{{ alt_txt_14_right }}">
             </li>
 
             <li>
@@ -228,15 +217,11 @@
                     determine when they will next encounter the card.
                     {% endblocktrans %}
                 </p>
-                <img src="{% static "img/tutorial/15_left.jpg" %}"
-                     alt="Screenshot of the front of a flashcard in “Review and Answer” mode, with the Russian word,
-                     the word’s context, and a box where students type the answer">
+                <img src="{% static "img/tutorial/15_left.jpg" %}" alt="{{ alt_txt_15_left }}"
+                     title="{{ alt_txt_15_left }}">
 
-                <img src="{% static "img/tutorial/15_right.jpg" %}"
-                     alt="Screenshot of the back of a flashcard in “Review and Answer” mode, with the English
-                     translation of the Russian word, the word’s context, and six options from 0 to 5
-                     (0 being the most difficult, 5 being the easiest) so that students can judge how difficult
-                     they found the word">
+                <img src="{% static "img/tutorial/15_right.jpg" %}" alt="{{ alt_txt_15_right }}"
+                     title="{{ alt_txt_15_right }}">
             </li>
         </ol>
     </div>
