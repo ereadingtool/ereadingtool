@@ -50,8 +50,23 @@ type alias Model = {
     flags : Flags
   , login_params : LoginParams
   , login: Login
+  , acknowledgements_page_url : User.AcknowledgePageURL
+  , about_page_url : User.AboutPageURL
   , errors : Dict String String }
 
+
+init : Flags -> (Model, Cmd Msg)
+init flags =
+  let
+    login = flagsToLogin flags
+  in
+    ({
+      flags = flags
+    , login_params = (LoginParams "" "")
+    , login = login
+    , about_page_url = flagsToAboutURL flags
+    , acknowledgements_page_url = flagsToAcknowledgementURL flags
+    , errors = Dict.fromList [] }, Cmd.none)
 
 flagsToLogin : Flags -> Login
 flagsToLogin flags =
@@ -67,6 +82,14 @@ flagsToLogin flags =
       (User.LoginURI (User.URI flags.login_uri))
       (User.LoginPageURL (User.URL flags.login_page_url))
       (User.ForgotPassURL (User.URL flags.forgot_password_url))
+
+flagsToAboutURL : { a | about_url: String } -> User.AboutPageURL
+flagsToAboutURL flags =
+  User.AboutPageURL (User.URL flags.about_url)
+
+flagsToAcknowledgementURL : { a | acknowledgements_url: String } -> User.AcknowledgePageURL
+flagsToAcknowledgementURL flags =
+  User.AcknowledgePageURL (User.URL flags.acknowledgements_url)
 
 loginURI : Login -> User.LoginURI
 loginURI login =
@@ -139,17 +162,6 @@ loginRespDecoder =
   decode LoginResp
     |> required "id" (Decode.map User.UserID Decode.int)
     |> required "redirect" (Decode.map (User.URI >> User.RedirectURI) Decode.string)
-
-init : Flags -> (Model, Cmd Msg)
-init flags =
-  let
-    login = flagsToLogin flags
-  in
-    ({
-      flags = flags
-    , login_params = (LoginParams "" "")
-    , login = login
-    , errors = Dict.fromList [] }, Cmd.none)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =

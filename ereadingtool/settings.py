@@ -27,7 +27,7 @@ CHANNEL_LAYERS = {
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
-ADMINS = [('Andrew', 'als2@pdx.edu')]
+ADMINS = [('Andrew', 'als2@pdx.edu'), ('EReader', 'ereader@pdx.edu')]
 
 YANDEX_TRANSLATION_API_KEY = os.getenv('YANDEX_TRANSLATION_API_KEY')
 YANDEX_DEFINITION_API_KEY = os.getenv('YANDEX_DEFINITION_API_KEY')

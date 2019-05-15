@@ -13840,7 +13840,11 @@ var _user$project$Views$view_logo = function (event_attr) {
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html_Attributes$id('logo'),
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'alt', 'Steps To Advanced Reading Logo'),
+						_1: {ctor: '[]'}
+					}
 				}
 			},
 			event_attr),

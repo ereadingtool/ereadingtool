@@ -12170,49 +12170,57 @@ var _user$project$TextReader_TextWord$translations = function (_p1) {
 	var _p2 = _p1;
 	return _p2._4;
 };
-var _user$project$TextReader_TextWord$grammemes = function (_p3) {
-	var _p4 = _p3;
-	return _p4._3;
+var _user$project$TextReader_TextWord$hasTranslations = function (text_word) {
+	var _p3 = _user$project$TextReader_TextWord$translations(text_word);
+	if (_p3.ctor === 'Just') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _user$project$TextReader_TextWord$grammemes = function (_p4) {
+	var _p5 = _p4;
+	return _p5._3;
 };
 var _user$project$TextReader_TextWord$grammemesToString = function (text_word) {
-	var _p5 = _user$project$TextReader_TextWord$grammemes(text_word);
-	if (_p5.ctor === 'Just') {
+	var _p6 = _user$project$TextReader_TextWord$grammemes(text_word);
+	if (_p6.ctor === 'Just') {
 		return A2(
 			_elm_lang$core$String$join,
 			', ',
 			A2(
 				_elm_lang$core$List$map,
-				function (_p6) {
-					var _p7 = _p6;
+				function (_p7) {
+					var _p8 = _p7;
 					return A2(
 						_elm_lang$core$Basics_ops['++'],
-						_p7._0,
-						A2(_elm_lang$core$Basics_ops['++'], ': ', _p7._1));
+						_p8._0,
+						A2(_elm_lang$core$Basics_ops['++'], ': ', _p8._1));
 				},
-				_elm_lang$core$Dict$toList(_p5._0)));
+				_elm_lang$core$Dict$toList(_p6._0)));
 	} else {
 		return '';
 	}
 };
-var _user$project$TextReader_TextWord$group = function (_p8) {
-	var _p9 = _p8;
-	return _user$project$Text_Translations_TextWord$wordTypeToGroup(_p9._5);
+var _user$project$TextReader_TextWord$group = function (_p9) {
+	var _p10 = _p9;
+	return _user$project$Text_Translations_TextWord$wordTypeToGroup(_p10._5);
 };
-var _user$project$TextReader_TextWord$word = function (_p10) {
-	var _p11 = _p10;
-	return _p11._5;
+var _user$project$TextReader_TextWord$word = function (_p11) {
+	var _p12 = _p11;
+	return _p12._5;
 };
 var _user$project$TextReader_TextWord$wordType = function (text_word) {
 	return _user$project$Text_Translations_TextWord$wordTypeToString(
 		_user$project$TextReader_TextWord$word(text_word));
 };
-var _user$project$TextReader_TextWord$phrase = function (_p12) {
-	var _p13 = _p12;
-	return _p13._2;
+var _user$project$TextReader_TextWord$phrase = function (_p13) {
+	var _p14 = _p13;
+	return _p14._2;
 };
-var _user$project$TextReader_TextWord$instance = function (_p14) {
-	var _p15 = _p14;
-	return _p15._1;
+var _user$project$TextReader_TextWord$instance = function (_p15) {
+	var _p16 = _p15;
+	return _p16._1;
 };
 var _user$project$TextReader_TextWord$Translation = F2(
 	function (a, b) {
@@ -13446,7 +13454,11 @@ var _user$project$Views$view_logo = function (event_attr) {
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html_Attributes$id('logo'),
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'alt', 'Steps To Advanced Reading Logo'),
+						_1: {ctor: '[]'}
+					}
 				}
 			},
 			event_attr),
@@ -14290,46 +14302,56 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 		function (instructor_signup_uri) {
 			return A2(
 				_elm_lang$core$Json_Decode$andThen,
-				function (forgot_pass_endpoint) {
+				function (about_url) {
 					return A2(
 						_elm_lang$core$Json_Decode$andThen,
-						function (forgot_password_url) {
+						function (acknowledgements_url) {
 							return A2(
 								_elm_lang$core$Json_Decode$andThen,
-								function (login_page_url) {
+								function (forgot_pass_endpoint) {
 									return A2(
 										_elm_lang$core$Json_Decode$andThen,
-										function (login_uri) {
+										function (forgot_password_url) {
 											return A2(
 												_elm_lang$core$Json_Decode$andThen,
-												function (reset_pass_endpoint) {
+												function (login_page_url) {
 													return A2(
 														_elm_lang$core$Json_Decode$andThen,
-														function (signup_page_url) {
+														function (login_uri) {
 															return A2(
 																_elm_lang$core$Json_Decode$andThen,
-																function (user_type) {
+																function (reset_pass_endpoint) {
 																	return A2(
 																		_elm_lang$core$Json_Decode$andThen,
-																		function (csrftoken) {
-																			return _elm_lang$core$Json_Decode$succeed(
-																				{instructor_signup_uri: instructor_signup_uri, forgot_pass_endpoint: forgot_pass_endpoint, forgot_password_url: forgot_password_url, login_page_url: login_page_url, login_uri: login_uri, reset_pass_endpoint: reset_pass_endpoint, signup_page_url: signup_page_url, user_type: user_type, csrftoken: csrftoken});
+																		function (signup_page_url) {
+																			return A2(
+																				_elm_lang$core$Json_Decode$andThen,
+																				function (user_type) {
+																					return A2(
+																						_elm_lang$core$Json_Decode$andThen,
+																						function (csrftoken) {
+																							return _elm_lang$core$Json_Decode$succeed(
+																								{instructor_signup_uri: instructor_signup_uri, about_url: about_url, acknowledgements_url: acknowledgements_url, forgot_pass_endpoint: forgot_pass_endpoint, forgot_password_url: forgot_password_url, login_page_url: login_page_url, login_uri: login_uri, reset_pass_endpoint: reset_pass_endpoint, signup_page_url: signup_page_url, user_type: user_type, csrftoken: csrftoken});
+																						},
+																						A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string));
+																				},
+																				A2(_elm_lang$core$Json_Decode$field, 'user_type', _elm_lang$core$Json_Decode$string));
 																		},
-																		A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string));
+																		A2(_elm_lang$core$Json_Decode$field, 'signup_page_url', _elm_lang$core$Json_Decode$string));
 																},
-																A2(_elm_lang$core$Json_Decode$field, 'user_type', _elm_lang$core$Json_Decode$string));
+																A2(_elm_lang$core$Json_Decode$field, 'reset_pass_endpoint', _elm_lang$core$Json_Decode$string));
 														},
-														A2(_elm_lang$core$Json_Decode$field, 'signup_page_url', _elm_lang$core$Json_Decode$string));
+														A2(_elm_lang$core$Json_Decode$field, 'login_uri', _elm_lang$core$Json_Decode$string));
 												},
-												A2(_elm_lang$core$Json_Decode$field, 'reset_pass_endpoint', _elm_lang$core$Json_Decode$string));
+												A2(_elm_lang$core$Json_Decode$field, 'login_page_url', _elm_lang$core$Json_Decode$string));
 										},
-										A2(_elm_lang$core$Json_Decode$field, 'login_uri', _elm_lang$core$Json_Decode$string));
+										A2(_elm_lang$core$Json_Decode$field, 'forgot_password_url', _elm_lang$core$Json_Decode$string));
 								},
-								A2(_elm_lang$core$Json_Decode$field, 'login_page_url', _elm_lang$core$Json_Decode$string));
+								A2(_elm_lang$core$Json_Decode$field, 'forgot_pass_endpoint', _elm_lang$core$Json_Decode$string));
 						},
-						A2(_elm_lang$core$Json_Decode$field, 'forgot_password_url', _elm_lang$core$Json_Decode$string));
+						A2(_elm_lang$core$Json_Decode$field, 'acknowledgements_url', _elm_lang$core$Json_Decode$string));
 				},
-				A2(_elm_lang$core$Json_Decode$field, 'forgot_pass_endpoint', _elm_lang$core$Json_Decode$string));
+				A2(_elm_lang$core$Json_Decode$field, 'about_url', _elm_lang$core$Json_Decode$string));
 		},
 		A2(_elm_lang$core$Json_Decode$field, 'instructor_signup_uri', _elm_lang$core$Json_Decode$string)));
 

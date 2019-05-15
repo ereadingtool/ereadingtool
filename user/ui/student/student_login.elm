@@ -1,10 +1,12 @@
 import Html exposing (Html)
 
+import User
+
 import User.Flags.UnAuthed exposing (UnAuthedUserFlags)
 
 import Login
 import Html exposing (Html, div, span)
-import Html.Attributes exposing (class, classList, attribute)
+import Html.Attributes exposing (id, class, classList, attribute)
 
 import Views
 
@@ -19,15 +21,32 @@ view_help_msgs model =
     If this is your first time using this website, please create a new account."""
   ]]
 
+view_acknowledgements_and_about_links : Login.Model -> Html Login.Msg
+view_acknowledgements_and_about_links model =
+  div [id "acknowledgements-and-about"] [
+    div [] [
+      Html.a [attribute "href" (User.urlToString (User.aboutPageURL model.about_page_url))] [
+        Html.text "About This Website"
+      ]
+    ]
+  ,
+    div [] [
+      Html.a [attribute "href" (User.urlToString (User.acknowledgePageURL model.acknowledgements_page_url))] [
+        Html.text "Acknowledgements"
+      ]
+    ]
+  ]
+
 view_content : Login.Model -> Html Login.Msg
 view_content model =
   div [ classList [("login", True)] ] [
     div [class "login_type"] [ Html.text (Login.label model.login) ]
   , div [classList [("login_box", True)] ] <|
-      (Login.view_email_input model) ++
-      (Login.view_password_input model) ++ (Login.view_login model.login) ++
-      (Login.view_submit model) ++
-      (view_help_msgs model) ++
+      Login.view_email_input model ++
+      Login.view_password_input model ++ Login.view_login model.login ++
+      Login.view_submit model ++
+      view_help_msgs model ++
+      [view_acknowledgements_and_about_links model] ++
       (Login.view_errors model)
   ]
 
