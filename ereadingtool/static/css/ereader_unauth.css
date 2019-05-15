@@ -24,3 +24,13 @@
 #about > #title {
     padding-bottom: 3%;
 }
+
+#about > ol > li > img {
+    padding-top: 35px;
+
+    max-width: 45%;
+}
+
+#about > ol > li {
+    text-align: center;
+}
