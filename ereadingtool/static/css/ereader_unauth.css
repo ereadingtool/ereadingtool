@@ -25,12 +25,11 @@
     padding-bottom: 3%;
 }
 
-#about > ol > li > img {
-    padding-top: 35px;
-
-    max-width: 45%;
+.screenshot {
+    text-align: center;
 }
 
-#about > ol > li {
-    text-align: center;
+.screenshot > img {
+    padding-top: 35px;
+    max-width: 45%;
 }
