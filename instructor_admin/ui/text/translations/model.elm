@@ -3,6 +3,8 @@ module Text.Translations.Model exposing (..)
 import Array exposing (Array)
 import Dict exposing (Dict)
 
+import OrderedDict exposing (OrderedDict)
+
 import Text.Model
 import Text.Translations exposing (..)
 
@@ -15,7 +17,7 @@ type alias Grammemes = Dict String (Maybe String)
 
 type alias Model = {
    words: Dict Text.Translations.Word (Array TextWord)
- , merging_words: Dict String WordInstance
+ , merging_words: OrderedDict String WordInstance
  , editing_grammeme: Maybe String
  , editing_grammemes: Dict String String
  , editing_words: Dict Text.Translations.Word Int
@@ -28,7 +30,7 @@ type alias Model = {
 init : Flags -> Text.Model.Text -> Model
 init flags text = {
    words=Dict.empty
- , merging_words=Dict.empty
+ , merging_words=OrderedDict.empty
  , editing_words=Dict.empty
  , editing_grammeme=Nothing
  , editing_grammemes=Dict.empty
@@ -80,11 +82,11 @@ newWordInstance model instance token =
 
 mergingWordInstances : Model -> List WordInstance
 mergingWordInstances model =
-  Dict.values (mergingWords model)
+  OrderedDict.values (mergingWords model)
 
 mergeSiblings : Model -> WordInstance -> List WordInstance
 mergeSiblings model word_instance =
-  Dict.values <| (Dict.remove (Text.Translations.Word.Instance.id word_instance) (mergingWords model))
+  OrderedDict.values <| (OrderedDict.remove (Text.Translations.Word.Instance.id word_instance) (mergingWords model))
 
 mergeState : Model -> WordInstance -> Maybe MergeState
 mergeState model word_instance =
@@ -117,29 +119,31 @@ completeMerge model phrase instance text_words =
 
 cancelMerge : Model -> Model
 cancelMerge model =
-  { model | merging_words = Dict.empty }
+  { model | merging_words = OrderedDict.empty }
 
 isMergingWords : Model -> Bool
 isMergingWords model =
-  not (Dict.isEmpty model.merging_words)
+  not (OrderedDict.isEmpty model.merging_words)
 
-mergingWords : Model -> Dict String WordInstance
+mergingWords : Model -> OrderedDict String WordInstance
 mergingWords model =
   model.merging_words
 
 mergingWord : Model -> WordInstance -> Bool
 mergingWord model word_instance =
-  Dict.member (Text.Translations.Word.Instance.id word_instance) model.merging_words
+  OrderedDict.member (Text.Translations.Word.Instance.id word_instance) model.merging_words
 
 addToMergeWords : Model -> WordInstance -> Model
 addToMergeWords model word_instance =
   { model |
-    merging_words = Dict.insert (Text.Translations.Word.Instance.id word_instance) word_instance model.merging_words }
+    merging_words =
+      OrderedDict.insert (Text.Translations.Word.Instance.id word_instance) word_instance model.merging_words }
 
 removeFromMergeWords : Model -> WordInstance -> Model
 removeFromMergeWords model word_instance =
   { model |
-    merging_words = Dict.remove (Text.Translations.Word.Instance.id word_instance) model.merging_words }
+    merging_words =
+      OrderedDict.remove (Text.Translations.Word.Instance.id word_instance) model.merging_words }
 
 instanceCount : Model -> Text.Translations.Word -> Int
 instanceCount model word =

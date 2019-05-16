@@ -1,3 +1,5 @@
+from typing import AnyStr
+
 from django.db import models
 
 from text.phrase.models import TextPhrase
@@ -21,3 +23,6 @@ class TextGroupWord(models.Model):
     word = models.OneToOneField(TextWord, related_name='group_word', on_delete=models.CASCADE)
 
     order = models.IntegerField(default=0)
+
+    def __str__(self) -> AnyStr:
+        return f'{self.word.phrase} {self.order} of {self.group.components.count()} group {self.group.pk}'
