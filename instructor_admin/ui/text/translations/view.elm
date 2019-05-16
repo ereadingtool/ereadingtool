@@ -9,6 +9,8 @@ import Html exposing (..)
 import Html.Events exposing (..)
 import Html.Attributes exposing (..)
 
+import OrderedDict exposing (OrderedDict)
+
 import Dict exposing (Dict)
 import Set exposing (Set)
 
@@ -273,8 +275,8 @@ view_instance_word model msg word_instance =
 
             merging_words =
                  List.map (\(k, v) -> word v)
-              <| Dict.toList
-              <| Dict.remove word_instance_id (Text.Translations.Model.mergingWords model)
+              <| OrderedDict.toList
+              <| OrderedDict.remove word_instance_id (Text.Translations.Model.mergingWords model)
           in
             String.join " " ([word word_instance] ++ merging_words)
 

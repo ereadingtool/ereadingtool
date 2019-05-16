@@ -1,18 +1,14 @@
 import json
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import models
+from django.db import transaction
+from django.http import HttpResponse, HttpRequest, HttpResponseServerError
 from django.urls import reverse_lazy
 from django.views.generic import View
 
-from django.http import HttpResponse, HttpRequest, HttpResponseServerError
-
-from django.db import transaction
-
-from django.db import models
-
-from text.phrase.models import TextPhrase
-from text.translations.models import TextWord
 from text.translations.group.models import TextWordGroup, TextGroupWord
+from text.translations.models import TextWord
 
 
 class TextWordGroupAPIView(LoginRequiredMixin, View):

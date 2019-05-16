@@ -26991,7 +26991,7 @@ var _user$project$Text_Translations_Model$removeFromMergeWords = F2(
 			model,
 			{
 				merging_words: A2(
-					_elm_lang$core$Dict$remove,
+					_rnons$ordered_containers$OrderedDict$remove,
 					_user$project$Text_Translations_Word_Instance$id(word_instance),
 					model.merging_words)
 			});
@@ -27002,7 +27002,7 @@ var _user$project$Text_Translations_Model$addToMergeWords = F2(
 			model,
 			{
 				merging_words: A3(
-					_elm_lang$core$Dict$insert,
+					_rnons$ordered_containers$OrderedDict$insert,
 					_user$project$Text_Translations_Word_Instance$id(word_instance),
 					word_instance,
 					model.merging_words)
@@ -27011,7 +27011,7 @@ var _user$project$Text_Translations_Model$addToMergeWords = F2(
 var _user$project$Text_Translations_Model$mergingWord = F2(
 	function (model, word_instance) {
 		return A2(
-			_elm_lang$core$Dict$member,
+			_rnons$ordered_containers$OrderedDict$member,
 			_user$project$Text_Translations_Word_Instance$id(word_instance),
 			model.merging_words);
 	});
@@ -27019,12 +27019,12 @@ var _user$project$Text_Translations_Model$mergingWords = function (model) {
 	return model.merging_words;
 };
 var _user$project$Text_Translations_Model$isMergingWords = function (model) {
-	return !_elm_lang$core$Dict$isEmpty(model.merging_words);
+	return !_rnons$ordered_containers$OrderedDict$isEmpty(model.merging_words);
 };
 var _user$project$Text_Translations_Model$cancelMerge = function (model) {
 	return _elm_lang$core$Native_Utils.update(
 		model,
-		{merging_words: _elm_lang$core$Dict$empty});
+		{merging_words: _rnons$ordered_containers$OrderedDict$empty});
 };
 var _user$project$Text_Translations_Model$uneditWord = F2(
 	function (model, word_instance) {
@@ -27048,9 +27048,9 @@ var _user$project$Text_Translations_Model$uneditWord = F2(
 	});
 var _user$project$Text_Translations_Model$mergeSiblings = F2(
 	function (model, word_instance) {
-		return _elm_lang$core$Dict$values(
+		return _rnons$ordered_containers$OrderedDict$values(
 			A2(
-				_elm_lang$core$Dict$remove,
+				_rnons$ordered_containers$OrderedDict$remove,
 				_user$project$Text_Translations_Word_Instance$id(word_instance),
 				_user$project$Text_Translations_Model$mergingWords(model)));
 	});
@@ -27072,7 +27072,7 @@ var _user$project$Text_Translations_Model$mergeState = F2(
 		}
 	});
 var _user$project$Text_Translations_Model$mergingWordInstances = function (model) {
-	return _elm_lang$core$Dict$values(
+	return _rnons$ordered_containers$OrderedDict$values(
 		_user$project$Text_Translations_Model$mergingWords(model));
 };
 var _user$project$Text_Translations_Model$newWordInstance = F3(
@@ -27152,7 +27152,7 @@ var _user$project$Text_Translations_Model$completeMerge = F4(
 	});
 var _user$project$Text_Translations_Model$init = F2(
 	function (flags, text) {
-		return {words: _elm_lang$core$Dict$empty, merging_words: _elm_lang$core$Dict$empty, editing_words: _elm_lang$core$Dict$empty, editing_grammeme: _elm_lang$core$Maybe$Nothing, editing_grammemes: _elm_lang$core$Dict$empty, editing_word_instances: _elm_lang$core$Dict$empty, text: text, new_translations: _elm_lang$core$Dict$empty, flags: flags};
+		return {words: _elm_lang$core$Dict$empty, merging_words: _rnons$ordered_containers$OrderedDict$empty, editing_words: _elm_lang$core$Dict$empty, editing_grammeme: _elm_lang$core$Maybe$Nothing, editing_grammemes: _elm_lang$core$Dict$empty, editing_word_instances: _elm_lang$core$Dict$empty, text: text, new_translations: _elm_lang$core$Dict$empty, flags: flags};
 	});
 var _user$project$Text_Translations_Model$Model = F9(
 	function (a, b, c, d, e, f, g, h, i) {
@@ -29098,9 +29098,9 @@ var _user$project$Text_Translations_View$view_instance_word = F3(
 						var _p7 = _p6;
 						return word(_p7._1);
 					},
-					_elm_lang$core$Dict$toList(
+					_rnons$ordered_containers$OrderedDict$toList(
 						A2(
-							_elm_lang$core$Dict$remove,
+							_rnons$ordered_containers$OrderedDict$remove,
 							word_instance_id,
 							_user$project$Text_Translations_Model$mergingWords(model))));
 				return A2(
