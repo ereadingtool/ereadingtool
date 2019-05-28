@@ -68,9 +68,6 @@ class FlashcardSession(models.Model):
         except FlashcardStateMachineException as e:
             raise FlashcardSessionException(code=e.code, error_msg=e.error_msg)
 
-        if not self.deleted:
-            self.save()
-
     @property
     def flashcards(self):
         raise NotImplementedError
