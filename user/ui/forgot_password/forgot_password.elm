@@ -173,7 +173,7 @@ view_email_input model =
       else
         []
   in [
-      login_label [] (span [] [ Html.text "Username (e-mail address):" ])
+      login_label [] (span [] [ Html.text "E-mail address:" ])
     , Html.input ([
         attribute "size" "25"
       , onInput UpdateEmail ] ++ email_error) []

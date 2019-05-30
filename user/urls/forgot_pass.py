@@ -2,7 +2,7 @@ from django.urls import path
 from user.views.forgot_password import (PasswordResetAPIView, PasswordResetConfirmView, PasswordResetConfirmAPIView,
                                         PasswordResetView)
 
-from user.views.forgot_password import ElmLoadPassResetConfirmView
+from user.views.forgot_password import ElmLoadPassResetConfirmView, ElmLoadPasswordResetView
 
 
 api_urlpatterns = [
@@ -13,6 +13,9 @@ api_urlpatterns = [
 urlpatterns = [
     path('load_elm_unauth_pass_reset_confirm.js',
          ElmLoadPassResetConfirmView.as_view(), name='load-elm-unauth-pass-reset-confirm'),
+
+    path('load_elm_unauth_pass_reset.js',
+         ElmLoadPasswordResetView.as_view(), name='load-elm-unauth-pass-reset'),
 
     path('user/password_reset/', PasswordResetView.as_view(), name='password-reset'),
     path('user/password_reset/confirm/<str:uidb64>/<str:token>/',

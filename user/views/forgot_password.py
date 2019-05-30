@@ -1,8 +1,8 @@
 import json
 from typing import Dict
-from typing import TypeVar
 
 from django import forms
+from django.urls import reverse
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
@@ -41,6 +41,18 @@ class ElmLoadPassResetConfirmView(NoAuthElmLoadJsView):
 
         context['elm']['uidb64'] = {'quote': True, 'safe': True, 'value': self.request.session.get('uidb64')}
         context['elm']['token'] = {'quote': True, 'safe': True, 'value': self.request.session.get('token')}
+        context['elm']['forgot_pass_endpoint'] = {'quote': True, 'safe': True,
+                                                  'value': reverse('api-password-reset-confirm')}
+
+        return context
+
+
+class ElmLoadPasswordResetView(NoAuthElmLoadJsView):
+    def get_context_data(self, **kwargs: Dict) -> Dict:
+        context = super(ElmLoadPasswordResetView, self).get_context_data(**kwargs)
+
+        context['elm']['forgot_pass_endpoint'] = {'quote': True, 'safe': True,
+                                                  'value': reverse('api-password-reset-confirm')}
 
         return context
 
