@@ -39,19 +39,28 @@ class Instructor(Profile, TextReadings, models.Model):
     def unread_text_queryset(self):
         return self.text_search_queryset.exclude(instructortextreading__instructor=self)
 
-    def to_dict(self):
-        return {
+    def to_dict(self) -> Dict:
+        instructor_profile_dict = {
             'id': self.pk,
             'username': self.user.username,
             'texts': [text.to_instructor_summary_dict()
                       for text in self.created_texts.model.objects.filter(
                     Q(created_by=self) | Q(last_modified_by=self))],
-            'invites': [invite.to_dict() for invite in self.invite_set.all()] if self.invite_set.exists() else None,
+            'instructor_admin': False,
+            'invites': None,
             'uris': {
                 'logout_uri': reverse('api-instructor-logout'),
                 'profile_uri': reverse('instructor-profile')
             }
         }
+
+        if self.is_admin:
+            instructor_profile_dict['instructor_admin'] = True
+            instructor_profile_dict['invites'] = [
+                invite.to_dict() for invite in self.invite_set.all()
+            ] if self.invite_set.exists() else None
+
+        return instructor_profile_dict
 
     def to_text_summary_dict(self, text: Text) -> Dict:
         text_instructor_summary = text.to_student_summary_dict()

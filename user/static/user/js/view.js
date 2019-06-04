@@ -9851,7 +9851,7 @@ var _user$project$Instructor_Profile$texts = function (_p1) {
 };
 var _user$project$Instructor_Profile$uris = function (_p3) {
 	var _p4 = _p3;
-	return _p4._4;
+	return _p4._5;
 };
 var _user$project$Instructor_Profile$usernameToString = function (_p5) {
 	var _p6 = _p5;
@@ -9859,15 +9859,19 @@ var _user$project$Instructor_Profile$usernameToString = function (_p5) {
 };
 var _user$project$Instructor_Profile$username = function (_p7) {
 	var _p8 = _p7;
-	return _p8._3;
+	return _p8._4;
 };
 var _user$project$Instructor_Profile$invites = function (_p9) {
 	var _p10 = _p9;
-	return _p10._2;
+	return _p10._3;
 };
-var _user$project$Instructor_Profile$urisToProfileUri = function (_p11) {
+var _user$project$Instructor_Profile$isAdmin = function (_p11) {
 	var _p12 = _p11;
-	return _p12._1;
+	return _p12._2;
+};
+var _user$project$Instructor_Profile$urisToProfileUri = function (_p13) {
+	var _p14 = _p13;
+	return _p14._1;
 };
 var _user$project$Instructor_Profile$profileUri = function (instructor_profile) {
 	return _user$project$Instructor_Profile$urisToProfileUri(
@@ -9878,9 +9882,9 @@ var _user$project$Instructor_Profile$profileUriToString = function (instructor_p
 		_user$project$Instructor_Resource$instructorProfileURI(
 			_user$project$Instructor_Profile$profileUri(instructor_profile)));
 };
-var _user$project$Instructor_Profile$urisToLogoutUri = function (_p13) {
-	var _p14 = _p13;
-	return _p14._0;
+var _user$project$Instructor_Profile$urisToLogoutUri = function (_p15) {
+	var _p16 = _p15;
+	return _p16._0;
 };
 var _user$project$Instructor_Profile$logoutUri = function (instructor_profile) {
 	return _user$project$Instructor_Profile$urisToLogoutUri(
@@ -9944,9 +9948,9 @@ var _user$project$Instructor_Profile$InstructorURIParams = F2(
 	function (a, b) {
 		return {logout_uri: a, profile_uri: b};
 	});
-var _user$project$Instructor_Profile$InstructorProfileParams = F5(
-	function (a, b, c, d, e) {
-		return {id: a, texts: b, invites: c, username: d, uris: e};
+var _user$project$Instructor_Profile$InstructorProfileParams = F6(
+	function (a, b, c, d, e, f) {
+		return {id: a, texts: b, instructor_admin: c, invites: d, username: e, uris: f};
 	});
 var _user$project$Instructor_Profile$InstructorUsername = function (a) {
 	return {ctor: 'InstructorUsername', _0: a};
@@ -9963,20 +9967,21 @@ var _user$project$Instructor_Profile$initProfileURIs = function (params) {
 		_user$project$Instructor_Resource$InstructorProfileURI(
 			_user$project$Instructor_Resource$URI(params.profile_uri)));
 };
-var _user$project$Instructor_Profile$InstructorProfile = F5(
-	function (a, b, c, d, e) {
-		return {ctor: 'InstructorProfile', _0: a, _1: b, _2: c, _3: d, _4: e};
+var _user$project$Instructor_Profile$InstructorProfile = F6(
+	function (a, b, c, d, e, f) {
+		return {ctor: 'InstructorProfile', _0: a, _1: b, _2: c, _3: d, _4: e, _5: f};
 	});
 var _user$project$Instructor_Profile$initProfile = function (params) {
-	return A5(
+	return A6(
 		_user$project$Instructor_Profile$InstructorProfile,
 		params.id,
 		params.texts,
+		params.instructor_admin,
 		function () {
-			var _p15 = params.invites;
-			if (_p15.ctor === 'Just') {
+			var _p17 = params.invites;
+			if (_p17.ctor === 'Just') {
 				return _elm_lang$core$Maybe$Just(
-					A2(_elm_lang$core$List$map, _user$project$Instructor_Invite$new, _p15._0));
+					A2(_elm_lang$core$List$map, _user$project$Instructor_Invite$new, _p17._0));
 			} else {
 				return _elm_lang$core$Maybe$Nothing;
 			}
@@ -9985,15 +9990,15 @@ var _user$project$Instructor_Profile$initProfile = function (params) {
 		_user$project$Instructor_Profile$initProfileURIs(params.uris));
 };
 var _user$project$Instructor_Profile$addInvite = F2(
-	function (_p16, invite) {
-		var _p17 = _p16;
+	function (_p18, invite) {
+		var _p19 = _p18;
 		var new_invites = function () {
-			var _p18 = _p17._2;
-			if (_p18.ctor === 'Just') {
+			var _p20 = _p19._3;
+			if (_p20.ctor === 'Just') {
 				return _elm_lang$core$Maybe$Just(
 					A2(
 						_elm_lang$core$Basics_ops['++'],
-						_p18._0,
+						_p20._0,
 						{
 							ctor: '::',
 							_0: invite,
@@ -10003,7 +10008,7 @@ var _user$project$Instructor_Profile$addInvite = F2(
 				return _elm_lang$core$Maybe$Nothing;
 			}
 		}();
-		return A5(_user$project$Instructor_Profile$InstructorProfile, _p17._0, _p17._1, new_invites, _p17._3, _p17._4);
+		return A6(_user$project$Instructor_Profile$InstructorProfile, _p19._0, _p19._1, _p19._2, new_invites, _p19._4, _p19._5);
 	});
 
 var _user$project$Question_Model$new_question = function (i) {

@@ -42,6 +42,7 @@ type alias InstructorURIParams = {
 type alias InstructorProfileParams = {
     id: Maybe Int
   , texts: List Text
+  , instructor_admin: Bool
   , invites : Maybe (List Instructor.Invite.InviteParams)
   , username: String
   , uris : InstructorURIParams }
@@ -64,6 +65,7 @@ type InstructorProfile =
   InstructorProfile
     (Maybe Int)
     (List Text)
+    Bool
     (Maybe (List InstructorInvite))
     InstructorUsername
     InstructorProfileURIs
@@ -80,6 +82,7 @@ initProfile params =
   InstructorProfile
     params.id
     params.texts
+    params.instructor_admin
     (case params.invites of
       Just invite_params ->
         Just (List.map Instructor.Invite.new invite_params)
@@ -90,7 +93,7 @@ initProfile params =
     (initProfileURIs params.uris)
 
 addInvite : InstructorProfile -> InstructorInvite -> InstructorProfile
-addInvite (InstructorProfile id texts invites username logout_uri) invite =
+addInvite (InstructorProfile id texts admin invites username logout_uri) invite =
   let
     new_invites =
       (case invites of
@@ -100,14 +103,18 @@ addInvite (InstructorProfile id texts invites username logout_uri) invite =
         Nothing ->
           Nothing)
   in
-    InstructorProfile id texts new_invites username logout_uri
+    InstructorProfile id texts admin new_invites username logout_uri
+
+isAdmin : InstructorProfile -> Bool
+isAdmin (InstructorProfile _ _ admin _ _ _) =
+  admin
 
 invites : InstructorProfile -> Maybe (List InstructorInvite)
-invites (InstructorProfile _ _ invites _ _) =
+invites (InstructorProfile _ _ _ invites _ _) =
   invites
 
 username : InstructorProfile -> InstructorUsername
-username (InstructorProfile _ _ _ username _) =
+username (InstructorProfile _ _ _ _ username _) =
   username
 
 usernameToString : InstructorUsername -> String
@@ -115,7 +122,7 @@ usernameToString (InstructorUsername username) =
   username
 
 uris : InstructorProfile -> InstructorProfileURIs
-uris (InstructorProfile _ _ _ _ uris) =
+uris (InstructorProfile _ _ _ _ _ uris) =
   uris
 
 logoutUri : InstructorProfile -> Instructor.Resource.InstructorLogoutURI
@@ -135,7 +142,7 @@ profileUriToString instructor_profile =
   Instructor.Resource.uriToString (Instructor.Resource.instructorProfileURI (profileUri instructor_profile))
 
 texts : InstructorProfile -> List Text
-texts (InstructorProfile _ texts _ _ _) =
+texts (InstructorProfile _ texts _ _ _ _) =
   texts
 
 logout :
