@@ -277,7 +277,7 @@ class TestStudentUser(TestData, TestUser, TestCase):
                                             {'username': self.student_user.email, 'password': self.student_passwd}),
                                         content_type='application/json')
 
-        self.assertEquals(resp.status_code, 200)
+        self.assertEquals(resp.status_code, 200, (resp.content, resp.status_code))
 
     def test_password_reset(self):
         self.student_client.logout()
