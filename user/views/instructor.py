@@ -16,7 +16,7 @@ from user.instructor.models import Instructor
 from user.views.api import APIView
 from user.views.mixin import ProfileView
 
-from mixins.view import ElmLoadJsBaseView, NoAuthElmLoadJsView, ElmLoadJsInstructorBaseView
+from mixins.view import NoAuthElmLoadJsView, ElmLoadJsInstructorBaseView
 
 
 Form = TypeVar('Form', bound=forms.Form)
