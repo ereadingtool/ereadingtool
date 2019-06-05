@@ -28,6 +28,9 @@ class TestTextWord(TestUser, TestCase):
     def setUp(self):
         super(TestTextWord, self).setUp()
 
+        Tag.setup_default()
+        TextDifficulty.setup_default()
+
         self.instructor = self.new_instructor_client(Client())
         self.student = self.new_student_client(Client())
 
@@ -106,6 +109,9 @@ class TestTextWordTranslations(TestUser, TestCase):
 
     def setUp(self):
         super(TestTextWordTranslations, self).setUp()
+
+        Tag.setup_default()
+        TextDifficulty.setup_default()
 
         self.instructor = self.new_instructor_client(Client())
         self.student = self.new_student_client(Client())
