@@ -1,10 +1,13 @@
 import collections
 import json
+import os
+
 from typing import Dict, Optional, List, Tuple
 
 import channels.layers
 from asgiref.sync import async_to_sync
 from django.test import TestCase
+from unittest import skipIf
 from django.test.client import Client
 from statemachine import State
 
@@ -126,6 +129,7 @@ class TestText(TestData, TestUser, TestCase):
 
         return num_of_words, text_section
 
+    @skipIf(os.getenv('CI', False), 'running in CI env.')
     def test_word_definition_background_job(self):
         test_data = self.get_test_data()
 
