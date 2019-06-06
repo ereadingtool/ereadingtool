@@ -1,3 +1,5 @@
+import random
+import string
 import json
 
 from typing import AnyStr, Optional
@@ -34,7 +36,8 @@ class TestInstructorUser(TestUserBase, TestCase):
 
     def instructor_signup(self, invite_code: AnyStr, email: AnyStr,
                           password: Optional[AnyStr] = None) -> HttpResponse:
-        password = password or self.password_strategy.example()
+        password = password or ''.join(random.choices(
+            string.ascii_uppercase + string.digits + string.ascii_lowercase, k=8))
 
         anonymous_client = Client()
 
