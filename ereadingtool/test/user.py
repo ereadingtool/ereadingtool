@@ -1,8 +1,12 @@
+import random
+import string
+
 from typing import Dict, Union, AnyStr, List
 from typing import Optional, Tuple
 
 from django.test import TestCase
 from django.test.client import Client
+
 from hypothesis.extra.django import from_model
 from hypothesis.strategies import just, text
 
@@ -33,7 +37,8 @@ class TestUser(TestCase):
         }
 
         user = from_model(ReaderUser, **reader_user_params).example()
-        user_passwd = password or self.password_strategy.example()
+        user_passwd = password or ''.join(random.choices(
+            string.ascii_uppercase + string.digits + string.ascii_lowercase, k=8))
 
         user.set_password(user_passwd)
         user.save()
