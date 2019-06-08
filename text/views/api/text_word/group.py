@@ -37,7 +37,13 @@ class TextWordGroupAPIView(LoginRequiredMixin, View):
             return self.default_error_resp
 
         try:
-            text_words = TextWord.objects.filter(pk__in=text_word_ids).select_related('group_word', 'group_word__group')
+            text_word_objs = {
+                w.pk: w for w in
+                TextWord.objects.filter(pk__in=text_word_ids).select_related('group_word', 'group_word__group')
+            }
+
+            # maintain order from parameter list
+            text_words = [text_word_objs[text_word_id] for text_word_id in text_word_ids]
         except ValueError:
             # invalid ids
             return self.default_error_resp
