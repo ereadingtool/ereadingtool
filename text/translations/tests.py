@@ -13,6 +13,7 @@ from text.models import Text
 
 from text.translations.models import TextWord
 from text.phrase.models import TextPhraseTranslation
+from text.translations.group.models import TextWordGroup
 
 from text.tests import TestText
 from ereadingtool.test.user import TestUser
@@ -75,6 +76,47 @@ class TestTextWord(TestUser, TestCase):
 
         self.assertIn('grouped', resp_content)
         self.assertTrue(resp_content['grouped'])
+
+    def test_regression_text_compound_words_in_order(self):
+        text_word_group_api_endpoint = reverse('text-word-group-api')
+        test_data = TestText.get_test_data()
+
+        test_data['text_sections'][0]['body'] += 'Post Office is a compound word.'
+
+        text = self.setup_text(test_data)
+
+        text_section_one = text.sections.all()[0]
+
+        text_words = []
+
+        office = TextWord.objects.create(text_section=text_section_one, instance=0, phrase='Office')
+        office.pk = 30
+        office.save()
+
+        post = TextWord.objects.create(text_section=text_section_one, instance=0, phrase='Post')
+
+        post.pk = 2402
+        post.save()
+
+        text_words.append(post)
+
+        text_words.append(office)
+
+        resp = self.instructor.post(text_word_group_api_endpoint,
+                                    json.dumps([word.pk for word in text_words]), content_type='application/json')
+
+        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+
+        resp_content = json.loads(resp.content.decode('utf8'))
+
+        self.assertIn('grouped', resp_content)
+        self.assertTrue(resp_content['grouped'])
+
+        self.assertTrue(TextWordGroup.objects.filter(text_section=text_section_one.pk).exists())
+
+        text_word_group = TextWordGroup.objects.get(text_section=text_section_one.pk)
+
+        self.assertEquals('Post Office', text_word_group.phrase, f'phrase {text_word_group.phrase} is backwards!')
 
     def test_add_text_word_to_text_section(self):
         text_word_api_endpoint = reverse('text-word-api')
