@@ -23,6 +23,7 @@ type Msg =
 
   -- words
   | AddTextWord WordInstance
+  | AddedTextWord WordInstance TextWord
   | EditWord WordInstance
   | CloseEditWord WordInstance
   | DeleteTextWord TextWord

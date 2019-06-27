@@ -9,6 +9,8 @@ import Text.Translations.Word.Instance exposing (WordInstance)
 import Text.Translations.TextWord exposing (TextWord)
 
 import Text.Translations.Encode
+import Text.Translations.Word.Instance.Encode
+
 import Text.Translations.Decode
 
 import Config
@@ -54,7 +56,7 @@ update parent_msg msg model =
       (model, Cmd.none)
 
     MergeWords word_instances ->
-      (model, postMergeWords parent_msg model model.flags.csrftoken word_instances)
+      (model, tryMergeWords parent_msg model model.flags.csrftoken word_instances)
 
     MergedWords (Ok merge_resp) ->
       case merge_resp.grouped of
@@ -138,6 +140,32 @@ update parent_msg msg model =
 
     RemoveGrammeme word_instance grammeme_str ->
       (model, Cmd.none)
+
+
+tryMergeWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> Cmd msg
+tryMergeWords parent_msg model csrftoken word_instances =
+  let
+    new_model = Text.Translations.Model.disableWordInstanceInput model
+  in
+    case Text.Translations.Word.Instance.verifyCanMergeWords of
+      True ->
+        postMergeWords parent_msg new_model new_model.flags.csrftoken word_instances
+
+      False ->
+        Cmd.batch (List.map addAsTextWord word_instances)
+
+
+addAsTextWord : (Msg -> msg) -> Model -> Flags.CSRFToken -> WordInstance -> Cmd msg
+addAsTextWord parent_msg model csrftoken word_instance =
+  let
+    endpoint_uri = model.flags.add_as_text_word_endpoint_url
+    headers = [Http.header "X-CSRFToken" csrftoken]
+    encoded_text_word = Text.Translations.Word.Instance.Encode.textWordAddEncoder word_instance
+    body = (Http.jsonBody encoded_text_word)
+    request =
+      HttpHelpers.post_with_headers endpoint_uri headers body Text.Translations.Decode.textWordDecoder
+  in
+    Http.send (parent_msg << (AddedTextWord word_instance)) request
 
 
 postMergeWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> Cmd msg

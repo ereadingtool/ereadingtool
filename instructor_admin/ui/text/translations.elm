@@ -27,9 +27,17 @@ type alias TextGroupDetails = {
 
 type alias Words = Dict Word WordValues
 
+type URL = URL String
+
+type AddTextWordEndpoint = AddTextWordEndpoint URL
+type MergeTextWordEndpoint = MergeTextWordEndpoint URL
+
 type MergeState = Mergeable | Cancelable
 
-type alias Flags = { group_word_endpoint_url: String, csrftoken : Flags.CSRFToken }
+type alias Flags = {
+    add_as_text_word_endpoint_url: AddTextWordEndpoint
+  , group_word_endpoint_url: MergeTextWordEndpoint
+  , csrftoken : Flags.CSRFToken }
 
 type alias Translation = {
    id: Int
