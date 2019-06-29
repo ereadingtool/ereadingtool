@@ -6,34 +6,9 @@ import Set exposing (Set)
 
 import Text.Translations.TextWord exposing (TextWord)
 
-import Text.Translations.Word.Instance.Editing exposing (Editing)
-import Text.Translations.Word.Instance.Input exposing (Input)
-
 
 type WordInstance = WordInstance Instance Token (Maybe TextWord)
 
-type WordInstanceEdit = WordInstanceEdit Editing Input
-
-
-wordInstanceEdit : Bool -> Bool -> WordInstanceEdit
-wordInstanceEdit editing disabled_input =
-  WordInstanceEdit (Editing editing) (Input disabled_input)
-
-enableWordInstanceEditing : WordInstanceEdit -> WordInstanceEdit
-enableWordInstanceEditing (WordInstanceEdit editing input) =
-  WordInstanceEdit (Text.Translations.Word.Instance.Editing.enableEditing) editing input
-
-disableWordInstanceEditing : WordInstanceEdit -> WordInstanceEdit
-disableWordInstanceEditing (WordInstanceEdit editing input) =
-  WordInstanceEdit (Text.Translations.Word.Instance.Editing.disableEditing editing) input
-
-enableWordInstanceInput : WordInstanceEdit -> WordInstanceEdit
-enableWordInstanceInput (WordInstanceEdit editing input) =
-  WordInstanceEdit editing (Text.Translations.Word.Instance.Input.enableInput input)
-
-disableWordInstanceInput : WordInstanceEdit -> WordInstanceEdit
-disableWordInstanceInput (WordInstanceEdit editing input) =
-  Text.Translations.Word.Instance.Input.disableInput input
 
 verifyCanMergeWords : List WordInstance -> Bool
 verifyCanMergeWords word_instances =
@@ -47,7 +22,6 @@ hasTextWord (WordInstance instance token text_word) =
 
     Nothing ->
       False
-
 
 grammemeValue : WordInstance -> String -> Maybe String
 grammemeValue word_instance grammeme_name =

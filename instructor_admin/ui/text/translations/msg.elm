@@ -43,6 +43,7 @@ type Msg =
 
   -- result msgs
   -- words
+  | AddToTextWords (Result Http.Error (List TextWord))
   | MergedWords (Result Http.Error Text.Translations.Decode.TextWordMergeResp)
   | DeletedTextWord (Result Http.Error TextWord)
   | UpdatedTextWord (Result Http.Error TextWord)

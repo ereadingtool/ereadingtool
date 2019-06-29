@@ -19,6 +19,7 @@ import Dict exposing (Dict)
 import Array exposing (Array)
 
 import Http
+import Task exposing (Task)
 
 import HttpHelpers
 
@@ -56,7 +57,7 @@ update parent_msg msg model =
       (model, Cmd.none)
 
     MergeWords word_instances ->
-      (model, tryMergeWords parent_msg model model.flags.csrftoken word_instances)
+      mergeWords parent_msg model model.flags.csrftoken word_instances
 
     MergedWords (Ok merge_resp) ->
       case merge_resp.grouped of
@@ -142,31 +143,43 @@ update parent_msg msg model =
       (model, Cmd.none)
 
 
-tryMergeWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> Cmd msg
-tryMergeWords parent_msg model csrftoken word_instances =
-  let
-    new_model = Text.Translations.Model.disableWordInstanceInput model
-  in
-    case Text.Translations.Word.Instance.verifyCanMergeWords of
-      True ->
-        postMergeWords parent_msg new_model new_model.flags.csrftoken word_instances
+mergeWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> (Model, Cmd msg)
+mergeWords parent_msg model csrftoken word_instances =
+  case Text.Translations.Word.Instance.verifyCanMergeWords of
+    True ->
+      -- all word instances are ready to merge
+      (model, postMergeWords parent_msg model model.flags.csrftoken word_instances)
 
-      False ->
-        Cmd.batch (List.map addAsTextWord word_instances)
+    False ->
+      -- lock editing on the page and instantiate some asynchronous tasks to associate text words with these
+      -- word instances
+      let
+        word_instances_with_no_text_words =
+          List.filter (Text.Translations.Word.Instance.hasTextWord >> not) word_instances
+      in
+        ({ model | edit_lock = True }
+        , addTextWords parent_msg model model.flags.csrftoken word_instances)
 
+addTextWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> Cmd msg
+addTextWords parent_msg model csrftoken word_instances =
+     Task.attempt AddToTextWords
+  <| Task.sequence
+  <| List.map Http.toTask
+  <| List.map (addAsTextWordRequest parent_msg model csrftoken) word_instances
 
-addAsTextWord : (Msg -> msg) -> Model -> Flags.CSRFToken -> WordInstance -> Cmd msg
-addAsTextWord parent_msg model csrftoken word_instance =
+addAsTextWordRequest : Model -> Flags.CSRFToken -> WordInstance -> Http.Request
+addAsTextWordRequest model csrftoken word_instance =
   let
     endpoint_uri = model.flags.add_as_text_word_endpoint_url
     headers = [Http.header "X-CSRFToken" csrftoken]
     encoded_text_word = Text.Translations.Word.Instance.Encode.textWordAddEncoder word_instance
     body = (Http.jsonBody encoded_text_word)
-    request =
-      HttpHelpers.post_with_headers endpoint_uri headers body Text.Translations.Decode.textWordDecoder
   in
-    Http.send (parent_msg << (AddedTextWord word_instance)) request
+    HttpHelpers.post_with_headers endpoint_uri headers body Text.Translations.Decode.textWordDecoder
 
+addAsTextWord : (Msg -> msg) -> Model -> Flags.CSRFToken -> WordInstance -> Cmd msg
+addAsTextWord parent_msg model csrftoken word_instance =
+  Http.send (parent_msg << (AddedTextWord word_instance)) (addAsTextWordRequest model csrftoken word_instance)
 
 postMergeWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> Cmd msg
 postMergeWords parent_msg model csrftoken word_instances =

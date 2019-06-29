@@ -9,7 +9,7 @@ import Text.Model
 import Text.Translations exposing (..)
 
 import Text.Translations.TextWord exposing (TextWord)
-import Text.Translations.Word.Instance exposing (WordInstance, WordInstanceEdit)
+import Text.Translations.Word.Instance exposing (WordInstance)
 
 
 type alias Grammemes = Dict String (Maybe String)
@@ -21,7 +21,8 @@ type alias Model = {
  , editing_grammeme: Maybe String
  , editing_grammemes: Dict String String
  , editing_words: Dict Text.Translations.Word Int
- , editing_word_instances: Dict Text.Translations.Word WordInstanceEdit
+ , editing_word_instances: Dict Text.Translations.Word Bool
+ , edit_lock: Bool
  , text: Text.Model.Text
  , new_translations: Dict String String
  , flags: Flags }
@@ -35,6 +36,7 @@ init flags text = {
  , editing_grammeme=Nothing
  , editing_grammemes=Dict.empty
  , editing_word_instances=Dict.empty
+ , edit_lock=False
  , text=text
  , new_translations=Dict.empty
  , flags=flags }
@@ -47,42 +49,6 @@ clearEditingFields model =
 selectGrammemeForEditing : Model -> String -> Model
 selectGrammemeForEditing model grammeme_name =
   { model | editing_grammeme = Just grammeme_name }
-
-setWordInstanceInput : Bool -> Maybe WordInstanceEdit -> Maybe WordInstanceEdit
-setWordInstanceInput enable word_instance_edit =
-  case word_instance_edit of
-    Just word_edit ->
-      case enable of
-        True ->
-          Just (Text.Translations.Word.Instance.enableWordInstanceInput word_edit)
-
-        False ->
-          Just (Text.Translations.Word.Instance.disableWordInstanceInput word_edit)
-
-    Nothing ->
-      Nothing
-
-setWordInstanceEditing : Bool -> Maybe WordInstanceEdit -> Maybe WordInstanceEdit
-setWordInstanceEditing editing word_instance_edit =
-  case word_instance_edit of
-    Just word_edit ->
-      case editing of
-        True ->
-          Just (Text.Translations.Word.Instance.enableWordInstanceEditing word_edit)
-
-        False ->
-          Just (Text.Translations.Word.Instance.disableWordInstanceEditing word_edit)
-
-    Nothing ->
-      Nothing
-
-disableWordInstanceInput : Model -> WordInstance -> Model
-disableWordInstanceInput model word_instance =
-  { model | editing_word_instances = Dict.update word (setWordInstanceInput False) model.editing_word_instances }
-
-enableWordInstanceInput : Model -> WordInstance -> Model
-enableWordInstanceInput model word_instance =
-  { model | editing_word_instances = Dict.update word (setWordInstanceInput True) model.editing_word_instances }
 
 editingGrammeme : Model -> String
 editingGrammeme model =
@@ -212,7 +178,7 @@ editWord model word_instance =
         Nothing ->
           Dict.insert normalized_word 0 model.editing_words)
 
-    new_editing_word_instances = Dict.update word_instance_id (setWordInstanceEditing True) model.editing_word_instances
+    new_editing_word_instances = Dict.update word_instance_id True
   in
     { model | editing_words = new_edited_words, editing_word_instances = new_editing_word_instances }
 
