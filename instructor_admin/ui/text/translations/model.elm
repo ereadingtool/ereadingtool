@@ -178,7 +178,7 @@ editWord model word_instance =
         Nothing ->
           Dict.insert normalized_word 0 model.editing_words)
 
-    new_editing_word_instances = Dict.update word_instance_id True
+    new_editing_word_instances = Dict.insert word_instance_id True model.editing_word_instances
   in
     { model | editing_words = new_edited_words, editing_word_instances = new_editing_word_instances }
 

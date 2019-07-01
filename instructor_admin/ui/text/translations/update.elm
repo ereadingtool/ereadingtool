@@ -167,15 +167,15 @@ addTextWords parent_msg model csrftoken word_instances =
   <| List.map Http.toTask
   <| List.map (addAsTextWordRequest parent_msg model csrftoken) word_instances
 
-addAsTextWordRequest : Model -> Flags.CSRFToken -> WordInstance -> Http.Request
+addAsTextWordRequest : Model -> Flags.CSRFToken -> WordInstance -> Http.Request TextWord
 addAsTextWordRequest model csrftoken word_instance =
   let
-    endpoint_uri = model.flags.add_as_text_word_endpoint_url
+    endpoint_uri = (Text.Translations.addTextWordEndpointToString model.flags.add_as_text_word_endpoint_url)
     headers = [Http.header "X-CSRFToken" csrftoken]
     encoded_text_word = Text.Translations.Word.Instance.Encode.textWordAddEncoder word_instance
     body = (Http.jsonBody encoded_text_word)
   in
-    HttpHelpers.post_with_headers endpoint_uri headers body Text.Translations.Decode.textWordDecoder
+    HttpHelpers.post_with_headers endpoint_uri headers body Text.Translations.Decode.textWordInstanceDecoder
 
 addAsTextWord : (Msg -> msg) -> Model -> Flags.CSRFToken -> WordInstance -> Cmd msg
 addAsTextWord parent_msg model csrftoken word_instance =
@@ -184,16 +184,15 @@ addAsTextWord parent_msg model csrftoken word_instance =
 postMergeWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> Cmd msg
 postMergeWords parent_msg model csrftoken word_instances =
   let
-    endpoint_uri = model.flags.group_word_endpoint_url
+    endpoint_url = (Text.Translations.mergeTextWordEndpointToString model.flags.group_word_endpoint_url)
     headers = [Http.header "X-CSRFToken" csrftoken]
     text_words = List.filterMap (\instance -> (Text.Translations.Word.Instance.textWord instance)) word_instances
     encoded_text_word_ids = Text.Translations.Encode.textWordMergeEncoder text_words
     body = (Http.jsonBody encoded_text_word_ids)
     request =
-      HttpHelpers.post_with_headers endpoint_uri headers body Text.Translations.Decode.textWordMergeDecoder
+      HttpHelpers.post_with_headers endpoint_url headers body Text.Translations.Decode.textWordMergeDecoder
   in
     Http.send (parent_msg << MergedWords) request
-
 
 matchTranslations : (Msg -> msg) -> Model -> WordInstance -> Cmd msg
 matchTranslations parent_msg model word_instance =

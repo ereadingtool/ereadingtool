@@ -10802,6 +10802,26 @@ var _user$project$Text_Translations$expectedGrammemeKeys = _elm_lang$core$Set$fr
 			}
 		}
 	});
+var _user$project$Text_Translations$addTextWordEndpointURL = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0;
+};
+var _user$project$Text_Translations$mergeTextWordEndpointURL = function (_p2) {
+	var _p3 = _p2;
+	return _p3._0;
+};
+var _user$project$Text_Translations$urlToString = function (_p4) {
+	var _p5 = _p4;
+	return _p5._0;
+};
+var _user$project$Text_Translations$addTextWordEndpointToString = function (endpoint) {
+	return _user$project$Text_Translations$urlToString(
+		_user$project$Text_Translations$addTextWordEndpointURL(endpoint));
+};
+var _user$project$Text_Translations$mergeTextWordEndpointToString = function (endpoint) {
+	return _user$project$Text_Translations$urlToString(
+		_user$project$Text_Translations$mergeTextWordEndpointURL(endpoint));
+};
 var _user$project$Text_Translations$WordValues = F2(
 	function (a, b) {
 		return {grammemes: a, translations: b};
@@ -10810,14 +10830,23 @@ var _user$project$Text_Translations$TextGroupDetails = F4(
 	function (a, b, c, d) {
 		return {id: a, instance: b, pos: c, length: d};
 	});
-var _user$project$Text_Translations$Flags = F2(
-	function (a, b) {
-		return {group_word_endpoint_url: a, csrftoken: b};
+var _user$project$Text_Translations$Flags = F3(
+	function (a, b, c) {
+		return {add_as_text_word_endpoint_url: a, group_word_endpoint_url: b, csrftoken: c};
 	});
 var _user$project$Text_Translations$Translation = F4(
 	function (a, b, c, d) {
 		return {id: a, endpoint: b, correct_for_context: c, text: d};
 	});
+var _user$project$Text_Translations$URL = function (a) {
+	return {ctor: 'URL', _0: a};
+};
+var _user$project$Text_Translations$AddTextWordEndpoint = function (a) {
+	return {ctor: 'AddTextWordEndpoint', _0: a};
+};
+var _user$project$Text_Translations$MergeTextWordEndpoint = function (a) {
+	return {ctor: 'MergeTextWordEndpoint', _0: a};
+};
 var _user$project$Text_Translations$Cancelable = {ctor: 'Cancelable'};
 var _user$project$Text_Translations$Mergeable = {ctor: 'Mergeable'};
 

@@ -53,6 +53,10 @@ textWord : WordInstance -> Maybe TextWord
 textWord (WordInstance _ _ text_word) =
   text_word
 
+instance : WordInstance -> Instance
+instance (WordInstance instance _ _) =
+  instance
+
 word : WordInstance -> Token
 word (WordInstance _ word _) =
   word

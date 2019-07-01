@@ -51,6 +51,26 @@ type alias Translations = List Translation
 type alias Grammemes = Dict String String
 
 
+urlToString : URL -> String
+urlToString (URL url) =
+  url
+
+mergeTextWordEndpointURL : MergeTextWordEndpoint -> URL
+mergeTextWordEndpointURL (MergeTextWordEndpoint url) =
+  url
+
+addTextWordEndpointURL : AddTextWordEndpoint -> URL
+addTextWordEndpointURL (AddTextWordEndpoint url) =
+  url
+
+addTextWordEndpointToString : AddTextWordEndpoint -> String
+addTextWordEndpointToString endpoint =
+  urlToString (addTextWordEndpointURL endpoint)
+
+mergeTextWordEndpointToString : MergeTextWordEndpoint -> String
+mergeTextWordEndpointToString endpoint =
+  urlToString (mergeTextWordEndpointURL endpoint)
+
 expectedGrammemeKeys : Set String
 expectedGrammemeKeys = Set.fromList [
    "pos"
