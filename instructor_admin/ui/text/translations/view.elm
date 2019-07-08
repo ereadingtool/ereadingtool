@@ -15,6 +15,7 @@ import Dict exposing (Dict)
 import Set exposing (Set)
 
 import Text.Section.Words.Tag
+import Text.Section.Model
 
 import Text.Translations exposing (..)
 
@@ -55,8 +56,8 @@ is_part_of_compound_word model instance word =
     Nothing ->
       Nothing
 
-tagWord : Model -> (Msg -> msg) -> Int -> String -> Html msg
-tagWord model parent_msg instance token =
+tagWord : Model -> (Msg -> msg) -> Int -> Int -> String -> Html msg
+tagWord model parent_msg section_number instance token =
   let
     id = String.join "_" [toString instance, token]
   in
@@ -66,7 +67,7 @@ tagWord model parent_msg instance token =
 
       False ->
         let
-          word_instance = Text.Translations.Model.newWordInstance model instance token
+          word_instance = Text.Translations.Model.newWordInstance model section_number instance token
 
           editing_word = Text.Translations.Model.editingWord model token
           merging_word = Text.Translations.Model.mergingWord model word_instance
@@ -86,6 +87,12 @@ tagWord model parent_msg instance token =
             ]
           , view_edit model parent_msg word_instance
           ]
+
+tagSection : Model -> (Msg -> msg) -> Text.Section.Model.TextSection -> Html msg
+tagSection model msg section =
+  div [id ("section-" ++ (toString section.order)), class "section"]
+    (Text.Section.Words.Tag.tagWordsAndToVDOM
+      (tagWord model msg section.order) (is_part_of_compound_word model) (HtmlParser.parse section.body))
 
 view_edit : Model -> (Msg -> msg) -> WordInstance -> Html msg
 view_edit model parent_msg word_instance =
@@ -356,15 +363,7 @@ view_translations : (Msg -> msg) -> Maybe Model -> Html msg
 view_translations msg translation_model =
   case translation_model of
     Just model ->
-      let
-        sections = Array.toList model.text.sections
-        text_body = String.join " " (List.map (\section -> section.body) sections)
-
-        text_body_vdom =
-          Text.Section.Words.Tag.tagWordsAndToVDOM
-            (tagWord model msg) (is_part_of_compound_word model) (HtmlParser.parse text_body)
-      in
-        div [id "translations_tab"] text_body_vdom
+      div [id "translations_tab"] (List.map (tagSection model msg) (Array.toList model.text.sections))
 
     Nothing ->
       div [id "translations_tab"] [

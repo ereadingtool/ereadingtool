@@ -11703,9 +11703,9 @@ var _user$project$Text_Translations_Decode$textTranslationRemoveRespDecoder = A3
 				'word',
 				_elm_lang$core$Json_Decode$string,
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Translations_Decode$TextWordTranslationDeleteResp)))));
-var _user$project$Text_Translations_Decode$TextWordMergeResp = F5(
-	function (a, b, c, d, e) {
-		return {phrase: a, instance: b, text_words: c, grouped: d, error: e};
+var _user$project$Text_Translations_Decode$TextWordMergeResp = F6(
+	function (a, b, c, d, e, f) {
+		return {phrase: a, section: b, instance: c, text_words: d, grouped: e, error: f};
 	});
 var _user$project$Text_Translations_Decode$textWordMergeDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -11725,9 +11725,13 @@ var _user$project$Text_Translations_Decode$textWordMergeDecoder = A3(
 				_elm_lang$core$Json_Decode$int,
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'phrase',
-					_elm_lang$core$Json_Decode$string,
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Translations_Decode$TextWordMergeResp))))));
+					'section',
+					_elm_lang$core$Json_Decode$int,
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'phrase',
+						_elm_lang$core$Json_Decode$string,
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Translations_Decode$TextWordMergeResp)))))));
 
 var _user$project$Question_Decode$questionDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,

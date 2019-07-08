@@ -6,6 +6,7 @@ import Dict exposing (Dict)
 import OrderedDict exposing (OrderedDict)
 
 import Text.Model
+
 import Text.Translations exposing (..)
 
 import Text.Translations.TextWord exposing (TextWord)
@@ -78,9 +79,9 @@ inputGrammeme model new_grammeme_value =
           Dict.insert editing_grammeme_name new_grammeme_value model.editing_grammemes
     }
 
-newWordInstance : Model -> Instance -> Token -> WordInstance
-newWordInstance model instance token =
-  Text.Translations.Word.Instance.new instance token (getTextWord model instance token)
+newWordInstance : Model -> Int -> Instance -> Token -> WordInstance
+newWordInstance model section_number instance token =
+  Text.Translations.Word.Instance.new section_number instance token (getTextWord model instance token)
 
 mergingWordInstances : Model -> List WordInstance
 mergingWordInstances model =
@@ -107,15 +108,15 @@ mergeState model word_instance =
       False ->
         Nothing
 
-completeMerge : Model -> Phrase -> Instance -> List TextWord -> Model
-completeMerge model phrase instance text_words =
+completeMerge : Model -> Int -> Phrase -> Instance -> List TextWord -> Model
+completeMerge model section_number phrase instance text_words =
   let
     new_model =
          setTextWords model text_words
       |> cancelMerge
       |> uneditAllWords
 
-    merged_word_instance = newWordInstance new_model instance phrase
+    merged_word_instance = newWordInstance new_model section_number instance phrase
   in
     editWord new_model merged_word_instance
 
