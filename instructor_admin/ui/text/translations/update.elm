@@ -161,9 +161,9 @@ mergeWords parent_msg model csrftoken word_instances =
         ({ model | edit_lock = True }
         , addTextWords parent_msg model model.flags.csrftoken word_instances)
 
-addTextWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> Cmd Msg
+addTextWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> Cmd msg
 addTextWords parent_msg model csrftoken word_instances =
-     Task.attempt AddToTextWords
+  Task.attempt (AddToTextWords >> parent_msg)
   <| Task.sequence
   <| List.map Http.toTask
   <| List.map (addAsTextWordRequest model csrftoken) word_instances
@@ -180,7 +180,7 @@ addAsTextWordRequest model csrftoken word_instance =
 
 addAsTextWord : (Msg -> msg) -> Model -> Flags.CSRFToken -> WordInstance -> Cmd msg
 addAsTextWord parent_msg model csrftoken word_instance =
-  Http.send (parent_msg << (AddedTextWord word_instance)) (addAsTextWordRequest model csrftoken word_instance)
+  Http.send (parent_msg << (AddedTextWord)) (addAsTextWordRequest model csrftoken word_instance)
 
 postMergeWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> Cmd msg
 postMergeWords parent_msg model csrftoken word_instances =

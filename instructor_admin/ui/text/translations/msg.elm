@@ -23,7 +23,6 @@ type Msg =
 
   -- words
   | AddTextWord WordInstance
-  | AddedTextWord WordInstance TextWord
   | EditWord WordInstance
   | CloseEditWord WordInstance
   | DeleteTextWord TextWord
@@ -43,6 +42,7 @@ type Msg =
 
   -- result msgs
   -- words
+  | AddedTextWord (Result Http.Error TextWord)
   | AddToTextWords (Result Http.Error (List TextWord))
   | MergedWords (Result Http.Error Text.Translations.Decode.TextWordMergeResp)
   | DeletedTextWord (Result Http.Error TextWord)
