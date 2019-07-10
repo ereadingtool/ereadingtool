@@ -26,6 +26,9 @@ type alias Model = {
  , edit_lock: Bool
  , text: Text.Model.Text
  , new_translations: Dict String String
+ , add_as_text_word_endpoint : Text.Translations.AddTextWordEndpoint
+ , group_word_endpoint : Text.Translations.GroupWordEndpoint
+ , merge_textword_endpoint : Text.Translations.MergeTextWordEndpoint
  , flags: Flags }
 
 
@@ -40,8 +43,10 @@ init flags text = {
  , edit_lock=False
  , text=text
  , new_translations=Dict.empty
- , flags=flags }
-
+ , flags=flags
+ , add_as_text_word_endpoint = AddTextWordEndpoint (URL flags.add_as_text_word_endpoint_url)
+ , group_word_endpoint = GroupWordEndpoint (URL flags.group_word_endpoint_url)
+ , merge_textword_endpoint = MergeTextWordEndpoint (URL flags.merge_textword_endpoint_url) }
 
 clearEditingFields : Model -> Model
 clearEditingFields model =
@@ -258,6 +263,7 @@ setTextWord model instance phrase text_word =
       (case getTextWords model phrase of
         Just text_words ->
           Array.set instance text_word text_words
+
         -- word not found
         Nothing ->
           Array.fromList [text_word])

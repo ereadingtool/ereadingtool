@@ -31,13 +31,16 @@ type URL = URL String
 
 type AddTextWordEndpoint = AddTextWordEndpoint URL
 type MergeTextWordEndpoint = MergeTextWordEndpoint URL
+type GroupWordEndpoint = GroupWordEndpoint URL
 
 type MergeState = Mergeable | Cancelable
 
 type alias Flags = {
-    add_as_text_word_endpoint_url: AddTextWordEndpoint
-  , group_word_endpoint_url: MergeTextWordEndpoint
+    add_as_text_word_endpoint_url: String
+  , group_word_endpoint_url: String
+  , merge_textword_endpoint_url: String
   , csrftoken : Flags.CSRFToken }
+
 
 type alias Translation = {
    id: Int

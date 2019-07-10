@@ -163,7 +163,7 @@ mergeWords parent_msg model csrftoken word_instances =
 
 addTextWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> Cmd msg
 addTextWords parent_msg model csrftoken word_instances =
-  Task.attempt (AddToTextWords >> parent_msg)
+  Task.attempt (UpdatedTextWords >> parent_msg)
   <| Task.sequence
   <| List.map Http.toTask
   <| List.map (addAsTextWordRequest model csrftoken) word_instances
@@ -171,7 +171,7 @@ addTextWords parent_msg model csrftoken word_instances =
 addAsTextWordRequest : Model -> Flags.CSRFToken -> WordInstance -> Http.Request TextWord
 addAsTextWordRequest model csrftoken word_instance =
   let
-    endpoint_uri = (Text.Translations.addTextWordEndpointToString model.flags.add_as_text_word_endpoint_url)
+    endpoint_uri = (Text.Translations.addTextWordEndpointToString model.add_as_text_word_endpoint)
     headers = [Http.header "X-CSRFToken" csrftoken]
     encoded_text_word = Text.Translations.Word.Instance.Encode.textWordAddEncoder word_instance
     body = (Http.jsonBody encoded_text_word)
@@ -180,12 +180,12 @@ addAsTextWordRequest model csrftoken word_instance =
 
 addAsTextWord : (Msg -> msg) -> Model -> Flags.CSRFToken -> WordInstance -> Cmd msg
 addAsTextWord parent_msg model csrftoken word_instance =
-  Http.send (parent_msg << (AddedTextWord)) (addAsTextWordRequest model csrftoken word_instance)
+  Http.send (parent_msg << (UpdatedTextWord)) (addAsTextWordRequest model csrftoken word_instance)
 
 postMergeWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> Cmd msg
 postMergeWords parent_msg model csrftoken word_instances =
   let
-    endpoint_url = (Text.Translations.mergeTextWordEndpointToString model.flags.group_word_endpoint_url)
+    endpoint_url = (Text.Translations.mergeTextWordEndpointToString model.merge_textword_endpoint)
     headers = [Http.header "X-CSRFToken" csrftoken]
     text_words = List.filterMap (\instance -> (Text.Translations.Word.Instance.textWord instance)) word_instances
     encoded_text_word_ids = Text.Translations.Encode.textWordMergeEncoder text_words
