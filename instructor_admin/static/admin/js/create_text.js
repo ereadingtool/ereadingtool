@@ -21736,9 +21736,9 @@ var _user$project$Text_Translations$TextGroupDetails = F4(
 	function (a, b, c, d) {
 		return {id: a, instance: b, pos: c, length: d};
 	});
-var _user$project$Text_Translations$Flags = F4(
-	function (a, b, c, d) {
-		return {add_as_text_word_endpoint_url: a, group_word_endpoint_url: b, merge_textword_endpoint_url: c, csrftoken: d};
+var _user$project$Text_Translations$Flags = F3(
+	function (a, b, c) {
+		return {add_as_text_word_endpoint_url: a, merge_textword_endpoint_url: b, csrftoken: c};
 	});
 var _user$project$Text_Translations$Translation = F4(
 	function (a, b, c, d) {
@@ -26854,11 +26854,15 @@ var _user$project$Text_Translations_Word_Instance$id = function (_p6) {
 		'_',
 		{
 			ctor: '::',
-			_0: _elm_lang$core$Basics$toString(_p7._1),
+			_0: _elm_lang$core$Basics$toString(_p7._0),
 			_1: {
 				ctor: '::',
-				_0: _p7._2,
-				_1: {ctor: '[]'}
+				_0: _elm_lang$core$Basics$toString(_p7._1),
+				_1: {
+					ctor: '::',
+					_0: _p7._2,
+					_1: {ctor: '[]'}
+				}
 			}
 		});
 };
@@ -27227,8 +27231,6 @@ var _user$project$Text_Translations_Model$init = F2(
 			flags: flags,
 			add_as_text_word_endpoint: _user$project$Text_Translations$AddTextWordEndpoint(
 				_user$project$Text_Translations$URL(flags.add_as_text_word_endpoint_url)),
-			group_word_endpoint: _user$project$Text_Translations$GroupWordEndpoint(
-				_user$project$Text_Translations$URL(flags.group_word_endpoint_url)),
 			merge_textword_endpoint: _user$project$Text_Translations$MergeTextWordEndpoint(
 				_user$project$Text_Translations$URL(flags.merge_textword_endpoint_url))
 		};
@@ -27245,9 +27247,7 @@ var _user$project$Text_Translations_Model$Model = function (a) {
 									return function (j) {
 										return function (k) {
 											return function (l) {
-												return function (m) {
-													return {words: a, merging_words: b, editing_grammeme: c, editing_grammemes: d, editing_words: e, editing_word_instances: f, edit_lock: g, text: h, new_translations: i, add_as_text_word_endpoint: j, group_word_endpoint: k, merge_textword_endpoint: l, flags: m};
-												};
+												return {words: a, merging_words: b, editing_grammeme: c, editing_grammemes: d, editing_words: e, editing_word_instances: f, edit_lock: g, text: h, new_translations: i, add_as_text_word_endpoint: j, merge_textword_endpoint: k, flags: l};
 											};
 										};
 									};
@@ -32938,16 +32938,11 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 												function (csrftoken) {
 													return A2(
 														_elm_lang$core$Json_Decode$andThen,
-														function (group_word_endpoint_url) {
-															return A2(
-																_elm_lang$core$Json_Decode$andThen,
-																function (merge_textword_endpoint_url) {
-																	return _elm_lang$core$Json_Decode$succeed(
-																		{add_as_text_word_endpoint_url: add_as_text_word_endpoint_url, csrftoken: csrftoken, group_word_endpoint_url: group_word_endpoint_url, merge_textword_endpoint_url: merge_textword_endpoint_url});
-																},
-																A2(_elm_lang$core$Json_Decode$field, 'merge_textword_endpoint_url', _elm_lang$core$Json_Decode$string));
+														function (merge_textword_endpoint_url) {
+															return _elm_lang$core$Json_Decode$succeed(
+																{add_as_text_word_endpoint_url: add_as_text_word_endpoint_url, csrftoken: csrftoken, merge_textword_endpoint_url: merge_textword_endpoint_url});
 														},
-														A2(_elm_lang$core$Json_Decode$field, 'group_word_endpoint_url', _elm_lang$core$Json_Decode$string));
+														A2(_elm_lang$core$Json_Decode$field, 'merge_textword_endpoint_url', _elm_lang$core$Json_Decode$string));
 												},
 												A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string));
 										},

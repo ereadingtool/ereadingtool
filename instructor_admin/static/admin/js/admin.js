@@ -10830,9 +10830,9 @@ var _user$project$Text_Translations$TextGroupDetails = F4(
 	function (a, b, c, d) {
 		return {id: a, instance: b, pos: c, length: d};
 	});
-var _user$project$Text_Translations$Flags = F4(
-	function (a, b, c, d) {
-		return {add_as_text_word_endpoint_url: a, group_word_endpoint_url: b, merge_textword_endpoint_url: c, csrftoken: d};
+var _user$project$Text_Translations$Flags = F3(
+	function (a, b, c) {
+		return {add_as_text_word_endpoint_url: a, merge_textword_endpoint_url: b, csrftoken: c};
 	});
 var _user$project$Text_Translations$Translation = F4(
 	function (a, b, c, d) {

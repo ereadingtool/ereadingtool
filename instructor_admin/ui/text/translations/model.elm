@@ -27,7 +27,6 @@ type alias Model = {
  , text: Text.Model.Text
  , new_translations: Dict String String
  , add_as_text_word_endpoint : Text.Translations.AddTextWordEndpoint
- , group_word_endpoint : Text.Translations.GroupWordEndpoint
  , merge_textword_endpoint : Text.Translations.MergeTextWordEndpoint
  , flags: Flags }
 
@@ -45,7 +44,6 @@ init flags text = {
  , new_translations=Dict.empty
  , flags=flags
  , add_as_text_word_endpoint = AddTextWordEndpoint (URL flags.add_as_text_word_endpoint_url)
- , group_word_endpoint = GroupWordEndpoint (URL flags.group_word_endpoint_url)
  , merge_textword_endpoint = MergeTextWordEndpoint (URL flags.merge_textword_endpoint_url) }
 
 clearEditingFields : Model -> Model

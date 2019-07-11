@@ -51,7 +51,7 @@ sectionNumber (WordInstance section_number _ _ _) =
 
 id : WordInstance -> Id
 id (WordInstance section_number instance token _) =
-  String.join "_" [toString instance, token]
+  String.join "_" [toString section_number, toString instance, token]
 
 textWord : WordInstance -> Maybe TextWord
 textWord (WordInstance _ _ _ text_word) =

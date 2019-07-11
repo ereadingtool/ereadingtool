@@ -122,7 +122,8 @@ class AdminCreateEditElmLoadView(ElmLoadJsView):
             'safe': True,
             'value': json.dumps({
                 'csrftoken': get_token(self.request),
-                'group_word_endpoint_url': reverse('text-word-group-api')
+                'add_as_text_word_endpoint_url': reverse('text-word-api'),
+                'merge_textword_endpoint_url': reverse('text-word-group-api')
             })
         }
 

@@ -37,7 +37,6 @@ type MergeState = Mergeable | Cancelable
 
 type alias Flags = {
     add_as_text_word_endpoint_url: String
-  , group_word_endpoint_url: String
   , merge_textword_endpoint_url: String
   , csrftoken : Flags.CSRFToken }
 
