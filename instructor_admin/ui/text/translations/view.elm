@@ -59,7 +59,7 @@ is_part_of_compound_word model instance word =
 tagWord : Model -> (Msg -> msg) -> Int -> Int -> String -> Html msg
 tagWord model parent_msg section_number instance token =
   let
-    id = String.join "_" [toString instance, token]
+    id = String.join "-" ["section", toString section_number, "instance", toString instance, token]
   in
     case token == " " of
       True ->

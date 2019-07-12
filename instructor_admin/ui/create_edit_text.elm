@@ -156,15 +156,24 @@ update msg model = case msg of
                        ])
 
               Nothing ->
-                ({ model |
-                     text_component=text_component
-                   , mode=EditMode
-                   , text_translations_model=
-                       Just (Text.Translations.Model.init model.flags.translation_flags text)
-                   , success_msg=Just <| "editing '" ++ text.title ++ "' text"
-                 }, Cmd.batch [
-                      Text.Component.reinitialize_ck_editors text_component
-                    , Text.Translations.Update.retrieveTextWords TextTranslationMsg (Maybe.withDefault 0 text.id) ])
+                case text.id of
+                  Just id ->
+                    ({ model |
+                         text_component=text_component
+                       , mode=EditMode
+                       , text_translations_model=
+                           Just (Text.Translations.Model.init model.flags.translation_flags id text)
+                       , success_msg=Just <| "editing '" ++ text.title ++ "' text"
+                     }, Cmd.batch [
+                          Text.Component.reinitialize_ck_editors text_component
+                        , Text.Translations.Update.retrieveTextWords TextTranslationMsg (Maybe.withDefault 0 text.id) ])
+
+                  Nothing ->
+                    ({ model |
+                         text_component=text_component
+                       , mode=EditMode
+                       , error_msg=Just <| "Something went wrong: no valid text id"
+                     }, Text.Component.reinitialize_ck_editors text_component)
 
         Err err -> let _ = Debug.log "text decode error" err in
           ({ model |

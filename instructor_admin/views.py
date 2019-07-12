@@ -85,8 +85,8 @@ class AdminCreateEditTextView(AdminView):
 
         return super(AdminCreateEditTextView, self).get(request, *args, **kwargs)
 
-    # GA's nonce CSP policy conflicts with previously used unsafe-inline
-    # attempts at using nonce with CkEditor failed so making this csp_exempt for now
+    # GA's nonce CSP policy conflicts with previously used unsafe-inline.
+    # Attempts at using nonce with CkEditor failed so making this csp_exempt for now
     @csp_exempt
     def dispatch(self, request, *args, **kwargs):
         return super(AdminCreateEditTextView, self).dispatch(request, *args, **kwargs)

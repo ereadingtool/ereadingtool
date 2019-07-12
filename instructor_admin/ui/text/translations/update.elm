@@ -99,7 +99,7 @@ update parent_msg msg model =
       (Text.Translations.Model.updateTranslationsForWord model text_word translation_text, Cmd.none)
 
     AddTextWord word_instance ->
-      (model, Cmd.none)
+      (model, addAsTextWord parent_msg model model.flags.csrftoken word_instance)
 
     SubmitNewTranslationForTextWord text_word ->
       case Text.Translations.Model.getNewTranslationForWord model text_word of
@@ -173,7 +173,7 @@ addAsTextWordRequest model csrftoken word_instance =
   let
     endpoint_uri = (Text.Translations.addTextWordEndpointToString model.add_as_text_word_endpoint)
     headers = [Http.header "X-CSRFToken" csrftoken]
-    encoded_text_word = Text.Translations.Word.Instance.Encode.textWordAddEncoder word_instance
+    encoded_text_word = Text.Translations.Word.Instance.Encode.textWordAddEncoder model.text_id word_instance
     body = (Http.jsonBody encoded_text_word)
   in
     HttpHelpers.post_with_headers endpoint_uri headers body Text.Translations.Decode.textWordInstanceDecoder

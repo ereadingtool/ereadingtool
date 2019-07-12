@@ -11,6 +11,8 @@ from django.views.generic import View
 from django.db import transaction, DatabaseError
 from django.core.exceptions import ObjectDoesNotExist
 
+from text.models import TextSection
+
 from text.translations.models import TextWord
 
 from text.phrase.models import TextPhrase, TextPhraseTranslation
@@ -33,6 +35,9 @@ class TextWordAPIView(LoginRequiredMixin, View):
             return HttpResponse(json.dumps({'errors': {'json': str(validation_error)}}), status=400)
 
         try:
+            text_word_add_params['text_section'] = TextSection.objects.get(text=text_word_add_params.pop('text'),
+                                                                           order=text_word_add_params['text_section']+1)
+
             text_word = TextWord.create(**text_word_add_params)
 
             text_word_dict = text_word.to_dict()

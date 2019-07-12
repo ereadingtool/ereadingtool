@@ -25,14 +25,15 @@ type alias Model = {
  , editing_word_instances: Dict Text.Translations.Word Bool
  , edit_lock: Bool
  , text: Text.Model.Text
+ , text_id: Int
  , new_translations: Dict String String
  , add_as_text_word_endpoint : Text.Translations.AddTextWordEndpoint
  , merge_textword_endpoint : Text.Translations.MergeTextWordEndpoint
  , flags: Flags }
 
 
-init : Flags -> Text.Model.Text -> Model
-init flags text = {
+init : Flags -> Int -> Text.Model.Text -> Model
+init flags text_id text = {
    words=Dict.empty
  , merging_words=OrderedDict.empty
  , editing_words=Dict.empty
@@ -41,6 +42,7 @@ init flags text = {
  , editing_word_instances=Dict.empty
  , edit_lock=False
  , text=text
+ , text_id=text_id
  , new_translations=Dict.empty
  , flags=flags
  , add_as_text_word_endpoint = AddTextWordEndpoint (URL flags.add_as_text_word_endpoint_url)

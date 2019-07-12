@@ -1,14 +1,11 @@
 from django.db import models
 
-from text.models import TextSection
 from text.phrase.models import TextPhrase
 
 
 class TextWord(TextPhrase):
     @classmethod
     def create(cls, **params) -> 'TextWord':
-        params['text_section'] = TextSection.objects.get(pk=params['text_section'])
-
         return TextWord.objects.create(**params)
 
     def to_dict(self):
