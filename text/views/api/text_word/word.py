@@ -40,7 +40,7 @@ class TextWordAPIView(LoginRequiredMixin, View):
 
             text_word = TextWord.create(**text_word_add_params)
 
-            text_word_dict = text_word.to_dict()
+            text_word_dict = text_word.to_translations_dict()
 
             text_word_dict['id'] = text_word.pk
 
