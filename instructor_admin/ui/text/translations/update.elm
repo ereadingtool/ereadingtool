@@ -96,7 +96,8 @@ update parent_msg msg model =
       (model, Cmd.none)
 
     UpdateNewTranslationForTextWord text_word translation_text ->
-      (Text.Translations.Model.updateTranslationsForWord model text_word translation_text, Cmd.none)
+      let _ = Debug.log "updatenewtranslationfortextword" (text_word, translation_text) in
+        (Text.Translations.Model.updateTranslationsForWord model text_word translation_text, Cmd.none)
 
     AddTextWord word_instance ->
       (model, addAsTextWord parent_msg model model.flags.csrftoken word_instance)
@@ -109,7 +110,7 @@ update parent_msg msg model =
         Nothing ->
           (model, Cmd.none)
 
-    SubmittedTextTranslation (Ok (word, instance, translation)) ->
+    SubmittedTextTranslation (Ok (text_word, translation)) ->
       (Text.Translations.Model.addTextTranslation model instance word translation, Cmd.none)
 
     -- handle user-friendly msgs

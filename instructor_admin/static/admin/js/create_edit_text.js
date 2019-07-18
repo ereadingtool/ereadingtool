@@ -31844,9 +31844,15 @@ var _user$project$Text_Translations_Update$update = F3(
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'UpdateNewTranslationForTextWord':
+				var _p27 = _p16._1;
+				var _p26 = _p16._0;
+				var _p25 = A2(
+					_elm_lang$core$Debug$log,
+					'updatenewtranslationfortextword',
+					{ctor: '_Tuple2', _0: _p26, _1: _p27});
 				return {
 					ctor: '_Tuple2',
-					_0: A3(_user$project$Text_Translations_Model$updateTranslationsForWord, model, _p16._0, _p16._1),
+					_0: A3(_user$project$Text_Translations_Model$updateTranslationsForWord, model, _p26, _p27),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'AddTextWord':
@@ -31856,26 +31862,30 @@ var _user$project$Text_Translations_Update$update = F3(
 					_1: A4(_user$project$Text_Translations_Update$addAsTextWord, parent_msg, model, model.flags.csrftoken, _p16._0)
 				};
 			case 'SubmitNewTranslationForTextWord':
-				var _p26 = _p16._0;
-				var _p25 = A2(_user$project$Text_Translations_Model$getNewTranslationForWord, model, _p26);
-				if (_p25.ctor === 'Just') {
+				var _p32 = _p16._0;
+				var _p28 = A2(_user$project$Text_Translations_Model$getNewTranslationForWord, model, _p32);
+				if (_p28.ctor === 'Just') {
+					var _p30 = _p28._0;
+					var _p29 = A2(_elm_lang$core$Debug$log, 'submitting new translation for text word: ', _p30);
 					return {
 						ctor: '_Tuple2',
 						_0: model,
-						_1: A5(_user$project$Text_Translations_Update$postTranslation, parent_msg, model.flags.csrftoken, _p26, _p25._0, true)
+						_1: A5(_user$project$Text_Translations_Update$postTranslation, parent_msg, model.flags.csrftoken, _p32, _p30, true)
 					};
 				} else {
+					var _p31 = _elm_lang$core$Debug$log('no translation text to submit');
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'SubmittedTextTranslation':
 				if (_p16._0.ctor === 'Ok') {
+					var _p33 = _elm_lang$core$Debug$log('submitted text translation!');
 					return {
 						ctor: '_Tuple2',
 						_0: A4(_user$project$Text_Translations_Model$addTextTranslation, model, _p16._0._0._1, _p16._0._0._0, _p16._0._0._2),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p27 = A2(_elm_lang$core$Debug$log, 'error decoding adding text translations', _p16._0._0);
+					var _p34 = A2(_elm_lang$core$Debug$log, 'error decoding adding text translations', _p16._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'DeleteTranslation':
@@ -31886,17 +31896,17 @@ var _user$project$Text_Translations_Update$update = F3(
 				};
 			case 'DeletedTranslation':
 				if (_p16._0.ctor === 'Ok') {
-					var _p28 = _p16._0._0;
-					var translation = _p28.translation;
-					var word = _p28.word;
-					var instance = _p28.instance;
+					var _p35 = _p16._0._0;
+					var translation = _p35.translation;
+					var word = _p35.word;
+					var instance = _p35.instance;
 					return {
 						ctor: '_Tuple2',
 						_0: A4(_user$project$Text_Translations_Model$removeTextTranslation, model, instance, word, translation),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p29 = A2(_elm_lang$core$Debug$log, 'error deleting text translations', _p16._0._0);
+					var _p36 = A2(_elm_lang$core$Debug$log, 'error deleting text translations', _p16._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'SelectGrammemeForEditing':

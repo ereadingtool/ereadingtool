@@ -55,14 +55,14 @@ textWordMergeDecoder =
     |> required "grouped" Json.Decode.bool
     |> required "error" (Json.Decode.nullable Json.Decode.string)
 
-textTranslationUpdateRespDecoder : Json.Decode.Decoder (Word, Int, Translation)
+textTranslationUpdateRespDecoder : Json.Decode.Decoder (Int, Word, Int, Translation)
 textTranslationUpdateRespDecoder =
   Json.Decode.map3 (,,)
     (Json.Decode.field "word" Json.Decode.string)
     (Json.Decode.field "instance" Json.Decode.int)
     (Json.Decode.field "translation" textWordTranslationsDecoder)
 
-textTranslationAddRespDecoder : Json.Decode.Decoder (Word, Int, Translation)
+textTranslationAddRespDecoder : Json.Decode.Decoder (Int, Word, Int, Translation)
 textTranslationAddRespDecoder =
   Json.Decode.map3 (,,)
     (Json.Decode.field "word" Json.Decode.string)

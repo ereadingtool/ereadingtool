@@ -11638,23 +11638,21 @@ var _user$project$Text_Translations_Decode$textWordInstanceDecoder = A8(
 var _user$project$Text_Translations_Decode$textWordInstancesDecoder = _elm_lang$core$Json_Decode$list(_user$project$Text_Translations_Decode$textWordInstanceDecoder);
 var _user$project$Text_Translations_Decode$textWordDictInstancesDecoder = _elm_lang$core$Json_Decode$dict(
 	_elm_lang$core$Json_Decode$array(_user$project$Text_Translations_Decode$textWordInstanceDecoder));
-var _user$project$Text_Translations_Decode$textTranslationAddRespDecoder = A4(
-	_elm_lang$core$Json_Decode$map3,
-	F3(
-		function (v0, v1, v2) {
-			return {ctor: '_Tuple3', _0: v0, _1: v1, _2: v2};
+var _user$project$Text_Translations_Decode$textTranslationAddRespDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	F2(
+		function (v0, v1) {
+			return {ctor: '_Tuple2', _0: v0, _1: v1};
 		}),
-	A2(_elm_lang$core$Json_Decode$field, 'word', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$field, 'instance', _elm_lang$core$Json_Decode$int),
+	A2(_elm_lang$core$Json_Decode$field, 'text_word', _user$project$Text_Translations_Decode$textWordInstanceDecoder),
 	A2(_elm_lang$core$Json_Decode$field, 'translation', _user$project$Text_Translations_Decode$textWordTranslationsDecoder));
-var _user$project$Text_Translations_Decode$textTranslationUpdateRespDecoder = A4(
-	_elm_lang$core$Json_Decode$map3,
-	F3(
-		function (v0, v1, v2) {
-			return {ctor: '_Tuple3', _0: v0, _1: v1, _2: v2};
+var _user$project$Text_Translations_Decode$textTranslationUpdateRespDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	F2(
+		function (v0, v1) {
+			return {ctor: '_Tuple2', _0: v0, _1: v1};
 		}),
-	A2(_elm_lang$core$Json_Decode$field, 'word', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$field, 'instance', _elm_lang$core$Json_Decode$int),
+	A2(_elm_lang$core$Json_Decode$field, 'text_word', _user$project$Text_Translations_Decode$textWordInstanceDecoder),
 	A2(_elm_lang$core$Json_Decode$field, 'translation', _user$project$Text_Translations_Decode$textWordTranslationsDecoder));
 var _user$project$Text_Translations_Decode$wordValuesDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
