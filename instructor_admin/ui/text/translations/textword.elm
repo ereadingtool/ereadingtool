@@ -12,8 +12,12 @@ type alias Endpoints = {
   , translations: String
   }
 
-type TextWord = TextWord Int Instance Phrase (Maybe Grammemes) (Maybe Translations) Word Endpoints
+type TextWord = TextWord Int Int Instance Phrase (Maybe Grammemes) (Maybe Translations) Word Endpoints
 
+
+textWordEndpoint : TextWord -> String
+textWordEndpoint text_word =
+  (endpoints text_word).text_word
 
 grammemeValue : TextWord -> String -> Maybe String
 grammemeValue text_word grammeme_name =
@@ -25,7 +29,7 @@ grammemeValue text_word grammeme_name =
       Nothing
 
 grammemes : TextWord -> Maybe Grammemes
-grammemes (TextWord _ _ _ grammemes _ _ _) =
+grammemes (TextWord _ _ _ _ grammemes _ _ _) =
   grammemes
 
 strToWordType : (String, Maybe TextGroupDetails) -> Word
@@ -53,12 +57,16 @@ wordType : TextWord -> String
 wordType text_word =
   wordTypeToString (word text_word)
 
+sectionNumber : TextWord -> Int
+sectionNumber (TextWord _ section _ _ _ _ _ _) =
+  section
+
 word : TextWord -> Word
-word (TextWord _ _ _ _ _ word _) =
+word (TextWord _ _ _ _ _ _ word _) =
   word
 
 instance : TextWord -> Int
-instance (TextWord _ instance _ _ _ _ _) =
+instance (TextWord _ instance _ _ _ _ _ _) =
   instance
 
 wordTypeToGroup : Word -> Maybe TextGroupDetails
@@ -71,11 +79,11 @@ wordTypeToGroup word =
       Nothing
 
 group : TextWord -> Maybe TextGroupDetails
-group (TextWord _ _ _ _ _ word _) =
+group (TextWord _ _ _ _ _ _ word _) =
   wordTypeToGroup word
 
 endpoints : TextWord -> Endpoints
-endpoints (TextWord _ _ _ _ _ _ endpoints) =
+endpoints (TextWord _ _ _ _ _ _ _ endpoints) =
   endpoints
 
 translations_endpoint : TextWord -> String
@@ -87,56 +95,60 @@ text_word_endpoint text_word =
   (endpoints text_word).text_word
 
 id : TextWord -> Int
-id (TextWord id _ _ _ _ _ _) =
+id (TextWord id _ _ _ _ _ _ _) =
   id
 
-new : Int -> Instance -> Phrase -> Maybe Grammemes -> Maybe Translations -> Word -> Endpoints -> TextWord
-new id instance phrase grammemes translations word endpoint =
-  TextWord id instance phrase grammemes translations word endpoint
+new : Int -> Int -> Instance -> Phrase -> Maybe Grammemes -> Maybe Translations -> Word -> Endpoints -> TextWord
+new id section instance phrase grammemes translations word endpoints =
+  TextWord id section instance phrase grammemes translations word endpoints
 
 phrase : TextWord -> Phrase
-phrase (TextWord _ _ phrase _ _ _ _) =
+phrase (TextWord _ _ _ phrase _ _ _ _) =
   phrase
 
 translations : TextWord -> Maybe Translations
-translations (TextWord _ _ _ _ translations __ ) =
+translations (TextWord _ _ _ _ _ translations _ _) =
   translations
 
+setTranslations : TextWord -> Maybe Translations -> TextWord
+setTranslations (TextWord id section instance phrase grammemes translations word endpoints) new_translations =
+  TextWord id section instance phrase grammemes new_translations word endpoints
+
 addTranslation : TextWord -> Translation -> TextWord
-addTranslation (TextWord id instance phrase grammemes translations word url) translation =
+addTranslation text_word translation =
   let
     new_translations =
-      (case translations of
+      (case translations text_word of
         Just trs ->
           Just ((List.map (\tr -> { tr | correct_for_context = False }) trs) ++ [translation])
 
         Nothing ->
           Nothing)
   in
-    TextWord id instance phrase grammemes new_translations word url
+    setTranslations text_word new_translations
 
 removeTranslation : TextWord -> Translation -> TextWord
-removeTranslation ((TextWord id instance phrase grammemes translations word url) as text_word) text_word_translation =
-  case translations of
+removeTranslation text_word text_word_translation =
+  case (translations text_word) of
     Just trs ->
       let
         new_translations = List.filter (\tr -> tr.id /= text_word_translation.id) trs
       in
-        TextWord id instance phrase grammemes (Just new_translations) word url
+        setTranslations text_word (Just new_translations)
 
     -- no translations
     Nothing ->
       text_word
 
 updateTranslation : TextWord -> Translation -> TextWord
-updateTranslation ((TextWord id instance phrase grammemes translations word url) as text_word) text_word_translation =
-  case translations of
+updateTranslation text_word text_word_translation =
+  case (translations text_word) of
     Just trs ->
       let
         new_translations =
           List.map (\tr -> if tr.id == text_word_translation.id then text_word_translation else tr) trs
       in
-        TextWord id instance phrase grammemes (Just new_translations) word url
+        setTranslations text_word (Just new_translations)
 
     -- word has no translations
     Nothing ->
@@ -144,13 +156,13 @@ updateTranslation ((TextWord id instance phrase grammemes translations word url)
 
 
 setNoTRCorrectForContext : TextWord -> TextWord
-setNoTRCorrectForContext ((TextWord id instance phrase grammemes translations word url) as text_word) =
-  case translations of
+setNoTRCorrectForContext text_word =
+  case (translations text_word) of
     Just trs ->
       let
         new_translations = List.map (\tr -> { tr | correct_for_context = False }) trs
       in
-        TextWord id instance phrase grammemes (Just new_translations) word url
+        setTranslations text_word (Just new_translations)
 
     Nothing ->
       text_word

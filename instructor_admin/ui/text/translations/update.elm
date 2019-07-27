@@ -36,7 +36,7 @@ update parent_msg msg model =
       (Text.Translations.Model.setTextWords model text_words, Cmd.none)
 
     UpdatedTextWord (Ok text_word) ->
-      (Text.Translations.Model.setTextWords model [text_word], Cmd.none)
+      (Text.Translations.Model.setTextWord model text_word, Cmd.none)
 
     EditWord word_instance ->
       (Text.Translations.Model.editWord model word_instance, Cmd.none)
@@ -47,8 +47,8 @@ update parent_msg msg model =
     MakeCorrectForContext translation ->
       (model, updateTranslationAsCorrect parent_msg model.flags.csrftoken translation)
 
-    UpdateTextTranslation (Ok (word, instance, translation)) ->
-      (Text.Translations.Model.updateTextTranslation model instance word translation, Cmd.none)
+    UpdateTextTranslation (Ok (text_word, translation)) ->
+      (Text.Translations.Model.updateTextTranslation model text_word translation, Cmd.none)
 
     UpdatedTextWords (Err err) -> let _ = Debug.log "error updating text words" err in
       (model, Cmd.none)
@@ -111,7 +111,7 @@ update parent_msg msg model =
           (model, Cmd.none)
 
     SubmittedTextTranslation (Ok (text_word, translation)) ->
-      (Text.Translations.Model.addTextTranslation model instance word translation, Cmd.none)
+      (Text.Translations.Model.addTextTranslation model text_word translation, Cmd.none)
 
     -- handle user-friendly msgs
     SubmittedTextTranslation (Err err) -> let _ = Debug.log "error decoding adding text translations" err in
@@ -120,13 +120,8 @@ update parent_msg msg model =
     DeleteTranslation text_word text_translation ->
       (model, deleteTranslation parent_msg model.flags.csrftoken text_word text_translation)
 
-    DeletedTranslation (Ok translation_deleted_resp) ->
-      let
-        instance = translation_deleted_resp.instance
-        word = translation_deleted_resp.word
-        translation = translation_deleted_resp.translation
-      in
-        (Text.Translations.Model.removeTextTranslation model instance word translation, Cmd.none)
+    DeletedTranslation (Ok resp) ->
+      (Text.Translations.Model.removeTextTranslation model resp.text_word resp.translation, Cmd.none)
 
     -- handle user-friendly msgs
     DeletedTranslation (Err err) -> let _ = Debug.log "error deleting text translations" err in
@@ -200,6 +195,7 @@ matchTranslations : (Msg -> msg) -> Model -> WordInstance -> Cmd msg
 matchTranslations parent_msg model word_instance =
   let
     word = String.toLower (Text.Translations.Word.Instance.word word_instance)
+    section_number = Text.Translations.Word.Instance.sectionNumber word_instance
   in
     case (Text.Translations.Word.Instance.textWord word_instance) of
       Just text_word ->
@@ -208,7 +204,7 @@ matchTranslations parent_msg model word_instance =
             let
               match_translations = putMatchTranslations parent_msg model.flags.csrftoken
             in
-              case Text.Translations.Model.getTextWords model word of
+              case Text.Translations.Model.getTextWords model section_number word of
                 Just text_words ->
                   match_translations new_translations (Array.toList text_words)
 
@@ -282,7 +278,7 @@ postTranslation msg csrftoken text_word translation_text correct_for_context =
     body = Http.jsonBody encoded_translation
 
     request =
-      HttpHelpers.post_with_headers endpoint_uri headers body Text.Translations.Decode.textTranslationAddRespDecoder
+      HttpHelpers.post_with_headers endpoint_uri headers body Text.Translations.Decode.textTranslationUpdateRespDecoder
   in
     Http.send (msg << SubmittedTextTranslation) request
 

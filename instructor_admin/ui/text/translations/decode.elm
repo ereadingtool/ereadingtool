@@ -21,8 +21,7 @@ type alias Flashcards = Dict Phrase TextReader.TextWord.TextWord
 type alias TextWords = Dict Phrase TextWord
 
 type alias TextWordTranslationDeleteResp = {
-    word: String
-  , instance: Int
+    text_word: Text.Translations.TextWord.TextWord
   , translation: Translation
   , deleted: Bool }
 
@@ -55,31 +54,23 @@ textWordMergeDecoder =
     |> required "grouped" Json.Decode.bool
     |> required "error" (Json.Decode.nullable Json.Decode.string)
 
-textTranslationUpdateRespDecoder : Json.Decode.Decoder (Int, Word, Int, Translation)
+textTranslationUpdateRespDecoder : Json.Decode.Decoder (Text.Translations.TextWord.TextWord, Translation)
 textTranslationUpdateRespDecoder =
-  Json.Decode.map3 (,,)
-    (Json.Decode.field "word" Json.Decode.string)
-    (Json.Decode.field "instance" Json.Decode.int)
-    (Json.Decode.field "translation" textWordTranslationsDecoder)
-
-textTranslationAddRespDecoder : Json.Decode.Decoder (Int, Word, Int, Translation)
-textTranslationAddRespDecoder =
-  Json.Decode.map3 (,,)
-    (Json.Decode.field "word" Json.Decode.string)
-    (Json.Decode.field "instance" Json.Decode.int)
+  Json.Decode.map2 (,)
+    (Json.Decode.field "text_word" textWordInstanceDecoder)
     (Json.Decode.field "translation" textWordTranslationsDecoder)
 
 textTranslationRemoveRespDecoder : Json.Decode.Decoder TextWordTranslationDeleteResp
 textTranslationRemoveRespDecoder =
   decode TextWordTranslationDeleteResp
-    |> required "word" Json.Decode.string
-    |> required "instance" Json.Decode.int
+    |> required "text_word" textWordInstanceDecoder
     |> required "translation" textWordTranslationsDecoder
     |> required "deleted" Json.Decode.bool
 
-textWordDictInstancesDecoder : Json.Decode.Decoder (Dict Word (Array Text.Translations.TextWord.TextWord))
+textWordDictInstancesDecoder :
+  Json.Decode.Decoder (Array (Dict Text.Translations.Word (Array Text.Translations.TextWord.TextWord)))
 textWordDictInstancesDecoder =
-  Json.Decode.dict (Json.Decode.array textWordInstanceDecoder)
+  Json.Decode.array (Json.Decode.dict (Json.Decode.array textWordInstanceDecoder))
 
 textWordInstancesDecoder : Json.Decode.Decoder (List Text.Translations.TextWord.TextWord)
 textWordInstancesDecoder =
@@ -131,8 +122,9 @@ textWordEndpointsDecoder =
 
 textWordInstanceDecoder : Json.Decode.Decoder Text.Translations.TextWord.TextWord
 textWordInstanceDecoder =
-  Json.Decode.map7 Text.Translations.TextWord.new
+  Json.Decode.map8 Text.Translations.TextWord.new
     (Json.Decode.field "id" Json.Decode.int)
+    (Json.Decode.field "section" Json.Decode.int)
     (Json.Decode.field "instance" Json.Decode.int)
     (Json.Decode.field "phrase" Json.Decode.string)
     (Json.Decode.field "grammemes" (Json.Decode.nullable (Json.Decode.map Dict.fromList grammemesDecoder)))

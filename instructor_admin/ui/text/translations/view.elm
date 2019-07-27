@@ -42,9 +42,9 @@ wordInstanceOnClick model parent_msg word_instance =
     False ->
       onClick (parent_msg (EditWord word_instance))
 
-is_part_of_compound_word : Model -> Int -> String -> Maybe (Int, Int, Int)
-is_part_of_compound_word model instance word =
-  case Text.Translations.Model.getTextWord model instance word of
+is_part_of_compound_word : Model -> Int -> Int -> String -> Maybe (Int, Int, Int)
+is_part_of_compound_word model section_number instance word =
+  case Text.Translations.Model.getTextWord model section_number instance word of
     Just text_word ->
       case (Text.Translations.TextWord.group text_word) of
         Just group ->
@@ -92,7 +92,7 @@ tagSection : Model -> (Msg -> msg) -> Text.Section.Model.TextSection -> Html msg
 tagSection model msg section =
   div [id ("section-" ++ (toString section.order)), class "section"]
     (Text.Section.Words.Tag.tagWordsAndToVDOM
-      (tagWord model msg section.order) (is_part_of_compound_word model) (HtmlParser.parse section.body))
+      (tagWord model msg section.order) (is_part_of_compound_word model section.order) (HtmlParser.parse section.body))
 
 view_edit : Model -> (Msg -> msg) -> WordInstance -> Html msg
 view_edit model parent_msg word_instance =
@@ -113,8 +113,9 @@ view_btns : Model -> (Msg -> msg) -> WordInstance -> Html msg
 view_btns model parent_msg word_instance =
   let
     word = Text.Translations.Word.Instance.word word_instance
+    section_number = Text.Translations.Word.Instance.sectionNumber word_instance
     normalized_word = String.toLower word
-    instance_count = Text.Translations.Model.instanceCount model normalized_word
+    instance_count = Text.Translations.Model.instanceCount model section_number normalized_word
   in
     div [class "text_word_options"] <| [
       view_make_compound_text_word model parent_msg word_instance
