@@ -124,7 +124,7 @@ textWordInstanceDecoder : Json.Decode.Decoder Text.Translations.TextWord.TextWor
 textWordInstanceDecoder =
   Json.Decode.map8 Text.Translations.TextWord.new
     (Json.Decode.field "id" Json.Decode.int)
-    (Json.Decode.field "section" Json.Decode.int)
+    (Json.Decode.field "text_section" Json.Decode.int)
     (Json.Decode.field "instance" Json.Decode.int)
     (Json.Decode.field "phrase" Json.Decode.string)
     (Json.Decode.field "grammemes" (Json.Decode.nullable (Json.Decode.map Dict.fromList grammemesDecoder)))
