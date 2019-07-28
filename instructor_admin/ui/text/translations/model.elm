@@ -308,15 +308,8 @@ updateTranslationsForWord model text_word translation_text =
     { model | new_translations = Dict.insert phrase translation_text model.new_translations }
 
 addTextTranslation : Model -> TextWord -> Translation -> Model
-addTextTranslation model text_word translation =
-  let
-    section_number = Text.Translations.TextWord.sectionNumber text_word
-    phrase = Text.Translations.TextWord.phrase text_word
-    instance = Text.Translations.TextWord.instance text_word
-
-    new_text_word = Text.Translations.TextWord.addTranslation text_word translation
-  in
-    setTextWord model new_text_word
+addTextTranslation model new_text_word translation =
+  setTextWord model new_text_word
 
 removeTextTranslation : Model -> TextWord -> Translation -> Model
 removeTextTranslation model text_word translation =

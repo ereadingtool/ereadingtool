@@ -96,8 +96,7 @@ class TextWordTranslationsAPIView(LoginRequiredMixin, View):
             deleted, deleted_objs = text_phrase_translation.delete()
 
             return HttpResponse(json.dumps({
-                'word': str(text_phrase_translation.text_phrase.phrase),
-                'instance': text_phrase_translation.text_phrase.instance,
+                'text_word': text_phrase_translation.text_phrase.child_instance.to_translations_dict(),
                 'translation': text_word_translation_dict,
                 'deleted': deleted >= 1
             }))
@@ -133,8 +132,7 @@ class TextWordTranslationsAPIView(LoginRequiredMixin, View):
                 text_phrase_translation = TextPhraseTranslation.create(**text_word_add_translation_params)
 
                 return HttpResponse(json.dumps({
-                    'word': str(text_phrase_translation.text_phrase.phrase),
-                    'instance': text_phrase.instance,
+                    'text_word': text_phrase.child_instance.to_translations_dict(),
                     'translation': text_phrase_translation.to_dict()
                 }))
 
@@ -171,8 +169,7 @@ class TextWordTranslationsAPIView(LoginRequiredMixin, View):
             text_phrase_translation.refresh_from_db()
 
             return HttpResponse(json.dumps({
-                'word': text_phrase_translation.text_phrase.phrase,
-                'instance': text_phrase_translation.text_phrase.instance,
+                'text_word': text_phrase_translation.text_phrase.child_instance.to_translations_dict(),
                 'translation': text_phrase_translation.to_dict()
             }))
 
