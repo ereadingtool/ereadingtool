@@ -37,7 +37,7 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
             return self.textwordgroup
 
     def __str__(self):
-        return f'{self.phrase} instance {self.instance+1} from text section {self.text_section}'
+        return f'{self.phrase} instance {self.instance+1} from {self.text_section}'
 
     @property
     def serialized_grammemes(self):

@@ -36,7 +36,7 @@ class TextWordAPIView(LoginRequiredMixin, View):
 
         try:
             text_word_add_params['text_section'] = TextSection.objects.get(text=text_word_add_params.pop('text'),
-                                                                           order=text_word_add_params['text_section']+1)
+                                                                           order=text_word_add_params['text_section'])
 
             text_word = TextWord.create(**text_word_add_params)
 
