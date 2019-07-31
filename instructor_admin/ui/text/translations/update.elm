@@ -13,7 +13,6 @@ import Text.Translations.Word.Instance.Encode
 
 import Text.Translations.Decode
 
-import Config
 
 import Dict exposing (Dict)
 import Array exposing (Array)
@@ -67,7 +66,7 @@ update parent_msg msg model =
           , Cmd.none)
 
         False -> let _ = Debug.log "error merging text words" merge_resp.error in
-          (Text.Translations.Model.cancelMerge model, Cmd.none)
+          (Text.Translations.Model.clearMerge model, Cmd.none)
 
     MergedWords (Err err) -> let _ = Debug.log "error merging text words" err in
       (model, Cmd.none)
@@ -297,11 +296,17 @@ updateTranslationAsCorrect msg csrftoken translation =
   in
     Http.send (msg << UpdateTextTranslation) request
 
-retrieveTextWords : (Msg -> msg) -> Int -> Cmd msg
+retrieveTextWords : (Msg -> msg) -> Maybe Int -> Cmd msg
 retrieveTextWords msg text_id =
-  let
-    request =
-      Http.get (String.join "?" [String.join "" [Config.text_api_endpoint,  toString text_id, "/"], "text_words=list"])
-        Text.Translations.Decode.textWordDictInstancesDecoder
-  in
-    Http.send (msg << UpdateTextTranslations) request
+  case text_id of
+    Just id ->
+      let
+        request =
+          Http.get (String.join "?"
+            [String.join "" [Config.text_api_endpoint,  toString id, "/"], "text_words=list"])
+          Text.Translations.Decode.textWordDictInstancesDecoder
+      in
+        Http.send (msg << UpdateTextTranslations) request
+
+    Nothing ->
+      Cmd.none

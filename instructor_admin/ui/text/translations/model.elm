@@ -46,8 +46,8 @@ init flags text_id text = {
  , text_id=text_id
  , new_translations=Dict.empty
  , flags=flags
- , add_as_text_word_endpoint = AddTextWordEndpoint (URL flags.add_as_text_word_endpoint_url)
- , merge_textword_endpoint = MergeTextWordEndpoint (URL flags.merge_textword_endpoint_url) }
+ , add_as_text_word_endpoint=AddTextWordEndpoint (URL flags.add_as_text_word_endpoint_url)
+ , merge_textword_endpoint=MergeTextWordEndpoint (URL flags.merge_textword_endpoint_url) }
 
 clearEditingFields : Model -> Model
 clearEditingFields model =
@@ -119,15 +119,17 @@ completeMerge model section_number phrase instance text_words =
   let
     new_model =
          setTextWords model text_words
-      |> cancelMerge
+      |> clearMerge
       |> uneditAllWords
+
+    words = Debug.log "text_words" text_words
 
     merged_word_instance = newWordInstance new_model section_number instance phrase
   in
-    editWord new_model merged_word_instance
+    Debug.log "completed merge" (editWord new_model merged_word_instance)
 
-cancelMerge : Model -> Model
-cancelMerge model =
+clearMerge : Model -> Model
+clearMerge model =
   { model | merging_words = OrderedDict.empty }
 
 isMergingWords : Model -> Bool
@@ -220,7 +222,7 @@ uneditWord model word_instance =
     word_instance_id = Text.Translations.Word.Instance.id word_instance
 
     new_editing_word_instances = Dict.remove word_instance_id model.editing_word_instances
-    cancelled_merge_model = cancelMerge model
+    cancelled_merge_model = clearMerge model
   in
    { cancelled_merge_model |
      editing_words = new_edited_words
@@ -263,8 +265,8 @@ setSectionWords model section_number words =
 setTextWordsForPhrase : Model -> Int -> Phrase -> Array TextWord -> Model
 setTextWordsForPhrase model section_number phrase text_words =
   case getSectionWords model section_number of
-    Just words ->
-      setSectionWords model section_number (Dict.insert (String.toLower phrase) text_words words)
+    Just section_words ->
+      setSectionWords model section_number (Dict.insert (String.toLower phrase) text_words section_words)
 
     Nothing ->
       model

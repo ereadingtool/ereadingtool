@@ -4,10 +4,10 @@ import Html.Attributes exposing (classList, attribute)
 import Http exposing (..)
 import Date exposing (..)
 
+import Admin.Text
 import Text.Model exposing (TextListItem)
 import Text.Decode
 
-import Config exposing (..)
 import Profile.Flags as Flags
 
 import Views
@@ -25,10 +25,13 @@ type Msg =
   | LogOut MenuMsg.Msg
   | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
 
-type alias Flags = Flags.Flags {}
+type alias Flags = Flags.Flags {
+  text_api_endpoint_url: String
+  }
 
 type alias Model = {
     texts : List TextListItem
+  , text_api_endpoint : Admin.Text.TextAPIEndpoint
   , profile : User.Profile.Profile
   , menu_items : Menu.Items.MenuItems
   , flags : Flags
@@ -38,22 +41,29 @@ type alias Model = {
 type alias Filter = List String
 
 init : Flags -> (Model, Cmd Msg)
-init flags = ({
-      texts=[]
-    , profile=User.Profile.initProfile flags
-    , menu_items=Menu.Items.initMenuItems flags
-    , flags=flags
-    , loading=True
-  }, updateTexts [])
+init flags =
+  let
+    text_api_endpoint = Admin.Text.TextAPIEndpoint (Admin.Text.URL flags.text_api_endpoint_url)
+  in
+    ({
+        texts=[]
+      , text_api_endpoint=text_api_endpoint
+      , profile=User.Profile.initProfile flags
+      , menu_items=Menu.Items.initMenuItems flags
+      , flags=flags
+      , loading=True
+    }, updateTexts text_api_endpoint [])
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
-updateTexts : Filter -> Cmd Msg
-updateTexts filter =
+updateTexts : Admin.Text.TextAPIEndpoint -> Filter -> Cmd Msg
+updateTexts text_api_endpoint filter =
   let
-    request = Http.get text_api_endpoint Text.Decode.textListDecoder
+    text_api_endpoint_url = Admin.Text.textEndpointToString text_api_endpoint
+
+    request = Http.get text_api_endpoint_url Text.Decode.textListDecoder
   in
     Http.send Update request
 

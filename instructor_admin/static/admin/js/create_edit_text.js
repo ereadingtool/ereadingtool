@@ -27072,14 +27072,14 @@ var _user$project$Text_Translations_Model$mergingWords = function (model) {
 var _user$project$Text_Translations_Model$isMergingWords = function (model) {
 	return !_rnons$ordered_containers$OrderedDict$isEmpty(model.merging_words);
 };
-var _user$project$Text_Translations_Model$cancelMerge = function (model) {
+var _user$project$Text_Translations_Model$clearMerge = function (model) {
 	return _elm_lang$core$Native_Utils.update(
 		model,
 		{merging_words: _rnons$ordered_containers$OrderedDict$empty});
 };
 var _user$project$Text_Translations_Model$uneditWord = F2(
 	function (model, word_instance) {
-		var cancelled_merge_model = _user$project$Text_Translations_Model$cancelMerge(model);
+		var cancelled_merge_model = _user$project$Text_Translations_Model$clearMerge(model);
 		var word_instance_id = _user$project$Text_Translations_Word_Instance$id(word_instance);
 		var new_editing_word_instances = A2(_elm_lang$core$Dict$remove, word_instance_id, model.editing_word_instances);
 		var word = _user$project$Text_Translations_Word_Instance$word(word_instance);
@@ -27194,8 +27194,9 @@ var _user$project$Text_Translations_Model$setTextWords = F2(
 	});
 var _user$project$Text_Translations_Model$completeMerge = F5(
 	function (model, section_number, phrase, instance, text_words) {
+		var words = A2(_elm_lang$core$Debug$log, 'text_words', text_words);
 		var new_model = _user$project$Text_Translations_Model$uneditAllWords(
-			_user$project$Text_Translations_Model$cancelMerge(
+			_user$project$Text_Translations_Model$clearMerge(
 				A2(_user$project$Text_Translations_Model$setTextWords, model, text_words)));
 		var merged_word_instance = A4(_user$project$Text_Translations_Model$newWordInstance, new_model, section_number, instance, phrase);
 		return A2(_user$project$Text_Translations_Model$editWord, new_model, merged_word_instance);
@@ -31774,7 +31775,7 @@ var _user$project$Text_Translations_Update$update = F3(
 						var _p20 = A2(_elm_lang$core$Debug$log, 'error merging text words', _p21.error);
 						return {
 							ctor: '_Tuple2',
-							_0: _user$project$Text_Translations_Model$cancelMerge(model),
+							_0: _user$project$Text_Translations_Model$clearMerge(model),
 							_1: _elm_lang$core$Platform_Cmd$none
 						};
 					}

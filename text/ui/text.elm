@@ -1,3 +1,5 @@
+module Text exposing (..)
+
 import Html exposing (Html, div)
 
 import Dict exposing (Dict)
