@@ -10806,17 +10806,25 @@ var _user$project$Text_Translations$expectedGrammemeKeys = _elm_lang$core$Set$fr
 			}
 		}
 	});
-var _user$project$Text_Translations$addTextWordEndpointURL = function (_p0) {
+var _user$project$Text_Translations$textTransMatchEndpointURL = function (_p0) {
 	var _p1 = _p0;
 	return _p1._0;
 };
-var _user$project$Text_Translations$mergeTextWordEndpointURL = function (_p2) {
+var _user$project$Text_Translations$addTextWordEndpointURL = function (_p2) {
 	var _p3 = _p2;
 	return _p3._0;
 };
-var _user$project$Text_Translations$urlToString = function (_p4) {
+var _user$project$Text_Translations$mergeTextWordEndpointURL = function (_p4) {
 	var _p5 = _p4;
 	return _p5._0;
+};
+var _user$project$Text_Translations$urlToString = function (_p6) {
+	var _p7 = _p6;
+	return _p7._0;
+};
+var _user$project$Text_Translations$textTransMatchEndpointToString = function (endpoint) {
+	return _user$project$Text_Translations$urlToString(
+		_user$project$Text_Translations$textTransMatchEndpointURL(endpoint));
 };
 var _user$project$Text_Translations$addTextWordEndpointToString = function (endpoint) {
 	return _user$project$Text_Translations$urlToString(
@@ -10834,9 +10842,9 @@ var _user$project$Text_Translations$TextGroupDetails = F4(
 	function (a, b, c, d) {
 		return {id: a, instance: b, pos: c, length: d};
 	});
-var _user$project$Text_Translations$Flags = F3(
-	function (a, b, c) {
-		return {add_as_text_word_endpoint_url: a, merge_textword_endpoint_url: b, csrftoken: c};
+var _user$project$Text_Translations$Flags = F4(
+	function (a, b, c, d) {
+		return {add_as_text_word_endpoint_url: a, merge_textword_endpoint_url: b, text_translation_match_endpoint: c, csrftoken: d};
 	});
 var _user$project$Text_Translations$Translation = F4(
 	function (a, b, c, d) {
@@ -10853,6 +10861,9 @@ var _user$project$Text_Translations$MergeTextWordEndpoint = function (a) {
 };
 var _user$project$Text_Translations$GroupWordEndpoint = function (a) {
 	return {ctor: 'GroupWordEndpoint', _0: a};
+};
+var _user$project$Text_Translations$TextTranslationMatchEndpoint = function (a) {
+	return {ctor: 'TextTranslationMatchEndpoint', _0: a};
 };
 var _user$project$Text_Translations$Cancelable = {ctor: 'Cancelable'};
 var _user$project$Text_Translations$Mergeable = {ctor: 'Mergeable'};

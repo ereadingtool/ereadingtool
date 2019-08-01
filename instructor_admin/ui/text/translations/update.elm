@@ -8,6 +8,8 @@ import Text.Translations exposing (..)
 import Text.Translations.Word.Instance exposing (WordInstance)
 import Text.Translations.TextWord exposing (TextWord)
 
+import Admin.Text
+
 import Text.Translations.Encode
 import Text.Translations.Word.Instance.Encode
 
@@ -200,7 +202,8 @@ matchTranslations parent_msg model word_instance =
         case (Text.Translations.TextWord.translations text_word) of
           Just new_translations ->
             let
-              match_translations = putMatchTranslations parent_msg model.flags.csrftoken
+              match_translations =
+                putMatchTranslations parent_msg model.text_translation_match_endpoint  model.flags.csrftoken
             in
               case Text.Translations.Model.getTextWords model section_number word of
                 Just text_words ->
@@ -231,10 +234,10 @@ deleteTranslation msg csrftoken text_word translation =
     Http.send (msg << DeletedTranslation) request
 
 putMatchTranslations :
-  (Msg -> msg) -> Flags.CSRFToken -> List Translation -> List TextWord -> Cmd msg
-putMatchTranslations msg csrftoken translations text_words =
+  (Msg -> msg) -> TextTranslationMatchEndpoint -> Flags.CSRFToken -> List Translation -> List TextWord -> Cmd msg
+putMatchTranslations msg text_translation_api_match_endpoint csrftoken translations text_words =
   let
-    endpoint_uri = Config.text_translation_api_match_endpoint
+    endpoint_uri = Text.Translations.textTransMatchEndpointToString text_translation_api_match_endpoint
     headers = [Http.header "X-CSRFToken" csrftoken]
     encoded_merge_request = Text.Translations.Encode.textTranslationsMergeEncoder translations text_words
     body = Http.jsonBody encoded_merge_request
@@ -296,14 +299,16 @@ updateTranslationAsCorrect msg csrftoken translation =
   in
     Http.send (msg << UpdateTextTranslation) request
 
-retrieveTextWords : (Msg -> msg) -> Maybe Int -> Cmd msg
-retrieveTextWords msg text_id =
+retrieveTextWords : (Msg -> msg) -> Admin.Text.TextAPIEndpoint -> Maybe Int -> Cmd msg
+retrieveTextWords msg text_api_endpoint text_id =
   case text_id of
     Just id ->
       let
+        text_api_endpoint_url = Admin.Text.textEndpointToString text_api_endpoint
+
         request =
           Http.get (String.join "?"
-            [String.join "" [Config.text_api_endpoint,  toString id, "/"], "text_words=list"])
+            [String.join "" [text_api_endpoint_url,  toString id, "/"], "text_words=list"])
           Text.Translations.Decode.textWordDictInstancesDecoder
       in
         Http.send (msg << UpdateTextTranslations) request

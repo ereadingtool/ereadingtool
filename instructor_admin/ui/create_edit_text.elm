@@ -49,26 +49,30 @@ import Text.Translations.Subscriptions
 
 
 init : Flags -> (Model, Cmd Msg)
-init flags = ({
-        flags=flags
-      , mode=CreateMode
-      , success_msg=Nothing
-      , error_msg=Nothing
-      , profile=Instructor.Profile.initProfile flags.instructor_profile
-      , menu_items=Menu.Items.initMenuItems flags
-      , text_component=Text.Component.emptyTextComponent
-      , text_endpoint_url=(Admin.Admin.Text.TextAPIEndpoint (Admin.Text.URL flags.text_endpoint_url))
-      , text_difficulties=[]
-      , text_translations_model=Nothing
-      , tags=Dict.fromList []
-      , selected_tab=TextTab
-      , write_locked=False
-  }
-  , Cmd.batch [
-      retrieveTextDifficultyOptions
-    , textJSONtoComponent flags.text
-    , tagsToDict flags.tags
-    ])
+init flags =
+  let
+    text_api_endpoint = (Admin.Text.TextAPIEndpoint (Admin.Text.URL flags.text_endpoint))
+  in
+    ({
+      flags=flags
+    , mode=CreateMode
+    , success_msg=Nothing
+    , error_msg=Nothing
+    , profile=Instructor.Profile.initProfile flags.instructor_profile
+    , menu_items=Menu.Items.initMenuItems flags
+    , text_component=Text.Component.emptyTextComponent
+    , text_api_endpoint=text_api_endpoint
+    , text_difficulties=[]
+    , text_translations_model=Nothing
+    , tags=Dict.fromList []
+    , selected_tab=TextTab
+    , write_locked=False
+    }
+    , Cmd.batch [
+        retrieveTextDifficultyOptions text_api_endpoint
+      , textJSONtoComponent flags.text
+      , tagsToDict flags.tags
+      ])
 
 tagsToDict : List String -> Cmd Msg
 tagsToDict tag_list =
@@ -92,8 +96,7 @@ textJSONtoComponent text =
 retrieveTextDifficultyOptions : Admin.Text.TextAPIEndpoint -> Cmd Msg
 retrieveTextDifficultyOptions text_api_endpoint =
   let
-    text_api_endpoint_url = Admin.Text.TextAPIEndpoint
- text_api_endpoint
+    text_api_endpoint_url = Admin.Text.textEndpointToString text_api_endpoint
 
     request =
       Http.get (String.join "?" [text_api_endpoint_url, "difficulties=list"]) Text.Decode.textDifficultiesDecoder
@@ -127,10 +130,12 @@ update msg model = case msg of
             ({ model | success_msg = Just <| "Text is locked by " ++ write_locker}, Cmd.none)
 
           EditMode ->
-            ({ model | error_msg = Nothing, success_msg = Nothing }, updateText model.flags.csrftoken text)
+            ({ model | error_msg = Nothing, success_msg = Nothing }
+            , updateText model.flags.csrftoken model.text_api_endpoint text)
 
           CreateMode ->
-            ({ model | error_msg = Nothing, success_msg = Nothing }, postText model.flags.csrftoken text)
+            ({ model | error_msg = Nothing, success_msg = Nothing }
+            , postText model.flags.csrftoken model.text_api_endpoint text)
 
     TextJSONDecode result ->
       case result of
@@ -157,7 +162,7 @@ update msg model = case msg of
                        , write_locked=True
                     }, Cmd.batch [
                          Text.Component.reinitialize_ck_editors text_component
-                       , Text.Translations.Update.retrieveTextWords TextTranslationMsg text.id
+                       , Text.Translations.Update.retrieveTextWords TextTranslationMsg model.text_api_endpoint text.id
                        ])
 
               Nothing ->
@@ -171,7 +176,9 @@ update msg model = case msg of
                        , success_msg=Just <| "editing '" ++ text.title ++ "' text"
                      }, Cmd.batch [
                           Text.Component.reinitialize_ck_editors text_component
-                        , Text.Translations.Update.retrieveTextWords TextTranslationMsg (Maybe.withDefault 0 text.id) ])
+                        , Text.Translations.Update.retrieveTextWords TextTranslationMsg model.text_api_endpoint text.id
+                        ]
+                    )
 
                   Nothing ->
                     ({ model |
@@ -269,8 +276,8 @@ update msg model = case msg of
       let
         text = Text.Component.text model.text_component
 
-        lock = postLock model.flags.csrftoken text
-        unlock = deleteLock model.flags.csrftoken text
+        lock = postLock model.flags.csrftoken model.text_api_endpoint text
+        unlock = deleteLock model.flags.csrftoken model.text_api_endpoint text
       in
         (model, if not model.write_locked then lock else unlock)
 
@@ -363,7 +370,7 @@ update msg model = case msg of
           let
             text = Text.Component.text model.text_component
           in
-            (model, deleteText model.flags.csrftoken text)
+            (model, deleteText model.flags.csrftoken model.text_api_endpoint text)
 
         False ->
           (model, Cmd.none)
@@ -416,8 +423,7 @@ postLock csrftoken text_api_endpoint text =
   case text.id of
     Just text_id ->
       let
-        text_api_endpoint_url = Admin.Text.TextAPIEndpoint
- text_api_endpoint
+        text_api_endpoint_url = Admin.Text.textEndpointToString text_api_endpoint
 
         req =
           post_with_headers
@@ -435,8 +441,7 @@ deleteLock csrftoken text_api_endpoint text =
   case text.id of
     Just text_id ->
       let
-        text_api_endpoint_url = Admin.Text.TextAPIEndpoint
- text_api_endpoint
+        text_api_endpoint_url = Admin.Text.textEndpointToString text_api_endpoint
 
         req =
           delete_with_headers
@@ -453,11 +458,10 @@ deleteLock csrftoken text_api_endpoint text =
 postText : Flags.CSRFToken -> Admin.Text.TextAPIEndpoint -> Text -> Cmd Msg
 postText csrftoken text_api_endpoint text =
   let
-    text_api_endpoint_url = Admin.Text.TextAPIEndpoint
- text_api_endpoint
+    text_api_endpoint_url = Admin.Text.textEndpointToString text_api_endpoint
 
     encoded_text = Text.Encode.textEncoder text
-    req = post_with_headers text_api_endpoint [Http.header "X-CSRFToken" csrftoken] (Http.jsonBody encoded_text)
+    req = post_with_headers text_api_endpoint_url [Http.header "X-CSRFToken" csrftoken] (Http.jsonBody encoded_text)
       <| Text.Decode.textCreateRespDecoder
   in
     Http.send Submitted req
@@ -467,8 +471,7 @@ updateText csrftoken text_api_endpoint text =
   case text.id of
     Just text_id ->
       let
-        text_api_endpoint_url = Admin.Text.TextAPIEndpoint
- text_api_endpoint
+        text_api_endpoint_url = Admin.Text.textEndpointToString text_api_endpoint
 
         encoded_text = Text.Encode.textEncoder text
         req = put_with_headers
@@ -484,8 +487,7 @@ deleteText csrftoken text_api_endpoint text =
   case text.id of
     Just text_id ->
       let
-        text_api_endpoint_url = Admin.Text.TextAPIEndpoint
- text_api_endpoint
+        text_api_endpoint_url = Admin.Text.textEndpointToString text_api_endpoint
 
         req = delete_with_headers
           (String.join "" [text_api_endpoint_url, toString text_id, "/"]) [Http.header "X-CSRFToken" csrftoken]

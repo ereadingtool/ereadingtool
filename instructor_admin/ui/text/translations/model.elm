@@ -30,6 +30,7 @@ type alias Model = {
  , new_translations: Dict String String
  , add_as_text_word_endpoint: Text.Translations.AddTextWordEndpoint
  , merge_textword_endpoint: Text.Translations.MergeTextWordEndpoint
+ , text_translation_match_endpoint: Text.Translations.TextTranslationMatchEndpoint
  , flags: Flags }
 
 
@@ -47,7 +48,10 @@ init flags text_id text = {
  , new_translations=Dict.empty
  , flags=flags
  , add_as_text_word_endpoint=AddTextWordEndpoint (URL flags.add_as_text_word_endpoint_url)
- , merge_textword_endpoint=MergeTextWordEndpoint (URL flags.merge_textword_endpoint_url) }
+ , merge_textword_endpoint=MergeTextWordEndpoint (URL flags.merge_textword_endpoint_url)
+ , text_translation_match_endpoint=
+     Text.Translations.TextTranslationMatchEndpoint (URL flags.text_translation_match_endpoint)
+ }
 
 clearEditingFields : Model -> Model
 clearEditingFields model =
