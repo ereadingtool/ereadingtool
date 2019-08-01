@@ -1,9 +1,6 @@
 module Config exposing (..)
 
 
-text_translation_api_match_endpoint : String
-text_translation_api_match_endpoint = "/api/text/translations/match/"
-
 text_section_api_endpoint : String
 text_section_api_endpoint = "/api/section/"
 

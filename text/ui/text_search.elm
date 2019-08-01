@@ -24,7 +24,7 @@ import Views
 import Student.Profile
 import User.Profile
 
-import Config exposing (..)
+import Admin.Text
 
 import Profile.Flags as Flags
 
@@ -58,6 +58,7 @@ type Msg =
 type alias Flags = Flags.Flags {
     text_difficulties: List Text.Model.TextDifficulty
   , text_statuses: List (String, String)
+  , text_api_endpoint_url: String
   , welcome: Bool
   , text_tags: List String }
 
@@ -66,6 +67,7 @@ type alias Model = {
   , profile : User.Profile.Profile
   , menu_items : Menu.Items.MenuItems
   , text_search : TextSearch
+  , text_api_endpoint : Admin.Text.TextAPIEndpoint
   , help : TextSearch.Help.TextSearchHelp
   , error_msg : Maybe String
   , flags : Flags }
@@ -84,6 +86,8 @@ init flags =
 
     status_search =
       Text.Search.ReadingStatus.new "text_status_search" (Text.Search.Option.newOptions flags.text_statuses)
+
+    text_api_endpoint = Admin.Text.TextAPIEndpoint (Admin.Text.URL flags.text_api_endpoint_url)
 
     default_search = Text.Search.new text_api_endpoint tag_search difficulty_search status_search
 
@@ -109,21 +113,23 @@ init flags =
     , profile=profile
     , menu_items=menu_items
     , text_search=text_search
+    , text_api_endpoint=text_api_endpoint
     , help=text_search_help
     , error_msg=Nothing
     , flags=flags
     }
-    , updateResults text_search)
+    , updateResults text_api_endpoint text_search)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
 
-updateResults : TextSearch -> Cmd Msg
-updateResults text_search =
+updateResults : Admin.Text.TextAPIEndpoint -> TextSearch -> Cmd Msg
+updateResults text_api_endpoint text_search =
   let
+    text_api_endpoint_url = Admin.Text.textEndpointToString text_api_endpoint
     filter_params = Text.Search.filterParams text_search
-    query_string = String.join "" [text_api_endpoint, "?"] ++ (String.join "&" filter_params)
+    query_string = String.join "" [text_api_endpoint_url, "?"] ++ (String.join "&" filter_params)
     request = Http.get query_string Text.Decode.textListDecoder
   in
     if (List.length filter_params) > 0 then
@@ -138,7 +144,7 @@ update msg model =
       let
         new_text_search = Text.Search.addDifficultyToSearch model.text_search difficulty select
       in
-        ({ model | text_search = new_text_search, results = [] }, updateResults new_text_search)
+        ({ model | text_search = new_text_search, results = [] }, updateResults model.text_api_endpoint new_text_search)
 
     SelectStatus status selected ->
       let
@@ -146,7 +152,7 @@ update msg model =
         new_status_search = Text.Search.ReadingStatus.selectStatus status_search status selected
         new_text_search = Text.Search.setStatusSearch model.text_search new_status_search
       in
-        ({ model | text_search = new_text_search, results = [] }, updateResults new_text_search)
+        ({ model | text_search = new_text_search, results = [] }, updateResults model.text_api_endpoint new_text_search)
 
     SelectTag tag_name selected ->
       let
@@ -156,7 +162,7 @@ update msg model =
         new_text_search = Text.Search.setTagSearch model.text_search new_tag_search
       in
         ({ model | text_search = new_text_search, results = [] }
-        , Cmd.batch [clearInputText tag_search_input_id, updateResults new_text_search])
+        , Cmd.batch [clearInputText tag_search_input_id, updateResults model.text_api_endpoint new_text_search])
 
     TextSearch result ->
       case result of

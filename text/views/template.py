@@ -12,6 +12,8 @@ from text.models import Text, TextDifficulty, text_statuses
 from user.instructor.models import Instructor
 from django.conf import settings
 
+from django.urls import reverse
+
 from ereadingtool.menu import MenuItems
 
 
@@ -55,6 +57,12 @@ class TextSearchLoadElm(ElmLoadJsView):
             'quote': False,
             'safe': True,
             'value': json.dumps(text_statuses)
+        }
+
+        context['elm']['text_api_endpoint_url'] = {
+            'quote': True,
+            'safe': True,
+            'value': reverse('text-api')
         }
 
         try:

@@ -23487,7 +23487,6 @@ var _user$project$Config$text_page = function (text_id) {
 };
 var _user$project$Config$question_api_endpoint = '/api/question/';
 var _user$project$Config$text_section_api_endpoint = '/api/section/';
-var _user$project$Config$text_translation_api_match_endpoint = '/api/text/translations/match/';
 
 var _user$project$Answer_View$edit_answer_feedback = F2(
 	function (params, answer_field) {
