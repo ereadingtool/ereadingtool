@@ -26984,21 +26984,17 @@ var _user$project$Text_Translations_Model$wordInstanceKey = function (word_insta
 };
 var _user$project$Text_Translations_Model$editWord = F2(
 	function (model, word_instance) {
-		var new_editing_word_instances = A2(
-			_elm_lang$core$Debug$log,
-			'new editing word instances',
-			A3(
-				_elm_lang$core$Dict$insert,
-				_user$project$Text_Translations_Model$wordInstanceKey(word_instance),
-				true,
-				model.editing_word_instances));
-		var _p1 = A2(_elm_lang$core$Debug$log, 'old editing word instance', model.editing_word_instances);
+		var new_editing_word_instances = A3(
+			_elm_lang$core$Dict$insert,
+			_user$project$Text_Translations_Model$wordInstanceKey(word_instance),
+			true,
+			model.editing_word_instances);
 		var normalized_word = _elm_lang$core$String$toLower(
 			_user$project$Text_Translations_Word_Instance$word(word_instance));
 		var new_edited_words = function () {
-			var _p2 = A2(_elm_lang$core$Dict$get, normalized_word, model.editing_words);
-			if (_p2.ctor === 'Just') {
-				return A3(_elm_lang$core$Dict$insert, normalized_word, _p2._0 + 1, model.editing_words);
+			var _p1 = A2(_elm_lang$core$Dict$get, normalized_word, model.editing_words);
+			if (_p1.ctor === 'Just') {
+				return A3(_elm_lang$core$Dict$insert, normalized_word, _p1._0 + 1, model.editing_words);
 			} else {
 				return A3(_elm_lang$core$Dict$insert, normalized_word, 0, model.editing_words);
 			}
@@ -27016,25 +27012,25 @@ var _user$project$Text_Translations_Model$editingWord = F2(
 	});
 var _user$project$Text_Translations_Model$getTextWords = F3(
 	function (model, section_number, phrase) {
-		var _p3 = A2(_user$project$Text_Translations_Model$getSectionWords, model, section_number);
-		if (_p3.ctor === 'Just') {
+		var _p2 = A2(_user$project$Text_Translations_Model$getSectionWords, model, section_number);
+		if (_p2.ctor === 'Just') {
 			return A2(
 				_elm_lang$core$Dict$get,
 				_elm_lang$core$String$toLower(phrase),
-				_p3._0);
+				_p2._0);
 		} else {
 			return _elm_lang$core$Maybe$Nothing;
 		}
 	});
 var _user$project$Text_Translations_Model$getTextWord = F4(
 	function (model, section_number, instance, phrase) {
-		var _p4 = A3(
+		var _p3 = A3(
 			_user$project$Text_Translations_Model$getTextWords,
 			model,
 			section_number,
 			_elm_lang$core$String$toLower(phrase));
-		if (_p4.ctor === 'Just') {
-			return A2(_elm_lang$core$Array$get, instance, _p4._0);
+		if (_p3.ctor === 'Just') {
+			return A2(_elm_lang$core$Array$get, instance, _p3._0);
 		} else {
 			return _elm_lang$core$Maybe$Nothing;
 		}
@@ -27046,9 +27042,9 @@ var _user$project$Text_Translations_Model$setTextWord = F2(
 			_user$project$Text_Translations_TextWord$phrase(text_word));
 		var section_number = _user$project$Text_Translations_TextWord$sectionNumber(text_word);
 		var new_text_words = function () {
-			var _p5 = A3(_user$project$Text_Translations_Model$getTextWords, model, section_number, phrase);
-			if (_p5.ctor === 'Just') {
-				return A3(_elm_lang$core$Array$set, instance, text_word, _p5._0);
+			var _p4 = A3(_user$project$Text_Translations_Model$getTextWords, model, section_number, phrase);
+			if (_p4.ctor === 'Just') {
+				return A3(_elm_lang$core$Array$set, instance, text_word, _p4._0);
 			} else {
 				return _elm_lang$core$Array$fromList(
 					{
@@ -27079,13 +27075,13 @@ var _user$project$Text_Translations_Model$removeTextTranslation = F3(
 	});
 var _user$project$Text_Translations_Model$instanceCount = F3(
 	function (model, section_number, word) {
-		var _p6 = A3(
+		var _p5 = A3(
 			_user$project$Text_Translations_Model$getTextWords,
 			model,
 			section_number,
 			_elm_lang$core$String$toLower(word));
-		if (_p6.ctor === 'Just') {
-			return _elm_lang$core$Array$length(_p6._0);
+		if (_p5.ctor === 'Just') {
+			return _elm_lang$core$Array$length(_p5._0);
 		} else {
 			return 0;
 		}
@@ -27141,10 +27137,10 @@ var _user$project$Text_Translations_Model$uneditWord = F2(
 		var word = _user$project$Text_Translations_Word_Instance$word(word_instance);
 		var normalized_word = _elm_lang$core$String$toLower(word);
 		var new_edited_words = function () {
-			var _p7 = A2(_elm_lang$core$Dict$get, normalized_word, model.editing_words);
-			if (_p7.ctor === 'Just') {
-				var _p8 = _p7._0;
-				return _elm_lang$core$Native_Utils.eq(_p8 - 1, -1) ? A2(_elm_lang$core$Dict$remove, normalized_word, model.editing_words) : A3(_elm_lang$core$Dict$insert, normalized_word, _p8 - 1, model.editing_words);
+			var _p6 = A2(_elm_lang$core$Dict$get, normalized_word, model.editing_words);
+			if (_p6.ctor === 'Just') {
+				var _p7 = _p6._0;
+				return _elm_lang$core$Native_Utils.eq(_p7 - 1, -1) ? A2(_elm_lang$core$Dict$remove, normalized_word, model.editing_words) : A3(_elm_lang$core$Dict$insert, normalized_word, _p7 - 1, model.editing_words);
 			} else {
 				return model.editing_words;
 			}
@@ -27164,12 +27160,12 @@ var _user$project$Text_Translations_Model$mergeSiblings = F2(
 var _user$project$Text_Translations_Model$mergeState = F2(
 	function (model, word_instance) {
 		var other_merging_words = A2(_user$project$Text_Translations_Model$mergeSiblings, model, word_instance);
-		var _p9 = A2(_user$project$Text_Translations_Model$mergingWord, model, word_instance);
-		if (_p9 === true) {
-			var _p10 = _elm_lang$core$Native_Utils.cmp(
+		var _p8 = A2(_user$project$Text_Translations_Model$mergingWord, model, word_instance);
+		if (_p8 === true) {
+			var _p9 = _elm_lang$core$Native_Utils.cmp(
 				_elm_lang$core$List$length(other_merging_words),
 				1) > -1;
-			if (_p10 === true) {
+			if (_p9 === true) {
 				return _elm_lang$core$Maybe$Just(_user$project$Text_Translations$Mergeable);
 			} else {
 				return _elm_lang$core$Maybe$Just(_user$project$Text_Translations$Cancelable);
@@ -27253,10 +27249,7 @@ var _user$project$Text_Translations_Model$completeMerge = F5(
 		var new_model = _user$project$Text_Translations_Model$uneditAllWords(
 			_user$project$Text_Translations_Model$clearMerge(
 				A2(_user$project$Text_Translations_Model$setTextWords, model, text_words)));
-		var merged_word_instance = A2(
-			_elm_lang$core$Debug$log,
-			'new merged word',
-			A4(_user$project$Text_Translations_Model$newWordInstance, new_model, section_number, instance, phrase));
+		var merged_word_instance = A4(_user$project$Text_Translations_Model$newWordInstance, new_model, section_number, instance, phrase);
 		return A2(_user$project$Text_Translations_Model$editWord, new_model, merged_word_instance);
 	});
 var _user$project$Text_Translations_Model$init = F3(
@@ -32303,9 +32296,8 @@ var _user$project$Main$update = F2(
 				}
 			case 'SubmitText':
 				var text = _user$project$Text_Component$text(model.text_component);
-				var _p10 = A2(_elm_lang$core$Debug$log, 'text', text);
-				var _p11 = model.mode;
-				switch (_p11.ctor) {
+				var _p10 = model.mode;
+				switch (_p10.ctor) {
 					case 'ReadOnlyMode':
 						return {
 							ctor: '_Tuple2',
@@ -32313,7 +32305,7 @@ var _user$project$Main$update = F2(
 								model,
 								{
 									success_msg: _elm_lang$core$Maybe$Just(
-										A2(_elm_lang$core$Basics_ops['++'], 'Text is locked by ', _p11._0))
+										A2(_elm_lang$core$Basics_ops['++'], 'Text is locked by ', _p10._0))
 								}),
 							_1: _elm_lang$core$Platform_Cmd$none
 						};
@@ -32335,30 +32327,30 @@ var _user$project$Main$update = F2(
 						};
 				}
 			case 'TextJSONDecode':
-				var _p12 = _p7._0;
-				if (_p12.ctor === 'Ok') {
-					var _p17 = _p12._0;
-					var text = _user$project$Text_Component$text(_p17);
-					var _p13 = text.write_locker;
-					if (_p13.ctor === 'Just') {
-						var _p15 = _p13._0;
-						var _p14 = !_elm_lang$core$Native_Utils.eq(
-							_p15,
+				var _p11 = _p7._0;
+				if (_p11.ctor === 'Ok') {
+					var _p16 = _p11._0;
+					var text = _user$project$Text_Component$text(_p16);
+					var _p12 = text.write_locker;
+					if (_p12.ctor === 'Just') {
+						var _p14 = _p12._0;
+						var _p13 = !_elm_lang$core$Native_Utils.eq(
+							_p14,
 							_user$project$Instructor_Profile$usernameToString(
 								_user$project$Instructor_Profile$username(model.profile)));
-						if (_p14 === true) {
+						if (_p13 === true) {
 							return {
 								ctor: '_Tuple2',
 								_0: _elm_lang$core$Native_Utils.update(
 									model,
 									{
-										text_component: _p17,
-										mode: _user$project$Text_Create$ReadOnlyMode(_p15),
+										text_component: _p16,
+										mode: _user$project$Text_Create$ReadOnlyMode(_p14),
 										error_msg: _elm_lang$core$Maybe$Just(
-											A2(_elm_lang$core$Basics_ops['++'], 'READONLY: text is currently being edited by ', _p15)),
+											A2(_elm_lang$core$Basics_ops['++'], 'READONLY: text is currently being edited by ', _p14)),
 										write_locked: true
 									}),
-								_1: _user$project$Text_Component$reinitialize_ck_editors(_p17)
+								_1: _user$project$Text_Component$reinitialize_ck_editors(_p16)
 							};
 						} else {
 							return {
@@ -32366,7 +32358,7 @@ var _user$project$Main$update = F2(
 								_0: _elm_lang$core$Native_Utils.update(
 									model,
 									{
-										text_component: _p17,
+										text_component: _p16,
 										mode: _user$project$Text_Create$EditMode,
 										success_msg: _elm_lang$core$Maybe$Just(
 											A2(
@@ -32378,7 +32370,7 @@ var _user$project$Main$update = F2(
 								_1: _elm_lang$core$Platform_Cmd$batch(
 									{
 										ctor: '::',
-										_0: _user$project$Text_Component$reinitialize_ck_editors(_p17),
+										_0: _user$project$Text_Component$reinitialize_ck_editors(_p16),
 										_1: {
 											ctor: '::',
 											_0: A3(_user$project$Text_Translations_Update$retrieveTextWords, _user$project$Text_Create$TextTranslationMsg, model.text_api_endpoint, text.id),
@@ -32388,17 +32380,17 @@ var _user$project$Main$update = F2(
 							};
 						}
 					} else {
-						var _p16 = text.id;
-						if (_p16.ctor === 'Just') {
+						var _p15 = text.id;
+						if (_p15.ctor === 'Just') {
 							return {
 								ctor: '_Tuple2',
 								_0: _elm_lang$core$Native_Utils.update(
 									model,
 									{
-										text_component: _p17,
+										text_component: _p16,
 										mode: _user$project$Text_Create$EditMode,
 										text_translations_model: _elm_lang$core$Maybe$Just(
-											A3(_user$project$Text_Translations_Model$init, model.flags.translation_flags, _p16._0, text)),
+											A3(_user$project$Text_Translations_Model$init, model.flags.translation_flags, _p15._0, text)),
 										success_msg: _elm_lang$core$Maybe$Just(
 											A2(
 												_elm_lang$core$Basics_ops['++'],
@@ -32408,7 +32400,7 @@ var _user$project$Main$update = F2(
 								_1: _elm_lang$core$Platform_Cmd$batch(
 									{
 										ctor: '::',
-										_0: _user$project$Text_Component$reinitialize_ck_editors(_p17),
+										_0: _user$project$Text_Component$reinitialize_ck_editors(_p16),
 										_1: {
 											ctor: '::',
 											_0: A3(_user$project$Text_Translations_Update$retrieveTextWords, _user$project$Text_Create$TextTranslationMsg, model.text_api_endpoint, text.id),
@@ -32422,16 +32414,16 @@ var _user$project$Main$update = F2(
 								_0: _elm_lang$core$Native_Utils.update(
 									model,
 									{
-										text_component: _p17,
+										text_component: _p16,
 										mode: _user$project$Text_Create$EditMode,
 										error_msg: _elm_lang$core$Maybe$Just('Something went wrong: no valid text id')
 									}),
-								_1: _user$project$Text_Component$reinitialize_ck_editors(_p17)
+								_1: _user$project$Text_Component$reinitialize_ck_editors(_p16)
 							};
 						}
 					}
 				} else {
-					var _p18 = A2(_elm_lang$core$Debug$log, 'text decode error', _p12._0);
+					var _p17 = A2(_elm_lang$core$Debug$log, 'text decode error', _p11._0);
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
@@ -32450,13 +32442,13 @@ var _user$project$Main$update = F2(
 					_1: _user$project$Text_Component$initialize_text_field_ck_editors(model.text_component)
 				};
 			case 'TextTagsDecode':
-				var _p19 = _p7._0;
-				if (_p19.ctor === 'Ok') {
+				var _p18 = _p7._0;
+				if (_p18.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{tags: _p19._0}),
+							{tags: _p18._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
@@ -32495,17 +32487,17 @@ var _user$project$Main$update = F2(
 						_1: _elm_lang$navigation$Navigation$load(_p7._0._0.redirect)
 					};
 				} else {
-					var _p20 = _p7._0._0;
-					switch (_p20.ctor) {
+					var _p19 = _p7._0._0;
+					switch (_p19.ctor) {
 						case 'BadStatus':
-							var _p21 = _user$project$Text_Decode$decodeRespErrors(_p20._0.body);
-							if (_p21.ctor === 'Ok') {
+							var _p20 = _user$project$Text_Decode$decodeRespErrors(_p19._0.body);
+							if (_p20.ctor === 'Ok') {
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
 										model,
 										{
-											text_component: A2(_user$project$Text_Component$update_text_errors, model.text_component, _p21._0)
+											text_component: A2(_user$project$Text_Component$update_text_errors, model.text_component, _p20._0)
 										}),
 									_1: _elm_lang$core$Platform_Cmd$none
 								};
@@ -32513,7 +32505,7 @@ var _user$project$Main$update = F2(
 								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 							}
 						case 'BadPayload':
-							var _p22 = A2(_elm_lang$core$Debug$log, 'submit text bad payload error', _p20._1.body);
+							var _p21 = A2(_elm_lang$core$Debug$log, 'submit text bad payload error', _p19._1.body);
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 						default:
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
@@ -32543,19 +32535,19 @@ var _user$project$Main$update = F2(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p23 = _p7._0._0;
-					switch (_p23.ctor) {
+					var _p22 = _p7._0._0;
+					switch (_p22.ctor) {
 						case 'BadStatus':
-							var _p26 = _p23._0;
-							var _p24 = A2(_elm_lang$core$Debug$log, 'update error bad status', _p26);
-							var _p25 = _user$project$Text_Decode$decodeRespErrors(_p26.body);
-							if (_p25.ctor === 'Ok') {
+							var _p25 = _p22._0;
+							var _p23 = A2(_elm_lang$core$Debug$log, 'update error bad status', _p25);
+							var _p24 = _user$project$Text_Decode$decodeRespErrors(_p25.body);
+							if (_p24.ctor === 'Ok') {
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
 										model,
 										{
-											text_component: A2(_user$project$Text_Component$update_text_errors, model.text_component, _p25._0)
+											text_component: A2(_user$project$Text_Component$update_text_errors, model.text_component, _p24._0)
 										}),
 									_1: _elm_lang$core$Platform_Cmd$none
 								};
@@ -32563,7 +32555,7 @@ var _user$project$Main$update = F2(
 								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 							}
 						case 'BadPayload':
-							var _p27 = A2(_elm_lang$core$Debug$log, 'update error bad payload', _p23._1);
+							var _p26 = A2(_elm_lang$core$Debug$log, 'update error bad payload', _p22._1);
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 						default:
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
@@ -32582,40 +32574,40 @@ var _user$project$Main$update = F2(
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'ToggleEditable':
-				var _p31 = _p7._1;
-				var _p28 = function () {
-					var _p29 = _p7._0;
-					switch (_p29.ctor) {
+				var _p30 = _p7._1;
+				var _p27 = function () {
+					var _p28 = _p7._0;
+					switch (_p28.ctor) {
 						case 'Title':
 							return {
 								ctor: '_Tuple2',
-								_0: A2(_user$project$Text_Component$set_title_editable, model.text_component, _p31),
+								_0: A2(_user$project$Text_Component$set_title_editable, model.text_component, _p30),
 								_1: _user$project$Text_Component$post_toggle_title
 							};
 						case 'Author':
 							return {
 								ctor: '_Tuple2',
-								_0: A2(_user$project$Text_Component$set_author_editable, model.text_component, _p31),
+								_0: A2(_user$project$Text_Component$set_author_editable, model.text_component, _p30),
 								_1: _user$project$Text_Component$post_toggle_author
 							};
 						case 'Source':
 							return {
 								ctor: '_Tuple2',
-								_0: A2(_user$project$Text_Component$set_source_editable, model.text_component, _p31),
+								_0: A2(_user$project$Text_Component$set_source_editable, model.text_component, _p30),
 								_1: _user$project$Text_Component$post_toggle_source
 							};
 						default:
 							return {
 								ctor: '_Tuple2',
 								_0: model.text_component,
-								_1: function (_p30) {
+								_1: function (_p29) {
 									return _elm_lang$core$Platform_Cmd$none;
 								}
 							};
 					}
 				}();
-				var text_component = _p28._0;
-				var post_toggle_cmds = _p28._1;
+				var text_component = _p27._0;
+				var post_toggle_cmds = _p27._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -32645,17 +32637,17 @@ var _user$project$Main$update = F2(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p32 = _p7._0._0;
-					switch (_p32.ctor) {
+					var _p31 = _p7._0._0;
+					switch (_p31.ctor) {
 						case 'BadStatus':
-							var _p35 = _p32._0;
-							var _p33 = A2(_elm_lang$core$Debug$log, 'update error bad status', _p35);
-							var _p34 = _user$project$Text_Decode$decodeRespErrors(_p35.body);
-							if (_p34.ctor === 'Ok') {
+							var _p34 = _p31._0;
+							var _p32 = A2(_elm_lang$core$Debug$log, 'update error bad status', _p34);
+							var _p33 = _user$project$Text_Decode$decodeRespErrors(_p34.body);
+							if (_p33.ctor === 'Ok') {
 								var errors_str = A2(
 									_elm_lang$core$String$join,
 									' and ',
-									_elm_lang$core$Dict$values(_p34._0));
+									_elm_lang$core$Dict$values(_p33._0));
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
@@ -32670,7 +32662,7 @@ var _user$project$Main$update = F2(
 								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 							}
 						case 'BadPayload':
-							var _p36 = A2(_elm_lang$core$Debug$log, 'update error bad payload', _p32._1);
+							var _p35 = A2(_elm_lang$core$Debug$log, 'update error bad payload', _p31._1);
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 						default:
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
@@ -32689,17 +32681,17 @@ var _user$project$Main$update = F2(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p37 = _p7._0._0;
-					switch (_p37.ctor) {
+					var _p36 = _p7._0._0;
+					switch (_p36.ctor) {
 						case 'BadStatus':
-							var _p40 = _p37._0;
-							var _p38 = A2(_elm_lang$core$Debug$log, 'update error bad status', _p40);
-							var _p39 = _user$project$Text_Decode$decodeRespErrors(_p40.body);
-							if (_p39.ctor === 'Ok') {
+							var _p39 = _p36._0;
+							var _p37 = A2(_elm_lang$core$Debug$log, 'update error bad status', _p39);
+							var _p38 = _user$project$Text_Decode$decodeRespErrors(_p39.body);
+							if (_p38.ctor === 'Ok') {
 								var errors_str = A2(
 									_elm_lang$core$String$join,
 									' and ',
-									_elm_lang$core$Dict$values(_p39._0));
+									_elm_lang$core$Dict$values(_p38._0));
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
@@ -32714,7 +32706,7 @@ var _user$project$Main$update = F2(
 								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 							}
 						case 'BadPayload':
-							var _p41 = A2(_elm_lang$core$Debug$log, 'update error bad payload', _p37._1);
+							var _p40 = A2(_elm_lang$core$Debug$log, 'update error bad payload', _p36._1);
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 						default:
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
@@ -32731,41 +32723,41 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'UpdateTextCkEditors':
-				var _p43 = _p7._0._1;
-				var _p42 = _p7._0._0;
+				var _p42 = _p7._0._1;
+				var _p41 = _p7._0._0;
 				var text_conclusion_input_id = _user$project$Text_Field$text_conclusion_attrs(
 					_user$project$Text_Field$conclusion(
 						_user$project$Text_Component$text_fields(model.text_component))).input_id;
 				var text_intro_input_id = _user$project$Text_Field$text_intro_attrs(
 					_user$project$Text_Field$intro(
 						_user$project$Text_Component$text_fields(model.text_component))).input_id;
-				return _elm_lang$core$Native_Utils.eq(_p42, text_intro_input_id) ? {
+				return _elm_lang$core$Native_Utils.eq(_p41, text_intro_input_id) ? {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							text_component: A3(_user$project$Text_Component$set_text_attribute, model.text_component, 'introduction', _p43)
+							text_component: A3(_user$project$Text_Component$set_text_attribute, model.text_component, 'introduction', _p42)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
-				} : (_elm_lang$core$Native_Utils.eq(_p42, text_conclusion_input_id) ? {
+				} : (_elm_lang$core$Native_Utils.eq(_p41, text_conclusion_input_id) ? {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							text_component: A3(_user$project$Text_Component$set_text_attribute, model.text_component, 'conclusion', _p43)
+							text_component: A3(_user$project$Text_Component$set_text_attribute, model.text_component, 'conclusion', _p42)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none});
 			case 'AddTagInput':
-				var _p45 = _p7._1;
-				var _p44 = A2(_elm_lang$core$Dict$member, _p45, model.tags);
-				if (_p44 === true) {
+				var _p44 = _p7._1;
+				var _p43 = A2(_elm_lang$core$Dict$member, _p44, model.tags);
+				if (_p43 === true) {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								text_component: A2(_user$project$Text_Component$add_tag, model.text_component, _p45)
+								text_component: A2(_user$project$Text_Component$add_tag, model.text_component, _p44)
 							}),
 						_1: _user$project$Ports$clearInputText(_p7._0)
 					};
@@ -32789,8 +32781,8 @@ var _user$project$Main$update = F2(
 					_1: _user$project$Ports$confirm('Are you sure you want to delete this text?')
 				};
 			case 'ConfirmTextDelete':
-				var _p46 = _p7._0;
-				if (_p46 === true) {
+				var _p45 = _p7._0;
+				if (_p45 === true) {
 					var text = _user$project$Text_Component$text(model.text_component);
 					return {
 						ctor: '_Tuple2',
@@ -32802,26 +32794,26 @@ var _user$project$Main$update = F2(
 				}
 			case 'TextDelete':
 				if (_p7._0.ctor === 'Ok') {
-					var _p48 = _p7._0._0;
-					var _p47 = A2(_elm_lang$core$Debug$log, 'text delete', _p48);
+					var _p47 = _p7._0._0;
+					var _p46 = A2(_elm_lang$core$Debug$log, 'text delete', _p47);
 					return {
 						ctor: '_Tuple2',
 						_0: model,
-						_1: _elm_lang$navigation$Navigation$load(_p48.redirect)
+						_1: _elm_lang$navigation$Navigation$load(_p47.redirect)
 					};
 				} else {
-					var _p55 = _p7._0._0;
-					var _p49 = _p55;
-					switch (_p49.ctor) {
+					var _p54 = _p7._0._0;
+					var _p48 = _p54;
+					switch (_p48.ctor) {
 						case 'BadStatus':
-							var _p52 = _p49._0;
-							var _p50 = A2(_elm_lang$core$Debug$log, 'delete text error bad status', _p52);
-							var _p51 = _user$project$Text_Decode$decodeRespErrors(_p52.body);
-							if (_p51.ctor === 'Ok') {
+							var _p51 = _p48._0;
+							var _p49 = A2(_elm_lang$core$Debug$log, 'delete text error bad status', _p51);
+							var _p50 = _user$project$Text_Decode$decodeRespErrors(_p51.body);
+							if (_p50.ctor === 'Ok') {
 								var errors_str = A2(
 									_elm_lang$core$String$join,
 									' and ',
-									_elm_lang$core$Dict$values(_p51._0));
+									_elm_lang$core$Dict$values(_p50._0));
 								return {
 									ctor: '_Tuple2',
 									_0: _elm_lang$core$Native_Utils.update(
@@ -32836,18 +32828,18 @@ var _user$project$Main$update = F2(
 								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 							}
 						case 'BadPayload':
-							var _p53 = A2(_elm_lang$core$Debug$log, 'delete text error bad payload', _p49._1);
+							var _p52 = A2(_elm_lang$core$Debug$log, 'delete text error bad payload', _p48._1);
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 						default:
-							var _p54 = A2(_elm_lang$core$Debug$log, 'delete text error bad payload', _p55);
+							var _p53 = A2(_elm_lang$core$Debug$log, 'delete text error bad payload', _p54);
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 					}
 				}
 			case 'ToggleTab':
-				var _p57 = _p7._0;
+				var _p56 = _p7._0;
 				var post_toggle_cmd = function () {
-					var _p56 = _elm_lang$core$Native_Utils.eq(_p57, _user$project$Text_Create$TextTab);
-					if (_p56 === true) {
+					var _p55 = _elm_lang$core$Native_Utils.eq(_p56, _user$project$Text_Create$TextTab);
+					if (_p55 === true) {
 						return _user$project$Text_Component$reinitialize_ck_editors(model.text_component);
 					} else {
 						return _elm_lang$core$Platform_Cmd$none;
@@ -32857,7 +32849,7 @@ var _user$project$Main$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{selected_tab: _p57}),
+						{selected_tab: _p56}),
 					_1: post_toggle_cmd
 				};
 			case 'LogOut':
@@ -32898,24 +32890,24 @@ var _user$project$Main$retrieveTextDifficultyOptions = function (text_api_endpoi
 	return A2(_elm_lang$http$Http$send, _user$project$Text_Create$UpdateTextDifficultyOptions, request);
 };
 var _user$project$Main$textJSONtoComponent = function (text) {
-	var _p58 = text;
-	if (_p58.ctor === 'Just') {
+	var _p57 = text;
+	if (_p57.ctor === 'Just') {
 		return A2(
 			_elm_lang$core$Task$attempt,
 			_user$project$Text_Create$TextJSONDecode,
 			function () {
-				var _p59 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Text_Decode$textDecoder, _p58._0);
-				if (_p59.ctor === 'Ok') {
+				var _p58 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Text_Decode$textDecoder, _p57._0);
+				if (_p58.ctor === 'Ok') {
 					return _elm_lang$core$Task$succeed(
-						_user$project$Text_Component$init(_p59._0));
+						_user$project$Text_Component$init(_p58._0));
 				} else {
-					return _elm_lang$core$Task$fail(_p59._0);
+					return _elm_lang$core$Task$fail(_p58._0);
 				}
 			}());
 	} else {
 		return A2(
 			_elm_lang$core$Task$attempt,
-			function (_p60) {
+			function (_p59) {
 				return _user$project$Text_Create$InitTextFieldEditors;
 			},
 			_elm_lang$core$Task$succeed(_elm_lang$core$Maybe$Nothing));

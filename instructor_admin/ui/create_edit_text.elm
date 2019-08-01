@@ -123,7 +123,6 @@ update msg model = case msg of
     SubmitText ->
       let
         text = Text.Component.text model.text_component
-        _ = Debug.log "text" text
       in
         case model.mode of
           ReadOnlyMode write_locker ->

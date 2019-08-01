@@ -197,11 +197,7 @@ editWord model word_instance =
         Nothing ->
           Dict.insert normalized_word 0 model.editing_words)
 
-    _ = Debug.log "old editing word instance" model.editing_word_instances
-
-    new_editing_word_instances =
-      Debug.log "new editing word instances"
-        (Dict.insert (wordInstanceKey word_instance) True model.editing_word_instances)
+    new_editing_word_instances = Dict.insert (wordInstanceKey word_instance) True model.editing_word_instances
   in
     { model | editing_words = new_edited_words, editing_word_instances = new_editing_word_instances }
 
