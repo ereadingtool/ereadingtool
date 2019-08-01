@@ -62,18 +62,18 @@ class TestTextWordGroup(TestUser, TestCase):
     def test_create_grouped_words(self) -> List[TextWord]:
         section = self.text.sections.all()[0]
 
-        test_text_word_one = TextWord.objects.create(
+        Post = TextWord.objects.create(
             phrase='Post',
             text_section=section
         )
 
-        test_text_word_two = TextWord.objects.create(
+        Office = TextWord.objects.create(
             phrase='Office',
             text_section=section
         )
 
         resp = self.instructor.post(self.text_group_endpoint,
-                                    json.dumps([test_text_word_one.pk, test_text_word_two.pk]),
+                                    json.dumps([Post.pk, Office.pk]),
                                     content_type='application/json')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
@@ -82,10 +82,10 @@ class TestTextWordGroup(TestUser, TestCase):
 
         self.assertEquals(resp_content['grouped'], True)
 
-        test_text_word_one.refresh_from_db()
-        test_text_word_two.refresh_from_db()
+        Post.refresh_from_db()
+        Office.refresh_from_db()
 
-        self.assertTrue(test_text_word_one.group_word)
-        self.assertTrue(test_text_word_two.group_word)
+        self.assertTrue(Post.group_word)
+        self.assertTrue(Office.group_word)
 
-        return [test_text_word_one, test_text_word_two]
+        return [Post, Office]

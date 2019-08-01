@@ -11,6 +11,8 @@ from django.views.generic import View
 from django.db import transaction, DatabaseError
 from django.core.exceptions import ObjectDoesNotExist
 
+from text.models import TextSection
+
 from text.translations.models import TextWord
 
 from text.phrase.models import TextPhrase, TextPhraseTranslation
@@ -33,9 +35,12 @@ class TextWordAPIView(LoginRequiredMixin, View):
             return HttpResponse(json.dumps({'errors': {'json': str(validation_error)}}), status=400)
 
         try:
+            text_word_add_params['text_section'] = TextSection.objects.get(text=text_word_add_params.pop('text'),
+                                                                           order=text_word_add_params['text_section'])
+
             text_word = TextWord.create(**text_word_add_params)
 
-            text_word_dict = text_word.to_dict()
+            text_word_dict = text_word.to_translations_dict()
 
             text_word_dict['id'] = text_word.pk
 
@@ -91,8 +96,7 @@ class TextWordTranslationsAPIView(LoginRequiredMixin, View):
             deleted, deleted_objs = text_phrase_translation.delete()
 
             return HttpResponse(json.dumps({
-                'word': str(text_phrase_translation.text_phrase.phrase),
-                'instance': text_phrase_translation.text_phrase.instance,
+                'text_word': text_phrase_translation.text_phrase.child_instance.to_translations_dict(),
                 'translation': text_word_translation_dict,
                 'deleted': deleted >= 1
             }))
@@ -128,8 +132,7 @@ class TextWordTranslationsAPIView(LoginRequiredMixin, View):
                 text_phrase_translation = TextPhraseTranslation.create(**text_word_add_translation_params)
 
                 return HttpResponse(json.dumps({
-                    'word': str(text_phrase_translation.text_phrase.phrase),
-                    'instance': text_phrase.instance,
+                    'text_word': text_phrase.child_instance.to_translations_dict(),
                     'translation': text_phrase_translation.to_dict()
                 }))
 
@@ -166,8 +169,7 @@ class TextWordTranslationsAPIView(LoginRequiredMixin, View):
             text_phrase_translation.refresh_from_db()
 
             return HttpResponse(json.dumps({
-                'word': text_phrase_translation.text_phrase.phrase,
-                'instance': text_phrase_translation.text_phrase.instance,
+                'text_word': text_phrase_translation.text_phrase.child_instance.to_translations_dict(),
                 'translation': text_phrase_translation.to_dict()
             }))
 

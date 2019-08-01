@@ -98,7 +98,7 @@ class TestText(TestData, TestUser, TestCase):
         text_section = TextSection.objects.all()[0]
 
         TextPhraseTranslation.create(
-            text_phrase=TextWord.create(phrase='опаздывает', instance=0, text_section=text_section.pk),
+            text_phrase=TextWord.create(phrase='опаздывает', instance=0, text_section=text_section),
             phrase='be late',
             correct_for_context=True
         )
@@ -668,7 +668,7 @@ class TestText(TestData, TestUser, TestCase):
 
         text_sections = text.sections.all()
 
-        заявление = TextWord.create(phrase='заявление', instance=0, text_section=text_sections[0].pk)
+        заявление = TextWord.create(phrase='заявление', instance=0, text_section=text_sections[0])
 
         TextPhraseTranslation.create(
             text_phrase=заявление,
@@ -700,8 +700,8 @@ class TestText(TestData, TestUser, TestCase):
         text_one_section = text_one.sections.all()
         text_two_section = text_two.sections.all()
 
-        заявление = TextWord.create(phrase='заявление', instance=0, text_section=text_one_section[0].pk)
-        неделю = TextWord.create(phrase='неделю', instance=0, text_section=text_two_section[0].pk)
+        заявление = TextWord.create(phrase='заявление', instance=0, text_section=text_one_section[0])
+        неделю = TextWord.create(phrase='неделю', instance=0, text_section=text_two_section[0])
 
         TextPhraseTranslation.create(
             text_phrase=заявление,

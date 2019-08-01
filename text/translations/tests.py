@@ -130,7 +130,8 @@ class TestTextWord(TestUser, TestCase):
 
         resp = self.instructor.post(text_word_api_endpoint,
                                     json.dumps({
-                                        'text_section': text_section_one.pk,
+                                        'text': text.pk,
+                                        'text_section': text_section_one.order,
                                         'instance': 0,
                                         'phrase': 'sentence'
                                     }), content_type='application/json')

@@ -37,7 +37,7 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
             return self.textwordgroup
 
     def __str__(self):
-        return f'{self.phrase} instance {self.instance+1} from text section {self.text_section}'
+        return f'{self.phrase} instance {self.instance+1} from {self.text_section}'
 
     @property
     def serialized_grammemes(self):
@@ -64,13 +64,14 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
         schema = {
             'type': 'object',
             'properties': {
+                'text': {'type': 'number'},
                 'text_section': {'type': 'number'},
                 'instance': {'type': 'number'},
                 'phrase': {'type': 'string'},
                 'grammeme': cls.grammeme_add_schema()
             },
             'minItems': 1,
-            'required': ['text_section', 'instance', 'phrase']
+            'required': ['text', 'text_section', 'instance', 'phrase']
         }
 
         return schema
@@ -100,7 +101,7 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
     def to_translations_dict(self):
         translation_dict = {
             'id': self.pk,
-            # phrase.instance is the phrase instance within a particular section
+            'text_section': self.text_section.order,
             'instance': self.instance,
             'phrase': self.phrase,
             'grammemes': self.serialized_grammemes,

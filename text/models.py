@@ -79,20 +79,23 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
 
     @property
     def text_words(self):
-        # for the entire text, compile a dictionary of words
-        # word instances are tracked across the entire text
-        words = dict()
+        # for the entire text, compile an array of dictionaries, indexed by section number
+        section_words = []
 
         # translated_words__translations joins TextSections with TextPhrase and their TextPhraseTranslations
-        for section in self.sections.prefetch_related('translated_words__translations').all():
-            seen_group = dict()
+        for section in self.sections.prefetch_related('translated_words__translations').order_by('order').all():
+            words = dict()
 
             for text_phrase in section.translated_words.all():
-                words.setdefault(text_phrase.phrase, [])
+                phrase = text_phrase.phrase.lower()
 
-                words[text_phrase.phrase].append(text_phrase.child_instance.to_translations_dict())
+                words.setdefault(phrase, [])
 
-        return words
+                words[phrase].append(text_phrase.child_instance.to_translations_dict())
+
+            section_words.append(words)
+
+        return section_words
 
     @classmethod
     def to_json_schema(cls) -> Dict:

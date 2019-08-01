@@ -9,6 +9,7 @@ import Json.Encode
 
 import Http
 
+import Admin.Text
 import Text.Model exposing (Text, TextDifficulty)
 
 import Text.Translations
@@ -33,6 +34,7 @@ import Menu.Logout
 type alias Flags = Flags.AuthedFlags {
     instructor_profile : Instructor.Profile.InstructorProfileParams
   , text: Maybe Json.Encode.Value
+  , text_endpoint_url: String
   , translation_flags: Text.Translations.Flags
   , tags: List String }
 
@@ -87,6 +89,7 @@ type alias Model = {
   , menu_items : Menu.Items.MenuItems
   , success_msg : Maybe String
   , error_msg : Maybe String
+  , text_api_endpoint : Admin.Text.TextAPIEndpoint
   , text_component : TextComponent
   , text_difficulties : List Text.Model.TextDifficulty
   , text_translations_model: Maybe TextTranslations.Model

@@ -15,6 +15,7 @@ import Dict exposing (Dict)
 import Set exposing (Set)
 
 import Text.Section.Words.Tag
+import Text.Section.Model
 
 import Text.Translations exposing (..)
 
@@ -41,9 +42,9 @@ wordInstanceOnClick model parent_msg word_instance =
     False ->
       onClick (parent_msg (EditWord word_instance))
 
-is_part_of_compound_word : Model -> Int -> String -> Maybe (Int, Int, Int)
-is_part_of_compound_word model instance word =
-  case Text.Translations.Model.getTextWord model instance word of
+is_part_of_compound_word : Model -> Int -> Int -> String -> Maybe (Int, Int, Int)
+is_part_of_compound_word model section_number instance word =
+  case Text.Translations.Model.getTextWord model section_number instance word of
     Just text_word ->
       case (Text.Translations.TextWord.group text_word) of
         Just group ->
@@ -55,10 +56,11 @@ is_part_of_compound_word model instance word =
     Nothing ->
       Nothing
 
-tagWord : Model -> (Msg -> msg) -> Int -> String -> Html msg
-tagWord model parent_msg instance token =
+tagWord : Model -> (Msg -> msg) -> Int -> Int -> String -> Html msg
+tagWord model parent_msg section_number instance original_token =
   let
-    id = String.join "_" [toString instance, token]
+    id = String.join "-" ["section", toString section_number, "instance", toString instance, original_token]
+    token = String.toLower original_token
   in
     case token == " " of
       True ->
@@ -66,7 +68,7 @@ tagWord model parent_msg instance token =
 
       False ->
         let
-          word_instance = Text.Translations.Model.newWordInstance model instance token
+          word_instance = Text.Translations.Model.newWordInstance model section_number instance token
 
           editing_word = Text.Translations.Model.editingWord model token
           merging_word = Text.Translations.Model.mergingWord model word_instance
@@ -82,10 +84,16 @@ tagWord model parent_msg instance token =
               ]
             , wordInstanceOnClick model parent_msg word_instance
             ] [
-              VirtualDom.text token
+              VirtualDom.text original_token
             ]
           , view_edit model parent_msg word_instance
           ]
+
+tagSection : Model -> (Msg -> msg) -> Text.Section.Model.TextSection -> Html msg
+tagSection model msg section =
+  div [id ("section-" ++ (toString section.order)), class "section"]
+    (Text.Section.Words.Tag.tagWordsAndToVDOM
+      (tagWord model msg section.order) (is_part_of_compound_word model section.order) (HtmlParser.parse section.body))
 
 view_edit : Model -> (Msg -> msg) -> WordInstance -> Html msg
 view_edit model parent_msg word_instance =
@@ -106,8 +114,9 @@ view_btns : Model -> (Msg -> msg) -> WordInstance -> Html msg
 view_btns model parent_msg word_instance =
   let
     word = Text.Translations.Word.Instance.word word_instance
+    section_number = Text.Translations.Word.Instance.sectionNumber word_instance
     normalized_word = String.toLower word
-    instance_count = Text.Translations.Model.instanceCount model normalized_word
+    instance_count = Text.Translations.Model.instanceCount model section_number normalized_word
   in
     div [class "text_word_options"] <| [
       view_make_compound_text_word model parent_msg word_instance
@@ -271,12 +280,11 @@ view_instance_word model msg word_instance =
       (case Text.Translations.Model.mergingWord model word_instance of
         True ->
           let
-            word_instance_id = Text.Translations.Word.Instance.id word_instance
-
             merging_words =
                  List.map (\(k, v) -> word v)
               <| OrderedDict.toList
-              <| OrderedDict.remove word_instance_id (Text.Translations.Model.mergingWords model)
+              <| OrderedDict.remove
+                   (wordInstanceKey word_instance) (Text.Translations.Model.mergingWords model)
           in
             String.join " " ([word word_instance] ++ merging_words)
 
@@ -356,15 +364,7 @@ view_translations : (Msg -> msg) -> Maybe Model -> Html msg
 view_translations msg translation_model =
   case translation_model of
     Just model ->
-      let
-        sections = Array.toList model.text.sections
-        text_body = String.join " " (List.map (\section -> section.body) sections)
-
-        text_body_vdom =
-          Text.Section.Words.Tag.tagWordsAndToVDOM
-            (tagWord model msg) (is_part_of_compound_word model) (HtmlParser.parse text_body)
-      in
-        div [id "translations_tab"] text_body_vdom
+      div [id "translations_tab"] (List.map (tagSection model msg) (Array.toList model.text.sections))
 
     Nothing ->
       div [id "translations_tab"] [

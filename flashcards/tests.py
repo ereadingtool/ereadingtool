@@ -45,31 +45,31 @@ class TestFlashcardStateMachine(TestData, TestUser, TestCase):
         self.text_phrases = []
 
         TextPhraseTranslation.create(
-            text_phrase=TextWord.create(phrase='заявление', instance=0, text_section=text_sections[0].pk),
+            text_phrase=TextWord.create(phrase='заявление', instance=0, text_section=text_sections[0]),
             phrase='statement',
             correct_for_context=True
         )
 
         TextPhraseTranslation.create(
-            text_phrase=TextWord.create(phrase='неделю', instance=0, text_section=text_sections[0].pk),
+            text_phrase=TextWord.create(phrase='неделю', instance=0, text_section=text_sections[0]),
             phrase='week',
             correct_for_context=True
         )
 
         TextPhraseTranslation.create(
-            text_phrase=TextWord.create(phrase='стрельбы', instance=0, text_section=text_sections[1].pk),
+            text_phrase=TextWord.create(phrase='стрельбы', instance=0, text_section=text_sections[1]),
             phrase='shooting',
             correct_for_context=True
         )
 
         TextPhraseTranslation.create(
-            text_phrase=TextWord.create(phrase='Число', instance=0, text_section=text_sections[0].pk),
+            text_phrase=TextWord.create(phrase='Число', instance=0, text_section=text_sections[0]),
             phrase='number',
             correct_for_context=True
         )
 
         TextPhraseTranslation.create(
-            text_phrase=TextWord.create(phrase='вещи', instance=0, text_section=text_sections[1].pk),
+            text_phrase=TextWord.create(phrase='вещи', instance=0, text_section=text_sections[1]),
             phrase='number',
             correct_for_context=True
         )

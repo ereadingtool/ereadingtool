@@ -85,8 +85,8 @@ class AdminCreateEditTextView(AdminView):
 
         return super(AdminCreateEditTextView, self).get(request, *args, **kwargs)
 
-    # GA's nonce CSP policy conflicts with previously used unsafe-inline
-    # attempts at using nonce with CkEditor failed so making this csp_exempt for now
+    # GA's nonce CSP policy conflicts with previously used unsafe-inline.
+    # Attempts at using nonce with CkEditor failed so making this csp_exempt for now
     @csp_exempt
     def dispatch(self, request, *args, **kwargs):
         return super(AdminCreateEditTextView, self).dispatch(request, *args, **kwargs)
@@ -122,8 +122,16 @@ class AdminCreateEditElmLoadView(ElmLoadJsView):
             'safe': True,
             'value': json.dumps({
                 'csrftoken': get_token(self.request),
-                'group_word_endpoint_url': reverse('text-word-group-api')
+                'add_as_text_word_endpoint_url': reverse('text-word-api'),
+                'merge_textword_endpoint_url': reverse('text-word-group-api'),
+                'text_translation_match_endpoint': reverse('text-translation-match-method')
             })
+        }
+
+        context['elm']['text_endpoint_url'] = {
+            'quote': False,
+            'safe': True,
+            'value': json.dumps(reverse('text-api'))
         }
 
         return context

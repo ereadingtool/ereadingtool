@@ -24,8 +24,9 @@ class TextWordGroupAPIView(LoginRequiredMixin, View):
         text_group = None
 
         resp = {
-            'instance': 0,
             'phrase': '',
+            'section': None,
+            'instance': 0,
             'grouped': False,
             'text_words': [],
             'error': None
@@ -86,6 +87,7 @@ class TextWordGroupAPIView(LoginRequiredMixin, View):
                     text_group_word.save()
 
                 resp['grouped'] = True
+                resp['section'] = text_group.text_section.order
         else:
             try:
                 first_text_word_group = text_words[0].group_word.group
@@ -94,8 +96,9 @@ class TextWordGroupAPIView(LoginRequiredMixin, View):
                     # words all belong to the same group already
                     text_group = first_text_word_group
 
-                    resp['instance'] = text_group.instance
                     resp['phrase'] = text_group.phrase
+                    resp['section'] = text_group.text_section.order
+                    resp['instance'] = text_group.instance
                     resp['grouped'] = True
 
             except (ValueError, IndexError):

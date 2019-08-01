@@ -48,7 +48,7 @@ type Msg =
   | UpdatedTextWords (Result Http.Error (List TextWord))
 
   -- translations
-  | UpdateTextTranslations (Result Http.Error (Dict Text.Translations.Word (Array TextWord)))
-  | UpdateTextTranslation (Result Http.Error (Text.Translations.Word, Int, Translation))
-  | SubmittedTextTranslation (Result Http.Error (Text.Translations.Word, Int, Translation))
+  | UpdateTextTranslations (Result Http.Error (Array (Dict Text.Translations.Word (Array TextWord))))
+  | UpdateTextTranslation (Result Http.Error (TextWord, Translation))
+  | SubmittedTextTranslation (Result Http.Error (TextWord, Translation))
   | DeletedTranslation (Result Http.Error Text.Translations.Decode.TextWordTranslationDeleteResp)
