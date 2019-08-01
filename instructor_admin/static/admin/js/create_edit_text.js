@@ -26869,7 +26869,11 @@ var _user$project$Text_Translations_Word_Instance$id = function (_p6) {
 				_0: _elm_lang$core$Basics$toString(_p7._1),
 				_1: {
 					ctor: '::',
-					_0: _p7._2,
+					_0: A2(
+						_elm_lang$core$String$join,
+						'_',
+						_elm_lang$core$String$words(
+							_elm_lang$core$String$toLower(_p7._2))),
 					_1: {ctor: '[]'}
 				}
 			}
@@ -26975,14 +26979,20 @@ var _user$project$Text_Translations_Model$uneditAllWords = function (model) {
 		model,
 		{editing_words: _elm_lang$core$Dict$empty, editing_word_instances: _elm_lang$core$Dict$empty});
 };
+var _user$project$Text_Translations_Model$wordInstanceKey = function (word_instance) {
+	return _user$project$Text_Translations_Word_Instance$id(word_instance);
+};
 var _user$project$Text_Translations_Model$editWord = F2(
 	function (model, word_instance) {
-		var _p1 = A2(_elm_lang$core$Debug$log, 'old editing word instance', model.editing_word_instances);
-		var word_instance_id = _user$project$Text_Translations_Word_Instance$id(word_instance);
 		var new_editing_word_instances = A2(
 			_elm_lang$core$Debug$log,
 			'new editing word instances',
-			A3(_elm_lang$core$Dict$insert, word_instance_id, true, model.editing_word_instances));
+			A3(
+				_elm_lang$core$Dict$insert,
+				_user$project$Text_Translations_Model$wordInstanceKey(word_instance),
+				true,
+				model.editing_word_instances));
+		var _p1 = A2(_elm_lang$core$Debug$log, 'old editing word instance', model.editing_word_instances);
 		var normalized_word = _elm_lang$core$String$toLower(
 			_user$project$Text_Translations_Word_Instance$word(word_instance));
 		var new_edited_words = function () {
@@ -27124,8 +27134,10 @@ var _user$project$Text_Translations_Model$clearMerge = function (model) {
 var _user$project$Text_Translations_Model$uneditWord = F2(
 	function (model, word_instance) {
 		var cancelled_merge_model = _user$project$Text_Translations_Model$clearMerge(model);
-		var word_instance_id = _user$project$Text_Translations_Word_Instance$id(word_instance);
-		var new_editing_word_instances = A2(_elm_lang$core$Dict$remove, word_instance_id, model.editing_word_instances);
+		var new_editing_word_instances = A2(
+			_elm_lang$core$Dict$remove,
+			_user$project$Text_Translations_Model$wordInstanceKey(word_instance),
+			model.editing_word_instances);
 		var word = _user$project$Text_Translations_Word_Instance$word(word_instance);
 		var normalized_word = _elm_lang$core$String$toLower(word);
 		var new_edited_words = function () {
@@ -27172,16 +27184,12 @@ var _user$project$Text_Translations_Model$mergingWordInstances = function (model
 };
 var _user$project$Text_Translations_Model$newWordInstance = F4(
 	function (model, section_number, instance, token) {
-		var phrase = A2(
-			_elm_lang$core$String$join,
-			'_',
-			_elm_lang$core$String$words(token));
 		return A4(
 			_user$project$Text_Translations_Word_Instance$new,
 			section_number,
 			instance,
 			token,
-			A4(_user$project$Text_Translations_Model$getTextWord, model, section_number, instance, phrase));
+			A4(_user$project$Text_Translations_Model$getTextWord, model, section_number, instance, token));
 	});
 var _user$project$Text_Translations_Model$editingGrammeme = function (model) {
 	var first_grammeme_name = 'aspect';
@@ -27245,7 +27253,10 @@ var _user$project$Text_Translations_Model$completeMerge = F5(
 		var new_model = _user$project$Text_Translations_Model$uneditAllWords(
 			_user$project$Text_Translations_Model$clearMerge(
 				A2(_user$project$Text_Translations_Model$setTextWords, model, text_words)));
-		var merged_word_instance = A4(_user$project$Text_Translations_Model$newWordInstance, new_model, section_number, instance, phrase);
+		var merged_word_instance = A2(
+			_elm_lang$core$Debug$log,
+			'new merged word',
+			A4(_user$project$Text_Translations_Model$newWordInstance, new_model, section_number, instance, phrase));
 		return A2(_user$project$Text_Translations_Model$editWord, new_model, merged_word_instance);
 	});
 var _user$project$Text_Translations_Model$init = F3(
@@ -29234,7 +29245,6 @@ var _user$project$Text_Translations_View$view_instance_word = F3(
 		var word_txt = function () {
 			var _p5 = A2(_user$project$Text_Translations_Model$mergingWord, model, word_instance);
 			if (_p5 === true) {
-				var word_instance_id = _user$project$Text_Translations_Word_Instance$id(word_instance);
 				var merging_words = A2(
 					_elm_lang$core$List$map,
 					function (_p6) {
@@ -29244,7 +29254,7 @@ var _user$project$Text_Translations_View$view_instance_word = F3(
 					_rnons$ordered_containers$OrderedDict$toList(
 						A2(
 							_rnons$ordered_containers$OrderedDict$remove,
-							word_instance_id,
+							_user$project$Text_Translations_Model$wordInstanceKey(word_instance),
 							_user$project$Text_Translations_Model$mergingWords(model))));
 				return A2(
 					_elm_lang$core$String$join,

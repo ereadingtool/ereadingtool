@@ -280,12 +280,11 @@ view_instance_word model msg word_instance =
       (case Text.Translations.Model.mergingWord model word_instance of
         True ->
           let
-            word_instance_id = Text.Translations.Word.Instance.id word_instance
-
             merging_words =
                  List.map (\(k, v) -> word v)
               <| OrderedDict.toList
-              <| OrderedDict.remove word_instance_id (Text.Translations.Model.mergingWords model)
+              <| OrderedDict.remove
+                   (wordInstanceKey word_instance) (Text.Translations.Model.mergingWords model)
           in
             String.join " " ([word word_instance] ++ merging_words)
 

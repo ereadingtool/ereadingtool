@@ -180,11 +180,14 @@ editingWord : Model -> String -> Bool
 editingWord model word =
   Dict.member (String.toLower word) model.editing_words
 
+wordInstanceKey : WordInstance -> String
+wordInstanceKey word_instance =
+  Text.Translations.Word.Instance.id word_instance
+
 editWord : Model -> WordInstance -> Model
 editWord model word_instance =
   let
     normalized_word = String.toLower (Text.Translations.Word.Instance.word word_instance)
-    word_instance_id = Text.Translations.Word.Instance.id word_instance
 
     new_edited_words =
       (case Dict.get normalized_word model.editing_words of
@@ -197,7 +200,8 @@ editWord model word_instance =
     _ = Debug.log "old editing word instance" model.editing_word_instances
 
     new_editing_word_instances =
-      Debug.log "new editing word instances" (Dict.insert word_instance_id True model.editing_word_instances)
+      Debug.log "new editing word instances"
+        (Dict.insert (wordInstanceKey word_instance) True model.editing_word_instances)
   in
     { model | editing_words = new_edited_words, editing_word_instances = new_editing_word_instances }
 
@@ -224,9 +228,7 @@ uneditWord model word_instance =
         Nothing ->
           model.editing_words)
 
-    word_instance_id = Text.Translations.Word.Instance.id word_instance
-
-    new_editing_word_instances = Dict.remove word_instance_id model.editing_word_instances
+    new_editing_word_instances = Dict.remove (wordInstanceKey word_instance) model.editing_word_instances
     cancelled_merge_model = clearMerge model
   in
    { cancelled_merge_model |

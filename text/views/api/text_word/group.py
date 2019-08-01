@@ -87,7 +87,7 @@ class TextWordGroupAPIView(LoginRequiredMixin, View):
                     text_group_word.save()
 
                 resp['grouped'] = True
-                resp['section'] = text_group.text_section.pk
+                resp['section'] = text_group.text_section.order
         else:
             try:
                 first_text_word_group = text_words[0].group_word.group
@@ -97,7 +97,7 @@ class TextWordGroupAPIView(LoginRequiredMixin, View):
                     text_group = first_text_word_group
 
                     resp['phrase'] = text_group.phrase
-                    resp['section'] = text_group.text_section.pk
+                    resp['section'] = text_group.text_section.order
                     resp['instance'] = text_group.instance
                     resp['grouped'] = True
 
