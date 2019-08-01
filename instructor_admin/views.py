@@ -123,8 +123,15 @@ class AdminCreateEditElmLoadView(ElmLoadJsView):
             'value': json.dumps({
                 'csrftoken': get_token(self.request),
                 'add_as_text_word_endpoint_url': reverse('text-word-api'),
-                'merge_textword_endpoint_url': reverse('text-word-group-api')
+                'merge_textword_endpoint_url': reverse('text-word-group-api'),
+                'text_translation_match_endpoint': reverse('text-translation-match-method')
             })
+        }
+
+        context['elm']['text_endpoint_url'] = {
+            'quote': False,
+            'safe': True,
+            'value': json.dumps(reverse('text-api'))
         }
 
         return context

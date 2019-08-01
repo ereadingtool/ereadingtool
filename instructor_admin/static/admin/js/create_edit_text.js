@@ -32910,7 +32910,7 @@ var _user$project$Main$tagsToDict = function (tag_list) {
 };
 var _user$project$Main$init = function (flags) {
 	var text_api_endpoint = _user$project$Admin_Text$TextAPIEndpoint(
-		_user$project$Admin_Text$URL(flags.text_endpoint));
+		_user$project$Admin_Text$URL(flags.text_endpoint_url));
 	return {
 		ctor: '_Tuple2',
 		_0: {
@@ -32958,7 +32958,7 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 						function (text) {
 							return A2(
 								_elm_lang$core$Json_Decode$andThen,
-								function (text_endpoint) {
+								function (text_endpoint_url) {
 									return A2(
 										_elm_lang$core$Json_Decode$andThen,
 										function (translation_flags) {
@@ -32969,7 +32969,7 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 														_elm_lang$core$Json_Decode$andThen,
 														function (menu_items) {
 															return _elm_lang$core$Json_Decode$succeed(
-																{instructor_profile: instructor_profile, tags: tags, text: text, text_endpoint: text_endpoint, translation_flags: translation_flags, csrftoken: csrftoken, menu_items: menu_items});
+																{instructor_profile: instructor_profile, tags: tags, text: text, text_endpoint_url: text_endpoint_url, translation_flags: translation_flags, csrftoken: csrftoken, menu_items: menu_items});
 														},
 														A2(
 															_elm_lang$core$Json_Decode$field,
@@ -33021,7 +33021,7 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 												},
 												A2(_elm_lang$core$Json_Decode$field, 'add_as_text_word_endpoint_url', _elm_lang$core$Json_Decode$string))));
 								},
-								A2(_elm_lang$core$Json_Decode$field, 'text_endpoint', _elm_lang$core$Json_Decode$string));
+								A2(_elm_lang$core$Json_Decode$field, 'text_endpoint_url', _elm_lang$core$Json_Decode$string));
 						},
 						A2(
 							_elm_lang$core$Json_Decode$field,

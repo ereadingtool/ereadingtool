@@ -51,7 +51,7 @@ import Text.Translations.Subscriptions
 init : Flags -> (Model, Cmd Msg)
 init flags =
   let
-    text_api_endpoint = (Admin.Text.TextAPIEndpoint (Admin.Text.URL flags.text_endpoint))
+    text_api_endpoint = (Admin.Text.TextAPIEndpoint (Admin.Text.URL flags.text_endpoint_url))
   in
     ({
       flags=flags
