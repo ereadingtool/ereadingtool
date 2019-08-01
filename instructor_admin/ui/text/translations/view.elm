@@ -57,9 +57,10 @@ is_part_of_compound_word model section_number instance word =
       Nothing
 
 tagWord : Model -> (Msg -> msg) -> Int -> Int -> String -> Html msg
-tagWord model parent_msg section_number instance token =
+tagWord model parent_msg section_number instance original_token =
   let
-    id = String.join "-" ["section", toString section_number, "instance", toString instance, token]
+    id = String.join "-" ["section", toString section_number, "instance", toString instance, original_token]
+    token = String.toLower original_token
   in
     case token == " " of
       True ->
@@ -83,7 +84,7 @@ tagWord model parent_msg section_number instance token =
               ]
             , wordInstanceOnClick model parent_msg word_instance
             ] [
-              VirtualDom.text token
+              VirtualDom.text original_token
             ]
           , view_edit model parent_msg word_instance
           ]

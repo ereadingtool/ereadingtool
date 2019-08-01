@@ -26977,14 +26977,18 @@ var _user$project$Text_Translations_Model$uneditAllWords = function (model) {
 };
 var _user$project$Text_Translations_Model$editWord = F2(
 	function (model, word_instance) {
+		var _p1 = A2(_elm_lang$core$Debug$log, 'old editing word instance', model.editing_word_instances);
 		var word_instance_id = _user$project$Text_Translations_Word_Instance$id(word_instance);
-		var new_editing_word_instances = A3(_elm_lang$core$Dict$insert, word_instance_id, true, model.editing_word_instances);
+		var new_editing_word_instances = A2(
+			_elm_lang$core$Debug$log,
+			'new editing word instances',
+			A3(_elm_lang$core$Dict$insert, word_instance_id, true, model.editing_word_instances));
 		var normalized_word = _elm_lang$core$String$toLower(
 			_user$project$Text_Translations_Word_Instance$word(word_instance));
 		var new_edited_words = function () {
-			var _p1 = A2(_elm_lang$core$Dict$get, normalized_word, model.editing_words);
-			if (_p1.ctor === 'Just') {
-				return A3(_elm_lang$core$Dict$insert, normalized_word, _p1._0 + 1, model.editing_words);
+			var _p2 = A2(_elm_lang$core$Dict$get, normalized_word, model.editing_words);
+			if (_p2.ctor === 'Just') {
+				return A3(_elm_lang$core$Dict$insert, normalized_word, _p2._0 + 1, model.editing_words);
 			} else {
 				return A3(_elm_lang$core$Dict$insert, normalized_word, 0, model.editing_words);
 			}
@@ -27002,18 +27006,25 @@ var _user$project$Text_Translations_Model$editingWord = F2(
 	});
 var _user$project$Text_Translations_Model$getTextWords = F3(
 	function (model, section_number, phrase) {
-		var _p2 = A2(_user$project$Text_Translations_Model$getSectionWords, model, section_number);
-		if (_p2.ctor === 'Just') {
-			return A2(_elm_lang$core$Dict$get, phrase, _p2._0);
+		var _p3 = A2(_user$project$Text_Translations_Model$getSectionWords, model, section_number);
+		if (_p3.ctor === 'Just') {
+			return A2(
+				_elm_lang$core$Dict$get,
+				_elm_lang$core$String$toLower(phrase),
+				_p3._0);
 		} else {
 			return _elm_lang$core$Maybe$Nothing;
 		}
 	});
 var _user$project$Text_Translations_Model$getTextWord = F4(
 	function (model, section_number, instance, phrase) {
-		var _p3 = A3(_user$project$Text_Translations_Model$getTextWords, model, section_number, phrase);
-		if (_p3.ctor === 'Just') {
-			return A2(_elm_lang$core$Array$get, instance, _p3._0);
+		var _p4 = A3(
+			_user$project$Text_Translations_Model$getTextWords,
+			model,
+			section_number,
+			_elm_lang$core$String$toLower(phrase));
+		if (_p4.ctor === 'Just') {
+			return A2(_elm_lang$core$Array$get, instance, _p4._0);
 		} else {
 			return _elm_lang$core$Maybe$Nothing;
 		}
@@ -27021,12 +27032,13 @@ var _user$project$Text_Translations_Model$getTextWord = F4(
 var _user$project$Text_Translations_Model$setTextWord = F2(
 	function (model, text_word) {
 		var instance = _user$project$Text_Translations_TextWord$instance(text_word);
-		var phrase = _user$project$Text_Translations_TextWord$phrase(text_word);
+		var phrase = _elm_lang$core$String$toLower(
+			_user$project$Text_Translations_TextWord$phrase(text_word));
 		var section_number = _user$project$Text_Translations_TextWord$sectionNumber(text_word);
 		var new_text_words = function () {
-			var _p4 = A3(_user$project$Text_Translations_Model$getTextWords, model, section_number, phrase);
-			if (_p4.ctor === 'Just') {
-				return A3(_elm_lang$core$Array$set, instance, text_word, _p4._0);
+			var _p5 = A3(_user$project$Text_Translations_Model$getTextWords, model, section_number, phrase);
+			if (_p5.ctor === 'Just') {
+				return A3(_elm_lang$core$Array$set, instance, text_word, _p5._0);
 			} else {
 				return _elm_lang$core$Array$fromList(
 					{
@@ -27057,9 +27069,13 @@ var _user$project$Text_Translations_Model$removeTextTranslation = F3(
 	});
 var _user$project$Text_Translations_Model$instanceCount = F3(
 	function (model, section_number, word) {
-		var _p5 = A3(_user$project$Text_Translations_Model$getTextWords, model, section_number, word);
-		if (_p5.ctor === 'Just') {
-			return _elm_lang$core$Array$length(_p5._0);
+		var _p6 = A3(
+			_user$project$Text_Translations_Model$getTextWords,
+			model,
+			section_number,
+			_elm_lang$core$String$toLower(word));
+		if (_p6.ctor === 'Just') {
+			return _elm_lang$core$Array$length(_p6._0);
 		} else {
 			return 0;
 		}
@@ -27113,10 +27129,10 @@ var _user$project$Text_Translations_Model$uneditWord = F2(
 		var word = _user$project$Text_Translations_Word_Instance$word(word_instance);
 		var normalized_word = _elm_lang$core$String$toLower(word);
 		var new_edited_words = function () {
-			var _p6 = A2(_elm_lang$core$Dict$get, normalized_word, model.editing_words);
-			if (_p6.ctor === 'Just') {
-				var _p7 = _p6._0;
-				return _elm_lang$core$Native_Utils.eq(_p7 - 1, -1) ? A2(_elm_lang$core$Dict$remove, normalized_word, model.editing_words) : A3(_elm_lang$core$Dict$insert, normalized_word, _p7 - 1, model.editing_words);
+			var _p7 = A2(_elm_lang$core$Dict$get, normalized_word, model.editing_words);
+			if (_p7.ctor === 'Just') {
+				var _p8 = _p7._0;
+				return _elm_lang$core$Native_Utils.eq(_p8 - 1, -1) ? A2(_elm_lang$core$Dict$remove, normalized_word, model.editing_words) : A3(_elm_lang$core$Dict$insert, normalized_word, _p8 - 1, model.editing_words);
 			} else {
 				return model.editing_words;
 			}
@@ -27136,12 +27152,12 @@ var _user$project$Text_Translations_Model$mergeSiblings = F2(
 var _user$project$Text_Translations_Model$mergeState = F2(
 	function (model, word_instance) {
 		var other_merging_words = A2(_user$project$Text_Translations_Model$mergeSiblings, model, word_instance);
-		var _p8 = A2(_user$project$Text_Translations_Model$mergingWord, model, word_instance);
-		if (_p8 === true) {
-			var _p9 = _elm_lang$core$Native_Utils.cmp(
+		var _p9 = A2(_user$project$Text_Translations_Model$mergingWord, model, word_instance);
+		if (_p9 === true) {
+			var _p10 = _elm_lang$core$Native_Utils.cmp(
 				_elm_lang$core$List$length(other_merging_words),
 				1) > -1;
-			if (_p9 === true) {
+			if (_p10 === true) {
 				return _elm_lang$core$Maybe$Just(_user$project$Text_Translations$Mergeable);
 			} else {
 				return _elm_lang$core$Maybe$Just(_user$project$Text_Translations$Cancelable);
@@ -27156,12 +27172,16 @@ var _user$project$Text_Translations_Model$mergingWordInstances = function (model
 };
 var _user$project$Text_Translations_Model$newWordInstance = F4(
 	function (model, section_number, instance, token) {
+		var phrase = A2(
+			_elm_lang$core$String$join,
+			'_',
+			_elm_lang$core$String$words(token));
 		return A4(
 			_user$project$Text_Translations_Word_Instance$new,
 			section_number,
 			instance,
 			token,
-			A4(_user$project$Text_Translations_Model$getTextWord, model, section_number, instance, token));
+			A4(_user$project$Text_Translations_Model$getTextWord, model, section_number, instance, phrase));
 	});
 var _user$project$Text_Translations_Model$editingGrammeme = function (model) {
 	var first_grammeme_name = 'aspect';
@@ -27222,15 +27242,11 @@ var _user$project$Text_Translations_Model$setTextWords = F2(
 	});
 var _user$project$Text_Translations_Model$completeMerge = F5(
 	function (model, section_number, phrase, instance, text_words) {
-		var words = A2(_elm_lang$core$Debug$log, 'text_words', text_words);
 		var new_model = _user$project$Text_Translations_Model$uneditAllWords(
 			_user$project$Text_Translations_Model$clearMerge(
 				A2(_user$project$Text_Translations_Model$setTextWords, model, text_words)));
 		var merged_word_instance = A4(_user$project$Text_Translations_Model$newWordInstance, new_model, section_number, instance, phrase);
-		return A2(
-			_elm_lang$core$Debug$log,
-			'completed merge',
-			A2(_user$project$Text_Translations_Model$editWord, new_model, merged_word_instance));
+		return A2(_user$project$Text_Translations_Model$editWord, new_model, merged_word_instance);
 	});
 var _user$project$Text_Translations_Model$init = F3(
 	function (flags, text_id, text) {
@@ -29880,7 +29896,8 @@ var _user$project$Text_Translations_View$wordInstanceOnClick = F3(
 		}
 	});
 var _user$project$Text_Translations_View$tagWord = F5(
-	function (model, parent_msg, section_number, instance, token) {
+	function (model, parent_msg, section_number, instance, original_token) {
+		var token = _elm_lang$core$String$toLower(original_token);
 		var id = A2(
 			_elm_lang$core$String$join,
 			'-',
@@ -29898,7 +29915,7 @@ var _user$project$Text_Translations_View$tagWord = F5(
 							_0: _elm_lang$core$Basics$toString(instance),
 							_1: {
 								ctor: '::',
-								_0: token,
+								_0: original_token,
 								_1: {ctor: '[]'}
 							}
 						}
@@ -29957,7 +29974,7 @@ var _user$project$Text_Translations_View$tagWord = F5(
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$virtual_dom$VirtualDom$text(token),
+							_0: _elm_lang$virtual_dom$VirtualDom$text(original_token),
 							_1: {ctor: '[]'}
 						}),
 					_1: {

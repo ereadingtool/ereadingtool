@@ -126,11 +126,9 @@ completeMerge model section_number phrase instance text_words =
       |> clearMerge
       |> uneditAllWords
 
-    words = Debug.log "text_words" text_words
-
     merged_word_instance = newWordInstance new_model section_number instance phrase
   in
-    Debug.log "completed merge" (editWord new_model merged_word_instance)
+    editWord new_model merged_word_instance
 
 clearMerge : Model -> Model
 clearMerge model =
@@ -162,7 +160,7 @@ removeFromMergeWords model word_instance =
 
 instanceCount : Model -> Int -> Text.Translations.Word -> Int
 instanceCount model section_number word =
-  case getTextWords model section_number word of
+  case getTextWords model section_number (String.toLower word) of
     Just text_words ->
       Array.length text_words
 
@@ -173,7 +171,7 @@ getTextWords : Model -> Int -> Phrase -> Maybe (Array TextWord)
 getTextWords model section_number phrase =
   case getSectionWords model section_number of
     Just words ->
-      Dict.get phrase words
+      Dict.get (String.toLower phrase) words
 
     Nothing ->
       Nothing
@@ -196,7 +194,10 @@ editWord model word_instance =
         Nothing ->
           Dict.insert normalized_word 0 model.editing_words)
 
-    new_editing_word_instances = Dict.insert word_instance_id True model.editing_word_instances
+    _ = Debug.log "old editing word instance" model.editing_word_instances
+
+    new_editing_word_instances =
+      Debug.log "new editing word instances" (Dict.insert word_instance_id True model.editing_word_instances)
   in
     { model | editing_words = new_edited_words, editing_word_instances = new_editing_word_instances }
 
@@ -239,7 +240,7 @@ editingWordInstance model word_instance =
 
 getTextWord : Model -> Int -> Int -> Phrase -> Maybe TextWord
 getTextWord model section_number instance phrase =
-  case getTextWords model section_number phrase of
+  case getTextWords model section_number (String.toLower phrase) of
     Just text_words ->
       Array.get instance text_words
 
@@ -279,7 +280,7 @@ setTextWord : Model -> TextWord -> Model
 setTextWord model text_word =
   let
     section_number = Text.Translations.TextWord.sectionNumber text_word
-    phrase = Text.Translations.TextWord.phrase text_word
+    phrase = String.toLower (Text.Translations.TextWord.phrase text_word)
     instance = Text.Translations.TextWord.instance text_word
 
     new_text_words =

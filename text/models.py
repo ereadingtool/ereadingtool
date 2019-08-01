@@ -87,9 +87,11 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
             words = dict()
 
             for text_phrase in section.translated_words.all():
-                words.setdefault(text_phrase.phrase, [])
+                phrase = text_phrase.phrase.lower()
 
-                words[text_phrase.phrase].append(text_phrase.child_instance.to_translations_dict())
+                words.setdefault(phrase, [])
+
+                words[phrase].append(text_phrase.child_instance.to_translations_dict())
 
             section_words.append(words)
 
