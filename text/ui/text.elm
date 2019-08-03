@@ -1,5 +1,3 @@
-module Text exposing (..)
-
 import Html exposing (Html, div)
 
 import Dict exposing (Dict)
@@ -11,6 +9,8 @@ import User.Profile.TextReader.Flashcards
 import WebSocket
 
 import Menu.Items
+
+import Text.Resource
 
 import TextReader
 
@@ -24,7 +24,6 @@ import TextReader.Msg exposing (Msg(..))
 import TextReader.Update exposing (..)
 
 import Ports
-import Config
 
 
 init : Flags -> (Model, Cmd Msg)
@@ -42,6 +41,7 @@ init flags =
         <| List.map (\text_word -> (TextReader.TextWord.phrase text_word, text_word)) text_words_with_flashcards)
   in
     ({ text=TextReader.Text.Model.emptyText
+     , text_url=Text.Resource.TextReadingURL (Text.Resource.URL flags.text_url)
      , gloss=Dict.empty
      , profile=profile
      , menu_items=menu_items
@@ -87,7 +87,7 @@ update msg model =
         (model, Cmd.none)
 
       StartOver ->
-        (model, Ports.redirect (Config.text_page model.flags.text_id))
+        (model, Ports.redirect (Text.Resource.textReadingURLToString model.text_url))
 
       NextSection ->
         (model, send_command NextReq)

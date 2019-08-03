@@ -22,7 +22,9 @@ import Student.Profile.Model exposing (UsernameUpdate, Model)
 
 import Student.Profile.Help exposing (StudentHelp(..))
 
+import Text.Resource
 import Text.Reading.Model exposing (TextReading, TextReadingScore)
+
 import Text.Model as Text
 
 import Menu.Item
@@ -32,8 +34,6 @@ import Menu.View
 import Menu.Msg
 
 import Help.View exposing (ArrowPlacement(..), ArrowPosition(..), view_hint_overlay)
-
-import Config
 
 
 view_difficulty : Model -> Html Msg
@@ -60,12 +60,15 @@ view_text_reading_actions text_reading =
   let
     action_label =
       (case text_reading.status of
-         "complete" -> "Start Over"
-         _ -> "Resume")
+         "complete" ->
+           "Start Over"
+
+         _ ->
+           "Resume")
   in
     div [class "text_reading_actions"] [
       div [] [
-        Html.a [attribute "href" (Config.text_page text_reading.text_id)] [ Html.text action_label ]
+        Html.a [attribute "href" (Text.Resource.textReadingURLToString text_reading.url)] [ Html.text action_label ]
       ]
     ]
 

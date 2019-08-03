@@ -55,11 +55,9 @@ type alias Translations = List Translation
 type alias Grammemes = Dict String String
 
 
-
 urlToString : URL -> String
 urlToString (URL url) =
   url
-
 
 mergeTextWordEndpointURL : MergeTextWordEndpoint -> URL
 mergeTextWordEndpointURL (MergeTextWordEndpoint url) =
