@@ -140,6 +140,9 @@ class TextLoadElm(ElmLoadJsView):
         context['elm']['text_reader_ws_addr'] = {'quote': True, 'safe': True,
                                                  'value': ws_addr}
 
+        context['elm']['text_url'] = {'quote': True, 'safe': True,
+                                      'value': reverse('text', kwargs={'pk': context['pk']})}
+
         context['elm']['flashcards'] = {'quote': False, 'safe': True, 'value': json.dumps([
             c.phrase.child_instance.to_text_reading_dict() for c in profile.flashcards.all()
         ])}

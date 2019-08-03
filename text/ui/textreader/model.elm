@@ -2,6 +2,8 @@ module TextReader.Model exposing (..)
 
 import Dict exposing (Dict)
 
+import Text.Resource
+
 import TextReader
 
 import TextReader.TextWord
@@ -99,11 +101,13 @@ type alias TextScores = {
 type alias Flags =
   Flags.Flags {
     text_id : Int
+  , text_url : String
   , flashcards : List TextReader.TextWord.TextWordParams
   , text_reader_ws_addr: String }
 
 type alias Model = {
     text : Text
+  , text_url : Text.Resource.TextReadingURL
   , profile : User.Profile.Profile
   , menu_items : Menu.Items.MenuItems
   , text_reader_ws_addr : TextReader.WebSocketAddress
