@@ -34,6 +34,7 @@ import Menu.Logout
 type alias Flags = Flags.AuthedFlags {
     instructor_profile : Instructor.Profile.InstructorProfileParams
   , text: Maybe Json.Encode.Value
+  , answer_feedback_limit: Int
   , text_endpoint_url: String
   , translation_flags: Text.Translations.Flags
   , tags: List String }

@@ -291,12 +291,13 @@ view_tab_menu params =
      ]
   ]
 
-view_text_tab : TextViewParams -> Html Msg
-view_text_tab params =
+view_text_tab : TextViewParams -> Int -> Html Msg
+view_text_tab params answer_feedback_limit =
   div [attribute "id" "text"] <| [
     (view_text_attributes params)
   , (Text.Section.View.view_text_section_components TextComponentMsg
-      (Text.Component.text_section_components params.text_component)
+    (Text.Component.text_section_components params.text_component)
+    answer_feedback_limit
     params.text_difficulties)
   ] ++ (case params.mode of
           ReadOnlyMode write_locker -> []
@@ -306,20 +307,20 @@ view_translations_tab : TextViewParams -> Html Msg
 view_translations_tab params =
   Text.Translations.View.view_translations params.text_translation_msg params.text_translations_model
 
-view_tab_contents : TextViewParams -> Html Msg
-view_tab_contents params =
+view_tab_contents : TextViewParams -> Int -> Html Msg
+view_tab_contents params answer_feedback_limit =
   case params.selected_tab of
     TextTab ->
-      view_text_tab params
+      view_text_tab params answer_feedback_limit
 
     TranslationsTab ->
       view_translations_tab params
 
-view_text : TextViewParams -> Html Msg
-view_text params =
+view_text : TextViewParams -> Int -> Html Msg
+view_text params answer_feedback_limit =
   div [attribute "id" "tabs"] [
     view_tab_menu params
   , div [attribute "id" "tabs_contents"] [
-      view_tab_contents params
+      view_tab_contents params answer_feedback_limit
     ]
   ]

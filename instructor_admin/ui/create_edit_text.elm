@@ -565,5 +565,5 @@ view model =
     div [] [
         Views.view_authed_header (User.Profile.fromInstructorProfile model.profile) model.menu_items Text.Create.LogOut
       , view_msgs model
-      , Text.View.view_text text_view_params
+      , Text.View.view_text text_view_params model.flags.answer_feedback_limit
     ]

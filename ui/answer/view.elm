@@ -13,10 +13,9 @@ import Text.Section.Component exposing (TextSectionComponent)
 
 import Html.Events exposing (onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
 
-import Config exposing (answer_feedback_limit)
-
 type alias AnswerFieldParams msg = {
     text_section_component: TextSectionComponent
+  , answer_feedback_limit: Int
   , question: Question.Model.Question
   , msg: (Text.Update.Msg -> msg) }
 
@@ -65,11 +64,11 @@ edit_answer_feedback params answer_field =
       , div [
         classList [
             ("chars_remaining", True)
-          , ("error", (answer_feedback_limit - (String.length answer.feedback)) < 0)
+          , ("error", (params.answer_feedback_limit - (String.length answer.feedback)) < 0)
         ] ] [
         Html.text
          <| "Characters remaining "
-         ++ (toString (answer_feedback_limit - (String.length answer.feedback)))
+         ++ (toString (params.answer_feedback_limit - (String.length answer.feedback)))
          ++ "."
       , Html.text feedback_field.error_string ]
     ]
@@ -126,6 +125,7 @@ view_editable_answer params num_of_answers answer_field =
               , attribute "width" "18px"] []
             ]
           ]
+
         4 ->
           [ span [
               attribute "class" "answer_delete"
@@ -139,4 +139,5 @@ view_editable_answer params num_of_answers answer_field =
               , attribute "width" "18px"] []
             ]
           ]
+
         _ -> [])
