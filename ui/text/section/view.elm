@@ -58,8 +58,8 @@ edit_body params =
 toggle_editable : (msg -> Attribute msg) -> (TextField msg) -> Attribute msg
 toggle_editable event params = event <| params.msg (ToggleEditable params.text_section_component (Text params.field))
 
-view_text_section_component : (Msg -> msg) -> List TextDifficulty -> TextSectionComponent -> List (Html msg)
-view_text_section_component msg text_difficulties text_section_component =
+view_text_section_component : (Msg -> msg) -> List TextDifficulty -> Int -> TextSectionComponent -> List (Html msg)
+view_text_section_component msg text_difficulties answer_feedback_limit text_section_component =
   let
     text_section = Text.Section.Component.text_section text_section_component
     body_field = Text.Section.Component.body text_section_component
@@ -81,6 +81,7 @@ view_text_section_component msg text_difficulties text_section_component =
     ] ++ [
         Question.View.view_questions msg text_section_component
           (Text.Section.Component.question_fields text_section_component)
+          answer_feedback_limit
       , Question.View.view_question_buttons msg text_section_component
       , div [class "cursor", onClick (msg <| DeleteTextSection text_section_component)] [
           Html.img [
@@ -91,9 +92,11 @@ view_text_section_component msg text_difficulties text_section_component =
     ]
   ]
 
-view_text_section_components : (Msg -> msg) -> TextSectionComponentGroup -> List TextDifficulty -> Html msg
-view_text_section_components msg text_components text_difficulties =
+view_text_section_components : (Msg -> msg) -> TextSectionComponentGroup -> Int -> List TextDifficulty -> Html msg
+view_text_section_components msg text_components answer_feedback_limit text_difficulties =
     Html.div [attribute "class" "text_sections"]
     <| List.foldr (++) []
     <| Array.toList
-    <| Array.map (view_text_section_component msg text_difficulties) (Text.Section.Component.Group.toArray text_components)
+    <| Array.map
+       (view_text_section_component msg text_difficulties answer_feedback_limit)
+       (Text.Section.Component.Group.toArray text_components)

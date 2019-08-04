@@ -102,11 +102,17 @@ view_question_menu params field =
         ] (view_menu_items params field)
     ]
 
-view_editable_question : (Msg -> msg) -> TextSectionComponent -> QuestionField -> Html msg
-view_editable_question msg text_section_component field =
+view_editable_question : (Msg -> msg) -> TextSectionComponent -> Int -> QuestionField -> Html msg
+view_editable_question msg text_section_component answer_feedback_limit field =
   let
     question_field_attrs = Question.Field.attributes field
-    params = {text_section_component=text_section_component, question=Question.Field.question field, msg=msg}
+    question_params = {text_section_component=text_section_component, question=Question.Field.question field, msg=msg}
+    answer_params = {
+        text_section_component=text_section_component
+      , answer_feedback_limit=answer_feedback_limit
+      , question=Question.Field.question field
+      , msg=msg }
+
     num_of_answers = Array.length (Question.Field.answers field)
   in
     div [ classList [("question_parts", True), ("input_error", question_field_attrs.error)] ] [
@@ -115,13 +121,13 @@ view_editable_question msg text_section_component field =
       ]
     , div [classList [("question", True)]] <| [
          (case (Question.Field.editable field) of
-            True -> edit_question params field
-            _ -> view_question params field)
+            True -> edit_question question_params field
+            _ -> view_question question_params field)
       ] ++ (
            Array.toList
-        <| Array.map (Answer.View.view_editable_answer params num_of_answers) (Question.Field.answers field)
+        <| Array.map (Answer.View.view_editable_answer answer_params num_of_answers) (Question.Field.answers field)
       )
-    , (view_question_menu params field)
+    , (view_question_menu question_params field)
     ]
 
 view_add_question : (Msg -> msg) -> TextSectionComponent -> Html msg
@@ -149,9 +155,9 @@ view_delete_selected msg text_component =
         , attribute "width" "20px"] [], Html.text "Delete Selected Question"
   ]
 
-view_questions : (Msg -> msg) -> TextSectionComponent -> Array QuestionField -> Html msg
-view_questions msg text_component fields =
+view_questions : (Msg -> msg) -> TextSectionComponent -> Array QuestionField -> Int -> Html msg
+view_questions msg text_component fields answer_feedback_limit =
   div [ classList [("question_section", True)] ]
     (  Array.toList
-    <| Array.map (view_editable_question msg text_component) fields
+    <| Array.map (view_editable_question msg text_component answer_feedback_limit) fields
     )

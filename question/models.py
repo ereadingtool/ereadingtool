@@ -64,7 +64,7 @@ class Answer(models.Model):
     question = models.ForeignKey(Question, blank=False, related_name='answers', on_delete=models.CASCADE)
 
     text = models.CharField(max_length=2048, blank=False)
-    correct = models.BooleanField(default=False, blank=False)
+    correct = models.BooleanField(default=False)
     feedback = models.CharField(max_length=2048, blank=False)
 
     def __str__(self):

@@ -11,6 +11,8 @@ from django.views.generic import TemplateView
 
 from mixins.view import ElmLoadJsView
 from text.models import Text
+from question.models import Answer
+
 from user.views.instructor import InstructorView
 
 from ereadingtool.menu import MenuItems, instructor_create_a_text_menu_item
@@ -132,6 +134,12 @@ class AdminCreateEditElmLoadView(ElmLoadJsView):
             'quote': False,
             'safe': True,
             'value': json.dumps(reverse('text-api'))
+        }
+
+        context['elm']['answer_feedback_limit'] = {
+            'quote': False,
+            'safe': True,
+            'value': Answer._meta.get_field('feedback').max_length
         }
 
         return context
