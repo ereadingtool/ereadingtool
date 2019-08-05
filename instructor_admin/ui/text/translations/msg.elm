@@ -20,6 +20,8 @@ type Msg =
     AddToMergeWords WordInstance
   | RemoveFromMergeWords WordInstance
   | MergeWords (List WordInstance)
+  | AddedTextWordsForMerge (List TextWord)
+  | MergeFail Http.Error
 
   -- words
   | AddTextWord WordInstance

@@ -79,6 +79,17 @@ update parent_msg msg model =
     RemoveFromMergeWords word_instance ->
       (Text.Translations.Model.removeFromMergeWords model word_instance, Cmd.none)
 
+    AddedTextWordsForMerge text_words ->
+      let
+        new_model = Text.Translations.Model.setTextWords model text_words
+        updated_word_instances = List.map (Text.Translations.Model.textWordToWordInstance) text_words
+      in
+        -- merge
+        (new_model, postMergeWords parent_msg new_model model.flags.csrftoken updated_word_instances)
+
+    MergeFail err -> let _ = Debug.log "merge failure" err in
+      (setGlobalEditLock model False, Cmd.none)
+
     DeleteTextWord text_word ->
       (model, Cmd.none)
 
@@ -142,7 +153,7 @@ update parent_msg msg model =
 
 mergeWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> (Model, Cmd msg)
 mergeWords parent_msg model csrftoken word_instances =
-  case Text.Translations.Word.Instance.verifyCanMergeWords word_instances of
+  case Text.Translations.Word.Instance.canMergeWords word_instances of
     True ->
       -- all word instances are ready to merge
       (model, postMergeWords parent_msg model model.flags.csrftoken word_instances)
@@ -154,15 +165,24 @@ mergeWords parent_msg model csrftoken word_instances =
         word_instances_with_no_text_words =
           List.filter (Text.Translations.Word.Instance.hasTextWord >> not) word_instances
       in
-        ({ model | edit_lock = True }
-        , addTextWords parent_msg model model.flags.csrftoken word_instances)
+        ( setGlobalEditLock model True
+        , attemptToAddTextWords parent_msg model model.flags.csrftoken word_instances)
 
-addTextWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> Cmd msg
-addTextWords parent_msg model csrftoken word_instances =
-  Task.attempt (UpdatedTextWords >> parent_msg)
-  <| Task.sequence
-  <| List.map Http.toTask
-  <| List.map (addAsTextWordRequest model csrftoken) word_instances
+handleAddTextWords : (Msg -> msg) -> Result Http.Error (List TextWord) -> msg
+handleAddTextWords parent_msg result =
+  case result of
+    (Err err) ->
+      (MergeFail >> parent_msg) err
+
+    Ok (text_words) ->
+      (AddedTextWordsForMerge >> parent_msg) text_words
+
+attemptToAddTextWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> Cmd msg
+attemptToAddTextWords parent_msg model csrftoken word_instances =
+    Task.attempt (handleAddTextWords parent_msg)
+ <| Task.sequence
+ <| List.map Http.toTask
+ <| List.map (addAsTextWordRequest model csrftoken) word_instances
 
 addAsTextWordRequest : Model -> Flags.CSRFToken -> WordInstance -> Http.Request TextWord
 addAsTextWordRequest model csrftoken word_instance =

@@ -10,8 +10,8 @@ import Text.Translations.TextWord exposing (TextWord)
 type WordInstance = WordInstance Int Instance Token (Maybe TextWord)
 
 
-verifyCanMergeWords : List WordInstance -> Bool
-verifyCanMergeWords word_instances =
+canMergeWords : List WordInstance -> Bool
+canMergeWords word_instances =
   List.all hasTextWord word_instances
 
 hasTextWord : WordInstance -> Bool

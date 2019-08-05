@@ -89,6 +89,15 @@ inputGrammeme model new_grammeme_value =
           Dict.insert editing_grammeme_name new_grammeme_value model.editing_grammemes
     }
 
+textWordToWordInstance : TextWord -> WordInstance
+textWordToWordInstance text_word =
+  let
+    section_number = Text.Translations.TextWord.sectionNumber text_word
+    phrase = String.toLower (Text.Translations.TextWord.phrase text_word)
+    instance = Text.Translations.TextWord.instance text_word
+  in
+    Text.Translations.Word.Instance.new section_number instance phrase (Just text_word)
+
 newWordInstance : Model -> Int -> Instance -> Token -> WordInstance
 newWordInstance model section_number instance token =
   Text.Translations.Word.Instance.new section_number instance token (getTextWord model section_number instance token)
@@ -183,6 +192,10 @@ editingWord model word =
 wordInstanceKey : WordInstance -> String
 wordInstanceKey word_instance =
   Text.Translations.Word.Instance.id word_instance
+
+setGlobalEditLock : Model -> Bool -> Model
+setGlobalEditLock model value =
+  { model | edit_lock = value }
 
 editWord : Model -> WordInstance -> Model
 editWord model word_instance =
