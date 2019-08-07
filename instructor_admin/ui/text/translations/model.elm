@@ -98,6 +98,20 @@ textWordToWordInstance text_word =
   in
     Text.Translations.Word.Instance.new section_number instance phrase (Just text_word)
 
+refreshTextWordForWordInstance : Model -> WordInstance -> WordInstance
+refreshTextWordForWordInstance model word_instance =
+   let
+    section_number = Text.Translations.Word.Instance.sectionNumber word_instance
+    instance = Text.Translations.Word.Instance.instance word_instance
+    phrase = Text.Translations.Word.Instance.token word_instance
+  in
+    case getTextWord model section_number instance phrase of
+      Just text_word ->
+        Text.Translations.Word.Instance.setTextWord word_instance text_word
+
+      Nothing ->
+        word_instance
+
 newWordInstance : Model -> Int -> Instance -> Token -> WordInstance
 newWordInstance model section_number instance token =
   Text.Translations.Word.Instance.new section_number instance token (getTextWord model section_number instance token)
