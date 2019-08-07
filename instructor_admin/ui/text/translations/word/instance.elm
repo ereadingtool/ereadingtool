@@ -10,8 +10,12 @@ import Text.Translations.TextWord exposing (TextWord)
 type WordInstance = WordInstance Int Instance Token (Maybe TextWord)
 
 
-verifyCanMergeWords : List WordInstance -> Bool
-verifyCanMergeWords word_instances =
+setTextWord : WordInstance -> TextWord -> WordInstance
+setTextWord (WordInstance id instance token _) new_text_word =
+  WordInstance id instance token (Just new_text_word)
+
+canMergeWords : List WordInstance -> Bool
+canMergeWords word_instances =
   List.all hasTextWord word_instances
 
 hasTextWord : WordInstance -> Bool
@@ -52,6 +56,10 @@ sectionNumber (WordInstance section_number _ _ _) =
 id : WordInstance -> Id
 id (WordInstance section_number instance token _) =
   String.join "_" [toString section_number, toString instance, String.join "_" (String.words (String.toLower token))]
+
+token : WordInstance -> Token
+token (WordInstance _ _ token _) =
+  token
 
 textWord : WordInstance -> Maybe TextWord
 textWord (WordInstance _ _ _ text_word) =
