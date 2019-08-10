@@ -37,6 +37,17 @@ class TextAdminElmLoadView(ElmLoadJsView):
 
         return instructor_menu_items
 
+    def get_context_data(self, **kwargs) -> Dict:
+        context_data = super(TextAdminElmLoadView, self).get_context_data()
+
+        context_data['elm']['text_api_endpoint_url'] = {
+            'quote': True,
+            'safe': True,
+            'value': reverse('text-api')
+        }
+
+        return context_data
+
 
 class TextDefinitionElmLoadView(ElmLoadJsView):
     def get_context_data(self, **kwargs) -> Dict:
