@@ -18,3 +18,4 @@ pdfkit
 asynctest
 Twisted[tls,http2]
 pytz
+selenium

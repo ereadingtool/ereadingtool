@@ -3,7 +3,7 @@ module Login exposing (..)
 import User
 
 import Html exposing (Html, div, span)
-import Html.Attributes exposing (class, classList, attribute)
+import Html.Attributes exposing (id, class, classList, attribute)
 import Html.Events exposing (on, onClick, onBlur, onInput, onMouseOver, onCheck, onMouseOut, onMouseLeave)
 
 import Http exposing (..)
@@ -235,6 +235,7 @@ view_email_input model =
     case Dict.get "email" model.errors of
        Just err_msg ->
          login_label [] (Html.em [] [Html.text err_msg])
+
        Nothing ->
          Html.text ""
   in
@@ -243,7 +244,8 @@ view_email_input model =
     else [] in [
       login_label [] (span [] [ Html.text "E-mail Address:" ])
     , Html.input ([
-        attribute "size" "25"
+        id "username"
+      , attribute "size" "25"
       , onInput UpdateEmail ] ++ (email_error)) []
       , err_msg
     ]
@@ -262,7 +264,7 @@ view_password_input model =
       (Dict.member "password" model.errors)
 
     attrs =
-      [attribute "size" "35", attribute "type" "password"] ++
+      [id "password", attribute "size" "35", attribute "type" "password"] ++
       (if pass_err then [attribute "class" "input_error"] else [])
 
   in [
@@ -278,13 +280,14 @@ view_errors model =
   case Dict.get "all" model.errors of
     Just all_err ->
       [ login_label [] (span [attribute "class" "errors"] [ Html.em [] [Html.text <| all_err ]]) ]
+
     _ ->
       [ span [attribute "class" "errors"] [] ]
 
 view_submit : Model -> List (Html Msg)
 view_submit model = [
     login_label [class "button", onClick Submit, class "cursor"]
-      (div [class "login_submit"] [ span [] [ Html.text "Login" ] ])
+      (div [id "login_submit"] [ span [] [ Html.text "Login" ] ])
   ]
 
 view_other_login_option : Login -> Html Msg

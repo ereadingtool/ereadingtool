@@ -36,7 +36,7 @@
     -webkit-padding-before: 2.5%;
 }
 
-.signup_submit, .login_submit {
+.signup_submit, #login_submit {
     display: grid;
     justify-content: center;
 }

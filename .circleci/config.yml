@@ -7,6 +7,7 @@ jobs:
       - image: circleci/python:3.6.7
         environment:
           PIPENV_VENV_IN_PROJECT: true
+      - image: selenium/standalone-chrome
     steps:
       - checkout
       - run: sudo chown -R circleci:circleci /usr/local/bin
@@ -30,6 +31,16 @@ jobs:
       - run:
           command: |
             pipenv run python3 manage.py test
+      - run:
+          name: run server
+          command: |
+            pipenv run python3 manage.py runserver 8000
+          background: true
+      - run:
+          name: run selenium tests
+          command: |
+            sleep 5;
+            python manage.py run_selenium_tests
       - store_test_results:
-        # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
+          # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
           path: test-results

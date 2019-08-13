@@ -14033,11 +14033,15 @@ var _user$project$Login$view_email_input = function (model) {
 					_elm_lang$core$Basics_ops['++'],
 					{
 						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Attributes$attribute, 'size', '25'),
+						_0: _elm_lang$html$Html_Attributes$id('username'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onInput(_user$project$Login$UpdateEmail),
-							_1: {ctor: '[]'}
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'size', '25'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onInput(_user$project$Login$UpdateEmail),
+								_1: {ctor: '[]'}
+							}
 						}
 					},
 					email_error),
@@ -14157,11 +14161,15 @@ var _user$project$Login$view_password_input = function (model) {
 		_elm_lang$core$Basics_ops['++'],
 		{
 			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'size', '35'),
+			_0: _elm_lang$html$Html_Attributes$id('password'),
 			_1: {
 				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'password'),
-				_1: {ctor: '[]'}
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'size', '35'),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'password'),
+					_1: {ctor: '[]'}
+				}
 			}
 		},
 		pass_err ? {
@@ -14247,7 +14255,7 @@ var _user$project$Login$view_submit = function (model) {
 				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('login_submit'),
+					_0: _elm_lang$html$Html_Attributes$id('login_submit'),
 					_1: {ctor: '[]'}
 				},
 				{
