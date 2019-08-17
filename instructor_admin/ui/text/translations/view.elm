@@ -42,20 +42,6 @@ wordInstanceOnClick model parent_msg word_instance =
     False ->
       onClick (parent_msg (EditWord word_instance))
 
-is_part_of_compound_word : Model -> Int -> Int -> String -> Maybe (Int, Int, Int)
-is_part_of_compound_word model section_number instance word =
-  case Text.Translations.Model.getTextWord model section_number instance word of
-    Just text_word ->
-      case (Text.Translations.TextWord.group text_word) of
-        Just group ->
-          Just (group.instance, group.pos, group.length)
-
-        Nothing ->
-          Nothing
-
-    Nothing ->
-      Nothing
-
 tagWord : Model -> (Msg -> msg) -> Int -> Int -> String -> Html msg
 tagWord model parent_msg section_number instance original_token =
   let
@@ -93,7 +79,7 @@ tagSection : Model -> (Msg -> msg) -> Text.Section.Model.TextSection -> Html msg
 tagSection model msg section =
   div [id ("section-" ++ (toString section.order)), class "section"]
     (Text.Section.Words.Tag.tagWordsAndToVDOM
-      (tagWord model msg section.order) (is_part_of_compound_word model section.order) (HtmlParser.parse section.body))
+      (tagWord model msg section.order) (isPartOfCompoundWord model section.order) (HtmlParser.parse section.body))
 
 view_edit : Model -> (Msg -> msg) -> WordInstance -> Html msg
 view_edit model parent_msg word_instance =

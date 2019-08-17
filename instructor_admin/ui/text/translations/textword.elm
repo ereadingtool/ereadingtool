@@ -2,17 +2,16 @@ module Text.Translations.TextWord exposing (..)
 
 import Dict exposing (Dict)
 
+import Text.Translations.Word.Kind exposing (WordKind(..))
+
 import Text.Translations exposing (..)
-
-
-type Word = SingleWord (Maybe TextGroupDetails) | CompoundWord
 
 type alias Endpoints = {
     text_word: String
   , translations: String
   }
 
-type TextWord = TextWord Int Int Instance Phrase (Maybe Grammemes) (Maybe Translations) Word Endpoints
+type TextWord = TextWord Int Int Instance Phrase (Maybe Grammemes) (Maybe Translations) WordKind Endpoints
 
 
 textWordEndpoint : TextWord -> String
@@ -32,7 +31,7 @@ grammemes : TextWord -> Maybe Grammemes
 grammemes (TextWord _ _ _ _ grammemes _ _ _) =
   grammemes
 
-strToWordType : (String, Maybe TextGroupDetails) -> Word
+strToWordType : (String, Maybe TextGroupDetails) -> WordKind
 strToWordType (str, group_details) =
   case str of
     "single" ->
@@ -44,7 +43,7 @@ strToWordType (str, group_details) =
     _ ->
       SingleWord group_details
 
-wordTypeToString : Word -> String
+wordTypeToString : WordKind -> String
 wordTypeToString word =
   case word of
     SingleWord _ ->
@@ -55,22 +54,22 @@ wordTypeToString word =
 
 wordType : TextWord -> String
 wordType text_word =
-  wordTypeToString (word text_word)
+  wordTypeToString (wordKind text_word)
 
 sectionNumber : TextWord -> Int
 sectionNumber (TextWord _ section _ _ _ _ _ _) =
   section
 
-word : TextWord -> Word
-word (TextWord _ _ _ _ _ _ word _) =
-  word
+wordKind : TextWord -> WordKind
+wordKind (TextWord _ _ _ _ _ _ word_kind _) =
+  word_kind
 
 instance : TextWord -> Int
 instance (TextWord _ instance _ _ _ _ _ _) =
   instance
 
-wordTypeToGroup : Word -> Maybe TextGroupDetails
-wordTypeToGroup word =
+wordKindToGroup : WordKind -> Maybe TextGroupDetails
+wordKindToGroup word =
   case word of
     SingleWord group_details ->
       group_details
@@ -80,7 +79,7 @@ wordTypeToGroup word =
 
 group : TextWord -> Maybe TextGroupDetails
 group (TextWord _ _ _ _ _ _ word _) =
-  wordTypeToGroup word
+  wordKindToGroup word
 
 endpoints : TextWord -> Endpoints
 endpoints (TextWord _ _ _ _ _ _ _ endpoints) =
@@ -98,7 +97,7 @@ id : TextWord -> Int
 id (TextWord id _ _ _ _ _ _ _) =
   id
 
-new : Int -> Int -> Instance -> Phrase -> Maybe Grammemes -> Maybe Translations -> Word -> Endpoints -> TextWord
+new : Int -> Int -> Instance -> Phrase -> Maybe Grammemes -> Maybe Translations -> WordKind -> Endpoints -> TextWord
 new id section instance phrase grammemes translations word endpoints =
   TextWord id section instance phrase grammemes translations word endpoints
 

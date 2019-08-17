@@ -141,6 +141,30 @@ mergeState model word_instance =
       False ->
         Nothing
 
+isTextWordPartOfCompoundWord : Model -> TextWord -> Maybe (Int, Int, Int)
+isTextWordPartOfCompoundWord model text_word =
+  let
+    section_number = Text.Translations.TextWord.sectionNumber text_word
+    instance = Text.Translations.TextWord.instance text_word
+    phrase = Text.Translations.TextWord.phrase text_word
+  in
+    isPartOfCompoundWord model section_number instance phrase
+
+isPartOfCompoundWord : Model -> Int -> Int -> String -> Maybe (Int, Int, Int)
+isPartOfCompoundWord model section_number instance word =
+  case getTextWord model section_number instance word of
+    Just text_word ->
+      case (Text.Translations.TextWord.group text_word) of
+        Just group ->
+          Just (group.instance, group.pos, group.length)
+
+        Nothing ->
+          Nothing
+
+    Nothing ->
+      Nothing
+
+
 completeMerge : Model -> Int -> Phrase -> Instance -> List TextWord -> Model
 completeMerge model section_number phrase instance text_words =
   let
@@ -150,6 +174,8 @@ completeMerge model section_number phrase instance text_words =
       |> uneditAllWords
 
     merged_word_instance = newWordInstance new_model section_number instance phrase
+
+    _ = Debug.log "new text words" text_words
   in
     editWord new_model merged_word_instance
 
