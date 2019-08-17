@@ -14,6 +14,17 @@ type alias Endpoints = {
 type TextWord = TextWord Int Int Instance Phrase (Maybe Grammemes) (Maybe Translations) WordKind Endpoints
 
 
+textWordToString : TextWord -> String
+textWordToString text_word =
+  "(" ++
+   (String.join " " [
+     toString (id text_word)
+   , toString (sectionNumber text_word)
+   , toString (instance text_word)
+   , toString (phrase text_word)
+   , toString (wordKindToGroup (wordKind text_word))
+   ]) ++ ")"
+
 textWordEndpoint : TextWord -> String
 textWordEndpoint text_word =
   (endpoints text_word).text_word
@@ -65,7 +76,7 @@ wordKind (TextWord _ _ _ _ _ _ word_kind _) =
   word_kind
 
 instance : TextWord -> Int
-instance (TextWord _ instance _ _ _ _ _ _) =
+instance (TextWord _ _ instance _ _ _ _ _) =
   instance
 
 wordKindToGroup : WordKind -> Maybe TextGroupDetails

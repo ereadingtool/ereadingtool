@@ -174,8 +174,6 @@ completeMerge model section_number phrase instance text_words =
       |> uneditAllWords
 
     merged_word_instance = newWordInstance new_model section_number instance phrase
-
-    _ = Debug.log "new text words" text_words
   in
     editWord new_model merged_word_instance
 
@@ -331,13 +329,20 @@ setTextWord : Model -> TextWord -> Model
 setTextWord model text_word =
   let
     section_number = Text.Translations.TextWord.sectionNumber text_word
-    phrase = String.toLower (Text.Translations.TextWord.phrase text_word)
+    phrase = Text.Translations.TextWord.phrase text_word
     instance = Text.Translations.TextWord.instance text_word
 
     new_text_words =
       (case getTextWords model section_number phrase of
         Just text_words ->
-          Array.set instance text_word text_words
+          let
+            new_words =
+              (if instance == Array.length text_words then
+                 Array.push text_word text_words
+               else
+                 Array.set instance text_word text_words)
+          in
+            new_words
 
         -- word not found
         Nothing ->

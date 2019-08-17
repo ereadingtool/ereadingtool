@@ -2,9 +2,13 @@ module Test.Text.Words.Merge exposing (section_one_words, suite, testMerge, test
 
 import Array exposing (Array)
 import Dict exposing (Dict)
-import Expect exposing (Expectation)
+
 import OrderedDict exposing (OrderedDict)
+
+import Expect exposing (Expectation)
+
 import Test exposing (Test, describe, test)
+
 import Text.Translations exposing (..)
 import Text.Translations.Model exposing (Model)
 import Text.Translations.TextWord as TextWord
@@ -61,9 +65,36 @@ section_one_words =
         ]
 
 new_text_words =
-    [ TextWord.new 10868 1 0 "потому" (Just (Dict.fromList [ ( "pos", "ADVB" ) ])) (Just [ { id = 32817, endpoint = "/api/text/word/10868/translation/32817/", correct_for_context = True, text = "therefore" } ]) (SingleWord (Just { id = 15064, instance = 0, pos = 0, length = 2 })) { text_word = "/api/text/word/10868/", translations = "/api/text/word/10868/translation/" }
-    , TextWord.new 10838 1 3 "что" (Just (Dict.fromList [ ( "pos", "CONJ" ) ])) (Just [ { id = 32725, endpoint = "/api/text/word/10838/translation/32725/", correct_for_context = True, text = "that" }, { id = 32726, endpoint = "/api/text/word/10838/translation/32726/", correct_for_context = False, text = "what" }, { id = 32727, endpoint = "/api/text/word/10838/translation/32727/", correct_for_context = False, text = "the" }, { id = 32728, endpoint = "/api/text/word/10838/translation/32728/", correct_for_context = False, text = "than" }, { id = 32729, endpoint = "/api/text/word/10838/translation/32729/", correct_for_context = False, text = "it" } ]) (SingleWord (Just { id = 15064, instance = 0, pos = 1, length = 2 })) { text_word = "/api/text/word/10838/", translations = "/api/text/word/10838/translation/" }
-    , TextWord.new 15064 1 0 "потому что" (Just (Dict.fromList [])) Nothing CompoundWord { text_word = "/api/text/word/15064/", translations = "/api/text/word/15064/translation/" }
+    [ TextWord.new
+        10868 1 0 "потому"
+        (Just (Dict.fromList [ ( "pos", "ADVB" ) ]))
+        (Just [
+           { id = 32817, endpoint = "/api/text/word/10868/translation/32817/", correct_for_context = True
+           , text = "therefore" }
+         ])
+        (SingleWord (Just { id = 15064, instance = 0, pos = 0, length = 2 }))
+        { text_word = "/api/text/word/10868/", translations = "/api/text/word/10868/translation/" }
+    , TextWord.new
+        10838 1 3 "что"
+        (Just (Dict.fromList [ ( "pos", "CONJ" ) ]))
+        (Just [
+          { id = 32725, endpoint = "/api/text/word/10838/translation/32725/", correct_for_context = True
+          , text = "that" }
+        , { id = 32726, endpoint = "/api/text/word/10838/translation/32726/", correct_for_context = False
+          , text = "what" }
+        , { id = 32727, endpoint = "/api/text/word/10838/translation/32727/", correct_for_context = False
+          , text = "the" }
+        , { id = 32728, endpoint = "/api/text/word/10838/translation/32728/", correct_for_context = False
+          , text = "than" }
+        , { id = 32729, endpoint = "/api/text/word/10838/translation/32729/", correct_for_context = False
+          , text = "it" }
+        ])
+        (SingleWord (Just { id = 15064, instance = 3, pos = 1, length = 2 }))
+        { text_word = "/api/text/word/10838/", translations = "/api/text/word/10838/translation/" }
+    , TextWord.new
+        15064 1 0 "потому что"
+        (Just (Dict.fromList [])) Nothing CompoundWord
+        { text_word = "/api/text/word/15064/", translations = "/api/text/word/15064/translation/" }
     ]
 
 test_model =
@@ -111,12 +142,11 @@ test_model =
 testMerge : Model -> Int -> Phrase -> Instance -> List TextWord.TextWord -> Expectation
 testMerge model section phrase instance text_words =
     let
-        new_model =
-            Text.Translations.Model.completeMerge model 1 "потому что" 0 text_words
+      new_model = Text.Translations.Model.completeMerge model 1 "потому что" 0 text_words
     in
-    Expect.equalLists
-      [Just (0, 0, 2), Just (0,1,2), Nothing]
-      (List.map (Text.Translations.Model.isTextWordPartOfCompoundWord new_model) text_words)
+      Expect.equalLists
+        [Just (0, 0, 2), Just (3, 1, 2), Nothing]
+        (List.map (Text.Translations.Model.isTextWordPartOfCompoundWord new_model) text_words)
 
 
 suite : Test

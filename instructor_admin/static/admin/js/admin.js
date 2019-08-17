@@ -11318,7 +11318,7 @@ var _user$project$Text_Translations_TextWord$group = function (_p9) {
 };
 var _user$project$Text_Translations_TextWord$instance = function (_p11) {
 	var _p12 = _p11;
-	return _p12._1;
+	return _p12._2;
 };
 var _user$project$Text_Translations_TextWord$wordKind = function (_p13) {
 	var _p14 = _p13;
@@ -11368,6 +11368,44 @@ var _user$project$Text_Translations_TextWord$grammemeValue = F2(
 	});
 var _user$project$Text_Translations_TextWord$textWordEndpoint = function (text_word) {
 	return _user$project$Text_Translations_TextWord$endpoints(text_word).text_word;
+};
+var _user$project$Text_Translations_TextWord$textWordToString = function (text_word) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		'(',
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			A2(
+				_elm_lang$core$String$join,
+				' ',
+				{
+					ctor: '::',
+					_0: _elm_lang$core$Basics$toString(
+						_user$project$Text_Translations_TextWord$id(text_word)),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$core$Basics$toString(
+							_user$project$Text_Translations_TextWord$sectionNumber(text_word)),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$core$Basics$toString(
+								_user$project$Text_Translations_TextWord$instance(text_word)),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$core$Basics$toString(
+									_user$project$Text_Translations_TextWord$phrase(text_word)),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$core$Basics$toString(
+										_user$project$Text_Translations_TextWord$wordKindToGroup(
+											_user$project$Text_Translations_TextWord$wordKind(text_word))),
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}
+				}),
+			')'));
 };
 var _user$project$Text_Translations_TextWord$Endpoints = F2(
 	function (a, b) {
