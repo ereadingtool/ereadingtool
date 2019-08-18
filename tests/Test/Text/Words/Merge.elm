@@ -47,7 +47,14 @@ section_one_words =
         , ( "организованно", Array.fromList [ TextWord.new 10844 1 0 "организованно" (Just (Dict.fromList [ ( "pos", "ADVB" ) ])) Nothing (SingleWord Nothing) { text_word = "/api/text/word/10844/", translations = "/api/text/word/10844/translation/" } ] )
         , ( "пойти", Array.fromList [ TextWord.new 10845 1 0 "пойти" (Just (Dict.fromList [ ( "aspect", "perf" ), ( "pos", "INFN" ) ])) (Just [ { id = 32742, endpoint = "/api/text/word/10845/translation/32742/", correct_for_context = True, text = "go" }, { id = 32743, endpoint = "/api/text/word/10845/translation/32743/", correct_for_context = False, text = "will" }, { id = 32744, endpoint = "/api/text/word/10845/translation/32744/", correct_for_context = False, text = "take" }, { id = 32745, endpoint = "/api/text/word/10845/translation/32745/", correct_for_context = False, text = "start" } ]) (SingleWord Nothing) { text_word = "/api/text/word/10845/", translations = "/api/text/word/10845/translation/" }, TextWord.new 10846 1 1 "пойти" (Just (Dict.fromList [ ( "aspect", "perf" ), ( "pos", "INFN" ) ])) (Just [ { id = 32746, endpoint = "/api/text/word/10846/translation/32746/", correct_for_context = True, text = "go" }, { id = 32747, endpoint = "/api/text/word/10846/translation/32747/", correct_for_context = False, text = "will" }, { id = 32748, endpoint = "/api/text/word/10846/translation/32748/", correct_for_context = False, text = "take" }, { id = 32749, endpoint = "/api/text/word/10846/translation/32749/", correct_for_context = False, text = "start" } ]) (SingleWord Nothing) { text_word = "/api/text/word/10846/", translations = "/api/text/word/10846/translation/" } ] )
         , ( "потом", Array.fromList [ TextWord.new 10856 1 0 "потом" (Just (Dict.fromList [ ( "pos", "ADVB" ) ])) (Just [ { id = 32777, endpoint = "/api/text/word/10856/translation/32777/", correct_for_context = True, text = "then" }, { id = 32778, endpoint = "/api/text/word/10856/translation/32778/", correct_for_context = False, text = "after" }, { id = 32779, endpoint = "/api/text/word/10856/translation/32779/", correct_for_context = False, text = "next" }, { id = 32780, endpoint = "/api/text/word/10856/translation/32780/", correct_for_context = False, text = "after that" } ]) (SingleWord Nothing) { text_word = "/api/text/word/10856/", translations = "/api/text/word/10856/translation/" } ] )
-        , ( "потому", Array.fromList [ TextWord.new 10868 1 0 "потому" (Just (Dict.fromList [ ( "pos", "ADVB" ) ])) (Just [ { id = 32817, endpoint = "/api/text/word/10868/translation/32817/", correct_for_context = True, text = "therefore" } ]) (SingleWord Nothing) { text_word = "/api/text/word/10868/", translations = "/api/text/word/10868/translation/" } ] )
+        , ( "потому", Array.fromList [
+            TextWord.new 10868 1 0 "потому"
+              (Just (Dict.fromList [ ( "pos", "ADVB" ) ]))
+              (Just [
+                { id = 32817, endpoint = "/api/text/word/10868/translation/32817/", correct_for_context = True
+                , text = "therefore" } ]) (SingleWord Nothing) { text_word = "/api/text/word/10868/"
+                , translations = "/api/text/word/10868/translation/" }
+           ] )
         , ( "похороны", Array.fromList [ TextWord.new 10847 1 0 "похороны" (Just (Dict.fromList [ ( "form", "nomn" ), ( "pos", "NOUN" ) ])) (Just [ { id = 32750, endpoint = "/api/text/word/10847/translation/32750/", correct_for_context = True, text = "funeral" }, { id = 32751, endpoint = "/api/text/word/10847/translation/32751/", correct_for_context = False, text = "bury" } ]) (SingleWord Nothing) { text_word = "/api/text/word/10847/", translations = "/api/text/word/10847/translation/" } ] )
         , ( "правильными", Array.fromList [ TextWord.new 10823 1 0 "правильными" (Just (Dict.fromList [ ( "form", "ablt" ), ( "pos", "ADJF" ) ])) (Just [ { id = 32680, endpoint = "/api/text/word/10823/translation/32680/", correct_for_context = True, text = "right" }, { id = 32681, endpoint = "/api/text/word/10823/translation/32681/", correct_for_context = False, text = "correct" }, { id = 32682, endpoint = "/api/text/word/10823/translation/32682/", correct_for_context = False, text = "regular" }, { id = 32683, endpoint = "/api/text/word/10823/translation/32683/", correct_for_context = False, text = "valid" }, { id = 32684, endpoint = "/api/text/word/10823/translation/32684/", correct_for_context = False, text = "true" } ]) (SingleWord Nothing) { text_word = "/api/text/word/10823/", translations = "/api/text/word/10823/translation/" } ] )
         , ( "прощание", Array.fromList [ TextWord.new 10861 1 0 "прощание" (Just (Dict.fromList [ ( "form", "nomn" ), ( "pos", "NOUN" ) ])) (Just [ { id = 32794, endpoint = "/api/text/word/10861/translation/32794/", correct_for_context = True, text = "farewell" }, { id = 32795, endpoint = "/api/text/word/10861/translation/32795/", correct_for_context = False, text = "parting" }, { id = 32796, endpoint = "/api/text/word/10861/translation/32796/", correct_for_context = False, text = "valediction" }, { id = 32797, endpoint = "/api/text/word/10861/translation/32797/", correct_for_context = False, text = "leave" }, { id = 32798, endpoint = "/api/text/word/10861/translation/32798/", correct_for_context = False, text = "saying goodbye" } ]) (SingleWord Nothing) { text_word = "/api/text/word/10861/", translations = "/api/text/word/10861/translation/" } ] )
@@ -61,7 +68,62 @@ section_one_words =
         , ( "том", Array.fromList [ TextWord.new 10834 1 0 "том" (Just (Dict.fromList [ ( "form", "loct" ), ( "pos", "ADJF" ) ])) (Just [ { id = 32707, endpoint = "/api/text/word/10834/translation/32707/", correct_for_context = True, text = "the" }, { id = 32708, endpoint = "/api/text/word/10834/translation/32708/", correct_for_context = False, text = "it" }, { id = 32709, endpoint = "/api/text/word/10834/translation/32709/", correct_for_context = False, text = "one" } ]) (SingleWord Nothing) { text_word = "/api/text/word/10834/", translations = "/api/text/word/10834/translation/" } ] )
         , ( "университете", Array.fromList [ TextWord.new 10830 1 0 "университете" (Just (Dict.fromList [ ( "form", "loct" ), ( "pos", "NOUN" ) ])) (Just [ { id = 32696, endpoint = "/api/text/word/10830/translation/32696/", correct_for_context = True, text = "University" }, { id = 32697, endpoint = "/api/text/word/10830/translation/32697/", correct_for_context = False, text = "varsity" } ]) (SingleWord Nothing) { text_word = "/api/text/word/10830/", translations = "/api/text/word/10830/translation/" } ] )
         , ( "учились", Array.fromList [ TextWord.new 10815 1 0 "учились" (Just (Dict.fromList [ ( "aspect", "impf" ), ( "mood", "indc" ), ( "pos", "VERB" ), ( "tense", "past" ) ])) (Just [ { id = 32646, endpoint = "/api/text/word/10815/translation/32646/", correct_for_context = True, text = "learn" }, { id = 32647, endpoint = "/api/text/word/10815/translation/32647/", correct_for_context = False, text = "study" }, { id = 32648, endpoint = "/api/text/word/10815/translation/32648/", correct_for_context = False, text = "go" }, { id = 32649, endpoint = "/api/text/word/10815/translation/32649/", correct_for_context = False, text = "student" }, { id = 32650, endpoint = "/api/text/word/10815/translation/32650/", correct_for_context = False, text = "attend" } ]) (SingleWord Nothing) { text_word = "/api/text/word/10815/", translations = "/api/text/word/10815/translation/" } ] )
-        , ( "что", Array.fromList [ TextWord.new 10835 1 0 "что" (Just (Dict.fromList [ ( "pos", "CONJ" ) ])) (Just [ { id = 32710, endpoint = "/api/text/word/10835/translation/32710/", correct_for_context = True, text = "that" }, { id = 32711, endpoint = "/api/text/word/10835/translation/32711/", correct_for_context = False, text = "what" }, { id = 32712, endpoint = "/api/text/word/10835/translation/32712/", correct_for_context = False, text = "the" }, { id = 32713, endpoint = "/api/text/word/10835/translation/32713/", correct_for_context = False, text = "than" }, { id = 32714, endpoint = "/api/text/word/10835/translation/32714/", correct_for_context = False, text = "it" } ]) (SingleWord Nothing) { text_word = "/api/text/word/10835/", translations = "/api/text/word/10835/translation/" }, TextWord.new 10836 1 1 "что" (Just (Dict.fromList [ ( "pos", "CONJ" ) ])) (Just [ { id = 32715, endpoint = "/api/text/word/10836/translation/32715/", correct_for_context = True, text = "that" }, { id = 32716, endpoint = "/api/text/word/10836/translation/32716/", correct_for_context = False, text = "what" }, { id = 32717, endpoint = "/api/text/word/10836/translation/32717/", correct_for_context = False, text = "the" }, { id = 32718, endpoint = "/api/text/word/10836/translation/32718/", correct_for_context = False, text = "than" }, { id = 32719, endpoint = "/api/text/word/10836/translation/32719/", correct_for_context = False, text = "it" } ]) (SingleWord Nothing) { text_word = "/api/text/word/10836/", translations = "/api/text/word/10836/translation/" }, TextWord.new 10837 1 2 "что" (Just (Dict.fromList [ ( "pos", "CONJ" ) ])) (Just [ { id = 32720, endpoint = "/api/text/word/10837/translation/32720/", correct_for_context = True, text = "that" }, { id = 32721, endpoint = "/api/text/word/10837/translation/32721/", correct_for_context = False, text = "what" }, { id = 32722, endpoint = "/api/text/word/10837/translation/32722/", correct_for_context = False, text = "the" }, { id = 32723, endpoint = "/api/text/word/10837/translation/32723/", correct_for_context = False, text = "than" }, { id = 32724, endpoint = "/api/text/word/10837/translation/32724/", correct_for_context = False, text = "it" } ]) (SingleWord Nothing) { text_word = "/api/text/word/10837/", translations = "/api/text/word/10837/translation/" }, TextWord.new 10838 1 3 "что" (Just (Dict.fromList [ ( "pos", "CONJ" ) ])) (Just [ { id = 32725, endpoint = "/api/text/word/10838/translation/32725/", correct_for_context = True, text = "that" }, { id = 32726, endpoint = "/api/text/word/10838/translation/32726/", correct_for_context = False, text = "what" }, { id = 32727, endpoint = "/api/text/word/10838/translation/32727/", correct_for_context = False, text = "the" }, { id = 32728, endpoint = "/api/text/word/10838/translation/32728/", correct_for_context = False, text = "than" }, { id = 32729, endpoint = "/api/text/word/10838/translation/32729/", correct_for_context = False, text = "it" } ]) (SingleWord Nothing) { text_word = "/api/text/word/10838/", translations = "/api/text/word/10838/translation/" } ] )
+        , ( "что", Array.fromList [
+            TextWord.new 10835 1 0 "что"
+              (Just (Dict.fromList [ ( "pos", "CONJ" ) ]))
+              (Just [
+                { id = 32710, endpoint = "/api/text/word/10835/translation/32710/", correct_for_context = True
+                , text = "that" }
+              , { id = 32711, endpoint = "/api/text/word/10835/translation/32711/", correct_for_context = False
+                , text = "what" }
+              , { id = 32712, endpoint = "/api/text/word/10835/translation/32712/", correct_for_context = False
+                , text = "the" }, { id = 32713, endpoint = "/api/text/word/10835/translation/32713/"
+                , correct_for_context = False, text = "than" }
+              , { id = 32714, endpoint = "/api/text/word/10835/translation/32714/", correct_for_context = False
+                , text = "it" } ]) (SingleWord Nothing)
+                  { text_word = "/api/text/word/10835/", translations = "/api/text/word/10835/translation/" }
+          , TextWord.new 10836 1 1 "что"
+               (Just (Dict.fromList [ ( "pos", "CONJ" ) ]))
+               (Just [
+                 { id = 32715, endpoint = "/api/text/word/10836/translation/32715/", correct_for_context = True
+                 , text = "that" }
+               , { id = 32716, endpoint = "/api/text/word/10836/translation/32716/", correct_for_context = False
+                 , text = "what" }
+               , { id = 32717, endpoint = "/api/text/word/10836/translation/32717/", correct_for_context = False
+                 , text = "the" }
+               , { id = 32718, endpoint = "/api/text/word/10836/translation/32718/", correct_for_context = False
+                 , text = "than" }
+               , { id = 32719, endpoint = "/api/text/word/10836/translation/32719/", correct_for_context = False
+                 , text = "it" } ]) (SingleWord Nothing)
+                   { text_word = "/api/text/word/10836/", translations = "/api/text/word/10836/translation/" }
+          , TextWord.new 10837 1 2 "что"
+              (Just (Dict.fromList [ ( "pos", "CONJ" ) ]))
+              (Just [
+                { id = 32720, endpoint = "/api/text/word/10837/translation/32720/", correct_for_context = True
+                , text = "that" }
+              , { id = 32721, endpoint = "/api/text/word/10837/translation/32721/", correct_for_context = False
+                , text = "what" }
+              , { id = 32722, endpoint = "/api/text/word/10837/translation/32722/", correct_for_context = False
+                , text = "the" }
+              , { id = 32723, endpoint = "/api/text/word/10837/translation/32723/", correct_for_context = False
+                , text = "than" }
+              , { id = 32724, endpoint = "/api/text/word/10837/translation/32724/", correct_for_context = False
+                , text = "it" } ]) (SingleWord Nothing)
+              { text_word = "/api/text/word/10837/", translations = "/api/text/word/10837/translation/" }
+          , TextWord.new 10838 1 3 "что"
+              (Just (Dict.fromList [ ( "pos", "CONJ" ) ]))
+              (Just [
+                { id = 32725, endpoint = "/api/text/word/10838/translation/32725/", correct_for_context = True
+                , text = "that" }
+              , { id = 32726, endpoint = "/api/text/word/10838/translation/32726/", correct_for_context = False
+                , text = "what" }
+              , { id = 32727, endpoint = "/api/text/word/10838/translation/32727/", correct_for_context = False
+                , text = "the" }
+              , { id = 32728, endpoint = "/api/text/word/10838/translation/32728/", correct_for_context = False
+                , text = "than" }
+              , { id = 32729, endpoint = "/api/text/word/10838/translation/32729/", correct_for_context = False
+                , text = "it" } ]) (SingleWord Nothing)
+                { text_word = "/api/text/word/10838/", translations = "/api/text/word/10838/translation/" } ] )
         ]
 
 new_text_words =

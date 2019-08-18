@@ -335,14 +335,7 @@ setTextWord model text_word =
     new_text_words =
       (case getTextWords model section_number phrase of
         Just text_words ->
-          let
-            new_words =
-              (if instance == Array.length text_words then
-                 Array.push text_word text_words
-               else
-                 Array.set instance text_word text_words)
-          in
-            new_words
+          Array.set instance text_word text_words
 
         -- word not found
         Nothing ->
