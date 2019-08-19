@@ -29,7 +29,7 @@ type alias TextWordTranslationDeleteResp = {
 
 type alias TextWordMergeResp = {
     phrase: String
-  , section: Int
+  , section: SectionNumber
   , instance: Int
   , text_words: List Text.Translations.TextWord.TextWord
   , grouped : Bool
@@ -50,7 +50,7 @@ textWordMergeDecoder : Json.Decode.Decoder TextWordMergeResp
 textWordMergeDecoder =
   decode TextWordMergeResp
     |> required "phrase" Json.Decode.string
-    |> required "section" Json.Decode.int
+    |> required "section" (Json.Decode.map SectionNumber Json.Decode.int)
     |> required "instance" Json.Decode.int
     |> required "text_words" textWordInstancesDecoder
     |> required "grouped" Json.Decode.bool
@@ -125,8 +125,8 @@ textWordEndpointsDecoder =
 textWordInstanceDecoder : Json.Decode.Decoder Text.Translations.TextWord.TextWord
 textWordInstanceDecoder =
   Json.Decode.map8 Text.Translations.TextWord.new
-    (Json.Decode.field "id" Json.Decode.int)
-    (Json.Decode.field "text_section" Json.Decode.int)
+    (Json.Decode.field "id" (Json.Decode.map TextWordId Json.Decode.int))
+    (Json.Decode.field "text_section" (Json.Decode.map SectionNumber Json.Decode.int))
     (Json.Decode.field "instance" Json.Decode.int)
     (Json.Decode.field "phrase" Json.Decode.string)
     (Json.Decode.field "grammemes" (Json.Decode.nullable (Json.Decode.map Dict.fromList grammemesDecoder)))

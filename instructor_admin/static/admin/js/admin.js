@@ -10834,6 +10834,14 @@ var _user$project$Text_Translations$mergeTextWordEndpointToString = function (en
 	return _user$project$Text_Translations$urlToString(
 		_user$project$Text_Translations$mergeTextWordEndpointURL(endpoint));
 };
+var _user$project$Text_Translations$textWordIdToInt = function (_p8) {
+	var _p9 = _p8;
+	return _p9._0;
+};
+var _user$project$Text_Translations$sectionNumberToInt = function (_p10) {
+	var _p11 = _p10;
+	return _p11._0;
+};
 var _user$project$Text_Translations$WordValues = F2(
 	function (a, b) {
 		return {grammemes: a, translations: b};
@@ -10850,6 +10858,12 @@ var _user$project$Text_Translations$Translation = F4(
 	function (a, b, c, d) {
 		return {id: a, endpoint: b, correct_for_context: c, text: d};
 	});
+var _user$project$Text_Translations$SectionNumber = function (a) {
+	return {ctor: 'SectionNumber', _0: a};
+};
+var _user$project$Text_Translations$TextWordId = function (a) {
+	return {ctor: 'TextWordId', _0: a};
+};
 var _user$project$Text_Translations$URL = function (a) {
 	return {ctor: 'URL', _0: a};
 };
@@ -11294,6 +11308,10 @@ var _user$project$Text_Translations_TextWord$id = function (_p4) {
 	var _p5 = _p4;
 	return _p5._0;
 };
+var _user$project$Text_Translations_TextWord$idToInt = function (text_word) {
+	return _user$project$Text_Translations$textWordIdToInt(
+		_user$project$Text_Translations_TextWord$id(text_word));
+};
 var _user$project$Text_Translations_TextWord$endpoints = function (_p6) {
 	var _p7 = _p6;
 	return _p7._7;
@@ -11667,8 +11685,14 @@ var _user$project$Text_Translations_Decode$textWordTranslationsDecoder = A3(
 var _user$project$Text_Translations_Decode$textWordInstanceDecoder = A9(
 	_elm_lang$core$Json_Decode$map8,
 	_user$project$Text_Translations_TextWord$new,
-	A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int),
-	A2(_elm_lang$core$Json_Decode$field, 'text_section', _elm_lang$core$Json_Decode$int),
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'id',
+		A2(_elm_lang$core$Json_Decode$map, _user$project$Text_Translations$TextWordId, _elm_lang$core$Json_Decode$int)),
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'text_section',
+		A2(_elm_lang$core$Json_Decode$map, _user$project$Text_Translations$SectionNumber, _elm_lang$core$Json_Decode$int)),
 	A2(_elm_lang$core$Json_Decode$field, 'instance', _elm_lang$core$Json_Decode$int),
 	A2(_elm_lang$core$Json_Decode$field, 'phrase', _elm_lang$core$Json_Decode$string),
 	A2(
@@ -11764,7 +11788,7 @@ var _user$project$Text_Translations_Decode$textWordMergeDecoder = A3(
 				A3(
 					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 					'section',
-					_elm_lang$core$Json_Decode$int,
+					A2(_elm_lang$core$Json_Decode$map, _user$project$Text_Translations$SectionNumber, _elm_lang$core$Json_Decode$int),
 					A3(
 						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 						'phrase',

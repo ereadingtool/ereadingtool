@@ -7,6 +7,18 @@ import Dict exposing (Dict)
 import Set exposing (Set)
 
 
+type SectionNumber = SectionNumber Int
+
+sectionNumberToInt : SectionNumber -> Int
+sectionNumberToInt (SectionNumber section_number) =
+  section_number
+
+type TextWordId = TextWordId Int
+
+textWordIdToInt : TextWordId -> Int
+textWordIdToInt (TextWordId id) =
+  id
+
 type alias Id = String
 type alias Instance = Int
 type alias Phrase = String

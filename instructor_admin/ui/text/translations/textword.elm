@@ -11,7 +11,8 @@ type alias Endpoints = {
   , translations: String
   }
 
-type TextWord = TextWord Int Int Instance Phrase (Maybe Grammemes) (Maybe Translations) WordKind Endpoints
+type TextWord =
+  TextWord TextWordId SectionNumber Instance Phrase (Maybe Grammemes) (Maybe Translations) WordKind Endpoints
 
 
 textWordToString : TextWord -> String
@@ -67,7 +68,7 @@ wordType : TextWord -> String
 wordType text_word =
   wordTypeToString (wordKind text_word)
 
-sectionNumber : TextWord -> Int
+sectionNumber : TextWord -> SectionNumber
 sectionNumber (TextWord _ section _ _ _ _ _ _) =
   section
 
@@ -104,11 +105,17 @@ text_word_endpoint : TextWord -> String
 text_word_endpoint text_word =
   (endpoints text_word).text_word
 
-id : TextWord -> Int
+id : TextWord -> TextWordId
 id (TextWord id _ _ _ _ _ _ _) =
   id
 
-new : Int -> Int -> Instance -> Phrase -> Maybe Grammemes -> Maybe Translations -> WordKind -> Endpoints -> TextWord
+idToInt : TextWord -> Int
+idToInt text_word =
+  textWordIdToInt (id text_word)
+
+new :
+  TextWordId -> SectionNumber -> Instance -> Phrase -> Maybe Grammemes -> Maybe Translations -> WordKind -> Endpoints
+  -> TextWord
 new id section instance phrase grammemes translations word endpoints =
   TextWord id section instance phrase grammemes translations word endpoints
 

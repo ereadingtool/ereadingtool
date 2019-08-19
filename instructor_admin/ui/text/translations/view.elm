@@ -54,7 +54,9 @@ tagWord model parent_msg section_number instance original_token =
 
       False ->
         let
-          word_instance = Text.Translations.Model.newWordInstance model section_number instance token
+          word_instance =
+            Text.Translations.Model.newWordInstance
+              model (SectionNumber section_number) instance token
 
           editing_word = Text.Translations.Model.editingWord model token
           merging_word = Text.Translations.Model.mergingWord model word_instance
@@ -77,9 +79,12 @@ tagWord model parent_msg section_number instance original_token =
 
 tagSection : Model -> (Msg -> msg) -> Text.Section.Model.TextSection -> Html msg
 tagSection model msg section =
-  div [id ("section-" ++ (toString section.order)), class "section"]
-    (Text.Section.Words.Tag.tagWordsAndToVDOM
-      (tagWord model msg section.order) (isPartOfCompoundWord model section.order) (HtmlParser.parse section.body))
+  let
+    section_number = SectionNumber section.order
+  in
+    div [id ("section-" ++ (toString section.order)), class "section"]
+      (Text.Section.Words.Tag.tagWordsAndToVDOM
+        (tagWord model msg section.order) (isPartOfCompoundWord model section_number) (HtmlParser.parse section.body))
 
 view_edit : Model -> (Msg -> msg) -> WordInstance -> Html msg
 view_edit model parent_msg word_instance =

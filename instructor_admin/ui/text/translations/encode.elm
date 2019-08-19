@@ -24,7 +24,7 @@ textTranslationsMergeEncoder text_word_translations text_words =
     ,  Encode.list
     <| List.map (\tw ->
           Encode.object [
-            ("id", Encode.int (Text.Translations.TextWord.id tw))
+            ("id", Encode.int (Text.Translations.TextWord.idToInt tw))
           , ("word_type", Encode.string (Text.Translations.TextWord.wordType tw))
           ]
        ) text_words)
@@ -51,7 +51,7 @@ textTranslationAsCorrectEncoder text_translation =
 textWordMergeEncoder : List TextWord -> Encode.Value
 textWordMergeEncoder text_words =
   Encode.list
-    (List.map (\text_word -> Encode.int (Text.Translations.TextWord.id text_word)) text_words)
+    (List.map (\text_word -> Encode.int (Text.Translations.TextWord.idToInt text_word)) text_words)
 
 newTextTranslationEncoder : String -> Bool-> Encode.Value
 newTextTranslationEncoder translation correct_for_context =

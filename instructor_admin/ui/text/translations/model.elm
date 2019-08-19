@@ -112,7 +112,7 @@ refreshTextWordForWordInstance model word_instance =
       Nothing ->
         word_instance
 
-newWordInstance : Model -> Int -> Instance -> Token -> WordInstance
+newWordInstance : Model -> SectionNumber -> Instance -> Token -> WordInstance
 newWordInstance model section_number instance token =
   Text.Translations.Word.Instance.new section_number instance token (getTextWord model section_number instance token)
 
@@ -150,7 +150,7 @@ isTextWordPartOfCompoundWord model text_word =
   in
     isPartOfCompoundWord model section_number instance phrase
 
-isPartOfCompoundWord : Model -> Int -> Int -> String -> Maybe (Int, Int, Int)
+isPartOfCompoundWord : Model -> SectionNumber -> Int -> String -> Maybe (Int, Int, Int)
 isPartOfCompoundWord model section_number instance word =
   case getTextWord model section_number instance word of
     Just text_word ->
@@ -165,7 +165,7 @@ isPartOfCompoundWord model section_number instance word =
       Nothing
 
 
-completeMerge : Model -> Int -> Phrase -> Instance -> List TextWord -> Model
+completeMerge : Model -> SectionNumber -> Phrase -> Instance -> List TextWord -> Model
 completeMerge model section_number phrase instance text_words =
   let
     new_model =
@@ -205,7 +205,7 @@ removeFromMergeWords model word_instance =
     merging_words =
       OrderedDict.remove (Text.Translations.Word.Instance.id word_instance) model.merging_words }
 
-instanceCount : Model -> Int -> Text.Translations.Word -> Int
+instanceCount : Model -> SectionNumber -> Text.Translations.Word -> Int
 instanceCount model section_number word =
   case getTextWords model section_number (String.toLower word) of
     Just text_words ->
@@ -214,7 +214,7 @@ instanceCount model section_number word =
     Nothing ->
       0
 
-getTextWords : Model -> Int -> Phrase -> Maybe (Array TextWord)
+getTextWords : Model -> SectionNumber -> Phrase -> Maybe (Array TextWord)
 getTextWords model section_number phrase =
   case getSectionWords model section_number of
     Just words ->
@@ -287,7 +287,7 @@ editingWordInstance : Model -> WordInstance -> Bool
 editingWordInstance model word_instance =
   Dict.member (Text.Translations.Word.Instance.id word_instance) model.editing_word_instances
 
-getTextWord : Model -> Int -> Int -> Phrase -> Maybe TextWord
+getTextWord : Model -> SectionNumber -> Int -> Phrase -> Maybe TextWord
 getTextWord model section_number instance phrase =
   case getTextWords model section_number (String.toLower phrase) of
     Just text_words ->
@@ -308,15 +308,15 @@ setTextWords model text_words =
   in
     List.foldl (\text_word model -> setTextWord model text_word) new_model sorted_text_words
 
-getSectionWords : Model -> Int -> Maybe (Dict Text.Translations.Word (Array TextWord))
+getSectionWords : Model -> SectionNumber -> Maybe (Dict Text.Translations.Word (Array TextWord))
 getSectionWords model section_number =
-  Array.get section_number model.words
+  Array.get (sectionNumberToInt section_number) model.words
 
-setSectionWords : Model -> Int -> Dict Text.Translations.Word (Array TextWord) -> Model
+setSectionWords : Model -> SectionNumber -> Dict Text.Translations.Word (Array TextWord) -> Model
 setSectionWords model section_number words =
-  { model | words = Array.set section_number words model.words }
+  { model | words = Array.set (sectionNumberToInt section_number) words model.words }
 
-setTextWordsForPhrase : Model -> Int -> Phrase -> Array TextWord -> Model
+setTextWordsForPhrase : Model -> SectionNumber -> Phrase -> Array TextWord -> Model
 setTextWordsForPhrase model section_number phrase text_words =
   case getSectionWords model section_number of
     Just section_words ->
