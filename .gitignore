@@ -152,6 +152,9 @@ venv.bak/
 # mkdocs documentation
 /site
 
+# elm
+elm-stuff
+
 # mypy
 .mypy_cache/
 
