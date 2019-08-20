@@ -7,7 +7,7 @@ import Set exposing (Set)
 import Text.Translations.TextWord exposing (TextWord)
 
 
-type WordInstance = WordInstance Int Instance Token (Maybe TextWord)
+type WordInstance = WordInstance SectionNumber Instance Token (Maybe TextWord)
 
 
 setTextWord : WordInstance -> TextWord -> WordInstance
@@ -49,9 +49,13 @@ grammemes word_instance =
     Nothing ->
       Nothing
 
-sectionNumber : WordInstance -> Int
+sectionNumber : WordInstance -> SectionNumber
 sectionNumber (WordInstance section_number _ _ _) =
   section_number
+
+wordInstanceSectionNumberToInt : WordInstance -> Int
+wordInstanceSectionNumberToInt word_instance =
+  sectionNumberToInt (sectionNumber word_instance)
 
 id : WordInstance -> Id
 id (WordInstance section_number instance token _) =
@@ -76,6 +80,6 @@ word (WordInstance _ _ word _) =
 normalizeToken : String -> String
 normalizeToken = String.toLower
 
-new : Int -> Instance -> Token -> Maybe TextWord -> WordInstance
+new : SectionNumber -> Instance -> Token -> Maybe TextWord -> WordInstance
 new section_number instance token text_word =
   WordInstance section_number instance token text_word

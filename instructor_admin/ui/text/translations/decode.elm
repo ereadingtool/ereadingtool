@@ -9,6 +9,8 @@ import Text.Translations.TextWord
 
 import TextReader.TextWord
 
+import Text.Translations.Word.Kind
+
 import Util
 
 import Json.Decode
@@ -27,7 +29,7 @@ type alias TextWordTranslationDeleteResp = {
 
 type alias TextWordMergeResp = {
     phrase: String
-  , section: Int
+  , section: SectionNumber
   , instance: Int
   , text_words: List Text.Translations.TextWord.TextWord
   , grouped : Bool
@@ -48,7 +50,7 @@ textWordMergeDecoder : Json.Decode.Decoder TextWordMergeResp
 textWordMergeDecoder =
   decode TextWordMergeResp
     |> required "phrase" Json.Decode.string
-    |> required "section" Json.Decode.int
+    |> required "section" (Json.Decode.map SectionNumber Json.Decode.int)
     |> required "instance" Json.Decode.int
     |> required "text_words" textWordInstancesDecoder
     |> required "grouped" Json.Decode.bool
@@ -96,20 +98,20 @@ textGroupDetailsDecoder =
     |> required "pos" Json.Decode.int
     |> required "length" Json.Decode.int
 
-wordDecoder : Json.Decode.Decoder Text.Translations.TextWord.Word
+wordDecoder : Json.Decode.Decoder Text.Translations.Word.Kind.WordKind
 wordDecoder =
   Json.Decode.field "word_type" (Json.Decode.string)
     |> Json.Decode.andThen wordHelpDecoder
 
-wordHelpDecoder : String -> Json.Decode.Decoder Text.Translations.TextWord.Word
+wordHelpDecoder : String -> Json.Decode.Decoder Text.Translations.Word.Kind.WordKind
 wordHelpDecoder word_type =
   case word_type of
     "single" ->
       Json.Decode.field "group"
-        (Json.Decode.map Text.Translations.TextWord.SingleWord (Json.Decode.nullable textGroupDetailsDecoder))
+        (Json.Decode.map Text.Translations.Word.Kind.SingleWord (Json.Decode.nullable textGroupDetailsDecoder))
 
     "compound" ->
-      Json.Decode.succeed Text.Translations.TextWord.CompoundWord
+      Json.Decode.succeed Text.Translations.Word.Kind.CompoundWord
 
     _ ->
       Json.Decode.fail "Unsupported word type"
@@ -123,8 +125,8 @@ textWordEndpointsDecoder =
 textWordInstanceDecoder : Json.Decode.Decoder Text.Translations.TextWord.TextWord
 textWordInstanceDecoder =
   Json.Decode.map8 Text.Translations.TextWord.new
-    (Json.Decode.field "id" Json.Decode.int)
-    (Json.Decode.field "text_section" Json.Decode.int)
+    (Json.Decode.field "id" (Json.Decode.map TextWordId Json.Decode.int))
+    (Json.Decode.field "text_section" (Json.Decode.map SectionNumber Json.Decode.int))
     (Json.Decode.field "instance" Json.Decode.int)
     (Json.Decode.field "phrase" Json.Decode.string)
     (Json.Decode.field "grammemes" (Json.Decode.nullable (Json.Decode.map Dict.fromList grammemesDecoder)))

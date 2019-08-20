@@ -3,7 +3,9 @@ module TextReader.TextWord exposing (..)
 import Dict exposing (Dict)
 
 import Text.Translations exposing (..)
-import Text.Translations.TextWord exposing (Word(..))
+
+import Text.Translations.Word.Kind
+import Text.Translations.TextWord
 
 
 type alias Translation = {
@@ -23,7 +25,7 @@ type alias TextWordParams = {
   }
 
 
-type TextWord = TextWord Int Instance Phrase (Maybe Grammemes) (Maybe Translations) Text.Translations.TextWord.Word
+type TextWord = TextWord Int Instance Phrase (Maybe Grammemes) (Maybe Translations) Text.Translations.Word.Kind.WordKind
 
 
 instance : TextWord -> Instance
@@ -34,7 +36,7 @@ phrase : TextWord -> Phrase
 phrase (TextWord _ _ phrase _ _ _) =
   phrase
 
-word : TextWord -> Text.Translations.TextWord.Word
+word : TextWord -> Text.Translations.Word.Kind.WordKind
 word (TextWord _ _ _ _ _ word) =
   word
 
@@ -44,7 +46,7 @@ wordType text_word =
 
 group : TextWord -> Maybe TextGroupDetails
 group (TextWord _ _ _ _ _ word) =
-  Text.Translations.TextWord.wordTypeToGroup word
+  Text.Translations.TextWord.wordKindToGroup word
 
 grammemes : TextWord -> Maybe Grammemes
 grammemes (TextWord _ _ _ grammemes _ _) =
@@ -74,7 +76,7 @@ translations : TextWord -> Maybe Translations
 translations (TextWord _ _ _ _ translations _) =
   translations
 
-new : Int -> Instance -> Phrase -> Maybe Grammemes -> Maybe Translations -> Text.Translations.TextWord.Word -> TextWord
+new : Int -> Instance -> Phrase -> Maybe Grammemes -> Maybe Translations -> Text.Translations.Word.Kind.WordKind -> TextWord
 new id instance phrase grammemes translations word =
   TextWord id instance phrase grammemes translations word
 

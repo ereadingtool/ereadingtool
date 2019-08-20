@@ -10101,6 +10101,14 @@ var _user$project$Text_Translations$mergeTextWordEndpointToString = function (en
 	return _user$project$Text_Translations$urlToString(
 		_user$project$Text_Translations$mergeTextWordEndpointURL(endpoint));
 };
+var _user$project$Text_Translations$textWordIdToInt = function (_p8) {
+	var _p9 = _p8;
+	return _p9._0;
+};
+var _user$project$Text_Translations$sectionNumberToInt = function (_p10) {
+	var _p11 = _p10;
+	return _p11._0;
+};
 var _user$project$Text_Translations$WordValues = F2(
 	function (a, b) {
 		return {grammemes: a, translations: b};
@@ -10117,6 +10125,12 @@ var _user$project$Text_Translations$Translation = F4(
 	function (a, b, c, d) {
 		return {id: a, endpoint: b, correct_for_context: c, text: d};
 	});
+var _user$project$Text_Translations$SectionNumber = function (a) {
+	return {ctor: 'SectionNumber', _0: a};
+};
+var _user$project$Text_Translations$TextWordId = function (a) {
+	return {ctor: 'TextWordId', _0: a};
+};
 var _user$project$Text_Translations$URL = function (a) {
 	return {ctor: 'URL', _0: a};
 };
