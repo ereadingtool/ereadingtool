@@ -52,7 +52,7 @@ class ElmLoadPasswordResetView(NoAuthElmLoadJsView):
         context = super(ElmLoadPasswordResetView, self).get_context_data(**kwargs)
 
         context['elm']['forgot_pass_endpoint'] = {'quote': True, 'safe': True,
-                                                  'value': reverse('api-password-reset-confirm')}
+                                                  'value': reverse('api-password-reset')}
 
         return context
 
