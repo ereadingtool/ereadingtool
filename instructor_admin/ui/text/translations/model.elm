@@ -156,7 +156,7 @@ isPartOfCompoundWord model section_number instance word =
     Just text_word ->
       case (Text.Translations.TextWord.group text_word) of
         Just group ->
-          Just (group.instance, group.pos, group.length)
+          Just (Text.Translations.TextWord.instance text_word, group.pos, group.length)
 
         Nothing ->
           Nothing
