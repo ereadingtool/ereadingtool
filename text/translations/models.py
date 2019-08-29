@@ -27,7 +27,6 @@ class TextWord(TextPhrase):
         try:
             translation_dict['group'] = {
                 'id': self.group_word.group.pk,
-                'instance': self.group_word.group.instance,
                 'pos': self.group_word.order,
                 'length': self.group_word.group.components.count()
             }
