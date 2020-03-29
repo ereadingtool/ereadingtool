@@ -307,9 +307,21 @@ view_research_consent model =
     consented_tooltip = "You've consented to be a part of a research study."
     no_consent_tooltip = "You have not consented to be a part of a research study."
   in
-    div [id "research_consent", class "profile_item"] [
-     span [class "profile_item_title"] [ Html.text "Research Consent" ]
-    ,  span [class "profile_item_value"] [
+    div [id "research_consent"] [
+      span [class "profile_item_title"] [ Html.text "Research Consent" ]
+    ,
+      span [] [
+        Html.text """
+          From time to time, there maybe research projects related to this site.
+          To read about those projects and to review and sign consent forms,
+          please go
+         """
+      , Html.a [attribute "href" "https://sites.google.com/pdx.edu/star-russian/home/"] [
+         Html.text "here"
+        ]
+      , Html.text "."
+      ]
+    , span [class "value"] [
           div [ classList [("check-box", True), ("check-box-selected", consented)]
               , onClick ToggleResearchConsent
               , attribute "title" (if consented then consented_tooltip else no_consent_tooltip)] []

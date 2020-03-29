@@ -13892,7 +13892,7 @@ var _user$project$Login$view_other_login_option = function (login) {
 			{ctor: '[]'},
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html$text('Are you an instructor? '),
+				_0: _elm_lang$html$Html$text('Are you a content editor? '),
 				_1: {
 					ctor: '::',
 					_0: A2(
@@ -13913,7 +13913,7 @@ var _user$project$Login$view_other_login_option = function (login) {
 								},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text('Login as an instructor'),
+									_0: _elm_lang$html$Html$text('Login as a content editor'),
 									_1: {ctor: '[]'}
 								}),
 							_1: {ctor: '[]'}

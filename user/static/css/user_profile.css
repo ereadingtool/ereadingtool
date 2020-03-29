@@ -90,7 +90,16 @@ table td {
     overflow: scroll;
 }
 
-#research_consent > .profile_item_value > .check-box {
+#research_consent {
+    display: grid;
+    grid-column: 1 / 4;
+    grid-template-columns: auto;
+    grid-template-rows: auto 35px 35px;
+    grid-row-gap: 10px;
+    margin-bottom: 15px;
+}
+
+#research_consent > .value > .check-box {
     display: inline-block;
     cursor: pointer;
     border: solid black 0.5px;
@@ -99,7 +108,7 @@ table td {
     margin-right: 0.5em;
 }
 
-#research_consent > .profile_item_value > .check-box-text {
+#research_consent > .value > .check-box-text {
     display: inline-block;
     vertical-align: top;
     font-size: larger;

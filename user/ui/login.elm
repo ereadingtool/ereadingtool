@@ -295,10 +295,10 @@ view_other_login_option login =
     case login of
       StudentLogin _ _ _ _ ->
         div [] [
-          Html.text "Are you an instructor? "
+          Html.text "Are you a content editor? "
         , Html.a [attribute "href" login_url] [
             span [attribute "class" "cursor"] [
-              Html.text "Login as an instructor"
+              Html.text "Login as a content editor"
             ]
           ]
         ]
