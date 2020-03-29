@@ -32,7 +32,6 @@ type alias WordValues = {
 
 type alias TextGroupDetails = {
     id: Int
-  , instance: Int
   , pos: Int
   , length: Int
   }

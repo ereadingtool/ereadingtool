@@ -94,7 +94,6 @@ textGroupDetailsDecoder : Json.Decode.Decoder TextGroupDetails
 textGroupDetailsDecoder =
   decode TextGroupDetails
     |> required "id" Json.Decode.int
-    |> required "instance" Json.Decode.int
     |> required "pos" Json.Decode.int
     |> required "length" Json.Decode.int
 
