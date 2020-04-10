@@ -147,15 +147,17 @@ class TestFlashcardStateMachine(TestData, TestUser, TestCase):
 
         self.assertEquals(state_machine.current_state, state_machine.finished_review_and_answer)
 
+        current_year = today.year
+
         # tweaking SM-2 constants leads to different review dates so we just check the year for sanity + repetitions
         self.assertEquals(
             [[c.next_review_dt.year, c.repetitions]
              for c in self.test_student.flashcards.all()], [
-                [2019, self.test_flashcards[0].repetitions+1],
-                [2019, self.test_flashcards[1].repetitions],  # not due for review
-                [2019, self.test_flashcards[2].repetitions+1],
-                [2019, self.test_flashcards[3].repetitions+1],
-                [2019, self.test_flashcards[4].repetitions+1]])
+                [current_year, self.test_flashcards[0].repetitions+1],
+                [current_year, self.test_flashcards[1].repetitions],  # not due for review
+                [current_year, self.test_flashcards[2].repetitions+1],
+                [current_year, self.test_flashcards[3].repetitions+1],
+                [current_year, self.test_flashcards[4].repetitions+1]])
 
     def test_review_and_answer_transitions(self):
         state_machine = FlashcardSessionStateMachine(mode='review_and_answer',
