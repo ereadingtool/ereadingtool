@@ -72,9 +72,7 @@ studentProfileParamsDecoder =
 
 studentProfileDecoder : Json.Decode.Decoder Student.Profile.StudentProfile
 studentProfileDecoder =
-  Json.Decode.map
-    Student.Profile.initProfile
-      (Json.Decode.field "profile" studentProfileParamsDecoder)
+  Json.Decode.map Student.Profile.initProfile studentProfileParamsDecoder
 
 studentConsentRespDecoder : Json.Decode.Decoder Student.Profile.Model.StudentConsentResp
 studentConsentRespDecoder =

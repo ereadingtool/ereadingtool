@@ -3,12 +3,10 @@ import string
 import time
 from typing import AnyStr
 
-from selenium.webdriver.support.ui import Select
-
 from django.test.testcases import TestCase
 from django.urls import reverse
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.chrome.webdriver import WebDriver, Options
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 
 class TestLiveServerStudent(TestCase):
@@ -18,7 +16,6 @@ class TestLiveServerStudent(TestCase):
 
         options = Options()
         options.add_argument('--headless')
-        # options.set_preference('devtools.console.stdout.content', True)
 
         desired_capabilities = DesiredCapabilities.CHROME
         desired_capabilities['goog:loggingPrefs'] = {'browser': 'ALL'}
@@ -77,10 +74,7 @@ class TestLiveServerStudent(TestCase):
 
         self.test_login(username, password)
 
-        difficulty_select = Select(self.selenium.find_element_by_xpath('//div[@class="preferred_difficulty"]//select'))
-
-        difficulty_select.select_by_value('intermediate_high')
-        difficulty_select.select_by_value('advanced_mid')
+        self.selenium.find_element_by_xpath('//div[@class="preferred_difficulty"]//select').send_keys('advanced-mid')
 
         time.sleep(2)
 

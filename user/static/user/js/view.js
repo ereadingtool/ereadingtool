@@ -10113,9 +10113,9 @@ var _user$project$Text_Translations$WordValues = F2(
 	function (a, b) {
 		return {grammemes: a, translations: b};
 	});
-var _user$project$Text_Translations$TextGroupDetails = F4(
-	function (a, b, c, d) {
-		return {id: a, instance: b, pos: c, length: d};
+var _user$project$Text_Translations$TextGroupDetails = F3(
+	function (a, b, c) {
+		return {id: a, pos: b, length: c};
 	});
 var _user$project$Text_Translations$Flags = F4(
 	function (a, b, c, d) {
