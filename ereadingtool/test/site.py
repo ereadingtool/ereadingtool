@@ -3,20 +3,28 @@ import string
 import time
 from typing import AnyStr
 
+from selenium.webdriver.support.ui import Select
+
 from django.test.testcases import TestCase
 from django.urls import reverse
-from selenium.webdriver.firefox.webdriver import WebDriver, Options
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.chrome.webdriver import WebDriver, Options
 
 
-class TestStudent(TestCase):
+class TestLiveServerStudent(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
 
         options = Options()
         options.add_argument('--headless')
+        # options.set_preference('devtools.console.stdout.content', True)
 
-        cls.selenium = WebDriver(executable_path='/usr/local/bin/geckodriver', firefox_options=options)
+        desired_capabilities = DesiredCapabilities.CHROME
+        desired_capabilities['goog:loggingPrefs'] = {'browser': 'ALL'}
+
+        cls.selenium = WebDriver(executable_path='/usr/local/bin/chromedriver', chrome_options=options,
+                                 desired_capabilities=desired_capabilities)
 
         cls.site_root = 'http://0.0.0.0:8000'
 
@@ -68,6 +76,17 @@ class TestStudent(TestCase):
         username, password = self.test_sign_up(username='user+test@test.com', password='pass4!123bea')
 
         self.test_login(username, password)
+
+        difficulty_select = Select(self.selenium.find_element_by_xpath('//div[@class="preferred_difficulty"]//select'))
+
+        difficulty_select.select_by_value('intermediate_high')
+        difficulty_select.select_by_value('advanced_mid')
+
+        time.sleep(2)
+
+        self.assertIn('Advanced Mid',
+                      self.selenium.find_element_by_class_name('difficulty_descs').text,
+                      'Preferred Difficulty description did not update')
 
     def test_login(self, username: AnyStr, password: AnyStr):
         login_page_inputs = self.selenium.find_elements_by_xpath('//div[@class="login_box"]//input')
