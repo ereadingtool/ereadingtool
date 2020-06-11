@@ -23792,10 +23792,7 @@ var _user$project$Student_Profile_Decode$studentProfileParamsDecoder = A3(
 						'id',
 						_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
 						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Student_Profile$StudentProfileParams)))))));
-var _user$project$Student_Profile_Decode$studentProfileDecoder = A2(
-	_elm_lang$core$Json_Decode$map,
-	_user$project$Student_Profile$initProfile,
-	A2(_elm_lang$core$Json_Decode$field, 'profile', _user$project$Student_Profile_Decode$studentProfileParamsDecoder));
+var _user$project$Student_Profile_Decode$studentProfileDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Student_Profile$initProfile, _user$project$Student_Profile_Decode$studentProfileParamsDecoder);
 var _user$project$Student_Profile_Decode$performanceReportDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'pdf_link',
