@@ -10,7 +10,10 @@ text:
 
 .PHONY: user
 user:
-	for f in user/ui/{instructor,student,forgot_password}/*.elm; do ${ELM_MAKE} $$f --warn --output=user/static/user/js/$$(basename -s .elm $$f).js; done;
+	# for f in user/ui/{Instructor,Student,ForgotPassword}/*.elm; do ${ELM_MAKE} $$f --warn --output=user/static/user/js/$$(basename -s .elm $$f).js; done;
+	for f in user/ui/Instructor/*.elm; do ${ELM_MAKE} $$f --warn --output=user/static/user/js/$$(basename -s .elm $$f).js; done;
+	for f in user/ui/Student/*.elm; do ${ELM_MAKE} $$f --warn --output=user/static/user/js/$$(basename -s .elm $$f).js; done;
+	for f in user/ui/ForgotPassword/*.elm; do ${ELM_MAKE} $$f --warn --output=user/static/user/js/$$(basename -s .elm $$f).js; done;
 
 .PHONY: flashcard
 flashcard:
