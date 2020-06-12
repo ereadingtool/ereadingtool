@@ -9300,192 +9300,6 @@ var _elm_lang$core$Process$kill = _elm_lang$core$Native_Scheduler.kill;
 var _elm_lang$core$Process$sleep = _elm_lang$core$Native_Scheduler.sleep;
 var _elm_lang$core$Process$spawn = _elm_lang$core$Native_Scheduler.spawn;
 
-var _elm_lang$dom$Native_Dom = function() {
-
-var fakeNode = {
-	addEventListener: function() {},
-	removeEventListener: function() {}
-};
-
-var onDocument = on(typeof document !== 'undefined' ? document : fakeNode);
-var onWindow = on(typeof window !== 'undefined' ? window : fakeNode);
-
-function on(node)
-{
-	return function(eventName, decoder, toTask)
-	{
-		return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback) {
-
-			function performTask(event)
-			{
-				var result = A2(_elm_lang$core$Json_Decode$decodeValue, decoder, event);
-				if (result.ctor === 'Ok')
-				{
-					_elm_lang$core$Native_Scheduler.rawSpawn(toTask(result._0));
-				}
-			}
-
-			node.addEventListener(eventName, performTask);
-
-			return function()
-			{
-				node.removeEventListener(eventName, performTask);
-			};
-		});
-	};
-}
-
-var rAF = typeof requestAnimationFrame !== 'undefined'
-	? requestAnimationFrame
-	: function(callback) { callback(); };
-
-function withNode(id, doStuff)
-{
-	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
-	{
-		rAF(function()
-		{
-			var node = document.getElementById(id);
-			if (node === null)
-			{
-				callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'NotFound', _0: id }));
-				return;
-			}
-			callback(_elm_lang$core$Native_Scheduler.succeed(doStuff(node)));
-		});
-	});
-}
-
-
-// FOCUS
-
-function focus(id)
-{
-	return withNode(id, function(node) {
-		node.focus();
-		return _elm_lang$core$Native_Utils.Tuple0;
-	});
-}
-
-function blur(id)
-{
-	return withNode(id, function(node) {
-		node.blur();
-		return _elm_lang$core$Native_Utils.Tuple0;
-	});
-}
-
-
-// SCROLLING
-
-function getScrollTop(id)
-{
-	return withNode(id, function(node) {
-		return node.scrollTop;
-	});
-}
-
-function setScrollTop(id, desiredScrollTop)
-{
-	return withNode(id, function(node) {
-		node.scrollTop = desiredScrollTop;
-		return _elm_lang$core$Native_Utils.Tuple0;
-	});
-}
-
-function toBottom(id)
-{
-	return withNode(id, function(node) {
-		node.scrollTop = node.scrollHeight;
-		return _elm_lang$core$Native_Utils.Tuple0;
-	});
-}
-
-function getScrollLeft(id)
-{
-	return withNode(id, function(node) {
-		return node.scrollLeft;
-	});
-}
-
-function setScrollLeft(id, desiredScrollLeft)
-{
-	return withNode(id, function(node) {
-		node.scrollLeft = desiredScrollLeft;
-		return _elm_lang$core$Native_Utils.Tuple0;
-	});
-}
-
-function toRight(id)
-{
-	return withNode(id, function(node) {
-		node.scrollLeft = node.scrollWidth;
-		return _elm_lang$core$Native_Utils.Tuple0;
-	});
-}
-
-
-// SIZE
-
-function width(options, id)
-{
-	return withNode(id, function(node) {
-		switch (options.ctor)
-		{
-			case 'Content':
-				return node.scrollWidth;
-			case 'VisibleContent':
-				return node.clientWidth;
-			case 'VisibleContentWithBorders':
-				return node.offsetWidth;
-			case 'VisibleContentWithBordersAndMargins':
-				var rect = node.getBoundingClientRect();
-				return rect.right - rect.left;
-		}
-	});
-}
-
-function height(options, id)
-{
-	return withNode(id, function(node) {
-		switch (options.ctor)
-		{
-			case 'Content':
-				return node.scrollHeight;
-			case 'VisibleContent':
-				return node.clientHeight;
-			case 'VisibleContentWithBorders':
-				return node.offsetHeight;
-			case 'VisibleContentWithBordersAndMargins':
-				var rect = node.getBoundingClientRect();
-				return rect.bottom - rect.top;
-		}
-	});
-}
-
-return {
-	onDocument: F3(onDocument),
-	onWindow: F3(onWindow),
-
-	focus: focus,
-	blur: blur,
-
-	getScrollTop: getScrollTop,
-	setScrollTop: F2(setScrollTop),
-	getScrollLeft: getScrollLeft,
-	setScrollLeft: F2(setScrollLeft),
-	toBottom: toBottom,
-	toRight: toRight,
-
-	height: F2(height),
-	width: F2(width)
-};
-
-}();
-
-var _elm_lang$dom$Dom_LowLevel$onWindow = _elm_lang$dom$Native_Dom.onWindow;
-var _elm_lang$dom$Dom_LowLevel$onDocument = _elm_lang$dom$Native_Dom.onDocument;
-
 var _elm_lang$http$Native_Http = function() {
 
 
@@ -9847,407 +9661,540 @@ var _elm_lang$http$Http$StringPart = F2(
 	});
 var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
 
-var _elm_lang$navigation$Native_Navigation = function() {
+var _elm_lang$websocket$Native_WebSocket = function() {
 
-
-// FAKE NAVIGATION
-
-function go(n)
-{
-	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
-	{
-		if (n !== 0)
-		{
-			history.go(n);
-		}
-		callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Native_Utils.Tuple0));
-	});
-}
-
-function pushState(url)
-{
-	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
-	{
-		history.pushState({}, '', url);
-		callback(_elm_lang$core$Native_Scheduler.succeed(getLocation()));
-	});
-}
-
-function replaceState(url)
-{
-	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
-	{
-		history.replaceState({}, '', url);
-		callback(_elm_lang$core$Native_Scheduler.succeed(getLocation()));
-	});
-}
-
-
-// REAL NAVIGATION
-
-function reloadPage(skipCache)
-{
-	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
-	{
-		document.location.reload(skipCache);
-		callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Native_Utils.Tuple0));
-	});
-}
-
-function setLocation(url)
+function open(url, settings)
 {
 	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
 	{
 		try
 		{
-			window.location = url;
+			var socket = new WebSocket(url);
+			socket.elm_web_socket = true;
 		}
 		catch(err)
 		{
-			// Only Firefox can throw a NS_ERROR_MALFORMED_URI exception here.
-			// Other browsers reload the page, so let's be consistent about that.
-			document.location.reload(false);
+			return callback(_elm_lang$core$Native_Scheduler.fail({
+				ctor: err.name === 'SecurityError' ? 'BadSecurity' : 'BadArgs',
+				_0: err.message
+			}));
 		}
-		callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Native_Utils.Tuple0));
+
+		socket.addEventListener("open", function(event) {
+			callback(_elm_lang$core$Native_Scheduler.succeed(socket));
+		});
+
+		socket.addEventListener("message", function(event) {
+			_elm_lang$core$Native_Scheduler.rawSpawn(A2(settings.onMessage, socket, event.data));
+		});
+
+		socket.addEventListener("close", function(event) {
+			_elm_lang$core$Native_Scheduler.rawSpawn(settings.onClose({
+				code: event.code,
+				reason: event.reason,
+				wasClean: event.wasClean
+			}));
+		});
+
+		return function()
+		{
+			if (socket && socket.close)
+			{
+				socket.close();
+			}
+		};
 	});
 }
 
-
-// GET LOCATION
-
-function getLocation()
+function send(socket, string)
 {
-	var location = document.location;
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		var result =
+			socket.readyState === WebSocket.OPEN
+				? _elm_lang$core$Maybe$Nothing
+				: _elm_lang$core$Maybe$Just({ ctor: 'NotOpen' });
 
-	return {
-		href: location.href,
-		host: location.host,
-		hostname: location.hostname,
-		protocol: location.protocol,
-		origin: location.origin,
-		port_: location.port,
-		pathname: location.pathname,
-		search: location.search,
-		hash: location.hash,
-		username: location.username,
-		password: location.password
-	};
+		try
+		{
+			socket.send(string);
+		}
+		catch(err)
+		{
+			result = _elm_lang$core$Maybe$Just({ ctor: 'BadString' });
+		}
+
+		callback(_elm_lang$core$Native_Scheduler.succeed(result));
+	});
 }
 
-
-// DETECT IE11 PROBLEMS
-
-function isInternetExplorer11()
+function close(code, reason, socket)
 {
-	return window.navigator.userAgent.indexOf('Trident') !== -1;
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback) {
+		try
+		{
+			socket.close(code, reason);
+		}
+		catch(err)
+		{
+			return callback(_elm_lang$core$Native_Scheduler.fail(_elm_lang$core$Maybe$Just({
+				ctor: err.name === 'SyntaxError' ? 'BadReason' : 'BadCode'
+			})));
+		}
+		callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Maybe$Nothing));
+	});
 }
 
+function bytesQueued(socket)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback) {
+		callback(_elm_lang$core$Native_Scheduler.succeed(socket.bufferedAmount));
+	});
+}
 
 return {
-	go: go,
-	setLocation: setLocation,
-	reloadPage: reloadPage,
-	pushState: pushState,
-	replaceState: replaceState,
-	getLocation: getLocation,
-	isInternetExplorer11: isInternetExplorer11
+	open: F2(open),
+	send: F2(send),
+	close: F3(close),
+	bytesQueued: bytesQueued
 };
 
 }();
 
-var _elm_lang$navigation$Navigation$replaceState = _elm_lang$navigation$Native_Navigation.replaceState;
-var _elm_lang$navigation$Navigation$pushState = _elm_lang$navigation$Native_Navigation.pushState;
-var _elm_lang$navigation$Navigation$go = _elm_lang$navigation$Native_Navigation.go;
-var _elm_lang$navigation$Navigation$reloadPage = _elm_lang$navigation$Native_Navigation.reloadPage;
-var _elm_lang$navigation$Navigation$setLocation = _elm_lang$navigation$Native_Navigation.setLocation;
-var _elm_lang$navigation$Navigation_ops = _elm_lang$navigation$Navigation_ops || {};
-_elm_lang$navigation$Navigation_ops['&>'] = F2(
-	function (task1, task2) {
-		return A2(
-			_elm_lang$core$Task$andThen,
-			function (_p0) {
-				return task2;
-			},
-			task1);
+var _elm_lang$websocket$WebSocket_LowLevel$bytesQueued = _elm_lang$websocket$Native_WebSocket.bytesQueued;
+var _elm_lang$websocket$WebSocket_LowLevel$send = _elm_lang$websocket$Native_WebSocket.send;
+var _elm_lang$websocket$WebSocket_LowLevel$closeWith = _elm_lang$websocket$Native_WebSocket.close;
+var _elm_lang$websocket$WebSocket_LowLevel$close = function (socket) {
+	return A2(
+		_elm_lang$core$Task$map,
+		_elm_lang$core$Basics$always(
+			{ctor: '_Tuple0'}),
+		A3(_elm_lang$websocket$WebSocket_LowLevel$closeWith, 1000, '', socket));
+};
+var _elm_lang$websocket$WebSocket_LowLevel$open = _elm_lang$websocket$Native_WebSocket.open;
+var _elm_lang$websocket$WebSocket_LowLevel$Settings = F2(
+	function (a, b) {
+		return {onMessage: a, onClose: b};
 	});
-var _elm_lang$navigation$Navigation$notify = F3(
-	function (router, subs, location) {
-		var send = function (_p1) {
-			var _p2 = _p1;
-			return A2(
-				_elm_lang$core$Platform$sendToApp,
-				router,
-				_p2._0(location));
-		};
-		return A2(
-			_elm_lang$navigation$Navigation_ops['&>'],
-			_elm_lang$core$Task$sequence(
-				A2(_elm_lang$core$List$map, send, subs)),
-			_elm_lang$core$Task$succeed(
-				{ctor: '_Tuple0'}));
-	});
-var _elm_lang$navigation$Navigation$cmdHelp = F3(
-	function (router, subs, cmd) {
-		var _p3 = cmd;
-		switch (_p3.ctor) {
-			case 'Jump':
-				return _elm_lang$navigation$Navigation$go(_p3._0);
-			case 'New':
-				return A2(
-					_elm_lang$core$Task$andThen,
-					A2(_elm_lang$navigation$Navigation$notify, router, subs),
-					_elm_lang$navigation$Navigation$pushState(_p3._0));
-			case 'Modify':
-				return A2(
-					_elm_lang$core$Task$andThen,
-					A2(_elm_lang$navigation$Navigation$notify, router, subs),
-					_elm_lang$navigation$Navigation$replaceState(_p3._0));
-			case 'Visit':
-				return _elm_lang$navigation$Navigation$setLocation(_p3._0);
-			default:
-				return _elm_lang$navigation$Navigation$reloadPage(_p3._0);
-		}
-	});
-var _elm_lang$navigation$Navigation$killPopWatcher = function (popWatcher) {
-	var _p4 = popWatcher;
-	if (_p4.ctor === 'Normal') {
-		return _elm_lang$core$Process$kill(_p4._0);
+var _elm_lang$websocket$WebSocket_LowLevel$WebSocket = {ctor: 'WebSocket'};
+var _elm_lang$websocket$WebSocket_LowLevel$BadArgs = {ctor: 'BadArgs'};
+var _elm_lang$websocket$WebSocket_LowLevel$BadSecurity = {ctor: 'BadSecurity'};
+var _elm_lang$websocket$WebSocket_LowLevel$BadReason = {ctor: 'BadReason'};
+var _elm_lang$websocket$WebSocket_LowLevel$BadCode = {ctor: 'BadCode'};
+var _elm_lang$websocket$WebSocket_LowLevel$BadString = {ctor: 'BadString'};
+var _elm_lang$websocket$WebSocket_LowLevel$NotOpen = {ctor: 'NotOpen'};
+
+var _elm_lang$websocket$WebSocket$closeConnection = function (connection) {
+	var _p0 = connection;
+	if (_p0.ctor === 'Opening') {
+		return _elm_lang$core$Process$kill(_p0._1);
 	} else {
-		return A2(
-			_elm_lang$navigation$Navigation_ops['&>'],
-			_elm_lang$core$Process$kill(_p4._0),
-			_elm_lang$core$Process$kill(_p4._1));
+		return _elm_lang$websocket$WebSocket_LowLevel$close(_p0._0);
 	}
 };
-var _elm_lang$navigation$Navigation$onSelfMsg = F3(
-	function (router, location, state) {
-		return A2(
-			_elm_lang$navigation$Navigation_ops['&>'],
-			A3(_elm_lang$navigation$Navigation$notify, router, state.subs, location),
-			_elm_lang$core$Task$succeed(state));
-	});
-var _elm_lang$navigation$Navigation$subscription = _elm_lang$core$Native_Platform.leaf('Navigation');
-var _elm_lang$navigation$Navigation$command = _elm_lang$core$Native_Platform.leaf('Navigation');
-var _elm_lang$navigation$Navigation$Location = function (a) {
-	return function (b) {
-		return function (c) {
-			return function (d) {
-				return function (e) {
-					return function (f) {
-						return function (g) {
-							return function (h) {
-								return function (i) {
-									return function (j) {
-										return function (k) {
-											return {href: a, host: b, hostname: c, protocol: d, origin: e, port_: f, pathname: g, search: h, hash: i, username: j, password: k};
-										};
-									};
-								};
-							};
-						};
-					};
-				};
-			};
-		};
-	};
+var _elm_lang$websocket$WebSocket$after = function (backoff) {
+	return (_elm_lang$core$Native_Utils.cmp(backoff, 1) < 0) ? _elm_lang$core$Task$succeed(
+		{ctor: '_Tuple0'}) : _elm_lang$core$Process$sleep(
+		_elm_lang$core$Basics$toFloat(
+			10 * Math.pow(2, backoff)));
 };
-var _elm_lang$navigation$Navigation$State = F2(
-	function (a, b) {
-		return {subs: a, popWatcher: b};
-	});
-var _elm_lang$navigation$Navigation$init = _elm_lang$core$Task$succeed(
-	A2(
-		_elm_lang$navigation$Navigation$State,
-		{ctor: '[]'},
-		_elm_lang$core$Maybe$Nothing));
-var _elm_lang$navigation$Navigation$Reload = function (a) {
-	return {ctor: 'Reload', _0: a};
-};
-var _elm_lang$navigation$Navigation$reload = _elm_lang$navigation$Navigation$command(
-	_elm_lang$navigation$Navigation$Reload(false));
-var _elm_lang$navigation$Navigation$reloadAndSkipCache = _elm_lang$navigation$Navigation$command(
-	_elm_lang$navigation$Navigation$Reload(true));
-var _elm_lang$navigation$Navigation$Visit = function (a) {
-	return {ctor: 'Visit', _0: a};
-};
-var _elm_lang$navigation$Navigation$load = function (url) {
-	return _elm_lang$navigation$Navigation$command(
-		_elm_lang$navigation$Navigation$Visit(url));
-};
-var _elm_lang$navigation$Navigation$Modify = function (a) {
-	return {ctor: 'Modify', _0: a};
-};
-var _elm_lang$navigation$Navigation$modifyUrl = function (url) {
-	return _elm_lang$navigation$Navigation$command(
-		_elm_lang$navigation$Navigation$Modify(url));
-};
-var _elm_lang$navigation$Navigation$New = function (a) {
-	return {ctor: 'New', _0: a};
-};
-var _elm_lang$navigation$Navigation$newUrl = function (url) {
-	return _elm_lang$navigation$Navigation$command(
-		_elm_lang$navigation$Navigation$New(url));
-};
-var _elm_lang$navigation$Navigation$Jump = function (a) {
-	return {ctor: 'Jump', _0: a};
-};
-var _elm_lang$navigation$Navigation$back = function (n) {
-	return _elm_lang$navigation$Navigation$command(
-		_elm_lang$navigation$Navigation$Jump(0 - n));
-};
-var _elm_lang$navigation$Navigation$forward = function (n) {
-	return _elm_lang$navigation$Navigation$command(
-		_elm_lang$navigation$Navigation$Jump(n));
-};
-var _elm_lang$navigation$Navigation$cmdMap = F2(
-	function (_p5, myCmd) {
-		var _p6 = myCmd;
-		switch (_p6.ctor) {
-			case 'Jump':
-				return _elm_lang$navigation$Navigation$Jump(_p6._0);
-			case 'New':
-				return _elm_lang$navigation$Navigation$New(_p6._0);
-			case 'Modify':
-				return _elm_lang$navigation$Navigation$Modify(_p6._0);
-			case 'Visit':
-				return _elm_lang$navigation$Navigation$Visit(_p6._0);
-			default:
-				return _elm_lang$navigation$Navigation$Reload(_p6._0);
-		}
-	});
-var _elm_lang$navigation$Navigation$Monitor = function (a) {
-	return {ctor: 'Monitor', _0: a};
-};
-var _elm_lang$navigation$Navigation$program = F2(
-	function (locationToMessage, stuff) {
-		var init = stuff.init(
-			_elm_lang$navigation$Native_Navigation.getLocation(
-				{ctor: '_Tuple0'}));
-		var subs = function (model) {
-			return _elm_lang$core$Platform_Sub$batch(
-				{
-					ctor: '::',
-					_0: _elm_lang$navigation$Navigation$subscription(
-						_elm_lang$navigation$Navigation$Monitor(locationToMessage)),
-					_1: {
-						ctor: '::',
-						_0: stuff.subscriptions(model),
-						_1: {ctor: '[]'}
-					}
-				});
-		};
-		return _elm_lang$html$Html$program(
-			{init: init, view: stuff.view, update: stuff.update, subscriptions: subs});
-	});
-var _elm_lang$navigation$Navigation$programWithFlags = F2(
-	function (locationToMessage, stuff) {
-		var init = function (flags) {
-			return A2(
-				stuff.init,
-				flags,
-				_elm_lang$navigation$Native_Navigation.getLocation(
-					{ctor: '_Tuple0'}));
-		};
-		var subs = function (model) {
-			return _elm_lang$core$Platform_Sub$batch(
-				{
-					ctor: '::',
-					_0: _elm_lang$navigation$Navigation$subscription(
-						_elm_lang$navigation$Navigation$Monitor(locationToMessage)),
-					_1: {
-						ctor: '::',
-						_0: stuff.subscriptions(model),
-						_1: {ctor: '[]'}
-					}
-				});
-		};
-		return _elm_lang$html$Html$programWithFlags(
-			{init: init, view: stuff.view, update: stuff.update, subscriptions: subs});
-	});
-var _elm_lang$navigation$Navigation$subMap = F2(
-	function (func, _p7) {
-		var _p8 = _p7;
-		return _elm_lang$navigation$Navigation$Monitor(
-			function (_p9) {
-				return func(
-					_p8._0(_p9));
+var _elm_lang$websocket$WebSocket$removeQueue = F2(
+	function (name, state) {
+		return _elm_lang$core$Native_Utils.update(
+			state,
+			{
+				queues: A2(_elm_lang$core$Dict$remove, name, state.queues)
 			});
 	});
-var _elm_lang$navigation$Navigation$InternetExplorer = F2(
-	function (a, b) {
-		return {ctor: 'InternetExplorer', _0: a, _1: b};
+var _elm_lang$websocket$WebSocket$updateSocket = F3(
+	function (name, connection, state) {
+		return _elm_lang$core$Native_Utils.update(
+			state,
+			{
+				sockets: A3(_elm_lang$core$Dict$insert, name, connection, state.sockets)
+			});
 	});
-var _elm_lang$navigation$Navigation$Normal = function (a) {
-	return {ctor: 'Normal', _0: a};
-};
-var _elm_lang$navigation$Navigation$spawnPopWatcher = function (router) {
-	var reportLocation = function (_p10) {
-		return A2(
-			_elm_lang$core$Platform$sendToSelf,
-			router,
-			_elm_lang$navigation$Native_Navigation.getLocation(
-				{ctor: '_Tuple0'}));
-	};
-	return _elm_lang$navigation$Native_Navigation.isInternetExplorer11(
-		{ctor: '_Tuple0'}) ? A3(
-		_elm_lang$core$Task$map2,
-		_elm_lang$navigation$Navigation$InternetExplorer,
-		_elm_lang$core$Process$spawn(
-			A3(_elm_lang$dom$Dom_LowLevel$onWindow, 'popstate', _elm_lang$core$Json_Decode$value, reportLocation)),
-		_elm_lang$core$Process$spawn(
-			A3(_elm_lang$dom$Dom_LowLevel$onWindow, 'hashchange', _elm_lang$core$Json_Decode$value, reportLocation))) : A2(
-		_elm_lang$core$Task$map,
-		_elm_lang$navigation$Navigation$Normal,
-		_elm_lang$core$Process$spawn(
-			A3(_elm_lang$dom$Dom_LowLevel$onWindow, 'popstate', _elm_lang$core$Json_Decode$value, reportLocation)));
-};
-var _elm_lang$navigation$Navigation$onEffects = F4(
-	function (router, cmds, subs, _p11) {
-		var _p12 = _p11;
-		var _p15 = _p12.popWatcher;
-		var stepState = function () {
-			var _p13 = {ctor: '_Tuple2', _0: subs, _1: _p15};
-			_v6_2:
-			do {
-				if (_p13._0.ctor === '[]') {
-					if (_p13._1.ctor === 'Just') {
-						return A2(
-							_elm_lang$navigation$Navigation_ops['&>'],
-							_elm_lang$navigation$Navigation$killPopWatcher(_p13._1._0),
-							_elm_lang$core$Task$succeed(
-								A2(_elm_lang$navigation$Navigation$State, subs, _elm_lang$core$Maybe$Nothing)));
-					} else {
-						break _v6_2;
-					}
+var _elm_lang$websocket$WebSocket$add = F2(
+	function (value, maybeList) {
+		var _p1 = maybeList;
+		if (_p1.ctor === 'Nothing') {
+			return _elm_lang$core$Maybe$Just(
+				{
+					ctor: '::',
+					_0: value,
+					_1: {ctor: '[]'}
+				});
+		} else {
+			return _elm_lang$core$Maybe$Just(
+				{ctor: '::', _0: value, _1: _p1._0});
+		}
+	});
+var _elm_lang$websocket$WebSocket$buildSubDict = F2(
+	function (subs, dict) {
+		buildSubDict:
+		while (true) {
+			var _p2 = subs;
+			if (_p2.ctor === '[]') {
+				return dict;
+			} else {
+				if (_p2._0.ctor === 'Listen') {
+					var _v3 = _p2._1,
+						_v4 = A3(
+						_elm_lang$core$Dict$update,
+						_p2._0._0,
+						_elm_lang$websocket$WebSocket$add(_p2._0._1),
+						dict);
+					subs = _v3;
+					dict = _v4;
+					continue buildSubDict;
 				} else {
-					if (_p13._1.ctor === 'Nothing') {
+					var _v5 = _p2._1,
+						_v6 = A3(
+						_elm_lang$core$Dict$update,
+						_p2._0._0,
+						function (_p3) {
+							return _elm_lang$core$Maybe$Just(
+								A2(
+									_elm_lang$core$Maybe$withDefault,
+									{ctor: '[]'},
+									_p3));
+						},
+						dict);
+					subs = _v5;
+					dict = _v6;
+					continue buildSubDict;
+				}
+			}
+		}
+	});
+var _elm_lang$websocket$WebSocket_ops = _elm_lang$websocket$WebSocket_ops || {};
+_elm_lang$websocket$WebSocket_ops['&>'] = F2(
+	function (t1, t2) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (_p4) {
+				return t2;
+			},
+			t1);
+	});
+var _elm_lang$websocket$WebSocket$sendMessagesHelp = F3(
+	function (cmds, socketsDict, queuesDict) {
+		sendMessagesHelp:
+		while (true) {
+			var _p5 = cmds;
+			if (_p5.ctor === '[]') {
+				return _elm_lang$core$Task$succeed(queuesDict);
+			} else {
+				var _p9 = _p5._1;
+				var _p8 = _p5._0._0;
+				var _p7 = _p5._0._1;
+				var _p6 = A2(_elm_lang$core$Dict$get, _p8, socketsDict);
+				if ((_p6.ctor === 'Just') && (_p6._0.ctor === 'Connected')) {
+					return A2(
+						_elm_lang$websocket$WebSocket_ops['&>'],
+						A2(_elm_lang$websocket$WebSocket_LowLevel$send, _p6._0._0, _p7),
+						A3(_elm_lang$websocket$WebSocket$sendMessagesHelp, _p9, socketsDict, queuesDict));
+				} else {
+					var _v9 = _p9,
+						_v10 = socketsDict,
+						_v11 = A3(
+						_elm_lang$core$Dict$update,
+						_p8,
+						_elm_lang$websocket$WebSocket$add(_p7),
+						queuesDict);
+					cmds = _v9;
+					socketsDict = _v10;
+					queuesDict = _v11;
+					continue sendMessagesHelp;
+				}
+			}
+		}
+	});
+var _elm_lang$websocket$WebSocket$subscription = _elm_lang$core$Native_Platform.leaf('WebSocket');
+var _elm_lang$websocket$WebSocket$command = _elm_lang$core$Native_Platform.leaf('WebSocket');
+var _elm_lang$websocket$WebSocket$State = F3(
+	function (a, b, c) {
+		return {sockets: a, queues: b, subs: c};
+	});
+var _elm_lang$websocket$WebSocket$init = _elm_lang$core$Task$succeed(
+	A3(_elm_lang$websocket$WebSocket$State, _elm_lang$core$Dict$empty, _elm_lang$core$Dict$empty, _elm_lang$core$Dict$empty));
+var _elm_lang$websocket$WebSocket$Send = F2(
+	function (a, b) {
+		return {ctor: 'Send', _0: a, _1: b};
+	});
+var _elm_lang$websocket$WebSocket$send = F2(
+	function (url, message) {
+		return _elm_lang$websocket$WebSocket$command(
+			A2(_elm_lang$websocket$WebSocket$Send, url, message));
+	});
+var _elm_lang$websocket$WebSocket$cmdMap = F2(
+	function (_p11, _p10) {
+		var _p12 = _p10;
+		return A2(_elm_lang$websocket$WebSocket$Send, _p12._0, _p12._1);
+	});
+var _elm_lang$websocket$WebSocket$KeepAlive = function (a) {
+	return {ctor: 'KeepAlive', _0: a};
+};
+var _elm_lang$websocket$WebSocket$keepAlive = function (url) {
+	return _elm_lang$websocket$WebSocket$subscription(
+		_elm_lang$websocket$WebSocket$KeepAlive(url));
+};
+var _elm_lang$websocket$WebSocket$Listen = F2(
+	function (a, b) {
+		return {ctor: 'Listen', _0: a, _1: b};
+	});
+var _elm_lang$websocket$WebSocket$listen = F2(
+	function (url, tagger) {
+		return _elm_lang$websocket$WebSocket$subscription(
+			A2(_elm_lang$websocket$WebSocket$Listen, url, tagger));
+	});
+var _elm_lang$websocket$WebSocket$subMap = F2(
+	function (func, sub) {
+		var _p13 = sub;
+		if (_p13.ctor === 'Listen') {
+			return A2(
+				_elm_lang$websocket$WebSocket$Listen,
+				_p13._0,
+				function (_p14) {
+					return func(
+						_p13._1(_p14));
+				});
+		} else {
+			return _elm_lang$websocket$WebSocket$KeepAlive(_p13._0);
+		}
+	});
+var _elm_lang$websocket$WebSocket$Connected = function (a) {
+	return {ctor: 'Connected', _0: a};
+};
+var _elm_lang$websocket$WebSocket$Opening = F2(
+	function (a, b) {
+		return {ctor: 'Opening', _0: a, _1: b};
+	});
+var _elm_lang$websocket$WebSocket$BadOpen = function (a) {
+	return {ctor: 'BadOpen', _0: a};
+};
+var _elm_lang$websocket$WebSocket$GoodOpen = F2(
+	function (a, b) {
+		return {ctor: 'GoodOpen', _0: a, _1: b};
+	});
+var _elm_lang$websocket$WebSocket$Die = function (a) {
+	return {ctor: 'Die', _0: a};
+};
+var _elm_lang$websocket$WebSocket$Receive = F2(
+	function (a, b) {
+		return {ctor: 'Receive', _0: a, _1: b};
+	});
+var _elm_lang$websocket$WebSocket$open = F2(
+	function (name, router) {
+		return A2(
+			_elm_lang$websocket$WebSocket_LowLevel$open,
+			name,
+			{
+				onMessage: F2(
+					function (_p15, msg) {
 						return A2(
-							_elm_lang$core$Task$map,
-							function (_p14) {
+							_elm_lang$core$Platform$sendToSelf,
+							router,
+							A2(_elm_lang$websocket$WebSocket$Receive, name, msg));
+					}),
+				onClose: function (details) {
+					return A2(
+						_elm_lang$core$Platform$sendToSelf,
+						router,
+						_elm_lang$websocket$WebSocket$Die(name));
+				}
+			});
+	});
+var _elm_lang$websocket$WebSocket$attemptOpen = F3(
+	function (router, backoff, name) {
+		var badOpen = function (_p16) {
+			return A2(
+				_elm_lang$core$Platform$sendToSelf,
+				router,
+				_elm_lang$websocket$WebSocket$BadOpen(name));
+		};
+		var goodOpen = function (ws) {
+			return A2(
+				_elm_lang$core$Platform$sendToSelf,
+				router,
+				A2(_elm_lang$websocket$WebSocket$GoodOpen, name, ws));
+		};
+		var actuallyAttemptOpen = A2(
+			_elm_lang$core$Task$onError,
+			badOpen,
+			A2(
+				_elm_lang$core$Task$andThen,
+				goodOpen,
+				A2(_elm_lang$websocket$WebSocket$open, name, router)));
+		return _elm_lang$core$Process$spawn(
+			A2(
+				_elm_lang$websocket$WebSocket_ops['&>'],
+				_elm_lang$websocket$WebSocket$after(backoff),
+				actuallyAttemptOpen));
+	});
+var _elm_lang$websocket$WebSocket$onEffects = F4(
+	function (router, cmds, subs, state) {
+		var newSubs = A2(_elm_lang$websocket$WebSocket$buildSubDict, subs, _elm_lang$core$Dict$empty);
+		var cleanup = function (newQueues) {
+			var rightStep = F3(
+				function (name, connection, getNewSockets) {
+					return A2(
+						_elm_lang$websocket$WebSocket_ops['&>'],
+						_elm_lang$websocket$WebSocket$closeConnection(connection),
+						getNewSockets);
+				});
+			var bothStep = F4(
+				function (name, _p17, connection, getNewSockets) {
+					return A2(
+						_elm_lang$core$Task$map,
+						A2(_elm_lang$core$Dict$insert, name, connection),
+						getNewSockets);
+				});
+			var leftStep = F3(
+				function (name, _p18, getNewSockets) {
+					return A2(
+						_elm_lang$core$Task$andThen,
+						function (newSockets) {
+							return A2(
+								_elm_lang$core$Task$andThen,
+								function (pid) {
+									return _elm_lang$core$Task$succeed(
+										A3(
+											_elm_lang$core$Dict$insert,
+											name,
+											A2(_elm_lang$websocket$WebSocket$Opening, 0, pid),
+											newSockets));
+								},
+								A3(_elm_lang$websocket$WebSocket$attemptOpen, router, 0, name));
+						},
+						getNewSockets);
+				});
+			var newEntries = A2(
+				_elm_lang$core$Dict$union,
+				newQueues,
+				A2(
+					_elm_lang$core$Dict$map,
+					F2(
+						function (k, v) {
+							return {ctor: '[]'};
+						}),
+					newSubs));
+			var collectNewSockets = A6(
+				_elm_lang$core$Dict$merge,
+				leftStep,
+				bothStep,
+				rightStep,
+				newEntries,
+				state.sockets,
+				_elm_lang$core$Task$succeed(_elm_lang$core$Dict$empty));
+			return A2(
+				_elm_lang$core$Task$andThen,
+				function (newSockets) {
+					return _elm_lang$core$Task$succeed(
+						A3(_elm_lang$websocket$WebSocket$State, newSockets, newQueues, newSubs));
+				},
+				collectNewSockets);
+		};
+		var sendMessagesGetNewQueues = A3(_elm_lang$websocket$WebSocket$sendMessagesHelp, cmds, state.sockets, state.queues);
+		return A2(_elm_lang$core$Task$andThen, cleanup, sendMessagesGetNewQueues);
+	});
+var _elm_lang$websocket$WebSocket$onSelfMsg = F3(
+	function (router, selfMsg, state) {
+		var _p19 = selfMsg;
+		switch (_p19.ctor) {
+			case 'Receive':
+				var sends = A2(
+					_elm_lang$core$List$map,
+					function (tagger) {
+						return A2(
+							_elm_lang$core$Platform$sendToApp,
+							router,
+							tagger(_p19._1));
+					},
+					A2(
+						_elm_lang$core$Maybe$withDefault,
+						{ctor: '[]'},
+						A2(_elm_lang$core$Dict$get, _p19._0, state.subs)));
+				return A2(
+					_elm_lang$websocket$WebSocket_ops['&>'],
+					_elm_lang$core$Task$sequence(sends),
+					_elm_lang$core$Task$succeed(state));
+			case 'Die':
+				var _p21 = _p19._0;
+				var _p20 = A2(_elm_lang$core$Dict$get, _p21, state.sockets);
+				if (_p20.ctor === 'Nothing') {
+					return _elm_lang$core$Task$succeed(state);
+				} else {
+					return A2(
+						_elm_lang$core$Task$andThen,
+						function (pid) {
+							return _elm_lang$core$Task$succeed(
+								A3(
+									_elm_lang$websocket$WebSocket$updateSocket,
+									_p21,
+									A2(_elm_lang$websocket$WebSocket$Opening, 0, pid),
+									state));
+						},
+						A3(_elm_lang$websocket$WebSocket$attemptOpen, router, 0, _p21));
+				}
+			case 'GoodOpen':
+				var _p24 = _p19._1;
+				var _p23 = _p19._0;
+				var _p22 = A2(_elm_lang$core$Dict$get, _p23, state.queues);
+				if (_p22.ctor === 'Nothing') {
+					return _elm_lang$core$Task$succeed(
+						A3(
+							_elm_lang$websocket$WebSocket$updateSocket,
+							_p23,
+							_elm_lang$websocket$WebSocket$Connected(_p24),
+							state));
+				} else {
+					return A3(
+						_elm_lang$core$List$foldl,
+						F2(
+							function (msg, task) {
 								return A2(
-									_elm_lang$navigation$Navigation$State,
-									subs,
-									_elm_lang$core$Maybe$Just(_p14));
+									_elm_lang$websocket$WebSocket_ops['&>'],
+									A2(_elm_lang$websocket$WebSocket_LowLevel$send, _p24, msg),
+									task);
+							}),
+						_elm_lang$core$Task$succeed(
+							A2(
+								_elm_lang$websocket$WebSocket$removeQueue,
+								_p23,
+								A3(
+									_elm_lang$websocket$WebSocket$updateSocket,
+									_p23,
+									_elm_lang$websocket$WebSocket$Connected(_p24),
+									state))),
+						_p22._0);
+				}
+			default:
+				var _p27 = _p19._0;
+				var _p25 = A2(_elm_lang$core$Dict$get, _p27, state.sockets);
+				if (_p25.ctor === 'Nothing') {
+					return _elm_lang$core$Task$succeed(state);
+				} else {
+					if (_p25._0.ctor === 'Opening') {
+						var _p26 = _p25._0._0;
+						return A2(
+							_elm_lang$core$Task$andThen,
+							function (pid) {
+								return _elm_lang$core$Task$succeed(
+									A3(
+										_elm_lang$websocket$WebSocket$updateSocket,
+										_p27,
+										A2(_elm_lang$websocket$WebSocket$Opening, _p26 + 1, pid),
+										state));
 							},
-							_elm_lang$navigation$Navigation$spawnPopWatcher(router));
+							A3(_elm_lang$websocket$WebSocket$attemptOpen, router, _p26 + 1, _p27));
 					} else {
-						break _v6_2;
+						return _elm_lang$core$Task$succeed(state);
 					}
 				}
-			} while(false);
-			return _elm_lang$core$Task$succeed(
-				A2(_elm_lang$navigation$Navigation$State, subs, _p15));
-		}();
-		return A2(
-			_elm_lang$navigation$Navigation_ops['&>'],
-			_elm_lang$core$Task$sequence(
-				A2(
-					_elm_lang$core$List$map,
-					A2(_elm_lang$navigation$Navigation$cmdHelp, router, subs),
-					cmds)),
-			stepState);
+		}
 	});
-_elm_lang$core$Native_Platform.effectManagers['Navigation'] = {pkg: 'elm-lang/navigation', init: _elm_lang$navigation$Navigation$init, onEffects: _elm_lang$navigation$Navigation$onEffects, onSelfMsg: _elm_lang$navigation$Navigation$onSelfMsg, tag: 'fx', cmdMap: _elm_lang$navigation$Navigation$cmdMap, subMap: _elm_lang$navigation$Navigation$subMap};
+_elm_lang$core$Native_Platform.effectManagers['WebSocket'] = {pkg: 'elm-lang/websocket', init: _elm_lang$websocket$WebSocket$init, onEffects: _elm_lang$websocket$WebSocket$onEffects, onSelfMsg: _elm_lang$websocket$WebSocket$onSelfMsg, tag: 'fx', cmdMap: _elm_lang$websocket$WebSocket$cmdMap, subMap: _elm_lang$websocket$WebSocket$subMap};
 
 var _rnons$ordered_containers$OrderedDict$values = function (_p0) {
 	var _p1 = _p0;
@@ -10612,291 +10559,16 @@ var _user$project$Menu_Items$setSelected = F3(
 	});
 
 
-
-var _user$project$Ports$selectAllInputText = _elm_lang$core$Native_Platform.outgoingPort(
-	'selectAllInputText',
-	function (v) {
-		return v;
-	});
-var _user$project$Ports$clearInputText = _elm_lang$core$Native_Platform.outgoingPort(
-	'clearInputText',
-	function (v) {
-		return v;
-	});
-var _user$project$Ports$ckEditor = _elm_lang$core$Native_Platform.outgoingPort(
-	'ckEditor',
-	function (v) {
-		return v;
-	});
-var _user$project$Ports$ckEditorUpdate = _elm_lang$core$Native_Platform.incomingPort(
-	'ckEditorUpdate',
-	A2(
-		_elm_lang$core$Json_Decode$andThen,
-		function (x0) {
-			return A2(
-				_elm_lang$core$Json_Decode$andThen,
-				function (x1) {
-					return _elm_lang$core$Json_Decode$succeed(
-						{ctor: '_Tuple2', _0: x0, _1: x1});
-				},
-				A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
-		},
-		A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string)));
-var _user$project$Ports$ckEditorSetHtml = _elm_lang$core$Native_Platform.outgoingPort(
-	'ckEditorSetHtml',
-	function (v) {
-		return [v._0, v._1];
-	});
-var _user$project$Ports$addClassToCKEditor = _elm_lang$core$Native_Platform.outgoingPort(
-	'addClassToCKEditor',
-	function (v) {
-		return [v._0, v._1];
-	});
-var _user$project$Ports$confirm = _elm_lang$core$Native_Platform.outgoingPort(
-	'confirm',
-	function (v) {
-		return v;
-	});
-var _user$project$Ports$confirmation = _elm_lang$core$Native_Platform.incomingPort('confirmation', _elm_lang$core$Json_Decode$bool);
-var _user$project$Ports$redirect = _elm_lang$core$Native_Platform.outgoingPort(
-	'redirect',
-	function (v) {
-		return v;
-	});
-var _user$project$Ports$scrollTo = _elm_lang$core$Native_Platform.outgoingPort(
-	'scrollTo',
-	function (v) {
-		return v;
-	});
-var _user$project$Ports$selectedText = _elm_lang$core$Native_Platform.incomingPort(
-	'selectedText',
-	_elm_lang$core$Json_Decode$oneOf(
-		{
-			ctor: '::',
-			_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-			_1: {
-				ctor: '::',
-				_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
-				_1: {ctor: '[]'}
-			}
-		}));
-
-var _user$project$Help_PopUp$setAllInvisible = function (msgs) {
-	return _rnons$ordered_containers$OrderedDict$fromList(
-		A2(
-			_elm_lang$core$List$map,
-			function (_p0) {
-				var _p1 = _p0;
-				return {
-					ctor: '_Tuple2',
-					_0: _p1._0,
-					_1: {ctor: '_Tuple2', _0: _p1._1._0, _1: false}
-				};
-			},
-			_rnons$ordered_containers$OrderedDict$toList(msgs)));
+var _user$project$Profile$profileIDtoString = function (_p0) {
+	var _p1 = _p0;
+	return _elm_lang$core$Basics$toString(_p1._0);
 };
-var _user$project$Help_PopUp$currentMsgIndex = function (_p2) {
-	var _p3 = _p2;
-	return _p3._3;
+var _user$project$Profile$ProfileID = function (a) {
+	return {ctor: 'ProfileID', _0: a};
 };
-var _user$project$Help_PopUp$msgs = function (_p4) {
-	var _p5 = _p4;
-	return _p5._0;
+var _user$project$Profile$ProfileType = function (a) {
+	return {ctor: 'ProfileType', _0: a};
 };
-var _user$project$Help_PopUp$toArray = function (help_msgs) {
-	return _elm_lang$core$Array$fromList(
-		_rnons$ordered_containers$OrderedDict$toList(help_msgs));
-};
-var _user$project$Help_PopUp$getMsg = F2(
-	function (help, index) {
-		var ordered_msgs = _user$project$Help_PopUp$toArray(
-			_user$project$Help_PopUp$msgs(help));
-		var _p6 = A2(_elm_lang$core$Array$get, index, ordered_msgs);
-		if (_p6.ctor === 'Just') {
-			return _elm_lang$core$Maybe$Just(_p6._0._1._0);
-		} else {
-			return _elm_lang$core$Maybe$Nothing;
-		}
-	});
-var _user$project$Help_PopUp$currentMsg = function (help) {
-	var current_msg_index = _user$project$Help_PopUp$currentMsgIndex(help);
-	return A2(_user$project$Help_PopUp$getMsg, help, current_msg_index);
-};
-var _user$project$Help_PopUp$nextMsg = function (help) {
-	var current_msg_index = _user$project$Help_PopUp$currentMsgIndex(help);
-	var next_msg_index = current_msg_index + 1;
-	var _p7 = A2(_user$project$Help_PopUp$getMsg, help, current_msg_index);
-	if (_p7.ctor === 'Just') {
-		var _p8 = A2(_user$project$Help_PopUp$getMsg, help, next_msg_index);
-		if (_p8.ctor === 'Just') {
-			return _elm_lang$core$Maybe$Just(
-				{ctor: '_Tuple2', _0: _p8._0, _1: next_msg_index});
-		} else {
-			var _p9 = A2(_user$project$Help_PopUp$getMsg, help, 0);
-			if (_p9.ctor === 'Just') {
-				return _elm_lang$core$Maybe$Just(
-					{ctor: '_Tuple2', _0: _p9._0, _1: 0});
-			} else {
-				return _elm_lang$core$Maybe$Nothing;
-			}
-		}
-	} else {
-		return _elm_lang$core$Maybe$Nothing;
-	}
-};
-var _user$project$Help_PopUp$prevMsg = function (help) {
-	var current_msg_index = _user$project$Help_PopUp$currentMsgIndex(help);
-	var prev_msg_index = current_msg_index - 1;
-	var _p10 = A2(_user$project$Help_PopUp$getMsg, help, current_msg_index);
-	if (_p10.ctor === 'Just') {
-		var _p11 = A2(_user$project$Help_PopUp$getMsg, help, prev_msg_index);
-		if (_p11.ctor === 'Just') {
-			return _elm_lang$core$Maybe$Just(
-				{ctor: '_Tuple2', _0: _p11._0, _1: prev_msg_index});
-		} else {
-			var last_msg_index = _elm_lang$core$Array$length(
-				_user$project$Help_PopUp$toArray(
-					_user$project$Help_PopUp$msgs(help))) - 1;
-			var _p12 = A2(_user$project$Help_PopUp$getMsg, help, last_msg_index);
-			if (_p12.ctor === 'Just') {
-				return _elm_lang$core$Maybe$Just(
-					{ctor: '_Tuple2', _0: _p12._0, _1: last_msg_index});
-			} else {
-				return _elm_lang$core$Maybe$Nothing;
-			}
-		}
-	} else {
-		return _elm_lang$core$Maybe$Nothing;
-	}
-};
-var _user$project$Help_PopUp$popupToID = F2(
-	function (_p13, help_msg) {
-		var _p14 = _p13;
-		return _p14._2(help_msg);
-	});
-var _user$project$Help_PopUp$scrollToFirstMsg = function (help) {
-	var _p15 = A2(_user$project$Help_PopUp$getMsg, help, 0);
-	if (_p15.ctor === 'Just') {
-		return _user$project$Ports$scrollTo(
-			A2(_user$project$Help_PopUp$popupToID, help, _p15._0));
-	} else {
-		return _elm_lang$core$Platform_Cmd$none;
-	}
-};
-var _user$project$Help_PopUp$scrollToNextMsg = function (help) {
-	var _p16 = _user$project$Help_PopUp$nextMsg(help);
-	if (_p16.ctor === 'Just') {
-		return _user$project$Ports$scrollTo(
-			A2(_user$project$Help_PopUp$popupToID, help, _p16._0._0));
-	} else {
-		return _elm_lang$core$Platform_Cmd$none;
-	}
-};
-var _user$project$Help_PopUp$scrollToPrevMsg = function (help) {
-	var _p17 = _user$project$Help_PopUp$prevMsg(help);
-	if (_p17.ctor === 'Just') {
-		return _user$project$Ports$scrollTo(
-			A2(_user$project$Help_PopUp$popupToID, help, _p17._0._0));
-	} else {
-		return _elm_lang$core$Platform_Cmd$none;
-	}
-};
-var _user$project$Help_PopUp$popupToOverlayID = F2(
-	function (_p18, help_msg) {
-		var _p19 = _p18;
-		return _p19._1(help_msg);
-	});
-var _user$project$Help_PopUp$isVisible = F2(
-	function (help, msg) {
-		var _p20 = A2(
-			_rnons$ordered_containers$OrderedDict$get,
-			A2(_user$project$Help_PopUp$popupToOverlayID, help, msg),
-			_user$project$Help_PopUp$msgs(help));
-		if (_p20.ctor === 'Just') {
-			return _p20._0._1;
-		} else {
-			return false;
-		}
-	});
-var _user$project$Help_PopUp$helpID = F2(
-	function (_p21, help_msg) {
-		var _p22 = _p21;
-		return _p22._2(help_msg);
-	});
-var _user$project$Help_PopUp$Help = F4(
-	function (a, b, c, d) {
-		return {ctor: 'Help', _0: a, _1: b, _2: c, _3: d};
-	});
-var _user$project$Help_PopUp$setMsgs = F2(
-	function (_p23, new_msgs) {
-		var _p24 = _p23;
-		return A4(_user$project$Help_PopUp$Help, new_msgs, _p24._1, _p24._2, _p24._3);
-	});
-var _user$project$Help_PopUp$setVisible = F3(
-	function (help, help_msg, visible) {
-		var help_msgs = _user$project$Help_PopUp$setAllInvisible(
-			_user$project$Help_PopUp$msgs(help));
-		var help_msg_id = A2(_user$project$Help_PopUp$popupToOverlayID, help, help_msg);
-		var new_msgs = A3(
-			_rnons$ordered_containers$OrderedDict$insert,
-			help_msg_id,
-			{ctor: '_Tuple2', _0: help_msg, _1: visible},
-			help_msgs);
-		return A2(_user$project$Help_PopUp$setMsgs, help, new_msgs);
-	});
-var _user$project$Help_PopUp$setCurrentMsgIndex = F2(
-	function (_p25, new_index) {
-		var _p26 = _p25;
-		return A4(_user$project$Help_PopUp$Help, _p26._0, _p26._1, _p26._2, new_index);
-	});
-var _user$project$Help_PopUp$next = function (help) {
-	var current_msg_index = _user$project$Help_PopUp$currentMsgIndex(help);
-	var _p27 = _user$project$Help_PopUp$nextMsg(help);
-	if (_p27.ctor === 'Just') {
-		return A2(
-			_user$project$Help_PopUp$setCurrentMsgIndex,
-			A3(_user$project$Help_PopUp$setVisible, help, _p27._0._0, true),
-			_p27._0._1);
-	} else {
-		return help;
-	}
-};
-var _user$project$Help_PopUp$prev = function (help) {
-	var current_msg_index = _user$project$Help_PopUp$currentMsgIndex(help);
-	var _p28 = _user$project$Help_PopUp$prevMsg(help);
-	if (_p28.ctor === 'Just') {
-		return A2(
-			_user$project$Help_PopUp$setCurrentMsgIndex,
-			A3(_user$project$Help_PopUp$setVisible, help, _p28._0._0, true),
-			_p28._0._1);
-	} else {
-		return help;
-	}
-};
-var _user$project$Help_PopUp$init = F3(
-	function (help_msgs, popup_to_overlay_id, popup_to_id) {
-		var initial_msgs = _rnons$ordered_containers$OrderedDict$fromList(
-			A2(
-				_elm_lang$core$List$map,
-				function (help_msg) {
-					return {
-						ctor: '_Tuple2',
-						_0: popup_to_overlay_id(help_msg),
-						_1: {ctor: '_Tuple2', _0: help_msg, _1: false}
-					};
-				},
-				help_msgs));
-		var _p29 = _elm_lang$core$List$head(help_msgs);
-		if (_p29.ctor === 'Just') {
-			return A3(
-				_user$project$Help_PopUp$setVisible,
-				A4(_user$project$Help_PopUp$Help, initial_msgs, popup_to_overlay_id, popup_to_id, 0),
-				_p29._0,
-				true);
-		} else {
-			return A4(_user$project$Help_PopUp$Help, initial_msgs, popup_to_overlay_id, popup_to_id, 0);
-		}
-	});
 
 var _user$project$HttpHelpers$delete_with_headers = F4(
 	function (url, headers, body, decoder) {
@@ -10937,6 +10609,39 @@ var _user$project$HttpHelpers$put_with_headers = F4(
 				withCredentials: false
 			});
 	});
+
+var _user$project$Instructor_Resource$uriToString = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0;
+};
+var _user$project$Instructor_Resource$instructorInviteURI = function (_p2) {
+	var _p3 = _p2;
+	return _p3._0;
+};
+var _user$project$Instructor_Resource$instructorLogoutURI = function (_p4) {
+	var _p5 = _p4;
+	return _p5._0;
+};
+var _user$project$Instructor_Resource$instructorProfileURI = function (_p6) {
+	var _p7 = _p6;
+	return _p7._0;
+};
+var _user$project$Instructor_Resource$URI = function (a) {
+	return {ctor: 'URI', _0: a};
+};
+var _user$project$Instructor_Resource$InstructorProfileURI = function (a) {
+	return {ctor: 'InstructorProfileURI', _0: a};
+};
+var _user$project$Instructor_Resource$InstructorLogoutURI = function (a) {
+	return {ctor: 'InstructorLogoutURI', _0: a};
+};
+var _user$project$Instructor_Resource$InstructorInviteURI = function (a) {
+	return {ctor: 'InstructorInviteURI', _0: a};
+};
+var _user$project$Instructor_Resource$flagsToInstructorURI = function (flags) {
+	return _user$project$Instructor_Resource$InstructorInviteURI(
+		_user$project$Instructor_Resource$URI(flags.instructor_invite_uri));
+};
 
 var _user$project$Util$onEnterUp = function (msg) {
 	return A2(
@@ -11029,6 +10734,20 @@ var _user$project$Instructor_Invite$new = function (params) {
 		_user$project$Instructor_Invite$InviteExpiration(params.expiration));
 };
 
+var _user$project$Instructor_Invite_Encode$newInviteEncoder = function (email) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'email',
+				_1: _elm_lang$core$Json_Encode$string(
+					_user$project$Instructor_Invite$emailToString(email))
+			},
+			_1: {ctor: '[]'}
+		});
+};
+
 var _user$project$Instructor_Invite_Decode$newInviteRespDecoder = A4(
 	_elm_lang$core$Json_Decode$map3,
 	_user$project$Instructor_Invite$InstructorInvite,
@@ -11044,53 +10763,6 @@ var _user$project$Instructor_Invite_Decode$newInviteRespDecoder = A4(
 		_elm_lang$core$Json_Decode$field,
 		'expiration',
 		A2(_elm_lang$core$Json_Decode$map, _user$project$Instructor_Invite$InviteExpiration, _elm_lang$core$Json_Decode$string)));
-
-var _user$project$Instructor_Invite_Encode$newInviteEncoder = function (email) {
-	return _elm_lang$core$Json_Encode$object(
-		{
-			ctor: '::',
-			_0: {
-				ctor: '_Tuple2',
-				_0: 'email',
-				_1: _elm_lang$core$Json_Encode$string(
-					_user$project$Instructor_Invite$emailToString(email))
-			},
-			_1: {ctor: '[]'}
-		});
-};
-
-var _user$project$Instructor_Resource$uriToString = function (_p0) {
-	var _p1 = _p0;
-	return _p1._0;
-};
-var _user$project$Instructor_Resource$instructorInviteURI = function (_p2) {
-	var _p3 = _p2;
-	return _p3._0;
-};
-var _user$project$Instructor_Resource$instructorLogoutURI = function (_p4) {
-	var _p5 = _p4;
-	return _p5._0;
-};
-var _user$project$Instructor_Resource$instructorProfileURI = function (_p6) {
-	var _p7 = _p6;
-	return _p7._0;
-};
-var _user$project$Instructor_Resource$URI = function (a) {
-	return {ctor: 'URI', _0: a};
-};
-var _user$project$Instructor_Resource$InstructorProfileURI = function (a) {
-	return {ctor: 'InstructorProfileURI', _0: a};
-};
-var _user$project$Instructor_Resource$InstructorLogoutURI = function (a) {
-	return {ctor: 'InstructorLogoutURI', _0: a};
-};
-var _user$project$Instructor_Resource$InstructorInviteURI = function (a) {
-	return {ctor: 'InstructorInviteURI', _0: a};
-};
-var _user$project$Instructor_Resource$flagsToInstructorURI = function (flags) {
-	return _user$project$Instructor_Resource$InstructorInviteURI(
-		_user$project$Instructor_Resource$URI(flags.instructor_invite_uri));
-};
 
 var _user$project$Menu_Logout$LogOutResp = function (a) {
 	return {redirect: a};
@@ -11390,9 +11062,9 @@ var _user$project$Text_Translations$WordValues = F2(
 	function (a, b) {
 		return {grammemes: a, translations: b};
 	});
-var _user$project$Text_Translations$TextGroupDetails = F4(
-	function (a, b, c, d) {
-		return {id: a, instance: b, pos: c, length: d};
+var _user$project$Text_Translations$TextGroupDetails = F3(
+	function (a, b, c) {
+		return {id: a, pos: b, length: c};
 	});
 var _user$project$Text_Translations$Flags = F4(
 	function (a, b, c, d) {
@@ -11521,17 +11193,6 @@ var _user$project$Text_Model$TextListItem = function (a) {
 			};
 		};
 	};
-};
-
-var _user$project$Profile$profileIDtoString = function (_p0) {
-	var _p1 = _p0;
-	return _elm_lang$core$Basics$toString(_p1._0);
-};
-var _user$project$Profile$ProfileID = function (a) {
-	return {ctor: 'ProfileID', _0: a};
-};
-var _user$project$Profile$ProfileType = function (a) {
-	return {ctor: 'ProfileType', _0: a};
 };
 
 var _user$project$Student_Resource$uriToString = function (_p0) {
@@ -11835,13 +11496,298 @@ var _user$project$Instructor_View$view_instructor_profile_header = F2(
 		};
 	});
 
-
 var _user$project$Student_Performance_Report$emptyPerformanceReport = {html: '<div>No results found.</div>', pdf_link: ''};
 var _user$project$Student_Performance_Report$PerformanceReport = F2(
 	function (a, b) {
 		return {html: a, pdf_link: b};
 	});
 
+
+
+var _user$project$Ports$selectAllInputText = _elm_lang$core$Native_Platform.outgoingPort(
+	'selectAllInputText',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$clearInputText = _elm_lang$core$Native_Platform.outgoingPort(
+	'clearInputText',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$ckEditor = _elm_lang$core$Native_Platform.outgoingPort(
+	'ckEditor',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$ckEditorUpdate = _elm_lang$core$Native_Platform.incomingPort(
+	'ckEditorUpdate',
+	A2(
+		_elm_lang$core$Json_Decode$andThen,
+		function (x0) {
+			return A2(
+				_elm_lang$core$Json_Decode$andThen,
+				function (x1) {
+					return _elm_lang$core$Json_Decode$succeed(
+						{ctor: '_Tuple2', _0: x0, _1: x1});
+				},
+				A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
+		},
+		A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string)));
+var _user$project$Ports$ckEditorSetHtml = _elm_lang$core$Native_Platform.outgoingPort(
+	'ckEditorSetHtml',
+	function (v) {
+		return [v._0, v._1];
+	});
+var _user$project$Ports$addClassToCKEditor = _elm_lang$core$Native_Platform.outgoingPort(
+	'addClassToCKEditor',
+	function (v) {
+		return [v._0, v._1];
+	});
+var _user$project$Ports$confirm = _elm_lang$core$Native_Platform.outgoingPort(
+	'confirm',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$confirmation = _elm_lang$core$Native_Platform.incomingPort('confirmation', _elm_lang$core$Json_Decode$bool);
+var _user$project$Ports$redirect = _elm_lang$core$Native_Platform.outgoingPort(
+	'redirect',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$scrollTo = _elm_lang$core$Native_Platform.outgoingPort(
+	'scrollTo',
+	function (v) {
+		return v;
+	});
+var _user$project$Ports$selectedText = _elm_lang$core$Native_Platform.incomingPort(
+	'selectedText',
+	_elm_lang$core$Json_Decode$oneOf(
+		{
+			ctor: '::',
+			_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+			_1: {
+				ctor: '::',
+				_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+				_1: {ctor: '[]'}
+			}
+		}));
+
+var _user$project$Help_PopUp$setAllInvisible = function (msgs) {
+	return _rnons$ordered_containers$OrderedDict$fromList(
+		A2(
+			_elm_lang$core$List$map,
+			function (_p0) {
+				var _p1 = _p0;
+				return {
+					ctor: '_Tuple2',
+					_0: _p1._0,
+					_1: {ctor: '_Tuple2', _0: _p1._1._0, _1: false}
+				};
+			},
+			_rnons$ordered_containers$OrderedDict$toList(msgs)));
+};
+var _user$project$Help_PopUp$currentMsgIndex = function (_p2) {
+	var _p3 = _p2;
+	return _p3._3;
+};
+var _user$project$Help_PopUp$msgs = function (_p4) {
+	var _p5 = _p4;
+	return _p5._0;
+};
+var _user$project$Help_PopUp$toArray = function (help_msgs) {
+	return _elm_lang$core$Array$fromList(
+		_rnons$ordered_containers$OrderedDict$toList(help_msgs));
+};
+var _user$project$Help_PopUp$getMsg = F2(
+	function (help, index) {
+		var ordered_msgs = _user$project$Help_PopUp$toArray(
+			_user$project$Help_PopUp$msgs(help));
+		var _p6 = A2(_elm_lang$core$Array$get, index, ordered_msgs);
+		if (_p6.ctor === 'Just') {
+			return _elm_lang$core$Maybe$Just(_p6._0._1._0);
+		} else {
+			return _elm_lang$core$Maybe$Nothing;
+		}
+	});
+var _user$project$Help_PopUp$currentMsg = function (help) {
+	var current_msg_index = _user$project$Help_PopUp$currentMsgIndex(help);
+	return A2(_user$project$Help_PopUp$getMsg, help, current_msg_index);
+};
+var _user$project$Help_PopUp$nextMsg = function (help) {
+	var current_msg_index = _user$project$Help_PopUp$currentMsgIndex(help);
+	var next_msg_index = current_msg_index + 1;
+	var _p7 = A2(_user$project$Help_PopUp$getMsg, help, current_msg_index);
+	if (_p7.ctor === 'Just') {
+		var _p8 = A2(_user$project$Help_PopUp$getMsg, help, next_msg_index);
+		if (_p8.ctor === 'Just') {
+			return _elm_lang$core$Maybe$Just(
+				{ctor: '_Tuple2', _0: _p8._0, _1: next_msg_index});
+		} else {
+			var _p9 = A2(_user$project$Help_PopUp$getMsg, help, 0);
+			if (_p9.ctor === 'Just') {
+				return _elm_lang$core$Maybe$Just(
+					{ctor: '_Tuple2', _0: _p9._0, _1: 0});
+			} else {
+				return _elm_lang$core$Maybe$Nothing;
+			}
+		}
+	} else {
+		return _elm_lang$core$Maybe$Nothing;
+	}
+};
+var _user$project$Help_PopUp$prevMsg = function (help) {
+	var current_msg_index = _user$project$Help_PopUp$currentMsgIndex(help);
+	var prev_msg_index = current_msg_index - 1;
+	var _p10 = A2(_user$project$Help_PopUp$getMsg, help, current_msg_index);
+	if (_p10.ctor === 'Just') {
+		var _p11 = A2(_user$project$Help_PopUp$getMsg, help, prev_msg_index);
+		if (_p11.ctor === 'Just') {
+			return _elm_lang$core$Maybe$Just(
+				{ctor: '_Tuple2', _0: _p11._0, _1: prev_msg_index});
+		} else {
+			var last_msg_index = _elm_lang$core$Array$length(
+				_user$project$Help_PopUp$toArray(
+					_user$project$Help_PopUp$msgs(help))) - 1;
+			var _p12 = A2(_user$project$Help_PopUp$getMsg, help, last_msg_index);
+			if (_p12.ctor === 'Just') {
+				return _elm_lang$core$Maybe$Just(
+					{ctor: '_Tuple2', _0: _p12._0, _1: last_msg_index});
+			} else {
+				return _elm_lang$core$Maybe$Nothing;
+			}
+		}
+	} else {
+		return _elm_lang$core$Maybe$Nothing;
+	}
+};
+var _user$project$Help_PopUp$popupToID = F2(
+	function (_p13, help_msg) {
+		var _p14 = _p13;
+		return _p14._2(help_msg);
+	});
+var _user$project$Help_PopUp$scrollToFirstMsg = function (help) {
+	var _p15 = A2(_user$project$Help_PopUp$getMsg, help, 0);
+	if (_p15.ctor === 'Just') {
+		return _user$project$Ports$scrollTo(
+			A2(_user$project$Help_PopUp$popupToID, help, _p15._0));
+	} else {
+		return _elm_lang$core$Platform_Cmd$none;
+	}
+};
+var _user$project$Help_PopUp$scrollToNextMsg = function (help) {
+	var _p16 = _user$project$Help_PopUp$nextMsg(help);
+	if (_p16.ctor === 'Just') {
+		return _user$project$Ports$scrollTo(
+			A2(_user$project$Help_PopUp$popupToID, help, _p16._0._0));
+	} else {
+		return _elm_lang$core$Platform_Cmd$none;
+	}
+};
+var _user$project$Help_PopUp$scrollToPrevMsg = function (help) {
+	var _p17 = _user$project$Help_PopUp$prevMsg(help);
+	if (_p17.ctor === 'Just') {
+		return _user$project$Ports$scrollTo(
+			A2(_user$project$Help_PopUp$popupToID, help, _p17._0._0));
+	} else {
+		return _elm_lang$core$Platform_Cmd$none;
+	}
+};
+var _user$project$Help_PopUp$popupToOverlayID = F2(
+	function (_p18, help_msg) {
+		var _p19 = _p18;
+		return _p19._1(help_msg);
+	});
+var _user$project$Help_PopUp$isVisible = F2(
+	function (help, msg) {
+		var _p20 = A2(
+			_rnons$ordered_containers$OrderedDict$get,
+			A2(_user$project$Help_PopUp$popupToOverlayID, help, msg),
+			_user$project$Help_PopUp$msgs(help));
+		if (_p20.ctor === 'Just') {
+			return _p20._0._1;
+		} else {
+			return false;
+		}
+	});
+var _user$project$Help_PopUp$helpID = F2(
+	function (_p21, help_msg) {
+		var _p22 = _p21;
+		return _p22._2(help_msg);
+	});
+var _user$project$Help_PopUp$Help = F4(
+	function (a, b, c, d) {
+		return {ctor: 'Help', _0: a, _1: b, _2: c, _3: d};
+	});
+var _user$project$Help_PopUp$setMsgs = F2(
+	function (_p23, new_msgs) {
+		var _p24 = _p23;
+		return A4(_user$project$Help_PopUp$Help, new_msgs, _p24._1, _p24._2, _p24._3);
+	});
+var _user$project$Help_PopUp$setVisible = F3(
+	function (help, help_msg, visible) {
+		var help_msgs = _user$project$Help_PopUp$setAllInvisible(
+			_user$project$Help_PopUp$msgs(help));
+		var help_msg_id = A2(_user$project$Help_PopUp$popupToOverlayID, help, help_msg);
+		var new_msgs = A3(
+			_rnons$ordered_containers$OrderedDict$insert,
+			help_msg_id,
+			{ctor: '_Tuple2', _0: help_msg, _1: visible},
+			help_msgs);
+		return A2(_user$project$Help_PopUp$setMsgs, help, new_msgs);
+	});
+var _user$project$Help_PopUp$setCurrentMsgIndex = F2(
+	function (_p25, new_index) {
+		var _p26 = _p25;
+		return A4(_user$project$Help_PopUp$Help, _p26._0, _p26._1, _p26._2, new_index);
+	});
+var _user$project$Help_PopUp$next = function (help) {
+	var current_msg_index = _user$project$Help_PopUp$currentMsgIndex(help);
+	var _p27 = _user$project$Help_PopUp$nextMsg(help);
+	if (_p27.ctor === 'Just') {
+		return A2(
+			_user$project$Help_PopUp$setCurrentMsgIndex,
+			A3(_user$project$Help_PopUp$setVisible, help, _p27._0._0, true),
+			_p27._0._1);
+	} else {
+		return help;
+	}
+};
+var _user$project$Help_PopUp$prev = function (help) {
+	var current_msg_index = _user$project$Help_PopUp$currentMsgIndex(help);
+	var _p28 = _user$project$Help_PopUp$prevMsg(help);
+	if (_p28.ctor === 'Just') {
+		return A2(
+			_user$project$Help_PopUp$setCurrentMsgIndex,
+			A3(_user$project$Help_PopUp$setVisible, help, _p28._0._0, true),
+			_p28._0._1);
+	} else {
+		return help;
+	}
+};
+var _user$project$Help_PopUp$init = F3(
+	function (help_msgs, popup_to_overlay_id, popup_to_id) {
+		var initial_msgs = _rnons$ordered_containers$OrderedDict$fromList(
+			A2(
+				_elm_lang$core$List$map,
+				function (help_msg) {
+					return {
+						ctor: '_Tuple2',
+						_0: popup_to_overlay_id(help_msg),
+						_1: {ctor: '_Tuple2', _0: help_msg, _1: false}
+					};
+				},
+				help_msgs));
+		var _p29 = _elm_lang$core$List$head(help_msgs);
+		if (_p29.ctor === 'Just') {
+			return A3(
+				_user$project$Help_PopUp$setVisible,
+				A4(_user$project$Help_PopUp$Help, initial_msgs, popup_to_overlay_id, popup_to_id, 0),
+				_p29._0,
+				true);
+		} else {
+			return A4(_user$project$Help_PopUp$Help, initial_msgs, popup_to_overlay_id, popup_to_id, 0);
+		}
+	});
 
 var _user$project$Student_Profile_Help$popupToID = function (help) {
 	var _p0 = help;
@@ -12368,13 +12314,9 @@ var _user$project$Text_Translations_Decode$textGroupDetailsDecoder = A3(
 		_elm_lang$core$Json_Decode$int,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'instance',
+			'id',
 			_elm_lang$core$Json_Decode$int,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'id',
-				_elm_lang$core$Json_Decode$int,
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Translations$TextGroupDetails)))));
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Translations$TextGroupDetails))));
 var _user$project$Text_Translations_Decode$wordHelpDecoder = function (word_type) {
 	var _p0 = word_type;
 	switch (_p0) {
@@ -13283,6 +13225,1416 @@ var _user$project$User_Profile$initProfile = function (flags) {
 	}
 };
 
+var _user$project$Profile_Flags$UnAuthedFlags = function (a) {
+	return {csrftoken: a};
+};
+
+var _user$project$Flashcard_Mode$modeId = function (mode_choice) {
+	var _p0 = mode_choice;
+	if (_p0.ctor === 'ReviewOnly') {
+		return _p0._0;
+	} else {
+		return _p0._0;
+	}
+};
+var _user$project$Flashcard_Mode$modeName = function (mode_choice) {
+	var _p1 = mode_choice;
+	if (_p1.ctor === 'ReviewOnly') {
+		return 'Review Only';
+	} else {
+		return 'Review and Answer';
+	}
+};
+var _user$project$Flashcard_Mode$ModeChoiceDesc = F3(
+	function (a, b, c) {
+		return {mode: a, desc: b, selected: c};
+	});
+var _user$project$Flashcard_Mode$ReviewAndAnswer = function (a) {
+	return {ctor: 'ReviewAndAnswer', _0: a};
+};
+var _user$project$Flashcard_Mode$ReviewOnly = function (a) {
+	return {ctor: 'ReviewOnly', _0: a};
+};
+var _user$project$Flashcard_Mode$modeFromString = function (str) {
+	var _p2 = str;
+	switch (_p2) {
+		case 'review':
+			return _user$project$Flashcard_Mode$ReviewOnly(_p2);
+		case 'review_and_answer':
+			return _user$project$Flashcard_Mode$ReviewAndAnswer(_p2);
+		default:
+			return _user$project$Flashcard_Mode$ReviewOnly('review');
+	}
+};
+
+var _user$project$Flashcard_Model$translation = function (_p0) {
+	var _p1 = _p0;
+	return _p1._2;
+};
+var _user$project$Flashcard_Model$hasTranslation = function (flashcard) {
+	var _p2 = _user$project$Flashcard_Model$translation(flashcard);
+	if (_p2.ctor === 'Just') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _user$project$Flashcard_Model$phrase = function (_p3) {
+	var _p4 = _p3;
+	return _p4._0;
+};
+var _user$project$Flashcard_Model$translationOrPhrase = function (flashcard) {
+	var _p5 = _user$project$Flashcard_Model$translation(flashcard);
+	if (_p5.ctor === 'Just') {
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			_p5._0,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				' - ',
+				_user$project$Flashcard_Model$phrase(flashcard)));
+	} else {
+		return _user$project$Flashcard_Model$phrase(flashcard);
+	}
+};
+var _user$project$Flashcard_Model$example = function (_p6) {
+	var _p7 = _p6;
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		'\"',
+		A2(_elm_lang$core$Basics_ops['++'], _p7._1, '\"'));
+};
+var _user$project$Flashcard_Model$hasException = function (model) {
+	var _p8 = model.exception;
+	if (_p8.ctor === 'Just') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _user$project$Flashcard_Model$inReview = function (model) {
+	var _p9 = model.session_state;
+	if (_p9.ctor === 'FinishedReview') {
+		return false;
+	} else {
+		return true;
+	}
+};
+var _user$project$Flashcard_Model$setException = F2(
+	function (model, exception) {
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{exception: exception});
+	});
+var _user$project$Flashcard_Model$setSessionState = F2(
+	function (original_model, session_state) {
+		var model = A2(_user$project$Flashcard_Model$setException, original_model, _elm_lang$core$Maybe$Nothing);
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{session_state: session_state});
+	});
+var _user$project$Flashcard_Model$setQuality = F2(
+	function (model, rating) {
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{selected_quality: rating});
+	});
+var _user$project$Flashcard_Model$setMode = F2(
+	function (model, mode) {
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{mode: mode});
+	});
+var _user$project$Flashcard_Model$disconnect = function (model) {
+	return _elm_lang$core$Native_Utils.update(
+		model,
+		{connect: false});
+};
+var _user$project$Flashcard_Model$Exception = F2(
+	function (a, b) {
+		return {code: a, error_msg: b};
+	});
+var _user$project$Flashcard_Model$InitRespRec = function (a) {
+	return {flashcards: a};
+};
+var _user$project$Flashcard_Model$Model = F9(
+	function (a, b, c, d, e, f, g, h, i) {
+		return {profile: a, menu_items: b, mode: c, session_state: d, exception: e, connect: f, answer: g, selected_quality: h, flags: i};
+	});
+var _user$project$Flashcard_Model$FinishedReview = {ctor: 'FinishedReview'};
+var _user$project$Flashcard_Model$RatedCard = function (a) {
+	return {ctor: 'RatedCard', _0: a};
+};
+var _user$project$Flashcard_Model$ReviewedCardAndAnsweredIncorrectly = function (a) {
+	return {ctor: 'ReviewedCardAndAnsweredIncorrectly', _0: a};
+};
+var _user$project$Flashcard_Model$ReviewedCardAndAnsweredCorrectly = function (a) {
+	return {ctor: 'ReviewedCardAndAnsweredCorrectly', _0: a};
+};
+var _user$project$Flashcard_Model$ReviewCardAndAnswer = function (a) {
+	return {ctor: 'ReviewCardAndAnswer', _0: a};
+};
+var _user$project$Flashcard_Model$ReviewedCard = function (a) {
+	return {ctor: 'ReviewedCard', _0: a};
+};
+var _user$project$Flashcard_Model$ReviewCard = function (a) {
+	return {ctor: 'ReviewCard', _0: a};
+};
+var _user$project$Flashcard_Model$ViewModeChoices = function (a) {
+	return {ctor: 'ViewModeChoices', _0: a};
+};
+var _user$project$Flashcard_Model$Init = function (a) {
+	return {ctor: 'Init', _0: a};
+};
+var _user$project$Flashcard_Model$Loading = {ctor: 'Loading'};
+var _user$project$Flashcard_Model$Flashcard = F3(
+	function (a, b, c) {
+		return {ctor: 'Flashcard', _0: a, _1: b, _2: c};
+	});
+var _user$project$Flashcard_Model$newFlashcard = F3(
+	function (phrase, example, translation) {
+		return A3(_user$project$Flashcard_Model$Flashcard, phrase, example, translation);
+	});
+var _user$project$Flashcard_Model$RateQualityReq = function (a) {
+	return {ctor: 'RateQualityReq', _0: a};
+};
+var _user$project$Flashcard_Model$AnswerReq = function (a) {
+	return {ctor: 'AnswerReq', _0: a};
+};
+var _user$project$Flashcard_Model$ReviewAnswerReq = {ctor: 'ReviewAnswerReq'};
+var _user$project$Flashcard_Model$PrevReq = {ctor: 'PrevReq'};
+var _user$project$Flashcard_Model$NextReq = {ctor: 'NextReq'};
+var _user$project$Flashcard_Model$StartReq = {ctor: 'StartReq'};
+var _user$project$Flashcard_Model$ChooseModeReq = function (a) {
+	return {ctor: 'ChooseModeReq', _0: a};
+};
+var _user$project$Flashcard_Model$FinishedReviewResp = {ctor: 'FinishedReviewResp'};
+var _user$project$Flashcard_Model$ExceptionResp = function (a) {
+	return {ctor: 'ExceptionResp', _0: a};
+};
+var _user$project$Flashcard_Model$ReviewedCardResp = function (a) {
+	return {ctor: 'ReviewedCardResp', _0: a};
+};
+var _user$project$Flashcard_Model$RatedCardResp = function (a) {
+	return {ctor: 'RatedCardResp', _0: a};
+};
+var _user$project$Flashcard_Model$ReviewedCardAndAnsweredIncorrectlyResp = function (a) {
+	return {ctor: 'ReviewedCardAndAnsweredIncorrectlyResp', _0: a};
+};
+var _user$project$Flashcard_Model$ReviewedCardAndAnsweredCorrectlyResp = function (a) {
+	return {ctor: 'ReviewedCardAndAnsweredCorrectlyResp', _0: a};
+};
+var _user$project$Flashcard_Model$ReviewCardAndAnswerResp = function (a) {
+	return {ctor: 'ReviewCardAndAnswerResp', _0: a};
+};
+var _user$project$Flashcard_Model$ReviewCardResp = function (a) {
+	return {ctor: 'ReviewCardResp', _0: a};
+};
+var _user$project$Flashcard_Model$ChooseModeChoiceResp = function (a) {
+	return {ctor: 'ChooseModeChoiceResp', _0: a};
+};
+var _user$project$Flashcard_Model$InitResp = function (a) {
+	return {ctor: 'InitResp', _0: a};
+};
+
+var _user$project$Flashcard_Decode$exceptionDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'error_msg',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'code',
+		_elm_lang$core$Json_Decode$string,
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Flashcard_Model$Exception)));
+var _user$project$Flashcard_Decode$initRespDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'flashcards',
+	_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string),
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Flashcard_Model$InitRespRec));
+var _user$project$Flashcard_Decode$startDecoder = A2(
+	_elm_lang$core$Json_Decode$map,
+	_user$project$Flashcard_Model$InitResp,
+	A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$Flashcard_Decode$initRespDecoder));
+var _user$project$Flashcard_Decode$modeDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Flashcard_Mode$modeFromString, _elm_lang$core$Json_Decode$string);
+var _user$project$Flashcard_Decode$modeChoiceDescDecoder = A4(
+	_elm_lang$core$Json_Decode$map3,
+	_user$project$Flashcard_Mode$ModeChoiceDesc,
+	A2(_elm_lang$core$Json_Decode$field, 'mode', _user$project$Flashcard_Decode$modeDecoder),
+	A2(_elm_lang$core$Json_Decode$field, 'desc', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'selected', _elm_lang$core$Json_Decode$bool));
+var _user$project$Flashcard_Decode$modeChoicesDescDecoder = _elm_lang$core$Json_Decode$list(_user$project$Flashcard_Decode$modeChoiceDescDecoder);
+var _user$project$Flashcard_Decode$modeChoicesDecoder = A2(
+	_elm_lang$core$Json_Decode$map,
+	_user$project$Flashcard_Model$ChooseModeChoiceResp,
+	A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$Flashcard_Decode$modeChoicesDescDecoder));
+var _user$project$Flashcard_Decode$flashcardDecoder = A4(
+	_elm_lang$core$Json_Decode$map3,
+	_user$project$Flashcard_Model$newFlashcard,
+	A2(_elm_lang$core$Json_Decode$field, 'phrase', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'example', _elm_lang$core$Json_Decode$string),
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'translation',
+		_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string)));
+var _user$project$Flashcard_Decode$reviewCardDecoder = A2(
+	_elm_lang$core$Json_Decode$map,
+	_user$project$Flashcard_Model$ReviewCardResp,
+	A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$Flashcard_Decode$flashcardDecoder));
+var _user$project$Flashcard_Decode$reviewCardAndAnswerDecoder = A2(
+	_elm_lang$core$Json_Decode$map,
+	_user$project$Flashcard_Model$ReviewCardAndAnswerResp,
+	A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$Flashcard_Decode$flashcardDecoder));
+var _user$project$Flashcard_Decode$reviewedCardAndAnsweredCorrectlyDecoder = A2(
+	_elm_lang$core$Json_Decode$map,
+	_user$project$Flashcard_Model$ReviewedCardAndAnsweredCorrectlyResp,
+	A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$Flashcard_Decode$flashcardDecoder));
+var _user$project$Flashcard_Decode$reviewedCardAndAnsweredIncorrectlyDecoder = A2(
+	_elm_lang$core$Json_Decode$map,
+	_user$project$Flashcard_Model$ReviewedCardAndAnsweredIncorrectlyResp,
+	A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$Flashcard_Decode$flashcardDecoder));
+var _user$project$Flashcard_Decode$ratedQualityDecoder = A2(
+	_elm_lang$core$Json_Decode$map,
+	_user$project$Flashcard_Model$RatedCardResp,
+	A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$Flashcard_Decode$flashcardDecoder));
+var _user$project$Flashcard_Decode$reviewedCardDecoder = A2(
+	_elm_lang$core$Json_Decode$map,
+	_user$project$Flashcard_Model$ReviewedCardResp,
+	A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$Flashcard_Decode$flashcardDecoder));
+var _user$project$Flashcard_Decode$command_resp_decoder = function (cmd_str) {
+	var _p0 = cmd_str;
+	switch (_p0) {
+		case 'init':
+			return _user$project$Flashcard_Decode$startDecoder;
+		case 'mode_choice':
+			return _user$project$Flashcard_Decode$modeChoicesDecoder;
+		case 'review_card':
+			return _user$project$Flashcard_Decode$reviewCardDecoder;
+		case 'review_and_answer_card':
+			return _user$project$Flashcard_Decode$reviewCardAndAnswerDecoder;
+		case 'correctly_answered_card':
+			return _user$project$Flashcard_Decode$reviewedCardAndAnsweredCorrectlyDecoder;
+		case 'incorrectly_answered_card':
+			return _user$project$Flashcard_Decode$reviewedCardAndAnsweredIncorrectlyDecoder;
+		case 'rated_your_answer_for_card':
+			return _user$project$Flashcard_Decode$ratedQualityDecoder;
+		case 'reviewed_card':
+			return _user$project$Flashcard_Decode$reviewedCardDecoder;
+		case 'exception':
+			return A2(
+				_elm_lang$core$Json_Decode$map,
+				_user$project$Flashcard_Model$ExceptionResp,
+				A2(_elm_lang$core$Json_Decode$field, 'result', _user$project$Flashcard_Decode$exceptionDecoder));
+		case 'finished_review':
+			return _elm_lang$core$Json_Decode$succeed(_user$project$Flashcard_Model$FinishedReviewResp);
+		default:
+			return _elm_lang$core$Json_Decode$fail(
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'Command ',
+					A2(_elm_lang$core$Basics_ops['++'], cmd_str, ' not supported')));
+	}
+};
+var _user$project$Flashcard_Decode$ws_resp_decoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	F2(
+		function (v0, v1) {
+			return {ctor: '_Tuple2', _0: v0, _1: v1};
+		}),
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'mode',
+		_elm_lang$core$Json_Decode$nullable(_user$project$Flashcard_Decode$modeDecoder)),
+	A2(
+		_elm_lang$core$Json_Decode$andThen,
+		_user$project$Flashcard_Decode$command_resp_decoder,
+		A2(_elm_lang$core$Json_Decode$field, 'command', _elm_lang$core$Json_Decode$string)));
+
+var _user$project$Flashcard_Encode$send_command = function (cmd_req) {
+	var _p0 = cmd_req;
+	switch (_p0.ctor) {
+		case 'ChooseModeReq':
+			return _elm_lang$core$Json_Encode$object(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'command',
+						_1: _elm_lang$core$Json_Encode$string('choose_mode')
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'mode',
+							_1: _elm_lang$core$Json_Encode$string(
+								_user$project$Flashcard_Mode$modeId(_p0._0))
+						},
+						_1: {ctor: '[]'}
+					}
+				});
+		case 'NextReq':
+			return _elm_lang$core$Json_Encode$object(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'command',
+						_1: _elm_lang$core$Json_Encode$string('next')
+					},
+					_1: {ctor: '[]'}
+				});
+		case 'StartReq':
+			return _elm_lang$core$Json_Encode$object(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'command',
+						_1: _elm_lang$core$Json_Encode$string('start')
+					},
+					_1: {ctor: '[]'}
+				});
+		case 'ReviewAnswerReq':
+			return _elm_lang$core$Json_Encode$object(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'command',
+						_1: _elm_lang$core$Json_Encode$string('review_answer')
+					},
+					_1: {ctor: '[]'}
+				});
+		case 'AnswerReq':
+			return _elm_lang$core$Json_Encode$object(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'command',
+						_1: _elm_lang$core$Json_Encode$string('answer')
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'answer',
+							_1: _elm_lang$core$Json_Encode$string(_p0._0)
+						},
+						_1: {ctor: '[]'}
+					}
+				});
+		case 'RateQualityReq':
+			return _elm_lang$core$Json_Encode$object(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'command',
+						_1: _elm_lang$core$Json_Encode$string('rate_quality')
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'rating',
+							_1: _elm_lang$core$Json_Encode$int(_p0._0)
+						},
+						_1: {ctor: '[]'}
+					}
+				});
+		default:
+			return _elm_lang$core$Json_Encode$object(
+				{ctor: '[]'});
+	}
+};
+var _user$project$Flashcard_Encode$jsonToString = _elm_lang$core$Json_Encode$encode(0);
+
+var _user$project$Flashcard_Msg$LoggedOut = function (a) {
+	return {ctor: 'LoggedOut', _0: a};
+};
+var _user$project$Flashcard_Msg$LogOut = function (a) {
+	return {ctor: 'LogOut', _0: a};
+};
+var _user$project$Flashcard_Msg$WebSocketResp = function (a) {
+	return {ctor: 'WebSocketResp', _0: a};
+};
+var _user$project$Flashcard_Msg$RateQuality = function (a) {
+	return {ctor: 'RateQuality', _0: a};
+};
+var _user$project$Flashcard_Msg$SubmitAnswer = {ctor: 'SubmitAnswer'};
+var _user$project$Flashcard_Msg$InputAnswer = function (a) {
+	return {ctor: 'InputAnswer', _0: a};
+};
+var _user$project$Flashcard_Msg$Prev = {ctor: 'Prev'};
+var _user$project$Flashcard_Msg$Next = {ctor: 'Next'};
+var _user$project$Flashcard_Msg$ReviewAnswer = {ctor: 'ReviewAnswer'};
+var _user$project$Flashcard_Msg$Start = {ctor: 'Start'};
+var _user$project$Flashcard_Msg$SelectMode = function (a) {
+	return {ctor: 'SelectMode', _0: a};
+};
+
+var _user$project$Flashcard_Update$route_cmd_resp = F3(
+	function (orig_model, mode, cmd_resp) {
+		var model = A2(_user$project$Flashcard_Model$setMode, orig_model, mode);
+		var _p0 = cmd_resp;
+		switch (_p0.ctor) {
+			case 'InitResp':
+				return {
+					ctor: '_Tuple2',
+					_0: A2(
+						_user$project$Flashcard_Model$setSessionState,
+						model,
+						_user$project$Flashcard_Model$Init(_p0._0)),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'ChooseModeChoiceResp':
+				return {
+					ctor: '_Tuple2',
+					_0: A2(
+						_user$project$Flashcard_Model$setSessionState,
+						model,
+						_user$project$Flashcard_Model$ViewModeChoices(_p0._0)),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'ReviewCardAndAnswerResp':
+				return {
+					ctor: '_Tuple2',
+					_0: A2(
+						_user$project$Flashcard_Model$setSessionState,
+						model,
+						_user$project$Flashcard_Model$ReviewCardAndAnswer(_p0._0)),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'ReviewedCardAndAnsweredCorrectlyResp':
+				return {
+					ctor: '_Tuple2',
+					_0: A2(
+						_user$project$Flashcard_Model$setSessionState,
+						model,
+						_user$project$Flashcard_Model$ReviewedCardAndAnsweredCorrectly(_p0._0)),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'ReviewedCardAndAnsweredIncorrectlyResp':
+				return {
+					ctor: '_Tuple2',
+					_0: A2(
+						_user$project$Flashcard_Model$setSessionState,
+						model,
+						_user$project$Flashcard_Model$ReviewedCardAndAnsweredIncorrectly(_p0._0)),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'RatedCardResp':
+				return {
+					ctor: '_Tuple2',
+					_0: A2(
+						_user$project$Flashcard_Model$setSessionState,
+						model,
+						_user$project$Flashcard_Model$RatedCard(_p0._0)),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'ReviewCardResp':
+				return {
+					ctor: '_Tuple2',
+					_0: A2(
+						_user$project$Flashcard_Model$setSessionState,
+						model,
+						_user$project$Flashcard_Model$ReviewCard(_p0._0)),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'ReviewedCardResp':
+				return {
+					ctor: '_Tuple2',
+					_0: A2(
+						_user$project$Flashcard_Model$setSessionState,
+						model,
+						_user$project$Flashcard_Model$ReviewedCard(_p0._0)),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'FinishedReviewResp':
+				return {
+					ctor: '_Tuple2',
+					_0: _user$project$Flashcard_Model$disconnect(
+						A2(_user$project$Flashcard_Model$setSessionState, model, _user$project$Flashcard_Model$FinishedReview)),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: A2(
+						_user$project$Flashcard_Model$setException,
+						model,
+						_elm_lang$core$Maybe$Just(_p0._0)),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+		}
+	});
+var _user$project$Flashcard_Update$handle_ws_resp = F2(
+	function (model, str) {
+		var _p1 = A2(_elm_lang$core$Json_Decode$decodeString, _user$project$Flashcard_Decode$ws_resp_decoder, str);
+		if (_p1.ctor === 'Ok') {
+			return A3(_user$project$Flashcard_Update$route_cmd_resp, model, _p1._0._0, _p1._0._1);
+		} else {
+			var _p2 = A2(
+				_elm_lang$core$Debug$log,
+				'websocket decode error',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_p1._0,
+					A2(_elm_lang$core$Basics_ops['++'], ' while decoding ', str)));
+			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+		}
+	});
+
+var _user$project$Flashcard_View$view_mode = function (model) {
+	var mode_name = function () {
+		var _p0 = model.mode;
+		if (_p0.ctor === 'Just') {
+			return _user$project$Flashcard_Mode$modeName(_p0._0);
+		} else {
+			return 'None';
+		}
+	}();
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('mode'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(
+				A2(_elm_lang$core$Basics_ops['++'], mode_name, ' Mode')),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Flashcard_View$view_state = function (session_state) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('state'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(
+				_elm_lang$core$Basics$toString(session_state)),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Flashcard_View$view_finish_review = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('finished'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('You\'ve finished this session.  Great job.  Come back tomorrow!'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Flashcard_View$view_card = F5(
+	function (model, card, addl_classes, addl_attrs, content) {
+		return A2(
+			_elm_lang$html$Html$div,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$id('card'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$classList(
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'cursor', _1: true},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'noselect', _1: true},
+										_1: {ctor: '[]'}
+									}
+								},
+								A2(
+									_elm_lang$core$Maybe$withDefault,
+									{ctor: '[]'},
+									addl_classes))),
+						_1: {ctor: '[]'}
+					}
+				},
+				A2(
+					_elm_lang$core$Maybe$withDefault,
+					{ctor: '[]'},
+					addl_attrs)),
+			content);
+	});
+var _user$project$Flashcard_View$view_quality = F3(
+	function (model, card, q) {
+		var selected = function () {
+			var _p1 = model.selected_quality;
+			if (_p1.ctor === 'Just') {
+				return _elm_lang$core$Native_Utils.eq(_p1._0, q);
+			} else {
+				return false;
+			}
+		}();
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'choice', _1: true},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'select', _1: selected},
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(
+						_user$project$Flashcard_Msg$RateQuality(q)),
+					_1: {ctor: '[]'}
+				}
+			},
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(
+						_elm_lang$core$Basics$toString(q)),
+					_1: {ctor: '[]'}
+				},
+				_elm_lang$core$Native_Utils.eq(q, 0) ? {
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(' - most difficult'),
+					_1: {ctor: '[]'}
+				} : (_elm_lang$core$Native_Utils.eq(q, 5) ? {
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(' - easiest'),
+					_1: {ctor: '[]'}
+				} : {ctor: '[]'})));
+	});
+var _user$project$Flashcard_View$view_rate_answer = F2(
+	function (model, card) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$id('answer-quality'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('Rate the difficulty of this card.'),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$id('choices'),
+							_1: {ctor: '[]'}
+						},
+						A2(
+							_elm_lang$core$List$map,
+							A2(_user$project$Flashcard_View$view_quality, model, card),
+							A2(_elm_lang$core$List$range, 0, 5))),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$Flashcard_View$view_input_answer = F2(
+	function (model, card) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$id('answer_input'),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Util$onEnterUp(_user$project$Flashcard_Msg$SubmitAnswer),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$input,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onInput(_user$project$Flashcard_Msg$InputAnswer),
+						_1: {
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'placeholder', 'Type an answer..'),
+							_1: {ctor: '[]'}
+						}
+					},
+					{ctor: '[]'}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$id('submit'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$id('button'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onClick(_user$project$Flashcard_Msg$SubmitAnswer),
+										_1: {ctor: '[]'}
+									}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('Submit'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$Flashcard_View$view_phrase = F2(
+	function (model, card) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$id('phrase'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(
+					_user$project$Flashcard_Model$translationOrPhrase(card)),
+				_1: {ctor: '[]'}
+			});
+	});
+var _user$project$Flashcard_View$view_example = F2(
+	function (model, card) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$id('example'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('e.g., '),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$id('sentence'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(
+								_user$project$Flashcard_Model$example(card)),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$Flashcard_View$view_review_only_card = F2(
+	function (model, card) {
+		return A5(
+			_user$project$Flashcard_View$view_card,
+			model,
+			card,
+			_elm_lang$core$Maybe$Nothing,
+			_elm_lang$core$Maybe$Just(
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onDoubleClick(_user$project$Flashcard_Msg$ReviewAnswer),
+					_1: {ctor: '[]'}
+				}),
+			{
+				ctor: '::',
+				_0: A2(_user$project$Flashcard_View$view_phrase, model, card),
+				_1: {
+					ctor: '::',
+					_0: A2(_user$project$Flashcard_View$view_example, model, card),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$Flashcard_View$view_reviewed_only_card = F2(
+	function (model, card) {
+		return A5(
+			_user$project$Flashcard_View$view_card,
+			model,
+			card,
+			_elm_lang$core$Maybe$Just(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'flip', _1: true},
+					_1: {ctor: '[]'}
+				}),
+			_elm_lang$core$Maybe$Nothing,
+			{
+				ctor: '::',
+				_0: A2(_user$project$Flashcard_View$view_phrase, model, card),
+				_1: {
+					ctor: '::',
+					_0: A2(_user$project$Flashcard_View$view_example, model, card),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$Flashcard_View$view_rated_card = F2(
+	function (model, card) {
+		var rating = function () {
+			var _p2 = model.selected_quality;
+			if (_p2.ctor === 'Just') {
+				return _elm_lang$core$Basics$toString(_p2._0);
+			} else {
+				return 'none';
+			}
+		}();
+		return A5(
+			_user$project$Flashcard_View$view_card,
+			model,
+			card,
+			_elm_lang$core$Maybe$Nothing,
+			_elm_lang$core$Maybe$Nothing,
+			{
+				ctor: '::',
+				_0: A2(_user$project$Flashcard_View$view_phrase, model, card),
+				_1: {
+					ctor: '::',
+					_0: A2(_user$project$Flashcard_View$view_example, model, card),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$id('card_rating'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(
+									A2(_elm_lang$core$Basics_ops['++'], 'Rated ', rating)),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+	});
+var _user$project$Flashcard_View$view_reviewed_and_answered_card = F3(
+	function (model, card, answered_correctly) {
+		return A5(
+			_user$project$Flashcard_View$view_card,
+			model,
+			card,
+			_elm_lang$core$Maybe$Just(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'flip', _1: true},
+					_1: {ctor: '[]'}
+				}),
+			_elm_lang$core$Maybe$Nothing,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				{
+					ctor: '::',
+					_0: A2(_user$project$Flashcard_View$view_phrase, model, card),
+					_1: {
+						ctor: '::',
+						_0: A2(_user$project$Flashcard_View$view_example, model, card),
+						_1: {ctor: '[]'}
+					}
+				},
+				answered_correctly ? {
+					ctor: '::',
+					_0: A2(_user$project$Flashcard_View$view_rate_answer, model, card),
+					_1: {ctor: '[]'}
+				} : {ctor: '[]'}));
+	});
+var _user$project$Flashcard_View$view_review_and_answer_card = F2(
+	function (model, card) {
+		return A5(
+			_user$project$Flashcard_View$view_card,
+			model,
+			card,
+			_elm_lang$core$Maybe$Nothing,
+			_elm_lang$core$Maybe$Nothing,
+			{
+				ctor: '::',
+				_0: A2(_user$project$Flashcard_View$view_phrase, model, card),
+				_1: {
+					ctor: '::',
+					_0: A2(_user$project$Flashcard_View$view_example, model, card),
+					_1: {
+						ctor: '::',
+						_0: A2(_user$project$Flashcard_View$view_input_answer, model, card),
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+	});
+var _user$project$Flashcard_View$view_exception = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('exception'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(
+				function () {
+					var _p3 = model.exception;
+					if (_p3.ctor === 'Just') {
+						return _p3._0.error_msg;
+					} else {
+						return '';
+					}
+				}()),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Flashcard_View$view_nav = F2(
+	function (model, content) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$id('nav'),
+				_1: {ctor: '[]'}
+			},
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				content,
+				_user$project$Flashcard_Model$hasException(model) ? {
+					ctor: '::',
+					_0: _user$project$Flashcard_View$view_exception(model),
+					_1: {ctor: '[]'}
+				} : {ctor: '[]'}));
+	});
+var _user$project$Flashcard_View$view_next_nav = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('next'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('cursor'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(_user$project$Flashcard_Msg$Next),
+					_1: {ctor: '[]'}
+				}
+			}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$img,
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/angle-right.svg'),
+					_1: {ctor: '[]'}
+				},
+				{ctor: '[]'}),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Flashcard_View$view_review_and_answer_nav = function (model) {
+	return A2(
+		_user$project$Flashcard_View$view_nav,
+		model,
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			{
+				ctor: '::',
+				_0: _user$project$Flashcard_View$view_mode(model),
+				_1: {ctor: '[]'}
+			},
+			_user$project$Flashcard_Model$inReview(model) ? {
+				ctor: '::',
+				_0: _user$project$Flashcard_View$view_next_nav(model),
+				_1: {ctor: '[]'}
+			} : {ctor: '[]'}));
+};
+var _user$project$Flashcard_View$view_prev_nav = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('prev'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('cursor'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(_user$project$Flashcard_Msg$Prev),
+					_1: {ctor: '[]'}
+				}
+			}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$img,
+				{
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/angle-left.svg'),
+					_1: {ctor: '[]'}
+				},
+				{ctor: '[]'}),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Flashcard_View$view_review_nav = function (model) {
+	return A2(
+		_user$project$Flashcard_View$view_nav,
+		model,
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			{
+				ctor: '::',
+				_0: _user$project$Flashcard_View$view_mode(model),
+				_1: {ctor: '[]'}
+			},
+			_user$project$Flashcard_Model$inReview(model) ? {
+				ctor: '::',
+				_0: _user$project$Flashcard_View$view_prev_nav(model),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Flashcard_View$view_next_nav(model),
+					_1: {ctor: '[]'}
+				}
+			} : {ctor: '[]'}));
+};
+var _user$project$Flashcard_View$view_start_nav = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('start'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('cursor'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(_user$project$Flashcard_Msg$Start),
+					_1: {ctor: '[]'}
+				}
+			}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text('Start'),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Flashcard_View$view_additional_notes = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('notes'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text('Note: In review mode double-click a flashcard in order to reveal the answer.'),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Flashcard_View$view_mode_choice = F2(
+	function (model, choice) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'mode-choice', _1: true},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'cursor', _1: true},
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'selected', _1: choice.selected},
+								_1: {ctor: '[]'}
+							}
+						}
+					}),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(
+						_user$project$Flashcard_Msg$SelectMode(choice.mode)),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('name'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(
+							_user$project$Flashcard_Mode$modeName(choice.mode)),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('desc'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(choice.desc),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('select'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$img,
+									{
+										ctor: '::',
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'src', '/static/img/circle_check.svg'),
+										_1: {
+											ctor: '::',
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'height', '40px'),
+											_1: {
+												ctor: '::',
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'width', '50px'),
+												_1: {ctor: '[]'}
+											}
+										}
+									},
+									{ctor: '[]'}),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+	});
+var _user$project$Flashcard_View$view_mode_choices = F2(
+	function (model, mode_choices) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$id('mode-choices'),
+				_1: {ctor: '[]'}
+			},
+			A2(
+				_elm_lang$core$List$map,
+				_user$project$Flashcard_View$view_mode_choice(model),
+				mode_choices));
+	});
+var _user$project$Flashcard_View$view_content = function (model) {
+	var content = function () {
+		var _p4 = model.session_state;
+		switch (_p4.ctor) {
+			case 'Loading':
+				return {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$id('loading'),
+							_1: {ctor: '[]'}
+						},
+						{ctor: '[]'}),
+					_1: {ctor: '[]'}
+				};
+			case 'Init':
+				return {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$id('loading'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$core$Native_Utils.eq(
+								_elm_lang$core$List$length(_p4._0.flashcards),
+								0) ? _elm_lang$html$Html$text('You do not have any flashcards.  Read some more texts and add flashcards before continuing.') : _elm_lang$html$Html$text(''),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				};
+			case 'ViewModeChoices':
+				return {
+					ctor: '::',
+					_0: A2(_user$project$Flashcard_View$view_mode_choices, model, _p4._0),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Flashcard_View$view_additional_notes(model),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_user$project$Flashcard_View$view_nav,
+								model,
+								{
+									ctor: '::',
+									_0: _user$project$Flashcard_View$view_start_nav(model),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}
+				};
+			case 'ReviewCard':
+				return {
+					ctor: '::',
+					_0: A2(_user$project$Flashcard_View$view_review_only_card, model, _p4._0),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Flashcard_View$view_review_nav(model),
+						_1: {ctor: '[]'}
+					}
+				};
+			case 'ReviewCardAndAnswer':
+				return {
+					ctor: '::',
+					_0: A2(_user$project$Flashcard_View$view_review_and_answer_card, model, _p4._0),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Flashcard_View$view_review_and_answer_nav(model),
+						_1: {ctor: '[]'}
+					}
+				};
+			case 'ReviewedCardAndAnsweredCorrectly':
+				return {
+					ctor: '::',
+					_0: A3(_user$project$Flashcard_View$view_reviewed_and_answered_card, model, _p4._0, true),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Flashcard_View$view_review_and_answer_nav(model),
+						_1: {ctor: '[]'}
+					}
+				};
+			case 'ReviewedCardAndAnsweredIncorrectly':
+				return {
+					ctor: '::',
+					_0: A3(_user$project$Flashcard_View$view_reviewed_and_answered_card, model, _p4._0, false),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Flashcard_View$view_review_and_answer_nav(model),
+						_1: {ctor: '[]'}
+					}
+				};
+			case 'RatedCard':
+				return {
+					ctor: '::',
+					_0: A2(_user$project$Flashcard_View$view_rated_card, model, _p4._0),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Flashcard_View$view_review_and_answer_nav(model),
+						_1: {ctor: '[]'}
+					}
+				};
+			case 'ReviewedCard':
+				return {
+					ctor: '::',
+					_0: A2(_user$project$Flashcard_View$view_reviewed_only_card, model, _p4._0),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Flashcard_View$view_review_nav(model),
+						_1: {ctor: '[]'}
+					}
+				};
+			default:
+				return {
+					ctor: '::',
+					_0: _user$project$Flashcard_View$view_finish_review(model),
+					_1: {ctor: '[]'}
+				};
+		}
+	}();
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('flashcard'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$id('contents'),
+					_1: {ctor: '[]'}
+				},
+				content),
+			_1: {ctor: '[]'}
+		});
+};
+
 var _user$project$Menu_View$view_top_menu = F3(
 	function (_p0, profile, top_level_menu_msg) {
 		var _p1 = _p0;
@@ -13625,761 +14977,16 @@ var _user$project$Views$view_authed_header = F3(
 			A3(_user$project$Menu_View$view_lower_menu, menu_items, profile, top_level_menu_msg));
 	});
 
-var _user$project$SignUp$toggle_show_password = function (model) {
-	return _elm_lang$core$Native_Utils.update(
-		model,
-		{
-			show_passwords: model.show_passwords ? false : true
-		});
-};
-var _user$project$SignUp$update_password = F2(
-	function (model, password) {
-		var signup_params = model.signup_params;
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{
-				signup_params: _elm_lang$core$Native_Utils.update(
-					signup_params,
-					{password: password})
-			});
-	});
-var _user$project$SignUp$update_confirm_password = F2(
-	function (model, confirm_password) {
-		var signup_params = model.signup_params;
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{
-				signup_params: _elm_lang$core$Native_Utils.update(
-					signup_params,
-					{confirm_password: confirm_password}),
-				errors: _elm_lang$core$Native_Utils.eq(confirm_password, model.signup_params.password) ? A2(
-					_elm_lang$core$Dict$remove,
-					'password',
-					A2(_elm_lang$core$Dict$remove, 'confirm_password', model.errors)) : A3(_elm_lang$core$Dict$insert, 'confirm_password', 'Passwords don\'t match.', model.errors)
-			});
-	});
-var _user$project$SignUp$update_email = F2(
-	function (model, addr) {
-		var signup_params = model.signup_params;
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{
-				signup_params: _elm_lang$core$Native_Utils.update(
-					signup_params,
-					{email: addr}),
-				errors: (_user$project$Util$isValidEmail(addr) || _elm_lang$core$Native_Utils.eq(addr, '')) ? A2(_elm_lang$core$Dict$remove, 'email', model.errors) : A3(_elm_lang$core$Dict$insert, 'email', 'This e-mail is invalid', model.errors)
-			});
-	});
-var _user$project$SignUp$submit = function (model) {
-	return _elm_lang$core$Native_Utils.update(
-		model,
-		{
-			errors: _elm_lang$core$Dict$fromList(
-				{ctor: '[]'})
-		});
-};
-var _user$project$SignUp$signup_label = function (html) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'signup_label'),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: html,
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$SignUp$view_email_input = F2(
-	function (update_email_msg, model) {
-		var email_error = A2(_elm_lang$core$Dict$member, 'email', model.errors) ? {
-			ctor: '::',
-			_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'input_error'),
-			_1: {ctor: '[]'}
-		} : {ctor: '[]'};
-		var err_msg = function () {
-			var _p0 = A2(_elm_lang$core$Dict$get, 'email', model.errors);
-			if (_p0.ctor === 'Just') {
-				return _user$project$SignUp$signup_label(
-					A2(
-						_elm_lang$html$Html$em,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(_p0._0),
-							_1: {ctor: '[]'}
-						}));
-			} else {
-				return _elm_lang$html$Html$text('');
-			}
-		}();
-		return {
-			ctor: '::',
-			_0: _user$project$SignUp$signup_label(
-				_elm_lang$html$Html$text('Email Address')),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$input,
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						{
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'size', '25'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onInput(update_email_msg),
-								_1: {ctor: '[]'}
-							}
-						},
-						email_error),
-					{ctor: '[]'}),
-				_1: {
-					ctor: '::',
-					_0: err_msg,
-					_1: {ctor: '[]'}
-				}
-			}
-		};
-	});
-var _user$project$SignUp$view_password_input = F2(
-	function (_p1, model) {
-		var _p2 = _p1;
-		var pass_err = A2(_elm_lang$core$Dict$member, 'confirm_password', model.errors) || A2(_elm_lang$core$Dict$member, 'password', model.errors);
-		var attrs = A2(
-			_elm_lang$core$Basics_ops['++'],
-			{
-				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'size', '35'),
-				_1: {ctor: '[]'}
-			},
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				pass_err ? {
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'input_error'),
-					_1: {ctor: '[]'}
-				} : {ctor: '[]'},
-				model.show_passwords ? {
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'text'),
-					_1: {ctor: '[]'}
-				} : {
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'type', 'password'),
-					_1: {ctor: '[]'}
-				}));
-		var password_err_msg = function () {
-			var _p3 = A2(_elm_lang$core$Dict$get, 'password', model.errors);
-			if (_p3.ctor === 'Just') {
-				return _user$project$SignUp$signup_label(
-					A2(
-						_elm_lang$html$Html$em,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(_p3._0),
-							_1: {ctor: '[]'}
-						}));
-			} else {
-				return _elm_lang$html$Html$text('');
-			}
-		}();
-		var confirm_err_msg = function () {
-			var _p4 = A2(_elm_lang$core$Dict$get, 'confirm_password', model.errors);
-			if (_p4.ctor === 'Just') {
-				return _user$project$SignUp$signup_label(
-					A2(
-						_elm_lang$html$Html$em,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(_p4._0),
-							_1: {ctor: '[]'}
-						}));
-			} else {
-				return _elm_lang$html$Html$text('');
-			}
-		}();
-		return {
-			ctor: '::',
-			_0: _user$project$SignUp$signup_label(
-				A2(
-					_elm_lang$html$Html$span,
-					{ctor: '[]'},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('Password '),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$span,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onClick(_p2._0),
-									_1: {
-										ctor: '::',
-										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'cursor'),
-										_1: {ctor: '[]'}
-									}
-								},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text('(show)'),
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}
-					})),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$input,
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						attrs,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onInput(_p2._1),
-							_1: {ctor: '[]'}
-						}),
-					{ctor: '[]'}),
-				_1: {
-					ctor: '::',
-					_0: password_err_msg,
-					_1: {
-						ctor: '::',
-						_0: _user$project$SignUp$signup_label(
-							_elm_lang$html$Html$text('Confirm Password')),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$input,
-								A2(
-									_elm_lang$core$Basics_ops['++'],
-									attrs,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Events$onInput(_p2._2),
-										_1: {ctor: '[]'}
-									}),
-								{ctor: '[]'}),
-							_1: {
-								ctor: '::',
-								_0: confirm_err_msg,
-								_1: {ctor: '[]'}
-							}
-						}
-					}
-				}
-			}
-		};
-	});
-var _user$project$SignUp$view_submit = F2(
-	function (submit_msg, model) {
-		return {
-			ctor: '::',
-			_0: _user$project$SignUp$signup_label(
-				A2(
-					_elm_lang$html$Html$span,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('cursor'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('signup_submit'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('button'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onClick(submit_msg),
-									_1: {ctor: '[]'}
-								}
-							}
-						}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('Sign Up'),
-						_1: {ctor: '[]'}
-					})),
-			_1: {ctor: '[]'}
-		};
-	});
-var _user$project$SignUp$view_content = F5(
-	function (signup_label, email_msg, password_msgs, submit_msg, model) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$classList(
-					{
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'signup', _1: true},
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('signup_title'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text(signup_label),
-						_1: {ctor: '[]'}
-					}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$classList(
-								{
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'signup_box', _1: true},
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						},
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							A2(_user$project$SignUp$view_email_input, email_msg, model),
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								A2(_user$project$SignUp$view_password_input, password_msgs, model),
-								A2(_user$project$SignUp$view_submit, submit_msg, model)))),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _user$project$SignUp$view = F6(
-	function (signup_label, email_msg, password_msgs, submit_msg, logout_msg, model) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
-			{
-				ctor: '::',
-				_0: _user$project$Views$view_unauthed_header,
-				_1: {
-					ctor: '::',
-					_0: A5(_user$project$SignUp$view_content, signup_label, email_msg, password_msgs, submit_msg, model),
-					_1: {
-						ctor: '::',
-						_0: _user$project$Views$view_footer,
-						_1: {ctor: '[]'}
-					}
-				}
-			});
-	});
-var _user$project$SignUp$uriToString = function (_p5) {
-	var _p6 = _p5;
-	return _p6._0;
-};
-var _user$project$SignUp$redirectURI = function (_p7) {
-	var _p8 = _p7;
-	return _p8._0;
-};
-var _user$project$SignUp$UserID = function (a) {
-	return {ctor: 'UserID', _0: a};
-};
-var _user$project$SignUp$RedirectURI = function (a) {
-	return {ctor: 'RedirectURI', _0: a};
-};
-var _user$project$SignUp$URI = function (a) {
-	return {ctor: 'URI', _0: a};
-};
-
-var _user$project$Main$isValidInviteCodeLength = function (invite_code) {
-	var _p0 = _elm_lang$core$Native_Utils.cmp(
-		_elm_lang$core$String$length(invite_code),
-		64) > 0;
-	if (_p0 === true) {
-		return {
-			ctor: '_Tuple2',
-			_0: false,
-			_1: _elm_lang$core$Maybe$Just('too long')
-		};
-	} else {
-		var _p1 = _elm_lang$core$Native_Utils.cmp(
-			_elm_lang$core$String$length(invite_code),
-			64) < 0;
-		if (_p1 === true) {
-			return {
-				ctor: '_Tuple2',
-				_0: false,
-				_1: _elm_lang$core$Maybe$Just('too short')
-			};
-		} else {
-			return {ctor: '_Tuple2', _0: true, _1: _elm_lang$core$Maybe$Nothing};
-		}
-	}
-};
-var _user$project$Main$updateInviteCode = F2(
-	function (model, invite_code) {
-		var _p2 = _user$project$Main$isValidInviteCodeLength(invite_code);
-		var valid_invite_code = _p2._0;
-		var invite_code_err = _p2._1;
-		var signup_params = model.signup_params;
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{
-				signup_params: _elm_lang$core$Native_Utils.update(
-					signup_params,
-					{invite_code: invite_code}),
-				errors: (valid_invite_code || _elm_lang$core$Native_Utils.eq(invite_code, '')) ? A2(_elm_lang$core$Dict$remove, 'invite_code', model.errors) : A3(
-					_elm_lang$core$Dict$insert,
-					'invite_code',
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						'This invite code is ',
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							A2(_elm_lang$core$Maybe$withDefault, '', invite_code_err),
-							'.')),
-					model.errors)
-			});
-	});
-var _user$project$Main$redirect = function (redirect_uri) {
-	return _elm_lang$navigation$Navigation$load(
-		_user$project$SignUp$uriToString(
-			_user$project$SignUp$redirectURI(redirect_uri)));
-};
-var _user$project$Main$signUpEncoder = function (signup_params) {
-	return _elm_lang$core$Json_Encode$object(
-		{
-			ctor: '::',
-			_0: {
-				ctor: '_Tuple2',
-				_0: 'email',
-				_1: _elm_lang$core$Json_Encode$string(signup_params.email)
-			},
-			_1: {
-				ctor: '::',
-				_0: {
-					ctor: '_Tuple2',
-					_0: 'password',
-					_1: _elm_lang$core$Json_Encode$string(signup_params.password)
-				},
-				_1: {
-					ctor: '::',
-					_0: {
-						ctor: '_Tuple2',
-						_0: 'confirm_password',
-						_1: _elm_lang$core$Json_Encode$string(signup_params.confirm_password)
-					},
-					_1: {
-						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'invite_code',
-							_1: _elm_lang$core$Json_Encode$string(signup_params.invite_code)
-						},
-						_1: {ctor: '[]'}
-					}
-				}
-			}
-		});
-};
-var _user$project$Main$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$none;
-};
-var _user$project$Main$instructorSignUpURI = function (_p3) {
-	var _p4 = _p3;
-	return _p4._0;
-};
-var _user$project$Main$SignUpResp = F2(
-	function (a, b) {
-		return {id: a, redirect: b};
-	});
-var _user$project$Main$signUpRespDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'redirect',
-	A2(
-		_elm_lang$core$Json_Decode$map,
-		function (_p5) {
-			return _user$project$SignUp$RedirectURI(
-				_user$project$SignUp$URI(_p5));
-		},
-		_elm_lang$core$Json_Decode$string),
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'id',
-		A2(_elm_lang$core$Json_Decode$map, _user$project$SignUp$UserID, _elm_lang$core$Json_Decode$int),
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Main$SignUpResp)));
-var _user$project$Main$SignUpParams = F4(
-	function (a, b, c, d) {
-		return {email: a, password: b, confirm_password: c, invite_code: d};
-	});
-var _user$project$Main$Model = F5(
-	function (a, b, c, d, e) {
-		return {flags: a, signup_params: b, signup_uri: c, show_passwords: d, errors: e};
-	});
-var _user$project$Main$InstructorSignUpURI = function (a) {
-	return {ctor: 'InstructorSignUpURI', _0: a};
-};
-var _user$project$Main$flagsToInstructorSignUpURI = function (flags) {
-	return _user$project$Main$InstructorSignUpURI(
-		_user$project$SignUp$URI(flags.instructor_signup_uri));
-};
-var _user$project$Main$init = function (flags) {
-	return {
-		ctor: '_Tuple2',
-		_0: {
-			flags: flags,
-			signup_params: {email: '', password: '', confirm_password: '', invite_code: ''},
-			signup_uri: _user$project$Main$flagsToInstructorSignUpURI(flags),
-			show_passwords: false,
-			errors: _elm_lang$core$Dict$fromList(
-				{ctor: '[]'})
-		},
-		_1: _elm_lang$core$Platform_Cmd$none
-	};
-};
-var _user$project$Main$Logout = function (a) {
-	return {ctor: 'Logout', _0: a};
-};
-var _user$project$Main$Submit = {ctor: 'Submit'};
-var _user$project$Main$Submitted = function (a) {
-	return {ctor: 'Submitted', _0: a};
-};
-var _user$project$Main$postSignup = F3(
-	function (csrftoken, instructor_signup_api_endpoint, signup_params) {
-		var encoded_signup_params = _user$project$Main$signUpEncoder(signup_params);
-		var req = A4(
-			_user$project$HttpHelpers$post_with_headers,
-			_user$project$SignUp$uriToString(
-				_user$project$Main$instructorSignUpURI(instructor_signup_api_endpoint)),
-			{
-				ctor: '::',
-				_0: A2(_elm_lang$http$Http$header, 'X-CSRFToken', csrftoken),
-				_1: {ctor: '[]'}
-			},
-			_elm_lang$http$Http$jsonBody(encoded_signup_params),
-			_user$project$Main$signUpRespDecoder);
-		return A2(_elm_lang$http$Http$send, _user$project$Main$Submitted, req);
-	});
-var _user$project$Main$update = F2(
-	function (msg, model) {
-		var _p6 = msg;
-		switch (_p6.ctor) {
-			case 'ToggleShowPassword':
-				return {
-					ctor: '_Tuple2',
-					_0: _user$project$SignUp$toggle_show_password(model),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'UpdatePassword':
-				return {
-					ctor: '_Tuple2',
-					_0: A2(_user$project$SignUp$update_password, model, _p6._0),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'UpdateConfirmPassword':
-				return {
-					ctor: '_Tuple2',
-					_0: A2(_user$project$SignUp$update_confirm_password, model, _p6._0),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'UpdateEmail':
-				return {
-					ctor: '_Tuple2',
-					_0: A2(_user$project$SignUp$update_email, model, _p6._0),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'UpdateInviteCode':
-				return {
-					ctor: '_Tuple2',
-					_0: A2(_user$project$Main$updateInviteCode, model, _p6._0),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'Submit':
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: A3(_user$project$Main$postSignup, model.flags.csrftoken, model.signup_uri, model.signup_params)
-				};
-			case 'Submitted':
-				if (_p6._0.ctor === 'Ok') {
-					return {
-						ctor: '_Tuple2',
-						_0: model,
-						_1: _user$project$Main$redirect(_p6._0._0.redirect)
-					};
-				} else {
-					var _p7 = _p6._0._0;
-					switch (_p7.ctor) {
-						case 'BadStatus':
-							var _p8 = A2(
-								_elm_lang$core$Json_Decode$decodeString,
-								_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string),
-								_p7._0.body);
-							if (_p8.ctor === 'Ok') {
-								return {
-									ctor: '_Tuple2',
-									_0: _elm_lang$core$Native_Utils.update(
-										model,
-										{errors: _p8._0}),
-									_1: _elm_lang$core$Platform_Cmd$none
-								};
-							} else {
-								return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-							}
-						case 'BadPayload':
-							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-						default:
-							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-					}
-				}
-			default:
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-		}
-	});
-var _user$project$Main$UpdateInviteCode = function (a) {
-	return {ctor: 'UpdateInviteCode', _0: a};
-};
-var _user$project$Main$view_invite_code_input = function (model) {
-	var err_msg = {
-		ctor: '::',
-		_0: _user$project$SignUp$signup_label(
-			A2(
-				_elm_lang$html$Html$em,
-				{ctor: '[]'},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text(
-						A2(
-							_elm_lang$core$Maybe$withDefault,
-							'',
-							A2(_elm_lang$core$Dict$get, 'invite_code', model.errors))),
-					_1: {ctor: '[]'}
-				})),
-		_1: {ctor: '[]'}
-	};
-	var err = A2(_elm_lang$core$Dict$member, 'invite_code', model.errors);
-	return A2(
-		_elm_lang$core$Basics_ops['++'],
-		{
-			ctor: '::',
-			_0: _user$project$SignUp$signup_label(
-				A2(
-					_elm_lang$html$Html$span,
-					{ctor: '[]'},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('Invite Code '),
-						_1: {ctor: '[]'}
-					})),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$input,
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						{
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'size', '25'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateInviteCode),
-								_1: {ctor: '[]'}
-							}
-						},
-						err ? {
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'class', 'input_error'),
-							_1: {ctor: '[]'}
-						} : {ctor: '[]'}),
-					{ctor: '[]'}),
-				_1: {ctor: '[]'}
-			}
-		},
-		err ? err_msg : {ctor: '[]'});
-};
-var _user$project$Main$UpdateConfirmPassword = function (a) {
-	return {ctor: 'UpdateConfirmPassword', _0: a};
-};
-var _user$project$Main$UpdatePassword = function (a) {
-	return {ctor: 'UpdatePassword', _0: a};
-};
-var _user$project$Main$UpdateEmail = function (a) {
-	return {ctor: 'UpdateEmail', _0: a};
-};
-var _user$project$Main$ToggleShowPassword = {ctor: 'ToggleShowPassword'};
-var _user$project$Main$instructor_signup_view = function (model) {
+var _user$project$Main$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{ctor: '[]'},
 		{
 			ctor: '::',
-			_0: _user$project$Views$view_unauthed_header,
+			_0: A3(_user$project$Views$view_authed_header, model.profile, model.menu_items, _user$project$Flashcard_Msg$LogOut),
 			_1: {
 				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$classList(
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'signup', _1: true},
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('signup_title'),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text('Instructor Signup'),
-								_1: {ctor: '[]'}
-							}),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$classList(
-										{
-											ctor: '::',
-											_0: {ctor: '_Tuple2', _0: 'signup_box', _1: true},
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								},
-								A2(
-									_elm_lang$core$Basics_ops['++'],
-									A2(_user$project$SignUp$view_email_input, _user$project$Main$UpdateEmail, model),
-									A2(
-										_elm_lang$core$Basics_ops['++'],
-										A2(
-											_user$project$SignUp$view_password_input,
-											{ctor: '_Tuple3', _0: _user$project$Main$ToggleShowPassword, _1: _user$project$Main$UpdatePassword, _2: _user$project$Main$UpdateConfirmPassword},
-											model),
-										A2(
-											_elm_lang$core$Basics_ops['++'],
-											_user$project$Main$view_invite_code_input(model),
-											A2(_user$project$SignUp$view_submit, _user$project$Main$Submit, model))))),
-							_1: {ctor: '[]'}
-						}
-					}),
+				_0: _user$project$Flashcard_View$view_content(model),
 				_1: {
 					ctor: '::',
 					_0: _user$project$Views$view_footer,
@@ -14388,65 +14995,518 @@ var _user$project$Main$instructor_signup_view = function (model) {
 			}
 		});
 };
+var _user$project$Main$update = F2(
+	function (msg, model) {
+		var send_command = function (cmd) {
+			return A2(
+				_elm_lang$websocket$WebSocket$send,
+				model.flags.flashcard_ws_addr,
+				_user$project$Flashcard_Encode$jsonToString(
+					_user$project$Flashcard_Encode$send_command(cmd)));
+		};
+		var _p0 = msg;
+		switch (_p0.ctor) {
+			case 'WebSocketResp':
+				return A2(_user$project$Flashcard_Update$handle_ws_resp, model, _p0._0);
+			case 'SelectMode':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: send_command(
+						_user$project$Flashcard_Model$ChooseModeReq(_p0._0))
+				};
+			case 'Start':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: send_command(_user$project$Flashcard_Model$StartReq)
+				};
+			case 'ReviewAnswer':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: send_command(_user$project$Flashcard_Model$ReviewAnswerReq)
+				};
+			case 'Prev':
+				return {
+					ctor: '_Tuple2',
+					_0: A2(_user$project$Flashcard_Model$setQuality, model, _elm_lang$core$Maybe$Nothing),
+					_1: send_command(_user$project$Flashcard_Model$PrevReq)
+				};
+			case 'Next':
+				return {
+					ctor: '_Tuple2',
+					_0: A2(_user$project$Flashcard_Model$setQuality, model, _elm_lang$core$Maybe$Nothing),
+					_1: send_command(_user$project$Flashcard_Model$NextReq)
+				};
+			case 'InputAnswer':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{answer: _p0._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'SubmitAnswer':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: send_command(
+						_user$project$Flashcard_Model$AnswerReq(model.answer))
+				};
+			case 'RateQuality':
+				var _p1 = _p0._0;
+				return {
+					ctor: '_Tuple2',
+					_0: A2(
+						_user$project$Flashcard_Model$setQuality,
+						model,
+						_elm_lang$core$Maybe$Just(_p1)),
+					_1: send_command(
+						_user$project$Flashcard_Model$RateQualityReq(_p1))
+				};
+			case 'LogOut':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: A3(_user$project$User_Profile$logout, model.profile, model.flags.csrftoken, _user$project$Flashcard_Msg$LoggedOut)
+				};
+			default:
+				if (_p0._0.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: model,
+						_1: _user$project$Ports$redirect(_p0._0._0.redirect)
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+		}
+	});
+var _user$project$Main$subscriptions = function (model) {
+	var _p2 = model.connect;
+	if (_p2 === true) {
+		return A2(_elm_lang$websocket$WebSocket$listen, model.flags.flashcard_ws_addr, _user$project$Flashcard_Msg$WebSocketResp);
+	} else {
+		return _elm_lang$core$Platform_Sub$none;
+	}
+};
+var _user$project$Main$init = function (flags) {
+	var menu_items = _user$project$Menu_Items$initMenuItems(flags);
+	var profile = _user$project$User_Profile$initProfile(flags);
+	return {
+		ctor: '_Tuple2',
+		_0: {exception: _elm_lang$core$Maybe$Nothing, flags: flags, profile: profile, menu_items: menu_items, mode: _elm_lang$core$Maybe$Nothing, session_state: _user$project$Flashcard_Model$Loading, connect: true, answer: '', selected_quality: _elm_lang$core$Maybe$Nothing},
+		_1: _elm_lang$core$Platform_Cmd$none
+	};
+};
 var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
-	{init: _user$project$Main$init, view: _user$project$Main$instructor_signup_view, subscriptions: _user$project$Main$subscriptions, update: _user$project$Main$update})(
+	{init: _user$project$Main$init, view: _user$project$Main$view, subscriptions: _user$project$Main$subscriptions, update: _user$project$Main$update})(
 	A2(
 		_elm_lang$core$Json_Decode$andThen,
-		function (instructor_signup_uri) {
+		function (flashcard_ws_addr) {
 			return A2(
 				_elm_lang$core$Json_Decode$andThen,
-				function (about_url) {
+				function (instructor_profile) {
 					return A2(
 						_elm_lang$core$Json_Decode$andThen,
-						function (acknowledgements_url) {
+						function (profile_id) {
 							return A2(
 								_elm_lang$core$Json_Decode$andThen,
-								function (forgot_pass_endpoint) {
+								function (profile_type) {
 									return A2(
 										_elm_lang$core$Json_Decode$andThen,
-										function (forgot_password_url) {
+										function (student_profile) {
 											return A2(
 												_elm_lang$core$Json_Decode$andThen,
-												function (login_page_url) {
+												function (csrftoken) {
 													return A2(
 														_elm_lang$core$Json_Decode$andThen,
-														function (login_uri) {
-															return A2(
+														function (menu_items) {
+															return _elm_lang$core$Json_Decode$succeed(
+																{flashcard_ws_addr: flashcard_ws_addr, instructor_profile: instructor_profile, profile_id: profile_id, profile_type: profile_type, student_profile: student_profile, csrftoken: csrftoken, menu_items: menu_items});
+														},
+														A2(
+															_elm_lang$core$Json_Decode$field,
+															'menu_items',
+															_elm_lang$core$Json_Decode$list(
+																A2(
+																	_elm_lang$core$Json_Decode$andThen,
+																	function (link) {
+																		return A2(
+																			_elm_lang$core$Json_Decode$andThen,
+																			function (link_text) {
+																				return A2(
+																					_elm_lang$core$Json_Decode$andThen,
+																					function (selected) {
+																						return _elm_lang$core$Json_Decode$succeed(
+																							{link: link, link_text: link_text, selected: selected});
+																					},
+																					A2(_elm_lang$core$Json_Decode$field, 'selected', _elm_lang$core$Json_Decode$bool));
+																			},
+																			A2(_elm_lang$core$Json_Decode$field, 'link_text', _elm_lang$core$Json_Decode$string));
+																	},
+																	A2(_elm_lang$core$Json_Decode$field, 'link', _elm_lang$core$Json_Decode$string)))));
+												},
+												A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string));
+										},
+										A2(
+											_elm_lang$core$Json_Decode$field,
+											'student_profile',
+											_elm_lang$core$Json_Decode$oneOf(
+												{
+													ctor: '::',
+													_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+													_1: {
+														ctor: '::',
+														_0: A2(
+															_elm_lang$core$Json_Decode$map,
+															_elm_lang$core$Maybe$Just,
+															A2(
 																_elm_lang$core$Json_Decode$andThen,
-																function (reset_pass_endpoint) {
+																function (difficulties) {
 																	return A2(
 																		_elm_lang$core$Json_Decode$andThen,
-																		function (signup_page_url) {
+																		function (difficulty_preference) {
 																			return A2(
 																				_elm_lang$core$Json_Decode$andThen,
-																				function (user_type) {
+																				function (email) {
 																					return A2(
 																						_elm_lang$core$Json_Decode$andThen,
-																						function (csrftoken) {
-																							return _elm_lang$core$Json_Decode$succeed(
-																								{instructor_signup_uri: instructor_signup_uri, about_url: about_url, acknowledgements_url: acknowledgements_url, forgot_pass_endpoint: forgot_pass_endpoint, forgot_password_url: forgot_password_url, login_page_url: login_page_url, login_uri: login_uri, reset_pass_endpoint: reset_pass_endpoint, signup_page_url: signup_page_url, user_type: user_type, csrftoken: csrftoken});
+																						function (id) {
+																							return A2(
+																								_elm_lang$core$Json_Decode$andThen,
+																								function (uris) {
+																									return A2(
+																										_elm_lang$core$Json_Decode$andThen,
+																										function (username) {
+																											return _elm_lang$core$Json_Decode$succeed(
+																												{difficulties: difficulties, difficulty_preference: difficulty_preference, email: email, id: id, uris: uris, username: username});
+																										},
+																										A2(
+																											_elm_lang$core$Json_Decode$field,
+																											'username',
+																											_elm_lang$core$Json_Decode$oneOf(
+																												{
+																													ctor: '::',
+																													_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																													_1: {
+																														ctor: '::',
+																														_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+																														_1: {ctor: '[]'}
+																													}
+																												})));
+																								},
+																								A2(
+																									_elm_lang$core$Json_Decode$field,
+																									'uris',
+																									A2(
+																										_elm_lang$core$Json_Decode$andThen,
+																										function (logout_uri) {
+																											return A2(
+																												_elm_lang$core$Json_Decode$andThen,
+																												function (profile_uri) {
+																													return _elm_lang$core$Json_Decode$succeed(
+																														{logout_uri: logout_uri, profile_uri: profile_uri});
+																												},
+																												A2(_elm_lang$core$Json_Decode$field, 'profile_uri', _elm_lang$core$Json_Decode$string));
+																										},
+																										A2(_elm_lang$core$Json_Decode$field, 'logout_uri', _elm_lang$core$Json_Decode$string))));
 																						},
-																						A2(_elm_lang$core$Json_Decode$field, 'csrftoken', _elm_lang$core$Json_Decode$string));
+																						A2(
+																							_elm_lang$core$Json_Decode$field,
+																							'id',
+																							_elm_lang$core$Json_Decode$oneOf(
+																								{
+																									ctor: '::',
+																									_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																									_1: {
+																										ctor: '::',
+																										_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$int),
+																										_1: {ctor: '[]'}
+																									}
+																								})));
 																				},
-																				A2(_elm_lang$core$Json_Decode$field, 'user_type', _elm_lang$core$Json_Decode$string));
+																				A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string));
 																		},
-																		A2(_elm_lang$core$Json_Decode$field, 'signup_page_url', _elm_lang$core$Json_Decode$string));
+																		A2(
+																			_elm_lang$core$Json_Decode$field,
+																			'difficulty_preference',
+																			_elm_lang$core$Json_Decode$oneOf(
+																				{
+																					ctor: '::',
+																					_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																					_1: {
+																						ctor: '::',
+																						_0: A2(
+																							_elm_lang$core$Json_Decode$map,
+																							_elm_lang$core$Maybe$Just,
+																							A2(
+																								_elm_lang$core$Json_Decode$andThen,
+																								function (x0) {
+																									return A2(
+																										_elm_lang$core$Json_Decode$andThen,
+																										function (x1) {
+																											return _elm_lang$core$Json_Decode$succeed(
+																												{ctor: '_Tuple2', _0: x0, _1: x1});
+																										},
+																										A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
+																								},
+																								A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string))),
+																						_1: {ctor: '[]'}
+																					}
+																				})));
 																},
-																A2(_elm_lang$core$Json_Decode$field, 'reset_pass_endpoint', _elm_lang$core$Json_Decode$string));
-														},
-														A2(_elm_lang$core$Json_Decode$field, 'login_uri', _elm_lang$core$Json_Decode$string));
-												},
-												A2(_elm_lang$core$Json_Decode$field, 'login_page_url', _elm_lang$core$Json_Decode$string));
-										},
-										A2(_elm_lang$core$Json_Decode$field, 'forgot_password_url', _elm_lang$core$Json_Decode$string));
+																A2(
+																	_elm_lang$core$Json_Decode$field,
+																	'difficulties',
+																	_elm_lang$core$Json_Decode$list(
+																		A2(
+																			_elm_lang$core$Json_Decode$andThen,
+																			function (x0) {
+																				return A2(
+																					_elm_lang$core$Json_Decode$andThen,
+																					function (x1) {
+																						return _elm_lang$core$Json_Decode$succeed(
+																							{ctor: '_Tuple2', _0: x0, _1: x1});
+																					},
+																					A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
+																			},
+																			A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$string)))))),
+														_1: {ctor: '[]'}
+													}
+												})));
 								},
-								A2(_elm_lang$core$Json_Decode$field, 'forgot_pass_endpoint', _elm_lang$core$Json_Decode$string));
+								A2(_elm_lang$core$Json_Decode$field, 'profile_type', _elm_lang$core$Json_Decode$string));
 						},
-						A2(_elm_lang$core$Json_Decode$field, 'acknowledgements_url', _elm_lang$core$Json_Decode$string));
+						A2(_elm_lang$core$Json_Decode$field, 'profile_id', _elm_lang$core$Json_Decode$int));
 				},
-				A2(_elm_lang$core$Json_Decode$field, 'about_url', _elm_lang$core$Json_Decode$string));
+				A2(
+					_elm_lang$core$Json_Decode$field,
+					'instructor_profile',
+					_elm_lang$core$Json_Decode$oneOf(
+						{
+							ctor: '::',
+							_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$core$Json_Decode$map,
+									_elm_lang$core$Maybe$Just,
+									A2(
+										_elm_lang$core$Json_Decode$andThen,
+										function (id) {
+											return A2(
+												_elm_lang$core$Json_Decode$andThen,
+												function (instructor_admin) {
+													return A2(
+														_elm_lang$core$Json_Decode$andThen,
+														function (invites) {
+															return A2(
+																_elm_lang$core$Json_Decode$andThen,
+																function (texts) {
+																	return A2(
+																		_elm_lang$core$Json_Decode$andThen,
+																		function (uris) {
+																			return A2(
+																				_elm_lang$core$Json_Decode$andThen,
+																				function (username) {
+																					return _elm_lang$core$Json_Decode$succeed(
+																						{id: id, instructor_admin: instructor_admin, invites: invites, texts: texts, uris: uris, username: username});
+																				},
+																				A2(_elm_lang$core$Json_Decode$field, 'username', _elm_lang$core$Json_Decode$string));
+																		},
+																		A2(
+																			_elm_lang$core$Json_Decode$field,
+																			'uris',
+																			A2(
+																				_elm_lang$core$Json_Decode$andThen,
+																				function (logout_uri) {
+																					return A2(
+																						_elm_lang$core$Json_Decode$andThen,
+																						function (profile_uri) {
+																							return _elm_lang$core$Json_Decode$succeed(
+																								{logout_uri: logout_uri, profile_uri: profile_uri});
+																						},
+																						A2(_elm_lang$core$Json_Decode$field, 'profile_uri', _elm_lang$core$Json_Decode$string));
+																				},
+																				A2(_elm_lang$core$Json_Decode$field, 'logout_uri', _elm_lang$core$Json_Decode$string))));
+																},
+																A2(
+																	_elm_lang$core$Json_Decode$field,
+																	'texts',
+																	_elm_lang$core$Json_Decode$list(
+																		A2(
+																			_elm_lang$core$Json_Decode$andThen,
+																			function (author) {
+																				return A2(
+																					_elm_lang$core$Json_Decode$andThen,
+																					function (conclusion) {
+																						return A2(
+																							_elm_lang$core$Json_Decode$andThen,
+																							function (created_by) {
+																								return A2(
+																									_elm_lang$core$Json_Decode$andThen,
+																									function (created_dt) {
+																										return A2(
+																											_elm_lang$core$Json_Decode$andThen,
+																											function (difficulty) {
+																												return A2(
+																													_elm_lang$core$Json_Decode$andThen,
+																													function (edit_uri) {
+																														return A2(
+																															_elm_lang$core$Json_Decode$andThen,
+																															function (id) {
+																																return A2(
+																																	_elm_lang$core$Json_Decode$andThen,
+																																	function (introduction) {
+																																		return A2(
+																																			_elm_lang$core$Json_Decode$andThen,
+																																			function (last_modified_by) {
+																																				return A2(
+																																					_elm_lang$core$Json_Decode$andThen,
+																																					function (modified_dt) {
+																																						return A2(
+																																							_elm_lang$core$Json_Decode$andThen,
+																																							function (source) {
+																																								return A2(
+																																									_elm_lang$core$Json_Decode$andThen,
+																																									function (tags) {
+																																										return A2(
+																																											_elm_lang$core$Json_Decode$andThen,
+																																											function (text_section_count) {
+																																												return A2(
+																																													_elm_lang$core$Json_Decode$andThen,
+																																													function (title) {
+																																														return A2(
+																																															_elm_lang$core$Json_Decode$andThen,
+																																															function (write_locker) {
+																																																return _elm_lang$core$Json_Decode$succeed(
+																																																	{author: author, conclusion: conclusion, created_by: created_by, created_dt: created_dt, difficulty: difficulty, edit_uri: edit_uri, id: id, introduction: introduction, last_modified_by: last_modified_by, modified_dt: modified_dt, source: source, tags: tags, text_section_count: text_section_count, title: title, write_locker: write_locker});
+																																															},
+																																															A2(
+																																																_elm_lang$core$Json_Decode$field,
+																																																'write_locker',
+																																																_elm_lang$core$Json_Decode$oneOf(
+																																																	{
+																																																		ctor: '::',
+																																																		_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																																																		_1: {
+																																																			ctor: '::',
+																																																			_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+																																																			_1: {ctor: '[]'}
+																																																		}
+																																																	})));
+																																													},
+																																													A2(_elm_lang$core$Json_Decode$field, 'title', _elm_lang$core$Json_Decode$string));
+																																											},
+																																											A2(_elm_lang$core$Json_Decode$field, 'text_section_count', _elm_lang$core$Json_Decode$int));
+																																									},
+																																									A2(
+																																										_elm_lang$core$Json_Decode$field,
+																																										'tags',
+																																										_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string)));
+																																							},
+																																							A2(_elm_lang$core$Json_Decode$field, 'source', _elm_lang$core$Json_Decode$string));
+																																					},
+																																					A2(_elm_lang$core$Json_Decode$field, 'modified_dt', _elm_lang$core$Json_Decode$string));
+																																			},
+																																			A2(
+																																				_elm_lang$core$Json_Decode$field,
+																																				'last_modified_by',
+																																				_elm_lang$core$Json_Decode$oneOf(
+																																					{
+																																						ctor: '::',
+																																						_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																																						_1: {
+																																							ctor: '::',
+																																							_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+																																							_1: {ctor: '[]'}
+																																						}
+																																					})));
+																																	},
+																																	A2(_elm_lang$core$Json_Decode$field, 'introduction', _elm_lang$core$Json_Decode$string));
+																															},
+																															A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int));
+																													},
+																													A2(_elm_lang$core$Json_Decode$field, 'edit_uri', _elm_lang$core$Json_Decode$string));
+																											},
+																											A2(_elm_lang$core$Json_Decode$field, 'difficulty', _elm_lang$core$Json_Decode$string));
+																									},
+																									A2(_elm_lang$core$Json_Decode$field, 'created_dt', _elm_lang$core$Json_Decode$string));
+																							},
+																							A2(_elm_lang$core$Json_Decode$field, 'created_by', _elm_lang$core$Json_Decode$string));
+																					},
+																					A2(
+																						_elm_lang$core$Json_Decode$field,
+																						'conclusion',
+																						_elm_lang$core$Json_Decode$oneOf(
+																							{
+																								ctor: '::',
+																								_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																								_1: {
+																									ctor: '::',
+																									_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
+																									_1: {ctor: '[]'}
+																								}
+																							})));
+																			},
+																			A2(_elm_lang$core$Json_Decode$field, 'author', _elm_lang$core$Json_Decode$string)))));
+														},
+														A2(
+															_elm_lang$core$Json_Decode$field,
+															'invites',
+															_elm_lang$core$Json_Decode$oneOf(
+																{
+																	ctor: '::',
+																	_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+																	_1: {
+																		ctor: '::',
+																		_0: A2(
+																			_elm_lang$core$Json_Decode$map,
+																			_elm_lang$core$Maybe$Just,
+																			_elm_lang$core$Json_Decode$list(
+																				A2(
+																					_elm_lang$core$Json_Decode$andThen,
+																					function (email) {
+																						return A2(
+																							_elm_lang$core$Json_Decode$andThen,
+																							function (expiration) {
+																								return A2(
+																									_elm_lang$core$Json_Decode$andThen,
+																									function (invite_code) {
+																										return _elm_lang$core$Json_Decode$succeed(
+																											{email: email, expiration: expiration, invite_code: invite_code});
+																									},
+																									A2(_elm_lang$core$Json_Decode$field, 'invite_code', _elm_lang$core$Json_Decode$string));
+																							},
+																							A2(_elm_lang$core$Json_Decode$field, 'expiration', _elm_lang$core$Json_Decode$string));
+																					},
+																					A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string)))),
+																		_1: {ctor: '[]'}
+																	}
+																})));
+												},
+												A2(_elm_lang$core$Json_Decode$field, 'instructor_admin', _elm_lang$core$Json_Decode$bool));
+										},
+										A2(
+											_elm_lang$core$Json_Decode$field,
+											'id',
+											_elm_lang$core$Json_Decode$oneOf(
+												{
+													ctor: '::',
+													_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+													_1: {
+														ctor: '::',
+														_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$int),
+														_1: {ctor: '[]'}
+													}
+												})))),
+								_1: {ctor: '[]'}
+							}
+						})));
 		},
-		A2(_elm_lang$core$Json_Decode$field, 'instructor_signup_uri', _elm_lang$core$Json_Decode$string)));
+		A2(_elm_lang$core$Json_Decode$field, 'flashcard_ws_addr', _elm_lang$core$Json_Decode$string)));
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};

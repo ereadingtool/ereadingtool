@@ -11501,9 +11501,9 @@ var _user$project$Text_Translations$WordValues = F2(
 	function (a, b) {
 		return {grammemes: a, translations: b};
 	});
-var _user$project$Text_Translations$TextGroupDetails = F3(
-	function (a, b, c) {
-		return {id: a, pos: b, length: c};
+var _user$project$Text_Translations$TextGroupDetails = F4(
+	function (a, b, c, d) {
+		return {id: a, instance: b, pos: c, length: d};
 	});
 var _user$project$Text_Translations$Flags = F4(
 	function (a, b, c, d) {
@@ -12478,9 +12478,13 @@ var _user$project$Text_Translations_Decode$textGroupDetailsDecoder = A3(
 		_elm_lang$core$Json_Decode$int,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'id',
+			'instance',
 			_elm_lang$core$Json_Decode$int,
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Translations$TextGroupDetails))));
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'id',
+				_elm_lang$core$Json_Decode$int,
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Text_Translations$TextGroupDetails)))));
 var _user$project$Text_Translations_Decode$wordHelpDecoder = function (word_type) {
 	var _p0 = word_type;
 	switch (_p0) {
