@@ -169,3 +169,6 @@ elm-stuff
 /.psc*
 /.purs*
 /.psa*
+
+# vscode
+.vscode/
