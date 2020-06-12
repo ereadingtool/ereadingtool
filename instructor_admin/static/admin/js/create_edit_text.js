@@ -26111,10 +26111,7 @@ var _user$project$Student_Profile_Decode$studentProfileParamsDecoder = A3(
 						'id',
 						_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$int),
 						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Student_Profile$StudentProfileParams)))))));
-var _user$project$Student_Profile_Decode$studentProfileDecoder = A2(
-	_elm_lang$core$Json_Decode$map,
-	_user$project$Student_Profile$initProfile,
-	A2(_elm_lang$core$Json_Decode$field, 'profile', _user$project$Student_Profile_Decode$studentProfileParamsDecoder));
+var _user$project$Student_Profile_Decode$studentProfileDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Student_Profile$initProfile, _user$project$Student_Profile_Decode$studentProfileParamsDecoder);
 var _user$project$Student_Profile_Decode$performanceReportDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'pdf_link',
@@ -31972,17 +31969,16 @@ var _user$project$Text_Translations_Update$update = F3(
 				return A4(_user$project$Text_Translations_Update$mergeWords, parent_msg, model, model.flags.csrftoken, _p19._0);
 			case 'MergedWords':
 				if (_p19._0.ctor === 'Ok') {
-					var _p25 = _p19._0._0;
-					var _p22 = _p25.grouped;
+					var _p24 = _p19._0._0;
+					var _p22 = _p24.grouped;
 					if (_p22 === true) {
-						var _p23 = A2(_elm_lang$core$Debug$log, 'new text words', _p25.text_words);
 						return {
 							ctor: '_Tuple2',
-							_0: A5(_user$project$Text_Translations_Model$completeMerge, model, _p25.section, _p25.phrase, _p25.instance, _p25.text_words),
+							_0: A5(_user$project$Text_Translations_Model$completeMerge, model, _p24.section, _p24.phrase, _p24.instance, _p24.text_words),
 							_1: _elm_lang$core$Platform_Cmd$none
 						};
 					} else {
-						var _p24 = A2(_elm_lang$core$Debug$log, 'error merging text words', _p25.error);
+						var _p23 = A2(_elm_lang$core$Debug$log, 'error merging text words', _p24.error);
 						return {
 							ctor: '_Tuple2',
 							_0: _user$project$Text_Translations_Model$clearMerge(model),
@@ -31990,7 +31986,7 @@ var _user$project$Text_Translations_Update$update = F3(
 						};
 					}
 				} else {
-					var _p26 = A2(_elm_lang$core$Debug$log, 'error merging text words', _p19._0._0);
+					var _p25 = A2(_elm_lang$core$Debug$log, 'error merging text words', _p19._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'AddToMergeWords':
@@ -32010,10 +32006,10 @@ var _user$project$Text_Translations_Update$update = F3(
 				var merging_word_instances = A2(
 					_elm_lang$core$List$map,
 					function (word_instance) {
-						var _p28 = function (_p27) {
-							return !_user$project$Text_Translations_Word_Instance$hasTextWord(_p27);
+						var _p27 = function (_p26) {
+							return !_user$project$Text_Translations_Word_Instance$hasTextWord(_p26);
 						}(word_instance);
-						if (_p28 === true) {
+						if (_p27 === true) {
 							return A2(_user$project$Text_Translations_Model$refreshTextWordForWordInstance, new_model, word_instance);
 						} else {
 							return word_instance;
@@ -32026,7 +32022,7 @@ var _user$project$Text_Translations_Update$update = F3(
 					_1: A4(_user$project$Text_Translations_Update$postMergeWords, parent_msg, new_model, model.flags.csrftoken, merging_word_instances)
 				};
 			case 'MergeFail':
-				var _p29 = A2(_elm_lang$core$Debug$log, 'merge failure', _p19._0);
+				var _p28 = A2(_elm_lang$core$Debug$log, 'merge failure', _p19._0);
 				return {
 					ctor: '_Tuple2',
 					_0: A2(_user$project$Text_Translations_Model$setGlobalEditLock, model, false),
@@ -32044,7 +32040,7 @@ var _user$project$Text_Translations_Update$update = F3(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p30 = A2(_elm_lang$core$Debug$log, 'error decoding text translation', _p19._0._0);
+					var _p29 = A2(_elm_lang$core$Debug$log, 'error decoding text translation', _p19._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'UpdateTextTranslations':
@@ -32057,7 +32053,7 @@ var _user$project$Text_Translations_Update$update = F3(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p31 = A2(_elm_lang$core$Debug$log, 'error decoding text translations', _p19._0._0);
+					var _p30 = A2(_elm_lang$core$Debug$log, 'error decoding text translations', _p19._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'UpdateNewTranslationForTextWord':
@@ -32073,13 +32069,13 @@ var _user$project$Text_Translations_Update$update = F3(
 					_1: A4(_user$project$Text_Translations_Update$addAsTextWord, parent_msg, model, model.flags.csrftoken, _p19._0)
 				};
 			case 'SubmitNewTranslationForTextWord':
-				var _p33 = _p19._0;
-				var _p32 = A2(_user$project$Text_Translations_Model$getNewTranslationForWord, model, _p33);
-				if (_p32.ctor === 'Just') {
+				var _p32 = _p19._0;
+				var _p31 = A2(_user$project$Text_Translations_Model$getNewTranslationForWord, model, _p32);
+				if (_p31.ctor === 'Just') {
 					return {
 						ctor: '_Tuple2',
 						_0: model,
-						_1: A5(_user$project$Text_Translations_Update$postTranslation, parent_msg, model.flags.csrftoken, _p33, _p32._0, true)
+						_1: A5(_user$project$Text_Translations_Update$postTranslation, parent_msg, model.flags.csrftoken, _p32, _p31._0, true)
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
@@ -32092,7 +32088,7 @@ var _user$project$Text_Translations_Update$update = F3(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p34 = A2(_elm_lang$core$Debug$log, 'error decoding adding text translations', _p19._0._0);
+					var _p33 = A2(_elm_lang$core$Debug$log, 'error decoding adding text translations', _p19._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'DeleteTranslation':
@@ -32103,14 +32099,14 @@ var _user$project$Text_Translations_Update$update = F3(
 				};
 			case 'DeletedTranslation':
 				if (_p19._0.ctor === 'Ok') {
-					var _p35 = _p19._0._0;
+					var _p34 = _p19._0._0;
 					return {
 						ctor: '_Tuple2',
-						_0: A3(_user$project$Text_Translations_Model$removeTextTranslation, model, _p35.text_word, _p35.translation),
+						_0: A3(_user$project$Text_Translations_Model$removeTextTranslation, model, _p34.text_word, _p34.translation),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var _p36 = A2(_elm_lang$core$Debug$log, 'error deleting text translations', _p19._0._0);
+					var _p35 = A2(_elm_lang$core$Debug$log, 'error deleting text translations', _p19._0._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'SelectGrammemeForEditing':
