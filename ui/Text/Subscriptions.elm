@@ -1,9 +1,10 @@
 module Text.Subscriptions exposing (..)
 
-import Ports exposing (selectAllInputText, ckEditor, ckEditorUpdate)
-import Text.Update exposing (Msg)
+import Ports exposing (ckEditor, ckEditorUpdate, selectAllInputText)
 import Text.Component as Text exposing (TextComponent)
+import Text.Update exposing (Msg)
 
-subscriptions : (Msg -> msg) -> { a | text_component: TextComponent} -> Sub msg
+
+subscriptions : (Msg -> msg) -> { a | text_component : TextComponent } -> Sub msg
 subscriptions msg model =
-  ckEditorUpdate (Text.Update.UpdateTextBody >> msg)
+    ckEditorUpdate (Text.Update.UpdateTextBody >> msg)

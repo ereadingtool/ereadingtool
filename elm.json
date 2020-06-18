@@ -1,0 +1,23 @@
+{
+    "type": "application",
+    "source-directories": [
+        "flashcards/ui/",
+        "instructor_admin/ui/",
+        "user/ui/",
+        "text/ui/",
+        "ui/"
+    ],
+    "elm-version": "0.19.1",
+    "dependencies": {
+        "direct": {
+            "elm/core": "1.0.0"
+        },
+        "indirect": {
+            "elm/json": "1.0.0"
+        }
+    },
+    "test-dependencies": {
+        "direct": {},
+        "indirect": {}
+    }
+}

@@ -1,18 +1,28 @@
 module Menu exposing (..)
 
-type Select = Select Bool
-type URI = URI String
-type LinkText = LinkText String
+
+type Select
+    = Select Bool
+
+
+type URI
+    = URI String
+
+
+type LinkText
+    = LinkText String
 
 
 selected : Select -> Bool
 selected (Select selected) =
-  selected
+    selected
+
 
 uriToString : URI -> String
 uriToString (URI uri) =
-  uri
+    uri
+
 
 linkTextToString : LinkText -> String
 linkTextToString (LinkText text) =
-  text
+    text

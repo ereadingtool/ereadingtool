@@ -1,106 +1,116 @@
-import Html exposing (Html, div)
-
-import Views
-import User.Profile
-import Menu.Items
-
-import Ports
-
-import WebSocket
+module Main exposing (init, main, subscriptions, update, view)
 
 import Flashcard.Encode
-import Flashcard.Model
-
-import Flashcard.View exposing (..)
 import Flashcard.Model exposing (..)
 import Flashcard.Msg exposing (Msg(..))
 import Flashcard.Update exposing (..)
+import Flashcard.View exposing (..)
+import Html exposing (Html, div)
+import Menu.Items
+import Ports
+import User.Profile
+import Views
+import WebSocket
 
 
-init : Flags -> (Model, Cmd Msg)
+init : Flags -> ( Model, Cmd Msg )
 init flags =
-  let
-    profile = User.Profile.initProfile flags
-    menu_items = Menu.Items.initMenuItems flags
-  in
-    ({ exception=Nothing
-     , flags=flags
-     , profile=profile
-     , menu_items=menu_items
-     , mode=Nothing
-     , session_state=Loading
-     , connect=True
-     , answer=""
-     , selected_quality=Nothing
-     } , Cmd.none)
+    let
+        profile =
+            User.Profile.initProfile flags
+
+        menu_items =
+            Menu.Items.initMenuItems flags
+    in
+    ( { exception = Nothing
+      , flags = flags
+      , profile = profile
+      , menu_items = menu_items
+      , mode = Nothing
+      , session_state = Loading
+      , connect = True
+      , answer = ""
+      , selected_quality = Nothing
+      }
+    , Cmd.none
+    )
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  case model.connect of
-    True ->
-      WebSocket.listen model.flags.flashcard_ws_addr WebSocketResp
+    case model.connect of
+        True ->
+            WebSocket.listen model.flags.flashcard_ws_addr WebSocketResp
 
-    False ->
-      Sub.none
+        False ->
+            Sub.none
 
-update : Msg -> Model -> (Model, Cmd Msg)
+
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-  let
-    send_command = (\cmd ->
-      WebSocket.send
-        model.flags.flashcard_ws_addr
-        (Flashcard.Encode.jsonToString <| Flashcard.Encode.send_command cmd))
-  in
+    let
+        send_command =
+            \cmd ->
+                WebSocket.send
+                    model.flags.flashcard_ws_addr
+                    (Flashcard.Encode.jsonToString <| Flashcard.Encode.send_command cmd)
+    in
     case msg of
-      WebSocketResp str ->
-        Flashcard.Update.handle_ws_resp model str
+        WebSocketResp str ->
+            Flashcard.Update.handle_ws_resp model str
 
-      SelectMode mode ->
-        (model, send_command (ChooseModeReq mode))
+        SelectMode mode ->
+            ( model, send_command (ChooseModeReq mode) )
 
-      Start ->
-        (model, send_command StartReq)
+        Start ->
+            ( model, send_command StartReq )
 
-      ReviewAnswer ->
-        (model, send_command ReviewAnswerReq)
+        ReviewAnswer ->
+            ( model, send_command ReviewAnswerReq )
 
-      Prev ->
-        (Flashcard.Model.setQuality model Nothing, send_command PrevReq)
+        Prev ->
+            ( Flashcard.Model.setQuality model Nothing, send_command PrevReq )
 
-      Next ->
-        (Flashcard.Model.setQuality model Nothing, send_command NextReq)
+        Next ->
+            ( Flashcard.Model.setQuality model Nothing, send_command NextReq )
 
-      InputAnswer str ->
-        ({ model | answer = str }, Cmd.none)
+        InputAnswer str ->
+            ( { model | answer = str }, Cmd.none )
 
-      SubmitAnswer ->
-        (model, send_command (AnswerReq model.answer))
+        SubmitAnswer ->
+            ( model, send_command (AnswerReq model.answer) )
 
-      RateQuality q ->
-        (Flashcard.Model.setQuality model (Just q), send_command (RateQualityReq q))
+        RateQuality q ->
+            ( Flashcard.Model.setQuality model (Just q), send_command (RateQualityReq q) )
 
-      LogOut msg ->
-        (model, User.Profile.logout model.profile model.flags.csrftoken LoggedOut)
+        LogOut msg ->
+            ( model, User.Profile.logout model.profile model.flags.csrftoken LoggedOut )
 
-      LoggedOut (Ok logout_resp) ->
-        (model, Ports.redirect logout_resp.redirect)
+        LoggedOut (Ok logout_resp) ->
+            ( model, Ports.redirect logout_resp.redirect )
 
-      LoggedOut (Err err) ->
-        (model, Cmd.none)
+        LoggedOut (Err err) ->
+            ( model, Cmd.none )
+
 
 main : Program Flags Model Msg
 main =
-  Html.programWithFlags
-    { init = init
-    , view = view
-    , subscriptions = subscriptions
-    , update = update
-    }
+    Html.programWithFlags
+        { init = init
+        , view = view
+        , subscriptions = subscriptions
+        , update = update
+        }
+
+
 
 -- VIEW
+
+
 view : Model -> Html Msg
-view model = div [] [
-    (Views.view_authed_header model.profile model.menu_items LogOut)
-  , (Flashcard.View.view_content model)
-  , (Views.view_footer)
-  ]
+view model =
+    div []
+        [ Views.view_authed_header model.profile model.menu_items LogOut
+        , Flashcard.View.view_content model
+        , Views.view_footer
+        ]
