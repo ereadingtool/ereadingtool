@@ -1,6 +1,6 @@
 module TextReader.Text.Model exposing (..)
 
-import Date exposing (Date)
+import DateTime exposing (DateTime)
 
 
 type alias Text =
@@ -14,8 +14,8 @@ type alias Text =
     , created_by : Maybe String
     , last_modified_by : Maybe String
     , tags : Maybe (List String)
-    , created_dt : Maybe Date
-    , modified_dt : Maybe Date
+    , created_dt : Maybe DateTime
+    , modified_dt : Maybe DateTime
     }
 
 
