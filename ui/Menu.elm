@@ -14,8 +14,8 @@ type LinkText
 
 
 selected : Select -> Bool
-selected (Select selected) =
-    selected
+selected (Select is_selected) =
+    is_selected
 
 
 uriToString : URI -> String

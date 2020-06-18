@@ -14,8 +14,8 @@ new link select =
 
 
 selected : MenuItem -> Bool
-selected (MenuItem _ selected) =
-    Menu.selected selected
+selected (MenuItem _ is_selected) =
+    Menu.selected is_selected
 
 
 uri : MenuItem -> URI

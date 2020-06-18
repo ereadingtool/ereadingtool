@@ -1,6 +1,6 @@
 module Date.Utils exposing (..)
 
-import Date
+import DateTime
 
 
 pad_zero : Int -> Int -> String
@@ -18,15 +18,15 @@ pad_zero zeros num =
             toString num
 
 
-hour_min_sec_fmt : Date.Date -> String
+hour_min_sec_fmt : DateTime.DateTime -> String
 hour_min_sec_fmt date =
     String.join " "
-        [ String.join ":" [ pad_zero 1 (Date.hour date - 12), pad_zero 1 (Date.minute date), pad_zero 1 (Date.second date) ]
+        [ String.join ":" [ pad_zero 1 (DateTime.hour date - 12), pad_zero 1 (Date.minute date), pad_zero 1 (Date.second date) ]
         , am_pm_fmt date
         ]
 
 
-am_pm_fmt : Date.Date -> String
+am_pm_fmt : DateTime.DateTime -> String
 am_pm_fmt date =
     case Date.hour date < 12 of
         True ->
@@ -36,7 +36,7 @@ am_pm_fmt date =
             "PM"
 
 
-month_day_year_fmt : Date.Date -> String
+month_day_year_fmt : DateTime.DateTime -> String
 month_day_year_fmt date =
     List.foldr (++) "" <|
         List.map (\s -> s ++ "  ")

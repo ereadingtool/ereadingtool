@@ -37,13 +37,13 @@ items (MenuItems menu_items) =
 
 
 getItem : MenuItems -> Int -> Maybe MenuItem
-getItem (MenuItems items) index =
-    Array.get index items
+getItem (MenuItems menu_items) index =
+    Array.get index menu_items
 
 
 setItem : MenuItems -> MenuItem -> Int -> MenuItems
-setItem (MenuItems items) item index =
-    MenuItems (Array.set index item items)
+setItem (MenuItems menu_items) item index =
+    MenuItems (Array.set index item menu_items)
 
 
 setSelected : MenuItems -> Int -> Bool -> MenuItems

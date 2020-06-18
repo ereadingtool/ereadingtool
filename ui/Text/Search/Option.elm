@@ -33,8 +33,8 @@ type SearchOptions
 
 
 options : SearchOptions -> List SearchOption
-options (SearchOptions options) =
-    options
+options (SearchOptions opts) =
+    opts
 
 
 selectedOptions : SearchOptions -> List SearchOption
@@ -43,51 +43,51 @@ selectedOptions search_options =
 
 
 newOption : ( Value, Label ) -> Selected -> SearchOption
-newOption ( value, label ) selected =
-    SearchOption value label selected
+newOption ( v, l ) is_selected =
+    SearchOption v l is_selected
 
 
 value : SearchOption -> Value
-value (SearchOption value _ _) =
-    value
+value (SearchOption v _ _) =
+    v
 
 
 label : SearchOption -> Label
-label (SearchOption _ label _) =
-    label
+label (SearchOption _ l _) =
+    l
 
 
 newOptions : List ( Value, Label ) -> SearchOptions
-newOptions options =
+newOptions opts =
     SearchOptions
-        (List.map (\( value, label ) -> newOption ( value, label ) False) options)
+        (List.map (\( v, l ) -> newOption ( v, l ) False) opts)
 
 
 addOption : SearchOptions -> ( Value, Label ) -> SearchOptions
-addOption (SearchOptions options) ( value, label ) =
-    SearchOptions (SearchOption value label False :: options)
+addOption (SearchOptions opts) ( v, l ) =
+    SearchOptions (SearchOption v l False :: opts)
 
 
 optionsToDict : SearchOptions -> Dict String SearchOption
-optionsToDict (SearchOptions options) =
-    Dict.fromList (List.map (\option -> ( value option, option )) options)
+optionsToDict (SearchOptions opts) =
+    Dict.fromList (List.map (\option -> ( value option, option )) opts)
 
 
 listToOptions : List SearchOption -> SearchOptions
-listToOptions options =
-    SearchOptions options
+listToOptions opts =
+    SearchOptions opts
 
 
 dictToOptions : Dict String SearchOption -> SearchOptions
-dictToOptions options =
-    SearchOptions (Dict.values options)
+dictToOptions opts =
+    SearchOptions (Dict.values opts)
 
 
 setSelected : SearchOption -> Bool -> SearchOption
-setSelected (SearchOption value label selected) new_selected =
-    SearchOption value label new_selected
+setSelected (SearchOption v l _) new_selected =
+    SearchOption v l new_selected
 
 
 selected : SearchOption -> Bool
-selected (SearchOption _ _ selected) =
-    selected
+selected (SearchOption _ _ is_selected) =
+    is_selected

@@ -3,17 +3,13 @@ module Util exposing (..)
 import Html
 import Html.Events
 import Json.Decode
-import Regex
+import Email
 
-
-valid_email_regex : Regex.Regex
-valid_email_regex =
-    Regex.regex "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$" |> Regex.caseInsensitive
 
 
 isValidEmail : String -> Bool
 isValidEmail addr =
-    Regex.contains valid_email_regex addr
+    Email.isValid addr
 
 
 stringTupleDecoder : Json.Decode.Decoder ( String, String )

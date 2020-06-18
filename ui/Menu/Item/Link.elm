@@ -8,15 +8,15 @@ type MenuItemLink
 
 
 new : URI -> LinkText -> MenuItemLink
-new uri link_text =
-    MenuItemLink uri link_text
+new u link_text =
+    MenuItemLink u link_text
 
 
 uri : MenuItemLink -> URI
-uri (MenuItemLink uri _) =
-    uri
+uri (MenuItemLink u _) =
+    u
 
 
 text : MenuItemLink -> LinkText
-text (MenuItemLink _ text) =
-    text
+text (MenuItemLink _ t) =
+    t

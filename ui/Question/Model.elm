@@ -2,14 +2,14 @@ module Question.Model exposing (Question, initial_questions, new_question)
 
 import Answer.Model
 import Array exposing (Array)
-import Date exposing (Date)
+import DateTime exposing (DateTime)
 
 
 type alias Question =
     { id : Maybe Int
     , text_id : Maybe Int
-    , created_dt : Maybe Date
-    , modified_dt : Maybe Date
+    , created_dt : Maybe DateTime
+    , modified_dt : Maybe DateTime
     , body : String
     , order : Int
     , answers : Array Answer.Model.Answer

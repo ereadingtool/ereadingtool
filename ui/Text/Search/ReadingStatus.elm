@@ -45,23 +45,23 @@ valueToStatus value =
 
 
 new : ID -> SearchOptions -> TextReadStatusSearch
-new id options =
-    TextReadStatusSearch id options Search.emptyError
+new id opts =
+    TextReadStatusSearch id opts Search.emptyError
 
 
 options : TextReadStatusSearch -> List SearchOption
-options (TextReadStatusSearch _ options _) =
-    Text.Search.Option.options options
+options (TextReadStatusSearch _ opts _) =
+    Text.Search.Option.options opts
 
 
 selectedOptions : TextReadStatusSearch -> List SearchOption
-selectedOptions (TextReadStatusSearch _ options _) =
-    Text.Search.Option.selectedOptions options
+selectedOptions (TextReadStatusSearch _ opts _) =
+    Text.Search.Option.selectedOptions opts
 
 
 optionsToDict : TextReadStatusSearch -> Dict String SearchOption
-optionsToDict (TextReadStatusSearch _ options _) =
-    Text.Search.Option.optionsToDict options
+optionsToDict (TextReadStatusSearch _ opts _) =
+    Text.Search.Option.optionsToDict opts
 
 
 selectStatus : TextReadStatusSearch -> TextReadStatus -> Selected -> TextReadStatusSearch

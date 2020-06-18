@@ -1,7 +1,7 @@
 module Menu.Logout exposing (..)
 
 import Json.Decode
-import Json.Decode.Pipeline exposing (decode, hardcoded, optional, required, resolve)
+import Json.Decode.Pipeline exposing (required)
 
 
 type alias LogOutResp =
@@ -10,5 +10,5 @@ type alias LogOutResp =
 
 logoutRespDecoder : Json.Decode.Decoder LogOutResp
 logoutRespDecoder =
-    decode LogOutResp
+    Json.Decode.succeed LogOutResp
         |> required "redirect" Json.Decode.string

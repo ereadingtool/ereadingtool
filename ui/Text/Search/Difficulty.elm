@@ -14,23 +14,23 @@ type DifficultySearch
 
 
 new : ID -> SearchOptions -> DifficultySearch
-new id options =
-    DifficultySearch id options Search.emptyError
+new id opts =
+    DifficultySearch id opts Search.emptyError
 
 
 options : DifficultySearch -> List SearchOption
-options (DifficultySearch _ options _) =
-    Text.Search.Option.options options
+options (DifficultySearch _ opts _) =
+    Text.Search.Option.options opts
 
 
 selectedOptions : DifficultySearch -> List SearchOption
-selectedOptions (DifficultySearch _ options _) =
-    Text.Search.Option.selectedOptions options
+selectedOptions (DifficultySearch _ opts _) =
+    Text.Search.Option.selectedOptions opts
 
 
 optionsToDict : DifficultySearch -> Dict String SearchOption
-optionsToDict (DifficultySearch _ options _) =
-    Text.Search.Option.optionsToDict options
+optionsToDict (DifficultySearch _ opts _) =
+    Text.Search.Option.optionsToDict opts
 
 
 selectDifficulty : DifficultySearch -> Difficulty -> Selected -> DifficultySearch

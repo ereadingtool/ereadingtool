@@ -215,11 +215,11 @@ prev help =
 
 
 setAllInvisible : HelpMsgs help_msg -> HelpMsgs help_msg
-setAllInvisible msgs =
+setAllInvisible messages =
     OrderedDict.fromList <|
         List.map
             (\( id, ( help_msg, _ ) ) -> ( id, ( help_msg, False ) ))
-            (OrderedDict.toList <| msgs)
+            (OrderedDict.toList <| messages)
 
 
 setVisible : Help help_msg -> help_msg -> HelpMsgVisible -> Help help_msg
