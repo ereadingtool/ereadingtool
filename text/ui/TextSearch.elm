@@ -1,4 +1,4 @@
-module Main exposing (Flags, Model, Msg(..), init, main, subscriptions, update, updateResults, view, view_content, view_difficulties, view_difficulty_filter_hint, view_help_msg, view_search_filters, view_search_footer, view_search_results, view_status_filter_hint, view_statuses, view_tags, view_topic_filter_hint)
+module TextSearch exposing (Flags, Model, Msg(..), init, main, subscriptions, update, updateResults, view, view_content, view_difficulties, view_difficulty_filter_hint, view_help_msg, view_search_filters, view_search_footer, view_search_results, view_status_filter_hint, view_statuses, view_tags, view_topic_filter_hint)
 
 import Admin.Text
 import Date.Utils
