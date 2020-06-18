@@ -1,7 +1,7 @@
 module Text.Model exposing (..)
 
 import Array exposing (Array)
-import Date exposing (Date)
+import DateTime exposing (DateTime)
 import Dict exposing (Dict)
 import Text.Section.Model exposing (emptyTextSection)
 import Text.Translations exposing (..)
@@ -22,8 +22,8 @@ type alias Text =
     , created_by : Maybe String
     , last_modified_by : Maybe String
     , tags : Maybe (List String)
-    , created_dt : Maybe Date
-    , modified_dt : Maybe Date
+    , created_dt : Maybe DateTime
+    , modified_dt : Maybe DateTime
     , sections : Array Text.Section.Model.TextSection
     , write_locker : Maybe String
     , words : Words
@@ -38,9 +38,9 @@ type alias TextListItem =
     , created_by : String
     , last_modified_by : Maybe String
     , tags : Maybe (List String)
-    , created_dt : Date
-    , modified_dt : Date
-    , last_read_dt : Maybe Date
+    , created_dt : DateTime
+    , modified_dt : DateTime
+    , last_read_dt : Maybe DateTime
     , text_section_count : Int
     , text_sections_complete : Maybe Int
     , questions_correct : Maybe ( Int, Int )
