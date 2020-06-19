@@ -1,5 +1,7 @@
 module Text.Translations.TextWord exposing (..)
 
+-- grammemes, TextWord, Endpoints
+
 import Dict exposing (Dict)
 import Text.Translations exposing (..)
 import Text.Translations.Word.Kind exposing (WordKind(..))
@@ -36,16 +38,16 @@ textWordEndpoint text_word =
 grammemeValue : TextWord -> String -> Maybe String
 grammemeValue text_word grammeme_name =
     case grammemes text_word of
-        Just grammemes ->
-            Dict.get grammeme_name grammemes
+        Just grammes ->
+            Dict.get grammeme_name grammes
 
         Nothing ->
             Nothing
 
 
 grammemes : TextWord -> Maybe Grammemes
-grammemes (TextWord _ _ _ _ grammemes _ _ _) =
-    grammemes
+grammemes (TextWord _ _ _ _ maybeGrammemes _ _ _) =
+    maybeGrammemes
 
 
 strToWordType : ( String, Maybe TextGroupDetails ) -> WordKind
@@ -87,8 +89,8 @@ wordKind (TextWord _ _ _ _ _ _ word_kind _) =
 
 
 instance : TextWord -> Int
-instance (TextWord _ _ instance _ _ _ _ _) =
-    instance
+instance (TextWord _ _ inst _ _ _ _ _) =
+    inst
 
 
 wordKindToGroup : WordKind -> Maybe TextGroupDetails
@@ -107,8 +109,8 @@ group (TextWord _ _ _ _ _ _ word _) =
 
 
 endpoints : TextWord -> Endpoints
-endpoints (TextWord _ _ _ _ _ _ _ endpoints) =
-    endpoints
+endpoints (TextWord _ _ _ _ _ _ _ endpnts) =
+    endpnts
 
 
 translations_endpoint : TextWord -> String
@@ -122,8 +124,8 @@ text_word_endpoint text_word =
 
 
 id : TextWord -> TextWordId
-id (TextWord id _ _ _ _ _ _ _) =
-    id
+id (TextWord wordId _ _ _ _ _ _ _) =
+    wordId
 
 
 idToInt : TextWord -> Int
@@ -141,23 +143,23 @@ new :
     -> WordKind
     -> Endpoints
     -> TextWord
-new id section instance phrase grammemes translations word endpoints =
-    TextWord id section instance phrase grammemes translations word endpoints
+new wordId section inst phrs maybeGrammemes maybeTranslations word endpnts =
+    TextWord wordId section inst phrase maybeGrammemes maybeTranslations word endpnts
 
 
 phrase : TextWord -> Phrase
-phrase (TextWord _ _ _ phrase _ _ _ _) =
-    phrase
+phrase (TextWord _ _ _ phrs _ _ _ _) =
+    phrs
 
 
 translations : TextWord -> Maybe Translations
-translations (TextWord _ _ _ _ _ translations _ _) =
-    translations
+translations (TextWord _ _ _ _ _ maybeTranslations _ _) =
+    maybeTranslations
 
 
 setTranslations : TextWord -> Maybe Translations -> TextWord
-setTranslations (TextWord id section instance phrase grammemes translations word endpoints) new_translations =
-    TextWord id section instance phrase grammemes new_translations word endpoints
+setTranslations (TextWord wordId section inst phrs maybeGrammemes _ word endpnts) new_translations =
+    TextWord wordId section inst phrs maybeGrammemes new_translations word endpnts
 
 
 addTranslation : TextWord -> Translation -> TextWord
