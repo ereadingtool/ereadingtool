@@ -130,9 +130,16 @@
 
     align-content: center;
     justify-content: center;
+
+    transition: background-color 0.2s ease-out;
 }
 
 .difficulty_option_selected {
+    background-color: #f6f6f6;
+    filter: brightness(85%);
+}
+
+.difficulty_option:hover {
     background-color: #f6f6f6;
     filter: brightness(85%);
 }
@@ -148,6 +155,8 @@
 
     align-content: center;
     justify-content: center;
+
+    transition: background-color 0.2s ease-out;
 }
 
 .text_status_option_selected {
@@ -163,18 +172,19 @@
 .text_tag {
     cursor: pointer;
     margin: 5px 5px 5px 5px;
+
+    transition: background-color 0.3s ease-out;
+}
+
+.text_tag:hover {
+    background-color: #f6f6f6;
+    filter: brightness(85%);
 }
 
 .text_tag_selected {
     background-color: #f6f6f6;
     filter: brightness(85%);
 }
-
-.difficulty_option:hover {
-    background-color: #f6f6f6;
-    filter: brightness(85%);
-}
-
 
 .result_item_title {
     text-align: center;
