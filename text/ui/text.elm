@@ -1,4 +1,4 @@
-module Main exposing (init, main, subscriptions, update, view)
+module Text exposing (init, main, subscriptions, update, view)
 
 import Dict exposing (Dict)
 import Html exposing (Html, div)
@@ -16,7 +16,6 @@ import TextReader.View exposing (..)
 import User.Profile
 import User.Profile.TextReader.Flashcards
 import Views
-import WebSocket
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -101,13 +100,13 @@ update msg model =
         WebSocketResp str ->
             TextReader.Update.handle_ws_resp model str
 
-        LogOut msg ->
+        LogOut _ ->
             ( model, User.Profile.logout model.profile model.flags.csrftoken LoggedOut )
 
         LoggedOut (Ok logout_resp) ->
             ( model, Ports.redirect logout_resp.redirect )
 
-        LoggedOut (Err err) ->
+        LoggedOut (Err _) ->
             ( model, Cmd.none )
 
 

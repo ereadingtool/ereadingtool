@@ -3,8 +3,8 @@ module TextReader.View exposing (..)
 import Array exposing (Array)
 import Dict exposing (Dict)
 import Html exposing (Html, div, span)
-import Html.Attributes exposing (attribute, class, classList, id, property)
-import Html.Events exposing (onClick, onDoubleClick, onMouseLeave)
+import Html.Attributes exposing (attribute, class, classList, id)
+import Html.Events exposing (onClick, onMouseLeave)
 import HtmlParser
 import HtmlParser.Util
 import Text.Section.Words.Tag

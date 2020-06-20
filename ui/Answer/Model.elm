@@ -15,7 +15,7 @@ type alias Answer =
 
 default_answer_text : Answer -> String
 default_answer_text answer =
-    String.join " " [ "Click to write choice", toString (answer.order + 1) ]
+    String.join " " [ "Click to write choice", String.fromInt (answer.order + 1) ]
 
 
 generate_answer : Int -> Answer

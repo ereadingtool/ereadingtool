@@ -1,14 +1,15 @@
 module TextReader.Text.Decode exposing (..)
 
+import DateTime
 import Json.Decode
-import Json.Decode.Extra exposing (date)
-import Json.Decode.Pipeline exposing (decode, hardcoded, optional, required, resolve)
+import Json.Decode.Extra exposing (posix)
+import Json.Decode.Pipeline exposing (required)
 import TextReader.Text.Model exposing (Text)
 
 
 textDecoder : Json.Decode.Decoder Text
 textDecoder =
-    decode Text
+    Json.Decode.succeed Text
         |> required "id" Json.Decode.int
         |> required "title" Json.Decode.string
         |> required "introduction" Json.Decode.string
@@ -19,5 +20,5 @@ textDecoder =
         |> required "created_by" (Json.Decode.nullable Json.Decode.string)
         |> required "last_modified_by" (Json.Decode.nullable Json.Decode.string)
         |> required "tags" (Json.Decode.nullable (Json.Decode.list Json.Decode.string))
-        |> required "created_dt" (Json.Decode.nullable date)
-        |> required "modified_dt" (Json.Decode.nullable date)
+        |> required "created_dt" (Json.Decode.nullable (Json.Decode.map DateTime.fromPosix posix))
+        |> required "modified_dt" (Json.Decode.nullable (Json.Decode.map DateTime.fromPosix posix))

@@ -69,7 +69,7 @@ translations section =
 
 newSection : TextSection -> Section
 newSection text_section =
-    Section text_section (Array.map TextReader.Question.Model.gen_text_question text_section.questions)
+    Section text_section (Array.map TextReader.Question.Model.initTextQuestion text_section.questions)
 
 
 complete : Section -> Bool
