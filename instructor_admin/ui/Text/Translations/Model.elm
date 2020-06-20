@@ -209,10 +209,18 @@ isTextWordPartOfCompoundWord model textWord =
 
 
 isPartOfCompoundWord : Model -> SectionNumber -> Int -> String -> Maybe ( Int, Int, Int )
-isPartOfCompoundWord model sectionNumber instance word =
-    getTextWord model sectionNumber instance word
-        |> Maybe.andThen Text.Translations.TextWord.group
-        |> Maybe.map (\group -> ( Text.Translations.TextWord.instance textWord, group.pos, group.length ))
+isPartOfCompoundWord model section_number instance word =
+    case getTextWord model section_number instance word of
+        Just text_word ->
+            case Text.Translations.TextWord.group text_word of
+                Just group ->
+                    Just ( Text.Translations.TextWord.instance text_word, group.pos, group.length )
+
+                Nothing ->
+                    Nothing
+
+        Nothing ->
+            Nothing
 
 
 completeMerge : Model -> SectionNumber -> Phrase -> Instance -> List TextWord -> Model
