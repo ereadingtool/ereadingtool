@@ -1,13 +1,12 @@
 module TextReader.Question.Decode exposing (..)
 
 import Array exposing (Array)
+import DateTime
 import Json.Decode
 import Json.Decode.Extra exposing (posix)
 import Json.Decode.Pipeline exposing (required)
 import TextReader.Answer.Model exposing (Answer)
 import TextReader.Question.Model exposing (Question, TextQuestion)
-
-import DateTime
 
 
 answerDecoder : Json.Decode.Decoder Answer
