@@ -18,28 +18,28 @@ type TextWord
 
 
 textWordToString : TextWord -> String
-textWordToString text_word =
+textWordToString textWord =
     "("
         ++ String.join " "
-            [ toString (id text_word)
-            , toString (sectionNumber text_word)
-            , toString (instance text_word)
-            , toString (phrase text_word)
-            , toString (wordKindToGroup (wordKind text_word))
+            [ toString (id textWord)
+            , toString (sectionNumber textWord)
+            , toString (instance textWord)
+            , toString (phrase textWord)
+            , toString (wordKindToGroup (wordKind textWord))
             ]
         ++ ")"
 
 
 textWordEndpoint : TextWord -> String
-textWordEndpoint text_word =
-    (endpoints text_word).text_word
+textWordEndpoint textWord =
+    (endpoints textWord).text_word
 
 
 grammemeValue : TextWord -> String -> Maybe String
-grammemeValue text_word grammeme_name =
-    case grammemes text_word of
+grammemeValue textWord grammemeName =
+    case grammemes textWord of
         Just grammes ->
-            Dict.get grammeme_name grammes
+            Dict.get grammemeName grammes
 
         Nothing ->
             Nothing
@@ -51,16 +51,16 @@ grammemes (TextWord _ _ _ _ maybeGrammemes _ _ _) =
 
 
 strToWordType : ( String, Maybe TextGroupDetails ) -> WordKind
-strToWordType ( str, group_details ) =
+strToWordType ( str, groupDetails ) =
     case str of
         "single" ->
-            SingleWord group_details
+            SingleWord groupDetails
 
         "compound" ->
             CompoundWord
 
         _ ->
-            SingleWord group_details
+            SingleWord groupDetails
 
 
 wordTypeToString : WordKind -> String
@@ -74,8 +74,8 @@ wordTypeToString word =
 
 
 wordType : TextWord -> String
-wordType text_word =
-    wordTypeToString (wordKind text_word)
+wordType textWord =
+    wordTypeToString (wordKind textWord)
 
 
 sectionNumber : TextWord -> SectionNumber
@@ -84,8 +84,8 @@ sectionNumber (TextWord _ section _ _ _ _ _ _) =
 
 
 wordKind : TextWord -> WordKind
-wordKind (TextWord _ _ _ _ _ _ word_kind _) =
-    word_kind
+wordKind (TextWord _ _ _ _ _ _ wk _) =
+    wk
 
 
 instance : TextWord -> Int
@@ -96,8 +96,8 @@ instance (TextWord _ _ inst _ _ _ _ _) =
 wordKindToGroup : WordKind -> Maybe TextGroupDetails
 wordKindToGroup word =
     case word of
-        SingleWord group_details ->
-            group_details
+        SingleWord groupDetails ->
+            groupDetails
 
         CompoundWord ->
             Nothing
@@ -114,13 +114,13 @@ endpoints (TextWord _ _ _ _ _ _ _ endpnts) =
 
 
 translations_endpoint : TextWord -> String
-translations_endpoint text_word =
-    (endpoints text_word).translations
+translations_endpoint textWord =
+    (endpoints textWord).translations
 
 
 text_word_endpoint : TextWord -> String
-text_word_endpoint text_word =
-    (endpoints text_word).text_word
+text_word_endpoint textWord =
+    (endpoints textWord).text_word
 
 
 id : TextWord -> TextWordId
@@ -129,8 +129,8 @@ id (TextWord wordId _ _ _ _ _ _ _) =
 
 
 idToInt : TextWord -> Int
-idToInt text_word =
-    textWordIdToInt (id text_word)
+idToInt textWord =
+    textWordIdToInt (id textWord)
 
 
 new :
@@ -158,71 +158,71 @@ translations (TextWord _ _ _ _ _ maybeTranslations _ _) =
 
 
 setTranslations : TextWord -> Maybe Translations -> TextWord
-setTranslations (TextWord wordId section inst phrs maybeGrammemes _ word endpnts) new_translations =
-    TextWord wordId section inst phrs maybeGrammemes new_translations word endpnts
+setTranslations (TextWord wordId section inst phrs maybeGrammemes _ word endpnts) newTranslations =
+    TextWord wordId section inst phrs maybeGrammemes newTranslations word endpnts
 
 
 addTranslation : TextWord -> Translation -> TextWord
-addTranslation text_word translation =
+addTranslation textWord translation =
     let
-        new_translations =
-            case translations text_word of
+        newTranslations =
+            case translations textWord of
                 Just trs ->
                     Just (List.map (\tr -> { tr | correct_for_context = False }) trs ++ [ translation ])
 
                 Nothing ->
                     Nothing
     in
-    setTranslations text_word new_translations
+    setTranslations textWord newTranslations
 
 
 removeTranslation : TextWord -> Translation -> TextWord
-removeTranslation text_word text_word_translation =
-    case translations text_word of
+removeTranslation textWord textWordTranslation =
+    case translations textWord of
         Just trs ->
             let
-                new_translations =
-                    List.filter (\tr -> tr.id /= text_word_translation.id) trs
+                newTranslations =
+                    List.filter (\tr -> tr.id /= textWordTranslation.id) trs
             in
-            setTranslations text_word (Just new_translations)
+            setTranslations textWord (Just newTranslations)
 
         -- no translations
         Nothing ->
-            text_word
+            textWord
 
 
 updateTranslation : TextWord -> Translation -> TextWord
-updateTranslation text_word text_word_translation =
-    case translations text_word of
+updateTranslation textWord textWordTranslation =
+    case translations textWord of
         Just trs ->
             let
-                new_translations =
+                newTranslations =
                     List.map
                         (\tr ->
-                            if tr.id == text_word_translation.id then
-                                text_word_translation
+                            if tr.id == textWordTranslation.id then
+                                textWordTranslation
 
                             else
                                 tr
                         )
                         trs
             in
-            setTranslations text_word (Just new_translations)
+            setTranslations textWord (Just newTranslations)
 
         -- word has no translations
         Nothing ->
-            text_word
+            textWord
 
 
 setNoTRCorrectForContext : TextWord -> TextWord
-setNoTRCorrectForContext text_word =
-    case translations text_word of
+setNoTRCorrectForContext textWord =
+    case translations textWord of
         Just trs ->
             let
-                new_translations =
+                newTranslations =
                     List.map (\tr -> { tr | correct_for_context = False }) trs
             in
-            setTranslations text_word (Just new_translations)
+            setTranslations textWord (Just newTranslations)
 
         Nothing ->
-            text_word
+            textWord

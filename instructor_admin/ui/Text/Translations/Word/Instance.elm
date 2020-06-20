@@ -20,9 +20,9 @@ canMergeWords word_instances =
 
 
 hasTextWord : WordInstance -> Bool
-hasTextWord (WordInstance section_number instance token text_word) =
+hasTextWord (WordInstance _ _ _ text_word) =
     case text_word of
-        Just tw ->
+        Just _ ->
             True
 
         Nothing ->
