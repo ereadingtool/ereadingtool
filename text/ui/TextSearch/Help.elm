@@ -39,14 +39,14 @@ status_filter_help =
 helpMsg : TextHelp -> HelpMsgStr
 helpMsg help_msg =
     case help_msg of
-        DifficultyFilterHelp help ->
-            help
+        DifficultyFilterHelp h ->
+            h
 
-        TopicFilterHelp help ->
-            help
+        TopicFilterHelp h ->
+            h
 
-        StatusFilterHelp help ->
-            help
+        StatusFilterHelp h ->
+            h
 
 
 popupToOverlayID : TextHelp -> HelpMsgOverlayID

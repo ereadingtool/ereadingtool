@@ -2,13 +2,13 @@ module TextReader.Text.Decode exposing (..)
 
 import Json.Decode
 import Json.Decode.Extra exposing (date)
-import Json.Decode.Pipeline exposing (decode, hardcoded, optional, required, resolve)
+import Json.Decode.Pipeline exposing (required)
 import TextReader.Text.Model exposing (Text)
 
 
 textDecoder : Json.Decode.Decoder Text
 textDecoder =
-    decode Text
+    Json.Decode.succeed Text
         |> required "id" Json.Decode.int
         |> required "title" Json.Decode.string
         |> required "introduction" Json.Decode.string
