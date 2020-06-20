@@ -1,4 +1,20 @@
-module Text.Translations.Word.Instance exposing (..)
+module Text.Translations.Word.Instance exposing
+    ( WordInstance
+    , canMergeWords
+    , grammemeKeys
+    , grammemeValue
+    , grammemes
+    , hasTextWord
+    , id
+    , instance
+    , new
+    , sectionNumber
+    , setTextWord
+    , textWord
+    , token
+    , word
+    , wordInstanceSectionNumberToInt
+    )
 
 import Set exposing (Set)
 import Text.Translations exposing (..)
@@ -31,12 +47,8 @@ hasTextWord (WordInstance _ _ _ text_word) =
 
 grammemeValue : WordInstance -> String -> Maybe String
 grammemeValue word_instance grammeme_name =
-    case textWord word_instance of
-        Just text_word ->
-            Text.Translations.TextWord.grammemeValue text_word grammeme_name
-
-        Nothing ->
-            Nothing
+    textWord word_instance
+        |> Maybe.andThen (\tw -> Text.Translations.TextWord.grammemeValue tw grammeme_name)
 
 
 grammemeKeys : Set String
@@ -46,12 +58,8 @@ grammemeKeys =
 
 grammemes : WordInstance -> Maybe Grammemes
 grammemes word_instance =
-    case textWord word_instance of
-        Just text_word ->
-            Text.Translations.TextWord.grammemes text_word
-
-        Nothing ->
-            Nothing
+    textWord word_instance
+        |> Maybe.andThen Text.Translations.TextWord.grammemes
 
 
 sectionNumber : WordInstance -> SectionNumber

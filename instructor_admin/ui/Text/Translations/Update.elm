@@ -1,12 +1,15 @@
-module Text.Translations.Update exposing (..)
+module Text.Translations.Update exposing
+    ( retrieveTextWords
+    , update
+    )
 
 import Admin.Text
-import Array exposing (Array)
+import Array
 import Dict exposing (Dict)
 import Flags
 import Http
 import HttpHelpers
-import Task exposing (Task)
+import Task
 import Text.Translations exposing (..)
 import Text.Translations.Decode
 import Text.Translations.Encode
@@ -59,23 +62,22 @@ update parent_msg msg model =
             mergeWords parent_msg model model.flags.csrftoken word_instances
 
         MergedWords (Ok merge_resp) ->
-            case merge_resp.grouped of
-                True ->
-                    ( Text.Translations.Model.completeMerge
-                        model
-                        merge_resp.section
-                        merge_resp.phrase
-                        merge_resp.instance
-                        merge_resp.text_words
-                    , Cmd.none
-                    )
+            if merge_resp.grouped then
+                ( Text.Translations.Model.completeMerge
+                    model
+                    merge_resp.section
+                    merge_resp.phrase
+                    merge_resp.instance
+                    merge_resp.text_words
+                , Cmd.none
+                )
 
-                False ->
-                    let
-                        _ =
-                            Debug.log "error merging text words" merge_resp.error
-                    in
-                    ( Text.Translations.Model.clearMerge model, Cmd.none )
+            else
+                let
+                    _ =
+                        Debug.log "error merging text words" merge_resp.error
+                in
+                ( Text.Translations.Model.clearMerge model, Cmd.none )
 
         MergedWords (Err err) ->
             let
@@ -99,12 +101,11 @@ update parent_msg msg model =
                 merging_word_instances =
                     List.map
                         (\word_instance ->
-                            case (Text.Translations.Word.Instance.hasTextWord >> not) word_instance of
-                                True ->
-                                    Text.Translations.Model.refreshTextWordForWordInstance new_model word_instance
+                            if (Text.Translations.Word.Instance.hasTextWord >> not) word_instance then
+                                Text.Translations.Model.refreshTextWordForWordInstance new_model word_instance
 
-                                False ->
-                                    word_instance
+                            else
+                                word_instance
                         )
                         (Text.Translations.Model.mergingWordInstances new_model)
             in
@@ -197,21 +198,20 @@ update parent_msg msg model =
 
 mergeWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> ( Model, Cmd msg )
 mergeWords parent_msg model csrftoken word_instances =
-    case Text.Translations.Word.Instance.canMergeWords word_instances of
-        True ->
-            -- all word instances are ready to merge
-            ( model, postMergeWords parent_msg model model.flags.csrftoken word_instances )
+    if Text.Translations.Word.Instance.canMergeWords word_instances then
+        -- all word instances are ready to merge
+        ( model, postMergeWords parent_msg model model.flags.csrftoken word_instances )
 
-        False ->
-            -- lock editing on the page and instantiate some asynchronous tasks to associate text words with these
-            -- word instances
-            let
-                word_instances_with_no_text_words =
-                    List.filter (Text.Translations.Word.Instance.hasTextWord >> not) word_instances
-            in
-            ( setGlobalEditLock model True
-            , attemptToAddTextWords parent_msg model model.flags.csrftoken word_instances_with_no_text_words
-            )
+    else
+        -- lock editing on the page and instantiate some asynchronous tasks to associate text words with these
+        -- word instances
+        let
+            word_instances_with_no_text_words =
+                List.filter (Text.Translations.Word.Instance.hasTextWord >> not) word_instances
+        in
+        ( setGlobalEditLock model True
+        , attemptToAddTextWords parent_msg model model.flags.csrftoken word_instances_with_no_text_words
+        )
 
 
 handleAddTextWords : (Msg -> msg) -> List WordInstance -> Result Http.Error (List TextWord) -> msg
@@ -365,7 +365,7 @@ updateGrammemes msg csrftoken word_instance grammemes =
                     [ Http.header "X-CSRFToken" csrftoken ]
 
                 text_word_endpoint =
-                    Text.Translations.TextWord.text_word_endpoint text_word
+                    Text.Translations.TextWord.textWordEndpoint text_word
 
                 encoded_grammemes =
                     Text.Translations.Encode.grammemesEncoder text_word grammemes
@@ -391,7 +391,7 @@ postTranslation : (Msg -> msg) -> Flags.CSRFToken -> TextWord -> String -> Bool 
 postTranslation msg csrftoken text_word translation_text correct_for_context =
     let
         endpoint_uri =
-            Text.Translations.TextWord.translations_endpoint text_word
+            Text.Translations.TextWord.translationsEndpoint text_word
 
         headers =
             [ Http.header "X-CSRFToken" csrftoken ]

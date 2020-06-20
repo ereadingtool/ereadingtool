@@ -1,4 +1,11 @@
-module Text.Translations.Encode exposing (..)
+module Text.Translations.Encode exposing
+    ( deleteTextTranslationEncode
+    , grammemesEncoder
+    , newTextTranslationEncoder
+    , textTranslationAsCorrectEncoder
+    , textTranslationsMergeEncoder
+    , textWordMergeEncoder
+    )
 
 import Dict exposing (Dict)
 import Json.Encode as Encode

@@ -1,4 +1,20 @@
-module Create_Edit_Text exposing (deleteLock, deleteText, init, main, postLock, postText, retrieveTextDifficultyOptions, subscriptions, tagsToDict, textJSONtoComponent, update, updateText, view, view_msg, view_msgs)
+module Create_Edit_Text exposing
+    ( deleteLock
+    , deleteText
+    , init
+    , main
+    , postLock
+    , postText
+    , retrieveTextDifficultyOptions
+    , subscriptions
+    , tagsToDict
+    , textJSONtoComponent
+    , update
+    , updateText
+    , view
+    , view_msg
+    , view_msgs
+    )
 
 import Admin.Text
 import Debug

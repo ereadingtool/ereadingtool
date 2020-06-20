@@ -1,8 +1,26 @@
-module Text.Translations.TextWord exposing (..)
+module Text.Translations.TextWord exposing
+    ( Endpoints
+    , TextWord
+    , grammemeValue
+    , grammemes
+    , group
+    , idToInt
+    , instance
+    , new
+    , phrase
+    , removeTranslation
+    , sectionNumber
+    , setNoTRCorrectForContext
+    , strToWordType
+    , textWordEndpoint
+    , translations
+    , updateTranslation
+    , wordKindToGroup
+    , wordType
+    , wordTypeToString
+    )
 
--- grammemes, TextWord, Endpoints
-
-import Dict exposing (Dict)
+import Dict
 import Text.Translations exposing (..)
 import Text.Translations.Word.Kind exposing (WordKind(..))
 
@@ -30,19 +48,10 @@ textWordToString textWord =
         ++ ")"
 
 
-textWordEndpoint : TextWord -> String
-textWordEndpoint textWord =
-    (endpoints textWord).text_word
-
-
 grammemeValue : TextWord -> String -> Maybe String
 grammemeValue textWord grammemeName =
-    case grammemes textWord of
-        Just grammes ->
-            Dict.get grammemeName grammes
-
-        Nothing ->
-            Nothing
+    grammemes textWord
+        |> Maybe.andThen (Dict.get grammemeName)
 
 
 grammemes : TextWord -> Maybe Grammemes
@@ -113,13 +122,13 @@ endpoints (TextWord _ _ _ _ _ _ _ endpnts) =
     endpnts
 
 
-translations_endpoint : TextWord -> String
-translations_endpoint textWord =
+translationsEndpoint : TextWord -> String
+translationsEndpoint textWord =
     (endpoints textWord).translations
 
 
-text_word_endpoint : TextWord -> String
-text_word_endpoint textWord =
+textWordEndpoint : TextWord -> String
+textWordEndpoint textWord =
     (endpoints textWord).text_word
 
 
@@ -143,7 +152,7 @@ new :
     -> WordKind
     -> Endpoints
     -> TextWord
-new wordId section inst phrs maybeGrammemes maybeTranslations word endpnts =
+new wordId section inst _ maybeGrammemes maybeTranslations word endpnts =
     TextWord wordId section inst phrase maybeGrammemes maybeTranslations word endpnts
 
 
@@ -166,12 +175,9 @@ addTranslation : TextWord -> Translation -> TextWord
 addTranslation textWord translation =
     let
         newTranslations =
-            case translations textWord of
-                Just trs ->
-                    Just (List.map (\tr -> { tr | correct_for_context = False }) trs ++ [ translation ])
-
-                Nothing ->
-                    Nothing
+            translations textWord
+                |> Maybe.map (List.map (\tr -> { tr | correct_for_context = False }))
+                |> Maybe.map (\trs -> trs ++ [ translation ])
     in
     setTranslations textWord newTranslations
 

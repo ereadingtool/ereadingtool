@@ -1,4 +1,35 @@
-module Text.Translations.Model exposing (..)
+module Text.Translations.Model exposing
+    ( Model
+    , TextTranslations
+    , addTextTranslation
+    , addToMergeWords
+    , clearMerge
+    , completeMerge
+    , editWord
+    , editingGrammemeValue
+    , editingWord
+    , editingWordInstance
+    , getNewTranslationForWord
+    , getTextWords
+    , init
+    , inputGrammeme
+    , instanceCount
+    , isMergingWords
+    , mergeState
+    , mergingWord
+    , mergingWordInstances
+    , mergingWords
+    , newWordInstance
+    , refreshTextWordForWordInstance
+    , removeFromMergeWords
+    , removeTextTranslation
+    , selectGrammemeForEditing
+    , setTextWord
+    , setTextWords
+    , uneditWord
+    , updateTextTranslation
+    , updateTranslationsForWord
+    )
 
 import Array exposing (Array)
 import Dict exposing (Dict)
@@ -154,17 +185,15 @@ mergeState model word_instance =
         other_merging_words =
             mergeSiblings model word_instance
     in
-    case mergingWord model word_instance of
-        True ->
-            case List.length other_merging_words >= 1 of
-                True ->
-                    Just Mergeable
+    if mergingWord model word_instance then
+        if List.length other_merging_words >= 1 then
+            Just Mergeable
 
-                False ->
-                    Just Cancelable
+        else
+            Just Cancelable
 
-        False ->
-            Nothing
+    else
+        Nothing
 
 
 isTextWordPartOfCompoundWord : Model -> TextWord -> Maybe ( Int, Int, Int )
@@ -184,17 +213,9 @@ isTextWordPartOfCompoundWord model text_word =
 
 isPartOfCompoundWord : Model -> SectionNumber -> Int -> String -> Maybe ( Int, Int, Int )
 isPartOfCompoundWord model section_number instance word =
-    case getTextWord model section_number instance word of
-        Just text_word ->
-            case Text.Translations.TextWord.group text_word of
-                Just group ->
-                    Just ( Text.Translations.TextWord.instance text_word, group.pos, group.length )
-
-                Nothing ->
-                    Nothing
-
-        Nothing ->
-            Nothing
+    getTextWord model section_number instance word
+        |> Maybe.andThen Text.Translations.TextWord.group
+        |> Maybe.map (\group -> ( Text.Translations.TextWord.instance text_word, group.pos, group.length ))
 
 
 completeMerge : Model -> SectionNumber -> Phrase -> Instance -> List TextWord -> Model
@@ -259,12 +280,8 @@ instanceCount model section_number word =
 
 getTextWords : Model -> SectionNumber -> Phrase -> Maybe (Array TextWord)
 getTextWords model section_number phrase =
-    case getSectionWords model section_number of
-        Just words ->
-            Dict.get (String.toLower phrase) words
-
-        Nothing ->
-            Nothing
+    getSectionWords model section_number
+        |> Maybe.andThen (Dict.get (String.toLower phrase))
 
 
 editingWord : Model -> String -> Bool
@@ -351,13 +368,8 @@ editingWordInstance model word_instance =
 
 getTextWord : Model -> SectionNumber -> Int -> Phrase -> Maybe TextWord
 getTextWord model section_number instance phrase =
-    case getTextWords model section_number (String.toLower phrase) of
-        Just text_words ->
-            Array.get instance text_words
-
-        -- word not found
-        Nothing ->
-            Nothing
+    getTextWords model section_number (String.toLower phrase)
+        |> Maybe.andThen (Array.get instance)
 
 
 setTextWords : Model -> List TextWord -> Model

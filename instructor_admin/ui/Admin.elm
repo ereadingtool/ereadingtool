@@ -1,4 +1,20 @@
-module Admin exposing (Filter, Flags, Model, Msg(..), init, main, month_day_year_fmt, subscriptions, update, updateTexts, view, view_footer, view_tags, view_text, view_texts)
+module Admin exposing
+    ( Filter
+    , Flags
+    , Model
+    , Msg(..)
+    , init
+    , main
+    , month_day_year_fmt
+    , subscriptions
+    , update
+    , updateTexts
+    , view
+    , view_footer
+    , view_tags
+    , view_text
+    , view_texts
+    )
 
 import Admin.Text
 import Date exposing (..)
