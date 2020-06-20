@@ -2,13 +2,15 @@ module Text.Decode exposing (..)
 
 import Array exposing (Array)
 import Dict exposing (Dict)
-import Json.Decode as Decode
-import Json.Decode.Extra exposing (date)
-import Json.Decode.Pipeline exposing (decode, hardcoded, optional, required, resolve)
+import Json.Decode
+import Json.Decode.Extra exposing (posix)
+import Json.Decode.Pipeline exposing (required)
 import Text.Model exposing (Text, TextDifficulty, TextListItem)
 import Text.Section.Decode
 import Text.Translations.Decode
 import Util
+
+import DateTime
 
 
 type alias TextCreateResp =
@@ -35,95 +37,89 @@ type alias TextsRespError =
     Dict String String
 
 
-textDecoder : Decode.Decoder Text
+textDecoder : Json.Decode.Decoder Text
 textDecoder =
-    decode Text
-        |> required "id" (Decode.nullable Decode.int)
-        |> required "title" Decode.string
-        |> required "introduction" Decode.string
-        |> required "author" Decode.string
-        |> required "source" Decode.string
-        |> required "difficulty" Decode.string
-        |> required "conclusion" (Decode.nullable Decode.string)
-        |> required "created_by" (Decode.nullable Decode.string)
-        |> required "last_modified_by" (Decode.nullable Decode.string)
-        |> required "tags" (Decode.nullable (Decode.list Decode.string))
-        |> required "created_dt" (Decode.nullable date)
-        |> required "modified_dt" (Decode.nullable date)
-        |> required "text_sections" (Decode.map Array.fromList Text.Section.Decode.textSectionsDecoder)
-        |> required "write_locker" (Decode.nullable Decode.string)
+    Json.Decode.succeed Text
+        |> required "id" (Json.Decode.nullable Json.Decode.int)
+        |> required "title" Json.Decode.string
+        |> required "introduction" Json.Decode.string
+        |> required "author" Json.Decode.string
+        |> required "source" Json.Decode.string
+        |> required "difficulty" Json.Decode.string
+        |> required "conclusion" (Json.Decode.nullable Json.Decode.string)
+        |> required "created_by" (Json.Decode.nullable Json.Decode.string)
+        |> required "last_modified_by" (Json.Decode.nullable Json.Decode.string)
+        |> required "tags" (Json.Decode.nullable (Json.Decode.list Json.Decode.string))
+        |> required "created_dt" (Json.Decode.nullable (Json.Decode.map DateTime.fromPosix posix))
+        |> required "modified_dt" (Json.Decode.nullable (Json.Decode.map DateTime.fromPosix posix))
+        |> required "text_sections" (Json.Decode.map Array.fromList Text.Section.Decode.textSectionsDecoder)
+        |> required "write_locker" (Json.Decode.nullable Json.Decode.string)
         |> required "words" Text.Translations.Decode.wordsDecoder
 
 
-textListItemDecoder : Decode.Decoder TextListItem
+textListItemDecoder : Json.Decode.Decoder TextListItem
 textListItemDecoder =
-    decode TextListItem
-        |> required "id" Decode.int
-        |> required "title" Decode.string
-        |> required "author" Decode.string
-        |> required "difficulty" Decode.string
-        |> required "created_by" Decode.string
-        |> required "last_modified_by" (Decode.nullable Decode.string)
-        |> required "tags" (Decode.nullable (Decode.list Decode.string))
-        |> required "created_dt" date
-        |> required "modified_dt" date
-        |> required "last_read_dt" (Decode.nullable date)
-        |> required "text_section_count" Decode.int
-        |> required "text_sections_complete" (Decode.nullable Decode.int)
-        |> required "questions_correct" (Decode.nullable Util.intTupleDecoder)
-        |> required "uri" Decode.string
-        |> required "write_locker" (Decode.nullable Decode.string)
+    Json.Decode.succeed TextListItem
+        |> required "id" Json.Decode.int
+        |> required "title" Json.Decode.string
+        |> required "author" Json.Decode.string
+        |> required "difficulty" Json.Decode.string
+        |> required "created_by" Json.Decode.string
+        |> required "last_modified_by" (Json.Decode.nullable Json.Decode.string)
+        |> required "tags" (Json.Decode.nullable (Json.Decode.list Json.Decode.string))
+        |> required "created_dt" (Json.Decode.map DateTime.fromPosix posix)
+        |> required "modified_dt" (Json.Decode.map DateTime.fromPosix posix)
+        |> required "last_read_dt" (Json.Decode.nullable (Json.Decode.map DateTime.fromPosix posix))
+        |> required "text_section_count" Json.Decode.int
+        |> required "text_sections_complete" (Json.Decode.nullable Json.Decode.int)
+        |> required "questions_correct" (Json.Decode.nullable Util.intTupleDecoder)
+        |> required "uri" Json.Decode.string
+        |> required "write_locker" (Json.Decode.nullable Json.Decode.string)
 
 
-textListDecoder : Decode.Decoder (List TextListItem)
+textListDecoder : Json.Decode.Decoder (List TextListItem)
 textListDecoder =
-    Decode.list textListItemDecoder
+    Json.Decode.list textListItemDecoder
 
 
-textCreateRespDecoder : Decode.Decoder TextCreateResp
+textCreateRespDecoder : Json.Decode.Decoder TextCreateResp
 textCreateRespDecoder =
-    decode TextCreateResp
-        |> required "id" Decode.int
-        |> required "redirect" Decode.string
+    Json.Decode.succeed TextCreateResp
+        |> required "id" Json.Decode.int
+        |> required "redirect" Json.Decode.string
 
 
-textUpdateRespDecoder : Decode.Decoder TextUpdateResp
+textUpdateRespDecoder : Json.Decode.Decoder TextUpdateResp
 textUpdateRespDecoder =
-    decode TextUpdateResp
-        |> required "id" Decode.int
-        |> required "updated" Decode.bool
+    Json.Decode.succeed TextUpdateResp
+        |> required "id" Json.Decode.int
+        |> required "updated" Json.Decode.bool
 
 
-textDeleteRespDecoder : Decode.Decoder TextDeleteResp
+textDeleteRespDecoder : Json.Decode.Decoder TextDeleteResp
 textDeleteRespDecoder =
-    decode TextDeleteResp
-        |> required "id" Decode.int
-        |> required "redirect" Decode.string
-        |> required "deleted" Decode.bool
+    Json.Decode.succeed TextDeleteResp
+        |> required "id" Json.Decode.int
+        |> required "redirect" Json.Decode.string
+        |> required "deleted" Json.Decode.bool
 
 
-textLockRespDecoder : Decode.Decoder TextLockResp
+textLockRespDecoder : Json.Decode.Decoder TextLockResp
 textLockRespDecoder =
-    decode TextLockResp
-        |> required "locked" Decode.bool
+    Json.Decode.succeed TextLockResp
+        |> required "locked" Json.Decode.bool
 
 
-textDifficultiesDecoder : Decode.Decoder (List TextDifficulty)
+textDifficultiesDecoder : Json.Decode.Decoder (List TextDifficulty)
 textDifficultiesDecoder =
-    Decode.list textDifficultyDecoder
+    Json.Decode.list textDifficultyDecoder
 
 
-textDifficultyDecoder : Decode.Decoder TextDifficulty
+textDifficultyDecoder : Json.Decode.Decoder TextDifficulty
 textDifficultyDecoder =
     Util.stringTupleDecoder
 
 
 decodeRespErrors : String -> Result String TextsRespError
 decodeRespErrors str =
-    Decode.decodeString (Decode.field "errors" (Decode.dict Decode.string)) str
-
-
-textProgressDecoder : Decode.Decoder TextProgressUpdateResp
-textProgressDecoder =
-    decode TextProgressUpdateResp
-        |> required "updated" Decode.bool
+    Json.Decode.decodeString (Json.Decode.field "errors" (Json.Decode.dict Json.Decode.string)) str
