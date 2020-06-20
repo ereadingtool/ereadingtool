@@ -1,9 +1,9 @@
 module TextReader.Text.Decode exposing (..)
 
-import Json.Decode
 import DateTime
-import Json.Decode.Pipeline exposing (required)
+import Json.Decode
 import Json.Decode.Extra exposing (posix)
+import Json.Decode.Pipeline exposing (required)
 import TextReader.Text.Model exposing (Text)
 
 
