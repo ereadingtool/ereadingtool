@@ -21,28 +21,28 @@ import Text.Translations.Word.Instance.Encode
 
 
 update : (Msg -> msg) -> Msg -> Model -> ( Model, Cmd msg )
-update parent_msg msg model =
+update parentMsg msg model =
     case msg of
-        MatchTranslations word_instance ->
-            ( model, matchTranslations parent_msg model word_instance )
+        MatchTranslations wordInstance ->
+            ( model, matchTranslations parentMsg model wordInstance )
 
-        UpdatedTextWords (Ok text_words) ->
-            ( Text.Translations.Model.setTextWords model text_words, Cmd.none )
+        UpdatedTextWords (Ok textWords) ->
+            ( Text.Translations.Model.setTextWords model textWords, Cmd.none )
 
-        UpdatedTextWord (Ok text_word) ->
-            ( Text.Translations.Model.setTextWord model text_word, Cmd.none )
+        UpdatedTextWord (Ok textWord) ->
+            ( Text.Translations.Model.setTextWord model textWord, Cmd.none )
 
-        EditWord word_instance ->
-            ( Text.Translations.Model.editWord model word_instance, Cmd.none )
+        EditWord wordInstance ->
+            ( Text.Translations.Model.editWord model wordInstance, Cmd.none )
 
-        CloseEditWord word_instance ->
-            ( Text.Translations.Model.uneditWord model word_instance, Cmd.none )
+        CloseEditWord wordInstance ->
+            ( Text.Translations.Model.uneditWord model wordInstance, Cmd.none )
 
         MakeCorrectForContext translation ->
-            ( model, updateTranslationAsCorrect parent_msg model.flags.csrftoken translation )
+            ( model, updateTranslationAsCorrect parentMsg model.flags.csrftoken translation )
 
-        UpdateTextTranslation (Ok ( text_word, translation )) ->
-            ( Text.Translations.Model.updateTextTranslation model text_word translation, Cmd.none )
+        UpdateTextTranslation (Ok ( textWord, translation )) ->
+            ( Text.Translations.Model.updateTextTranslation model textWord translation, Cmd.none )
 
         UpdatedTextWords (Err err) ->
             let
@@ -58,17 +58,17 @@ update parent_msg msg model =
             in
             ( model, Cmd.none )
 
-        MergeWords word_instances ->
-            mergeWords parent_msg model model.flags.csrftoken word_instances
+        MergeWords wordInstances ->
+            mergeWords parentMsg model model.flags.csrftoken wordInstances
 
-        MergedWords (Ok merge_resp) ->
-            if merge_resp.grouped then
+        MergedWords (Ok mergeResp) ->
+            if mergeResp.grouped then
                 ( Text.Translations.Model.completeMerge
                     model
-                    merge_resp.section
-                    merge_resp.phrase
-                    merge_resp.instance
-                    merge_resp.text_words
+                    mergeResp.section
+                    mergeResp.phrase
+                    mergeResp.instance
+                    mergeResp.text_words
                 , Cmd.none
                 )
 
@@ -86,31 +86,31 @@ update parent_msg msg model =
             in
             ( model, Cmd.none )
 
-        AddToMergeWords word_instance ->
-            ( Text.Translations.Model.addToMergeWords model word_instance, Cmd.none )
+        AddToMergeWords wordInstance ->
+            ( Text.Translations.Model.addToMergeWords model wordInstance, Cmd.none )
 
-        RemoveFromMergeWords word_instance ->
-            ( Text.Translations.Model.removeFromMergeWords model word_instance, Cmd.none )
+        RemoveFromMergeWords wordInstance ->
+            ( Text.Translations.Model.removeFromMergeWords model wordInstance, Cmd.none )
 
-        AddedTextWordsForMerge text_words ->
+        AddedTextWordsForMerge textWords ->
             let
-                new_model =
-                    Text.Translations.Model.setTextWords model text_words
+                newModel =
+                    Text.Translations.Model.setTextWords model textWords
 
                 -- update merging words with text words
-                merging_word_instances =
+                mergingWordInstances =
                     List.map
-                        (\word_instance ->
-                            if (Text.Translations.Word.Instance.hasTextWord >> not) word_instance then
-                                Text.Translations.Model.refreshTextWordForWordInstance new_model word_instance
+                        (\wordInstance ->
+                            if (Text.Translations.Word.Instance.hasTextWord >> not) wordInstance then
+                                Text.Translations.Model.refreshTextWordForWordInstance newModel wordInstance
 
                             else
-                                word_instance
+                                wordInstance
                         )
-                        (Text.Translations.Model.mergingWordInstances new_model)
+                        (Text.Translations.Model.mergingWordInstances newModel)
             in
             -- merge
-            ( new_model, postMergeWords parent_msg new_model model.flags.csrftoken merging_word_instances )
+            ( newModel, postMergeWords parentMsg newModel model.flags.csrftoken mergingWordInstances )
 
         MergeFail err ->
             let
@@ -119,10 +119,10 @@ update parent_msg msg model =
             in
             ( setGlobalEditLock model False, Cmd.none )
 
-        DeleteTextWord text_word ->
+        DeleteTextWord _ ->
             ( model, Cmd.none )
 
-        DeletedTextWord text_word ->
+        DeletedTextWord _ ->
             ( model, Cmd.none )
 
         -- handle user-friendly msgs
@@ -144,22 +144,22 @@ update parent_msg msg model =
             in
             ( model, Cmd.none )
 
-        UpdateNewTranslationForTextWord text_word translation_text ->
-            ( Text.Translations.Model.updateTranslationsForWord model text_word translation_text, Cmd.none )
+        UpdateNewTranslationForTextWord textWord translationText ->
+            ( Text.Translations.Model.updateTranslationsForWord model textWord translationtTxt, Cmd.none )
 
-        AddTextWord word_instance ->
-            ( model, addAsTextWord parent_msg model model.flags.csrftoken word_instance )
+        AddTextWord wordInstance ->
+            ( model, addAsTextWord parentMsg model model.flags.csrftoken wordInstance )
 
-        SubmitNewTranslationForTextWord text_word ->
-            case Text.Translations.Model.getNewTranslationForWord model text_word of
-                Just translation_text ->
-                    ( model, postTranslation parent_msg model.flags.csrftoken text_word translation_text True )
+        SubmitNewTranslationForTextWord textWord ->
+            case Text.Translations.Model.getNewTranslationForWord model textWord of
+                Just translationText ->
+                    ( model, postTranslation parentMsg model.flags.csrftoken textWord translationText True )
 
                 Nothing ->
                     ( model, Cmd.none )
 
-        SubmittedTextTranslation (Ok ( text_word, translation )) ->
-            ( Text.Translations.Model.addTextTranslation model text_word translation, Cmd.none )
+        SubmittedTextTranslation (Ok ( textWord, translation )) ->
+            ( Text.Translations.Model.addTextTranslation model textWord translation, Cmd.none )
 
         -- handle user-friendly msgs
         SubmittedTextTranslation (Err err) ->
@@ -169,8 +169,8 @@ update parent_msg msg model =
             in
             ( model, Cmd.none )
 
-        DeleteTranslation text_word text_translation ->
-            ( model, deleteTranslation parent_msg model.flags.csrftoken text_word text_translation )
+        DeleteTranslation textWord textTranslation ->
+            ( model, deleteTranslation parentMsg model.flags.csrftoken textWord textTranslation )
 
         DeletedTranslation (Ok resp) ->
             ( Text.Translations.Model.removeTextTranslation model resp.text_word resp.translation, Cmd.none )
@@ -183,122 +183,122 @@ update parent_msg msg model =
             in
             ( model, Cmd.none )
 
-        SelectGrammemeForEditing word_instance grammeme_name ->
-            ( Text.Translations.Model.selectGrammemeForEditing model grammeme_name, Cmd.none )
+        SelectGrammemeForEditing _ grammemeName ->
+            ( Text.Translations.Model.selectGrammemeForEditing model grammemeName, Cmd.none )
 
-        InputGrammeme word_instance grammeme_value ->
-            ( Text.Translations.Model.inputGrammeme model grammeme_value, Cmd.none )
+        InputGrammeme _ grammemeValue ->
+            ( Text.Translations.Model.inputGrammeme model grammemeValue, Cmd.none )
 
-        SaveEditedGrammemes word_instance ->
-            ( model, updateGrammemes parent_msg model.flags.csrftoken word_instance model.editing_grammemes )
+        SaveEditedGrammemes wordInstance ->
+            ( model, updateGrammemes parentMsg model.flags.csrftoken wordInstance model.editing_grammemes )
 
-        RemoveGrammeme word_instance grammeme_str ->
+        RemoveGrammeme _ _ ->
             ( model, Cmd.none )
 
 
 mergeWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> ( Model, Cmd msg )
-mergeWords parent_msg model csrftoken word_instances =
-    if Text.Translations.Word.Instance.canMergeWords word_instances then
+mergeWords parent_msg model _ wordInstances =
+    if Text.Translations.Word.Instance.canMergeWords wordInstances then
         -- all word instances are ready to merge
-        ( model, postMergeWords parent_msg model model.flags.csrftoken word_instances )
+        ( model, postMergeWords parentMsg model model.flags.csrftoken wordInstances )
 
     else
         -- lock editing on the page and instantiate some asynchronous tasks to associate text words with these
         -- word instances
         let
-            word_instances_with_no_text_words =
-                List.filter (Text.Translations.Word.Instance.hasTextWord >> not) word_instances
+            wordInstancesWithNoTextWords =
+                List.filter (Text.Translations.Word.Instance.hasTextWord >> not) wordInstances
         in
         ( setGlobalEditLock model True
-        , attemptToAddTextWords parent_msg model model.flags.csrftoken word_instances_with_no_text_words
+        , attemptToAddTextWords parentMsg model model.flags.csrftoken wordInstancesWithNoTextWords
         )
 
 
 handleAddTextWords : (Msg -> msg) -> List WordInstance -> Result Http.Error (List TextWord) -> msg
-handleAddTextWords parent_msg word_instances_with_no_text_word result =
+handleAddTextWords parentMsg _ result =
     case result of
         Err err ->
-            (MergeFail >> parent_msg) err
+            (MergeFail >> parentMsg) err
 
-        Ok text_words ->
-            (AddedTextWordsForMerge >> parent_msg) text_words
+        Ok textWords ->
+            (AddedTextWordsForMerge >> parentMsg) textWords
 
 
 attemptToAddTextWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> Cmd msg
-attemptToAddTextWords parent_msg model csrftoken word_instances_with_no_text_word =
-    Task.attempt (handleAddTextWords parent_msg word_instances_with_no_text_word) <|
+attemptToAddTextWords parentMsg model csrftoken wordInstancesWithNoTextWord =
+    Task.attempt (handleAddTextWords parentMsg wordInstancesWithNoTextWord) <|
         Task.sequence <|
             List.map Http.toTask <|
-                List.map (addAsTextWordRequest model csrftoken) word_instances_with_no_text_word
+                List.map (addAsTextWordRequest model csrftoken) wordInstancesWithNoTextWord
 
 
 addAsTextWordRequest : Model -> Flags.CSRFToken -> WordInstance -> Http.Request TextWord
-addAsTextWordRequest model csrftoken word_instance =
+addAsTextWordRequest model csrftoken wordInstance =
     let
-        endpoint_uri =
+        endpointUri =
             Text.Translations.addTextWordEndpointToString model.add_as_text_word_endpoint
 
         headers =
             [ Http.header "X-CSRFToken" csrftoken ]
 
-        encoded_text_word =
-            Text.Translations.Word.Instance.Encode.textWordAddEncoder model.text_id word_instance
+        encodedTextWord =
+            Text.Translations.Word.Instance.Encode.textWordAddEncoder model.text_id wordInstance
 
         body =
-            Http.jsonBody encoded_text_word
+            Http.jsonBody encodedTextWord
     in
-    HttpHelpers.post_with_headers endpoint_uri headers body Text.Translations.Decode.textWordInstanceDecoder
+    HttpHelpers.post_with_headers endpointUri headers body Text.Translations.Decode.textWordInstanceDecoder
 
 
 addAsTextWord : (Msg -> msg) -> Model -> Flags.CSRFToken -> WordInstance -> Cmd msg
-addAsTextWord parent_msg model csrftoken word_instance =
-    Http.send (parent_msg << UpdatedTextWord) (addAsTextWordRequest model csrftoken word_instance)
+addAsTextWord parentMsg model csrftoken wordInstance =
+    Http.send (parentMsg << UpdatedTextWord) (addAsTextWordRequest model csrftoken wordInstance)
 
 
 postMergeWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> Cmd msg
-postMergeWords parent_msg model csrftoken word_instances =
+postMergeWords parentMsg model csrftoken wordInstances =
     let
-        endpoint_url =
+        endpointUrl =
             Text.Translations.mergeTextWordEndpointToString model.merge_textword_endpoint
 
         headers =
             [ Http.header "X-CSRFToken" csrftoken ]
 
-        text_words =
-            List.filterMap (\instance -> Text.Translations.Word.Instance.textWord instance) word_instances
+        textWords =
+            List.filterMap (\instance -> Text.Translations.Word.Instance.textWord instance) wordInstances
 
-        encoded_text_word_ids =
-            Text.Translations.Encode.textWordMergeEncoder text_words
+        encodedTextWordIds =
+            Text.Translations.Encode.textWordMergeEncoder textWords
 
         body =
-            Http.jsonBody encoded_text_word_ids
+            Http.jsonBody encodedTextWordIds
 
         request =
-            HttpHelpers.post_with_headers endpoint_url headers body Text.Translations.Decode.textWordMergeDecoder
+            HttpHelpers.post_with_headers endpointUrl headers body Text.Translations.Decode.textWordMergeDecoder
     in
     Http.send (parent_msg << MergedWords) request
 
 
 matchTranslations : (Msg -> msg) -> Model -> WordInstance -> Cmd msg
-matchTranslations parent_msg model word_instance =
+matchTranslations parentMsg model wordInstance =
     let
         word =
-            String.toLower (Text.Translations.Word.Instance.word word_instance)
+            String.toLower (Text.Translations.Word.Instance.word wordInstance)
 
-        section_number =
-            Text.Translations.Word.Instance.sectionNumber word_instance
+        sectionNumber =
+            Text.Translations.Word.Instance.sectionNumber wordInstance
     in
-    case Text.Translations.Word.Instance.textWord word_instance of
-        Just text_word ->
-            case Text.Translations.TextWord.translations text_word of
-                Just new_translations ->
+    case Text.Translations.Word.Instance.textWord wordInstance of
+        Just textWord ->
+            case Text.Translations.TextWord.translations textWord of
+                Just newTranslations ->
                     let
-                        match_translations =
-                            putMatchTranslations parent_msg model.text_translation_match_endpoint model.flags.csrftoken
+                        matchTranslations =
+                            putMatchTranslations parentMsg model.text_translation_match_endpoint model.flags.csrftoken
                     in
-                    case Text.Translations.Model.getTextWords model section_number word of
-                        Just text_words ->
-                            match_translations new_translations (Array.toList text_words)
+                    case Text.Translations.Model.getTextWords model sectionNumber word of
+                        Just textWords ->
+                            matchTranslations newTranslations (Array.toList textWords)
 
                         -- no text words associated with this word
                         Nothing ->
@@ -314,16 +314,16 @@ matchTranslations parent_msg model word_instance =
 
 
 deleteTranslation : (Msg -> msg) -> Flags.CSRFToken -> TextWord -> Translation -> Cmd msg
-deleteTranslation msg csrftoken text_word translation =
+deleteTranslation msg csrftoken _ translation =
     let
         headers =
             [ Http.header "X-CSRFToken" csrftoken ]
 
-        encoded_translation =
+        encodedTranslation =
             Text.Translations.Encode.deleteTextTranslationEncode translation.id
 
         body =
-            Http.jsonBody encoded_translation
+            Http.jsonBody encodedTranslation
 
         request =
             HttpHelpers.delete_with_headers
@@ -336,46 +336,46 @@ deleteTranslation msg csrftoken text_word translation =
 
 
 putMatchTranslations : (Msg -> msg) -> TextTranslationMatchEndpoint -> Flags.CSRFToken -> List Translation -> List TextWord -> Cmd msg
-putMatchTranslations msg text_translation_api_match_endpoint csrftoken translations text_words =
+putMatchTranslations msg textTranslationApiMatchEndpoint csrftoken translations textWords =
     let
-        endpoint_uri =
-            Text.Translations.textTransMatchEndpointToString text_translation_api_match_endpoint
+        endpointUri =
+            Text.Translations.textTransMatchEndpointToString textTranslationApiMatchEndpoint
 
         headers =
             [ Http.header "X-CSRFToken" csrftoken ]
 
-        encoded_merge_request =
-            Text.Translations.Encode.textTranslationsMergeEncoder translations text_words
+        encodedMergeRequest =
+            Text.Translations.Encode.textTranslationsMergeEncoder translations textWords
 
         body =
-            Http.jsonBody encoded_merge_request
+            Http.jsonBody encodedMergeRequest
 
         request =
-            HttpHelpers.put_with_headers endpoint_uri headers body Text.Translations.Decode.textWordInstancesDecoder
+            HttpHelpers.put_with_headers endpointUri headers body Text.Translations.Decode.textWordInstancesDecoder
     in
     Http.send (msg << UpdatedTextWords) request
 
 
 updateGrammemes : (Msg -> msg) -> Flags.CSRFToken -> WordInstance -> Dict String String -> Cmd msg
-updateGrammemes msg csrftoken word_instance grammemes =
-    case Text.Translations.Word.Instance.textWord word_instance of
-        Just text_word ->
+updateGrammemes msg csrftoken wordInstance grammemes =
+    case Text.Translations.Word.Instance.textWord wordInstance of
+        Just textWord ->
             let
                 headers =
                     [ Http.header "X-CSRFToken" csrftoken ]
 
-                text_word_endpoint =
-                    Text.Translations.TextWord.textWordEndpoint text_word
+                textWordEndpoint =
+                    Text.Translations.TextWord.textWordEndpoint textWord
 
-                encoded_grammemes =
-                    Text.Translations.Encode.grammemesEncoder text_word grammemes
+                encodedGrammemes =
+                    Text.Translations.Encode.grammemesEncoder textWord grammemes
 
                 body =
-                    Http.jsonBody encoded_grammemes
+                    Http.jsonBody encodedGrammemes
 
                 request =
                     HttpHelpers.put_with_headers
-                        text_word_endpoint
+                        textWordEndpoint
                         headers
                         body
                         Text.Translations.Decode.textWordInstanceDecoder
@@ -388,22 +388,22 @@ updateGrammemes msg csrftoken word_instance grammemes =
 
 
 postTranslation : (Msg -> msg) -> Flags.CSRFToken -> TextWord -> String -> Bool -> Cmd msg
-postTranslation msg csrftoken text_word translation_text correct_for_context =
+postTranslation msg csrftoken textWord translationText correctForContext =
     let
-        endpoint_uri =
-            Text.Translations.TextWord.translationsEndpoint text_word
+        endpointUri =
+            Text.Translations.TextWord.translationsEndpoint textWord
 
         headers =
             [ Http.header "X-CSRFToken" csrftoken ]
 
-        encoded_translation =
-            Text.Translations.Encode.newTextTranslationEncoder translation_text correct_for_context
+        encodedTranslation =
+            Text.Translations.Encode.newTextTranslationEncoder translationText correctForContext
 
         body =
-            Http.jsonBody encoded_translation
+            Http.jsonBody encodedTranslation
 
         request =
-            HttpHelpers.post_with_headers endpoint_uri headers body Text.Translations.Decode.textTranslationUpdateRespDecoder
+            HttpHelpers.post_with_headers endpointUri headers body Text.Translations.Decode.textTranslationUpdateRespDecoder
     in
     Http.send (msg << SubmittedTextTranslation) request
 
@@ -414,11 +414,11 @@ updateTranslationAsCorrect msg csrftoken translation =
         headers =
             [ Http.header "X-CSRFToken" csrftoken ]
 
-        encoded_translation =
+        encodedTranslation =
             Text.Translations.Encode.textTranslationAsCorrectEncoder { translation | correct_for_context = True }
 
         body =
-            Http.jsonBody encoded_translation
+            Http.jsonBody encodedTranslation
 
         request =
             HttpHelpers.put_with_headers
@@ -431,17 +431,17 @@ updateTranslationAsCorrect msg csrftoken translation =
 
 
 retrieveTextWords : (Msg -> msg) -> Admin.Text.TextAPIEndpoint -> Maybe Int -> Cmd msg
-retrieveTextWords msg text_api_endpoint text_id =
-    case text_id of
+retrieveTextWords msg textApiEndpoint textId =
+    case textId of
         Just id ->
             let
-                text_api_endpoint_url =
-                    Admin.Text.textEndpointToString text_api_endpoint
+                textApiEndpointUrl =
+                    Admin.Text.textEndpointToString textApiEndpoint
 
                 request =
                     Http.get
                         (String.join "?"
-                            [ String.join "" [ text_api_endpoint_url, toString id, "/" ], "text_words=list" ]
+                            [ String.join "" [ textApiEndpointUrl, toString id, "/" ], "text_words=list" ]
                         )
                         Text.Translations.Decode.textWordDictInstancesDecoder
             in

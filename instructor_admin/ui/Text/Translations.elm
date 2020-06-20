@@ -10,8 +10,8 @@ type SectionNumber
 
 
 sectionNumberToInt : SectionNumber -> Int
-sectionNumberToInt (SectionNumber section_number) =
-    section_number
+sectionNumberToInt (SectionNumber sectionNumber) =
+    sectionNumber
 
 
 type TextWordId

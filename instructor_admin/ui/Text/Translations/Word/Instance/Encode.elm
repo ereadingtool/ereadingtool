@@ -5,10 +5,10 @@ import Text.Translations.Word.Instance exposing (WordInstance)
 
 
 textWordAddEncoder : Int -> WordInstance -> Encode.Value
-textWordAddEncoder text_id word_instance =
+textWordAddEncoder textId wordInstance =
     Encode.object
-        [ ( "text", Encode.int text_id )
-        , ( "text_section", Encode.int (Text.Translations.Word.Instance.wordInstanceSectionNumberToInt word_instance) )
-        , ( "instance", Encode.int (Text.Translations.Word.Instance.instance word_instance) )
-        , ( "phrase", Encode.string (Text.Translations.Word.Instance.word word_instance) )
+        [ ( "text", Encode.int textId )
+        , ( "text_section", Encode.int (Text.Translations.Word.Instance.wordInstanceSectionNumberToInt wordInstance) )
+        , ( "instance", Encode.int (Text.Translations.Word.Instance.instance wordInstance) )
+        , ( "phrase", Encode.string (Text.Translations.Word.Instance.word wordInstance) )
         ]
