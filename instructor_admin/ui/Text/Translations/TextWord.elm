@@ -21,10 +21,10 @@ textWordToString : TextWord -> String
 textWordToString textWord =
     "("
         ++ String.join " "
-            [ toString (id textWord)
-            , toString (sectionNumber textWord)
-            , toString (instance textWord)
-            , toString (phrase textWord)
+            [ String.fromInt (id textWord)
+            , String.fromInt (sectionNumber textWord)
+            , String.fromInt (instance textWord)
+            , phrase textWord
             , toString (wordKindToGroup (wordKind textWord))
             ]
         ++ ")"
