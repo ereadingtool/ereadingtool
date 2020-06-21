@@ -35,19 +35,6 @@ type TextWord
     = TextWord TextWordId SectionNumber Instance Phrase (Maybe Grammemes) (Maybe Translations) WordKind Endpoints
 
 
-textWordToString : TextWord -> String
-textWordToString textWord =
-    "("
-        ++ String.join " "
-            [ String.fromInt (id textWord)
-            , String.fromInt (sectionNumber textWord)
-            , String.fromInt (instance textWord)
-            , phrase textWord
-            , toString (wordKindToGroup (wordKind textWord))
-            ]
-        ++ ")"
-
-
 grammemeValue : TextWord -> String -> Maybe String
 grammemeValue textWord grammemeName =
     grammemes textWord
@@ -152,8 +139,8 @@ new :
     -> WordKind
     -> Endpoints
     -> TextWord
-new wordId section inst _ maybeGrammemes maybeTranslations word endpnts =
-    TextWord wordId section inst phrase maybeGrammemes maybeTranslations word endpnts
+new wordId section inst phr maybeGrammemes maybeTranslations word endpnts =
+    TextWord wordId section inst phr maybeGrammemes maybeTranslations word endpnts
 
 
 phrase : TextWord -> Phrase
