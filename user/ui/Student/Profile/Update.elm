@@ -2,11 +2,11 @@ module Student.Profile.Update exposing (update)
 
 --
 
-import Dict exposing ()
+import Dict
 import Http exposing (..)
 import Json.Decode
 import Ports
-import Student.Profile exposing ()
+import Student.Profile
 import Student.Profile.Help
 import Student.Profile.Model exposing (Model)
 import Student.Profile.Msg exposing (..)

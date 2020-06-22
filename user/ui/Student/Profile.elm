@@ -116,12 +116,8 @@ studentLogoutURI student_profile =
 
 initProfileUsername : Maybe String -> Maybe StudentUsername
 initProfileUsername name =
-    case name of
-        Just username ->
-            Just (StudentUsername username)
-
-        Nothing ->
-            Nothing
+    name
+        |> Maybe.map StudentUsername
 
 
 initProfile : StudentProfileParams -> StudentProfile

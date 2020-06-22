@@ -48,11 +48,16 @@ studentSignUpURI (StudentSignUpURI uri) =
 
 
 type alias SignUpResp =
-    { id : SignUp.UserID, redirect : SignUp.RedirectURI }
+    { id : SignUp.UserID
+    , redirect : SignUp.RedirectURI
+    }
 
 
 type alias Flags =
-    UnAuthedUserFlags { student_signup_uri : String, difficulties : List TextDifficulty }
+    UnAuthedUserFlags
+        { student_signup_uri : String
+        , difficulties : List TextDifficulty
+        }
 
 
 type alias SignUpParams =
@@ -207,8 +212,8 @@ view_difficulty_choices model =
             (List.map
                 (\( k, v ) ->
                     Html.option
-                        ([ attribute "value" k ]
-                            ++ (if v == model.signup_params.difficulty then
+                        (attribute "value" k
+                            :: (if v == model.signup_params.difficulty then
                                     [ attribute "selected" "" ]
 
                                 else
