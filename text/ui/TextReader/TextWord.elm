@@ -31,18 +31,18 @@ type TextWord
 
 
 instance : TextWord -> Instance
-instance (TextWord _ instance _ _ _ _) =
-    instance
+instance (TextWord _ inst _ _ _ _) =
+    inst
 
 
 phrase : TextWord -> Phrase
-phrase (TextWord _ _ phrase _ _ _) =
-    phrase
+phrase (TextWord _ _ phr _ _ _) =
+    phr
 
 
 word : TextWord -> Text.Translations.Word.Kind.WordKind
-word (TextWord _ _ _ _ _ word) =
-    word
+word (TextWord _ _ _ _ _ word_kind) =
+    word_kind
 
 
 wordType : TextWord -> String
@@ -51,13 +51,13 @@ wordType text_word =
 
 
 group : TextWord -> Maybe TextGroupDetails
-group (TextWord _ _ _ _ _ word) =
-    Text.Translations.TextWord.wordKindToGroup word
+group (TextWord _ _ _ _ _ w) =
+    Text.Translations.TextWord.wordKindToGroup w
 
 
 grammemes : TextWord -> Maybe Grammemes
-grammemes (TextWord _ _ _ grammemes _ _) =
-    grammemes
+grammemes (TextWord _ _ _ grams _ _) =
+    grams
 
 
 grammemesToString : TextWord -> String
@@ -83,18 +83,18 @@ hasTranslations text_word =
 
 
 translations : TextWord -> Maybe Translations
-translations (TextWord _ _ _ _ translations _) =
-    translations
+translations (TextWord _ _ _ _ trans _) =
+    trans
 
 
 new : Int -> Instance -> Phrase -> Maybe Grammemes -> Maybe Translations -> Text.Translations.Word.Kind.WordKind -> TextWord
-new id instance phrase grammemes translations word =
-    TextWord id instance phrase grammemes translations word
+new id inst phr grams trans w =
+    TextWord id inst phr grams trans w
 
 
 newGrammemeFromList : Maybe (List ( String, String )) -> Grammemes
-newGrammemeFromList grammemes =
-    case grammemes of
+newGrammemeFromList grams =
+    case grams of
         Just grs ->
             Dict.fromList grs
 

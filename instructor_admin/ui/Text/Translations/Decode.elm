@@ -3,7 +3,7 @@ module Text.Translations.Decode exposing (..)
 import Array exposing (Array)
 import Dict exposing (Dict)
 import Json.Decode
-import Json.Decode.Pipeline exposing (decode, required)
+import Json.Decode.Pipeline exposing (required)
 import Text.Translations exposing (..)
 import Text.Translations.TextWord
 import Text.Translations.Word.Kind
@@ -42,7 +42,7 @@ type alias TextWordMergeResp =
 
 wordValuesDecoder : Json.Decode.Decoder WordValues
 wordValuesDecoder =
-    decode WordValues
+    Json.Decode.succeed WordValues
         |> required "grammemes" (Json.Decode.map Dict.fromList grammemesDecoder)
         |> required "translations" (Json.Decode.nullable (Json.Decode.list Json.Decode.string))
 
@@ -54,7 +54,7 @@ wordsDecoder =
 
 textWordMergeDecoder : Json.Decode.Decoder TextWordMergeResp
 textWordMergeDecoder =
-    decode TextWordMergeResp
+    Json.Decode.succeed TextWordMergeResp
         |> required "phrase" Json.Decode.string
         |> required "section" (Json.Decode.map SectionNumber Json.Decode.int)
         |> required "instance" Json.Decode.int
@@ -72,7 +72,7 @@ textTranslationUpdateRespDecoder =
 
 textTranslationRemoveRespDecoder : Json.Decode.Decoder TextWordTranslationDeleteResp
 textTranslationRemoveRespDecoder =
-    decode TextWordTranslationDeleteResp
+    Json.Decode.succeed TextWordTranslationDeleteResp
         |> required "text_word" textWordInstanceDecoder
         |> required "translation" textWordTranslationsDecoder
         |> required "deleted" Json.Decode.bool
@@ -90,21 +90,16 @@ textWordInstancesDecoder =
 
 textWordTranslationsDecoder : Json.Decode.Decoder Translation
 textWordTranslationsDecoder =
-    decode Translation
+    Json.Decode.succeed Translation
         |> required "id" Json.Decode.int
         |> required "endpoint" Json.Decode.string
         |> required "correct_for_context" Json.Decode.bool
         |> required "text" Json.Decode.string
 
 
-textWordsDecoder : Json.Decode.Decoder (List TextWord)
-textWordsDecoder =
-    Json.Decode.list textWordDecoder
-
-
 textGroupDetailsDecoder : Json.Decode.Decoder TextGroupDetails
 textGroupDetailsDecoder =
-    decode TextGroupDetails
+    Json.Decode.succeed TextGroupDetails
         |> required "id" Json.Decode.int
         |> required "instance" Json.Decode.int
         |> required "pos" Json.Decode.int
@@ -133,7 +128,7 @@ wordHelpDecoder wordType =
 
 textWordEndpointsDecoder : Json.Decode.Decoder Text.Translations.TextWord.Endpoints
 textWordEndpointsDecoder =
-    decode Text.Translations.TextWord.Endpoints
+    Json.Decode.succeed Text.Translations.TextWord.Endpoints
         |> required "text_word" Json.Decode.string
         |> required "translations" Json.Decode.string
 
@@ -158,7 +153,7 @@ grammemesDecoder =
 
 textWordDecoder : Json.Decode.Decoder TextWord
 textWordDecoder =
-    decode TextWord
+    Json.Decode.succeed TextWord
         |> required "phrase" Json.Decode.string
         |> required "grammemes" grammemesDecoder
         |> required "translation" (Json.Decode.nullable Json.Decode.string)

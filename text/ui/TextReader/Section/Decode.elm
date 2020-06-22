@@ -3,7 +3,7 @@ module TextReader.Section.Decode exposing (..)
 import Array exposing (Array)
 import Dict exposing (Dict)
 import Json.Decode
-import Json.Decode.Pipeline exposing (decode, hardcoded, optional, required, resolve)
+import Json.Decode.Pipeline exposing (required)
 import Text.Translations exposing (..)
 import Text.Translations.Decode
 import TextReader.Question.Decode
@@ -18,7 +18,7 @@ sectionDecoder =
 
 textWordTranslationDecoder : Json.Decode.Decoder TextReader.TextWord.Translation
 textWordTranslationDecoder =
-    decode TextReader.TextWord.Translation
+    Json.Decode.succeed TextReader.TextWord.Translation
         |> required "correct_for_context" Json.Decode.bool
         |> required "text" Json.Decode.string
 
@@ -48,15 +48,10 @@ textWordDictInstancesDecoder =
 
 textSectionDecoder : Json.Decode.Decoder TextSection
 textSectionDecoder =
-    decode TextSection
+    Json.Decode.succeed TextSection
         |> required "order" Json.Decode.int
         |> required "body" Json.Decode.string
         |> required "question_count" Json.Decode.int
         |> required "questions" TextReader.Question.Decode.questionsDecoder
         |> required "num_of_sections" Json.Decode.int
         |> required "translations" textWordDictInstancesDecoder
-
-
-textSectionsDecoder : Json.Decode.Decoder (List TextSection)
-textSectionsDecoder =
-    Json.Decode.list textSectionDecoder

@@ -120,6 +120,6 @@ textDifficultyDecoder =
     Util.stringTupleDecoder
 
 
-decodeRespErrors : String -> Result String TextsRespError
+decodeRespErrors : String -> Result Json.Decode.Error TextsRespError
 decodeRespErrors str =
     Json.Decode.decodeString (Json.Decode.field "errors" (Json.Decode.dict Json.Decode.string)) str

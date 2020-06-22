@@ -53,8 +53,8 @@ getTextWord section instance phrase =
 
 
 questions : Section -> Array TextQuestion
-questions (Section _ questions) =
-    questions
+questions (Section _ qs) =
+    qs
 
 
 textSection : Section -> TextSection
@@ -77,28 +77,6 @@ complete section =
     List.all (\answered -> answered) <|
         Array.toList <|
             Array.map (\question -> TextReader.Question.Model.answered question) (questions section)
-
-
-completedSections : Array Section -> Int
-completedSections sections =
-    List.sum <|
-        Array.toList <|
-            Array.map
-                (\section ->
-                    if complete section then
-                        1
-
-                    else
-                        0
-                )
-                sections
-
-
-maxScore : Section -> Int
-maxScore section =
-    List.sum <|
-        Array.toList <|
-            Array.map (\question -> 1) (questions section)
 
 
 score : Section -> Int
