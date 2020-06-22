@@ -1,4 +1,20 @@
-module Main exposing (deleteLock, deleteText, init, main, postLock, postText, retrieveTextDifficultyOptions, subscriptions, tagsToDict, textJSONtoComponent, update, updateText, view, view_msg, view_msgs)
+module Create_Edit_Text exposing
+    ( deleteLock
+    , deleteText
+    , init
+    , main
+    , postLock
+    , postText
+    , retrieveTextDifficultyOptions
+    , subscriptions
+    , tagsToDict
+    , textJSONtoComponent
+    , update
+    , updateText
+    , view
+    , view_msg
+    , view_msgs
+    )
 
 import Admin.Text
 import Debug
@@ -35,7 +51,7 @@ import Views
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
-        text_api_endpoint =
+        textApiEndpoint =
             Admin.Text.TextAPIEndpoint (Admin.Text.URL flags.text_endpoint_url)
     in
     ( { flags = flags
@@ -45,7 +61,7 @@ init flags =
       , profile = Instructor.Profile.initProfile flags.instructor_profile
       , menu_items = Menu.Items.initMenuItems flags
       , text_component = Text.Component.emptyTextComponent
-      , text_api_endpoint = text_api_endpoint
+      , text_api_endpoint = textApiEndpoint
       , text_difficulties = []
       , text_translations_model = Nothing
       , tags = Dict.fromList []
@@ -53,7 +69,7 @@ init flags =
       , write_locked = False
       }
     , Cmd.batch
-        [ retrieveTextDifficultyOptions text_api_endpoint
+        [ retrieveTextDifficultyOptions textApiEndpoint
         , textJSONtoComponent flags.text
         , tagsToDict flags.tags
         ]
@@ -61,8 +77,8 @@ init flags =
 
 
 tagsToDict : List String -> Cmd Msg
-tagsToDict tag_list =
-    Task.attempt TextTagsDecode (Task.succeed <| Dict.fromList (List.map (\tag -> ( tag, tag )) tag_list))
+tagsToDict tagList =
+    Task.attempt TextTagsDecode (Task.succeed <| Dict.fromList (List.map (\tag -> ( tag, tag )) tagList))
 
 
 textJSONtoComponent : Maybe Json.Encode.Value -> Cmd Msg
@@ -84,13 +100,13 @@ textJSONtoComponent text =
 
 
 retrieveTextDifficultyOptions : Admin.Text.TextAPIEndpoint -> Cmd Msg
-retrieveTextDifficultyOptions text_api_endpoint =
+retrieveTextDifficultyOptions textApiEndpoint =
     let
-        text_api_endpoint_url =
-            Admin.Text.textEndpointToString text_api_endpoint
+        textApiEndpointUrl =
+            Admin.Text.textEndpointToString textApiEndpoint
 
         request =
-            Http.get (String.join "?" [ text_api_endpoint_url, "difficulties=list" ]) Text.Decode.textDifficultiesDecoder
+            Http.get (String.join "?" [ textApiEndpointUrl, "difficulties=list" ]) Text.Decode.textDifficultiesDecoder
     in
     Http.send UpdateTextDifficultyOptions request
 
@@ -103,12 +119,12 @@ update msg model =
 
         Text.Create.TextTranslationMsg msg ->
             case model.text_translations_model of
-                Just translation_model ->
+                Just translationModel ->
                     let
-                        ( text_translations_model, text_translation_cmd ) =
-                            Text.Translations.Update.update TextTranslationMsg msg translation_model
+                        ( textTranslationsModel, textTranslationCmd ) =
+                            Text.Translations.Update.update TextTranslationMsg msg translationModel
                     in
-                    ( { model | text_translations_model = Just text_translations_model }, text_translation_cmd )
+                    ( { model | text_translations_model = Just textTranslationsModel }, textTranslationCmd )
 
                 Nothing ->
                     ( model, Cmd.none )
@@ -119,8 +135,8 @@ update msg model =
                     Text.Component.text model.text_component
             in
             case model.mode of
-                ReadOnlyMode write_locker ->
-                    ( { model | success_msg = Just <| "Text is locked by " ++ write_locker }, Cmd.none )
+                ReadOnlyMode writeLocker ->
+                    ( { model | success_msg = Just <| "Text is locked by " ++ writeLocker }, Cmd.none )
 
                 EditMode ->
                     ( { model | error_msg = Nothing, success_msg = Nothing }
@@ -134,33 +150,33 @@ update msg model =
 
         TextJSONDecode result ->
             case result of
-                Ok text_component ->
+                Ok textComponent ->
                     let
                         text =
-                            Text.Component.text text_component
+                            Text.Component.text textComponent
                     in
                     case text.write_locker of
-                        Just write_locker ->
-                            case write_locker /= Instructor.Profile.usernameToString (Instructor.Profile.username model.profile) of
+                        Just writeLocker ->
+                            case writeLocker /= Instructor.Profile.usernameToString (Instructor.Profile.username model.profile) of
                                 True ->
                                     ( { model
-                                        | text_component = text_component
-                                        , mode = ReadOnlyMode write_locker
-                                        , error_msg = Just <| "READONLY: text is currently being edited by " ++ write_locker
+                                        | text_component = textComponent
+                                        , mode = ReadOnlyMode writeLocker
+                                        , error_msg = Just <| "READONLY: text is currently being edited by " ++ writeLocker
                                         , write_locked = True
                                       }
-                                    , Text.Component.reinitialize_ck_editors text_component
+                                    , Text.Component.reinitialize_ck_editors textComponent
                                     )
 
                                 False ->
                                     ( { model
-                                        | text_component = text_component
+                                        | text_component = textComponent
                                         , mode = EditMode
                                         , success_msg = Just <| "editing '" ++ text.title ++ "' text"
                                         , write_locked = True
                                       }
                                     , Cmd.batch
-                                        [ Text.Component.reinitialize_ck_editors text_component
+                                        [ Text.Component.reinitialize_ck_editors textComponent
                                         , Text.Translations.Update.retrieveTextWords TextTranslationMsg model.text_api_endpoint text.id
                                         ]
                                     )
@@ -169,25 +185,25 @@ update msg model =
                             case text.id of
                                 Just id ->
                                     ( { model
-                                        | text_component = text_component
+                                        | text_component = textComponent
                                         , mode = EditMode
                                         , text_translations_model =
                                             Just (Text.Translations.Model.init model.flags.translation_flags id text)
                                         , success_msg = Just <| "editing '" ++ text.title ++ "' text"
                                       }
                                     , Cmd.batch
-                                        [ Text.Component.reinitialize_ck_editors text_component
+                                        [ Text.Component.reinitialize_ck_editors textComponent
                                         , Text.Translations.Update.retrieveTextWords TextTranslationMsg model.text_api_endpoint text.id
                                         ]
                                     )
 
                                 Nothing ->
                                     ( { model
-                                        | text_component = text_component
+                                        | text_component = textComponent
                                         , mode = EditMode
                                         , error_msg = Just <| "Something went wrong: no valid text id"
                                       }
-                                    , Text.Component.reinitialize_ck_editors text_component
+                                    , Text.Component.reinitialize_ck_editors textComponent
                                     )
 
                 Err err ->
@@ -216,7 +232,7 @@ update msg model =
         ClearMessages time ->
             ( { model | success_msg = Nothing }, Cmd.none )
 
-        Submitted (Ok text_create_resp) ->
+        Submitted (Ok textCreateResp) ->
             let
                 text =
                     Text.Component.text model.text_component
@@ -225,10 +241,10 @@ update msg model =
                 | success_msg = Just <| String.join " " [ " created '" ++ text.title ++ "'" ]
                 , mode = EditMode
               }
-            , Navigation.load text_create_resp.redirect
+            , Navigation.load textCreateResp.redirect
             )
 
-        Updated (Ok text_update_resp) ->
+        Updated (Ok textUpdateResp) ->
             let
                 text =
                     Text.Component.text model.text_component
@@ -286,21 +302,21 @@ update msg model =
         UpdateTextDifficultyOptions (Err _) ->
             ( model, Cmd.none )
 
-        ToggleEditable text_field editable ->
+        ToggleEditable textField editable ->
             let
-                ( text_component, post_toggle_cmds ) =
-                    case text_field of
-                        Title text_title ->
+                ( textComponent, postToggleCmds ) =
+                    case textField of
+                        Title textTitle ->
                             ( Text.Component.set_title_editable model.text_component editable
                             , Text.Component.post_toggle_title
                             )
 
-                        Author text_author ->
+                        Author textAuthor ->
                             ( Text.Component.set_author_editable model.text_component editable
                             , Text.Component.post_toggle_author
                             )
 
-                        Source text_source ->
+                        Source textSource ->
                             ( Text.Component.set_source_editable model.text_component editable
                             , Text.Component.post_toggle_source
                             )
@@ -308,7 +324,7 @@ update msg model =
                         _ ->
                             ( model.text_component, \_ -> Cmd.none )
             in
-            ( { model | text_component = text_component }, post_toggle_cmds text_component )
+            ( { model | text_component = textComponent }, postToggleCmds textComponent )
 
         ToggleLock ->
             let
@@ -329,10 +345,10 @@ update msg model =
                 unlock
             )
 
-        TextLocked (Ok text_locked_resp) ->
+        TextLocked (Ok textLockedResp) ->
             ( { model
                 | write_locked =
-                    if text_locked_resp.locked then
+                    if textLockedResp.locked then
                         True
 
                     else
@@ -343,10 +359,10 @@ update msg model =
             , Cmd.none
             )
 
-        TextUnlocked (Ok text_unlocked_resp) ->
+        TextUnlocked (Ok textUnlockedResp) ->
             ( { model
                 | write_locked =
-                    if text_unlocked_resp.locked then
+                    if textUnlockedResp.locked then
                         True
 
                     else
@@ -413,41 +429,41 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
-        UpdateTextAttributes attr_name attr_value ->
-            ( { model | text_component = Text.Component.set_text_attribute model.text_component attr_name attr_value }
+        UpdateTextAttributes attrName attrValue ->
+            ( { model | text_component = Text.Component.set_text_attribute model.text_component attrName attrValue }
             , Cmd.none
             )
 
-        UpdateTextCkEditors ( ck_id, ck_text ) ->
+        UpdateTextCkEditors ( ckId, ckText ) ->
             let
-                text_intro_input_id =
+                textIntroInputId =
                     (Text.Field.text_intro_attrs
                         (Text.Field.intro (Text.Component.text_fields model.text_component))
                     ).input_id
 
-                text_conclusion_input_id =
+                textConclusionInputId =
                     (Text.Field.text_conclusion_attrs
                         (Text.Field.conclusion (Text.Component.text_fields model.text_component))
                     ).input_id
             in
-            if ck_id == text_intro_input_id then
-                ( { model | text_component = Text.Component.set_text_attribute model.text_component "introduction" ck_text }
+            if ckId == textIntroInputId then
+                ( { model | text_component = Text.Component.set_text_attribute model.text_component "introduction" ckText }
                 , Cmd.none
                 )
 
-            else if ck_id == text_conclusion_input_id then
-                ( { model | text_component = Text.Component.set_text_attribute model.text_component "conclusion" ck_text }
+            else if ckId == textConclusionInputId then
+                ( { model | text_component = Text.Component.set_text_attribute model.text_component "conclusion" ckText }
                 , Cmd.none
                 )
 
             else
                 ( model, Cmd.none )
 
-        AddTagInput input_id input ->
+        AddTagInput inputId input ->
             case Dict.member input model.tags of
                 True ->
                     ( { model | text_component = Text.Component.add_tag model.text_component input }
-                    , clearInputText input_id
+                    , clearInputText inputId
                     )
 
                 _ ->
@@ -471,12 +487,12 @@ update msg model =
                 False ->
                     ( model, Cmd.none )
 
-        TextDelete (Ok text_delete) ->
+        TextDelete (Ok textDelete) ->
             let
                 _ =
-                    Debug.log "text delete" text_delete
+                    Debug.log "text delete" textDelete
             in
-            ( model, Navigation.load text_delete.redirect )
+            ( model, Navigation.load textDelete.redirect )
 
         TextDelete (Err err) ->
             case err of
@@ -488,10 +504,10 @@ update msg model =
                     case Text.Decode.decodeRespErrors resp.body of
                         Ok errors ->
                             let
-                                errors_str =
+                                errorsStr =
                                     String.join " and " (Dict.values errors)
                             in
-                            ( { model | success_msg = Just <| "Error trying to delete the text: " ++ errors_str }, Cmd.none )
+                            ( { model | success_msg = Just <| "Error trying to delete the text: " ++ errorsStr }, Cmd.none )
 
                         _ ->
                             ( model, Cmd.none )
@@ -512,7 +528,7 @@ update msg model =
 
         ToggleTab tab ->
             let
-                post_toggle_cmd =
+                postToggleCmd =
                     case tab == TextTab of
                         True ->
                             Text.Component.reinitialize_ck_editors model.text_component
@@ -520,29 +536,29 @@ update msg model =
                         False ->
                             Cmd.none
             in
-            ( { model | selected_tab = tab }, post_toggle_cmd )
+            ( { model | selected_tab = tab }, postToggleCmd )
 
         LogOut msg ->
             ( model, Instructor.Profile.logout model.profile model.flags.csrftoken LoggedOut )
 
-        LoggedOut (Ok logout_resp) ->
-            ( model, Ports.redirect logout_resp.redirect )
+        LoggedOut (Ok logoutResp) ->
+            ( model, Ports.redirect logoutResp.redirect )
 
         LoggedOut (Err err) ->
             ( model, Cmd.none )
 
 
 postLock : Flags.CSRFToken -> Admin.Text.TextAPIEndpoint -> Text.Model.Text -> Cmd Msg
-postLock csrftoken text_api_endpoint text =
+postLock csrftoken textApiEndpoint text =
     case text.id of
-        Just text_id ->
+        Just textId ->
             let
-                text_api_endpoint_url =
-                    Admin.Text.textEndpointToString text_api_endpoint
+                textApiEndpointUrl =
+                    Admin.Text.textEndpointToString textApiEndpoint
 
                 req =
                     post_with_headers
-                        (String.join "" [ text_api_endpoint_url, toString text_id, "/", "lock/" ])
+                        (String.join "" [ textApiEndpointUrl, toString textId, "/", "lock/" ])
                         [ Http.header "X-CSRFToken" csrftoken ]
                         Http.emptyBody
                         Text.Decode.textLockRespDecoder
@@ -554,16 +570,16 @@ postLock csrftoken text_api_endpoint text =
 
 
 deleteLock : Flags.CSRFToken -> Admin.Text.TextAPIEndpoint -> Text.Model.Text -> Cmd Msg
-deleteLock csrftoken text_api_endpoint text =
+deleteLock csrftoken textApiEndpoint text =
     case text.id of
-        Just text_id ->
+        Just textId ->
             let
-                text_api_endpoint_url =
-                    Admin.Text.textEndpointToString text_api_endpoint
+                textApiEndpointUrl =
+                    Admin.Text.textEndpointToString textApiEndpoint
 
                 req =
                     delete_with_headers
-                        (String.join "" [ text_api_endpoint_url, toString text_id, "/", "lock/" ])
+                        (String.join "" [ textApiEndpointUrl, toString textId, "/", "lock/" ])
                         [ Http.header "X-CSRFToken" csrftoken ]
                         Http.emptyBody
                         Text.Decode.textLockRespDecoder
@@ -575,37 +591,37 @@ deleteLock csrftoken text_api_endpoint text =
 
 
 postText : Flags.CSRFToken -> Admin.Text.TextAPIEndpoint -> Text -> Cmd Msg
-postText csrftoken text_api_endpoint text =
+postText csrftoken textApiEndpoint text =
     let
-        text_api_endpoint_url =
-            Admin.Text.textEndpointToString text_api_endpoint
+        textApiEndpointUrl =
+            Admin.Text.textEndpointToString textApiEndpoint
 
         encoded_text =
             Text.Encode.textEncoder text
 
         req =
-            post_with_headers text_api_endpoint_url [ Http.header "X-CSRFToken" csrftoken ] (Http.jsonBody encoded_text) <|
+            post_with_headers textApiEndpointUrl [ Http.header "X-CSRFToken" csrftoken ] (Http.jsonBody encoded_text) <|
                 Text.Decode.textCreateRespDecoder
     in
     Http.send Submitted req
 
 
 updateText : Flags.CSRFToken -> Admin.Text.TextAPIEndpoint -> Text -> Cmd Msg
-updateText csrftoken text_api_endpoint text =
+updateText csrftoken textApiEndpoint text =
     case text.id of
-        Just text_id ->
+        Just textId ->
             let
-                text_api_endpoint_url =
-                    Admin.Text.textEndpointToString text_api_endpoint
+                textApiEndpointUrl =
+                    Admin.Text.textEndpointToString textApiEndpoint
 
-                encoded_text =
+                encodedText =
                     Text.Encode.textEncoder text
 
                 req =
                     put_with_headers
-                        (String.join "" [ text_api_endpoint_url, toString text_id, "/" ])
+                        (String.join "" [ textApiEndpointUrl, toString textId, "/" ])
                         [ Http.header "X-CSRFToken" csrftoken ]
-                        (Http.jsonBody encoded_text)
+                        (Http.jsonBody encodedText)
                     <|
                         Text.Decode.textUpdateRespDecoder
             in
@@ -616,16 +632,16 @@ updateText csrftoken text_api_endpoint text =
 
 
 deleteText : Flags.CSRFToken -> Admin.Text.TextAPIEndpoint -> Text.Model.Text -> Cmd Msg
-deleteText csrftoken text_api_endpoint text =
+deleteText csrftoken textApiEndpoint text =
     case text.id of
-        Just text_id ->
+        Just textId ->
             let
-                text_api_endpoint_url =
-                    Admin.Text.textEndpointToString text_api_endpoint
+                textApiEndpointUrl =
+                    Admin.Text.textEndpointToString textApiEndpoint
 
                 req =
                     delete_with_headers
-                        (String.join "" [ text_api_endpoint_url, toString text_id, "/" ])
+                        (String.join "" [ textApiEndpointUrl, toString textId, "/" ])
                         [ Http.header "X-CSRFToken" csrftoken ]
                         Http.emptyBody
                         Text.Decode.textDeleteRespDecoder
@@ -657,8 +673,8 @@ subscriptions model =
         , confirmation ConfirmTextDelete
         ]
             ++ [ case model.text_translations_model of
-                    Just translation_model ->
-                        Text.Translations.Subscriptions.subscriptions TextTranslationMsg translation_model
+                    Just translationModel ->
+                        Text.Translations.Subscriptions.subscriptions TextTranslationMsg translationModel
 
                     Nothing ->
                         Sub.none
@@ -678,7 +694,7 @@ main =
 view_msg : Maybe String -> Html Msg
 view_msg msg =
     let
-        msg_str =
+        msgStr =
             case msg of
                 Just str ->
                     String.join " " [ " ", str ]
@@ -686,7 +702,7 @@ view_msg msg =
                 _ ->
                     ""
     in
-    Html.text msg_str
+    Html.text msgStr
 
 
 view_msgs : Model -> Html Msg
@@ -700,7 +716,7 @@ view_msgs model =
 view : Model -> Html Msg
 view model =
     let
-        text_view_params =
+        textViewParams =
             { text = Text.Component.text model.text_component
             , text_component = model.text_component
             , text_translations_model = model.text_translations_model
@@ -717,5 +733,5 @@ view model =
     div []
         [ Views.view_authed_header (User.Profile.fromInstructorProfile model.profile) model.menu_items Text.Create.LogOut
         , view_msgs model
-        , Text.View.view_text text_view_params model.flags.answer_feedback_limit
+        , Text.View.view_text textViewParams model.flags.answer_feedback_limit
         ]

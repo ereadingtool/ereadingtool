@@ -1,4 +1,20 @@
-module Main exposing (Filter, Flags, Model, Msg(..), init, main, month_day_year_fmt, subscriptions, update, updateTexts, view, view_footer, view_tags, view_text, view_texts)
+module Admin exposing
+    ( Filter
+    , Flags
+    , Model
+    , Msg(..)
+    , init
+    , main
+    , month_day_year_fmt
+    , subscriptions
+    , update
+    , updateTexts
+    , view
+    , view_footer
+    , view_tags
+    , view_text
+    , view_texts
+    )
 
 import Admin.Text
 import Date exposing (..)
@@ -49,17 +65,17 @@ type alias Filter =
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
-        text_api_endpoint =
+        textApiEndpoint =
             Admin.Text.TextAPIEndpoint (Admin.Text.URL flags.text_api_endpoint_url)
     in
     ( { texts = []
-      , text_api_endpoint = text_api_endpoint
+      , text_api_endpoint = textApiEndpoint
       , profile = User.Profile.initProfile flags
       , menu_items = Menu.Items.initMenuItems flags
       , flags = flags
       , loading = True
       }
-    , updateTexts text_api_endpoint []
+    , updateTexts textApiEndpoint []
     )
 
 
@@ -69,13 +85,13 @@ subscriptions model =
 
 
 updateTexts : Admin.Text.TextAPIEndpoint -> Filter -> Cmd Msg
-updateTexts text_api_endpoint filter =
+updateTexts textApiEndpoint filter =
     let
-        text_api_endpoint_url =
-            Admin.Text.textEndpointToString text_api_endpoint
+        textApiEndpointUrl =
+            Admin.Text.textEndpointToString textApiEndpoint
 
         request =
-            Http.get text_api_endpoint_url Text.Decode.textListDecoder
+            Http.get textApiEndpointUrl Text.Decode.textListDecoder
     in
     Http.send Update request
 
@@ -97,8 +113,8 @@ update msg model =
         LogOut msg ->
             ( model, User.Profile.logout model.profile model.flags.csrftoken LoggedOut )
 
-        LoggedOut (Ok logout_resp) ->
-            ( model, Ports.redirect logout_resp.redirect )
+        LoggedOut (Ok logoutResp) ->
+            ( model, Ports.redirect logoutResp.redirect )
 
         LoggedOut (Err err) ->
             ( model, Cmd.none )
@@ -122,17 +138,17 @@ month_day_year_fmt date =
 
 
 view_text : TextListItem -> Html Msg
-view_text text_list_item =
+view_text textListItem =
     div [ classList [ ( "text_item", True ) ] ]
         [ div [ classList [ ( "item_property", True ) ], attribute "data-id" (toString text_list_item.id) ] [ Html.text "" ]
         , div [ classList [ ( "item_property", True ) ] ]
-            [ Html.a [ attribute "href" ("/admin/text/" ++ toString text_list_item.id) ] [ Html.text text_list_item.title ]
+            [ Html.a [ attribute "href" ("/admin/text/" ++ toString textListItem.id) ] [ Html.text textListItem.title ]
             , span [ classList [ ( "sub_description", True ) ] ]
-                [ Html.text <| "Modified:   " ++ month_day_year_fmt text_list_item.modified_dt
+                [ Html.text <| "Modified:   " ++ month_day_year_fmt textListItem.modified_dt
                 ]
             ]
         , div [ classList [ ( "item_property", True ) ] ]
-            [ Html.text <| toString text_list_item.text_section_count
+            [ Html.text <| toString textListItem.text_section_count
             , span [ classList [ ( "sub_description", True ) ] ]
                 [ Html.text "Text Sections"
                 ]
@@ -151,20 +167,20 @@ view_text text_list_item =
             ]
         , view_tags text_list_item
         , div [ classList [ ( "item_property", True ) ] ]
-            [ Html.text text_list_item.created_by
+            [ Html.text textListItem.created_by
             , span [ classList [ ( "sub_description", True ) ] ]
-                [ Html.text ("Created By (" ++ month_day_year_fmt text_list_item.created_dt ++ ")")
+                [ Html.text ("Created By (" ++ month_day_year_fmt textListItem.created_dt ++ ")")
                 ]
             ]
         ]
 
 
 view_tags : TextListItem -> Html Msg
-view_tags text_list_item =
+view_tags textListItem =
     div [ classList [ ( "item_property", True ) ] ]
         [ span [ attribute "class" "tag" ]
             [ Html.text
-                (case text_list_item.tags of
+                (case textListItem.tags of
                     Just tags ->
                         String.join ", " tags
 

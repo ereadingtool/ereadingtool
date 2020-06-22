@@ -3,7 +3,7 @@ module Text.Translations.Decode exposing (..)
 import Array exposing (Array)
 import Dict exposing (Dict)
 import Json.Decode
-import Json.Decode.Pipeline exposing (decode, hardcoded, optional, required, resolve)
+import Json.Decode.Pipeline exposing (decode, required)
 import Text.Translations exposing (..)
 import Text.Translations.TextWord
 import Text.Translations.Word.Kind
@@ -118,8 +118,8 @@ wordDecoder =
 
 
 wordHelpDecoder : String -> Json.Decode.Decoder Text.Translations.Word.Kind.WordKind
-wordHelpDecoder word_type =
-    case word_type of
+wordHelpDecoder wordType =
+    case wordType of
         "single" ->
             Json.Decode.field "group"
                 (Json.Decode.map Text.Translations.Word.Kind.SingleWord (Json.Decode.nullable textGroupDetailsDecoder))

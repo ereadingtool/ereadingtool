@@ -1,4 +1,20 @@
-module Text.Translations.Word.Instance exposing (..)
+module Text.Translations.Word.Instance exposing
+    ( WordInstance
+    , canMergeWords
+    , grammemeKeys
+    , grammemeValue
+    , grammemes
+    , hasTextWord
+    , id
+    , instance
+    , new
+    , sectionNumber
+    , setTextWord
+    , textWord
+    , token
+    , word
+    , wordInstanceSectionNumberToInt
+    )
 
 import Set exposing (Set)
 import Text.Translations exposing (..)
@@ -10,19 +26,19 @@ type WordInstance
 
 
 setTextWord : WordInstance -> TextWord -> WordInstance
-setTextWord (WordInstance id instance token _) new_text_word =
-    WordInstance id instance token (Just new_text_word)
+setTextWord (WordInstance id instance token _) newTextWord =
+    WordInstance id instance token (Just newTextWord)
 
 
 canMergeWords : List WordInstance -> Bool
-canMergeWords word_instances =
-    List.all hasTextWord word_instances
+canMergeWords wordInstances =
+    List.all hasTextWord wordInstances
 
 
 hasTextWord : WordInstance -> Bool
-hasTextWord (WordInstance section_number instance token text_word) =
-    case text_word of
-        Just tw ->
+hasTextWord (WordInstance _ _ _ textWord) =
+    case textWord of
+        Just _ ->
             True
 
         Nothing ->
@@ -30,13 +46,9 @@ hasTextWord (WordInstance section_number instance token text_word) =
 
 
 grammemeValue : WordInstance -> String -> Maybe String
-grammemeValue word_instance grammeme_name =
-    case textWord word_instance of
-        Just text_word ->
-            Text.Translations.TextWord.grammemeValue text_word grammeme_name
-
-        Nothing ->
-            Nothing
+grammemeValue wordInstance grammemeName =
+    textWord wordInstance
+        |> Maybe.andThen (\tw -> Text.Translations.TextWord.grammemeValue tw grammemeName)
 
 
 grammemeKeys : Set String
@@ -45,28 +57,24 @@ grammemeKeys =
 
 
 grammemes : WordInstance -> Maybe Grammemes
-grammemes word_instance =
-    case textWord word_instance of
-        Just text_word ->
-            Text.Translations.TextWord.grammemes text_word
-
-        Nothing ->
-            Nothing
+grammemes wordInstance =
+    textWord wordInstance
+        |> Maybe.andThen Text.Translations.TextWord.grammemes
 
 
 sectionNumber : WordInstance -> SectionNumber
-sectionNumber (WordInstance section_number _ _ _) =
-    section_number
+sectionNumber (WordInstance sectionNumber _ _ _) =
+    sectionNumber
 
 
 wordInstanceSectionNumberToInt : WordInstance -> Int
-wordInstanceSectionNumberToInt word_instance =
-    sectionNumberToInt (sectionNumber word_instance)
+wordInstanceSectionNumberToInt wordInstance =
+    sectionNumberToInt (sectionNumber wordInstance)
 
 
 id : WordInstance -> Id
-id (WordInstance section_number instance token _) =
-    String.join "_" [ toString section_number, toString instance, String.join "_" (String.words (String.toLower token)) ]
+id (WordInstance sectionNumber instance token _) =
+    String.join "_" [ toString sectionNumber, toString instance, String.join "_" (String.words (String.toLower token)) ]
 
 
 token : WordInstance -> Token
@@ -75,8 +83,8 @@ token (WordInstance _ _ token _) =
 
 
 textWord : WordInstance -> Maybe TextWord
-textWord (WordInstance _ _ _ text_word) =
-    text_word
+textWord (WordInstance _ _ _ textWord) =
+    textWord
 
 
 instance : WordInstance -> Instance
@@ -95,5 +103,5 @@ normalizeToken =
 
 
 new : SectionNumber -> Instance -> Token -> Maybe TextWord -> WordInstance
-new section_number instance token text_word =
-    WordInstance section_number instance token text_word
+new sectionNumber instance token textWord =
+    WordInstance sectionNumber instance token textWord
