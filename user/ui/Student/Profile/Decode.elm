@@ -1,4 +1,8 @@
-module Student.Profile.Decode exposing (..)
+module Student.Profile.Decode exposing
+    ( studentConsentRespDecoder
+    , studentProfileDecoder
+    , username_valid_decoder
+    )
 
 import Json.Decode
 import Json.Decode.Pipeline exposing (decode, hardcoded, optional, required, resolve)

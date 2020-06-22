@@ -1,4 +1,9 @@
-module Student.Profile.Model exposing (..)
+module Student.Profile.Model exposing
+    ( Model
+    , StudentConsentResp
+    , UsernameUpdate
+    , flagsToEndpoints
+    )
 
 import Dict exposing (Dict)
 import Menu.Items

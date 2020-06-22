@@ -1,4 +1,8 @@
-module Student.Profile.Resource exposing (..)
+module Student.Profile.Resource exposing
+    ( logout
+    , updateProfile
+    , validateUsername
+    )
 
 import Flags
 import Http

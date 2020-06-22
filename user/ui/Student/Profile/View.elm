@@ -1,4 +1,13 @@
-module Student.Profile.View exposing (..)
+module Student.Profile.View exposing
+    ( view_feedback_links
+    , view_flashcards
+    , view_header
+    , view_preferred_difficulty
+    , view_research_consent
+    , view_student_performance
+    , view_user_email
+    , view_username
+    )
 
 import Array exposing (Array)
 import Dict exposing (Dict)

@@ -1,4 +1,10 @@
-module Student.Student_Profile exposing (init, main, subscriptions, view, view_content)
+module Student.Student_Profile exposing
+    ( init
+    , main
+    , subscriptions
+    , view
+    , view_content
+    )
 
 import Dict exposing (Dict)
 import Html exposing (Html, div, span)

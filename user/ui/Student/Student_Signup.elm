@@ -1,4 +1,24 @@
-module Student.Student_Signup exposing (Flags, Model, Msg(..), SignUpParams, SignUpResp, StudentSignUpURI(..), flagsToStudentSignUpURI, init, main, postSignup, signUpEncoder, signUpRespDecoder, studentSignUpURI, subscriptions, update, view, view_content, view_difficulty_choices, view_student_welcome_msg)
+module Student.Student_Signup exposing
+    ( Flags
+    , Model
+    , Msg(..)
+    , SignUpParams
+    , SignUpResp
+    , StudentSignUpURI(..)
+    , flagsToStudentSignUpURI
+    , init
+    , main
+    , postSignup
+    , signUpEncoder
+    , signUpRespDecoder
+    , studentSignUpURI
+    , subscriptions
+    , update
+    , view
+    , view_content
+    , view_difficulty_choices
+    , view_student_welcome_msg
+    )
 
 import Dict exposing (Dict)
 import Flags

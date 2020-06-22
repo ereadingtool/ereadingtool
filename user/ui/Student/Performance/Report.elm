@@ -1,4 +1,4 @@
-module Student.Performance.Report exposing (..)
+module Student.Performance.Report exposing (PerformanceReport, emptyPerformanceReport)
 
 
 type alias PerformanceReport =

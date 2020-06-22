@@ -1,4 +1,23 @@
-module Student.Profile.Help exposing (..)
+module Student.Profile.Help exposing
+    ( StudentHelp
+    , StudentProfileHelp
+    , helpID
+    , helpMsg
+    , init
+    , isVisible
+    , my_performance_help
+    , next
+    , popupToOverlayID
+    , preferred_difficulty_help
+    , prev
+    , scrollToFirstMsg
+    , scrollToNextMsg
+    , scrollToPrevMsg
+    , search_menu_item_help
+    , setVisible
+    , username_help
+    , username_menu_item_help
+    )
 
 import Help exposing (CurrentHelpMsgIndex, HelpMsgID, HelpMsgOverlayID, HelpMsgStr, HelpMsgVisible)
 import Help.PopUp exposing (Help)

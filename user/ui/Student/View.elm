@@ -1,4 +1,8 @@
-module Student.View exposing (..)
+module Student.View exposing
+    ( view_profile_dropdown_menu
+    , view_student_profile_header
+    , view_student_profile_logout_link
+    )
 
 import Html exposing (Html, div)
 import Html.Attributes exposing (attribute, class, classList, id)

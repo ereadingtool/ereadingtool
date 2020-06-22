@@ -1,4 +1,6 @@
-module Student.Profile.Update exposing (..)
+module Student.Profile.Update exposing (update)
+
+--
 
 import Dict exposing (Dict)
 import Http exposing (..)

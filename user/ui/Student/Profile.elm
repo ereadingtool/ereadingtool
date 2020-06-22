@@ -1,4 +1,20 @@
-module Student.Profile exposing (..)
+module Student.Profile exposing
+    ( StudentProfile
+    , StudentProfileParams
+    , StudentURIParams
+    , initProfile
+    , profileUriToString
+    , setStudentDifficultyPreference
+    , setUserName
+    , studentDifficulties
+    , studentDifficultyPreference
+    , studentEmail
+    , studentEmailToString
+    , studentID
+    , studentLogoutURI
+    , studentUserName
+    , studentUserNameToString
+    )
 
 import Student.Resource exposing (..)
 import Text.Model as Text
