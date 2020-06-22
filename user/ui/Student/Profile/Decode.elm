@@ -5,12 +5,12 @@ module Student.Profile.Decode exposing
     )
 
 import Json.Decode
-import Json.Decode.Pipeline exposing (decode, hardcoded, optional, required, resolve)
+import Json.Decode.Pipeline exposing (decode, required)
 import Student.Performance.Report exposing (PerformanceReport)
 import Student.Profile exposing (StudentProfileParams)
 import Student.Profile.Model
 import Student.Resource
-import Text.Translations exposing (Grammemes, Phrase)
+import Text.Translations exposing (Phrase)
 import Text.Translations.Decode
 import TextReader.Section.Decode
 import TextReader.TextWord

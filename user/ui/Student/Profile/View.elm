@@ -9,8 +9,8 @@ module Student.Profile.View exposing
     , view_username
     )
 
-import Array exposing (Array)
-import Dict exposing (Dict)
+import Array
+import Dict
 import Help.View exposing (ArrowPlacement(..), ArrowPosition(..), view_hint_overlay)
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList, id)

@@ -45,7 +45,7 @@ type StudentProfile
 
 
 studentDifficultyPreference : StudentProfile -> Maybe Text.TextDifficulty
-studentDifficultyPreference (StudentProfile id username email diff_pref diffs _) =
+studentDifficultyPreference (StudentProfile _ _ _ diff_pref _) =
     diff_pref
 
 

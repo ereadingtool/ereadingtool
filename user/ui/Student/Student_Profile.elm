@@ -6,11 +6,11 @@ module Student.Student_Profile exposing
     , view_content
     )
 
-import Dict exposing (Dict)
+import Dict
 import Html exposing (Html, div, span)
-import Html.Attributes exposing (attribute, class, classList, id)
+import Html.Attributes exposing (attribute, classList)
 import Menu.Items
-import Student.Profile exposing (StudentProfileParams)
+import Student.Profile
 import Student.Profile.Flags exposing (Flags)
 import Student.Profile.Help
 import Student.Profile.Model exposing (..)
@@ -47,7 +47,7 @@ init flags =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
     Sub.none
 
 
