@@ -1,4 +1,4 @@
-module Main exposing (Flags, main, view, view_acknowledgements_and_about_links, view_content, view_help_msgs)
+module Student.Student_Login exposing (Flags, main, view, view_acknowledgements_and_about_links, view_content, view_help_msgs)
 
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList, id)

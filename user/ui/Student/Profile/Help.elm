@@ -115,25 +115,25 @@ scrollToFirstMsg student_profile_help =
 helpMsg : StudentHelp -> HelpMsgStr
 helpMsg help_msg =
     case help_msg of
-        UsernameHelp help ->
-            help
+        UsernameHelp unameHelp ->
+            unameHelp
 
-        MyPerformanceHelp help ->
-            help
+        MyPerformanceHelp performanceHelp ->
+            performanceHelp
 
-        PreferredDifficultyHelp help ->
-            help
+        PreferredDifficultyHelp difficultyHelp ->
+            difficultyHelp
 
-        UsernameMenuItemHelp help ->
-            help
+        UsernameMenuItemHelp unameItemHelp ->
+            unameItemHelp
 
-        SearchTextsMenuItemHelp help ->
-            help
+        SearchTextsMenuItemHelp textsItemHelp ->
+            textsItemHelp
 
 
 popupToID : StudentHelp -> HelpMsgID
-popupToID help =
-    case help of
+popupToID studentHelp =
+    case studentHelp of
         UsernameHelp _ ->
             "username_hint"
 
