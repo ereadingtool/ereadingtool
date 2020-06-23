@@ -31,7 +31,7 @@ validateUsername csrftoken username_valid_uri username =
 updateProfile : Flags.CSRFToken -> Student.Resource.StudentEndpointURI -> Student.Profile.StudentProfile -> Cmd Msg
 updateProfile csrftoken student_endpoint_uri student_profile =
     case Student.Profile.studentID student_profile of
-        Just id ->
+        Just _ ->
             let
                 encoded_profile =
                     Student.Profile.Encode.profileEncoder student_profile
@@ -57,7 +57,7 @@ toggleResearchConsent :
     -> Cmd Msg
 toggleResearchConsent csrftoken consent_method_uri student_profile consent =
     case Student.Profile.studentID student_profile of
-        Just id ->
+        Just _ ->
             let
                 encoded_consent =
                     Student.Profile.Encode.consentEncoder consent

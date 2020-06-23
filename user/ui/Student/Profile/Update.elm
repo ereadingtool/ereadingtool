@@ -177,7 +177,7 @@ update msg model =
         NextHelp ->
             ( { model | help = Student.Profile.Help.next model.help }, Student.Profile.Help.scrollToNextMsg model.help )
 
-        Logout msg ->
+        Logout _ ->
             ( model, Student.Profile.Resource.logout model.profile model.flags.csrftoken LoggedOut )
 
         LoggedOut (Ok logout_resp) ->

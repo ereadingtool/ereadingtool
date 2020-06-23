@@ -14,7 +14,7 @@ import Dict
 import Help.View exposing (ArrowPlacement(..), ArrowPosition(..), view_hint_overlay)
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList, id)
-import Html.Events exposing (onBlur, onCheck, onClick, onInput, onMouseLeave, onMouseOut, onMouseOver)
+import Html.Events exposing (onClick, onInput)
 import HtmlParser
 import HtmlParser.Util
 import Markdown
@@ -22,7 +22,7 @@ import Menu.Item
 import Menu.Items
 import Menu.Msg
 import Menu.View
-import OrderedDict exposing (OrderedDict)
+import OrderedDict
 import Student.Profile
 import Student.Profile.Help exposing (StudentHelp(..))
 import Student.Profile.Model exposing (Model, UsernameUpdate)
@@ -138,7 +138,7 @@ view_help_text_for_difficulty text_difficulty =
                 ]
 
         default_list =
-            List.map (\( k, v ) -> div [ class "difficulty_desc" ] [ v ]) (OrderedDict.toList difficulty_msgs)
+            List.map (\( _, v ) -> div [ class "difficulty_desc" ] [ v ]) (OrderedDict.toList difficulty_msgs)
 
         help_msg =
             case text_difficulty of
@@ -406,7 +406,7 @@ view_my_performance_hint model =
 
 
 view_feedback_links : Model -> Html Msg
-view_feedback_links model =
+view_feedback_links _ =
     div [ class "feedback" ]
         [ span [ class "profile_item_title" ] [ Html.text "Contact" ]
         , span [ class "profile_item_value" ]
@@ -504,7 +504,7 @@ view_menu_item model help_msgs menu_item =
 
 
 view_student_profile_page_link : Model -> HelpMsgs msg -> Html msg
-view_student_profile_page_link model help_msgs =
+view_student_profile_page_link model _ =
     let
         display_name =
             case Student.Profile.studentUserName model.profile of
@@ -532,12 +532,12 @@ view_student_profile_header model top_level_menu_msg help_msgs =
 
 
 view_top_level_menu : Model -> Menu.Items.MenuItems -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> List (Html msg)
-view_top_level_menu model menu_items top_level_menu_msg help_msgs =
+view_top_level_menu model _ top_level_menu_msg help_msgs =
     view_student_profile_header model top_level_menu_msg help_msgs
 
 
 view_lower_level_menu : Model -> Menu.Items.MenuItems -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> List (Html msg)
-view_lower_level_menu model menu_items top_level_menu_msg help_msgs =
+view_lower_level_menu model menu_items _ help_msgs =
     Array.toList <|
         Array.map (view_menu_item model help_msgs) <|
             Menu.Items.items menu_items
