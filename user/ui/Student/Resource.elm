@@ -61,7 +61,7 @@ profileIDToStudentEndpointURI student_endpoint_uri profile_id =
         endpoint_uri =
             uriToString (studentEndpointURI student_endpoint_uri)
     in
-    StudentEndpointURI (URI (String.join "" [ endpoint_uri, toString (Profile.profileIDtoString profile_id) ++ "/" ]))
+    StudentEndpointURI (URI (String.join "" [ endpoint_uri, (Profile.profileIDtoString profile_id) ++ "/" ]))
 
 
 studentProfileURI : StudentProfileURI -> URI

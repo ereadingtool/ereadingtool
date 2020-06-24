@@ -11,4 +11,4 @@ type ProfileType
 
 profileIDtoString : ProfileID -> String
 profileIDtoString (ProfileID id) =
-    toString id
+    String.fromInt id
