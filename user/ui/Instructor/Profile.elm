@@ -100,12 +100,8 @@ initProfile params =
         params.id
         params.texts
         params.instructor_admin
-        (case params.invites of
-            Just invite_params ->
-                Just (List.map Instructor.Invite.new invite_params)
-
-            Nothing ->
-                Nothing
+        (param.invites
+            |> Maybe.map (List.map Instructor.Invite.new)
         )
         (InstructorUsername params.username)
         (initProfileURIs params.uris)
@@ -115,12 +111,8 @@ addInvite : InstructorProfile -> InstructorInvite -> InstructorProfile
 addInvite (InstructorProfile id texts admin invites username logout_uri) invite =
     let
         new_invites =
-            case invites of
-                Just invites ->
-                    Just (invites ++ [ invite ])
-
-                Nothing ->
-                    Nothing
+            invites
+                |> Maybe.map (\invites -> invites ++ [ invite ])
     in
     InstructorProfile id texts admin new_invites username logout_uri
 
@@ -199,20 +191,19 @@ submitNewInvite :
     -> Email
     -> Cmd msg
 submitNewInvite csrftoken instructor_invite_uri msg email =
-    case Instructor.Invite.isValidEmail email of
-        True ->
-            let
-                encoded_new_invite =
-                    Instructor.Invite.Encode.newInviteEncoder email
+    if Instructor.Invite.isValidEmail email then
+        let
+            encoded_new_invite =
+                Instructor.Invite.Encode.newInviteEncoder email
 
-                req =
-                    HttpHelpers.post_with_headers
-                        (Instructor.Resource.uriToString (Instructor.Resource.instructorInviteURI instructor_invite_uri))
-                        [ Http.header "X-CSRFToken" csrftoken ]
-                        (Http.jsonBody encoded_new_invite)
-                        Instructor.Invite.Decode.newInviteRespDecoder
-            in
-            Http.send msg req
+            req =
+                HttpHelpers.post_with_headers
+                    (Instructor.Resource.uriToString (Instructor.Resource.instructorInviteURI instructor_invite_uri))
+                    [ Http.header "X-CSRFToken" csrftoken ]
+                    (Http.jsonBody encoded_new_invite)
+                    Instructor.Invite.Decode.newInviteRespDecoder
+        in
+        Http.send msg req
 
-        False ->
-            Cmd.none
+    else
+        Cmd.none

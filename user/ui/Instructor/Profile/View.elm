@@ -30,12 +30,11 @@ view_text instructor_profile text =
         , div [ class "text_value" ] [ Html.text (toString text.text_section_count) ]
         , div [ class "text_label" ] [ Html.text "Created/Modified" ]
         , div [ class "text_value" ]
-            [ case text.created_by == instructor_username of
-                True ->
-                    div [] [ Html.text "Created by you" ]
+            [ if text.created_by == instructor_username then
+                div [] [ Html.text "Created by you" ]
 
-                False ->
-                    div [] [ Html.text "Last modified by you on ", div [] [ Html.text text.modified_dt ] ]
+              else
+                div [] [ Html.text "Last modified by you on ", div [] [ Html.text text.modified_dt ] ]
             ]
         , div [ class "text_label" ] [ Html.text "Tags" ]
         , div [ class "text_value" ] (view_tags text.tags)
@@ -97,24 +96,23 @@ view_instructor_invite_create model =
 
 view_instructor_invites : Model -> List (Html Msg)
 view_instructor_invites model =
-    case Instructor.Profile.isAdmin model.profile of
-        True ->
-            let
-                invites =
-                    Maybe.withDefault [] (Instructor.Profile.invites model.profile)
-            in
-            [ div [ class "invites" ]
-                [ span [ class "profile_item_title" ] [ Html.text "Invitations" ]
-                , span [ class "profile_item_value" ]
-                    [ div [ class "list" ] <|
-                        List.map view_instructor_invite invites
-                            ++ [ view_instructor_invite_create model ]
-                    ]
+    if Instructor.Profile.isAdmin model.profile then
+        let
+            invites =
+                Maybe.withDefault [] (Instructor.Profile.invites model.profile)
+        in
+        [ div [ class "invites" ]
+            [ span [ class "profile_item_title" ] [ Html.text "Invitations" ]
+            , span [ class "profile_item_value" ]
+                [ div [ class "list" ] <|
+                    List.map view_instructor_invite invites
+                        ++ [ view_instructor_invite_create model ]
                 ]
             ]
+        ]
 
-        False ->
-            []
+    else
+        []
 
 
 view_texts : Model -> Html Msg

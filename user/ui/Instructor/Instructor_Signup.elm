@@ -27,7 +27,9 @@ instructorSignUpURI (InstructorSignUpURI uri) =
 
 
 type alias SignUpResp =
-    { id : SignUp.UserID, redirect : SignUp.RedirectURI }
+    { id : SignUp.UserID
+    , redirect : SignUp.RedirectURI
+    }
 
 
 type alias Flags =
@@ -177,17 +179,14 @@ update msg model =
 
 isValidInviteCodeLength : InviteCode -> ( Bool, Maybe String )
 isValidInviteCodeLength invite_code =
-    case String.length invite_code > 64 of
-        True ->
-            ( False, Just "too long" )
+    if String.length invite_code > 64 then
+        ( False, Just "too long" )
 
-        False ->
-            case String.length invite_code < 64 of
-                True ->
-                    ( False, Just "too short" )
+    else if String.length invite_code < 64 then
+        ( False, Just "too short" )
 
-                False ->
-                    ( True, Nothing )
+    else
+        ( True, Nothing )
 
 
 updateInviteCode : Model -> InviteCode -> Model
