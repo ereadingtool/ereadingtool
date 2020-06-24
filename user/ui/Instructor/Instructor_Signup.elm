@@ -8,7 +8,7 @@ import Html.Events exposing (onInput)
 import Http exposing (..)
 import HttpHelpers exposing (post_with_headers)
 import Json.Decode as Decode
-import Json.Decode.Pipeline exposing (decode, hardcoded, optional, required, resolve)
+import Json.Decode.Pipeline exposing (decode, required)
 import Json.Encode as Encode
 import Menu.Msg as MenuMsg
 import Navigation
@@ -69,7 +69,7 @@ type alias Model =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
     Sub.none
 
 
@@ -167,13 +167,13 @@ update msg model =
                         _ ->
                             ( model, Cmd.none )
 
-                Http.BadPayload err resp ->
+                Http.BadPayload _ _ ->
                     ( model, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
 
-        Logout msg ->
+        Logout _ ->
             ( model, Cmd.none )
 
 

@@ -15,7 +15,7 @@ import Views
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
     Sub.none
 
 
@@ -66,13 +66,13 @@ update msg model =
             in
             ( { model | errors = Dict.insert "invite" "Something went wrong." model.errors }, Cmd.none )
 
-        LogOut msg ->
+        LogOut _ ->
             ( model, Instructor.Profile.logout model.profile model.flags.csrftoken LoggedOut )
 
         LoggedOut (Ok logout_resp) ->
             ( model, Ports.redirect logout_resp.redirect )
 
-        LoggedOut (Err err) ->
+        LoggedOut (Err _) ->
             ( model, Cmd.none )
 
 
