@@ -1,6 +1,6 @@
 module Instructor.Profile.View exposing (view_content)
 
-import Dict exposing (Dict)
+import Dict
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList, id)
 import Html.Events exposing (onClick, onInput)

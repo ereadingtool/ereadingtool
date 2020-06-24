@@ -1,8 +1,8 @@
 module Instructor.Instructor_Profile exposing (main, subscriptions, update, updateNewInviteEmail, view)
 
-import Dict exposing (Dict)
+import Dict
 import Html exposing (Html, div)
-import Instructor.Invite exposing (Email, InstructorInvite)
+import Instructor.Invite exposing (Email)
 import Instructor.Profile
 import Instructor.Profile.Flags exposing (Flags)
 import Instructor.Profile.Init
