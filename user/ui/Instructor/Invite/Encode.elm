@@ -1,4 +1,4 @@
-module Instructor.Invite.Encode exposing (..)
+module Instructor.Invite.Encode exposing (newInviteEncoder)
 
 import Instructor.Invite exposing (Email)
 import Json.Encode

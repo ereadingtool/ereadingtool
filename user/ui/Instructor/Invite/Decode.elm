@@ -1,6 +1,6 @@
-module Instructor.Invite.Decode exposing (..)
+module Instructor.Invite.Decode exposing (newInviteRespDecoder)
 
-import Instructor.Invite exposing (Email, InstructorInvite)
+import Instructor.Invite
 import Json.Decode
 
 
