@@ -1,4 +1,20 @@
-module Student.Profile exposing (..)
+module Student.Profile exposing
+    ( StudentProfile
+    , StudentProfileParams
+    , StudentURIParams
+    , initProfile
+    , profileUriToString
+    , setStudentDifficultyPreference
+    , setUserName
+    , studentDifficulties
+    , studentDifficultyPreference
+    , studentEmail
+    , studentEmailToString
+    , studentID
+    , studentLogoutURI
+    , studentUserName
+    , studentUserNameToString
+    )
 
 import Student.Resource exposing (..)
 import Text.Model as Text
@@ -29,7 +45,7 @@ type StudentProfile
 
 
 studentDifficultyPreference : StudentProfile -> Maybe Text.TextDifficulty
-studentDifficultyPreference (StudentProfile id username email diff_pref diffs _) =
+studentDifficultyPreference (StudentProfile _ _ _ diff_pref _) =
     diff_pref
 
 
@@ -100,12 +116,8 @@ studentLogoutURI student_profile =
 
 initProfileUsername : Maybe String -> Maybe StudentUsername
 initProfileUsername name =
-    case name of
-        Just username ->
-            Just (StudentUsername username)
-
-        Nothing ->
-            Nothing
+    name
+        |> Maybe.map StudentUsername
 
 
 initProfile : StudentProfileParams -> StudentProfile

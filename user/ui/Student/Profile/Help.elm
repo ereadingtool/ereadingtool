@@ -1,6 +1,25 @@
-module Student.Profile.Help exposing (..)
+module Student.Profile.Help exposing
+    ( StudentHelp
+    , StudentProfileHelp
+    , helpID
+    , helpMsg
+    , init
+    , isVisible
+    , my_performance_help
+    , next
+    , popupToOverlayID
+    , preferred_difficulty_help
+    , prev
+    , scrollToFirstMsg
+    , scrollToNextMsg
+    , scrollToPrevMsg
+    , search_menu_item_help
+    , setVisible
+    , username_help
+    , username_menu_item_help
+    )
 
-import Help exposing (CurrentHelpMsgIndex, HelpMsgID, HelpMsgOverlayID, HelpMsgStr, HelpMsgVisible)
+import Help exposing (HelpMsgID, HelpMsgOverlayID, HelpMsgStr, HelpMsgVisible)
 import Help.PopUp exposing (Help)
 
 
@@ -115,25 +134,25 @@ scrollToFirstMsg student_profile_help =
 helpMsg : StudentHelp -> HelpMsgStr
 helpMsg help_msg =
     case help_msg of
-        UsernameHelp help ->
-            help
+        UsernameHelp unameHelp ->
+            unameHelp
 
-        MyPerformanceHelp help ->
-            help
+        MyPerformanceHelp performanceHelp ->
+            performanceHelp
 
-        PreferredDifficultyHelp help ->
-            help
+        PreferredDifficultyHelp difficultyHelp ->
+            difficultyHelp
 
-        UsernameMenuItemHelp help ->
-            help
+        UsernameMenuItemHelp unameItemHelp ->
+            unameItemHelp
 
-        SearchTextsMenuItemHelp help ->
-            help
+        SearchTextsMenuItemHelp textsItemHelp ->
+            textsItemHelp
 
 
 popupToID : StudentHelp -> HelpMsgID
-popupToID help =
-    case help of
+popupToID studentHelp =
+    case studentHelp of
         UsernameHelp _ ->
             "username_hint"
 

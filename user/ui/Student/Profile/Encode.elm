@@ -1,4 +1,8 @@
-module Student.Profile.Encode exposing (..)
+module Student.Profile.Encode exposing
+    ( consentEncoder
+    , profileEncoder
+    , username_valid_encode
+    )
 
 import Json.Encode
 import Student.Profile
