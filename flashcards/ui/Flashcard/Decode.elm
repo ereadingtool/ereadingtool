@@ -3,7 +3,7 @@ module Flashcard.Decode exposing (..)
 import Flashcard.Mode exposing (Mode)
 import Flashcard.Model exposing (..)
 import Json.Decode
-import Json.Decode.Pipeline exposing (decode, hardcoded, optional, required, resolve)
+import Json.Decode.Pipeline exposing (required)
 
 
 command_resp_decoder : String -> Json.Decode.Decoder CmdResp
@@ -107,7 +107,7 @@ modeChoicesDescDecoder =
 
 initRespDecoder : Json.Decode.Decoder InitRespRec
 initRespDecoder =
-    decode InitRespRec
+    Json.Decode.succeed InitRespRec
         |> required "flashcards" (Json.Decode.list Json.Decode.string)
 
 
@@ -118,7 +118,7 @@ startDecoder =
 
 exceptionDecoder : Json.Decode.Decoder Exception
 exceptionDecoder =
-    decode Exception
+    Json.Decode.succeed Exception
         |> required "code" Json.Decode.string
         |> required "error_msg" Json.Decode.string
 

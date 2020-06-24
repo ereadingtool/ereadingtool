@@ -4,13 +4,13 @@ import Flashcard.Mode
 import Flashcard.Model exposing (..)
 import Flashcard.Msg exposing (Msg(..))
 import Html exposing (Html, div, span)
-import Html.Attributes exposing (attribute, class, classList, id, property)
-import Html.Events exposing (defaultOptions, onClick, onDoubleClick, onInput, onWithOptions)
+import Html.Attributes exposing (attribute, class, classList, id)
+import Html.Events exposing (onClick, onDoubleClick, onInput)
 import Util
 
 
 view_mode_choice : Model -> Flashcard.Mode.ModeChoiceDesc -> Html Msg
-view_mode_choice model choice =
+view_mode_choice _ choice =
     div
         [ classList [ ( "mode-choice", True ), ( "cursor", True ), ( "selected", choice.selected ) ]
         , onClick (SelectMode choice.mode)
@@ -34,28 +34,28 @@ view_mode_choices model mode_choices =
 
 
 view_additional_notes : Model -> Html Msg
-view_additional_notes model =
+view_additional_notes _ =
     div [ id "notes" ]
         [ Html.text "Note: In review mode double-click a flashcard in order to reveal the answer."
         ]
 
 
 view_start_nav : Model -> Html Msg
-view_start_nav model =
+view_start_nav _ =
     div [ id "start", class "cursor", onClick Start ]
         [ Html.text "Start"
         ]
 
 
 view_prev_nav : Model -> Html Msg
-view_prev_nav model =
+view_prev_nav _ =
     div [ id "prev", class "cursor", onClick Prev ]
         [ Html.img [ attribute "src" "/static/img/angle-left.svg" ] []
         ]
 
 
 view_next_nav : Model -> Html Msg
-view_next_nav model =
+view_next_nav _ =
     div [ id "next", class "cursor", onClick Next ]
         [ Html.img [ attribute "src" "/static/img/angle-right.svg" ] []
         ]
@@ -115,7 +115,7 @@ view_review_nav model =
 
 
 view_example : Model -> Flashcard -> Html Msg
-view_example model card =
+view_example _ card =
     div [ id "example" ]
         [ div [] [ Html.text "e.g., " ]
         , div [ id "sentence" ] [ Html.text (Flashcard.Model.example card) ]
@@ -123,7 +123,7 @@ view_example model card =
 
 
 view_phrase : Model -> Flashcard -> Html Msg
-view_phrase model card =
+view_phrase _ card =
     div [ id "phrase" ] [ Html.text (Flashcard.Model.translationOrPhrase card) ]
 
 
@@ -150,7 +150,7 @@ view_reviewed_only_card model card =
 
 
 view_input_answer : Model -> Flashcard -> Html Msg
-view_input_answer model card =
+view_input_answer _ _ =
     div [ id "answer_input", Util.onEnterUp SubmitAnswer ]
         [ Html.input [ onInput InputAnswer, attribute "placeholder" "Type an answer.." ] []
         , div [ id "submit" ]
@@ -160,7 +160,7 @@ view_input_answer model card =
 
 
 view_quality : Model -> Flashcard -> Int -> Html Msg
-view_quality model card q =
+view_quality model _ q =
     let
         selected =
             case model.selected_quality of
@@ -171,7 +171,7 @@ view_quality model card q =
                     False
     in
     div [ classList [ ( "choice", True ), ( "select", selected ) ], onClick (RateQuality q) ] <|
-        [ Html.text (toString q)
+        [ Html.text (String.fromInt q)
         ]
             ++ (if q == 0 then
                     [ Html.text " - most difficult" ]
@@ -196,13 +196,7 @@ view_rate_answer model card =
 view_rated_card : Model -> Flashcard -> Html Msg
 view_rated_card model card =
     let
-        rating =
-            case model.selected_quality of
-                Just r ->
-                    toString r
-
-                Nothing ->
-                    "none"
+        rating = Maybe.withDefault "none" <| Maybe.map (String.fromInt) model.selected_quality
     in
     view_card model
         card
@@ -241,7 +235,7 @@ view_review_and_answer_card model card =
 
 
 view_card : Model -> Flashcard -> Maybe (List ( String, Bool )) -> Maybe (List (Html.Attribute Msg)) -> List (Html Msg) -> Html Msg
-view_card model card addl_classes addl_attrs content =
+view_card _ _ addl_classes addl_attrs content =
     div
         ([ id "card"
          , classList
@@ -255,15 +249,10 @@ view_card model card addl_classes addl_attrs content =
 
 
 view_finish_review : Model -> Html Msg
-view_finish_review model =
+view_finish_review _ =
     div [ id "finished" ]
         [ div [] [ Html.text "You've finished this session.  Great job.  Come back tomorrow!" ]
         ]
-
-
-view_state : SessionState -> Html Msg
-view_state session_state =
-    div [ id "state" ] [ Html.text (toString session_state) ]
 
 
 view_mode : Model -> Html Msg
