@@ -1,4 +1,4 @@
-module Main exposing (Flags, main)
+module Instructor.Instructor_Login exposing (Flags, main)
 
 import Html exposing (Html)
 import Login

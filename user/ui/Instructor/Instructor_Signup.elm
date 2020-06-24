@@ -1,4 +1,4 @@
-module Main exposing (Flags, InstructorSignUpURI(..), InviteCode, Model, Msg(..), SignUpParams, SignUpResp, flagsToInstructorSignUpURI, init, instructorSignUpURI, instructor_signup_view, isValidInviteCodeLength, main, postSignup, redirect, signUpEncoder, signUpRespDecoder, subscriptions, update, updateInviteCode, view_invite_code_input)
+module Instructor.Instructor_Signup exposing (Flags, InstructorSignUpURI(..), InviteCode, Model, Msg(..), SignUpParams, SignUpResp, flagsToInstructorSignUpURI, init, instructorSignUpURI, instructor_signup_view, isValidInviteCodeLength, main, postSignup, redirect, signUpEncoder, signUpRespDecoder, subscriptions, update, updateInviteCode, view_invite_code_input)
 
 import Dict exposing (Dict)
 import Flags

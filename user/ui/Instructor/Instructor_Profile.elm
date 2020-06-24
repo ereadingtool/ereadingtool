@@ -1,4 +1,4 @@
-module Main exposing (main, subscriptions, update, updateNewInviteEmail, view)
+module Instructor.Instructor_Profile exposing (main, subscriptions, update, updateNewInviteEmail, view)
 
 import Dict exposing (Dict)
 import Html exposing (Html, div)
