@@ -42,8 +42,8 @@ inviteCode (InstructorInvite _ invite_code _) =
 
 
 email : InstructorInvite -> Email
-email (InstructorInvite email _ _) =
-    email
+email (InstructorInvite eml _ _) =
+    eml
 
 
 expirationToString : InviteExpiration -> String
@@ -57,15 +57,15 @@ codeToString (InviteCode code) =
 
 
 emailToString : Email -> String
-emailToString (Email email) =
-    email
+emailToString (Email eml) =
+    eml
 
 
 isValidEmail : Email -> Bool
-isValidEmail email =
-    Util.isValidEmail (emailToString email)
+isValidEmail eml =
+    Util.isValidEmail (emailToString eml)
 
 
 isEmptyEmail : Email -> Bool
-isEmptyEmail email =
-    emailToString email == ""
+isEmptyEmail eml =
+    emailToString eml == ""
