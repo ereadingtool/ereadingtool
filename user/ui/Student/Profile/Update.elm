@@ -1,10 +1,12 @@
-module Student.Profile.Update exposing (..)
+module Student.Profile.Update exposing (update)
 
-import Dict exposing (Dict)
+--
+
+import Dict
 import Http exposing (..)
 import Json.Decode
 import Ports
-import Student.Profile exposing (StudentProfileParams)
+import Student.Profile
 import Student.Profile.Help
 import Student.Profile.Model exposing (Model)
 import Student.Profile.Msg exposing (..)
@@ -79,7 +81,7 @@ update msg model =
                         _ ->
                             ( model, Cmd.none )
 
-                Http.BadPayload err resp ->
+                Http.BadPayload err _ ->
                     let
                         _ =
                             Debug.log "bad payload" err
@@ -137,7 +139,7 @@ update msg model =
                         _ ->
                             ( model, Cmd.none )
 
-                Http.BadPayload err resp ->
+                Http.BadPayload _ _ ->
                     ( model, Cmd.none )
 
                 _ ->
@@ -160,7 +162,7 @@ update msg model =
                         _ ->
                             ( model, Cmd.none )
 
-                Http.BadPayload err resp ->
+                Http.BadPayload _ _ ->
                     ( model, Cmd.none )
 
                 _ ->
@@ -175,7 +177,7 @@ update msg model =
         NextHelp ->
             ( { model | help = Student.Profile.Help.next model.help }, Student.Profile.Help.scrollToNextMsg model.help )
 
-        Logout msg ->
+        Logout _ ->
             ( model, Student.Profile.Resource.logout model.profile model.flags.csrftoken LoggedOut )
 
         LoggedOut (Ok logout_resp) ->

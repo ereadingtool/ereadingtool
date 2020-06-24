@@ -1,4 +1,19 @@
-module Student.Resource exposing (..)
+module Student.Resource exposing
+    ( StudentEndpointURI
+    , StudentLogoutURI
+    , StudentProfileURI
+    , StudentResearchConsentURI
+    , StudentUsername
+    , StudentUsernameValidURI
+    , URI
+    , studentConsentURI
+    , studentEndpointURI
+    , studentLogoutURI
+    , studentProfileURI
+    , studentUserNameToString
+    , studentUsernameValidURI
+    , uriToString
+    )
 
 import Profile
 

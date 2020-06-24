@@ -1,4 +1,24 @@
-module Main exposing (Flags, Model, Msg(..), SignUpParams, SignUpResp, StudentSignUpURI(..), flagsToStudentSignUpURI, init, main, postSignup, signUpEncoder, signUpRespDecoder, studentSignUpURI, subscriptions, update, view, view_content, view_difficulty_choices, view_student_welcome_msg)
+module Student.Student_Signup exposing
+    ( Flags
+    , Model
+    , Msg(..)
+    , SignUpParams
+    , SignUpResp
+    , StudentSignUpURI(..)
+    , flagsToStudentSignUpURI
+    , init
+    , main
+    , postSignup
+    , signUpEncoder
+    , signUpRespDecoder
+    , studentSignUpURI
+    , subscriptions
+    , update
+    , view
+    , view_content
+    , view_difficulty_choices
+    , view_student_welcome_msg
+    )
 
 import Dict exposing (Dict)
 import Flags
@@ -28,11 +48,16 @@ studentSignUpURI (StudentSignUpURI uri) =
 
 
 type alias SignUpResp =
-    { id : SignUp.UserID, redirect : SignUp.RedirectURI }
+    { id : SignUp.UserID
+    , redirect : SignUp.RedirectURI
+    }
 
 
 type alias Flags =
-    UnAuthedUserFlags { student_signup_uri : String, difficulties : List TextDifficulty }
+    UnAuthedUserFlags
+        { student_signup_uri : String
+        , difficulties : List TextDifficulty
+        }
 
 
 type alias SignUpParams =
@@ -187,8 +212,8 @@ view_difficulty_choices model =
             (List.map
                 (\( k, v ) ->
                     Html.option
-                        ([ attribute "value" k ]
-                            ++ (if v == model.signup_params.difficulty then
+                        (attribute "value" k
+                            :: (if v == model.signup_params.difficulty then
                                     [ attribute "selected" "" ]
 
                                 else

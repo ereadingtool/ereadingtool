@@ -1,6 +1,6 @@
 module Instructor.Profile.Init exposing (init)
 
-import Dict exposing (Dict)
+import Dict
 import Instructor.Profile
 import Instructor.Profile.Flags
 import Instructor.Profile.Model exposing (Model)

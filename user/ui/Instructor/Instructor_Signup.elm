@@ -1,4 +1,4 @@
-module Main exposing (Flags, InstructorSignUpURI(..), InviteCode, Model, Msg(..), SignUpParams, SignUpResp, flagsToInstructorSignUpURI, init, instructorSignUpURI, instructor_signup_view, isValidInviteCodeLength, main, postSignup, redirect, signUpEncoder, signUpRespDecoder, subscriptions, update, updateInviteCode, view_invite_code_input)
+module Instructor.Instructor_Signup exposing (Flags, InstructorSignUpURI(..), InviteCode, Model, Msg(..), SignUpParams, SignUpResp, flagsToInstructorSignUpURI, init, instructorSignUpURI, instructor_signup_view, isValidInviteCodeLength, main, postSignup, redirect, signUpEncoder, signUpRespDecoder, subscriptions, update, updateInviteCode, view_invite_code_input)
 
 import Dict exposing (Dict)
 import Flags
@@ -8,7 +8,7 @@ import Html.Events exposing (onInput)
 import Http exposing (..)
 import HttpHelpers exposing (post_with_headers)
 import Json.Decode as Decode
-import Json.Decode.Pipeline exposing (decode, hardcoded, optional, required, resolve)
+import Json.Decode.Pipeline exposing (decode, required)
 import Json.Encode as Encode
 import Menu.Msg as MenuMsg
 import Navigation
@@ -27,7 +27,9 @@ instructorSignUpURI (InstructorSignUpURI uri) =
 
 
 type alias SignUpResp =
-    { id : SignUp.UserID, redirect : SignUp.RedirectURI }
+    { id : SignUp.UserID
+    , redirect : SignUp.RedirectURI
+    }
 
 
 type alias Flags =
@@ -67,7 +69,7 @@ type alias Model =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
     Sub.none
 
 
@@ -165,29 +167,26 @@ update msg model =
                         _ ->
                             ( model, Cmd.none )
 
-                Http.BadPayload err resp ->
+                Http.BadPayload _ _ ->
                     ( model, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
 
-        Logout msg ->
+        Logout _ ->
             ( model, Cmd.none )
 
 
 isValidInviteCodeLength : InviteCode -> ( Bool, Maybe String )
 isValidInviteCodeLength invite_code =
-    case String.length invite_code > 64 of
-        True ->
-            ( False, Just "too long" )
+    if String.length invite_code > 64 then
+        ( False, Just "too long" )
 
-        False ->
-            case String.length invite_code < 64 of
-                True ->
-                    ( False, Just "too short" )
+    else if String.length invite_code < 64 then
+        ( False, Just "too short" )
 
-                False ->
-                    ( True, Nothing )
+    else
+        ( True, Nothing )
 
 
 updateInviteCode : Model -> InviteCode -> Model

@@ -1,4 +1,8 @@
-module Student.View exposing (..)
+module Student.View exposing
+    ( view_profile_dropdown_menu
+    , view_student_profile_header
+    , view_student_profile_logout_link
+    )
 
 import Html exposing (Html, div)
 import Html.Attributes exposing (attribute, class, classList, id)
@@ -8,7 +12,7 @@ import Student.Profile
 
 
 view_student_profile_page_link : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> Html msg
-view_student_profile_page_link student_profile top_level_menu_msg =
+view_student_profile_page_link student_profile _ =
     let
         display_name =
             case Student.Profile.studentUserName student_profile of
@@ -35,7 +39,7 @@ view_student_profile_logout_link student_profile top_level_menu_msg =
 
 
 view_profile_dropdown_menu : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> List (Html msg) -> Html msg
-view_profile_dropdown_menu student_profile top_level_msg items =
+view_profile_dropdown_menu _ _ items =
     div [ id "profile-link", classList [ ( "menu_item", True ) ] ]
         [ div [ class "profile_dropdown_menu" ] items
         ]

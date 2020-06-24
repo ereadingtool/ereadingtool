@@ -1,11 +1,20 @@
-module Student.Profile.View exposing (..)
+module Student.Profile.View exposing
+    ( view_feedback_links
+    , view_flashcards
+    , view_header
+    , view_preferred_difficulty
+    , view_research_consent
+    , view_student_performance
+    , view_user_email
+    , view_username
+    )
 
-import Array exposing (Array)
-import Dict exposing (Dict)
+import Array
+import Dict
 import Help.View exposing (ArrowPlacement(..), ArrowPosition(..), view_hint_overlay)
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList, id)
-import Html.Events exposing (onBlur, onCheck, onClick, onInput, onMouseLeave, onMouseOut, onMouseOver)
+import Html.Events exposing (onClick, onInput)
 import HtmlParser
 import HtmlParser.Util
 import Markdown
@@ -13,7 +22,7 @@ import Menu.Item
 import Menu.Items
 import Menu.Msg
 import Menu.View
-import OrderedDict exposing (OrderedDict)
+import OrderedDict
 import Student.Profile
 import Student.Profile.Help exposing (StudentHelp(..))
 import Student.Profile.Model exposing (Model, UsernameUpdate)
@@ -37,8 +46,8 @@ view_difficulty model =
                 (List.map
                     (\( k, v ) ->
                         Html.option
-                            ([ attribute "value" k ]
-                                ++ (if k == pref then
+                            (attribute "value" k
+                                :: (if k == pref then
                                         [ attribute "selected" "" ]
 
                                     else
@@ -129,7 +138,7 @@ view_help_text_for_difficulty text_difficulty =
                 ]
 
         default_list =
-            List.map (\( k, v ) -> div [ class "difficulty_desc" ] [ v ]) (OrderedDict.toList difficulty_msgs)
+            List.map (\( _, v ) -> div [ class "difficulty_desc" ] [ v ]) (OrderedDict.toList difficulty_msgs)
 
         help_msg =
             case text_difficulty of
@@ -139,10 +148,10 @@ view_help_text_for_difficulty text_difficulty =
                             div [] [ difficulty_msg ]
 
                         Nothing ->
-                            div [] ([ Html.text default_msg ] ++ default_list)
+                            div [] (Html.text default_msg :: default_list)
 
                 Nothing ->
-                    div [] ([ Html.text default_msg ] ++ default_list)
+                    div [] (Html.text default_msg :: default_list)
     in
     div [ class "difficulty_descs" ]
         [ div [ class "text_readings_values" ] [ help_msg ]
@@ -157,16 +166,15 @@ view_username_submit username =
     in
     case username.valid of
         Just valid ->
-            case valid of
-                False ->
-                    []
-
-                True ->
-                    [ div [ class "username_submit" ]
-                        [ span [ class "cursor", onClick SubmitUsernameUpdate ] [ Html.text "Submit" ]
-                        , cancel_btn
-                        ]
+            if valid then
+                [ div [ class "username_submit" ]
+                    [ span [ class "cursor", onClick SubmitUsernameUpdate ] [ Html.text "Submit" ]
+                    , cancel_btn
                     ]
+                ]
+
+            else
+                []
 
         Nothing ->
             [ cancel_btn ]
@@ -221,12 +229,11 @@ view_username model =
         username_valid_attrs =
             case model.username_update.valid of
                 Just valid ->
-                    case valid of
-                        True ->
-                            [ class "valid_username" ]
+                    if valid then
+                        [ class "valid_username" ]
 
-                        False ->
-                            [ class "invalid_username" ]
+                    else
+                        [ class "invalid_username" ]
 
                 Nothing ->
                     []
@@ -242,28 +249,27 @@ view_username model =
     div [ class "profile_item" ] <|
         view_username_hint model
             ++ [ span [ class "profile_item_title" ] [ Html.text "Username" ]
-               , case Dict.member "username" model.editing of
-                    False ->
-                        span [ class "profile_item_value" ]
-                            [ Html.text username
-                            , div [ class "update_username", class "cursor", onClick ToggleUsernameUpdate ] [ Html.text "Update" ]
+               , if Dict.member "username" model.editing then
+                    span [ class "profile_item_value" ] <|
+                        [ Html.input
+                            [ class "username_input"
+                            , attribute "placeholder" "Username"
+                            , attribute "value" username
+                            , attribute "maxlength" "150"
+                            , attribute "minlength" "8"
+                            , onInput UpdateUsername
                             ]
+                            []
+                        , span username_valid_attrs []
+                        , div [ class "username_msg" ] username_msgs
+                        ]
+                            ++ view_username_submit model.username_update
 
-                    True ->
-                        span [ class "profile_item_value" ] <|
-                            [ Html.input
-                                [ class "username_input"
-                                , attribute "placeholder" "Username"
-                                , attribute "value" username
-                                , attribute "maxlength" "150"
-                                , attribute "minlength" "8"
-                                , onInput UpdateUsername
-                                ]
-                                []
-                            , span username_valid_attrs []
-                            , div [ class "username_msg" ] username_msgs
-                            ]
-                                ++ view_username_submit model.username_update
+                 else
+                    span [ class "profile_item_value" ]
+                        [ Html.text username
+                        , div [ class "update_username", class "cursor", onClick ToggleUsernameUpdate ] [ Html.text "Update" ]
+                        ]
                ]
 
 
@@ -400,7 +406,7 @@ view_my_performance_hint model =
 
 
 view_feedback_links : Model -> Html Msg
-view_feedback_links model =
+view_feedback_links _ =
     div [ class "feedback" ]
         [ span [ class "profile_item_title" ] [ Html.text "Contact" ]
         , span [ class "profile_item_value" ]
@@ -488,18 +494,17 @@ view_menu_item model help_msgs menu_item =
             Menu.Item.linkTextToString menu_item
 
         addl_view =
-            case link_text == "Find a text to read" of
-                True ->
-                    Just (view_search_menu_item_hint model help_msgs)
+            if link_text == "Find a text to read" then
+                Just (view_search_menu_item_hint model help_msgs)
 
-                False ->
-                    Nothing
+            else
+                Nothing
     in
     Menu.View.view_lower_menu_item menu_item addl_view
 
 
 view_student_profile_page_link : Model -> HelpMsgs msg -> Html msg
-view_student_profile_page_link model help_msgs =
+view_student_profile_page_link model _ =
     let
         display_name =
             case Student.Profile.studentUserName model.profile of
@@ -518,22 +523,21 @@ view_student_profile_page_link model help_msgs =
 
 view_student_profile_header : Model -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> List (Html msg)
 view_student_profile_header model top_level_menu_msg help_msgs =
-    [ Student.View.view_profile_dropdown_menu model.profile
+    Student.View.view_profile_dropdown_menu model.profile
         top_level_menu_msg
         [ view_student_profile_page_link model help_msgs
         , Student.View.view_student_profile_logout_link model.profile top_level_menu_msg
         ]
-    ]
-        ++ view_username_menu_item_hint model help_msgs
+        :: view_username_menu_item_hint model help_msgs
 
 
 view_top_level_menu : Model -> Menu.Items.MenuItems -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> List (Html msg)
-view_top_level_menu model menu_items top_level_menu_msg help_msgs =
+view_top_level_menu model _ top_level_menu_msg help_msgs =
     view_student_profile_header model top_level_menu_msg help_msgs
 
 
 view_lower_level_menu : Model -> Menu.Items.MenuItems -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> List (Html msg)
-view_lower_level_menu model menu_items top_level_menu_msg help_msgs =
+view_lower_level_menu model menu_items _ help_msgs =
     Array.toList <|
         Array.map (view_menu_item model help_msgs) <|
             Menu.Items.items menu_items

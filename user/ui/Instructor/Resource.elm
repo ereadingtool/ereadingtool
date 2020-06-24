@@ -1,4 +1,14 @@
-module Instructor.Resource exposing (..)
+module Instructor.Resource exposing
+    ( InstructorInviteURI
+    , InstructorLogoutURI
+    , InstructorProfileURI
+    , URI
+    , flagsToInstructorURI
+    , instructorInviteURI
+    , instructorLogoutURI
+    , instructorProfileURI
+    , uriToString
+    )
 
 
 type URI

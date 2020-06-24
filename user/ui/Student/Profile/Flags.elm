@@ -1,4 +1,4 @@
-module Student.Profile.Flags exposing (..)
+module Student.Profile.Flags exposing (Flags)
 
 import Flags
 import Student.Performance.Report
