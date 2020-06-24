@@ -1,4 +1,19 @@
-module Instructor.Invite exposing (..)
+module Instructor.Invite exposing
+    ( Email(..)
+    , InstructorInvite(..)
+    , InviteCode(..)
+    , InviteExpiration(..)
+    , InviteParams
+    , codeToString
+    , email
+    , emailToString
+    , expirationToString
+    , inviteCode
+    , inviteExpiration
+    , isEmptyEmail
+    , isValidEmail
+    , new
+    )
 
 import Util
 

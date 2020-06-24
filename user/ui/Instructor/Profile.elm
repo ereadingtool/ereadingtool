@@ -1,4 +1,19 @@
-module Instructor.Profile exposing (..)
+module Instructor.Profile exposing
+    ( InstructorProfile
+    , InstructorProfileParams
+    , Tag
+    , Text
+    , addInvite
+    , initProfile
+    , invites
+    , isAdmin
+    , logout
+    , profileUriToString
+    , submitNewInvite
+    , texts
+    , username
+    , usernameToString
+    )
 
 import Flags
 import Http

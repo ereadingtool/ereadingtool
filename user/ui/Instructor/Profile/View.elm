@@ -1,4 +1,4 @@
-module Instructor.Profile.View exposing (..)
+module Instructor.Profile.View exposing (view_content)
 
 import Dict exposing (Dict)
 import Html exposing (Html, div, span)

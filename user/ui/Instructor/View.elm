@@ -1,4 +1,4 @@
-module Instructor.View exposing (..)
+module Instructor.View exposing (view_instructor_profile_header)
 
 import Html exposing (Html, div)
 import Html.Attributes exposing (attribute, class, classList, id)
