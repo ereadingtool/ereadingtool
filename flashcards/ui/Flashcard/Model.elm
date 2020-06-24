@@ -106,33 +106,23 @@ hasException model =
 
 
 newFlashcard : Phrase -> Example -> Maybe TranslatedPhrase -> Flashcard
-newFlashcard phrase example translation =
-    Flashcard phrase example translation
+newFlashcard phr ex trans =
+    Flashcard phr ex trans
 
 
 example : Flashcard -> Example
-example (Flashcard _ example _) =
-    "\"" ++ example ++ "\""
+example (Flashcard _ ex _) =
+    "\"" ++ ex ++ "\""
 
 
 phrase : Flashcard -> Phrase
-phrase (Flashcard phrase _ _) =
-    phrase
+phrase (Flashcard phr _ _) =
+    phr
 
 
 translation : Flashcard -> Maybe TranslatedPhrase
-translation (Flashcard _ _ translation) =
-    translation
-
-
-hasTranslation : Flashcard -> Bool
-hasTranslation flashcard =
-    case translation flashcard of
-        Just _ ->
-            True
-
-        _ ->
-            False
+translation (Flashcard _ _ trans) =
+    trans
 
 
 translationOrPhrase : Flashcard -> String

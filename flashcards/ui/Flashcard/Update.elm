@@ -4,7 +4,10 @@ import Flashcard.Decode
 import Flashcard.Mode exposing (Mode)
 import Flashcard.Model exposing (..)
 import Flashcard.Msg exposing (Msg(..))
+import Flashcard.WebSocket
 import Json.Decode
+
+import WebSocket
 
 
 route_cmd_resp : Model -> Maybe Mode -> CmdResp -> ( Model, Cmd Msg )
@@ -39,21 +42,37 @@ route_cmd_resp orig_model mode cmd_resp =
             ( Flashcard.Model.setSessionState model (ReviewedCard card), Cmd.none )
 
         FinishedReviewResp ->
-            ( Flashcard.Model.disconnect (Flashcard.Model.setSessionState model FinishedReview), Cmd.none )
+            ( Flashcard.Model.disconnect (Flashcard.Model.setSessionState model FinishedReview)
+            , Flashcard.WebSocket.disconnect "flashcard" )
 
         ExceptionResp exception ->
             ( Flashcard.Model.setException model (Just exception), Cmd.none )
 
 
-handle_ws_resp : Model -> String -> ( Model, Cmd Msg )
-handle_ws_resp model str =
+handle_ws_resp : Model -> WebSocket.WebSocketMsg -> ( Model, Cmd Msg )
+handle_ws_resp model websocket_resp =
+     case websocket_resp of
+         WebSocket.Data {data} ->
+             decodeWebSocketResp model data
+
+         WebSocket.Error {error} ->
+             webSocketError model "websocket error" error
+
+
+decodeWebSocketResp : Model -> String -> ( Model, Cmd Msg )
+decodeWebSocketResp model str =
     case Json.Decode.decodeString Flashcard.Decode.ws_resp_decoder str of
         Ok ( mode, cmd_resp ) ->
             route_cmd_resp model mode cmd_resp
 
         Err err ->
-            let
-                _ =
-                    Debug.log "websocket decode error" (err ++ " while decoding " ++ str)
-            in
-            ( model, Cmd.none )
+            webSocketError model "websocket decode error" (err ++ " while decoding " ++ str)
+
+
+webSocketError : Model -> String -> String -> ( Model, Cmd Msg )
+webSocketError model err_type_str err_str =
+     let
+        _ =
+            Debug.log err_type_str (err_str)
+     in
+        ( model, Cmd.none )

@@ -5,6 +5,9 @@ import Http
 import Menu.Logout
 import Menu.Msg as MenuMsg
 
+import Json.Decode
+import WebSocket
+
 
 type Msg
     = SelectMode Flashcard.Mode.Mode
@@ -15,6 +18,6 @@ type Msg
     | InputAnswer String
     | SubmitAnswer
     | RateQuality Int
-    | WebSocketResp String
+    | WebSocketResp (Result Json.Decode.Error WebSocket.WebSocketMsg)
     | LogOut MenuMsg.Msg
     | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)

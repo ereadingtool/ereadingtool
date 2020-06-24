@@ -9,10 +9,14 @@ jsonToString : Json.Encode.Value -> String
 jsonToString =
     Json.Encode.encode 0
 
+commandRequestToString : CmdReq -> String
+commandRequestToString cmdReq =
+    jsonToString <| sendCommand cmdReq
 
-send_command : CmdReq -> Json.Encode.Value
-send_command cmd_req =
-    case cmd_req of
+
+sendCommand : CmdReq -> Json.Encode.Value
+sendCommand cmdReq =
+    case cmdReq of
         ChooseModeReq mode ->
             Json.Encode.object
                 [ ( "command", Json.Encode.string "choose_mode" )
