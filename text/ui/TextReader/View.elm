@@ -239,9 +239,9 @@ view_text_complete model scores =
       ]
     ]
   , view_text_conclusion model.text
-  , div [class "nav"] [
+  , div [id "nav"] [
       view_prev_btn
-    , div [attribute "id" "goback", onClick StartOver] [ Html.text "Start Over" ]
+    , div [onClick StartOver] [ Html.text "Start Over" ]
     ]
   ]
 
