@@ -81,7 +81,7 @@ edit_answer_feedback params answer_field =
             ]
             [ Html.text <|
                 "Characters remaining "
-                    ++ toString (params.answer_feedback_limit - String.length answer.feedback)
+                    ++ String.fromInt (params.answer_feedback_limit - String.length answer.feedback)
                     ++ "."
             , Html.text feedback_field.error_string
             ]

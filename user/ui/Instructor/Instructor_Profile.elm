@@ -13,6 +13,8 @@ import Ports
 import User.Profile
 import Views
 
+import Browser
+
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
@@ -78,7 +80,7 @@ update msg model =
 
 main : Program Flags Model Msg
 main =
-    Html.programWithFlags
+    Browser.element
         { init = Instructor.Profile.Init.init
         , view = view
         , subscriptions = subscriptions

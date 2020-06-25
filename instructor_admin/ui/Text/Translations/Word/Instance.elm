@@ -74,7 +74,7 @@ wordInstanceSectionNumberToInt wordInstance =
 
 id : WordInstance -> Id
 id (WordInstance sectionNumber instance token _) =
-    String.join "_" [ toString sectionNumber, toString instance, String.join "_" (String.words (String.toLower token)) ]
+    String.join "_" [ String.fromInt sectionNumber, String.fromInt instance, String.join "_" (String.words (String.toLower token)) ]
 
 
 token : WordInstance -> Token

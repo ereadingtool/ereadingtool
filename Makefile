@@ -10,8 +10,8 @@ text:
 
 .PHONY: user
 user:
-	for f in user/ui/Instructor/*.elm; do ${ELM_MAKE} $$f --output=user/static/user/js/$$(basename -s .elm $$f | tr '[:upper:]' '[:lower:]').js; done;
-	for f in user/ui/Student/*.elm; do ${ELM_MAKE} $$f --output=user/static/user/js/$$(basename -s .elm $$f | tr '[:upper:]' '[:lower:]').js; done;
+	for f in user/ui/Instructor/{Instructor_Login,Instructor_Profile,Instructor_Signup}.elm; do ${ELM_MAKE} $$f --output=user/static/user/js/$$(basename -s .elm $$f | tr '[:upper:]' '[:lower:]').js; done;
+	for f in user/ui/Student/{Student_Login,Student_Profile,Student_Signup}.elm; do ${ELM_MAKE} $$f --output=user/static/user/js/$$(basename -s .elm $$f | tr '[:upper:]' '[:lower:]').js; done;
 	for f in user/ui/ForgotPassword/*.elm; do ${ELM_MAKE} $$f --output=user/static/user/js/$$(basename -s .elm $$f | tr '[:upper:]' '[:lower:]').js; done;
 
 .PHONY: flashcard

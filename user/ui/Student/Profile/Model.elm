@@ -11,7 +11,7 @@ import Student.Performance.Report
 import Student.Profile
 import Student.Profile.Flags exposing (Flags)
 import Student.Profile.Help
-import Student.Resource exposing (..)
+import Student.Resource
 
 
 type alias UsernameUpdate =
@@ -26,18 +26,18 @@ type alias StudentConsentResp =
 
 
 type alias StudentEndpoints =
-    { student_endpoint_uri : StudentEndpointURI
-    , student_research_consent_uri : StudentResearchConsentURI
-    , student_username_validation_uri : StudentUsernameValidURI
+    { student_endpoint_uri : Student.Resource.StudentEndpointURI
+    , student_research_consent_uri : Student.Resource.StudentResearchConsentURI
+    , student_username_validation_uri : Student.Resource.StudentUsernameValidURI
     }
 
 
 flagsToEndpoints : Flags -> StudentEndpoints
 flagsToEndpoints flags =
     StudentEndpoints
-        (StudentEndpointURI (URI flags.student_endpoint))
-        (StudentResearchConsentURI (URI flags.student_research_consent_uri))
-        (StudentUsernameValidURI (URI flags.student_username_validation_uri))
+        (Student.Resource.toStudentEndpointURI flags.student_endpoint)
+        (Student.Resource.toStudentResearchConsentURI flags.student_research_consent_uri)
+        (Student.Resource.toStudentUsernameValidURI flags.student_username_validation_uri)
 
 
 type alias Model =

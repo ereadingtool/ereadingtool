@@ -24,14 +24,15 @@ import Dict exposing (Dict)
 import Flags
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList)
-import Html.Events exposing (onBlur, onClick, onInput)
+import Html.Events exposing (onInput)
 import Http exposing (..)
 import HttpHelpers exposing (post_with_headers)
-import Json.Decode as Decode
-import Json.Decode.Pipeline exposing (decode, hardcoded, optional, required, resolve)
+import Json.Decode
+import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode
 import Menu.Msg as MenuMsg
-import Navigation
+import Browser
+import Browser.Navigation
 import SignUp
 import Text.Model exposing (TextDifficulty)
 import User.Flags.UnAuthed exposing (UnAuthedUserFlags)
@@ -103,11 +104,11 @@ signUpEncoder signup_params =
         ]
 
 
-signUpRespDecoder : Decode.Decoder SignUpResp
+signUpRespDecoder : Json.Decode.Decoder SignUpResp
 signUpRespDecoder =
-    decode SignUpResp
-        |> required "id" (Decode.map SignUp.UserID Decode.int)
-        |> required "redirect" (Decode.map (SignUp.URI >> SignUp.RedirectURI) Decode.string)
+    Json.Decode.succeed SignUpResp
+        |> required "id" (Json.Decode.map SignUp.UserID Json.Decode.int)
+        |> required "redirect" (Json.Decode.map (SignUp.URI >> SignUp.RedirectURI) Json.Decode.string)
 
 
 postSignup : Flags.CSRFToken -> StudentSignUpURI -> SignUpParams -> Cmd Msg
@@ -180,31 +181,31 @@ update msg model =
             ( SignUp.submit model, postSignup model.flags.csrftoken model.student_signup_uri model.signup_params )
 
         Submitted (Ok resp) ->
-            ( model, Navigation.load (SignUp.uriToString (SignUp.redirectURI resp.redirect)) )
+            ( model, Browser.Navigation.load (SignUp.uriToString (SignUp.redirectURI resp.redirect)) )
 
-        Submitted (Err err) ->
-            case err of
+        Submitted (Err error) ->
+            case error of
                 Http.BadStatus resp ->
-                    case Decode.decodeString (Decode.dict Decode.string) resp.body of
+                    case Json.Decode.decodeString (Json.Decode.dict Json.Decode.string) resp.body of
                         Ok errors ->
                             ( { model | errors = errors }, Cmd.none )
 
                         _ ->
                             ( model, Cmd.none )
 
-                Http.BadPayload err resp ->
+                Http.BadPayload _ _ ->
                     ( model, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
 
-        Logout msg ->
+        Logout _ ->
             ( model, Cmd.none )
 
 
 view_difficulty_choices : Model -> List (Html Msg)
 view_difficulty_choices model =
-    [ SignUp.signup_label (Html.text "Choose a preferred difficulty:")
+    [ SignUp.signupLabel (Html.text "Choose a preferred difficulty:")
     , Html.select
         [ onInput UpdateDifficulty
         ]
@@ -288,7 +289,7 @@ view model =
 
 main : Program Flags Model Msg
 main =
-    Html.programWithFlags
+    Browser.element
         { init = init
         , view = view
         , subscriptions = subscriptions

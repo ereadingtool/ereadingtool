@@ -441,7 +441,7 @@ retrieveTextWords msg textApiEndpoint textId =
                 request =
                     Http.get
                         (String.join "?"
-                            [ String.join "" [ textApiEndpointUrl, toString id, "/" ], "text_words=list" ]
+                            [ String.join "" [ textApiEndpointUrl, String.fromInt id, "/" ], "text_words=list" ]
                         )
                         Text.Translations.Decode.textWordDictInstancesDecoder
             in

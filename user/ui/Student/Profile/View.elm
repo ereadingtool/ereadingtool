@@ -28,6 +28,7 @@ import Student.Profile.Help exposing (StudentHelp(..))
 import Student.Profile.Model exposing (Model, UsernameUpdate)
 import Student.Profile.Msg exposing (HelpMsgs, Msg(..))
 import Student.View
+import Student.Resource
 import Text.Model as Text
 import Text.Reading.Model exposing (TextReading, TextReadingScore)
 import Text.Resource
@@ -65,7 +66,7 @@ view_difficulty model =
 view_scores : TextReadingScore -> Html Msg
 view_scores score =
     div [ class "text_reading_item" ]
-        [ Html.text ("Score: " ++ toString score.complete_sections ++ " / " ++ toString score.num_of_sections)
+        [ Html.text ("Score: " ++ String.fromInt score.complete_sections ++ " / " ++ String.fromInt score.num_of_sections)
         ]
 
 
@@ -278,7 +279,7 @@ view_user_email model =
     div [ class "profile_item" ]
         [ span [ class "profile_item_title" ] [ Html.text "User E-Mail" ]
         , span [ class "profile_item_value" ]
-            [ Html.text (Student.Profile.studentEmailToString (Student.Profile.studentEmail model.profile))
+            [ Html.text (Student.Resource.studentEmailToString (Student.Profile.studentEmail model.profile))
             ]
         ]
 
