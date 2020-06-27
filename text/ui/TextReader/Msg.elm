@@ -8,6 +8,8 @@ import TextReader.Model exposing (TextReaderWord)
 import TextReader.Question.Model exposing (TextQuestion)
 import TextReader.Section.Model exposing (Section)
 
+import Json.Decode
+import WebSocket
 
 type Msg
     = Select TextAnswer
@@ -20,6 +22,6 @@ type Msg
     | ToggleGloss TextReaderWord
     | AddToFlashcards TextReaderWord
     | RemoveFromFlashcards TextReaderWord
-    | WebSocketResp String
+    | WebSocketResp (Result Json.Decode.Error WebSocket.WebSocketMsg)
     | LogOut MenuMsg.Msg
     | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
