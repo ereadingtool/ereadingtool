@@ -9,6 +9,7 @@ import Html.Attributes exposing (attribute, class, classList, id)
 import Html.Events exposing (onClick)
 import Menu.Msg exposing (Msg(..))
 import Student.Profile
+import Student.Resource
 
 
 view_student_profile_page_link : Student.Profile.StudentProfile -> (Menu.Msg.Msg -> msg) -> Html msg
@@ -20,7 +21,7 @@ view_student_profile_page_link student_profile _ =
                     Student.Profile.studentUserNameToString username
 
                 Nothing ->
-                    Student.Profile.studentEmailToString (Student.Profile.studentEmail student_profile)
+                    Student.Resource.studentEmailToString (Student.Profile.studentEmail student_profile)
     in
     div []
         [ Html.a [ attribute "href" (Student.Profile.profileUriToString student_profile) ]

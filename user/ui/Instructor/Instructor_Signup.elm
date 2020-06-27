@@ -7,11 +7,12 @@ import Html.Attributes exposing (attribute, class, classList)
 import Html.Events exposing (onInput)
 import Http exposing (..)
 import HttpHelpers exposing (post_with_headers)
-import Json.Decode as Decode
-import Json.Decode.Pipeline exposing (decode, required)
+import Json.Decode
+import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode
 import Menu.Msg as MenuMsg
-import Navigation
+import Browser
+import Browser.Navigation
 import SignUp
 import User.Flags.UnAuthed exposing (UnAuthedUserFlags)
 import Views
@@ -83,16 +84,16 @@ signUpEncoder signup_params =
         ]
 
 
-signUpRespDecoder : Decode.Decoder SignUpResp
+signUpRespDecoder : Json.Decode.Decoder SignUpResp
 signUpRespDecoder =
-    decode SignUpResp
-        |> required "id" (Decode.map SignUp.UserID Decode.int)
-        |> required "redirect" (Decode.map (SignUp.URI >> SignUp.RedirectURI) Decode.string)
+    Json.Decode.succeed SignUpResp
+        |> required "id" (Json.Decode.map SignUp.UserID Json.Decode.int)
+        |> required "redirect" (Json.Decode.map (SignUp.URI >> SignUp.RedirectURI) Json.Decode.string)
 
 
 redirect : SignUp.RedirectURI -> Cmd msg
 redirect redirect_uri =
-    Navigation.load (SignUp.uriToString (SignUp.redirectURI redirect_uri))
+    Browser.Navigation.load (SignUp.uriToString (SignUp.redirectURI redirect_uri))
 
 
 postSignup : Flags.CSRFToken -> InstructorSignUpURI -> SignUpParams -> Cmd Msg
@@ -160,7 +161,7 @@ update msg model =
         Submitted (Err err) ->
             case err of
                 Http.BadStatus resp ->
-                    case Decode.decodeString (Decode.dict Decode.string) resp.body of
+                    case Json.Decode.decodeString (Json.Decode.dict Json.Decode.string) resp.body of
                         Ok errors ->
                             ( { model | errors = errors }, Cmd.none )
 
@@ -219,11 +220,11 @@ view_invite_code_input model =
             Dict.member "invite_code" model.errors
 
         err_msg =
-            [ SignUp.signup_label
+            [ SignUp.signupLabel
                 (Html.em [] [ Html.text (Maybe.withDefault "" (Dict.get "invite_code" model.errors)) ])
             ]
     in
-    [ SignUp.signup_label (Html.span [] [ Html.text "Invite Code " ])
+    [ SignUp.signupLabel (Html.span [] [ Html.text "Invite Code " ])
     , Html.input
         ([ attribute "size" "25", onInput UpdateInviteCode ]
             ++ (if err then
@@ -261,7 +262,7 @@ instructor_signup_view model =
 
 main : Program Flags Model Msg
 main =
-    Html.programWithFlags
+    Browser.element
         { init = init
         , view = instructor_signup_view
         , subscriptions = subscriptions

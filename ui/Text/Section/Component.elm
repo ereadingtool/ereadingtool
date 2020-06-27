@@ -65,7 +65,7 @@ type alias FieldName =
 
 generate_text_section_field_id : Int -> String -> String
 generate_text_section_field_id i attr =
-    String.join "_" [ "textsection", toString i, attr ]
+    String.join "_" [ "textsection", String.fromInt i, attr ]
 
 
 generate_text_section_field_params : Int -> String -> TextSectionField

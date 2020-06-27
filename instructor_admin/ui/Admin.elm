@@ -134,7 +134,7 @@ month_day_year_fmt : Date -> String
 month_day_year_fmt date =
     List.foldr (++)
         ""
-        [ (toString <| Date.month date) ++ " ", (toString <| Date.day date) ++ "," ++ " ", toString <| Date.year date ]
+        [ (toString <| Date.month date) ++ " ", (toString <| Date.day date) ++ "," ++ " ", String.fromInt <| Date.year date ]
 
 
 view_text : TextListItem -> Html Msg
@@ -142,13 +142,13 @@ view_text textListItem =
     div [ classList [ ( "text_item", True ) ] ]
         [ div [ classList [ ( "item_property", True ) ], attribute "data-id" (toString text_list_item.id) ] [ Html.text "" ]
         , div [ classList [ ( "item_property", True ) ] ]
-            [ Html.a [ attribute "href" ("/admin/text/" ++ toString textListItem.id) ] [ Html.text textListItem.title ]
+            [ Html.a [ attribute "href" ("/admin/text/" ++ String.fromInt textListItem.id) ] [ Html.text textListItem.title ]
             , span [ classList [ ( "sub_description", True ) ] ]
                 [ Html.text <| "Modified:   " ++ month_day_year_fmt textListItem.modified_dt
                 ]
             ]
         , div [ classList [ ( "item_property", True ) ] ]
-            [ Html.text <| toString textListItem.text_section_count
+            [ Html.text <| String.fromInt textListItem.text_section_count
             , span [ classList [ ( "sub_description", True ) ] ]
                 [ Html.text "Text Sections"
                 ]
@@ -208,7 +208,7 @@ view_footer model =
                     Html.text "Loading..."
 
                 False ->
-                    Html.text <| "Showing " ++ toString (List.length model.texts) ++ " entries"
+                    Html.text <| "Showing " ++ String.fromInt (List.length model.texts) ++ " entries"
             ]
         ]
 

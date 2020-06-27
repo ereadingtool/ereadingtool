@@ -80,10 +80,10 @@ generate_answer_field : Int -> Int -> Int -> Answer -> AnswerField
 generate_answer_field i j k answer =
     let
         answer_id =
-            String.join "_" [ "textsection", toString i, "question", toString j, "answer", toString k ]
+            String.join "_" [ "textsection", String.fromInt i, "question", String.fromInt j, "answer", String.fromInt k ]
 
         answer_name =
-            String.join "_" [ "textsection", toString i, "question", toString j, "correct_answer" ]
+            String.join "_" [ "textsection", String.fromInt i, "question", String.fromInt j, "correct_answer" ]
     in
     AnswerField answer
         { id = answer_id

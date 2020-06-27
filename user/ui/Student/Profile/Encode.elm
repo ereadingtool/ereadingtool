@@ -21,8 +21,8 @@ profileEncoder student_profile =
 
         username =
             case Student.Profile.studentUserName student_profile of
-                Just username ->
-                    Json.Encode.string (Student.Profile.studentUserNameToString username)
+                Just uname ->
+                    Json.Encode.string (Student.Profile.studentUserNameToString uname)
 
                 Nothing ->
                     Json.Encode.null

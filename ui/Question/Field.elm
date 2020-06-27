@@ -80,7 +80,7 @@ generate_question_field : Int -> Int -> Question -> QuestionField
 generate_question_field text_index question_index question =
     let
         question_field_id =
-            String.join "_" [ "textsection", toString text_index, "question", toString question_index ]
+            String.join "_" [ "textsection", String.fromInt text_index, "question", String.fromInt question_index ]
     in
     QuestionField question
         { id = question_field_id

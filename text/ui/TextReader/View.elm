@@ -23,7 +23,7 @@ tagWord : Model -> Section -> Int -> String -> Html Msg
 tagWord model text_reader_section instance token =
     let
         id =
-            String.join "_" [ toString instance, token ]
+            String.join "_" [ String.fromInt instance, token ]
 
         textreader_textword =
             TextReader.Section.Model.getTextWord text_reader_section instance token
@@ -125,7 +125,7 @@ view_question text_section text_question =
             TextReader.Question.Model.answers text_question
 
         text_question_id =
-            String.join "_" [ "question", toString question.order ]
+            String.join "_" [ "question", String.fromInt question.order ]
     in
     div [ class "question", attribute "id" text_question_id ]
         [ div [ class "question-body" ] [ Html.text question.body ]
@@ -242,7 +242,7 @@ view_text_section model text_reader_section =
                 (HtmlParser.parse text_section.body)
 
         section_title =
-            "Section " ++ toString (text_section.order + 1) ++ "/" ++ toString text_section.num_of_sections
+            "Section " ++ String.fromInt (text_section.order + 1) ++ "/" ++ String.fromInt text_section.num_of_sections
     in
     div [ id "text-body" ] <|
         [ div [ id "title" ] [ Html.text section_title ]
@@ -283,9 +283,9 @@ view_text_complete model scores =
             [ div []
                 [ Html.text
                     ("You answered "
-                        ++ toString scores.section_scores
+                        ++ String.fromInt scores.section_scores
                         ++ " out of "
-                        ++ toString scores.possible_section_scores
+                        ++ String.fromInt scores.possible_section_scores
                         ++ " questions correctly for this text."
                     )
                 ]

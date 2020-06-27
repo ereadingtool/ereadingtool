@@ -1,9 +1,9 @@
 module SignUp exposing (..)
 
 import Dict exposing (Dict)
-import Html exposing (Html, div, span)
+import Html exposing (Html, div)
 import Html.Attributes exposing (attribute, class, classList)
-import Html.Events exposing (onBlur, onCheck, onClick, onInput, onMouseLeave, onMouseOut, onMouseOver)
+import Html.Events exposing (onClick, onInput)
 import Menu.Msg as MenuMsg
 import Util exposing (isValidEmail)
 import Views
@@ -31,18 +31,18 @@ uriToString (URI uri) =
     uri
 
 
-signup_label : Html msg -> Html msg
-signup_label html =
+signupLabel : Html msg -> Html msg
+signupLabel html =
     Html.div [ attribute "class" "signup_label" ] [ html ]
 
 
-submit : { b | errors : a } -> { b | errors : Dict comparable v }
+submit : { b | errors : Dict comparable v } -> { b | errors : Dict comparable v }
 submit model =
     { model | errors = Dict.fromList [] }
 
 
 update_email :
-    { c | signup_params : { b | email : a }, errors : Dict String String }
+    { c | signup_params : { b | email : String }, errors : Dict String String }
     -> String
     ->
         { c
@@ -122,10 +122,10 @@ view_email_input :
     -> List (Html msg)
 view_email_input update_email_msg model =
     let
-        err_msg =
+        errMsgHTML =
             case Dict.get "email" model.errors of
-                Just err_msg ->
-                    signup_label (Html.em [] [ Html.text err_msg ])
+                Just errMsg ->
+                    signupLabel (Html.em [] [ Html.text errMsg ])
 
                 Nothing ->
                     Html.text ""
@@ -137,9 +137,9 @@ view_email_input update_email_msg model =
             else
                 []
     in
-    [ signup_label (Html.text "Email Address")
+    [ signupLabel (Html.text "Email Address")
     , Html.input ([ attribute "size" "25", onInput update_email_msg ] ++ email_error) []
-    , err_msg
+    , errMsgHTML
     ]
 
 
@@ -152,7 +152,7 @@ view_password_input ( toggle_msg, update_msg, update_confirm_msg ) model =
         confirm_err_msg =
             case Dict.get "confirm_password" model.errors of
                 Just err_msg ->
-                    signup_label (Html.em [] [ Html.text err_msg ])
+                    signupLabel (Html.em [] [ Html.text err_msg ])
 
                 Nothing ->
                     Html.text ""
@@ -160,7 +160,7 @@ view_password_input ( toggle_msg, update_msg, update_confirm_msg ) model =
         password_err_msg =
             case Dict.get "password" model.errors of
                 Just err_msg ->
-                    signup_label (Html.em [] [ Html.text err_msg ])
+                    signupLabel (Html.em [] [ Html.text err_msg ])
 
                 Nothing ->
                     Html.text ""
@@ -183,7 +183,7 @@ view_password_input ( toggle_msg, update_msg, update_confirm_msg ) model =
                         [ attribute "type" "password" ]
                    )
     in
-    [ signup_label
+    [ signupLabel
         (Html.span []
             [ Html.text "Password "
             , Html.span [ onClick toggle_msg, attribute "class" "cursor" ] [ Html.text "(show)" ]
@@ -191,7 +191,7 @@ view_password_input ( toggle_msg, update_msg, update_confirm_msg ) model =
         )
     , Html.input (attrs ++ [ onInput update_msg ]) []
     , password_err_msg
-    , signup_label (Html.text "Confirm Password")
+    , signupLabel (Html.text "Confirm Password")
     , Html.input (attrs ++ [ onInput update_confirm_msg ]) []
     , confirm_err_msg
     ]
@@ -199,7 +199,7 @@ view_password_input ( toggle_msg, update_msg, update_confirm_msg ) model =
 
 view_submit : msg -> a -> List (Html msg)
 view_submit submit_msg model =
-    [ signup_label
+    [ signupLabel
         (Html.span [ class "cursor", class "signup_submit", class "button", onClick submit_msg ]
             [ Html.text "Sign Up"
             ]
@@ -214,9 +214,9 @@ view_content :
     -> a
     -> { b | show_passwords : Bool, errors : Dict String String }
     -> Html a
-view_content signup_label email_msg password_msgs submit_msg model =
+view_content signupLabelText email_msg password_msgs submit_msg model =
     div [ classList [ ( "signup", True ) ] ]
-        [ div [ class "signup_title" ] [ Html.text signup_label ]
+        [ div [ class "signup_title" ] [ Html.text signupLabelText ]
         , div [ classList [ ( "signup_box", True ) ] ] <|
             view_email_input email_msg model
                 ++ view_password_input password_msgs model

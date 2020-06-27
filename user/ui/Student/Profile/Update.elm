@@ -55,8 +55,8 @@ update msg model =
             ( { model | profile = profile, username_update = new_username_update }, Cmd.none )
 
         -- handle user-friendly msgs
-        RetrieveStudentProfile (Err err) ->
-            ( { model | err_str = toString err }, Cmd.none )
+        RetrieveStudentProfile (Err _) ->
+            ( { model | err_str = "Error retrieving student profile!" }, Cmd.none )
 
         UpdateUsername value ->
             let
@@ -64,15 +64,15 @@ update msg model =
                     model.username_update
 
                 new_username_update =
-                    { username_update | username = Just (Student.Resource.StudentUsername value) }
+                    { username_update | username = Just (Student.Resource.toStudentUsername value) }
             in
             ( { model | username_update = new_username_update }, validateUsername value )
 
         ValidUsername (Ok username_update) ->
             ( { model | username_update = username_update }, Cmd.none )
 
-        ValidUsername (Err err) ->
-            case err of
+        ValidUsername (Err error) ->
+            case error of
                 Http.BadStatus resp ->
                     case Json.Decode.decodeString (Json.Decode.dict Json.Decode.string) resp.body of
                         Ok errors ->
@@ -81,10 +81,10 @@ update msg model =
                         _ ->
                             ( model, Cmd.none )
 
-                Http.BadPayload err _ ->
+                Http.BadPayload badPayloadError _ ->
                     let
                         _ =
-                            Debug.log "bad payload" err
+                            Debug.log "bad payload" badPayloadError
                     in
                     ( model, Cmd.none )
 

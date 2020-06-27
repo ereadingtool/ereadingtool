@@ -558,7 +558,7 @@ postLock csrftoken textApiEndpoint text =
 
                 req =
                     post_with_headers
-                        (String.join "" [ textApiEndpointUrl, toString textId, "/", "lock/" ])
+                        (String.join "" [ textApiEndpointUrl, String.fromInt textId, "/", "lock/" ])
                         [ Http.header "X-CSRFToken" csrftoken ]
                         Http.emptyBody
                         Text.Decode.textLockRespDecoder
@@ -579,7 +579,7 @@ deleteLock csrftoken textApiEndpoint text =
 
                 req =
                     delete_with_headers
-                        (String.join "" [ textApiEndpointUrl, toString textId, "/", "lock/" ])
+                        (String.join "" [ textApiEndpointUrl, String.fromInt textId, "/", "lock/" ])
                         [ Http.header "X-CSRFToken" csrftoken ]
                         Http.emptyBody
                         Text.Decode.textLockRespDecoder
@@ -619,7 +619,7 @@ updateText csrftoken textApiEndpoint text =
 
                 req =
                     put_with_headers
-                        (String.join "" [ textApiEndpointUrl, toString textId, "/" ])
+                        (String.join "" [ textApiEndpointUrl, String.fromInt textId, "/" ])
                         [ Http.header "X-CSRFToken" csrftoken ]
                         (Http.jsonBody encodedText)
                     <|
@@ -641,7 +641,7 @@ deleteText csrftoken textApiEndpoint text =
 
                 req =
                     delete_with_headers
-                        (String.join "" [ textApiEndpointUrl, toString textId, "/" ])
+                        (String.join "" [ textApiEndpointUrl, String.fromInt textId, "/" ])
                         [ Http.header "X-CSRFToken" csrftoken ]
                         Http.emptyBody
                         Text.Decode.textDeleteRespDecoder

@@ -27,7 +27,7 @@ view_text instructor_profile text =
         , div [ class "text_label" ] [ Html.text "Difficulty" ]
         , div [ class "text_value" ] [ Html.text text.difficulty ]
         , div [ class "text_label" ] [ Html.text "Sections" ]
-        , div [ class "text_value" ] [ Html.text (toString text.text_section_count) ]
+        , div [ class "text_value" ] [ Html.text (String.fromInt text.text_section_count) ]
         , div [ class "text_label" ] [ Html.text "Created/Modified" ]
         , div [ class "text_value" ]
             [ if text.created_by == instructor_username then

@@ -38,7 +38,7 @@ tagWord : Model -> (Msg -> msg) -> Int -> Int -> String -> Html msg
 tagWord model parentMsg sectionNumber instance originalToken =
     let
         id =
-            String.join "-" [ "section", toString sectionNumber, "instance", toString instance, originalToken ]
+            String.join "-" [ "section", String.fromInt sectionNumber, "instance", String.fromInt instance, originalToken ]
 
         token =
             String.toLower originalToken
@@ -85,7 +85,7 @@ tagSection model msg section =
         sectionNumber =
             SectionNumber section.order
     in
-    div [ id ("section-" ++ toString section.order), class "section" ]
+    div [ id ("section-" ++ String.fromInt section.order), class "section" ]
         (Text.Section.Words.Tag.tagWordsAndToVDOM
             (tagWord model msg section.order)
             (isPartOfCompoundWord model sectionNumber)

@@ -95,7 +95,7 @@ view_text_section_component msg text_difficulties answer_feedback_limit text_sec
         [ -- text attributes
           div [ classList [ ( "text_properties", True ) ] ]
             [ div [ classList [ ( "body", True ) ] ]
-                [ div [] [ Html.text ("Text Section " ++ toString (text_section.order + 1)) ]
+                [ div [] [ Html.text ("Text Section " ++ String.fromInt (text_section.order + 1)) ]
                 , view_editable (params body_field) view_body edit_body
                 ]
             ]
