@@ -2,6 +2,7 @@ module Student.Profile.Resource exposing
     ( logout
     , updateProfile
     , validateUsername
+    , toggleResearchConsent
     )
 
 import Flags

@@ -39,7 +39,6 @@ type alias Text =
     , conclusion : Maybe String
     , created_by : String
     , last_modified_by : Maybe String
-    , tags : Maybe (List String)
     , created_dt : String
     , modified_dt : String
     , write_locker : Maybe String
@@ -74,8 +73,8 @@ type InstructorProfileURIs
 
 
 urisToLogoutUri : InstructorProfileURIs -> Instructor.Resource.InstructorLogoutURI
-urisToLogoutUri (InstructorProfileURIs logout _) =
-    logout
+urisToLogoutUri (InstructorProfileURIs logout_uri _) =
+    logout_uri
 
 
 urisToProfileUri : InstructorProfileURIs -> Instructor.Resource.InstructorProfileURI
@@ -90,31 +89,29 @@ type InstructorProfile
 initProfileURIs : InstructorURIParams -> InstructorProfileURIs
 initProfileURIs params =
     InstructorProfileURIs
-        (Instructor.Resource.InstructorLogoutURI (Instructor.Resource.URI params.logout_uri))
-        (Instructor.Resource.InstructorProfileURI (Instructor.Resource.URI params.profile_uri))
+        (Instructor.Resource.toInstructorLogoutURI params.logout_uri)
+        (Instructor.Resource.toInstructorProfileURI params.profile_uri)
 
 
 initProfile : InstructorProfileParams -> InstructorProfile
-initProfile params =
+initProfile param =
     InstructorProfile
-        params.id
-        params.texts
-        params.instructor_admin
+        param.id
+        param.texts
+        param.instructor_admin
         (param.invites
             |> Maybe.map (List.map Instructor.Invite.new)
         )
-        (InstructorUsername params.username)
-        (initProfileURIs params.uris)
+        (InstructorUsername param.username)
+        (initProfileURIs param.uris)
 
 
 addInvite : InstructorProfile -> InstructorInvite -> InstructorProfile
-addInvite (InstructorProfile id texts admin invites username logout_uri) invite =
+addInvite (InstructorProfile id ts admin invitations uname logout_uri) invite =
     let
-        new_invites =
-            invites
-                |> Maybe.map (\invites -> invites ++ [ invite ])
+        new_invites = Maybe.map (\i -> i ++ [ invite ]) invitations
     in
-    InstructorProfile id texts admin new_invites username logout_uri
+    InstructorProfile id ts admin new_invites uname logout_uri
 
 
 isAdmin : InstructorProfile -> Bool
@@ -123,23 +120,23 @@ isAdmin (InstructorProfile _ _ admin _ _ _) =
 
 
 invites : InstructorProfile -> Maybe (List InstructorInvite)
-invites (InstructorProfile _ _ _ invites _ _) =
-    invites
+invites (InstructorProfile _ _ _ invitations _ _) =
+    invitations
 
 
 username : InstructorProfile -> InstructorUsername
-username (InstructorProfile _ _ _ _ username _) =
-    username
+username (InstructorProfile _ _ _ _ uname _) =
+    uname
 
 
 usernameToString : InstructorUsername -> String
-usernameToString (InstructorUsername username) =
-    username
+usernameToString (InstructorUsername uname) =
+    uname
 
 
 uris : InstructorProfile -> InstructorProfileURIs
-uris (InstructorProfile _ _ _ _ _ uris) =
-    uris
+uris (InstructorProfile _ _ _ _ _ instructorUris) =
+    instructorUris
 
 
 logoutUri : InstructorProfile -> Instructor.Resource.InstructorLogoutURI
@@ -163,8 +160,8 @@ profileUriToString instructor_profile =
 
 
 texts : InstructorProfile -> List Text
-texts (InstructorProfile _ texts _ _ _ _) =
-    texts
+texts (InstructorProfile _ instructorTexts _ _ _ _) =
+    instructorTexts
 
 
 logout :

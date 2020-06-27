@@ -5,10 +5,11 @@ module Student.Profile.Decode exposing
     )
 
 import Json.Decode
-import Json.Decode.Pipeline exposing (decode, required)
+import Json.Decode.Pipeline exposing (required)
 import Student.Performance.Report exposing (PerformanceReport)
 import Student.Profile exposing (StudentProfileParams)
 import Student.Profile.Model
+
 import Student.Resource
 import Text.Translations exposing (Phrase)
 import Text.Translations.Decode
@@ -19,15 +20,15 @@ import Util exposing (stringTupleDecoder)
 
 username_valid_decoder : Json.Decode.Decoder Student.Profile.Model.UsernameUpdate
 username_valid_decoder =
-    decode Student.Profile.Model.UsernameUpdate
-        |> required "username" (Json.Decode.map (Student.Resource.StudentUsername >> Just) Json.Decode.string)
+    Json.Decode.succeed Student.Profile.Model.UsernameUpdate
+        |> required "username" (Json.Decode.map (Student.Resource.toStudentUsername >> Just) Json.Decode.string)
         |> required "valid" (Json.Decode.nullable Json.Decode.bool)
         |> required "msg" (Json.Decode.nullable Json.Decode.string)
 
 
 textWordParamsDecoder : Json.Decode.Decoder TextReader.TextWord.TextWordParams
 textWordParamsDecoder =
-    decode TextReader.TextWord.TextWordParams
+    Json.Decode.succeed TextReader.TextWord.TextWordParams
         |> required "id" Json.Decode.int
         |> required "instance" Json.Decode.int
         |> required "phrase" Json.Decode.string
@@ -53,21 +54,21 @@ wordTextWordDecoder =
 
 performanceReportDecoder : Json.Decode.Decoder PerformanceReport
 performanceReportDecoder =
-    decode PerformanceReport
+    Json.Decode.succeed PerformanceReport
         |> required "html" Json.Decode.string
         |> required "pdf_link" Json.Decode.string
 
 
 studentProfileURIParamsDecoder : Json.Decode.Decoder Student.Profile.StudentURIParams
 studentProfileURIParamsDecoder =
-    decode Student.Profile.StudentURIParams
+    Json.Decode.succeed Student.Profile.StudentURIParams
         |> required "logout_uri" Json.Decode.string
         |> required "profile_uri" Json.Decode.string
 
 
 studentProfileParamsDecoder : Json.Decode.Decoder StudentProfileParams
 studentProfileParamsDecoder =
-    decode StudentProfileParams
+    Json.Decode.succeed StudentProfileParams
         |> required "id" (Json.Decode.nullable Json.Decode.int)
         |> required "username" (Json.Decode.nullable Json.Decode.string)
         |> required "email" Json.Decode.string

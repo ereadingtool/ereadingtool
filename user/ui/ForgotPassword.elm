@@ -1,8 +1,8 @@
 module ForgotPassword exposing (..)
 
 import Dict exposing (Dict)
-import Json.Decode as Decode
-import Json.Decode.Pipeline exposing (decode, hardcoded, optional, required, resolve)
+import Json.Decode
+import Json.Decode.Pipeline exposing (required)
 
 
 type URI
@@ -91,13 +91,13 @@ password2toString (Password2 pw) =
 
 
 uidb64 : Password -> UIdb64
-uidb64 (Password _ _ uidb64) =
-    uidb64
+uidb64 (Password _ _ uid) =
+    uid
 
 
 uidb64toString : UIdb64 -> String
-uidb64toString (UIdb64 uidb64) =
-    uidb64
+uidb64toString (UIdb64 uid) =
+    uid
 
 
 emptyPassResetResp : PassResetConfirmResp
@@ -110,16 +110,16 @@ emptyForgotPassResp =
     { errors = Dict.fromList [], body = "" }
 
 
-forgotPassRespDecoder : Decode.Decoder ForgotPassResp
+forgotPassRespDecoder : Json.Decode.Decoder ForgotPassResp
 forgotPassRespDecoder =
-    decode ForgotPassResp
-        |> required "errors" (Decode.dict Decode.string)
-        |> required "body" Decode.string
+    Json.Decode.succeed ForgotPassResp
+        |> required "errors" (Json.Decode.dict Json.Decode.string)
+        |> required "body" Json.Decode.string
 
 
-forgotPassConfirmRespDecoder : Decode.Decoder PassResetConfirmResp
+forgotPassConfirmRespDecoder : Json.Decode.Decoder PassResetConfirmResp
 forgotPassConfirmRespDecoder =
-    decode PassResetConfirmResp
-        |> required "errors" (Decode.dict Decode.string)
-        |> required "body" Decode.string
-        |> required "redirect" Decode.string
+    Json.Decode.succeed PassResetConfirmResp
+        |> required "errors" (Json.Decode.dict Json.Decode.string)
+        |> required "body" Json.Decode.string
+        |> required "redirect" Json.Decode.string

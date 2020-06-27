@@ -1,7 +1,7 @@
 module Text.Reading.Model exposing (..)
 
 import Json.Decode
-import Json.Decode.Pipeline exposing (decode, hardcoded, optional, required, resolve)
+import Json.Decode.Pipeline exposing (required)
 import Text.Resource
 
 
@@ -26,7 +26,7 @@ type alias TextReading =
 
 textReadingScoreDecoder : Json.Decode.Decoder TextReadingScore
 textReadingScoreDecoder =
-    decode TextReadingScore
+    Json.Decode.succeed TextReadingScore
         |> required "num_of_sections" Json.Decode.int
         |> required "complete_sections" Json.Decode.int
         |> required "section_scores" Json.Decode.int
@@ -35,7 +35,7 @@ textReadingScoreDecoder =
 
 textReadingDecoder : Json.Decode.Decoder TextReading
 textReadingDecoder =
-    decode TextReading
+    Json.Decode.succeed TextReading
         |> required "id" Json.Decode.int
         |> required "text_id" Json.Decode.int
         |> required "url" Text.Resource.textURLDecoder

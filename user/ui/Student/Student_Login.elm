@@ -8,6 +8,7 @@ module Student.Student_Login exposing
     )
 
 import Html exposing (Html, div)
+import Browser
 import Html.Attributes exposing (attribute, class, classList, id)
 import Login
 import User
@@ -70,7 +71,7 @@ view model =
 
 main : Program Flags Login.Model Login.Msg
 main =
-    Html.programWithFlags
+    Browser.element
         { init = Login.init
         , view = view
         , subscriptions = Login.subscriptions

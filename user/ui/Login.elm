@@ -4,13 +4,13 @@ import Dict exposing (Dict)
 import Flags
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList)
-import Html.Events exposing (on, onBlur, onCheck, onClick, onInput, onMouseLeave, onMouseOut, onMouseOver)
+import Html.Events exposing (onClick, onInput)
 import Http exposing (..)
 import HttpHelpers exposing (post_with_headers)
-import Json.Decode as Decode
-import Json.Decode.Pipeline exposing (decode, hardcoded, optional, required, resolve)
+import Json.Decode
+import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode
-import Navigation
+import Browser.Navigation
 import User
 import User.Flags.UnAuthed exposing (UnAuthedUserFlags)
 import Util exposing (isValidEmail)
@@ -171,14 +171,14 @@ loginEncoder login_params =
 
 redirect : User.RedirectURI -> Cmd msg
 redirect redirect_uri =
-    Navigation.load (User.uriToString (User.redirectURI redirect_uri))
+    Browser.Navigation.load (User.uriToString (User.redirectURI redirect_uri))
 
 
-loginRespDecoder : Decode.Decoder LoginResp
+loginRespDecoder : Json.Decode.Decoder LoginResp
 loginRespDecoder =
-    decode LoginResp
-        |> required "id" (Decode.map User.UserID Decode.int)
-        |> required "redirect" (Decode.map (User.URI >> User.RedirectURI) Decode.string)
+    Json.Decode.succeed LoginResp
+        |> required "id" (Json.Decode.map User.UserID Json.Decode.int)
+        |> required "redirect" (Json.Decode.map (User.URI >> User.RedirectURI) Json.Decode.string)
 
 
 subscriptions : Model -> Sub Msg
@@ -237,17 +237,17 @@ update msg model =
         Submitted (Ok resp) ->
             ( model, redirect resp.redirect )
 
-        Submitted (Err err) ->
-            case err of
+        Submitted (Err error) ->
+            case error of
                 Http.BadStatus resp ->
-                    case Decode.decodeString (Decode.dict Decode.string) resp.body of
+                    case Json.Decode.decodeString (Json.Decode.dict Json.Decode.string) resp.body of
                         Ok errors ->
                             ( { model | errors = errors }, Cmd.none )
 
                         _ ->
                             ( model, Cmd.none )
 
-                Http.BadPayload err resp ->
+                Http.BadPayload _ _ ->
                     ( model, Cmd.none )
 
                 _ ->
@@ -264,10 +264,10 @@ login_label attributes html =
 view_email_input : Model -> List (Html Msg)
 view_email_input model =
     let
-        err_msg =
+        errorHTML =
             case Dict.get "email" model.errors of
-                Just err_msg ->
-                    login_label [] (Html.em [] [ Html.text err_msg ])
+                Just errorMsg ->
+                    login_label [] (Html.em [] [ Html.text errorMsg ])
 
                 Nothing ->
                     Html.text ""
@@ -288,7 +288,7 @@ view_email_input model =
             ++ email_error
         )
         []
-    , err_msg
+    , errorHTML
     ]
 
 

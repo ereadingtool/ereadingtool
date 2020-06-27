@@ -9,14 +9,13 @@ module Student.Profile exposing
     , studentDifficulties
     , studentDifficultyPreference
     , studentEmail
-    , studentEmailToString
     , studentID
     , studentLogoutURI
     , studentUserName
     , studentUserNameToString
     )
 
-import Student.Resource exposing (..)
+import Student.Resource
 import Text.Model as Text
 
 
@@ -41,11 +40,11 @@ type StudentURIs
 
 
 type StudentProfile
-    = StudentProfile (Maybe Int) (Maybe StudentUsername) StudentEmail (Maybe Text.TextDifficulty) (List Text.TextDifficulty) StudentURIs
+    = StudentProfile (Maybe Int) (Maybe Student.Resource.StudentUsername) Student.Resource.StudentEmail (Maybe Text.TextDifficulty) (List Text.TextDifficulty) StudentURIs
 
 
 studentDifficultyPreference : StudentProfile -> Maybe Text.TextDifficulty
-studentDifficultyPreference (StudentProfile _ _ _ diff_pref _) =
+studentDifficultyPreference (StudentProfile _ _ _ diff_pref _ _) =
     diff_pref
 
 
@@ -54,7 +53,7 @@ setStudentDifficultyPreference (StudentProfile id username email _ diffs logout_
     StudentProfile id username email (Just preference) diffs logout_uri
 
 
-setUserName : StudentProfile -> StudentUsername -> StudentProfile
+setUserName : StudentProfile -> Student.Resource.StudentUsername -> StudentProfile
 setUserName (StudentProfile id _ email diff_pref diffs logout_uri) new_username =
     StudentProfile id (Just new_username) email diff_pref diffs logout_uri
 
@@ -69,29 +68,24 @@ studentDifficulties (StudentProfile _ _ _ _ diffs _) =
     diffs
 
 
-studentUserName : StudentProfile -> Maybe StudentUsername
+studentUserName : StudentProfile -> Maybe Student.Resource.StudentUsername
 studentUserName (StudentProfile _ username _ _ _ _) =
     username
 
 
-studentUserNameToString : StudentUsername -> String
+studentUserNameToString : Student.Resource.StudentUsername -> String
 studentUserNameToString student_username =
     Student.Resource.studentUserNameToString student_username
 
 
-studentEmail : StudentProfile -> StudentEmail
+studentEmail : StudentProfile -> Student.Resource.StudentEmail
 studentEmail (StudentProfile _ _ email _ _ _) =
     email
 
 
-studentEmailToString : StudentEmail -> String
-studentEmailToString (StudentEmail email) =
-    email
-
-
 uris : StudentProfile -> StudentURIs
-uris (StudentProfile _ _ _ _ _ uris) =
-    uris
+uris (StudentProfile _ _ _ _ _ studentUris) =
+    studentUris
 
 
 logoutURI : StudentURIs -> Student.Resource.StudentLogoutURI
@@ -114,10 +108,10 @@ studentLogoutURI student_profile =
     logoutURI (uris student_profile)
 
 
-initProfileUsername : Maybe String -> Maybe StudentUsername
+initProfileUsername : Maybe String -> Maybe Student.Resource.StudentUsername
 initProfileUsername name =
     name
-        |> Maybe.map StudentUsername
+        |> Maybe.map Student.Resource.toStudentUsername
 
 
 initProfile : StudentProfileParams -> StudentProfile
@@ -125,10 +119,10 @@ initProfile params =
     StudentProfile
         params.id
         (initProfileUsername params.username)
-        (StudentEmail params.email)
+        (Student.Resource.toStudentEmail params.email)
         params.difficulty_preference
         params.difficulties
         (StudentURIs
-            (Student.Resource.StudentLogoutURI (Student.Resource.URI params.uris.logout_uri))
-            (Student.Resource.StudentProfileURI (Student.Resource.URI params.uris.profile_uri))
+            (Student.Resource.toStudentLogoutURI params.uris.logout_uri)
+            (Student.Resource.toStudentProfileURI params.uris.profile_uri)
         )

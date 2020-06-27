@@ -355,10 +355,10 @@ view_search_results text_list_items =
                 sections_complete =
                     case text_item.text_sections_complete of
                         Just sections_complete ->
-                            toString sections_complete ++ " / " ++ toString text_item.text_section_count
+                            String.fromInt sections_complete ++ " / " ++ String.fromInt text_item.text_section_count
 
                         Nothing ->
-                            "0 / " ++ toString text_item.text_section_count
+                            "0 / " ++ String.fromInt text_item.text_section_count
 
                 last_read =
                     case text_item.last_read_dt of
@@ -371,7 +371,7 @@ view_search_results text_list_items =
                 questions_correct =
                     case text_item.questions_correct of
                         Just correct ->
-                            toString (Tuple.first correct) ++ " out of " ++ toString (Tuple.second correct)
+                            String.fromInt (Tuple.first correct) ++ " out of " ++ String.fromInt (Tuple.second correct)
 
                         Nothing ->
                             "None"
@@ -424,7 +424,7 @@ view_search_footer model =
                 "entries"
 
         success_txt =
-            String.join " " [ "Showing", toString results_length, entries ]
+            String.join " " [ "Showing", String.fromInt results_length, entries ]
 
         txt =
             case model.error_msg of
