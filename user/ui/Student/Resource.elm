@@ -56,12 +56,12 @@ studentUserNameToString (StudentUsername username) =
 
 
 profileIDToStudentEndpointURI : StudentEndpointURI -> Profile.ProfileID -> StudentEndpointURI
-profileIDToStudentEndpointURI student_endpoint_uri profile_id =
+profileIDToStudentEndpointURI student_endpoint_uri profileID =
     let
-        endpoint_uri =
+        endpointURI =
             uriToString (studentEndpointURI student_endpoint_uri)
     in
-    StudentEndpointURI (URI (String.join "" [ endpoint_uri, toString (Profile.profileIDtoString profile_id) ++ "/" ]))
+    StudentEndpointURI (URI (String.join "" [ endpointURI, Profile.profileIDtoString profileID ++ "/" ]))
 
 
 studentProfileURI : StudentProfileURI -> URI

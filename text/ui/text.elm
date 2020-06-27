@@ -5,8 +5,7 @@ import Html exposing (Html, div)
 import Menu.Items
 import Ports
 import Text.Resource
-import TextReader
-import TextReader.Encode
+
 import TextReader.Model exposing (..)
 import TextReader.Msg exposing (Msg(..))
 import TextReader.Text.Model
@@ -17,6 +16,9 @@ import User.Profile
 import User.Profile.TextReader.Flashcards
 import Views
 
+import Browser
+import TextReader.WebSocket
+
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
@@ -24,10 +26,13 @@ init flags =
         profile =
             User.Profile.initProfile flags
 
+        textReaderAddr =
+            TextReader.WebSocket.toAddress flags.text_reader_ws_addr
+
         text_words_with_flashcards =
             List.map TextReader.TextWord.newFromParams flags.flashcards
 
-        menu_items =
+        menuItems =
             Menu.Items.initMenuItems flags
 
         flashcards =
@@ -41,30 +46,27 @@ init flags =
       , text_url = Text.Resource.TextReadingURL (Text.Resource.URL flags.text_url)
       , gloss = Dict.empty
       , profile = profile
-      , menu_items = menu_items
-      , text_reader_ws_addr = TextReader.WebSocketAddress flags.text_reader_ws_addr
+      , menu_items = menuItems
       , flashcard = flashcards
       , progress = Init
       , flags = flags
       , exception = Nothing
       }
-    , Cmd.none
+    , TextReader.WebSocket.connect textReaderAddr ""
     )
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
-    WebSocket.listen (TextReader.webSocketAddrToString model.text_reader_ws_addr) WebSocketResp
+subscriptions _ =
+    TextReader.WebSocket.listen
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     let
-        send_command =
-            \cmd ->
-                WebSocket.send
-                    (TextReader.webSocketAddrToString model.text_reader_ws_addr)
-                    (TextReader.Encode.jsonToString <| TextReader.Encode.send_command cmd)
+        sendCommand =
+            \cmdRequest ->
+                TextReader.WebSocket.sendCommand cmdRequest
     in
     case msg of
         Gloss reader_word ->
@@ -77,28 +79,28 @@ update msg model =
             ( { model | gloss = TextReader.Model.toggleGloss reader_word model.gloss }, Cmd.none )
 
         AddToFlashcards reader_word ->
-            ( model, send_command <| AddToFlashcardsReq reader_word )
+            ( model, sendCommand <| AddToFlashcardsReq reader_word )
 
         RemoveFromFlashcards reader_word ->
-            ( model, send_command <| RemoveFromFlashcardsReq reader_word )
+            ( model, sendCommand <| RemoveFromFlashcardsReq reader_word )
 
         Select text_answer ->
-            ( model, send_command <| AnswerReq text_answer )
+            ( model, sendCommand <| AnswerReq text_answer )
 
-        ViewFeedback text_section text_question text_answer view_feedback ->
+        ViewFeedback _ _ _ _ ->
             ( model, Cmd.none )
 
         StartOver ->
             ( model, Ports.redirect (Text.Resource.textReadingURLToString model.text_url) )
 
         NextSection ->
-            ( model, send_command NextReq )
+            ( model, sendCommand NextReq )
 
         PrevSection ->
-            ( model, send_command PrevReq )
+            ( model, sendCommand PrevReq )
 
         WebSocketResp str ->
-            TextReader.Update.handle_ws_resp model str
+            TextReader.Update.handleWSResp model str
 
         LogOut _ ->
             ( model, User.Profile.logout model.profile model.flags.csrftoken LoggedOut )
@@ -112,7 +114,7 @@ update msg model =
 
 main : Program Flags Model Msg
 main =
-    Html.programWithFlags
+    Browser.element
         { init = init
         , view = view
         , subscriptions = subscriptions

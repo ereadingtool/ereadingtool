@@ -33,7 +33,7 @@ init flags =
       , answer = ""
       , selected_quality = Nothing
       }
-    , Flashcard.WebSocket.connect "flashcard" flags.flashcard_ws_addr ""
+    , Flashcard.WebSocket.connect flags.flashcard_ws_addr ""
     )
 
 

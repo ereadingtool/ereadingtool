@@ -16,16 +16,20 @@ wsReceive = receiveSocketMsg <| WebSocket.receive WebSocketResp
 wsSend = WebSocket.send sendSocketCommand
 
 
-connect : String -> String -> String -> Cmd Msg
-connect name address protocol =
-    wsSend <| WebSocket.Connect {name = name, address = address, protocol = protocol}
+webSocketName : String
+webSocketName =
+    "flashcard"
+
+connect : String -> String -> Cmd Msg
+connect address protocol =
+    wsSend <| WebSocket.Connect {name = webSocketName, address = address, protocol = protocol}
 
 
 disconnect : String -> Cmd Msg
 disconnect name =
     wsSend <| WebSocket.Close {name = name}
 
-sendCommand : String -> CmdReq -> Cmd Msg
-sendCommand webSocketName cmdReq =
+sendCommand : CmdReq -> Cmd Msg
+sendCommand cmdReq =
       wsSend
    <| WebSocket.Send {name = webSocketName, content = Flashcard.Encode.commandRequestToString cmdReq}
