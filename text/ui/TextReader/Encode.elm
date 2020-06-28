@@ -9,10 +9,13 @@ jsonToString : Json.Encode.Value -> String
 jsonToString =
     Json.Encode.encode 0
 
+commandRequestToString : CmdReq -> String
+commandRequestToString cmdReq =
+    jsonToString <| sendCommand cmdReq
 
-send_command : CmdReq -> Json.Encode.Value
-send_command cmd_req =
-    case cmd_req of
+sendCommand : CmdReq -> Json.Encode.Value
+sendCommand cmdReq =
+    case cmdReq of
         NextReq ->
             Json.Encode.object
                 [ ( "command", Json.Encode.string "next" )
@@ -25,24 +28,24 @@ send_command cmd_req =
 
         AnswerReq text_answer ->
             let
-                text_reader_answer =
+                textReaderAnswer =
                     TextReader.Answer.Model.answer text_answer
             in
             Json.Encode.object
                 [ ( "command", Json.Encode.string "answer" )
-                , ( "answer_id", Json.Encode.int text_reader_answer.id )
+                , ( "answer_id", Json.Encode.int textReaderAnswer.id )
                 ]
 
         AddToFlashcardsReq reader_word ->
             Json.Encode.object
                 [ ( "command", Json.Encode.string "add_flashcard_phrase" )
-                , ( "instance", Json.Encode.string (toString (TextReader.Model.instance reader_word)) )
+                , ( "instance", Json.Encode.string (String.fromInt (TextReader.Model.instance reader_word)) )
                 , ( "phrase", Json.Encode.string (TextReader.Model.phrase reader_word) )
                 ]
 
         RemoveFromFlashcardsReq reader_word ->
             Json.Encode.object
                 [ ( "command", Json.Encode.string "remove_flashcard_phrase" )
-                , ( "instance", Json.Encode.string (toString (TextReader.Model.instance reader_word)) )
+                , ( "instance", Json.Encode.string (String.fromInt (TextReader.Model.instance reader_word)) )
                 , ( "phrase", Json.Encode.string (TextReader.Model.phrase reader_word) )
                 ]

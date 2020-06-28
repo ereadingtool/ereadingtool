@@ -3,10 +3,10 @@ module TextSearch exposing (Flags, Model, Msg(..), init, main, subscriptions, up
 import Admin.Text
 import Date.Utils
 import Dict exposing (Dict)
-import Help.View exposing (ArrowPlacement(..), ArrowPosition(..), view_hint_overlay)
-import Html exposing (Html, div, option, span)
+import Help.View exposing (ArrowPlacement(..), ArrowPosition(..))
+import Html exposing (Html, div, option)
 import Html.Attributes exposing (attribute, class, classList, id)
-import Html.Events exposing (onBlur, onCheck, onClick, onInput, onMouseLeave, onMouseOut, onMouseOver)
+import Html.Events exposing (onClick)
 import Http exposing (..)
 import Menu.Items
 import Menu.Logout
@@ -25,6 +25,7 @@ import TextSearch.Help exposing (TextSearchHelp)
 import User.Profile
 import Views
 
+import Browser
 
 
 -- UPDATE
@@ -209,7 +210,7 @@ update msg model =
         NextHelp ->
             ( { model | help = TextSearch.Help.next model.help }, TextSearch.Help.scrollToNextMsg model.help )
 
-        LogOut msg ->
+        LogOut _ ->
             ( model, User.Profile.logout model.profile model.flags.csrftoken LoggedOut )
 
         LoggedOut (Ok logout_resp) ->
@@ -221,7 +222,7 @@ update msg model =
 
 main : Program Flags Model Msg
 main =
-    Html.programWithFlags
+    Browser.element
         { init = init
         , view = view
         , subscriptions = subscriptions
@@ -340,36 +341,36 @@ view_search_filters model =
 
 
 view_search_results : List Text.Model.TextListItem -> Html Msg
-view_search_results text_list_items =
+view_search_results textListItems =
     let
-        view_search_result text_item =
+        view_search_result textItem =
             let
-                tags =
-                    case text_item.tags of
+                commaDelimitedTags =
+                    case textItem.tags of
                         Just tags ->
                             String.join ", " tags
 
                         Nothing ->
                             ""
 
-                sections_complete =
-                    case text_item.text_sections_complete of
+                sectionsCompleted =
+                    case textItem.text_sections_complete of
                         Just sections_complete ->
-                            String.fromInt sections_complete ++ " / " ++ String.fromInt text_item.text_section_count
+                            String.fromInt sections_complete ++ " / " ++ String.fromInt textItem.text_section_count
 
                         Nothing ->
-                            "0 / " ++ String.fromInt text_item.text_section_count
+                            "0 / " ++ String.fromInt textItem.text_section_count
 
-                last_read =
-                    case text_item.last_read_dt of
+                lastRead =
+                    case textItem.last_read_dt of
                         Just dt ->
                             Date.Utils.month_day_year_fmt dt
 
                         Nothing ->
                             ""
 
-                questions_correct =
-                    case text_item.questions_correct of
+                questionsCorrect =
+                    case textItem.questions_correct of
                         Just correct ->
                             String.fromInt (Tuple.first correct) ++ " out of " ++ String.fromInt (Tuple.second correct)
 
@@ -378,36 +379,36 @@ view_search_results text_list_items =
             in
             div [ class "search_result" ]
                 [ div [ class "result_item" ]
-                    [ div [ class "result_item_title" ] [ Html.a [ attribute "href" text_item.uri ] [ Html.text text_item.title ] ]
+                    [ div [ class "result_item_title" ] [ Html.a [ attribute "href" textItem.uri ] [ Html.text textItem.title ] ]
                     , div [ class "sub_description" ] [ Html.text "Title" ]
                     ]
                 , div [ class "result_item" ]
-                    [ div [ class "result_item_title" ] [ Html.text text_item.difficulty ]
+                    [ div [ class "result_item_title" ] [ Html.text textItem.difficulty ]
                     , div [ class "sub_description" ] [ Html.text "Difficulty" ]
                     ]
                 , div [ class "result_item" ]
-                    [ div [ class "result_item_title" ] [ Html.text text_item.author ]
+                    [ div [ class "result_item_title" ] [ Html.text textItem.author ]
                     , div [ class "sub_description" ] [ Html.text "Author" ]
                     ]
                 , div [ class "result_item" ]
-                    [ div [ class "result_item_title" ] [ Html.text sections_complete ]
+                    [ div [ class "result_item_title" ] [ Html.text sectionsCompleted ]
                     , div [ class "sub_description" ] [ Html.text "Sections Complete" ]
                     ]
                 , div [ class "result_item" ]
-                    [ div [ class "result_item_title" ] [ Html.text tags ]
+                    [ div [ class "result_item_title" ] [ Html.text commaDelimitedTags ]
                     , div [ class "sub_description" ] [ Html.text "Tags" ]
                     ]
                 , div [ class "result_item" ]
-                    [ div [ class "result_item_title" ] [ Html.text last_read ]
+                    [ div [ class "result_item_title" ] [ Html.text lastRead ]
                     , div [ class "sub_description" ] [ Html.text "Last Read" ]
                     ]
                 , div [ class "result_item" ]
-                    [ div [ class "result_item_title" ] [ Html.text questions_correct ]
+                    [ div [ class "result_item_title" ] [ Html.text questionsCorrect ]
                     , div [ class "sub_description" ] [ Html.text "Questions Correct" ]
                     ]
                 ]
     in
-    div [ id "text_search_results" ] (List.map view_search_result text_list_items)
+    div [ id "text_search_results" ] (List.map view_search_result textListItems)
 
 
 view_search_footer : Model -> Html Msg

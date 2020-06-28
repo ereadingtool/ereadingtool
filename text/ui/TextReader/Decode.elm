@@ -1,16 +1,16 @@
 module TextReader.Decode exposing (..)
 
 import Json.Decode
-import Json.Decode.Pipeline exposing (decode, hardcoded, optional, required, resolve)
+import Json.Decode.Pipeline exposing (required)
 import TextReader.Model exposing (..)
 import TextReader.Section.Decode
 import TextReader.Section.Model exposing (Section)
 import TextReader.Text.Decode
 
 
-command_resp_decoder : String -> Json.Decode.Decoder CmdResp
-command_resp_decoder cmd_str =
-    case cmd_str of
+commandRespDecoder : String -> Json.Decode.Decoder CmdResp
+commandRespDecoder cmdStr =
+    case cmdStr of
         "intro" ->
             startDecoder
 
@@ -34,7 +34,7 @@ command_resp_decoder cmd_str =
                 (Json.Decode.field "result" TextReader.Section.Decode.textWordInstanceDecoder)
 
         _ ->
-            Json.Decode.fail ("Command " ++ cmd_str ++ " not supported")
+            Json.Decode.fail ("Command " ++ cmdStr ++ " not supported")
 
 
 sectionDecoder : (Section -> CmdResp) -> Json.Decode.Decoder CmdResp
@@ -49,20 +49,20 @@ startDecoder =
 
 exceptionDecoder : Json.Decode.Decoder Exception
 exceptionDecoder =
-    decode Exception
+    Json.Decode.succeed Exception
         |> required "code" Json.Decode.string
         |> required "error_msg" Json.Decode.string
 
 
 textScoresDecoder : Json.Decode.Decoder TextScores
 textScoresDecoder =
-    decode TextScores
+    Json.Decode.succeed TextScores
         |> required "num_of_sections" Json.Decode.int
         |> required "complete_sections" Json.Decode.int
         |> required "section_scores" Json.Decode.int
         |> required "possible_section_scores" Json.Decode.int
 
 
-ws_resp_decoder : Json.Decode.Decoder CmdResp
-ws_resp_decoder =
-    Json.Decode.field "command" Json.Decode.string |> Json.Decode.andThen command_resp_decoder
+wsRespDecoder : Json.Decode.Decoder CmdResp
+wsRespDecoder =
+    Json.Decode.field "command" Json.Decode.string |> Json.Decode.andThen commandRespDecoder

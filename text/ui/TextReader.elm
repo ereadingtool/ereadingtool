@@ -11,12 +11,3 @@ type AnsweredCorrectly
 
 type FeedbackViewable
     = FeedbackViewable Bool
-
-
-type WebSocketAddress
-    = WebSocketAddress String
-
-
-webSocketAddrToString : WebSocketAddress -> String
-webSocketAddrToString (WebSocketAddress addr) =
-    addr

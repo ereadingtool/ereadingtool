@@ -5,7 +5,6 @@ import Menu.Items
 import Profile.Flags as Flags
 import Text.Resource
 import Text.Translations exposing (Id, Instance, Phrase)
-import TextReader
 import TextReader.Answer.Model exposing (Answer, AnswerCorrect, TextAnswer)
 import TextReader.Section.Model exposing (Section)
 import TextReader.Text.Model exposing (Text)
@@ -38,8 +37,8 @@ type TextReaderWord
 
 
 new : Id -> Instance -> Phrase -> Maybe TextReader.TextWord.TextWord -> TextReaderWord
-new id instance phrase text_word =
-    TextReaderWord id instance phrase text_word
+new id inst phr text_word =
+    TextReaderWord id inst phr text_word
 
 
 identifier : TextReaderWord -> Id
@@ -53,13 +52,13 @@ textWord (TextReaderWord _ _ _ text_word) =
 
 
 instance : TextReaderWord -> Instance
-instance (TextReaderWord _ instance _ _) =
-    instance
+instance (TextReaderWord _ inst _ _) =
+    inst
 
 
 phrase : TextReaderWord -> Phrase
-phrase (TextReaderWord _ _ phrase _) =
-    phrase
+phrase (TextReaderWord _ _ phr _) =
+    phr
 
 
 gloss : TextReaderWord -> Gloss -> Gloss
@@ -86,8 +85,8 @@ toggleGloss reader_word glosses =
 
 
 glossed : TextReaderWord -> Gloss -> Bool
-glossed reader_word gloss =
-    Dict.member (String.toLower (phrase reader_word)) gloss
+glossed reader_word gls =
+    Dict.member (String.toLower (phrase reader_word)) gls
 
 
 
@@ -95,8 +94,8 @@ glossed reader_word gloss =
 
 
 selected : TextReaderWord -> Gloss -> Bool
-selected reader_word gloss =
-    Dict.member (identifier reader_word) gloss
+selected reader_word gls =
+    Dict.member (identifier reader_word) gls
 
 
 type CmdReq
@@ -138,7 +137,6 @@ type alias Model =
     , text_url : Text.Resource.TextReadingURL
     , profile : User.Profile.Profile
     , menu_items : Menu.Items.MenuItems
-    , text_reader_ws_addr : TextReader.WebSocketAddress
     , flashcard : User.Profile.TextReader.Flashcards.ProfileFlashcards
     , progress : Progress
     , gloss : Gloss

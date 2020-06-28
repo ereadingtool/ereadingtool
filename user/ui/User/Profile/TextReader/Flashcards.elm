@@ -13,20 +13,20 @@ type ProfileFlashcards
 
 
 initFlashcards : Profile -> Text.Translations.Decode.Flashcards -> ProfileFlashcards
-initFlashcards profile flashcards =
+initFlashcards profile cards =
     case profile of
         User.Profile.Student student_profile ->
-            fromStudentFlashcards student_profile flashcards
+            fromStudentFlashcards student_profile cards
 
         _ ->
             InstructorFlashcards
 
 
 fromStudentFlashcards : Student.Profile.StudentProfile -> Text.Translations.Decode.Flashcards -> ProfileFlashcards
-fromStudentFlashcards student_profile flashcards =
+fromStudentFlashcards student_profile cards =
     let
         student_flashcards =
-            TextReader.Flashcard.Student.newStudentFlashcards student_profile (Just flashcards)
+            TextReader.Flashcard.Student.newStudentFlashcards student_profile (Just cards)
     in
     StudentFlashcards student_flashcards
 
