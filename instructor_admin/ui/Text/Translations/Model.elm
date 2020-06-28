@@ -1,6 +1,5 @@
 module Text.Translations.Model exposing
     ( Model
-    , TextTranslations
     , addTextTranslation
     , addToMergeWords
     , clearMerge
@@ -316,7 +315,7 @@ editWord model wordInstance =
                     Dict.insert normalizedWord (refCount + 1) model.editing_words
 
                 Nothing ->
-                    Dict.insert normalized_word 0 model.editing_words
+                    Dict.insert normalizedWord 0 model.editing_words
 
         newEditingWordInstances =
             Dict.insert (wordInstanceKey wordInstance) True model.editing_word_instances
@@ -342,7 +341,7 @@ uneditWord model wordInstance =
             String.toLower word
 
         newEditedWords =
-            case Dict.get normalizedWord model.editingWords of
+            case Dict.get normalizedWord model.editing_words of
                 Just refCount ->
                     if (refCount - 1) == -1 then
                         Dict.remove normalizedWord model.editing_words
@@ -387,7 +386,7 @@ setTextWords model textWords =
         newModel =
             clearEditingFields model
     in
-    List.foldl (\textWord model -> setTextWord model textWord) newModel sortedTextWords
+    List.foldl (\textWord accModel -> setTextWord accModel textWord) newModel sortedTextWords
 
 
 getSectionWords : Model -> SectionNumber -> Maybe (Dict Text.Translations.Word (Array TextWord))

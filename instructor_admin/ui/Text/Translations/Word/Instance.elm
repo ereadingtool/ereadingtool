@@ -26,8 +26,8 @@ type WordInstance
 
 
 setTextWord : WordInstance -> TextWord -> WordInstance
-setTextWord (WordInstance id instance token _) newTextWord =
-    WordInstance id instance token (Just newTextWord)
+setTextWord (WordInstance sectNum inst tok _) newTextWord =
+    WordInstance sectNum inst tok (Just newTextWord)
 
 
 canMergeWords : List WordInstance -> Bool
@@ -36,8 +36,8 @@ canMergeWords wordInstances =
 
 
 hasTextWord : WordInstance -> Bool
-hasTextWord (WordInstance _ _ _ textWord) =
-    case textWord of
+hasTextWord (WordInstance _ _ _ maybeTextWord) =
+    case maybeTextWord of
         Just _ ->
             True
 
@@ -63,8 +63,8 @@ grammemes wordInstance =
 
 
 sectionNumber : WordInstance -> SectionNumber
-sectionNumber (WordInstance sectionNumber _ _ _) =
-    sectionNumber
+sectionNumber (WordInstance sectNum _ _ _) =
+    sectNum
 
 
 wordInstanceSectionNumberToInt : WordInstance -> Int
@@ -73,28 +73,28 @@ wordInstanceSectionNumberToInt wordInstance =
 
 
 id : WordInstance -> Id
-id (WordInstance sectionNumber instance token _) =
-    String.join "_" [ String.fromInt sectionNumber, String.fromInt instance, String.join "_" (String.words (String.toLower token)) ]
+id (WordInstance sectNum inst tok _) =
+    String.join "_" [ String.fromInt (sectionNumberToInt sectNum), String.fromInt inst, String.join "_" (String.words (String.toLower tok)) ]
 
 
 token : WordInstance -> Token
-token (WordInstance _ _ token _) =
-    token
+token (WordInstance _ _ tok _) =
+    tok
 
 
 textWord : WordInstance -> Maybe TextWord
-textWord (WordInstance _ _ _ textWord) =
-    textWord
+textWord (WordInstance _ _ _ maybeTextWord) =
+    maybeTextWord
 
 
 instance : WordInstance -> Instance
-instance (WordInstance _ instance _ _) =
-    instance
+instance (WordInstance _ inst _ _) =
+    inst
 
 
 word : WordInstance -> Token
-word (WordInstance _ _ word _) =
-    word
+word (WordInstance _ _ tok _) =
+    tok
 
 
 normalizeToken : String -> String
@@ -103,5 +103,5 @@ normalizeToken =
 
 
 new : SectionNumber -> Instance -> Token -> Maybe TextWord -> WordInstance
-new sectionNumber instance token textWord =
-    WordInstance sectionNumber instance token textWord
+new sectNum inst tok maybeTextWord =
+    WordInstance sectNum inst tok maybeTextWord
