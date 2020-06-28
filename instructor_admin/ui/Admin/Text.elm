@@ -1,4 +1,4 @@
-module Admin.Text exposing (..)
+module Admin.Text exposing (TextAPIEndpoint, URL, textAPIEndpointURL, textEndpointToString)
 
 
 type URL

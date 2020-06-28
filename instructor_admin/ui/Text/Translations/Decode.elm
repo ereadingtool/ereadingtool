@@ -1,4 +1,19 @@
-module Text.Translations.Decode exposing (..)
+module Text.Translations.Decode exposing
+    ( Flashcards
+    , TextWord
+    , TextWordMergeResp
+    , TextWordTranslationDeleteResp
+    , grammemesDecoder
+    , textGroupDetailsDecoder
+    , textTranslationRemoveRespDecoder
+    , textTranslationUpdateRespDecoder
+    , textWordDictInstancesDecoder
+    , textWordInstanceDecoder
+    , textWordInstancesDecoder
+    , textWordMergeDecoder
+    , wordDecoder
+    , wordsDecoder
+    )
 
 import Array exposing (Array)
 import Dict exposing (Dict)
