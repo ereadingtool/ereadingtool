@@ -18,10 +18,10 @@ module Create_Edit_Text exposing
 
 import Admin.Text
 import Debug
-import Dict exposing (Dict)
+import Dict
 import Flags
 import Html exposing (..)
-import Html.Attributes exposing (attribute, classList)
+import Html.Attributes exposing (attribute)
 import Http
 import HttpHelpers exposing (delete_with_headers, post_with_headers, put_with_headers)
 import Instructor.Profile
@@ -29,14 +29,14 @@ import Json.Decode as Decode
 import Json.Encode
 import Menu.Items
 import Navigation
-import Ports exposing (ckEditor, ckEditorUpdate, clearInputText, confirm, confirmation)
+import Ports exposing (ckEditorUpdate, clearInputText, confirm, confirmation)
 import Task
-import Text.Component exposing (TextComponent)
+import Text.Component
 import Text.Create exposing (..)
 import Text.Decode
 import Text.Encode
 import Text.Field
-import Text.Model exposing (Text, TextDifficulty)
+import Text.Model exposing (Text)
 import Text.Subscriptions
 import Text.Translations.Model
 import Text.Translations.Subscriptions

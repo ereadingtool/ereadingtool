@@ -17,7 +17,7 @@ module Text.Translations.Word.Instance exposing
     )
 
 import Set exposing (Set)
-import Text.Translations exposing (..)
+import Text.Translations exposing (Grammemes, Id, Instance, SectionNumber, Token)
 import Text.Translations.TextWord exposing (TextWord)
 
 
@@ -69,12 +69,12 @@ sectionNumber (WordInstance sectNum _ _ _) =
 
 wordInstanceSectionNumberToInt : WordInstance -> Int
 wordInstanceSectionNumberToInt wordInstance =
-    sectionNumberToInt (sectionNumber wordInstance)
+    Text.Translations.sectionNumberToInt (sectionNumber wordInstance)
 
 
 id : WordInstance -> Id
 id (WordInstance sectNum inst tok _) =
-    String.join "_" [ String.fromInt (sectionNumberToInt sectNum), String.fromInt inst, String.join "_" (String.words (String.toLower tok)) ]
+    String.join "_" [ String.fromInt (Text.Translations.sectionNumberToInt sectNum), String.fromInt inst, String.join "_" (String.words (String.toLower tok)) ]
 
 
 token : WordInstance -> Token

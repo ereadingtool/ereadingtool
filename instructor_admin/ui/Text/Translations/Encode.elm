@@ -9,7 +9,7 @@ module Text.Translations.Encode exposing
 
 import Dict exposing (Dict)
 import Json.Encode as Encode
-import Text.Translations exposing (..)
+import Text.Translations exposing (Translation)
 import Text.Translations.TextWord exposing (TextWord)
 
 

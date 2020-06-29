@@ -1,13 +1,13 @@
 module Text.Translations.View exposing (..)
 
-import Array exposing (Array)
-import Dict exposing (Dict)
+import Array
+import Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import HtmlParser
-import OrderedDict exposing (OrderedDict)
-import Set exposing (Set)
+import OrderedDict
+import Set
 import Text.Section.Model
 import Text.Section.Words.Tag
 import Text.Translations exposing (..)

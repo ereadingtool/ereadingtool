@@ -19,7 +19,16 @@ import Array exposing (Array)
 import Dict exposing (Dict)
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)
-import Text.Translations exposing (..)
+import Text.Translations
+    exposing
+        ( Phrase
+        , SectionNumber(..)
+        , TextGroupDetails
+        , TextWordId(..)
+        , Translation
+        , WordValues
+        , Words
+        )
 import Text.Translations.TextWord
 import Text.Translations.Word.Kind
 import TextReader.TextWord

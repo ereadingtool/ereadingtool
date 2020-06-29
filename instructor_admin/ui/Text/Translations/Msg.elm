@@ -3,7 +3,7 @@ module Text.Translations.Msg exposing (Msg(..))
 import Array exposing (Array)
 import Dict exposing (Dict)
 import Http
-import Text.Translations exposing (..)
+import Text.Translations exposing (Translation)
 import Text.Translations.Decode
 import Text.Translations.TextWord exposing (TextWord)
 import Text.Translations.Word.Instance exposing (WordInstance)

@@ -21,7 +21,17 @@ module Text.Translations.TextWord exposing
     )
 
 import Dict
-import Text.Translations exposing (..)
+import Text.Translations
+    exposing
+        ( Grammemes
+        , Instance
+        , Phrase
+        , SectionNumber
+        , TextGroupDetails
+        , TextWordId
+        , Translation
+        , Translations
+        )
 import Text.Translations.Word.Kind exposing (WordKind(..))
 
 
@@ -126,7 +136,7 @@ id (TextWord wordId _ _ _ _ _ _ _) =
 
 idToInt : TextWord -> Int
 idToInt textWord =
-    textWordIdToInt (id textWord)
+    Text.Translations.textWordIdToInt (id textWord)
 
 
 new :
