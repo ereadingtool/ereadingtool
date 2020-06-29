@@ -144,7 +144,7 @@ update parentMsg msg model =
             in
             ( model, Cmd.none )
 
-        UpdateNewTranslationForTextWord textWord translationText ->
+        UpdateNewTranslationForTextWord textWord _ ->
             ( Text.Translations.Model.updateTranslationsForWord model textWord translationtTxt, Cmd.none )
 
         AddTextWord wordInstance ->
@@ -197,7 +197,7 @@ update parentMsg msg model =
 
 
 mergeWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> ( Model, Cmd msg )
-mergeWords parent_msg model _ wordInstances =
+mergeWords parentMsg model _ wordInstances =
     if Text.Translations.Word.Instance.canMergeWords wordInstances then
         -- all word instances are ready to merge
         ( model, postMergeWords parentMsg model model.flags.csrftoken wordInstances )

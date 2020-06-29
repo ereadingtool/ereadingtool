@@ -80,12 +80,12 @@ init flags =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
     Sub.none
 
 
 updateTexts : Admin.Text.TextAPIEndpoint -> Filter -> Cmd Msg
-updateTexts textApiEndpoint filter =
+updateTexts textApiEndpoint _ =
     let
         textApiEndpointUrl =
             Admin.Text.textEndpointToString textApiEndpoint
@@ -110,13 +110,13 @@ update msg model =
             in
             ( model, Cmd.none )
 
-        LogOut msg ->
+        LogOut _ ->
             ( model, User.Profile.logout model.profile model.flags.csrftoken LoggedOut )
 
         LoggedOut (Ok logoutResp) ->
             ( model, Ports.redirect logoutResp.redirect )
 
-        LoggedOut (Err err) ->
+        LoggedOut (Err _) ->
             ( model, Cmd.none )
 
 

@@ -171,7 +171,7 @@ view_make_compound_text_word model parentMsg wordInstance =
     in
     div [ class "text-word-option" ]
         (case Text.Translations.Word.Instance.textWord wordInstance of
-            Just textWord ->
+            Just _ ->
                 [ div
                     [ attribute "title" "Merge into compound word."
                     , classList [ ( "merge-highlight", Text.Translations.Model.mergingWord model wordInstance ) ]
@@ -320,7 +320,7 @@ view_instance_word model msg wordInstance =
         word =
             Text.Translations.Word.Instance.word
 
-        word_txt =
+        wordTxt =
             if Text.Translations.Model.mergingWord model wordInstance then
                 let
                     mergingWords =

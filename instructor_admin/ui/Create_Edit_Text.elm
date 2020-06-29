@@ -228,7 +228,7 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
-        ClearMessages time ->
+        ClearMessages _ ->
             ( { model | success_msg = Nothing }, Cmd.none )
 
         Submitted (Ok textCreateResp) ->
@@ -260,7 +260,7 @@ update msg model =
                         _ ->
                             ( model, Cmd.none )
 
-                Http.BadPayload err resp ->
+                Http.BadPayload _ resp ->
                     let
                         _ =
                             Debug.log "submit text bad payload error" resp.body
@@ -284,7 +284,7 @@ update msg model =
                         _ ->
                             ( model, Cmd.none )
 
-                Http.BadPayload err resp ->
+                Http.BadPayload _ resp ->
                     let
                         _ =
                             Debug.log "update error bad payload" resp
@@ -305,17 +305,17 @@ update msg model =
             let
                 ( textComponent, postToggleCmds ) =
                     case textField of
-                        Title textTitle ->
+                        Title _ ->
                             ( Text.Component.set_title_editable model.text_component editable
                             , Text.Component.post_toggle_title
                             )
 
-                        Author textAuthor ->
+                        Author _ ->
                             ( Text.Component.set_author_editable model.text_component editable
                             , Text.Component.post_toggle_author
                             )
 
-                        Source textSource ->
+                        Source _ ->
                             ( Text.Component.set_source_editable model.text_component editable
                             , Text.Component.post_toggle_source
                             )
@@ -390,7 +390,7 @@ update msg model =
                         _ ->
                             ( model, Cmd.none )
 
-                Http.BadPayload err resp ->
+                Http.BadPayload _ resp ->
                     let
                         _ =
                             Debug.log "update error bad payload" resp
@@ -418,7 +418,7 @@ update msg model =
                         _ ->
                             ( model, Cmd.none )
 
-                Http.BadPayload err resp ->
+                Http.BadPayload _ resp ->
                     let
                         _ =
                             Debug.log "update error bad payload" resp
@@ -534,13 +534,13 @@ update msg model =
             in
             ( { model | selected_tab = tab }, postToggleCmd )
 
-        LogOut msg ->
+        LogOut _ ->
             ( model, Instructor.Profile.logout model.profile model.flags.csrftoken LoggedOut )
 
         LoggedOut (Ok logoutResp) ->
             ( model, Ports.redirect logoutResp.redirect )
 
-        LoggedOut (Err err) ->
+        LoggedOut (Err _) ->
             ( model, Cmd.none )
 
 
@@ -656,7 +656,7 @@ subscriptions model =
 
         -- handle clearing messages
         , case model.success_msg of
-            Just msg ->
+            Just _ ->
                 Time.every (Time.second * 3) ClearMessages
 
             _ ->
