@@ -203,12 +203,11 @@ view_footer : Model -> Html Msg
 view_footer model =
     div [ classList [ ( "footer_items", True ) ] ]
         [ div [ classList [ ( "footer", True ), ( "message", True ) ] ]
-            [ case model.loading of
-                True ->
-                    Html.text "Loading..."
+            [ if model.loading then
+                Html.text "Loading..."
 
-                False ->
-                    Html.text <| "Showing " ++ String.fromInt (List.length model.texts) ++ " entries"
+              else
+                Html.text <| "Showing " ++ String.fromInt (List.length model.texts) ++ " entries"
             ]
         ]
 

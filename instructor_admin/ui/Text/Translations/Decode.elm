@@ -36,7 +36,10 @@ import Util
 
 
 type alias TextWord =
-    { phrase : Phrase, grammemes : List ( String, String ), translation : Maybe String }
+    { phrase : Phrase
+    , grammemes : List ( String, String )
+    , translation : Maybe String
+    }
 
 
 type alias Flashcards =
