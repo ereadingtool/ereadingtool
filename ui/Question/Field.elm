@@ -77,22 +77,22 @@ fromQuestions text_index questions =
 
 
 generate_question_field : Int -> Int -> Question -> QuestionField
-generate_question_field text_index question_index question =
+generate_question_field text_index questnIdx questn =
     let
-        question_field_id =
-            String.join "_" [ "textsection", String.fromInt text_index, "question", String.fromInt question_index ]
+        questionFieldId =
+            String.join "_" [ "textsection", String.fromInt text_index, "question", String.fromInt questnIdx ]
     in
-    QuestionField question
-        { id = question_field_id
-        , input_id = String.join "_" [ question_field_id, "input" ]
+    QuestionField questn
+        { id = questionFieldId
+        , input_id = String.join "_" [ questionFieldId, "input" ]
         , editable = False
         , menu_visible = False
         , selected = False
         , error_string = ""
         , error = False
-        , index = question_index
+        , index = questnIdx
         }
-        (Array.indexedMap (Answer.Field.generate_answer_field text_index question_index) question.answers)
+        (Array.indexedMap (Answer.Field.generate_answer_field text_index questnIdx) questn.answers)
 
 
 add_new_question : Int -> Array QuestionField -> Array QuestionField
@@ -107,8 +107,8 @@ add_new_question text_index fields =
 
 
 update_error : QuestionField -> String -> QuestionField
-update_error (QuestionField question attr answers) error_string =
-    QuestionField question { attr | error = True, error_string = error_string } answers
+update_error (QuestionField questn attr answrs) error_string =
+    QuestionField questn { attr | error = True, error_string = error_string } answrs
 
 
 update_errors : Array QuestionField -> ( String, String ) -> Array QuestionField
@@ -118,8 +118,8 @@ update_errors question_fields ( field_id, field_error ) =
             String.split "_" field_id
     in
     case error_key of
-        "question" :: question_index :: "answer" :: answer_index :: feedback ->
-            case String.toInt question_index of
+        "question" :: questnIdx :: "answer" :: answer_index :: feedback ->
+            case String.toInt questnIdx of
                 Ok i ->
                     case String.toInt answer_index of
                         Ok j ->
@@ -151,8 +151,8 @@ update_errors question_fields ( field_id, field_error ) =
                     question_fields
 
         -- not a valid question index
-        "question" :: question_index :: field :: [] ->
-            case String.toInt question_index of
+        "question" :: questnIdx :: field :: [] ->
+            case String.toInt questnIdx of
                 Ok i ->
                     case get_question_field question_fields i of
                         Just question_field ->
@@ -175,41 +175,41 @@ update_errors question_fields ( field_id, field_error ) =
 
 
 get_question_field : Array QuestionField -> Int -> Maybe QuestionField
-get_question_field question_fields index =
-    Array.get index question_fields
+get_question_field question_fields idx =
+    Array.get idx question_fields
 
 
 set_answer_field : Array QuestionField -> AnswerField -> Array QuestionField
 set_answer_field question_fields answer_field =
     let
-        question_index =
+        questnIdx =
             Answer.Field.question_index answer_field
 
         answer_index =
             Answer.Field.index answer_field
     in
-    case Array.get question_index question_fields of
-        Just (QuestionField question attr answers) ->
-            Array.set question_index (QuestionField question attr (Array.set answer_index answer_field answers)) question_fields
+    case Array.get questnIdx question_fields of
+        Just (QuestionField questn attr answrs) ->
+            Array.set questnIdx (QuestionField questn attr (Array.set answer_index answer_field answrs)) question_fields
 
         _ ->
             question_fields
 
 
 set_answer_feedback : QuestionField -> AnswerField -> String -> QuestionField
-set_answer_feedback (QuestionField question attr answers) answer_field feedback =
+set_answer_feedback (QuestionField questn attr answrs) answer_field feedback =
     let
-        index =
+        idx =
             Answer.Field.index answer_field
 
         new_answer_field =
             Answer.Field.set_answer_feedback answer_field feedback
     in
-    QuestionField question attr (Array.set index new_answer_field answers)
+    QuestionField questn attr (Array.set idx new_answer_field answrs)
 
 
 set_answer_correct : QuestionField -> AnswerField -> QuestionField
-set_answer_correct (QuestionField question attr answers) answer_field =
+set_answer_correct (QuestionField questn attr answrs) answer_field =
     let
         answer_index =
             Answer.Field.index answer_field
@@ -217,30 +217,30 @@ set_answer_correct (QuestionField question attr answers) answer_field =
         correct =
             Answer.Field.set_answer_correct
 
-        index =
+        idx =
             Answer.Field.index
     in
-    QuestionField question
+    QuestionField questn
         attr
         (Array.map
             (\a ->
-                if index a == answer_index then
+                if idx a == answer_index then
                     correct a True
 
                 else
                     correct a False
             )
-            answers
+            answrs
         )
 
 
 question_field_for_answer : Array QuestionField -> AnswerField -> Maybe QuestionField
 question_field_for_answer question_fields answer_field =
     let
-        question_index =
+        questnIdx =
             Answer.Field.question_index answer_field
     in
-    Array.get question_index question_fields
+    Array.get questnIdx question_fields
 
 
 question_index : QuestionField -> Int
@@ -249,13 +249,13 @@ question_index (QuestionField _ attr _) =
 
 
 question : QuestionField -> Question
-question (QuestionField question _ _) =
-    question
+question (QuestionField questn _ _) =
+    questn
 
 
 update_question : QuestionField -> Question -> QuestionField
-update_question (QuestionField question attr answers) new_question =
-    QuestionField new_question attr answers
+update_question (QuestionField questn attr answrs) new_question =
+    QuestionField new_question attr answrs
 
 
 error : QuestionField -> Bool
@@ -268,15 +268,15 @@ error question_field =
 
 
 delete_question : Int -> Array QuestionField -> Array QuestionField
-delete_question index fields =
+delete_question idx fields =
     Array.indexedMap
-        (\i (QuestionField question attr answer_fields) ->
-            QuestionField question
+        (\i (QuestionField questn attr answer_fields) ->
+            QuestionField questn
                 { attr | index = i }
                 (Array.map (\answer_field -> Answer.Field.update_question_index answer_field i) answer_fields)
         )
     <|
-        Array.filter (\field -> question_index field /= index) fields
+        Array.filter (\field -> question_index field /= idx) fields
 
 
 update_question_field : QuestionField -> Array QuestionField -> Array QuestionField
@@ -290,7 +290,7 @@ initial_question_fields text_index =
 
 
 set_question_type : QuestionField -> QuestionType -> QuestionField
-set_question_type (QuestionField question attr answer_fields) question_type =
+set_question_type (QuestionField questn attr answer_fields) question_type =
     let
         q_type =
             case question_type of
@@ -300,12 +300,12 @@ set_question_type (QuestionField question attr answer_fields) question_type =
                 Detail ->
                     "detail"
     in
-    QuestionField { question | question_type = q_type } attr answer_fields
+    QuestionField { questn | question_type = q_type } attr answer_fields
 
 
 switch_editable : QuestionField -> QuestionField
-switch_editable (QuestionField question attr answer_fields) =
-    QuestionField question
+switch_editable (QuestionField questn attr answer_fields) =
+    QuestionField questn
         { attr
             | editable =
                 if attr.editable then
@@ -327,18 +327,18 @@ menu_visible question_field =
 
 
 set_question_body : QuestionField -> String -> QuestionField
-set_question_body (QuestionField question attr answer_fields) value =
-    QuestionField { question | body = value } { attr | error = False } answer_fields
+set_question_body (QuestionField questn attr answer_fields) value =
+    QuestionField { questn | body = value } { attr | error = False } answer_fields
 
 
 set_menu_visible : QuestionField -> Bool -> QuestionField
-set_menu_visible (QuestionField question attr answer_fields) visible =
-    QuestionField question { attr | menu_visible = visible } answer_fields
+set_menu_visible (QuestionField questn attr answer_fields) visible =
+    QuestionField questn { attr | menu_visible = visible } answer_fields
 
 
 set_selected : QuestionField -> Bool -> QuestionField
-set_selected (QuestionField question attr answer_fields) selected =
-    QuestionField question { attr | selected = selected } answer_fields
+set_selected (QuestionField questn attr answer_fields) selected =
+    QuestionField questn { attr | selected = selected } answer_fields
 
 
 delete_selected : Array QuestionField -> Array QuestionField
@@ -355,7 +355,7 @@ delete_selected question_fields =
 
 
 attributes : QuestionField -> QuestionFieldAttributes
-attributes (QuestionField question attr answer_fields) =
+attributes (QuestionField _ attr answer_fields) =
     attr
 
 
@@ -415,5 +415,5 @@ answers (QuestionField _ _ answer_fields) =
 
 
 set_answers : QuestionField -> Array AnswerField -> QuestionField
-set_answers (QuestionField question attr answer_fields) new_answer_fields =
-    QuestionField question attr new_answer_fields
+set_answers (QuestionField questn attr answer_fields) new_answer_fields =
+    QuestionField questn attr new_answer_fields
