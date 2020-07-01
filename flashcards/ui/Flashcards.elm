@@ -5,6 +5,9 @@ import Flashcard.Msg exposing (Msg(..))
 import Flashcard.Update exposing (..)
 import Flashcard.View exposing (..)
 
+
+import Json.Decode
+
 import Flashcard.WebSocket
 import Html exposing (Html, div)
 import Menu.Items
@@ -50,7 +53,7 @@ subscriptions model =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     let
-        sendCommand = \cmdRequest -> Flashcard.WebSocket.sendCommand "flashcard" cmdRequest
+        sendCommand = \cmdRequest -> Flashcard.WebSocket.sendCommand cmdRequest
     in
     case msg of
         WebSocketResp response ->
@@ -59,7 +62,7 @@ update msg model =
                     Flashcard.Update.handle_ws_resp model websocketMsg
 
                 Err err ->
-                    Flashcard.Update.webSocketError model "invalid websocket msg" err
+                    Flashcard.Update.webSocketError model "invalid websocket msg" (Json.Decode.errorToString err)
 
         SelectMode mode ->
             ( model, sendCommand (ChooseModeReq mode) )
