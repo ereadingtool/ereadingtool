@@ -25033,7 +25033,7 @@ var _user$project$Student_Profile_View$view_research_consent = function (model) 
 								_elm_lang$html$Html$a,
 								{
 									ctor: '::',
-									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', 'https://sites.google.com/pdx.edu/star-russian/home/'),
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'href', 'https://sites.google.com/pdx.edu/star-russian/home'),
 									_1: {ctor: '[]'}
 								},
 								{
