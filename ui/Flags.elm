@@ -1,4 +1,4 @@
-module Flags exposing (..)
+module Flags exposing (AuthedFlags, CSRFToken, UnAuthedFlags)
 
 import Menu.Items
 

@@ -1,4 +1,11 @@
-module Views exposing (..)
+module Views exposing
+    ( view_authed_header
+    , view_footer
+    , view_give_feedback
+    , view_header
+    , view_report_problem
+    , view_unauthed_header
+    )
 
 import Html exposing (..)
 import Html.Attributes exposing (attribute, class, classList, id)

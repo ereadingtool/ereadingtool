@@ -1,4 +1,10 @@
-module Help exposing (..)
+module Help exposing
+    ( CurrentHelpMsgIndex
+    , HelpMsgID
+    , HelpMsgOverlayID
+    , HelpMsgStr
+    , HelpMsgVisible
+    )
 
 import Dict exposing (Dict)
 

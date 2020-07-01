@@ -1,4 +1,15 @@
-module Help.PopUp exposing (..)
+module Help.PopUp exposing
+    ( Help
+    , helpID
+    , init
+    , isVisible
+    , next
+    , prev
+    , scrollToFirstMsg
+    , scrollToNextMsg
+    , scrollToPrevMsg
+    , setVisible
+    )
 
 import Array exposing (Array)
 import Help exposing (CurrentHelpMsgIndex, HelpMsgID, HelpMsgOverlayID, HelpMsgStr, HelpMsgVisible)

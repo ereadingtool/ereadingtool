@@ -1,4 +1,4 @@
-module Text.Subscriptions exposing (..)
+module Text.Subscriptions exposing (subscriptions)
 
 import Ports exposing (ckEditor, ckEditorUpdate, selectAllInputText)
 import Text.Component as Text exposing (TextComponent)

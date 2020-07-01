@@ -1,4 +1,4 @@
-module Text.View exposing (..)
+module Text.View exposing (view_text)
 
 import Date.Utils
 import Dict exposing (Dict)

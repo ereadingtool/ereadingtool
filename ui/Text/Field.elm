@@ -1,4 +1,38 @@
-module Text.Field exposing (..)
+module Text.Field exposing
+    ( TextAuthor
+    , TextConclusion
+    , TextDifficulty
+    , TextFieldAttributes
+    , TextFields
+    , TextIntro
+    , TextSource
+    , TextTags
+    , TextTitle
+    , author
+    , conclusion
+    , difficulty
+    , init_text_fields
+    , intro
+    , post_toggle_author
+    , post_toggle_source
+    , post_toggle_title
+    , set_author
+    , set_conclusion
+    , set_intro
+    , set_source
+    , set_tags
+    , set_title
+    , source
+    , tags
+    , text_author_attrs
+    , text_conclusion_attrs
+    , text_intro_attrs
+    , text_source_attrs
+    , text_tags_attrs
+    , text_title_attrs
+    , title
+    , update_error
+    )
 
 import Field
 import Ports exposing (CKEditorID, CKEditorText, addClassToCKEditor, ckEditor, ckEditorSetHtml, selectAllInputText)

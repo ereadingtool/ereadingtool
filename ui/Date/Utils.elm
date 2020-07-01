@@ -1,7 +1,7 @@
-module Date.Utils exposing (..)
+module Date.Utils exposing (month_day_year_fmt)
 
-import DateTime
 import Calendar
+import DateTime
 
 
 pad_zero : Int -> Int -> String
@@ -22,11 +22,11 @@ pad_zero zeros num =
 hour_min_sec_fmt : DateTime.DateTime -> String
 hour_min_sec_fmt date =
     String.join " "
-        [ String.join ":" [
-            pad_zero 1 (DateTime.getHours date - 12)
-          , pad_zero 1 (DateTime.getMinutes date)
-          , pad_zero 1 (DateTime.getSeconds date)
-          ]
+        [ String.join ":"
+            [ pad_zero 1 (DateTime.getHours date - 12)
+            , pad_zero 1 (DateTime.getMinutes date)
+            , pad_zero 1 (DateTime.getSeconds date)
+            ]
         , am_pm_fmt date
         ]
 
@@ -47,5 +47,6 @@ month_day_year_fmt date =
         List.map (\s -> s ++ "  ")
             [ String.fromInt <| Calendar.monthToInt <| DateTime.getMonth date
             , (String.fromInt <| DateTime.getDay date) ++ ","
-            , hour_min_sec_fmt date, String.fromInt <| DateTime.getYear date
+            , hour_min_sec_fmt date
+            , String.fromInt <| DateTime.getYear date
             ]

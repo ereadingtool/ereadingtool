@@ -1,4 +1,11 @@
-module Menu.Item exposing (..)
+module Menu.Item exposing
+    ( MenuItem
+    , linkTextToString
+    , new
+    , selected
+    , setSelected
+    , uriToString
+    )
 
 import Menu exposing (..)
 import Menu.Item.Link

@@ -1,4 +1,8 @@
-module Menu.View exposing (..)
+module Menu.View exposing
+    ( view_lower_menu
+    , view_lower_menu_item
+    , view_top_menu
+    )
 
 import Array exposing (Array)
 import Html exposing (..)

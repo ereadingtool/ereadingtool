@@ -1,4 +1,7 @@
-module Question.View exposing (..)
+module Question.View exposing
+    ( view_question_buttons
+    , view_questions
+    )
 
 import Answer.View
 import Array exposing (Array)

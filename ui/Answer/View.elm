@@ -1,4 +1,4 @@
-module Answer.View exposing (..)
+module Answer.View exposing (view_editable_answer)
 
 import Answer.Field exposing (AnswerField)
 import Answer.Model

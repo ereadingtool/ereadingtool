@@ -1,4 +1,11 @@
-module Text.Model exposing (..)
+module Text.Model exposing
+    ( Text
+    , TextDifficulty
+    , TextListItem
+    , new_text
+    , set_sections
+    , set_tags
+    )
 
 import Array exposing (Array)
 import DateTime exposing (DateTime)

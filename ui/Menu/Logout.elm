@@ -1,4 +1,7 @@
-module Menu.Logout exposing (..)
+module Menu.Logout exposing
+    ( LogOutResp
+    , logoutRespDecoder
+    )
 
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)

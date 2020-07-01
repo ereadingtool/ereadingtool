@@ -1,4 +1,7 @@
-module Field exposing (..)
+module Field exposing
+    ( FieldAttributes
+    , ID
+    )
 
 import Json.Decode as Decode
 

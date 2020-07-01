@@ -1,4 +1,14 @@
-module Text.Search exposing (..)
+module Text.Search exposing
+    ( TextSearch
+    , addDifficultyToSearch
+    , difficultySearch
+    , filterParams
+    , new
+    , setStatusSearch
+    , setTagSearch
+    , statusSearch
+    , tagSearch
+    )
 
 import Admin.Text
 import Dict exposing (Dict)

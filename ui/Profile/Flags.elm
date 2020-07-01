@@ -1,4 +1,4 @@
-module Profile.Flags exposing (..)
+module Profile.Flags exposing (Flags)
 
 import Flags
 import Instructor.Profile

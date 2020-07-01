@@ -1,4 +1,12 @@
-module Text.Search.ReadingStatus exposing (..)
+module Text.Search.ReadingStatus exposing
+    ( TextReadStatus
+    , TextReadStatusSearch
+    , filterParams
+    , new
+    , options
+    , selectStatus
+    , valueToStatus
+    )
 
 import Dict exposing (Dict)
 import Search exposing (..)

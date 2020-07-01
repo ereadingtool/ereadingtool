@@ -1,4 +1,11 @@
-module Search exposing (..)
+module Search exposing
+    ( Error
+    , ID
+    , Label
+    , Selected
+    , Value
+    , emptyError
+    )
 
 
 type alias ID =

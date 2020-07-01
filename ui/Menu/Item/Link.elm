@@ -1,4 +1,9 @@
-module Menu.Item.Link exposing (..)
+module Menu.Item.Link exposing
+    ( MenuItemLink
+    , new
+    , text
+    , uri
+    )
 
 import Menu exposing (..)
 
