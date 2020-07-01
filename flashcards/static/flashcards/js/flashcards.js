@@ -6081,7 +6081,12 @@ var $author$project$Flashcard$Update$decodeWebSocketResp = F2(
 			var cmd_resp = _v1.b;
 			return A3($author$project$Flashcard$Update$route_cmd_resp, model, mode, cmd_resp);
 		} else {
-			return A3($author$project$Flashcard$Update$webSocketError, model, 'error decoding websocket response', str);
+			var err = _v0.a;
+			return A3(
+				$author$project$Flashcard$Update$webSocketError,
+				model,
+				'websocket decode error',
+				$elm$json$Json$Decode$errorToString(err) + (' while decoding ' + str));
 		}
 	});
 var $author$project$Flashcard$Update$handle_ws_resp = F2(

@@ -65,8 +65,8 @@ decodeWebSocketResp model str =
         Ok ( mode, cmd_resp ) ->
             route_cmd_resp model mode cmd_resp
 
-        Err _ ->
-            webSocketError model "error decoding websocket response" str
+        Err err ->
+            webSocketError model "websocket decode error" (Json.Decode.errorToString err ++ " while decoding " ++ str)
 
 
 webSocketError : Model -> String -> String -> ( Model, Cmd Msg )
