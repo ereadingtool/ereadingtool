@@ -1,7 +1,6 @@
 module Text.Subscriptions exposing (subscriptions)
 
-import Ports exposing (ckEditor, ckEditorUpdate, selectAllInputText)
-import Text.Component as Text exposing (TextComponent)
+import Ports exposing (ckEditorUpdate)
 import Text.Update exposing (Msg)
 
 

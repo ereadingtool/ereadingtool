@@ -1,7 +1,7 @@
 module Text.Tags.View exposing (view_tags)
 
 import Dict exposing (Dict)
-import Html exposing (Attribute, Html, datalist, div, option, span)
+import Html exposing (Attribute, Html, datalist, div, option)
 import Html.Attributes exposing (attribute, class, classList)
 import Html.Events exposing (onClick)
 import Text.Field

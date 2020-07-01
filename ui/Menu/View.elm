@@ -4,9 +4,9 @@ module Menu.View exposing
     , view_top_menu
     )
 
-import Array exposing (Array)
+import Array
 import Html exposing (..)
-import Html.Attributes exposing (attribute, class, classList)
+import Html.Attributes exposing (attribute, classList)
 import Menu.Item
 import Menu.Items
 import Menu.Msg

@@ -13,7 +13,7 @@ module Text.Decode exposing
     , textUpdateRespDecoder
     )
 
-import Array exposing (Array)
+import Array
 import DateTime
 import Dict exposing (Dict)
 import Json.Decode
@@ -26,15 +26,22 @@ import Util
 
 
 type alias TextCreateResp =
-    { id : Int, redirect : String }
+    { id : Int
+    , redirect : String
+    }
 
 
 type alias TextUpdateResp =
-    { id : Int, updated : Bool }
+    { id : Int
+    , updated : Bool
+    }
 
 
 type alias TextDeleteResp =
-    { id : Int, redirect : String, deleted : Bool }
+    { id : Int
+    , redirect : String
+    , deleted : Bool
+    }
 
 
 type alias TextLockResp =

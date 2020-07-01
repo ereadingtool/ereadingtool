@@ -12,7 +12,7 @@ module Help.PopUp exposing
     )
 
 import Array exposing (Array)
-import Help exposing (CurrentHelpMsgIndex, HelpMsgID, HelpMsgOverlayID, HelpMsgStr, HelpMsgVisible)
+import Help exposing (CurrentHelpMsgIndex, HelpMsgID, HelpMsgOverlayID, HelpMsgVisible)
 import OrderedDict exposing (OrderedDict)
 import Ports
 

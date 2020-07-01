@@ -38,8 +38,8 @@ import Answer.Field
 import Answer.Model
 import Array exposing (Array)
 import Field
-import Ports exposing (CKEditorID, CKEditorText, ckEditor, ckEditorSetHtml)
-import Question.Field exposing (QuestionField, generate_question_field)
+import Ports exposing (ckEditor, ckEditorSetHtml)
+import Question.Field exposing (QuestionField)
 import Text.Section.Model exposing (TextSection)
 
 

@@ -6,8 +6,6 @@ module Help exposing
     , HelpMsgVisible
     )
 
-import Dict exposing (Dict)
-
 
 type alias HelpMsgOverlayID =
     String

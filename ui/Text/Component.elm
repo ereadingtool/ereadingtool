@@ -25,7 +25,7 @@ module Text.Component exposing
 import Array
 import Dict exposing (Dict)
 import Ports
-import Text.Field exposing (TextFields, TextIntro, TextTags, TextTitle, init_text_fields)
+import Text.Field exposing (TextFields, TextTags, init_text_fields)
 import Text.Model as Text exposing (Text)
 import Text.Section.Component.Group exposing (TextSectionComponentGroup)
 

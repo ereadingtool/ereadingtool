@@ -161,12 +161,11 @@ view_editable_question msg text_section_component answer_feedback_limit field =
             [ Html.input [ attribute "type" "checkbox", onCheck <| SelectQuestion text_section_component field >> msg ] []
             ]
         , div [ classList [ ( "question", True ) ] ] <|
-            [ case Question.Field.editable field of
-                True ->
-                    edit_question question_params field
+            [ if Question.Field.editable field then
+                edit_question question_params field
 
-                _ ->
-                    view_question question_params field
+              else
+                view_question question_params field
             ]
                 ++ (Array.toList <|
                         Array.map (Answer.View.view_editable_answer answer_params num_of_answers) (Question.Field.answers field)

@@ -9,7 +9,7 @@ module Text.Model exposing
 
 import Array exposing (Array)
 import DateTime exposing (DateTime)
-import Dict exposing (Dict)
+import Dict
 import Text.Section.Model exposing (emptyTextSection)
 import Text.Translations exposing (..)
 

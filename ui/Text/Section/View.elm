@@ -1,9 +1,9 @@
 module Text.Section.View exposing (view_text_section_components)
 
-import Array exposing (Array)
+import Array
 import Html exposing (..)
 import Html.Attributes exposing (attribute, class, classList)
-import Html.Events exposing (onBlur, onCheck, onClick, onInput, onMouseLeave, onMouseOut, onMouseOver)
+import Html.Events exposing (onClick, onInput)
 import Question.View
 import Text.Model exposing (TextDifficulty)
 import Text.Section.Component exposing (TextSectionComponent)
@@ -31,12 +31,11 @@ view_editable :
     -> (TextField msg -> Html msg)
     -> Html msg
 view_editable params view edit =
-    case Text.Section.Component.editable params.field of
-        True ->
-            edit params
+    if Text.Section.Component.editable params.field then
+        edit params
 
-        _ ->
-            view params
+    else
+        view params
 
 
 view_body : TextField msg -> Html msg

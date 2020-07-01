@@ -35,7 +35,7 @@ module Text.Field exposing
     )
 
 import Field
-import Ports exposing (CKEditorID, CKEditorText, addClassToCKEditor, ckEditor, ckEditorSetHtml, selectAllInputText)
+import Ports exposing (addClassToCKEditor, ckEditor, selectAllInputText)
 
 
 type alias TextFieldAttributes =

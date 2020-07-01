@@ -8,12 +8,11 @@ pad_zero : Int -> Int -> String
 pad_zero zeros num =
     case String.toInt <| "1" ++ String.repeat (zeros - 1) "0" of
         Just places ->
-            case num > places of
-                True ->
-                    String.fromInt num
+            if num > places then
+                String.fromInt num
 
-                False ->
-                    String.repeat zeros "0" ++ String.fromInt num
+            else
+                String.repeat zeros "0" ++ String.fromInt num
 
         _ ->
             String.fromInt num
@@ -33,12 +32,11 @@ hour_min_sec_fmt date =
 
 am_pm_fmt : DateTime.DateTime -> String
 am_pm_fmt date =
-    case DateTime.getHours date < 12 of
-        True ->
-            "AM"
+    if DateTime.getHours date < 12 then
+        "AM"
 
-        False ->
-            "PM"
+    else
+        "PM"
 
 
 month_day_year_fmt : DateTime.DateTime -> String

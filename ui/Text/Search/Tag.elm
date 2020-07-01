@@ -34,12 +34,7 @@ select_tag ((TagSearch id options err) as tag_search) tag selected =
         (Text.Search.Option.dictToOptions <|
             Dict.update tag
                 (\v ->
-                    case v of
-                        Just option ->
-                            Just <| Text.Search.Option.setSelected option selected
-
-                        Nothing ->
-                            Nothing
+                    Maybe.map (\option -> Text.Search.Option.setSelected option selected) v
                 )
                 (optionsToDict tag_search)
         )

@@ -42,7 +42,10 @@ import Question.Model exposing (Question)
 
 
 type alias QuestionFieldAttributes =
-    Field.FieldAttributes { menu_visible : Bool, selected : Bool }
+    Field.FieldAttributes
+        { menu_visible : Bool
+        , selected : Bool
+        }
 
 
 type QuestionType

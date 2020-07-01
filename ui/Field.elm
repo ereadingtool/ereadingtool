@@ -28,4 +28,11 @@ fieldIDDecoder =
 
 
 type alias FieldAttributes a =
-    { a | id : String, input_id : String, editable : Bool, error : Bool, index : Int, error_string : String }
+    { a
+        | id : String
+        , input_id : String
+        , editable : Bool
+        , error : Bool
+        , index : Int
+        , error_string : String
+    }
