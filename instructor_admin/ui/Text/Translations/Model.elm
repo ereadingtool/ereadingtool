@@ -23,6 +23,7 @@ module Text.Translations.Model exposing
     , removeFromMergeWords
     , removeTextTranslation
     , selectGrammemeForEditing
+    , setGlobalEditLock
     , setTextWord
     , setTextWords
     , uneditWord

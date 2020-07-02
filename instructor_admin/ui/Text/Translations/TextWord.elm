@@ -14,6 +14,7 @@ module Text.Translations.TextWord exposing
     , strToWordType
     , textWordEndpoint
     , translations
+    , translationsEndpoint
     , updateTranslation
     , wordKindToGroup
     , wordType
