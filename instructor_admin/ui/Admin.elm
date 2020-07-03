@@ -80,12 +80,12 @@ init flags =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
     Sub.none
 
 
 updateTexts : Admin.Text.TextAPIEndpoint -> Filter -> Cmd Msg
-updateTexts textApiEndpoint filter =
+updateTexts textApiEndpoint _ =
     let
         textApiEndpointUrl =
             Admin.Text.textEndpointToString textApiEndpoint
@@ -110,13 +110,13 @@ update msg model =
             in
             ( model, Cmd.none )
 
-        LogOut msg ->
+        LogOut _ ->
             ( model, User.Profile.logout model.profile model.flags.csrftoken LoggedOut )
 
         LoggedOut (Ok logoutResp) ->
             ( model, Ports.redirect logoutResp.redirect )
 
-        LoggedOut (Err err) ->
+        LoggedOut (Err _) ->
             ( model, Cmd.none )
 
 
@@ -203,12 +203,11 @@ view_footer : Model -> Html Msg
 view_footer model =
     div [ classList [ ( "footer_items", True ) ] ]
         [ div [ classList [ ( "footer", True ), ( "message", True ) ] ]
-            [ case model.loading of
-                True ->
-                    Html.text "Loading..."
+            [ if model.loading then
+                Html.text "Loading..."
 
-                False ->
-                    Html.text <| "Showing " ++ String.fromInt (List.length model.texts) ++ " entries"
+              else
+                Html.text <| "Showing " ++ String.fromInt (List.length model.texts) ++ " entries"
             ]
         ]
 

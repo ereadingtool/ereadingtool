@@ -1,13 +1,13 @@
 module Text.Translations.View exposing (..)
 
-import Array exposing (Array)
-import Dict exposing (Dict)
+import Array
+import Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import HtmlParser
-import OrderedDict exposing (OrderedDict)
-import Set exposing (Set)
+import OrderedDict
+import Set
 import Text.Section.Model
 import Text.Section.Words.Tag
 import Text.Translations exposing (..)
@@ -20,18 +20,16 @@ import VirtualDom
 
 wordInstanceOnClick : Model -> (Msg -> msg) -> WordInstance -> Html.Attribute msg
 wordInstanceOnClick model parentMsg wordInstance =
-    case Text.Translations.Model.isMergingWords model of
+    if Text.Translations.Model.isMergingWords model then
         -- subsequent clicks on word instances will add them to the list of words to be merged
-        True ->
-            case Text.Translations.Model.mergingWord model wordInstance of
-                True ->
-                    onClick (parentMsg (RemoveFromMergeWords wordInstance))
+        if Text.Translations.Model.mergingWord model wordInstance then
+            onClick (parentMsg (RemoveFromMergeWords wordInstance))
 
-                False ->
-                    onClick (parentMsg (AddToMergeWords wordInstance))
+        else
+            onClick (parentMsg (AddToMergeWords wordInstance))
 
-        False ->
-            onClick (parentMsg (EditWord wordInstance))
+    else
+        onClick (parentMsg (EditWord wordInstance))
 
 
 tagWord : Model -> (Msg -> msg) -> Int -> Int -> String -> Html msg
@@ -43,40 +41,39 @@ tagWord model parentMsg sectionNumber instance originalToken =
         token =
             String.toLower originalToken
     in
-    case token == " " of
-        True ->
-            VirtualDom.text token
+    if token == " " then
+        VirtualDom.text token
 
-        False ->
-            let
-                wordInstance =
-                    Text.Translations.Model.newWordInstance
-                        model
-                        (SectionNumber sectionNumber)
-                        instance
-                        token
+    else
+        let
+            wordInstance =
+                Text.Translations.Model.newWordInstance
+                    model
+                    (SectionNumber sectionNumber)
+                    instance
+                    token
 
-                editingWord =
-                    Text.Translations.Model.editingWord model token
+            editingWord =
+                Text.Translations.Model.editingWord model token
 
-                mergingWord =
-                    Text.Translations.Model.mergingWord model wordInstance
-            in
-            Html.node "span"
-                [ Html.Attributes.id id
-                , classList [ ( "defined_word", True ), ( "cursor", True ) ]
-                ]
-                [ span
-                    [ classList
-                        [ ( "edit-highlight", editingWord )
-                        , ( "merge-highlight", mergingWord && not editingWord )
-                        ]
-                    , wordInstanceOnClick model parentMsg wordInstance
+            mergingWord =
+                Text.Translations.Model.mergingWord model wordInstance
+        in
+        Html.node "span"
+            [ Html.Attributes.id id
+            , classList [ ( "defined_word", True ), ( "cursor", True ) ]
+            ]
+            [ span
+                [ classList
+                    [ ( "edit-highlight", editingWord )
+                    , ( "merge-highlight", mergingWord && not editingWord )
                     ]
-                    [ VirtualDom.text originalToken
-                    ]
-                , view_edit model parentMsg wordInstance
+                , wordInstanceOnClick model parentMsg wordInstance
                 ]
+                [ VirtualDom.text originalToken
+                ]
+            , view_edit model parentMsg wordInstance
+            ]
 
 
 tagSection : Model -> (Msg -> msg) -> Text.Section.Model.TextSection -> Html msg
@@ -174,7 +171,7 @@ view_make_compound_text_word model parentMsg wordInstance =
     in
     div [ class "text-word-option" ]
         (case Text.Translations.Word.Instance.textWord wordInstance of
-            Just textWord ->
+            Just _ ->
                 [ div
                     [ attribute "title" "Merge into compound word."
                     , classList [ ( "merge-highlight", Text.Translations.Model.mergingWord model wordInstance ) ]
@@ -213,20 +210,19 @@ view_delete_text_word parentMsg wordInstance =
 
 view_correct_for_context : Bool -> List (Html msg)
 view_correct_for_context correct =
-    case correct of
-        True ->
-            [ div [ class "correct_checkmark", attribute "title" "Correct for the context." ]
-                [ Html.img
-                    [ attribute "src" "/static/img/circle_check.svg"
-                    , attribute "height" "12px"
-                    , attribute "width" "12px"
-                    ]
-                    []
+    if correct then
+        [ div [ class "correct_checkmark", attribute "title" "Correct for the context." ]
+            [ Html.img
+                [ attribute "src" "/static/img/circle_check.svg"
+                , attribute "height" "12px"
+                , attribute "width" "12px"
                 ]
+                []
             ]
+        ]
 
-        False ->
-            []
+    else
+        []
 
 
 view_add_as_text_word : (Msg -> msg) -> WordInstance -> Html msg
@@ -324,21 +320,20 @@ view_instance_word model msg wordInstance =
         word =
             Text.Translations.Word.Instance.word
 
-        word_txt =
-            case Text.Translations.Model.mergingWord model wordInstance of
-                True ->
-                    let
-                        mergingWords =
-                            List.map (\( k, v ) -> word v) <|
-                                OrderedDict.toList <|
-                                    OrderedDict.remove
-                                        (wordInstanceKey wordInstance)
-                                        (Text.Translations.Model.mergingWords model)
-                    in
-                    String.join " " ([ word wordInstance ] ++ mergingWords)
+        wordTxt =
+            if Text.Translations.Model.mergingWord model wordInstance then
+                let
+                    mergingWords =
+                        List.map (\( k, v ) -> word v) <|
+                            OrderedDict.toList <|
+                                OrderedDict.remove
+                                    (wordInstanceKey wordInstance)
+                                    (Text.Translations.Model.mergingWords model)
+                in
+                String.join " " (word wordInstance :: mergingWords)
 
-                False ->
-                    word wordInstance
+            else
+                word wordInstance
     in
     div [ class "word" ]
         [ Html.text wordTxt

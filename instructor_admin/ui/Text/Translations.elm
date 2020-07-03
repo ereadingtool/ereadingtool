@@ -1,4 +1,30 @@
-module Text.Translations exposing (..)
+module Text.Translations exposing
+    ( AddTextWordEndpoint(..)
+    , Flags
+    , Grammemes
+    , Id
+    , Instance
+    , MergeState(..)
+    , MergeTextWordEndpoint(..)
+    , Phrase
+    , SectionNumber(..)
+    , TextGroupDetails
+    , TextTranslationMatchEndpoint(..)
+    , TextWordId(..)
+    , Token
+    , Translation
+    , Translations
+    , URL(..)
+    , Word
+    , WordValues
+    , Words
+    , addTextWordEndpointToString
+    , expectedGrammemeKeys
+    , mergeTextWordEndpointToString
+    , sectionNumberToInt
+    , textTransMatchEndpointToString
+    , textWordIdToInt
+    )
 
 import Dict exposing (Dict)
 import Flags

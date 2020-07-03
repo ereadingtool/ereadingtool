@@ -1,6 +1,6 @@
 module Text.Translations.Word.Kind exposing (WordKind(..))
 
-import Text.Translations exposing (..)
+import Text.Translations exposing (TextGroupDetails)
 
 
 type WordKind

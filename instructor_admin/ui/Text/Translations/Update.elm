@@ -75,7 +75,7 @@ update parentMsg msg model =
             else
                 let
                     _ =
-                        Debug.log "error merging text words" merge_resp.error
+                        Debug.log "error merging text words" mergeResp.error
                 in
                 ( Text.Translations.Model.clearMerge model, Cmd.none )
 
@@ -144,8 +144,8 @@ update parentMsg msg model =
             in
             ( model, Cmd.none )
 
-        UpdateNewTranslationForTextWord textWord translationText ->
-            ( Text.Translations.Model.updateTranslationsForWord model textWord translationtTxt, Cmd.none )
+        UpdateNewTranslationForTextWord textWord translationTxt ->
+            ( Text.Translations.Model.updateTranslationsForWord model textWord translationTxt, Cmd.none )
 
         AddTextWord wordInstance ->
             ( model, addAsTextWord parentMsg model model.flags.csrftoken wordInstance )
@@ -197,7 +197,7 @@ update parentMsg msg model =
 
 
 mergeWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> ( Model, Cmd msg )
-mergeWords parent_msg model _ wordInstances =
+mergeWords parentMsg model _ wordInstances =
     if Text.Translations.Word.Instance.canMergeWords wordInstances then
         -- all word instances are ready to merge
         ( model, postMergeWords parentMsg model model.flags.csrftoken wordInstances )
@@ -276,7 +276,7 @@ postMergeWords parentMsg model csrftoken wordInstances =
         request =
             HttpHelpers.post_with_headers endpointUrl headers body Text.Translations.Decode.textWordMergeDecoder
     in
-    Http.send (parent_msg << MergedWords) request
+    Http.send (parentMsg << MergedWords) request
 
 
 matchTranslations : (Msg -> msg) -> Model -> WordInstance -> Cmd msg
@@ -293,12 +293,12 @@ matchTranslations parentMsg model wordInstance =
             case Text.Translations.TextWord.translations textWord of
                 Just newTranslations ->
                     let
-                        matchTranslations =
+                        matchTransltns =
                             putMatchTranslations parentMsg model.text_translation_match_endpoint model.flags.csrftoken
                     in
                     case Text.Translations.Model.getTextWords model sectionNumber word of
                         Just textWords ->
-                            matchTranslations newTranslations (Array.toList textWords)
+                            matchTransltns newTranslations (Array.toList textWords)
 
                         -- no text words associated with this word
                         Nothing ->

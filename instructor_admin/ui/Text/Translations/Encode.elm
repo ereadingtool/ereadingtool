@@ -9,7 +9,7 @@ module Text.Translations.Encode exposing
 
 import Dict exposing (Dict)
 import Json.Encode as Encode
-import Text.Translations exposing (..)
+import Text.Translations exposing (Translation)
 import Text.Translations.TextWord exposing (TextWord)
 
 
@@ -26,24 +26,22 @@ textTranslationsMergeEncoder : List Translation -> List TextWord -> Encode.Value
 textTranslationsMergeEncoder textWordTranslations textWords =
     Encode.object
         [ ( "words"
-          , Encode.list <|
+          , Encode.list Encode.object <|
                 List.map
                     (\tw ->
-                        Encode.object
-                            [ ( "id", Encode.int (Text.Translations.TextWord.idToInt tw) )
-                            , ( "word_type", Encode.string (Text.Translations.TextWord.wordType tw) )
-                            ]
+                        [ ( "id", Encode.int (Text.Translations.TextWord.idToInt tw) )
+                        , ( "word_type", Encode.string (Text.Translations.TextWord.wordType tw) )
+                        ]
                     )
                     textWords
           )
         , ( "translations"
-          , Encode.list <|
+          , Encode.list Encode.object <|
                 List.map
                     (\twt ->
-                        Encode.object
-                            [ ( "correct_for_context", Encode.bool twt.correct_for_context )
-                            , ( "phrase", Encode.string twt.text )
-                            ]
+                        [ ( "correct_for_context", Encode.bool twt.correct_for_context )
+                        , ( "phrase", Encode.string twt.text )
+                        ]
                     )
                     textWordTranslations
           )
@@ -52,7 +50,7 @@ textTranslationsMergeEncoder textWordTranslations textWords =
 
 textTranslationsEncoder : List Translation -> Encode.Value
 textTranslationsEncoder textTranslations =
-    Encode.list (List.map textTranslationEncoder textTranslations)
+    Encode.list textTranslationEncoder textTranslations
 
 
 textTranslationAsCorrectEncoder : Translation -> Encode.Value
@@ -65,8 +63,8 @@ textTranslationAsCorrectEncoder textTranslation =
 
 textWordMergeEncoder : List TextWord -> Encode.Value
 textWordMergeEncoder textWords =
-    Encode.list
-        (List.map (\textWord -> Encode.int (Text.Translations.TextWord.idToInt textWord)) textWords)
+    Encode.list Encode.int
+        (List.map (\textWord -> Text.Translations.TextWord.idToInt textWord) textWords)
 
 
 newTextTranslationEncoder : String -> Bool -> Encode.Value

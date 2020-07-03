@@ -18,10 +18,10 @@ module Create_Edit_Text exposing
 
 import Admin.Text
 import Debug
-import Dict exposing (Dict)
+import Dict
 import Flags
 import Html exposing (..)
-import Html.Attributes exposing (attribute, classList)
+import Html.Attributes exposing (attribute)
 import Http
 import HttpHelpers exposing (delete_with_headers, post_with_headers, put_with_headers)
 import Instructor.Profile
@@ -29,14 +29,14 @@ import Json.Decode as Decode
 import Json.Encode
 import Menu.Items
 import Navigation
-import Ports exposing (ckEditor, ckEditorUpdate, clearInputText, confirm, confirmation)
+import Ports exposing (ckEditorUpdate, clearInputText, confirm, confirmation)
 import Task
-import Text.Component exposing (TextComponent)
+import Text.Component
 import Text.Create exposing (..)
 import Text.Decode
 import Text.Encode
 import Text.Field
-import Text.Model exposing (Text, TextDifficulty)
+import Text.Model exposing (Text)
 import Text.Subscriptions
 import Text.Translations.Model
 import Text.Translations.Subscriptions
@@ -157,29 +157,28 @@ update msg model =
                     in
                     case text.write_locker of
                         Just writeLocker ->
-                            case writeLocker /= Instructor.Profile.usernameToString (Instructor.Profile.username model.profile) of
-                                True ->
-                                    ( { model
-                                        | text_component = textComponent
-                                        , mode = ReadOnlyMode writeLocker
-                                        , error_msg = Just <| "READONLY: text is currently being edited by " ++ writeLocker
-                                        , write_locked = True
-                                      }
-                                    , Text.Component.reinitialize_ck_editors textComponent
-                                    )
+                            if writeLocker /= Instructor.Profile.usernameToString (Instructor.Profile.username model.profile) then
+                                ( { model
+                                    | text_component = textComponent
+                                    , mode = ReadOnlyMode writeLocker
+                                    , error_msg = Just <| "READONLY: text is currently being edited by " ++ writeLocker
+                                    , write_locked = True
+                                  }
+                                , Text.Component.reinitialize_ck_editors textComponent
+                                )
 
-                                False ->
-                                    ( { model
-                                        | text_component = textComponent
-                                        , mode = EditMode
-                                        , success_msg = Just <| "editing '" ++ text.title ++ "' text"
-                                        , write_locked = True
-                                      }
-                                    , Cmd.batch
-                                        [ Text.Component.reinitialize_ck_editors textComponent
-                                        , Text.Translations.Update.retrieveTextWords TextTranslationMsg model.text_api_endpoint text.id
-                                        ]
-                                    )
+                            else
+                                ( { model
+                                    | text_component = textComponent
+                                    , mode = EditMode
+                                    , success_msg = Just <| "editing '" ++ text.title ++ "' text"
+                                    , write_locked = True
+                                  }
+                                , Cmd.batch
+                                    [ Text.Component.reinitialize_ck_editors textComponent
+                                    , Text.Translations.Update.retrieveTextWords TextTranslationMsg model.text_api_endpoint text.id
+                                    ]
+                                )
 
                         Nothing ->
                             case text.id of
@@ -229,7 +228,7 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
-        ClearMessages time ->
+        ClearMessages _ ->
             ( { model | success_msg = Nothing }, Cmd.none )
 
         Submitted (Ok textCreateResp) ->
@@ -261,7 +260,7 @@ update msg model =
                         _ ->
                             ( model, Cmd.none )
 
-                Http.BadPayload err resp ->
+                Http.BadPayload _ resp ->
                     let
                         _ =
                             Debug.log "submit text bad payload error" resp.body
@@ -285,7 +284,7 @@ update msg model =
                         _ ->
                             ( model, Cmd.none )
 
-                Http.BadPayload err resp ->
+                Http.BadPayload _ resp ->
                     let
                         _ =
                             Debug.log "update error bad payload" resp
@@ -306,17 +305,17 @@ update msg model =
             let
                 ( textComponent, postToggleCmds ) =
                     case textField of
-                        Title textTitle ->
+                        Title _ ->
                             ( Text.Component.set_title_editable model.text_component editable
                             , Text.Component.post_toggle_title
                             )
 
-                        Author textAuthor ->
+                        Author _ ->
                             ( Text.Component.set_author_editable model.text_component editable
                             , Text.Component.post_toggle_author
                             )
 
-                        Source textSource ->
+                        Source _ ->
                             ( Text.Component.set_source_editable model.text_component editable
                             , Text.Component.post_toggle_source
                             )
@@ -391,7 +390,7 @@ update msg model =
                         _ ->
                             ( model, Cmd.none )
 
-                Http.BadPayload err resp ->
+                Http.BadPayload _ resp ->
                     let
                         _ =
                             Debug.log "update error bad payload" resp
@@ -419,7 +418,7 @@ update msg model =
                         _ ->
                             ( model, Cmd.none )
 
-                Http.BadPayload err resp ->
+                Http.BadPayload _ resp ->
                     let
                         _ =
                             Debug.log "update error bad payload" resp
@@ -460,14 +459,13 @@ update msg model =
                 ( model, Cmd.none )
 
         AddTagInput inputId input ->
-            case Dict.member input model.tags of
-                True ->
-                    ( { model | text_component = Text.Component.add_tag model.text_component input }
-                    , clearInputText inputId
-                    )
+            if Dict.member input model.tags then
+                ( { model | text_component = Text.Component.add_tag model.text_component input }
+                , clearInputText inputId
+                )
 
-                _ ->
-                    ( model, Cmd.none )
+            else
+                ( model, Cmd.none )
 
         DeleteTag tag ->
             ( { model | text_component = Text.Component.remove_tag model.text_component tag }, Cmd.none )
@@ -476,16 +474,15 @@ update msg model =
             ( model, confirm "Are you sure you want to delete this text?" )
 
         ConfirmTextDelete confirm ->
-            case confirm of
-                True ->
-                    let
-                        text =
-                            Text.Component.text model.text_component
-                    in
-                    ( model, deleteText model.flags.csrftoken model.text_api_endpoint text )
+            if confirm then
+                let
+                    text =
+                        Text.Component.text model.text_component
+                in
+                ( model, deleteText model.flags.csrftoken model.text_api_endpoint text )
 
-                False ->
-                    ( model, Cmd.none )
+            else
+                ( model, Cmd.none )
 
         TextDelete (Ok textDelete) ->
             let
@@ -529,22 +526,21 @@ update msg model =
         ToggleTab tab ->
             let
                 postToggleCmd =
-                    case tab == TextTab of
-                        True ->
-                            Text.Component.reinitialize_ck_editors model.text_component
+                    if tab == TextTab then
+                        Text.Component.reinitialize_ck_editors model.text_component
 
-                        False ->
-                            Cmd.none
+                    else
+                        Cmd.none
             in
             ( { model | selected_tab = tab }, postToggleCmd )
 
-        LogOut msg ->
+        LogOut _ ->
             ( model, Instructor.Profile.logout model.profile model.flags.csrftoken LoggedOut )
 
         LoggedOut (Ok logoutResp) ->
             ( model, Ports.redirect logoutResp.redirect )
 
-        LoggedOut (Err err) ->
+        LoggedOut (Err _) ->
             ( model, Cmd.none )
 
 
@@ -660,7 +656,7 @@ subscriptions model =
 
         -- handle clearing messages
         , case model.success_msg of
-            Just msg ->
+            Just _ ->
                 Time.every (Time.second * 3) ClearMessages
 
             _ ->

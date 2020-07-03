@@ -1,10 +1,34 @@
-module Text.Translations.Decode exposing (..)
+module Text.Translations.Decode exposing
+    ( Flashcards
+    , TextWord
+    , TextWordMergeResp
+    , TextWordTranslationDeleteResp
+    , grammemesDecoder
+    , textGroupDetailsDecoder
+    , textTranslationRemoveRespDecoder
+    , textTranslationUpdateRespDecoder
+    , textWordDictInstancesDecoder
+    , textWordInstanceDecoder
+    , textWordInstancesDecoder
+    , textWordMergeDecoder
+    , wordDecoder
+    , wordsDecoder
+    )
 
 import Array exposing (Array)
 import Dict exposing (Dict)
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)
-import Text.Translations exposing (..)
+import Text.Translations
+    exposing
+        ( Phrase
+        , SectionNumber(..)
+        , TextGroupDetails
+        , TextWordId(..)
+        , Translation
+        , WordValues
+        , Words
+        )
 import Text.Translations.TextWord
 import Text.Translations.Word.Kind
 import TextReader.TextWord
@@ -12,7 +36,10 @@ import Util
 
 
 type alias TextWord =
-    { phrase : Phrase, grammemes : List ( String, String ), translation : Maybe String }
+    { phrase : Phrase
+    , grammemes : List ( String, String )
+    , translation : Maybe String
+    }
 
 
 type alias Flashcards =
