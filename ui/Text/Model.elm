@@ -1,8 +1,15 @@
-module Text.Model exposing (..)
+module Text.Model exposing
+    ( Text
+    , TextDifficulty
+    , TextListItem
+    , new_text
+    , set_sections
+    , set_tags
+    )
 
 import Array exposing (Array)
 import DateTime exposing (DateTime)
-import Dict exposing (Dict)
+import Dict
 import Text.Section.Model exposing (emptyTextSection)
 import Text.Translations exposing (..)
 

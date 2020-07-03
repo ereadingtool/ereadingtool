@@ -1,4 +1,7 @@
-module Text.Reading.Model exposing (..)
+module Text.Reading.Model exposing
+    ( TextReading
+    , TextReadingScore
+    )
 
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)

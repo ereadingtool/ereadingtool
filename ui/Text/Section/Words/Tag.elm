@@ -7,7 +7,7 @@ module Text.Section.Words.Tag exposing
     )
 
 import Dict exposing (Dict)
-import Html exposing (Html, div, span)
+import Html exposing (Html)
 import Html.Attributes
 import HtmlParser
 import Regex
@@ -56,12 +56,11 @@ maybeParseWordWithPunctuation str =
 
 intersperseWordsWith : String -> ( String, Int ) -> List ( String, Int ) -> List ( String, Int )
 intersperseWordsWith str (( token, token_occurrence ) as token_instance) tokens =
-    case hasPunctuation token of
-        True ->
-            tokens ++ [ token_instance ]
+    if hasPunctuation token then
+        tokens ++ [ token_instance ]
 
-        False ->
-            tokens ++ [ ( str, 0 ), token_instance ]
+    else
+        tokens ++ [ ( str, 0 ), token_instance ]
 
 
 intersperseWithWhitespace : List ( String, Int ) -> List ( String, Int )
@@ -103,26 +102,25 @@ parseCompoundWord :
 parseCompoundWord is_part_of_compound_word ( token, instance ) ( token_occurrences, ( compound_index, compound_token ) ) =
     case is_part_of_compound_word instance token of
         Just ( group_instance, pos, compound_word_length ) ->
-            case pos == compound_index of
-                True ->
-                    if pos + 1 == compound_word_length then
-                        let
-                            compound_word =
-                                String.join " " (compound_token ++ [ token ])
+            if pos == compound_index then
+                if pos + 1 == compound_word_length then
+                    let
+                        compound_word =
+                            String.join " " (compound_token ++ [ token ])
 
-                            compound_word_instance =
-                                ( compound_word, group_instance )
-                        in
-                        -- we're at the end of a compound word
-                        ( token_occurrences ++ [ compound_word_instance ], ( 0, [] ) )
+                        compound_word_instance =
+                            ( compound_word, group_instance )
+                    in
+                    -- we're at the end of a compound word
+                    ( token_occurrences ++ [ compound_word_instance ], ( 0, [] ) )
 
-                    else
-                        -- token is part of a compound word and is in the right position
-                        ( token_occurrences, ( pos + 1, compound_token ++ [ token ] ) )
+                else
+                    -- token is part of a compound word and is in the right position
+                    ( token_occurrences, ( pos + 1, compound_token ++ [ token ] ) )
 
-                False ->
-                    -- token is part of a compound word but not in the right position
-                    ( token_occurrences ++ [ ( token, instance ) ], ( 0, [] ) )
+            else
+                -- token is part of a compound word but not in the right position
+                ( token_occurrences ++ [ ( token, instance ) ], ( 0, [] ) )
 
         Nothing ->
             -- regular word

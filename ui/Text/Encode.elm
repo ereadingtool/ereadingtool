@@ -1,4 +1,4 @@
-module Text.Encode exposing (..)
+module Text.Encode exposing (textEncoder)
 
 import Json.Encode as Encode
 import Text.Model

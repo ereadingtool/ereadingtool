@@ -7,9 +7,8 @@ import Json.Encode as Encode
 
 answersEncoder : Array Answer -> Encode.Value
 answersEncoder answers =
-    Encode.list <|
-        Array.toList <|
-            Array.map (\answer -> answerEncoder answer) answers
+    Encode.list answerEncoder <|
+        Array.toList answers
 
 
 answerEncoder : Answer -> Encode.Value

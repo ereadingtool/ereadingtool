@@ -58,18 +58,18 @@ update_answer_indexes answer_fields =
 
 
 update_question_index : AnswerField -> Int -> AnswerField
-update_question_index (AnswerField answer attr feedback) i =
-    AnswerField answer { attr | question_index = i } feedback
+update_question_index (AnswerField answr attr feedback) i =
+    AnswerField answr { attr | question_index = i } feedback
 
 
 update_answer_index : AnswerField -> Int -> AnswerField
-update_answer_index (AnswerField answer attr feedback) i =
-    AnswerField { answer | order = i } { attr | index = i } feedback
+update_answer_index (AnswerField answr attr feedback) i =
+    AnswerField { answr | order = i } { attr | index = i } feedback
 
 
 generate_answer_feedback_field : String -> AnswerFeedbackField
-generate_answer_feedback_field id =
-    { id = id
+generate_answer_feedback_field i =
+    { id = i
     , editable = False
     , error_string = ""
     , error = False
@@ -77,7 +77,7 @@ generate_answer_feedback_field id =
 
 
 generate_answer_field : Int -> Int -> Int -> Answer -> AnswerField
-generate_answer_field i j k answer =
+generate_answer_field i j k answr =
     let
         answer_id =
             String.join "_" [ "textsection", String.fromInt i, "question", String.fromInt j, "answer", String.fromInt k ]
@@ -85,7 +85,7 @@ generate_answer_field i j k answer =
         answer_name =
             String.join "_" [ "textsection", String.fromInt i, "question", String.fromInt j, "correct_answer" ]
     in
-    AnswerField answer
+    AnswerField answr
         { id = answer_id
         , input_id = String.join "_" [ answer_id, "input" ]
         , name = answer_name
@@ -104,12 +104,12 @@ toAnswers answer_fields =
 
 
 feedback_field : AnswerField -> AnswerFeedbackField
-feedback_field (AnswerField _ _ feedback_field) =
-    feedback_field
+feedback_field (AnswerField _ _ fdbkField) =
+    fdbkField
 
 
 attributes : AnswerField -> Field.FieldAttributes AnswerFieldAttributes
-attributes (AnswerField answer attr feedback_field) =
+attributes (AnswerField _ attr _) =
     attr
 
 
@@ -150,13 +150,13 @@ index answer_field =
 
 
 answer : AnswerField -> Answer
-answer (AnswerField answer _ _) =
-    answer
+answer (AnswerField answr _ _) =
+    answr
 
 
 switch_editable : AnswerField -> AnswerField
-switch_editable (AnswerField answer attr feedback) =
-    AnswerField answer
+switch_editable (AnswerField answr attr feedback) =
+    AnswerField answr
         { attr
             | editable =
                 if attr.editable then
@@ -169,18 +169,18 @@ switch_editable (AnswerField answer attr feedback) =
 
 
 set_answer_text : AnswerField -> String -> AnswerField
-set_answer_text (AnswerField answer attr feedback) text =
-    AnswerField { answer | text = text } attr feedback
+set_answer_text (AnswerField answr attr feedback) text =
+    AnswerField { answr | text = text } attr feedback
 
 
 set_answer_correct : AnswerField -> Bool -> AnswerField
-set_answer_correct (AnswerField answer attr feedback) correct =
-    AnswerField { answer | correct = correct } attr feedback
+set_answer_correct (AnswerField answr attr feedback) correct =
+    AnswerField { answr | correct = correct } attr feedback
 
 
 set_answer_feedback : AnswerField -> String -> AnswerField
-set_answer_feedback (AnswerField answer attr feedback) new_feedback =
-    AnswerField { answer | feedback = new_feedback } attr feedback
+set_answer_feedback (AnswerField answr attr feedback) new_feedback =
+    AnswerField { answr | feedback = new_feedback } attr feedback
 
 
 editable : AnswerField -> Bool
@@ -202,8 +202,8 @@ question_index answer_field =
 
 
 get_answer_field : Array AnswerField -> Int -> Maybe AnswerField
-get_answer_field answer_fields index =
-    Array.get index answer_fields
+get_answer_field answer_fields idx =
+    Array.get idx answer_fields
 
 
 add_answer : Array AnswerField -> AnswerField -> AnswerField -> Array AnswerField
@@ -229,10 +229,10 @@ delete_answer answer_fields answer_field =
 
 
 update_error : AnswerField -> String -> AnswerField
-update_error (AnswerField answer attr feedback) error_string =
-    AnswerField answer { attr | error = True, error_string = error_string } feedback
+update_error (AnswerField answr attr feedback) error_string =
+    AnswerField answr { attr | error = True, error_string = error_string } feedback
 
 
 update_feedback_error : AnswerField -> String -> AnswerField
-update_feedback_error (AnswerField answer attr feedback) error_string =
-    switch_editable (AnswerField answer attr { feedback | error = True, error_string = error_string })
+update_feedback_error (AnswerField answr attr feedback) error_string =
+    switch_editable (AnswerField answr attr { feedback | error = True, error_string = error_string })

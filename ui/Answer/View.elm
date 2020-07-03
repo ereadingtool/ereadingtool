@@ -1,10 +1,10 @@
-module Answer.View exposing (..)
+module Answer.View exposing (view_editable_answer)
 
 import Answer.Field exposing (AnswerField)
 import Answer.Model
 import Html exposing (..)
 import Html.Attributes exposing (attribute, classList)
-import Html.Events exposing (onBlur, onCheck, onClick, onInput, onMouseLeave, onMouseOut, onMouseOver)
+import Html.Events exposing (onBlur, onCheck, onClick, onInput)
 import Question.Model
 import Text.Section.Component exposing (TextSectionComponent)
 import Text.Update exposing (..)
@@ -142,12 +142,11 @@ view_editable_answer params num_of_answers answer_field =
                    )
             )
             []
-        , case Answer.Field.editable answer_field of
-            True ->
-                edit_answer params answer_field
+        , if Answer.Field.editable answer_field then
+            edit_answer params answer_field
 
-            False ->
-                view_answer params answer_field
+          else
+            view_answer params answer_field
         ]
             ++ (case num_of_answers of
                     3 ->

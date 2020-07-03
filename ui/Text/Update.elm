@@ -1,11 +1,11 @@
 module Text.Update exposing (Field(..), Msg(..), update)
 
 import Answer.Field exposing (AnswerField)
-import Ports exposing (CKEditorID, CKEditorText, ckEditor, selectAllInputText)
+import Ports exposing (CKEditorID, CKEditorText, selectAllInputText)
 import Question.Field exposing (QuestionField)
 import Text.Component exposing (TextComponent)
 import Text.Section.Component exposing (TextSectionComponent)
-import Text.Section.Component.Group exposing (TextSectionComponentGroup)
+import Text.Section.Component.Group
 
 
 type Field

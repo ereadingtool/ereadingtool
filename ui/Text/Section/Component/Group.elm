@@ -15,7 +15,7 @@ module Text.Section.Component.Group exposing
 
 import Array exposing (Array)
 import Dict exposing (Dict)
-import Ports exposing (CKEditorID, CKEditorText, ckEditor)
+import Ports exposing (CKEditorText)
 import Text.Section.Component exposing (TextSectionComponent)
 import Text.Section.Model
 

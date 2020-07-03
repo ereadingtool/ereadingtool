@@ -1,6 +1,10 @@
-module Help exposing (..)
-
-import Dict exposing (Dict)
+module Help exposing
+    ( CurrentHelpMsgIndex
+    , HelpMsgID
+    , HelpMsgOverlayID
+    , HelpMsgStr
+    , HelpMsgVisible
+    )
 
 
 type alias HelpMsgOverlayID =

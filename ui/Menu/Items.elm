@@ -1,4 +1,9 @@
-module Menu.Items exposing (..)
+module Menu.Items exposing
+    ( MenuItemParams
+    , MenuItems(..)
+    , initMenuItems
+    , items
+    )
 
 import Array exposing (Array)
 import Menu exposing (..)

@@ -1,10 +1,14 @@
-module Util exposing (..)
+module Util exposing
+    ( intTupleDecoder
+    , isValidEmail
+    , onEnterUp
+    , stringTupleDecoder
+    )
 
+import Email
 import Html
 import Html.Events
 import Json.Decode
-import Email
-
 
 
 isValidEmail : String -> Bool

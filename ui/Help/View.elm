@@ -1,7 +1,7 @@
 module Help.View exposing (ArrowPlacement(..), ArrowPosition(..), view_hint_overlay)
 
-import Html exposing (Html, div, span)
-import Html.Attributes exposing (attribute, class, classList, id)
+import Html exposing (Html, span)
+import Html.Attributes exposing (attribute, class, classList)
 
 
 type ArrowPosition
@@ -71,7 +71,7 @@ view_hint_overlay { id, visible, text, cancel_event, next_event, prev_event, add
             , ( "invisible", not visible )
             ]
         ]
-        [ span ([ class hint_class ] ++ addl_attributes)
+        [ span (class hint_class :: addl_attributes)
             [ span [ class "msg" ] [ Html.text text ]
             , span [ class "exit" ] [ view_cancel_btn cancel_event ]
             , span [ class "nav" ]

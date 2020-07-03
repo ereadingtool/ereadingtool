@@ -1,12 +1,12 @@
-module Text.View exposing (..)
+module Text.View exposing (view_text)
 
 import Date.Utils
-import Dict exposing (Dict)
+import Dict
 import Html exposing (..)
 import Html.Attributes exposing (attribute, class, classList)
-import Html.Events exposing (onBlur, onCheck, onClick, onInput, onMouseOver)
-import Instructor.Profile exposing (InstructorProfile)
-import Text.Component exposing (TextComponent)
+import Html.Events exposing (onBlur, onClick, onInput)
+import Instructor.Profile
+import Text.Component
 import Text.Create exposing (..)
 import Text.Field exposing (TextAuthor, TextConclusion, TextDifficulty, TextIntro, TextSource, TextTags, TextTitle)
 import Text.Section.View
@@ -65,13 +65,12 @@ view_text_title params edit_view text_title =
         ]
     <|
         [ div [] [ Html.text "Text Title" ]
-        , case text_title_attrs.editable of
-            False ->
-                div [ attribute "class" "editable" ] <|
-                    [ Html.text params.text.title ]
+        , if text_title_attrs.editable then
+            div [] [ edit_view params text_title ]
 
-            True ->
-                div [] [ edit_view params text_title ]
+          else
+            div [ attribute "class" "editable" ] <|
+                [ Html.text params.text.title ]
         ]
             ++ (if text_title_attrs.error then
                     [ div [ class "error" ] [ Html.text text_title_attrs.error_string ] ]
@@ -216,12 +215,11 @@ view_text_lock params =
             view_edit_text_lock params
 
         ReadOnlyMode write_locker ->
-            case write_locker == Instructor.Profile.usernameToString (Instructor.Profile.username params.profile) of
-                True ->
-                    view_edit_text_lock params
+            if write_locker == Instructor.Profile.usernameToString (Instructor.Profile.username params.profile) then
+                view_edit_text_lock params
 
-                _ ->
-                    div [] []
+            else
+                div [] []
 
         _ ->
             div [] []
@@ -235,18 +233,17 @@ view_author params edit_author text_author =
     in
     div [ attribute "id" "text_author_view", attribute "class" "text_property" ] <|
         [ div [] [ Html.text "Text Author" ]
-        , case text_author_attrs.editable of
-            False ->
-                div
-                    [ attribute "id" text_author_attrs.id
-                    , attribute "class" "editable"
-                    , onClick (ToggleEditable (Author text_author) True)
-                    ]
-                    [ div [] [ Html.text params.text.author ]
-                    ]
+        , if text_author_attrs.editable then
+            div [] [ edit_author params text_author ]
 
-            True ->
-                div [] [ edit_author params text_author ]
+          else
+            div
+                [ attribute "id" text_author_attrs.id
+                , attribute "class" "editable"
+                , onClick (ToggleEditable (Author text_author) True)
+                ]
+                [ div [] [ Html.text params.text.author ]
+                ]
         ]
             ++ (if text_author_attrs.error then
                     [ div [ class "error" ] [ Html.text text_author_attrs.error_string ] ]
@@ -284,8 +281,8 @@ edit_difficulty params text_difficulty =
                 (List.map
                     (\( k, v ) ->
                         Html.option
-                            ([ attribute "value" k ]
-                                ++ (if k == params.text.difficulty then
+                            (attribute "value" k
+                                :: (if k == params.text.difficulty then
                                         [ attribute "selected" "" ]
 
                                     else
@@ -306,25 +303,24 @@ view_source params edit_view text_source =
         text_source_attrs =
             Text.Field.text_source_attrs text_source
     in
-    case text_source_attrs.editable of
-        False ->
-            div
-                [ onClick (ToggleEditable (Source text_source) True)
-                , classList [ ( "text_property", True ), ( "input_error", text_source_attrs.error ) ]
-                ]
-            <|
-                [ div [ attribute "id" text_source_attrs.id ] [ Html.text "Text Source" ]
-                , div [ attribute "class" "editable" ] [ Html.text params.text.source ]
-                ]
-                    ++ (if text_source_attrs.error then
-                            [ div [ class "error" ] [ Html.text text_source_attrs.error_string ] ]
+    if text_source_attrs.editable then
+        edit_view params text_source
 
-                        else
-                            []
-                       )
+    else
+        div
+            [ onClick (ToggleEditable (Source text_source) True)
+            , classList [ ( "text_property", True ), ( "input_error", text_source_attrs.error ) ]
+            ]
+        <|
+            [ div [ attribute "id" text_source_attrs.id ] [ Html.text "Text Source" ]
+            , div [ attribute "class" "editable" ] [ Html.text params.text.source ]
+            ]
+                ++ (if text_source_attrs.error then
+                        [ div [ class "error" ] [ Html.text text_source_attrs.error_string ] ]
 
-        True ->
-            edit_view params text_source
+                    else
+                        []
+                   )
 
 
 edit_source : TextViewParams -> TextSource -> Html Msg

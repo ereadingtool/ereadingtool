@@ -1,6 +1,20 @@
-module Text.Decode exposing (..)
+module Text.Decode exposing
+    ( TextCreateResp
+    , TextDeleteResp
+    , TextLockResp
+    , TextUpdateResp
+    , decodeRespErrors
+    , textCreateRespDecoder
+    , textDecoder
+    , textDeleteRespDecoder
+    , textDifficultiesDecoder
+    , textListDecoder
+    , textLockRespDecoder
+    , textUpdateRespDecoder
+    )
 
-import Array exposing (Array)
+import Array
+import DateTime
 import Dict exposing (Dict)
 import Json.Decode
 import Json.Decode.Extra exposing (posix)
@@ -10,19 +24,24 @@ import Text.Section.Decode
 import Text.Translations.Decode
 import Util
 
-import DateTime
-
 
 type alias TextCreateResp =
-    { id : Int, redirect : String }
+    { id : Int
+    , redirect : String
+    }
 
 
 type alias TextUpdateResp =
-    { id : Int, updated : Bool }
+    { id : Int
+    , updated : Bool
+    }
 
 
 type alias TextDeleteResp =
-    { id : Int, redirect : String, deleted : Bool }
+    { id : Int
+    , redirect : String
+    , deleted : Bool
+    }
 
 
 type alias TextLockResp =

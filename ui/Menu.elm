@@ -1,4 +1,11 @@
-module Menu exposing (..)
+module Menu exposing
+    ( LinkText(..)
+    , Select(..)
+    , URI(..)
+    , linkTextToString
+    , selected
+    , uriToString
+    )
 
 
 type Select
