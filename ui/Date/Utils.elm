@@ -1,11 +1,11 @@
-module Date.Utils exposing (month_day_year_fmt)
+module Date.Utils exposing (monthDayYearFormat)
 
 import Calendar
 import DateTime
 
 
-pad_zero : Int -> Int -> String
-pad_zero zeros num =
+padZero : Int -> Int -> String
+padZero zeros num =
     case String.toInt <| "1" ++ String.repeat (zeros - 1) "0" of
         Just places ->
             if num > places then
@@ -22,16 +22,16 @@ hour_min_sec_fmt : DateTime.DateTime -> String
 hour_min_sec_fmt date =
     String.join " "
         [ String.join ":"
-            [ pad_zero 1 (DateTime.getHours date - 12)
-            , pad_zero 1 (DateTime.getMinutes date)
-            , pad_zero 1 (DateTime.getSeconds date)
+            [ padZero 1 (DateTime.getHours date - 12)
+            , padZero 1 (DateTime.getMinutes date)
+            , padZero 1 (DateTime.getSeconds date)
             ]
-        , am_pm_fmt date
+        , amPMFormat date
         ]
 
 
-am_pm_fmt : DateTime.DateTime -> String
-am_pm_fmt date =
+amPMFormat : DateTime.DateTime -> String
+amPMFormat date =
     if DateTime.getHours date < 12 then
         "AM"
 
@@ -39,8 +39,8 @@ am_pm_fmt date =
         "PM"
 
 
-month_day_year_fmt : DateTime.DateTime -> String
-month_day_year_fmt date =
+monthDayYearFormat : DateTime.DateTime -> String
+monthDayYearFormat date =
     List.foldr (++) "" <|
         List.map (\s -> s ++ "  ")
             [ String.fromInt <| Calendar.monthToInt <| DateTime.getMonth date

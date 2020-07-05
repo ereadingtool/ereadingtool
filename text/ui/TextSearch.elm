@@ -364,7 +364,7 @@ view_search_results textListItems =
                 lastRead =
                     case textItem.last_read_dt of
                         Just dt ->
-                            Date.Utils.month_day_year_fmt dt
+                            Date.Utils.monthDayYearFormat dt
 
                         Nothing ->
                             ""
