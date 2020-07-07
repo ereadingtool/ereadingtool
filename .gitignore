@@ -153,6 +153,7 @@ venv.bak/
 
 # elm
 elm-stuff
+dist/
 
 # mypy
 .mypy_cache/
@@ -161,7 +162,6 @@ elm-stuff
 /db.sqlite3
 /static/
 /bower_components/
-/node_modules/
 /.pulp-cache/
 /output/
 /generated-docs/
@@ -171,3 +171,6 @@ elm-stuff
 
 # vscode
 .vscode/
+
+#node
+node_modules/
