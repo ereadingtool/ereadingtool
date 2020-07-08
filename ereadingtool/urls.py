@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.urls import path, include, reverse_lazy
 from django.views.generic import RedirectView, TemplateView
 
+from jwt_auth import views as jwt_auth_views
+
 from mixins.view import (ElmLoadJsView, NoAuthElmLoadJsView)
 
 from ereadingtool.views import AcknowledgementView, AboutView
@@ -26,6 +28,9 @@ from user.views.username import username
 urlpatterns = [
     path('load_elm.js', ElmLoadJsView.as_view(), name='load-elm'),
     path('load_elm_unauth.js', NoAuthElmLoadJsView.as_view(), name='load-elm-unauth'),
+
+    path("token-auth/", jwt_auth_views.jwt_token),
+    path("token-refresh/", jwt_auth_views.refresh_jwt_token),
 
     path('acknowledgements/', AcknowledgementView.as_view(), name='acknowledgements'),
     path('about/', AboutView.as_view(), name='about'),

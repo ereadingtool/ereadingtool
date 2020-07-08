@@ -1,4 +1,4 @@
-Django
+Django==2.2
 django-taggit
 ipython
 rjsmin
@@ -18,3 +18,4 @@ pdfkit
 asynctest
 Twisted[tls,http2]
 pytz
+webstack-django-jwt-auth
