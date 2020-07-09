@@ -1,5 +1,6 @@
 import random
 import string
+import json
 
 from typing import Dict, Union, AnyStr, List
 from typing import Optional, Tuple
@@ -14,6 +15,11 @@ from text_reading.models import StudentTextReading, InstructorTextReading
 from user.instructor.models import Instructor
 from user.models import ReaderUser
 from user.student.models import Student
+
+from ereadingtool.test.data import TestData
+
+from ereadingtool.urls import reverse_lazy
+
 
 SectionSpec = List[Dict[AnyStr, int]]
 Reading = Union[StudentTextReading, InstructorTextReading]
@@ -94,3 +100,40 @@ class TestUser(TestCase):
         client = self.login(client, user_and_pass)
 
         return client
+
+
+class TestUserLogin(TestData, TestUser):
+    def test_user_can_login_with_jwt(self):
+        user_passwd = 'test'
+        reader_user = ReaderUser(is_active=True, username='test@test.com')
+
+        reader_user.set_password(user_passwd)
+        reader_user.save()
+
+        text_data = self.get_test_data()
+
+        unauthed_client = Client()
+
+        # get JWT token
+        login_resp = unauthed_client.post(reverse_lazy('jwt-token-auth'),
+                                          json.dumps({
+                                           'username': reader_user.username,
+                                           'password': 'test'
+                                          }), content_type='application/json')
+
+        login_resp_json = json.loads(login_resp.content.decode('utf8'))
+
+        self.assertEquals(login_resp.status_code, 200, json.dumps(json.loads(login_resp.content.decode('utf8')),
+                                                                  indent=4))
+
+        resp = unauthed_client.post(reverse_lazy('text-api'),
+                                    json.dumps(text_data),
+                                    content_type='application/json',
+                                    HTTP_AUTHORIZATION=f"{login_resp_json['token_type']} {login_resp_json['token']}"
+                                    )
+
+        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8') or '{}'), indent=4))
+
+        _ = json.loads(resp.content.decode('utf8'))
+
+        return text
