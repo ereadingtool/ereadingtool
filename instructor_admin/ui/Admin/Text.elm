@@ -1,4 +1,4 @@
-module Admin.Text exposing (TextAPIEndpoint, URL, textAPIEndpointURL, textEndpointToString)
+module Admin.Text exposing (TextAPIEndpoint, toTextAPIEndpoint, URL, textAPIEndpointURL, textEndpointToString)
 
 
 type URL
@@ -7,6 +7,16 @@ type URL
 
 type TextAPIEndpoint
     = TextAPIEndpoint URL
+
+
+toURL : String -> URL
+toURL urlString =
+    URL urlString
+
+
+toTextAPIEndpoint : String -> TextAPIEndpoint
+toTextAPIEndpoint urlString =
+    TextAPIEndpoint (toURL urlString)
 
 
 urlToString : URL -> String
