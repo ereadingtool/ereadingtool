@@ -1,0 +1,33 @@
+{
+  "name": "ereadingtool-web",
+  "version": "0.1.0",
+  "description": "Frontend for the ereadingtool",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "",
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.8.4",
+    "elm-hot": "^1.1.0",
+    "node-elm-compiler": "^5.0.4",
+    "parcel-plugin-static-files-copy": "^2.4.3",
+    "typescript": "^3.9.6"
+  },
+  "staticFiles": {
+    "staticPath": {
+      "staticPath": "assets",
+      "staticOutDir": "assets"
+    },
+    "watcherGlob": "**"
+  },
+  "browserslist": [
+    "last 1 Chrome versions"
+  ]
+}
