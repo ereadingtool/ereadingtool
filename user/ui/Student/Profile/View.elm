@@ -358,7 +358,7 @@ view_research_consent model =
           To read about those projects and to review and sign consent forms,
           please go
          """
-            , Html.a [ attribute "href" "https://sites.google.com/pdx.edu/star-russian/home/" ]
+            , Html.a [ attribute "href" "https://sites.google.com/pdx.edu/star-russian/home" ]
                 [ Html.text "here"
                 ]
             , Html.text "."
@@ -378,6 +378,8 @@ view_research_consent model =
                 []
             , div [ class "check-box-text" ] [ Html.text "I consent to research." ]
             ]
+      , Html.a [attribute "href" "https://sites.google.com/pdx.edu/star-russian/home"] [
+         Html.text "here"
         ]
 
 

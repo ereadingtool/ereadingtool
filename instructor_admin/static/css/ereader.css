@@ -19,11 +19,21 @@ body {
 }
 
 .button {
-  font-size: 18px;
-  text-decoration: none;
-  background-color: #EEEEEE;
-  color: #333333;
-  padding: 10px 5px 10px 6px;
+    display: grid;
+    justify-content: center;
+    align-content: center;
+
+    cursor: pointer;
+
+    font-size: 18px;
+    color: white;
+    background-color: #0054a6;
+
+    transition: background 0.3s ease-out;
+}
+
+.button:hover {
+    background-color: #00458a;
 }
 
 #header {
@@ -234,7 +244,7 @@ body {
 .text_tag {
     display: inline-block;
 
-    padding: 2px;
+    padding: 3px;
 
     font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 18px;
@@ -244,8 +254,8 @@ body {
 
     margin-right: 5px;
 
-    border: solid 1px lightgrey;
-    border-radius: 5px;
+    border: solid 1px #777777;
+    border-radius: 7px;
 }
 
 .text_tag > img {

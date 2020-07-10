@@ -278,24 +278,23 @@ view_next_btn =
 
 view_text_complete : Model -> TextScores -> Html Msg
 view_text_complete model scores =
-    div [ id "complete" ]
-        [ div [ attribute "id" "text-score" ]
-            [ div []
-                [ Html.text
-                    ("You answered "
-                        ++ String.fromInt scores.section_scores
-                        ++ " out of "
-                        ++ String.fromInt scores.possible_section_scores
-                        ++ " questions correctly for this text."
-                    )
-                ]
-            ]
-        , view_text_conclusion model.text
-        , div [ class "nav" ]
-            [ view_prev_btn
-            , div [ attribute "id" "goback", onClick StartOver ] [ Html.text "Start Over" ]
-            ]
-        ]
+  div [id "complete"] [
+    div [attribute "id" "text-score"] [
+      div [] [
+        Html.text
+          (  "You answered "
+          ++ (toString scores.section_scores)
+          ++ " out of "
+          ++ (toString scores.possible_section_scores)
+          ++ " questions correctly for this text.")
+      ]
+    ]
+  , view_text_conclusion model.text
+  , div [id "nav"] [
+      view_prev_btn
+    , div [onClick StartOver] [ Html.text "Start Over" ]
+    ]
+  ]
 
 
 view_exceptions : Model -> Html Msg

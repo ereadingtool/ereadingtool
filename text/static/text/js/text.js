@@ -25434,7 +25434,7 @@ var _user$project$TextReader_View$view_text_complete = F2(
 							_elm_lang$html$Html$div,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('nav'),
+								_0: _elm_lang$html$Html_Attributes$id('nav'),
 								_1: {ctor: '[]'}
 							},
 							{
@@ -25446,12 +25446,8 @@ var _user$project$TextReader_View$view_text_complete = F2(
 										_elm_lang$html$Html$div,
 										{
 											ctor: '::',
-											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'id', 'goback'),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onClick(_user$project$TextReader_Msg$StartOver),
-												_1: {ctor: '[]'}
-											}
+											_0: _elm_lang$html$Html_Events$onClick(_user$project$TextReader_Msg$StartOver),
+											_1: {ctor: '[]'}
 										},
 										{
 											ctor: '::',

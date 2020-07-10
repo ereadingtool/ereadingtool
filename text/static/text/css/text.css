@@ -44,9 +44,17 @@
 
 #nav > div {
     text-align: center;
-    background: #f9f9f9;
+    color: white;
+    background-color: #0054a6;
+
+    cursor: pointer;
 
     margin-right: 5px;
+    transition: background 0.3s ease-out;
+}
+
+#nav > div:hover {
+    background-color: #00458a;
 }
 
 .exception {
@@ -147,6 +155,12 @@
     border-radius: 5px;
     font-size: 17px;
     cursor: pointer;
+
+    transition: border 0.2s ease-out;
+}
+
+.answer:hover {
+    border: solid 1px #0071bc;
 }
 
 .answer-feedback {
