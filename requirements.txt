@@ -4,6 +4,7 @@ ipython
 rjsmin
 django-csp
 hypothesis[django]
+faker
 jsonschema
 channels
 python-statemachine

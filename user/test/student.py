@@ -204,12 +204,12 @@ class TestStudentUser(TestData, TestUser, TestCase):
             'difficulty': TextDifficulty.objects.get(pk=1).slug
         }
 
-        student_client = self.test_student_signup(student_signup_params)
+        student_anonymous_client = self.test_student_signup(student_signup_params)
 
-        student_login_resp = student_client.post(self.student_login_api_endpoint,
-                                                 data=json.dumps({'username': student_signup_params['email'],
-                                                                  'password': student_signup_params['password']}),
-                                                 content_type='application/json')
+        student_client = self.login(
+            student_anonymous_client,
+            username=student_signup_params['email'], password=student_signup_params['password']
+        )
 
         # welcome flag should be present on the first loading of the profile page, but not on subsequent loads
         def match_welcome_flag(resp: HttpResponse) -> bool:

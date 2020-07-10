@@ -6,7 +6,6 @@ from typing import AnyStr, Optional
 
 from django.test import TestCase
 from django.test.client import Client
-from hypothesis.strategies import just
 
 from django.utils import timezone
 
@@ -56,7 +55,7 @@ class TestInstructorUser(TestUserBase, TestCase):
             password='test-p4ssw0rd!'
         )
 
-        admin_instructor = self.new_instructor_with_user(self.instructor_admin_user, admin=just(True))
+        admin_instructor = self.new_instructor_with_user(self.instructor_admin_user, admin=True)
 
         self.assertTrue(admin_instructor.is_admin)
 
@@ -79,7 +78,7 @@ class TestInstructorUser(TestUserBase, TestCase):
         self.assertEquals(resp.status_code, 403)
 
     def test_instructor_invite_can_expire(self):
-        admin_client = self.login(Client(), (self.instructor_admin_user, self.instructor_admin_password))
+        admin_client = self.login(Client(), user=self.instructor_admin_user, password=self.instructor_admin_password)
 
         invitee_email = 'test-invite@test.com'
 
@@ -109,7 +108,7 @@ class TestInstructorUser(TestUserBase, TestCase):
         self.assertIn('invite_code', resp_content)
 
     def test_instructor_invite(self):
-        admin_client = self.login(Client(), (self.instructor_admin_user, self.instructor_admin_password))
+        admin_client = self.login(Client(), user=self.instructor_admin_user, password=self.instructor_admin_password)
 
         invitee_email = 'test-invite@test.com'
 
