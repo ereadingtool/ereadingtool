@@ -28,7 +28,8 @@ import Instructor.Profile
 import Json.Decode as Decode
 import Json.Encode
 import Menu.Items
-import Navigation
+import Browser
+import Browser.Navigation
 import Ports exposing (ckEditorUpdate, clearInputText, confirm, confirmation)
 import Task
 import Text.Component
@@ -52,7 +53,7 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
         textApiEndpoint =
-            Admin.Text.TextAPIEndpoint (Admin.Text.URL flags.text_endpoint_url)
+            Admin.Text.toTextAPIEndpoint flags.text_endpoint_url
     in
     ( { flags = flags
       , mode = CreateMode
@@ -87,8 +88,8 @@ textJSONtoComponent text =
         Just json ->
             Task.attempt TextJSONDecode
                 (case Decode.decodeValue Text.Decode.textDecoder json of
-                    Ok text ->
-                        Task.succeed (Text.Component.init text)
+                    Ok decodedText ->
+                        Task.succeed (Text.Component.init decodedText)
 
                     Err err ->
                         Task.fail err
@@ -114,15 +115,15 @@ retrieveTextDifficultyOptions textApiEndpoint =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        TextComponentMsg msg ->
-            Text.Update.update msg model
+        TextComponentMsg textComponentMsg ->
+            Text.Update.update textComponentMsg model
 
-        Text.Create.TextTranslationMsg msg ->
+        Text.Create.TextTranslationMsg textTransMsg ->
             case model.text_translations_model of
                 Just translationModel ->
                     let
                         ( textTranslationsModel, textTranslationCmd ) =
-                            Text.Translations.Update.update TextTranslationMsg msg translationModel
+                            Text.Translations.Update.update TextTranslationMsg textTransMsg translationModel
                     in
                     ( { model | text_translations_model = Just textTranslationsModel }, textTranslationCmd )
 
@@ -240,7 +241,7 @@ update msg model =
                 | success_msg = Just <| String.join " " [ " created '" ++ text.title ++ "'" ]
                 , mode = EditMode
               }
-            , Navigation.load textCreateResp.redirect
+            , Browser.Navigation.load textCreateResp.redirect
             )
 
         Updated (Ok textUpdateResp) ->
@@ -489,10 +490,10 @@ update msg model =
                 _ =
                     Debug.log "text delete" textDelete
             in
-            ( model, Navigation.load textDelete.redirect )
+            ( model, Browser.Navigation.load textDelete.redirect )
 
-        TextDelete (Err err) ->
-            case err of
+        TextDelete (Err httpError) ->
+            case httpError of
                 Http.BadStatus resp ->
                     let
                         _ =
@@ -519,7 +520,7 @@ update msg model =
                 _ ->
                     let
                         _ =
-                            Debug.log "delete text error bad payload" err
+                            Debug.log "delete text error bad payload" httpError
                     in
                     ( model, Cmd.none )
 
@@ -657,7 +658,7 @@ subscriptions model =
         -- handle clearing messages
         , case model.success_msg of
             Just _ ->
-                Time.every (Time.second * 3) ClearMessages
+                Time.every 3.0 ClearMessages
 
             _ ->
                 Sub.none
@@ -668,18 +669,11 @@ subscriptions model =
         -- handle text delete confirmation
         , confirmation ConfirmTextDelete
         ]
-            ++ [ case model.text_translations_model of
-                    Just translationModel ->
-                        Text.Translations.Subscriptions.subscriptions TextTranslationMsg translationModel
-
-                    Nothing ->
-                        Sub.none
-               ]
 
 
 main : Program Flags Model Msg
 main =
-    Html.programWithFlags
+    Browser.element
         { init = init
         , view = view
         , subscriptions = subscriptions

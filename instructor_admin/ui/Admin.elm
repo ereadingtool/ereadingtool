@@ -5,7 +5,6 @@ module Admin exposing
     , Msg(..)
     , init
     , main
-    , month_day_year_fmt
     , subscriptions
     , update
     , updateTexts
@@ -17,7 +16,8 @@ module Admin exposing
     )
 
 import Admin.Text
-import Date exposing (..)
+import Browser
+import Date.Utils
 import Html exposing (..)
 import Html.Attributes exposing (attribute, classList)
 import Http exposing (..)
@@ -66,7 +66,7 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
         textApiEndpoint =
-            Admin.Text.TextAPIEndpoint (Admin.Text.URL flags.text_api_endpoint_url)
+            Admin.Text.toTextAPIEndpoint flags.text_api_endpoint_url
     in
     ( { texts = []
       , text_api_endpoint = textApiEndpoint
@@ -122,7 +122,7 @@ update msg model =
 
 main : Program Flags Model Msg
 main =
-    Html.programWithFlags
+    Browser.element
         { init = init
         , view = view
         , subscriptions = subscriptions
@@ -130,21 +130,14 @@ main =
         }
 
 
-month_day_year_fmt : Date -> String
-month_day_year_fmt date =
-    List.foldr (++)
-        ""
-        [ (toString <| Date.month date) ++ " ", (toString <| Date.day date) ++ "," ++ " ", String.fromInt <| Date.year date ]
-
-
 view_text : TextListItem -> Html Msg
 view_text textListItem =
     div [ classList [ ( "text_item", True ) ] ]
-        [ div [ classList [ ( "item_property", True ) ], attribute "data-id" (toString text_list_item.id) ] [ Html.text "" ]
+        [ div [ classList [ ( "item_property", True ) ], attribute "data-id" (String.fromInt textListItem.id) ] [ Html.text "" ]
         , div [ classList [ ( "item_property", True ) ] ]
             [ Html.a [ attribute "href" ("/admin/text/" ++ String.fromInt textListItem.id) ] [ Html.text textListItem.title ]
             , span [ classList [ ( "sub_description", True ) ] ]
-                [ Html.text <| "Modified:   " ++ month_day_year_fmt textListItem.modified_dt
+                [ Html.text <| "Modified:   " ++ Date.Utils.monthDayYearFormat textListItem.modified_dt
                 ]
             ]
         , div [ classList [ ( "item_property", True ) ] ]
@@ -160,16 +153,16 @@ view_text textListItem =
                 ]
             ]
         , div [ classList [ ( "item_property", True ) ] ]
-            [ Html.text text_list_item.author
+            [ Html.text textListItem.author
             , span [ classList [ ( "sub_description", True ) ] ]
                 [ Html.text "Author"
                 ]
             ]
-        , view_tags text_list_item
+        , view_tags textListItem
         , div [ classList [ ( "item_property", True ) ] ]
             [ Html.text textListItem.created_by
             , span [ classList [ ( "sub_description", True ) ] ]
-                [ Html.text ("Created By (" ++ month_day_year_fmt textListItem.created_dt ++ ")")
+                [ Html.text ("Created By (" ++ Date.Utils.monthDayYearFormat textListItem.created_dt ++ ")")
                 ]
             ]
         ]

@@ -24,7 +24,7 @@ view_text_date params =
                     Just last_modified_by ->
                         [ span []
                             [ Html.text
-                                ("Last Modified by " ++ last_modified_by ++ " on " ++ Date.Utils.month_day_year_fmt modified_dt)
+                                ("Last Modified by " ++ last_modified_by ++ " on " ++ Date.Utils.monthDayYearFormat modified_dt)
                             ]
                         ]
 
@@ -40,7 +40,7 @@ view_text_date params =
                             Just created_by ->
                                 [ span []
                                     [ Html.text
-                                        ("Created by " ++ created_by ++ " on " ++ Date.Utils.month_day_year_fmt created_dt)
+                                        ("Created by " ++ created_by ++ " on " ++ Date.Utils.monthDayYearFormat created_dt)
                                     ]
                                 ]
 
