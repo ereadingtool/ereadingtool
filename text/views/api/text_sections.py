@@ -6,4 +6,3 @@ from django.views.generic import View
 class TextSectionDefinitionAPIView(LoginRequiredMixin, View):
     login_url = reverse_lazy('instructor-login')
     allowed_methods = ['get', 'put', 'post', 'delete']
-
