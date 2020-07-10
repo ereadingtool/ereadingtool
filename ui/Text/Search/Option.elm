@@ -1,59 +1,93 @@
-module Text.Search.Option exposing (SearchOption, SearchOptions, newOptions, newOption, optionsToDict, dictToOptions
-  , selected, setSelected, label, options, value, selectedOptions, listToOptions)
+module Text.Search.Option exposing
+    ( SearchOption
+    , SearchOptions
+    , dictToOptions
+    , label
+    , listToOptions
+    , newOption
+    , newOptions
+    , options
+    , optionsToDict
+    , selected
+    , selectedOptions
+    , setSelected
+    , value
+    )
 
 import Dict exposing (Dict)
-
 import Search exposing (..)
 
-type SearchOption = SearchOption Value Label Selected
 
-{-could use an ordered dictionary for options
- (http://package.elm-lang.org/packages/wittjosiah/elm-ordered-dict/latest) -}
-type SearchOptions = SearchOptions (List SearchOption)
+type SearchOption
+    = SearchOption Value Label Selected
+
+
+
+{- could use an ordered dictionary for options
+   (http://package.elm-lang.org/packages/wittjosiah/elm-ordered-dict/latest)
+-}
+
+
+type SearchOptions
+    = SearchOptions (List SearchOption)
+
 
 options : SearchOptions -> List SearchOption
-options (SearchOptions options) =
-  options
+options (SearchOptions opts) =
+    opts
+
 
 selectedOptions : SearchOptions -> List SearchOption
 selectedOptions search_options =
-  List.filter selected (options search_options)
+    List.filter selected (options search_options)
 
-newOption : (Value, Label) -> Selected -> SearchOption
-newOption (value, label) selected =
-  SearchOption value label selected
+
+newOption : ( Value, Label ) -> Selected -> SearchOption
+newOption ( v, l ) is_selected =
+    SearchOption v l is_selected
+
 
 value : SearchOption -> Value
-value (SearchOption value _ _) =
-  value
+value (SearchOption v _ _) =
+    v
+
 
 label : SearchOption -> Label
-label (SearchOption _ label _) = label
+label (SearchOption _ l _) =
+    l
 
-newOptions : List (Value, Label) -> SearchOptions
-newOptions options =
-  SearchOptions
-    (List.map (\(value, label) -> newOption (value, label) False) options)
 
-addOption : SearchOptions -> (Value, Label) -> SearchOptions
-addOption (SearchOptions options) (value, label) =
-  SearchOptions ((SearchOption value label False) :: options)
+newOptions : List ( Value, Label ) -> SearchOptions
+newOptions opts =
+    SearchOptions
+        (List.map (\( v, l ) -> newOption ( v, l ) False) opts)
+
+
+addOption : SearchOptions -> ( Value, Label ) -> SearchOptions
+addOption (SearchOptions opts) ( v, l ) =
+    SearchOptions (SearchOption v l False :: opts)
+
 
 optionsToDict : SearchOptions -> Dict String SearchOption
-optionsToDict (SearchOptions options) =
-  Dict.fromList (List.map (\option -> (value option, option)) options)
+optionsToDict (SearchOptions opts) =
+    Dict.fromList (List.map (\option -> ( value option, option )) opts)
+
 
 listToOptions : List SearchOption -> SearchOptions
-listToOptions options =
-  SearchOptions options
+listToOptions opts =
+    SearchOptions opts
+
 
 dictToOptions : Dict String SearchOption -> SearchOptions
-dictToOptions options =
-  SearchOptions (Dict.values options)
+dictToOptions opts =
+    SearchOptions (Dict.values opts)
+
 
 setSelected : SearchOption -> Bool -> SearchOption
-setSelected (SearchOption value label selected) new_selected =
-  SearchOption value label new_selected
+setSelected (SearchOption v l _) new_selected =
+    SearchOption v l new_selected
+
 
 selected : SearchOption -> Bool
-selected (SearchOption _ _ selected) = selected
+selected (SearchOption _ _ is_selected) =
+    is_selected

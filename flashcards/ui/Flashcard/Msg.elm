@@ -1,21 +1,23 @@
 module Flashcard.Msg exposing (..)
 
-import Http
-
-import Menu.Msg as MenuMsg
-import Menu.Logout
-
 import Flashcard.Mode
+import Http
+import Menu.Logout
+import Menu.Msg as MenuMsg
 
-type Msg =
-    SelectMode Flashcard.Mode.Mode
-  | Start
-  | ReviewAnswer
-  | Next
-  | Prev
-  | InputAnswer String
-  | SubmitAnswer
-  | RateQuality Int
-  | WebSocketResp String
-  | LogOut MenuMsg.Msg
-  | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
+import Json.Decode
+import WebSocket
+
+
+type Msg
+    = SelectMode Flashcard.Mode.Mode
+    | Start
+    | ReviewAnswer
+    | Next
+    | Prev
+    | InputAnswer String
+    | SubmitAnswer
+    | RateQuality Int
+    | WebSocketResp (Result Json.Decode.Error WebSocket.WebSocketMsg)
+    | LogOut MenuMsg.Msg
+    | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)

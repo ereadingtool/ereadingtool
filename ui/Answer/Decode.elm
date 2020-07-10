@@ -1,20 +1,22 @@
 module Answer.Decode exposing (answerDecoder, answersDecoder)
 
 import Answer.Model exposing (Answer)
-
 import Array exposing (Array)
-import Json.Decode as Decode
-import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
+import Json.Decode
+import Json.Decode.Pipeline exposing (required)
 
-answerDecoder : Decode.Decoder Answer
+
+answerDecoder : Json.Decode.Decoder Answer
 answerDecoder =
-  decode Answer
-    |> required "id" (Decode.nullable Decode.int)
-    |> required "question_id" (Decode.nullable Decode.int)
-    |> required "text" Decode.string
-    |> required "correct" Decode.bool
-    |> required "order" Decode.int
-    |> required "feedback" Decode.string
+    Json.Decode.succeed Answer
+        |> required "id" (Json.Decode.nullable Json.Decode.int)
+        |> required "question_id" (Json.Decode.nullable Json.Decode.int)
+        |> required "text" Json.Decode.string
+        |> required "correct" Json.Decode.bool
+        |> required "order" Json.Decode.int
+        |> required "feedback" Json.Decode.string
 
-answersDecoder : Decode.Decoder (Array Answer)
-answersDecoder = Decode.array answerDecoder
+
+answersDecoder : Json.Decode.Decoder (Array Answer)
+answersDecoder =
+    Json.Decode.array answerDecoder

@@ -1,26 +1,28 @@
 module Question.Decode exposing (questionDecoder, questionsDecoder)
 
-import Question.Model exposing (Question)
 import Answer.Decode
-
 import Array exposing (Array)
+import Json.Decode
+import Json.Decode.Extra exposing (posix)
+import Json.Decode.Pipeline exposing (required)
+import Question.Model exposing (Question)
 
-import Json.Decode as Decode
-import Json.Decode.Pipeline exposing (decode, required, optional, resolve, hardcoded)
-import Json.Decode.Extra exposing (date)
+import DateTime
 
-questionDecoder : Decode.Decoder Question
+
+questionDecoder : Json.Decode.Decoder Question
 questionDecoder =
-  decode Question
-    |> required "id" (Decode.nullable Decode.int)
-    |> required "text_section_id" (Decode.nullable Decode.int)
-    |> required "created_dt" (Decode.nullable date)
-    |> required "modified_dt" (Decode.nullable date)
-    |> required "body" Decode.string
-    |> required "order" Decode.int
-    |> required "answers" Answer.Decode.answersDecoder
-    |> required "question_type" Decode.string
+    Json.Decode.succeed Question
+        |> required "id" (Json.Decode.nullable Json.Decode.int)
+        |> required "text_section_id" (Json.Decode.nullable Json.Decode.int)
+        |> required "created_dt" (Json.Decode.nullable (Json.Decode.map DateTime.fromPosix posix))
+        |> required "modified_dt" (Json.Decode.nullable (Json.Decode.map DateTime.fromPosix posix))
+        |> required "body" Json.Decode.string
+        |> required "order" Json.Decode.int
+        |> required "answers" Answer.Decode.answersDecoder
+        |> required "question_type" Json.Decode.string
 
-questionsDecoder : Decode.Decoder (Array Question)
-questionsDecoder = Decode.array questionDecoder
 
+questionsDecoder : Json.Decode.Decoder (Array Question)
+questionsDecoder =
+    Json.Decode.array questionDecoder
