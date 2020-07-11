@@ -1,6 +1,6 @@
 import { Elm } from './Main.elm';
 
-const baseUrl: string = 'http://localhost:9000/'
+const baseUrl: string = 'http://localhost:8000/'
 const authStoreKey: string = 'user';
 const flags: string = localStorage.getItem(authStoreKey);
 
@@ -9,11 +9,11 @@ const app = Elm.Main.init({
   flags: flags
 });
 
-type Creds = { email: string, password: string }
+type Creds = { username: string, password: string }
 type User = { user: { token: string } }
 
 app.ports.login.subscribe(async (creds: Creds) => {
-  const response = await fetch(baseUrl + 'login', {
+  const response = await fetch(baseUrl + 'token-auth/', {
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
