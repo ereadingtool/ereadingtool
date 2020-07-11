@@ -146,7 +146,7 @@ login =
     let
         creds =
             Encode.object
-                [ ( "email", Encode.string "test@email.com" )
+                [ ( "username", Encode.string "test@email.com" )
                 , ( "password", Encode.string "password" )
                 ]
     in

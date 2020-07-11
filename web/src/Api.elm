@@ -153,7 +153,7 @@ get :
 get endpoint maybeCred toMsg decoder =
     Http.request
         { method = "GET"
-        , url = "http://localhost:9000/" ++ endpoint
+        , url = "http://localhost:8000/" ++ endpoint
         , expect = Http.expectJson toMsg decoder
         , headers =
             case maybeCred of
