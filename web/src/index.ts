@@ -1,6 +1,6 @@
 import { Elm } from './Main.elm';
 
-const baseUrl: string = 'http://localhost:8000/'
+const baseUrl: string = process.env.RESTAPIURL;
 const authStoreKey: string = 'user';
 const flags: string = localStorage.getItem(authStoreKey);
 
