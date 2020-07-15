@@ -151,9 +151,12 @@ venv.bak/
 # mkdocs documentation
 /site
 
-# elm
-elm-stuff
+# parcel
 dist/
+
+# elm and elm-spa
+elm-stuff/
+src/Spa/Generated
 
 # mypy
 .mypy_cache/

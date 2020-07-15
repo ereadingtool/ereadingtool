@@ -1,58 +1,50 @@
-module Main exposing
-    ( Model
-    , Msg(..)
-    , init
-    , main
-    , subscriptions
-    , update
-    , view
-    )
+module Main exposing (main)
 
-import Api
 import Browser
-import Html exposing (button, div, text)
-import Html.Events exposing (onClick)
-import Http
-import Json.Decode as Decode exposing (Decoder)
-import Json.Decode.Pipeline exposing (required)
-import Json.Encode as Encode
-import Session exposing (Session)
-import Viewer exposing (Viewer)
+import Browser.Navigation as Nav
+import Shared exposing (Flags)
+import Spa.Document as Document exposing (Document)
+import Spa.Generated.Pages as Pages
+import Spa.Generated.Route as Route exposing (Route)
+import Url exposing (Url)
 
 
-
--- MAIN
-
-
+main : Program Flags Model Msg
 main =
-    Api.application Viewer.decoder
+    Browser.application
         { init = init
         , update = update
         , subscriptions = subscriptions
-        , view = view
+        , view = view >> Document.toBrowserDocument
+        , onUrlRequest = LinkClicked
+        , onUrlChange = UrlChanged
         }
 
 
 
--- MODEL
+-- INIT
 
 
 type alias Model =
-    { session : Session
-    , testMessage : String
+    { shared : Shared.Model
+    , page : Pages.Model
     }
 
 
-init : Maybe Viewer -> ( Model, Cmd Msg )
-init maybeViewer =
+init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
+init flags url key =
     let
-        session =
-            Session.fromViewer maybeViewer
+        ( shared, sharedCmd ) =
+            Shared.init flags url key
+
+        ( page, pageCmd ) =
+            Pages.init (fromUrl url) shared
     in
-    ( { session = session
-      , testMessage = ""
-      }
-    , Cmd.none
+    ( Model shared page
+    , Cmd.batch
+        [ Cmd.map Shared sharedCmd
+        , Cmd.map Pages pageCmd
+        ]
     )
 
 
@@ -61,117 +53,93 @@ init maybeViewer =
 
 
 type Msg
-    = Login
-    | Logout
-    | SubmittedTest
-    | GotSession Session
-    | GotTest (Result Http.Error TestMessage)
+    = LinkClicked Browser.UrlRequest
+    | UrlChanged Url
+    | Shared Shared.Msg
+    | Pages Pages.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Login ->
-            ( model, login )
-
-        Logout ->
-            ( model, logout )
-
-        GotSession session ->
-            ( { model
-                | session = session
-              }
-            , Cmd.none
-            )
-
-        SubmittedTest ->
+        LinkClicked (Browser.Internal url) ->
             ( model
-            , Api.get
-                "test"
-                (Session.cred model.session)
-                GotTest
-                testMessageDecoder
+            , Nav.pushUrl model.shared.key (Url.toString url)
             )
 
-        GotTest (Ok testMessage) ->
-            ( { model | testMessage = testMessageToString testMessage }, Cmd.none )
+        LinkClicked (Browser.External href) ->
+            ( model
+            , Nav.load href
+            )
 
-        GotTest (Err _) ->
-            ( { model | testMessage = "HTTP Request failed" }, Cmd.none )
+        UrlChanged url ->
+            let
+                original =
+                    model.shared
+
+                shared =
+                    { original | url = url }
+
+                ( page, pageCmd ) =
+                    Pages.init (fromUrl url) shared
+            in
+            ( { model | page = page, shared = Pages.save page shared }
+            , Cmd.map Pages pageCmd
+            )
+
+        Shared sharedMsg ->
+            let
+                ( shared, sharedCmd ) =
+                    Shared.update sharedMsg model.shared
+
+                ( page, pageCmd ) =
+                    Pages.load model.page shared
+            in
+            ( { model | page = page, shared = shared }
+            , Cmd.batch
+                [ Cmd.map Shared sharedCmd
+                , Cmd.map Pages pageCmd
+                ]
+            )
+
+        Pages pageMsg ->
+            let
+                ( page, pageCmd ) =
+                    Pages.update pageMsg model.page
+
+                shared =
+                    Pages.save page model.shared
+            in
+            ( { model | page = page, shared = shared }
+            , Cmd.map Pages pageCmd
+            )
 
 
-
--- VIEW
-
-
-view : Model -> Browser.Document Msg
+view : Model -> Document Msg
 view model =
-    let
-        loginStatus =
-            case Session.viewer model.session of
-                Just _ ->
-                    "logged in"
-
-                Nothing ->
-                    "logged out"
-    in
-    { title = "ereadingtool"
-    , body =
-        [ button [ onClick Login ] [ text "Login" ]
-        , button [ onClick Logout ] [ text "Logout" ]
-        , div [] [ text ("Status: " ++ loginStatus) ]
-        , div []
-            [ text ("Token: " ++ Api.exposeToken (Session.cred model.session)) ]
-        , button [ onClick SubmittedTest ] [ text "HTTP Test" ]
-        , div [] [ text model.testMessage ]
-        ]
-    }
-
-
-
--- SUBSCRIPTIONS
+    Shared.view
+        { page =
+            Pages.view model.page
+                |> Document.map Pages
+        , toMsg = Shared
+        }
+        model.shared
 
 
 subscriptions : Model -> Sub Msg
-subscriptions _ =
-    Session.changes GotSession
+subscriptions model =
+    Sub.batch
+        [ Shared.subscriptions model.shared
+            |> Sub.map Shared
+        , Pages.subscriptions model.page
+            |> Sub.map Pages
+        ]
 
 
 
--- AUTH
+-- URL
 
 
-login : Cmd msg
-login =
-    let
-        creds =
-            Encode.object
-                [ ( "username", Encode.string "test@email.com" )
-                , ( "password", Encode.string "password" )
-                ]
-    in
-    Api.login creds
-
-
-logout : Cmd msg
-logout =
-    Api.logout ()
-
-
-
--- HTTP TEST
-
-
-type TestMessage
-    = TestMessage String
-
-
-testMessageDecoder : Decoder TestMessage
-testMessageDecoder =
-    Decode.succeed TestMessage
-        |> required "message" Decode.string
-
-
-testMessageToString : TestMessage -> String
-testMessageToString (TestMessage message) =
-    message
+fromUrl : Url -> Route
+fromUrl =
+    Route.fromUrl >> Maybe.withDefault Route.NotFound

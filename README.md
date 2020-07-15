@@ -26,26 +26,26 @@ npm install
 ### Develop 
 
 `parcel` provides a local webserver and hot reloading which are useful during
-local development.
+local development. We call `elm-spa` and `parcel` with `npm`.
 
 ```
-parcel src/index.html
+npm start
 ```
 
 ## Build
 
-Both `parcel` build commands compile to the `dist` directory.
+Both build commands compile to the `dist` directory.
 
 To compile a development build without optimization
 
 ```
-parcel build src/index.html --no-minify
+npm run build:staging
 ```
 
 To compile an optimized production build
 
 ```
-parcel build src/index.html
+npm run build
 ```
 
 All debug statements must be removed for the optimized build.
