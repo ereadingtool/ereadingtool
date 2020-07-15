@@ -16,9 +16,11 @@ port module Api exposing
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint exposing (Endpoint)
 import Browser
+import Browser.Navigation as Nav
 import Http
 import Json.Decode as Decode exposing (Decoder, Value, field, string)
 import Json.Decode.Pipeline exposing (required)
+import Url exposing (Url)
 
 
 
@@ -177,7 +179,9 @@ access to the token to this module.
 application :
     Decoder (Cred -> viewer)
     ->
-        { init : { maybeConfig : Maybe Config, maybeViewer : Maybe viewer } -> ( model, Cmd msg )
+        { init : { maybeConfig : Maybe Config, maybeViewer : Maybe viewer } -> Url -> Nav.Key -> ( model, Cmd msg )
+        , onUrlChange : Url -> msg
+        , onUrlRequest : Browser.UrlRequest -> msg
         , update : msg -> model -> ( model, Cmd msg )
         , subscriptions : model -> Sub msg
         , view : model -> Browser.Document msg
@@ -185,7 +189,7 @@ application :
     -> Program Value model msg
 application viewerDecoder config =
     let
-        init flags =
+        init flags url navKey =
             let
                 decodedFlags =
                     { maybeViewer =
@@ -196,10 +200,12 @@ application viewerDecoder config =
                             |> Result.toMaybe
                     }
             in
-            config.init decodedFlags
+            config.init decodedFlags url navKey
     in
-    Browser.document
+    Browser.application
         { init = init
+        , onUrlChange = config.onUrlChange
+        , onUrlRequest = config.onUrlRequest
         , subscriptions = config.subscriptions
         , update = config.update
         , view = config.view

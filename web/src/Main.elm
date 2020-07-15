@@ -1,17 +1,33 @@
 module Main exposing (main)
 
+import Api exposing (AuthError, AuthSuccess)
 import Browser
 import Browser.Navigation as Nav
+import Json.Decode exposing (Value)
 import Shared exposing (Flags)
 import Spa.Document as Document exposing (Document)
 import Spa.Generated.Pages as Pages
 import Spa.Generated.Route as Route exposing (Route)
 import Url exposing (Url)
+import Viewer
 
 
-main : Program Flags Model Msg
+
+-- main : Program Flags Model Msg
+-- main =
+--     Browser.application
+--         { init = init
+--         , update = update
+--         , subscriptions = subscriptions
+--         , view = view >> Document.toBrowserDocument
+--         , onUrlRequest = LinkClicked
+--         , onUrlChange = UrlChanged
+--         }
+
+
+main : Program Value Model Msg
 main =
-    Browser.application
+    Api.application Viewer.decoder
         { init = init
         , update = update
         , subscriptions = subscriptions
