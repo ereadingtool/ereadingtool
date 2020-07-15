@@ -1,6 +1,11 @@
 port module Api exposing
-    ( Cred
+    ( AuthError
+    , AuthSuccess
+    , Cred
     , application
+    , authErrorMessage
+    , authResult
+    , authSuccessMessage
     , exposeToken
     , get
     , login
@@ -8,6 +13,8 @@ port module Api exposing
     , viewerChanges
     )
 
+import Api.Config as Config exposing (Config)
+import Api.Endpoint as Endpoint exposing (Endpoint)
 import Browser
 import Http
 import Json.Decode as Decode exposing (Decoder, Value, field, string)
@@ -53,6 +60,67 @@ exposeToken maybeCred =
 -- AUTH
 
 
+type alias AuthResponse =
+    { result : String
+    , message : String
+    }
+
+
+decodeAuthResponse : Decoder AuthResponse
+decodeAuthResponse =
+    Decode.succeed AuthResponse
+        |> required "result" Decode.string
+        |> required "message" Decode.string
+
+
+type AuthSuccess
+    = AuthSuccess String
+
+
+authSuccessMessage : AuthSuccess -> String
+authSuccessMessage (AuthSuccess val) =
+    val
+
+
+type AuthError
+    = AuthError String
+
+
+authErrorMessage : AuthError -> String
+authErrorMessage (AuthError err) =
+    err
+
+
+port onAuthResponse : (Value -> msg) -> Sub msg
+
+
+authResult : (Result AuthError AuthSuccess -> msg) -> Sub msg
+authResult toMsg =
+    onAuthResponse (\val -> toMsg (toAuthResult (Decode.decodeValue decodeAuthResponse val)))
+
+
+toAuthResult : Result Decode.Error AuthResponse -> Result AuthError AuthSuccess
+toAuthResult result =
+    case result of
+        Ok authResponse ->
+            case authResponse.result of
+                "success" ->
+                    Ok (AuthSuccess authResponse.message)
+
+                "error" ->
+                    Err (AuthError authResponse.message)
+
+                _ ->
+                    Err (AuthError "An internal error occured. Please contact the developers.")
+
+        Err err ->
+            Err
+                (AuthError <|
+                    "An internal error occured. Please contact the developers and mention that "
+                        ++ Decode.errorToString err
+                )
+
+
 port login : Value -> Cmd msg
 
 
@@ -80,8 +148,7 @@ viewerChanges toMsg decoder =
 
 decodeFromChange : Decoder (Cred -> viewer) -> Value -> Maybe viewer
 decodeFromChange viewerDecoder val =
-    Decode.decodeValue Decode.string val
-        |> Result.andThen (Decode.decodeString (storageDecoder viewerDecoder))
+    Decode.decodeValue (storageDecoder viewerDecoder) val
         |> Result.toMaybe
 
 
@@ -108,9 +175,9 @@ access to the token to this module.
 
 -}
 application :
-    Decoder (Cred -> user)
+    Decoder (Cred -> viewer)
     ->
-        { init : Maybe user -> ( model, Cmd msg )
+        { init : { maybeConfig : Maybe Config, maybeViewer : Maybe viewer } -> ( model, Cmd msg )
         , update : msg -> model -> ( model, Cmd msg )
         , subscriptions : model -> Sub msg
         , view : model -> Browser.Document msg
@@ -120,12 +187,16 @@ application viewerDecoder config =
     let
         init flags =
             let
-                maybeViewer =
-                    Decode.decodeValue Decode.string flags
-                        |> Result.andThen (Decode.decodeString (storageDecoder viewerDecoder))
-                        |> Result.toMaybe
+                decodedFlags =
+                    { maybeViewer =
+                        Decode.decodeValue (storageDecoder viewerDecoder) flags
+                            |> Result.toMaybe
+                    , maybeConfig =
+                        Decode.decodeValue Config.configDecoder flags
+                            |> Result.toMaybe
+                    }
             in
-            config.init maybeViewer
+            config.init decodedFlags
     in
     Browser.document
         { init = init
@@ -145,15 +216,15 @@ credHeader (Cred token) =
 
 
 get :
-    String
+    Endpoint
     -> Maybe Cred
     -> (Result Http.Error a -> msg)
     -> Decoder a
     -> Cmd msg
-get endpoint maybeCred toMsg decoder =
-    Http.request
+get url maybeCred toMsg decoder =
+    Endpoint.request
         { method = "GET"
-        , url = "http://localhost:8000/" ++ endpoint
+        , url = url
         , expect = Http.expectJson toMsg decoder
         , headers =
             case maybeCred of
