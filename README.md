@@ -32,7 +32,7 @@ local development. We call `elm-spa` and `parcel` with `npm`.
 npm start
 ```
 
-## Build
+### Build
 
 Both build commands compile to the `dist` directory.
 
@@ -49,3 +49,9 @@ npm run build
 ```
 
 All debug statements must be removed for the optimized build.
+
+### Environment variables
+
+Environment variables are stored `.env.local` for local development, `.env.devel` for the development server build, and `.env.production` for the production build.
+
+There may be occassional caching problems when using these environments. Deleting `.cache/` and `dist/` will usually help.
