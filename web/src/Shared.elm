@@ -87,6 +87,8 @@ view { page, toMsg } model =
             [ header [ class "navbar" ]
                 [ a [ class "link", href (Route.toString Route.Top) ] [ text "Homepage" ]
                 , a [ class "link", href (Route.toString Route.NotFound) ] [ text "Not found" ]
+                , a [ class "link", href (Route.toString Route.About) ] [ text "About" ]
+                , a [ class "link", href (Route.toString Route.Acknowledgments) ] [ text "Acknowledgments" ]
                 , div []
                     [ text ("Token: " ++ Api.exposeToken (Session.cred model.session)) ]
                 , div [] [ text ("REST API URL: " ++ Config.restApiUrl model.config) ]
