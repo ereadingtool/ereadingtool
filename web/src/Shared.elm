@@ -57,19 +57,27 @@ init flags url key =
 
 
 type Msg
-    = ReplaceMe
+    = GotSession Session
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ReplaceMe ->
-            ( model, Cmd.none )
+        GotSession session ->
+            let
+                dbg =
+                    Debug.log "session" session
+            in
+            ( { model
+                | session = session
+              }
+            , Cmd.none
+            )
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    Session.changes GotSession
 
 
 
@@ -87,6 +95,7 @@ view { page, toMsg } model =
             [ header [ class "navbar" ]
                 [ a [ class "link", href (Route.toString Route.Top) ] [ text "Homepage" ]
                 , a [ class "link", href (Route.toString Route.NotFound) ] [ text "Not found" ]
+                , a [ class "link", href (Route.toString Route.ProtectedApplicationTemplate) ] [ text "Protected" ]
                 , div []
                     [ text ("Token: " ++ Api.exposeToken (Session.cred model.session)) ]
                 , div [] [ text ("REST API URL: " ++ Config.restApiUrl model.config) ]
