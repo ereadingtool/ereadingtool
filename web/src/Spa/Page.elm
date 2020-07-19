@@ -143,7 +143,7 @@ protectedApplication page =
 
                 Nothing ->
                     ( Nothing
-                    , Nav.load (Route.toString Route.Top)
+                    , Nav.pushUrl shared.key (Route.toString Route.Top)
                     )
     }
 
