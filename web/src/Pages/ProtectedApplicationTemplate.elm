@@ -32,12 +32,16 @@ type alias Model =
 
 
 type SafeModel
-    = SafeModel { protectedInfo : String }
+    = SafeModel
+        { protectedInfo : String
+        }
 
 
 init : Shared.Model -> Url Params -> ( SafeModel, Cmd Msg )
 init shared { params } =
-    ( SafeModel { protectedInfo = "For authenticated eyes only" }
+    ( SafeModel
+        { protectedInfo = "For authenticated eyes only"
+        }
     , Cmd.none
     )
 
@@ -52,10 +56,6 @@ type Msg
 
 update : Msg -> SafeModel -> ( SafeModel, Cmd Msg )
 update msg (SafeModel model) =
-    -- let
-    --     model =
-    --         unwrap safeModel
-    -- in
     case msg of
         ReplaceMe ->
             ( SafeModel model, Cmd.none )
