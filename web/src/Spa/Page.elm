@@ -1,6 +1,7 @@
 module Spa.Page exposing
     ( Page
     , static, sandbox, element, application
+    , protectedApplication
     )
 
 {-|
@@ -11,8 +12,11 @@ module Spa.Page exposing
 
 -}
 
+import Browser.Navigation as Nav
+import Session
 import Shared
 import Spa.Document exposing (Document)
+import Spa.Generated.Route as Route
 import Spa.Url exposing (Url)
 
 
@@ -84,6 +88,64 @@ application :
     -> Page params model msg
 application page =
     page
+
+
+protectedApplication :
+    { init : Shared.Model -> Url params -> ( model, Cmd msg )
+    , update : msg -> model -> ( model, Cmd msg )
+    , view : model -> Document msg
+    , subscriptions : model -> Sub msg
+    , save : model -> Shared.Model -> Shared.Model
+    , load : Shared.Model -> model -> ( model, Cmd msg )
+    }
+    -> Page params (Maybe model) msg
+protectedApplication page =
+    { init =
+        \shared url ->
+            case Session.viewer shared.session of
+                Just viewer ->
+                    page.init shared url |> Tuple.mapFirst Just
+
+                Nothing ->
+                    ( Nothing
+                    , Nav.pushUrl url.key (Route.toString Route.Top)
+                    )
+    , update =
+        \msg maybeModel ->
+            case maybeModel of
+                Just model ->
+                    page.update msg model |> Tuple.mapFirst Just
+
+                Nothing ->
+                    ( Nothing, Cmd.none )
+    , view =
+        \maybeModel ->
+            case maybeModel of
+                Just model ->
+                    page.view model
+
+                Nothing ->
+                    { title = "Redirecting to login page", body = [] }
+    , subscriptions =
+        \maybeModel ->
+            case maybeModel of
+                Just model ->
+                    page.subscriptions model
+
+                Nothing ->
+                    Sub.none
+    , save = \_ shared -> shared
+    , load =
+        \shared model ->
+            case Session.viewer shared.session of
+                Just viewer ->
+                    ( model, Cmd.none )
+
+                Nothing ->
+                    ( Nothing
+                    , Nav.pushUrl shared.key (Route.toString Route.Top)
+                    )
+    }
 
 
 ignoreEffect : model -> ( model, Cmd msg )
