@@ -82,10 +82,6 @@ update msg model =
             ( { model | authMessage = Api.authErrorMessage authError }, Cmd.none )
 
         GotSession session ->
-            let
-                dbg =
-                    Debug.log "session" session
-            in
             ( { model
                 | session = session
               }
@@ -117,6 +113,8 @@ view { page, toMsg } model =
                 [ a [ class "link", href (Route.toString Route.Top) ] [ text "Homepage" ]
                 , a [ class "link", href (Route.toString Route.NotFound) ] [ text "Not found" ]
                 , a [ class "link", href (Route.toString Route.ProtectedApplicationTemplate) ] [ text "Protected" ]
+                , a [ class "link", href (Route.toString Route.ProtectedStudentApplication) ] [ text "Students Only" ]
+                , a [ class "link", href (Route.toString Route.ProtectedInstructorApplication) ] [ text "Instructors Only" ]
                 ]
             , div [ class "page" ] page.body
             , div []

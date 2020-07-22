@@ -17,9 +17,12 @@ import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint exposing (Endpoint)
 import Browser
 import Browser.Navigation as Nav
+import Dict
 import Http
+import JWT exposing (JWT(..))
 import Json.Decode as Decode exposing (Decoder, Value, field, string)
 import Json.Decode.Pipeline exposing (required)
+import Role exposing (Role)
 import Url exposing (Url)
 
 
@@ -143,27 +146,50 @@ Otherwise, we have a guest.
 port onAuthStoreChange : (Value -> msg) -> Sub msg
 
 
-viewerChanges : (Maybe viewer -> msg) -> Decoder (Cred -> viewer) -> Sub msg
+viewerChanges : (Maybe viewer -> msg) -> Decoder (Cred -> Role -> viewer) -> Sub msg
 viewerChanges toMsg decoder =
     onAuthStoreChange (\val -> toMsg (decodeFromChange decoder val))
 
 
-decodeFromChange : Decoder (Cred -> viewer) -> Value -> Maybe viewer
+decodeFromChange : Decoder (Cred -> Role -> viewer) -> Value -> Maybe viewer
 decodeFromChange viewerDecoder val =
     Decode.decodeValue (storageDecoder viewerDecoder) val
         |> Result.toMaybe
 
 
-storageDecoder : Decoder (Cred -> viewer) -> Decoder viewer
+storageDecoder : Decoder (Cred -> Role -> viewer) -> Decoder viewer
 storageDecoder viewerDecoder =
     Decode.field "user" (decoderFromCred viewerDecoder)
 
 
-decoderFromCred : Decoder (Cred -> a) -> Decoder a
+decoderFromCred : Decoder (Cred -> Role -> a) -> Decoder a
 decoderFromCred decoder =
-    Decode.map2 (\fromCred cred -> fromCred cred)
+    Decode.map3 (\fromCred role2 cred -> fromCred role2 cred)
         decoder
         credDecoder
+        (credDecoder
+            |> Decode.andThen roleDecoderFromCred
+        )
+
+
+roleDecoderFromCred : Cred -> Decoder Role
+roleDecoderFromCred (Cred cred) =
+    case JWT.fromString cred of
+        Ok (JWS jws) ->
+            case Dict.get "role" jws.claims.metadata of
+                Just roleClaim ->
+                    case Decode.decodeValue Decode.string roleClaim of
+                        Ok role ->
+                            Role.decoder role
+
+                        Err _ ->
+                            Role.decoder "Role claim not a string"
+
+                Nothing ->
+                    Role.decoder "Role claim missing"
+
+        Err _ ->
+            Role.decoder "Could not decode JWT"
 
 
 
@@ -177,7 +203,7 @@ access to the token to this module.
 
 -}
 application :
-    Decoder (Cred -> viewer)
+    Decoder (Cred -> Role -> viewer)
     ->
         { init : { maybeConfig : Maybe Config, maybeViewer : Maybe viewer } -> Url -> Nav.Key -> ( model, Cmd msg )
         , onUrlChange : Url -> msg

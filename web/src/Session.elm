@@ -1,6 +1,7 @@
-module Session exposing (Session, changes, cred, fromViewer, viewer)
+module Session exposing (Session, changes, cred, fromViewer, role, viewer)
 
 import Api exposing (Cred)
+import Role exposing (Role)
 import Viewer exposing (Viewer)
 
 
@@ -24,6 +25,16 @@ cred session =
     case session of
         LoggedIn val ->
             Just (Viewer.cred val)
+
+        Guest ->
+            Nothing
+
+
+role : Session -> Maybe Role
+role session =
+    case session of
+        LoggedIn val ->
+            Just (Viewer.role val)
 
         Guest ->
             Nothing
