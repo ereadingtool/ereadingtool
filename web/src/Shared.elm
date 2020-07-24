@@ -112,6 +112,8 @@ view { page, toMsg } model =
             [ header [ class "navbar" ]
                 [ a [ class "link", href (Route.toString Route.Top) ] [ text "Homepage" ]
                 , a [ class "link", href (Route.toString Route.NotFound) ] [ text "Not found" ]
+                , a [ class "link", href (Route.toString Route.About) ] [ text "About" ]
+                , a [ class "link", href (Route.toString Route.Acknowledgments) ] [ text "Acknowledgments" ]
                 , a [ class "link", href (Route.toString Route.ProtectedApplicationTemplate) ] [ text "Protected" ]
                 , a [ class "link", href (Route.toString Route.ProtectedStudentApplication) ] [ text "Students Only" ]
                 , a [ class "link", href (Route.toString Route.ProtectedInstructorApplication) ] [ text "Instructors Only" ]
