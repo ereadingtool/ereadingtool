@@ -1,6 +1,5 @@
-module Student.Student_Login exposing
+module Login.Student.Top exposing
     ( Flags
-    , main
     , view
     , view_acknowledgements_and_about_links
     , view_content
@@ -8,19 +7,23 @@ module Student.Student_Login exposing
     )
 
 import Html exposing (Html, div)
-import Browser
 import Html.Attributes exposing (attribute, class, classList, id)
-import Login
+import User.Login
 import User
 import User.Flags.UnAuthed exposing (UnAuthedUserFlags)
 import Views
+
+import Shared
+
+import Spa.Page as Page exposing (Page)
+
 
 
 type alias Flags =
     UnAuthedUserFlags {}
 
 
-view_help_msgs : Login.Model -> List (Html Login.Msg)
+view_help_msgs : User.Login.Model -> List (Html User.Login.Msg)
 view_help_msgs _ =
     [ div [ class "help_msgs" ]
         [ Html.text """When signing in, please note that this website is not connected to your university’s user account.
@@ -29,7 +32,7 @@ view_help_msgs _ =
     ]
 
 
-view_acknowledgements_and_about_links : Login.Model -> Html Login.Msg
+view_acknowledgements_and_about_links : User.Login.Model -> Html User.Login.Msg
 view_acknowledgements_and_about_links model =
     div [ id "acknowledgements-and-about" ]
         [ div []
@@ -45,22 +48,22 @@ view_acknowledgements_and_about_links model =
         ]
 
 
-view_content : Login.Model -> Html Login.Msg
+view_content : User.Login.Model -> Html User.Login.Msg
 view_content model =
     div [ classList [ ( "login", True ) ] ]
-        [ div [ class "login_type" ] [ Html.text (Login.label model.login) ]
+        [ div [ class "login_type" ] [ Html.text (User.Login.label model.login) ]
         , div [ classList [ ( "login_box", True ) ] ] <|
-            Login.view_email_input model
-                ++ Login.view_password_input model
-                ++ Login.view_login model.login
-                ++ Login.view_submit model
+            User.Login.view_email_input model
+                ++ User.Login.view_password_input model
+                ++ User.Login.view_login model.login
+                ++ User.Login.view_submit model
                 ++ view_help_msgs model
                 ++ [ view_acknowledgements_and_about_links model ]
-                ++ Login.view_errors model
+                ++ User.Login.view_errors model
         ]
 
 
-view : Login.Model -> Html Login.Msg
+view : User.Login.Model -> Html User.Login.Msg
 view model =
     div []
         [ Views.view_unauthed_header
@@ -68,12 +71,23 @@ view model =
         , Views.view_footer
         ]
 
+save : User.Login.Model -> Shared.Model -> Shared.Model
+save model shared =
+    shared
 
-main : Program Flags Login.Model Login.Msg
-main =
-    Browser.element
-        { init = Login.init
-        , view = view
-        , subscriptions = Login.subscriptions
-        , update = Login.update
-        }
+
+load : Shared.Model -> User.Login.Model -> ( User.Login.Model, Cmd User.Login.Msg )
+load shared safeModel =
+    ( safeModel, Cmd.none )
+
+
+page : Program Flags User.Login.Model User.Login.Msg
+page =
+    Page.application
+    { init = User.Login.init
+    , update = User.Login.update
+    , subscriptions = User.Login.subscriptions
+    , view = view
+    , save = save
+    , load = load
+    }

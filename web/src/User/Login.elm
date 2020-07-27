@@ -1,4 +1,4 @@
-module Login exposing (..)
+module User.Login exposing (..)
 
 import Dict exposing (Dict)
 import Flags
@@ -6,14 +6,14 @@ import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (..)
-import HttpHelpers exposing (post_with_headers)
+import Utils.HttpHelpers exposing (post_with_headers)
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode
 import Browser.Navigation
 import User
 import User.Flags.UnAuthed exposing (UnAuthedUserFlags)
-import Util exposing (isValidEmail)
+import Utils exposing (isValidEmail)
 import Views
 
 
