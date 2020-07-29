@@ -1,4 +1,4 @@
-module User exposing (..)
+module User.User exposing (..)
 
 
 type UserID

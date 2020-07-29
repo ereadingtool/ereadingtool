@@ -1,23 +1,23 @@
 module User.Login exposing (..)
 
+import Browser.Navigation
 import Dict exposing (Dict)
 import Flags
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (..)
-import Utils.HttpHelpers exposing (post_with_headers)
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode
-import Browser.Navigation
-import User
-import User.Flags.UnAuthed exposing (UnAuthedUserFlags)
-import Utils exposing (isValidEmail)
-import Views
-
 import Shared
+import Spa.Generated.Route as Route
 import Spa.Url exposing (Url)
+import User.User as User
+import User.User.Flags.UnAuthed exposing (UnAuthedUserFlags)
+import Utils exposing (isValidEmail)
+import Utils.HttpHelpers exposing (post_with_headers)
+import Views
 
 
 type alias LoginResp =
@@ -69,12 +69,30 @@ init sharedModel urlParams =
     ( { flags = urlParams
       , login_params = LoginParams "" ""
       , login = login
-      , about_page_url = flagsToAboutURL urlParams
-      , acknowledgements_page_url = flagsToAcknowledgementURL urlParams
+      , about_page_url = User.AboutPageURL (User.URL (Route.toString Route.About))
+      , acknowledgements_page_url = User.AcknowledgePageURL (User.URL (Route.toString Route.Acknowledgments))
       , errors = Dict.fromList []
       }
     , Cmd.none
     )
+
+
+loginRoutes : Url Params -> Login
+loginRoutes urlParams =
+    if urlParams.params.user_type == "instructor" then
+        InstructorLogin
+            -- (User.SignUpURL (User.URL (Route.toString Route.Signup__Student)))
+            (User.LoginURI (User.URI (Route.toString Route.Login__Student__Top)))
+        -- (User.SignUpURL (User.URL (Route.toString Route.ForgotPassword__Student)))
+
+    else
+        StudentLogin
+            -- (User.SignUpURL (User.URL (Route.toString Route.Signup__Instructor)))
+            (User.LoginURI (User.URI (Route.toString Route.Login__Instructor__Top)))
+
+
+
+-- (User.SignUpURL (User.URL (Route.toString Route.ForgotPassword__Instructor)))
 
 
 flagsToLogin : Url Params -> Login
@@ -92,16 +110,6 @@ flagsToLogin urlParams =
             (User.LoginURI (User.URI urlParams.params.login_uri))
             (User.LoginPageURL (User.URL urlParams.params.login_page_url))
             (User.ForgotPassURL (User.URL urlParams.params.forgot_password_url))
-
-
-flagsToAboutURL : Url { a | about_url : String } -> User.AboutPageURL
-flagsToAboutURL urlParams =
-    User.AboutPageURL (User.URL urlParams.params.about_url)
-
-
-flagsToAcknowledgementURL : Url { a | acknowledgements_url : String } -> User.AcknowledgePageURL
-flagsToAcknowledgementURL urlParams =
-    User.AcknowledgePageURL (User.URL urlParams.params.acknowledgements_url)
 
 
 loginURI : Login -> User.LoginURI
