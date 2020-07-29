@@ -16,12 +16,15 @@ import User.Flags.UnAuthed exposing (UnAuthedUserFlags)
 import Utils exposing (isValidEmail)
 import Views
 
+import Shared
+import Spa.Url exposing (Url)
+
 
 type alias LoginResp =
     { id : User.UserID, redirect : User.RedirectURI }
 
 
-type alias Flags =
+type alias Params =
     UnAuthedUserFlags {}
 
 
@@ -48,7 +51,7 @@ type alias LoginParams =
 
 
 type alias Model =
-    { flags : Flags
+    { flags : Url Params
     , login_params : LoginParams
     , login : Login
     , acknowledgements_page_url : User.AcknowledgePageURL
@@ -57,48 +60,48 @@ type alias Model =
     }
 
 
-init : Flags -> ( Model, Cmd Msg )
-init flags =
+init : Shared.Model -> Url Params -> ( Model, Cmd Msg )
+init sharedModel urlParams =
     let
         login =
-            flagsToLogin flags
+            flagsToLogin urlParams
     in
-    ( { flags = flags
+    ( { flags = urlParams
       , login_params = LoginParams "" ""
       , login = login
-      , about_page_url = flagsToAboutURL flags
-      , acknowledgements_page_url = flagsToAcknowledgementURL flags
+      , about_page_url = flagsToAboutURL urlParams
+      , acknowledgements_page_url = flagsToAcknowledgementURL urlParams
       , errors = Dict.fromList []
       }
     , Cmd.none
     )
 
 
-flagsToLogin : Flags -> Login
-flagsToLogin flags =
-    if flags.user_type == "instructor" then
+flagsToLogin : Url Params -> Login
+flagsToLogin urlParams =
+    if urlParams.params.user_type == "instructor" then
         InstructorLogin
-            (User.SignUpURL (User.URL flags.signup_page_url))
-            (User.LoginURI (User.URI flags.login_uri))
-            (User.LoginPageURL (User.URL flags.login_page_url))
-            (User.ForgotPassURL (User.URL flags.forgot_password_url))
+            (User.SignUpURL (User.URL urlParams.params.signup_page_url))
+            (User.LoginURI (User.URI urlParams.params.login_uri))
+            (User.LoginPageURL (User.URL urlParams.params.login_page_url))
+            (User.ForgotPassURL (User.URL urlParams.params.forgot_password_url))
 
     else
         StudentLogin
-            (User.SignUpURL (User.URL flags.signup_page_url))
-            (User.LoginURI (User.URI flags.login_uri))
-            (User.LoginPageURL (User.URL flags.login_page_url))
-            (User.ForgotPassURL (User.URL flags.forgot_password_url))
+            (User.SignUpURL (User.URL urlParams.params.signup_page_url))
+            (User.LoginURI (User.URI urlParams.params.login_uri))
+            (User.LoginPageURL (User.URL urlParams.params.login_page_url))
+            (User.ForgotPassURL (User.URL urlParams.params.forgot_password_url))
 
 
-flagsToAboutURL : { a | about_url : String } -> User.AboutPageURL
-flagsToAboutURL flags =
-    User.AboutPageURL (User.URL flags.about_url)
+flagsToAboutURL : Url { a | about_url : String } -> User.AboutPageURL
+flagsToAboutURL urlParams =
+    User.AboutPageURL (User.URL urlParams.params.about_url)
 
 
-flagsToAcknowledgementURL : { a | acknowledgements_url : String } -> User.AcknowledgePageURL
-flagsToAcknowledgementURL flags =
-    User.AcknowledgePageURL (User.URL flags.acknowledgements_url)
+flagsToAcknowledgementURL : Url { a | acknowledgements_url : String } -> User.AcknowledgePageURL
+flagsToAcknowledgementURL urlParams =
+    User.AcknowledgePageURL (User.URL urlParams.params.acknowledgements_url)
 
 
 loginURI : Login -> User.LoginURI
@@ -149,16 +152,6 @@ label login =
 
         InstructorLogin _ _ _ _ ->
             "Instructor Login"
-
-
-student_login : User.SignUpURL -> User.LoginURI -> User.LoginPageURL -> User.ForgotPassURL -> Login
-student_login signup_uri login_uri login_page_url forgot_pass_url =
-    StudentLogin signup_uri login_uri login_page_url forgot_pass_url
-
-
-instructor_login : User.SignUpURL -> User.LoginURI -> User.LoginPageURL -> User.ForgotPassURL -> Login
-instructor_login signup_uri login_uri login_page_url forgot_pass_url =
-    InstructorLogin signup_uri login_uri login_page_url forgot_pass_url
 
 
 loginEncoder : LoginParams -> Encode.Value
@@ -320,7 +313,7 @@ view_password_input model =
             [ Html.text "Password:"
             ]
         )
-    , Html.input (attrs ++ [ onInput UpdatePassword, Util.onEnterUp Submit ]) []
+    , Html.input (attrs ++ [ onInput UpdatePassword, Utils.onEnterUp Submit ]) []
     , password_err_msg
     ]
 

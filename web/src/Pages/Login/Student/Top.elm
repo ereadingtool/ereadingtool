@@ -81,7 +81,7 @@ load shared safeModel =
     ( safeModel, Cmd.none )
 
 
-page : Program Flags User.Login.Model User.Login.Msg
+page : Page Flags User.Login.Model User.Login.Msg
 page =
     Page.application
     { init = User.Login.init
