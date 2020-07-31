@@ -11,10 +11,11 @@ import Json.Decode
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode
 import Shared
+
 import Spa.Generated.Route as Route
 import Spa.Url exposing (Url)
-import User.User as User
-import User.User.Flags.UnAuthed exposing (UnAuthedUserFlags)
+import User
+import User.Flags.UnAuthed exposing (UnAuthedUserFlags)
 import Utils exposing (isValidEmail)
 import Utils.HttpHelpers exposing (post_with_headers)
 import Views
@@ -51,7 +52,7 @@ type alias LoginParams =
 
 
 type alias Model =
-    { flags : Url Params
+    { params : Url Params
     , login_params : LoginParams
     , login : Login
     , acknowledgements_page_url : User.AcknowledgePageURL
@@ -62,13 +63,9 @@ type alias Model =
 
 init : Shared.Model -> Url Params -> ( Model, Cmd Msg )
 init sharedModel urlParams =
-    let
-        login =
-            flagsToLogin urlParams
-    in
-    ( { flags = urlParams
+    ( { params = urlParams
       , login_params = LoginParams "" ""
-      , login = login
+      , login = paramsToLogin urlParams
       , about_page_url = User.AboutPageURL (User.URL (Route.toString Route.About))
       , acknowledgements_page_url = User.AcknowledgePageURL (User.URL (Route.toString Route.Acknowledgments))
       , errors = Dict.fromList []
@@ -76,27 +73,8 @@ init sharedModel urlParams =
     , Cmd.none
     )
 
-
-loginRoutes : Url Params -> Login
-loginRoutes urlParams =
-    if urlParams.params.user_type == "instructor" then
-        InstructorLogin
-            -- (User.SignUpURL (User.URL (Route.toString Route.Signup__Student)))
-            (User.LoginURI (User.URI (Route.toString Route.Login__Student__Top)))
-        -- (User.SignUpURL (User.URL (Route.toString Route.ForgotPassword__Student)))
-
-    else
-        StudentLogin
-            -- (User.SignUpURL (User.URL (Route.toString Route.Signup__Instructor)))
-            (User.LoginURI (User.URI (Route.toString Route.Login__Instructor__Top)))
-
-
-
--- (User.SignUpURL (User.URL (Route.toString Route.ForgotPassword__Instructor)))
-
-
-flagsToLogin : Url Params -> Login
-flagsToLogin urlParams =
+paramsToLogin : Url Params -> Login
+paramsToLogin urlParams =
     if urlParams.params.user_type == "instructor" then
         InstructorLogin
             (User.SignUpURL (User.URL urlParams.params.signup_page_url))
@@ -187,20 +165,17 @@ subscriptions model =
     Sub.none
 
 
-post_login : User.LoginURI -> Flags.CSRFToken -> LoginParams -> Cmd Msg
-post_login endpoint csrftoken login_params =
+postLogin : User.LoginURI -> LoginParams -> Cmd Msg
+postLogin endpoint login_params =
     let
         encoded_login_params =
             loginEncoder login_params
-
-        req =
-            post_with_headers
-                (User.uriToString (User.loginURI endpoint))
-                [ Http.header "X-CSRFToken" csrftoken ]
-                (Http.jsonBody encoded_login_params)
-                loginRespDecoder
     in
-    Http.send Submitted req
+    Http.post
+      { url = (User.uriToString (User.loginURI endpoint))
+      , body = (Http.jsonBody encoded_login_params)
+      , expect = Http.expectJson Submitted loginRespDecoder
+      }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -232,7 +207,7 @@ update msg model =
 
         Submit ->
             ( { model | errors = Dict.fromList [] }
-            , post_login (loginURI model.login) model.flags.csrftoken model.login_params
+            , postLogin (loginURI model.login) model.login_params
             )
 
         Submitted (Ok resp) ->
@@ -247,9 +222,6 @@ update msg model =
 
                         _ ->
                             ( model, Cmd.none )
-
-                Http.BadPayload _ _ ->
-                    ( model, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
