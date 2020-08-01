@@ -1,4 +1,4 @@
-module Student.Profile.View exposing
+module User.Student.Profile.View exposing
     ( view_feedback_links
     , view_flashcards
     , view_header
@@ -23,15 +23,15 @@ import Menu.Items
 import Menu.Msg
 import Menu.View
 import OrderedDict
-import Student.Profile
-import Student.Profile.Help exposing (StudentHelp(..))
-import Student.Profile.Model exposing (Model, UsernameUpdate)
-import Student.Profile.Msg exposing (HelpMsgs, Msg(..))
-import Student.View
-import Student.Resource
 import Text.Model as Text
 import Text.Reading.Model exposing (TextReading, TextReadingScore)
 import Text.Resource
+import User.Student.Profile as StudentProfile
+import User.Student.Profile.Help as StudentProfileHelp exposing (StudentHelp(..))
+import User.Student.Profile.Model exposing (Model, UsernameUpdate)
+import User.Student.Profile.Msg exposing (HelpMsgs, Msg(..))
+import User.Student.Resource as StudentResource
+import User.Student.View as StudentView
 import Views
 
 
@@ -39,7 +39,7 @@ view_difficulty : Model -> Html Msg
 view_difficulty model =
     let
         pref =
-            Tuple.first (Maybe.withDefault ( "", "" ) (Student.Profile.studentDifficultyPreference model.profile))
+            Tuple.first (Maybe.withDefault ( "", "" ) (StudentProfile.studentDifficultyPreference model.profile))
     in
     div []
         [ Html.select [ onInput UpdateDifficulty ]
@@ -57,7 +57,7 @@ view_difficulty model =
                             )
                             [ Html.text v ]
                     )
-                    (Student.Profile.studentDifficulties model.profile)
+                    (StudentProfile.studentDifficulties model.profile)
                 )
             ]
         ]
@@ -195,16 +195,16 @@ view_username_hint : Model -> List (Html Msg)
 view_username_hint model =
     let
         username_help =
-            Student.Profile.Help.username_help
+            StudentProfileHelp.username_help
 
         hint_attributes =
-            { id = Student.Profile.Help.popupToOverlayID username_help
-            , visible = Student.Profile.Help.isVisible model.help username_help
-            , text = Student.Profile.Help.helpMsg username_help
+            { id = StudentProfileHelp.popupToOverlayID username_help
+            , visible = StudentProfileHelp.isVisible model.help username_help
+            , text = StudentProfileHelp.helpMsg username_help
             , cancel_event = onClick (CloseHelp username_help)
             , next_event = onClick NextHelp
             , prev_event = onClick PrevHelp
-            , addl_attributes = [ id (Student.Profile.Help.helpID model.help username_help) ]
+            , addl_attributes = [ id (StudentProfileHelp.helpID model.help username_help) ]
             , arrow_placement = ArrowDown ArrowLeft
             }
     in
@@ -220,9 +220,9 @@ view_username : Model -> Html Msg
 view_username model =
     let
         username =
-            case Student.Profile.studentUserName model.profile of
+            case StudentProfile.studentUserName model.profile of
                 Just username ->
-                    Student.Profile.studentUserNameToString username
+                    StudentProfile.studentUserNameToString username
 
                 Nothing ->
                     ""
@@ -279,7 +279,7 @@ view_user_email model =
     div [ class "profile_item" ]
         [ span [ class "profile_item_title" ] [ Html.text "User E-Mail" ]
         , span [ class "profile_item_value" ]
-            [ Html.text (Student.Resource.studentEmailToString (Student.Profile.studentEmail model.profile))
+            [ Html.text (StudentResource.studentEmailToString (StudentProfile.studentEmail model.profile))
             ]
         ]
 
@@ -288,16 +288,16 @@ view_difficulty_hint : Model -> List (Html Msg)
 view_difficulty_hint model =
     let
         difficulty_help =
-            Student.Profile.Help.preferred_difficulty_help
+            StudentProfileHelp.preferred_difficulty_help
 
         hint_attributes =
-            { id = Student.Profile.Help.popupToOverlayID difficulty_help
-            , visible = Student.Profile.Help.isVisible model.help difficulty_help
-            , text = Student.Profile.Help.helpMsg difficulty_help
+            { id = StudentProfileHelp.popupToOverlayID difficulty_help
+            , visible = StudentProfileHelp.isVisible model.help difficulty_help
+            , text = StudentProfileHelp.helpMsg difficulty_help
             , cancel_event = onClick (CloseHelp difficulty_help)
             , next_event = onClick NextHelp
             , prev_event = onClick PrevHelp
-            , addl_attributes = [ id (Student.Profile.Help.helpID model.help difficulty_help) ]
+            , addl_attributes = [ id (StudentProfileHelp.helpID model.help difficulty_help) ]
             , arrow_placement = ArrowDown ArrowLeft
             }
     in
@@ -316,7 +316,7 @@ view_preferred_difficulty model =
             ++ [ span [ class "profile_item_title" ] [ Html.text "Preferred Difficulty" ]
                , span [ class "profile_item_value" ]
                     [ view_difficulty model
-                    , view_help_text_for_difficulty (Student.Profile.studentDifficultyPreference model.profile)
+                    , view_help_text_for_difficulty (StudentProfile.studentDifficultyPreference model.profile)
                     ]
                ]
 
@@ -378,8 +378,9 @@ view_research_consent model =
                 []
             , div [ class "check-box-text" ] [ Html.text "I consent to research." ]
             ]
-      , Html.a [attribute "href" "https://sites.google.com/pdx.edu/star-russian/home"] [
-         Html.text "here"
+        , Html.a [ attribute "href" "https://sites.google.com/pdx.edu/star-russian/home" ]
+            [ Html.text "here"
+            ]
         ]
 
 
@@ -387,16 +388,16 @@ view_my_performance_hint : Model -> List (Html Msg)
 view_my_performance_hint model =
     let
         performance_help =
-            Student.Profile.Help.my_performance_help
+            StudentProfileHelp.my_performance_help
 
         hint_attributes =
-            { id = Student.Profile.Help.popupToOverlayID performance_help
-            , visible = Student.Profile.Help.isVisible model.help performance_help
-            , text = Student.Profile.Help.helpMsg performance_help
+            { id = StudentProfileHelp.popupToOverlayID performance_help
+            , visible = StudentProfileHelp.isVisible model.help performance_help
+            , text = StudentProfileHelp.helpMsg performance_help
             , cancel_event = onClick (CloseHelp performance_help)
             , next_event = onClick NextHelp
             , prev_event = onClick PrevHelp
-            , addl_attributes = [ id (Student.Profile.Help.helpID model.help performance_help) ]
+            , addl_attributes = [ id (StudentProfileHelp.helpID model.help performance_help) ]
             , arrow_placement = ArrowDown ArrowLeft
             }
     in
@@ -444,16 +445,16 @@ view_username_menu_item_hint : Model -> HelpMsgs msg -> List (Html msg)
 view_username_menu_item_hint model help_msgs =
     let
         username_menu_item_help =
-            Student.Profile.Help.username_menu_item_help
+            StudentProfileHelp.username_menu_item_help
 
         hint_attributes =
-            { id = Student.Profile.Help.popupToOverlayID username_menu_item_help
-            , visible = Student.Profile.Help.isVisible model.help username_menu_item_help
-            , text = Student.Profile.Help.helpMsg username_menu_item_help
+            { id = StudentProfileHelp.popupToOverlayID username_menu_item_help
+            , visible = StudentProfileHelp.isVisible model.help username_menu_item_help
+            , text = StudentProfileHelp.helpMsg username_menu_item_help
             , cancel_event = onClick (help_msgs.close username_menu_item_help)
             , next_event = onClick help_msgs.next
             , prev_event = onClick help_msgs.prev
-            , addl_attributes = [ id (Student.Profile.Help.helpID model.help username_menu_item_help) ]
+            , addl_attributes = [ id (StudentProfileHelp.helpID model.help username_menu_item_help) ]
             , arrow_placement = ArrowUp ArrowRight
             }
     in
@@ -469,16 +470,16 @@ view_search_menu_item_hint : Model -> HelpMsgs msg -> List (Html msg)
 view_search_menu_item_hint model help_msgs =
     let
         search_menu_item_help =
-            Student.Profile.Help.search_menu_item_help
+            StudentProfileHelp.search_menu_item_help
 
         hint_attributes =
-            { id = Student.Profile.Help.popupToOverlayID search_menu_item_help
-            , visible = Student.Profile.Help.isVisible model.help search_menu_item_help
-            , text = Student.Profile.Help.helpMsg search_menu_item_help
+            { id = StudentProfileHelp.popupToOverlayID search_menu_item_help
+            , visible = StudentProfileHelp.isVisible model.help search_menu_item_help
+            , text = StudentProfileHelp.helpMsg search_menu_item_help
             , cancel_event = onClick (help_msgs.close search_menu_item_help)
             , next_event = onClick help_msgs.next
             , prev_event = onClick help_msgs.prev
-            , addl_attributes = [ id (Student.Profile.Help.helpID model.help search_menu_item_help) ]
+            , addl_attributes = [ id (StudentProfileHelp.helpID model.help search_menu_item_help) ]
             , arrow_placement = ArrowUp ArrowLeft
             }
     in
@@ -510,15 +511,15 @@ view_student_profile_page_link : Model -> HelpMsgs msg -> Html msg
 view_student_profile_page_link model _ =
     let
         display_name =
-            case Student.Profile.studentUserName model.profile of
+            case StudentProfile.studentUserName model.profile of
                 Just username ->
-                    Student.Profile.studentUserNameToString username
+                    StudentProfile.studentUserNameToString username
 
                 Nothing ->
-                    Student.Profile.studentEmailToString (Student.Profile.studentEmail model.profile)
+                    StudentProfile.studentEmailToString (StudentProfile.studentEmail model.profile)
     in
     div []
-        [ Html.a [ attribute "href" (Student.Profile.profileUriToString model.profile) ]
+        [ Html.a [ attribute "href" (StudentProfile.profileUriToString model.profile) ]
             [ Html.text display_name
             ]
         ]
@@ -526,10 +527,10 @@ view_student_profile_page_link model _ =
 
 view_student_profile_header : Model -> (Menu.Msg.Msg -> msg) -> HelpMsgs msg -> List (Html msg)
 view_student_profile_header model top_level_menu_msg help_msgs =
-    Student.View.view_profile_dropdown_menu model.profile
+    StudentView.view_profile_dropdown_menu model.profile
         top_level_menu_msg
         [ view_student_profile_page_link model help_msgs
-        , Student.View.view_student_profile_logout_link model.profile top_level_menu_msg
+        , StudentView.view_student_profile_logout_link model.profile top_level_menu_msg
         ]
         :: view_username_menu_item_hint model help_msgs
 

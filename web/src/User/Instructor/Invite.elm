@@ -1,4 +1,4 @@
-module Instructor.Invite exposing
+module User.Instructor.Invite exposing
     ( Email(..)
     , InstructorInvite(..)
     , InviteCode(..)
@@ -15,7 +15,7 @@ module Instructor.Invite exposing
     , new
     )
 
-import Util
+import Utils
 
 
 type alias InviteParams =
@@ -78,7 +78,7 @@ emailToString (Email eml) =
 
 isValidEmail : Email -> Bool
 isValidEmail eml =
-    Util.isValidEmail (emailToString eml)
+    Utils.isValidEmail (emailToString eml)
 
 
 isEmptyEmail : Email -> Bool

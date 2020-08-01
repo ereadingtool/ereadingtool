@@ -1,48 +1,48 @@
-module Student.Profile.Resource exposing
+module User.Student.Profile.Resource exposing
     ( logout
+    , toggleResearchConsent
     , updateProfile
     , validateUsername
-    , toggleResearchConsent
     )
 
 import Flags
 import Http
-import HttpHelpers
 import Menu.Logout
-import Student.Profile
-import Student.Profile.Decode
-import Student.Profile.Encode
-import Student.Profile.Msg exposing (Msg(..))
-import Student.Resource
+import User.Student.Profile as StudentProfile
+import User.Student.Profile.Decode as StudentProfileDecode
+import User.Student.Profile.Encode as StudentProfileEncode
+import User.Student.Profile.Msg exposing (Msg(..))
+import User.Student.Resource as StudentResource
+import Utils.HttpHelpers as HttpHelpers
 
 
-validateUsername : Flags.CSRFToken -> Student.Resource.StudentUsernameValidURI -> String -> Cmd Msg
+validateUsername : Flags.CSRFToken -> StudentResource.StudentUsernameValidURI -> String -> Cmd Msg
 validateUsername csrftoken username_valid_uri username =
     let
         req =
             HttpHelpers.post_with_headers
-                (Student.Resource.uriToString (Student.Resource.studentUsernameValidURI username_valid_uri))
+                (StudentResource.uriToString (StudentResource.studentUsernameValidURI username_valid_uri))
                 [ Http.header "X-CSRFToken" csrftoken ]
-                (Http.jsonBody (Student.Profile.Encode.username_valid_encode username))
-                Student.Profile.Decode.username_valid_decoder
+                (Http.jsonBody (StudentProfileEncode.username_valid_encode username))
+                StudentProfileDecode.username_valid_decoder
     in
     Http.send ValidUsername req
 
 
-updateProfile : Flags.CSRFToken -> Student.Resource.StudentEndpointURI -> Student.Profile.StudentProfile -> Cmd Msg
+updateProfile : Flags.CSRFToken -> StudentResource.StudentEndpointURI -> StudentProfile.StudentProfile -> Cmd Msg
 updateProfile csrftoken student_endpoint_uri student_profile =
-    case Student.Profile.studentID student_profile of
+    case StudentProfile.studentID student_profile of
         Just _ ->
             let
                 encoded_profile =
-                    Student.Profile.Encode.profileEncoder student_profile
+                    StudentProfileEncode.profileEncoder student_profile
 
                 req =
                     HttpHelpers.put_with_headers
-                        (Student.Resource.uriToString (Student.Resource.studentEndpointURI student_endpoint_uri))
+                        (StudentResource.uriToString (StudentResource.studentEndpointURI student_endpoint_uri))
                         [ Http.header "X-CSRFToken" csrftoken ]
                         (Http.jsonBody encoded_profile)
-                        Student.Profile.Decode.studentProfileDecoder
+                        StudentProfileDecode.studentProfileDecoder
             in
             Http.send Submitted req
 
@@ -52,23 +52,23 @@ updateProfile csrftoken student_endpoint_uri student_profile =
 
 toggleResearchConsent :
     Flags.CSRFToken
-    -> Student.Resource.StudentResearchConsentURI
-    -> Student.Profile.StudentProfile
+    -> StudentResource.StudentResearchConsentURI
+    -> StudentProfile.StudentProfile
     -> Bool
     -> Cmd Msg
 toggleResearchConsent csrftoken consent_method_uri student_profile consent =
-    case Student.Profile.studentID student_profile of
+    case StudentProfile.studentID student_profile of
         Just _ ->
             let
                 encoded_consent =
-                    Student.Profile.Encode.consentEncoder consent
+                    StudentProfileEncode.consentEncoder consent
 
                 req =
                     HttpHelpers.put_with_headers
-                        (Student.Resource.uriToString (Student.Resource.studentConsentURI consent_method_uri))
+                        (StudentResource.uriToString (StudentResource.studentConsentURI consent_method_uri))
                         [ Http.header "X-CSRFToken" csrftoken ]
                         (Http.jsonBody encoded_consent)
-                        Student.Profile.Decode.studentConsentRespDecoder
+                        StudentProfileDecode.studentConsentRespDecoder
             in
             Http.send SubmittedConsent req
 
@@ -77,7 +77,7 @@ toggleResearchConsent csrftoken consent_method_uri student_profile consent =
 
 
 logout :
-    Student.Profile.StudentProfile
+    StudentProfile.StudentProfile
     -> Flags.CSRFToken
     -> (Result Http.Error Menu.Logout.LogOutResp -> msg)
     -> Cmd msg
@@ -85,8 +85,8 @@ logout student_profile csrftoken logout_msg =
     let
         request =
             HttpHelpers.post_with_headers
-                (Student.Resource.uriToString
-                    (Student.Resource.studentLogoutURI (Student.Profile.studentLogoutURI student_profile))
+                (StudentResource.uriToString
+                    (StudentResource.studentLogoutURI (StudentProfile.studentLogoutURI student_profile))
                 )
                 [ Http.header "X-CSRFToken" csrftoken ]
                 Http.emptyBody

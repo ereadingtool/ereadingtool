@@ -1,4 +1,4 @@
-module Student.Student_Profile exposing
+module User.Student.Student_Profile exposing
     ( init
     , main
     , subscriptions
@@ -10,13 +10,13 @@ import Dict
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, classList)
 import Menu.Items
-import Student.Profile
-import Student.Profile.Flags exposing (Flags)
-import Student.Profile.Help
-import Student.Profile.Model exposing (..)
-import Student.Profile.Msg exposing (..)
-import Student.Profile.Update
-import Student.Profile.View
+import User.Student.Profile as StudentProfile
+import User.Student.Profile.Flags exposing (Flags)
+import User.Student.Profile.Help as StudentProfileHelp
+import User.Student.Profile.Model as StudentProfileModel exposing (..)
+import User.Student.Profile.Msg exposing (Msg)
+import User.Student.Profile.Update as StudentProfileUpdate
+import User.Student.Profile.View as StudentProfileView
 import Views
 
 
@@ -24,13 +24,13 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
         student_help =
-            Student.Profile.Help.init
+            StudentProfileHelp.init
 
         student_profile =
-            Student.Profile.initProfile flags.student_profile
+            StudentProfile.initProfile flags.student_profile
     in
     ( { flags = flags
-      , student_endpoints = Student.Profile.Model.flagsToEndpoints flags
+      , student_endpoints = StudentProfileModel.flagsToEndpoints flags
       , profile = student_profile
       , menu_items = Menu.Items.initMenuItems flags
       , flashcards = flags.flashcards
@@ -42,7 +42,7 @@ init flags =
       , err_str = ""
       , errors = Dict.empty
       }
-    , Student.Profile.Help.scrollToFirstMsg student_help
+    , StudentProfileHelp.scrollToFirstMsg student_help
     )
 
 
@@ -57,7 +57,7 @@ main =
         { init = init
         , view = view
         , subscriptions = subscriptions
-        , update = Student.Profile.Update.update
+        , update = StudentProfileUpdate.update
         }
 
 
@@ -65,13 +65,13 @@ view_content : Model -> Html Msg
 view_content model =
     div [ classList [ ( "profile", True ) ] ]
         [ div [ classList [ ( "profile_items", True ) ] ]
-            [ Student.Profile.View.view_preferred_difficulty model
-            , Student.Profile.View.view_username model
-            , Student.Profile.View.view_user_email model
-            , Student.Profile.View.view_student_performance model
-            , Student.Profile.View.view_feedback_links model
-            , Student.Profile.View.view_flashcards model
-            , Student.Profile.View.view_research_consent model
+            [ StudentProfileView.view_preferred_difficulty model
+            , StudentProfileView.view_username model
+            , StudentProfileView.view_user_email model
+            , StudentProfileView.view_student_performance model
+            , StudentProfileView.view_feedback_links model
+            , StudentProfileView.view_flashcards model
+            , StudentProfileView.view_research_consent model
             , if not (String.isEmpty model.err_str) then
                 span [ attribute "class" "error" ] [ Html.text "error: ", Html.text model.err_str ]
 
@@ -88,7 +88,7 @@ view_content model =
 view : Model -> Html Msg
 view model =
     div []
-        [ Student.Profile.View.view_header model Logout { next = NextHelp, prev = PrevHelp, close = CloseHelp }
+        [ StudentProfileView.view_header model Logout { next = NextHelp, prev = PrevHelp, close = CloseHelp }
         , view_content model
         , Views.view_footer
         ]

@@ -1,18 +1,18 @@
-module Student.Profile.Encode exposing
+module User.Student.Profile.Encode exposing
     ( consentEncoder
     , profileEncoder
     , username_valid_encode
     )
 
 import Json.Encode
-import Student.Profile
+import User.Student.Profile as StudentProfile exposing (StudentProfile)
 
 
-profileEncoder : Student.Profile.StudentProfile -> Json.Encode.Value
+profileEncoder : StudentProfile -> Json.Encode.Value
 profileEncoder student_profile =
     let
         encode_pref =
-            case Student.Profile.studentDifficultyPreference student_profile of
+            case StudentProfile.studentDifficultyPreference student_profile of
                 Just difficulty ->
                     Json.Encode.string (Tuple.first difficulty)
 
@@ -20,9 +20,9 @@ profileEncoder student_profile =
                     Json.Encode.null
 
         username =
-            case Student.Profile.studentUserName student_profile of
+            case StudentProfile.studentUserName student_profile of
                 Just uname ->
-                    Json.Encode.string (Student.Profile.studentUserNameToString uname)
+                    Json.Encode.string (StudentProfile.studentUserNameToString uname)
 
                 Nothing ->
                     Json.Encode.null

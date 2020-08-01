@@ -1,4 +1,4 @@
-module User.Profile exposing (..)
+module User.User.Profile exposing (..)
 
 import Flags
 import Html exposing (Html, div)

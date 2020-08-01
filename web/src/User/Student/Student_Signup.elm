@@ -1,4 +1,4 @@
-module Student.Student_Signup exposing
+module User.Student.Student_Signup exposing
     ( Flags
     , Model
     , Msg(..)
@@ -20,22 +20,22 @@ module Student.Student_Signup exposing
     , view_student_welcome_msg
     )
 
+import Browser
+import Browser.Navigation
 import Dict exposing (Dict)
 import Flags
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList)
 import Html.Events exposing (onInput)
 import Http exposing (..)
-import HttpHelpers exposing (post_with_headers)
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode
 import Menu.Msg as MenuMsg
-import Browser
-import Browser.Navigation
-import SignUp
 import Text.Model exposing (TextDifficulty)
-import User.Flags.UnAuthed exposing (UnAuthedUserFlags)
+import User.SignUp as SignUp
+import User.User.Flags.UnAuthed exposing (UnAuthedUserFlags)
+import Utils.HttpHelpers exposing (post_with_headers)
 import Views
 
 

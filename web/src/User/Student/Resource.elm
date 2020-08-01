@@ -1,30 +1,30 @@
-module Student.Resource exposing
-    ( StudentEndpointURI
+module User.Student.Resource exposing
+    ( StudentEmail
+    , StudentEndpointURI
     , StudentLogoutURI
     , StudentProfileURI
     , StudentResearchConsentURI
     , StudentUsername
-    , StudentEmail
     , StudentUsernameValidURI
     , URI
     , studentConsentURI
+    , studentEmailToString
     , studentEndpointURI
     , studentLogoutURI
     , studentProfileURI
     , studentUserNameToString
-    , studentEmailToString
     , studentUsernameValidURI
-    , toStudentUsername
     , toStudentEmail
     , toStudentEndpointURI
-    , toStudentResearchConsentURI
-    , toStudentUsernameValidURI
     , toStudentLogoutURI
     , toStudentProfileURI
+    , toStudentResearchConsentURI
+    , toStudentUsername
+    , toStudentUsernameValidURI
     , uriToString
     )
 
-import Profile
+import User.Profile as Profile
 
 
 type URI
@@ -78,9 +78,11 @@ toStudentProfileURI : String -> StudentProfileURI
 toStudentProfileURI profileURI =
     StudentProfileURI (URI profileURI)
 
+
 toStudentLogoutURI : String -> StudentLogoutURI
 toStudentLogoutURI logoutURI =
     StudentLogoutURI (URI logoutURI)
+
 
 toStudentEmail : String -> StudentEmail
 toStudentEmail email =
@@ -91,9 +93,11 @@ toStudentUsername : String -> StudentUsername
 toStudentUsername userName =
     StudentUsername userName
 
+
 studentEmailToString : StudentEmail -> String
 studentEmailToString (StudentEmail email) =
     email
+
 
 studentUserNameToString : StudentUsername -> String
 studentUserNameToString (StudentUsername username) =

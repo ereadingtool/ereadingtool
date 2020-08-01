@@ -1,4 +1,4 @@
-module Student.Profile.Update exposing (update)
+module User.Student.Profile.Update exposing (update)
 
 --
 
@@ -6,12 +6,12 @@ import Dict
 import Http exposing (..)
 import Json.Decode
 import Ports
-import Student.Profile
-import Student.Profile.Help
-import Student.Profile.Model exposing (Model)
-import Student.Profile.Msg exposing (..)
-import Student.Profile.Resource
-import Student.Resource
+import User.Student.Profile as StudentProfile
+import User.Student.Profile.Help as StudentProfileHelp
+import User.Student.Profile.Model exposing (Model)
+import User.Student.Profile.Msg exposing (Msg)
+import User.Student.Profile.Resource as StudentProfileResource
+import User.Student.Resource as StudentResource
 
 
 toggleUsernameUpdate : Model -> Model
@@ -30,15 +30,15 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     let
         validateUsername =
-            Student.Profile.Resource.validateUsername
+            StudentProfileResource.validateUsername
                 model.flags.csrftoken
                 model.student_endpoints.student_username_validation_uri
 
         updateProfile =
-            Student.Profile.Resource.updateProfile model.flags.csrftoken model.student_endpoints.student_endpoint_uri
+            StudentProfileResource.updateProfile model.flags.csrftoken model.student_endpoints.student_endpoint_uri
 
         toggleResearchConsent =
-            Student.Profile.Resource.toggleResearchConsent
+            StudentProfileResource.toggleResearchConsent
                 model.flags.csrftoken
                 model.student_endpoints.student_research_consent_uri
                 model.profile
@@ -50,7 +50,7 @@ update msg model =
                     model.username_update
 
                 new_username_update =
-                    { username_update | username = Student.Profile.studentUserName profile }
+                    { username_update | username = StudentProfile.studentUserName profile }
             in
             ( { model | profile = profile, username_update = new_username_update }, Cmd.none )
 
@@ -64,7 +64,7 @@ update msg model =
                     model.username_update
 
                 new_username_update =
-                    { username_update | username = Just (Student.Resource.toStudentUsername value) }
+                    { username_update | username = Just (StudentResource.toStudentUsername value) }
             in
             ( { model | username_update = new_username_update }, validateUsername value )
 
@@ -97,7 +97,7 @@ update msg model =
                     ( difficulty, difficulty )
 
                 new_student_profile =
-                    Student.Profile.setStudentDifficultyPreference model.profile new_difficulty_preference
+                    StudentProfile.setStudentDifficultyPreference model.profile new_difficulty_preference
             in
             ( model, updateProfile new_student_profile )
 
@@ -112,7 +112,7 @@ update msg model =
                 Just username ->
                     let
                         profile =
-                            Student.Profile.setUserName model.profile username
+                            StudentProfile.setUserName model.profile username
                     in
                     ( { model | profile = profile }, updateProfile profile )
 
@@ -169,16 +169,16 @@ update msg model =
                     ( model, Cmd.none )
 
         CloseHelp help_msg ->
-            ( { model | help = Student.Profile.Help.setVisible model.help help_msg False }, Cmd.none )
+            ( { model | help = StudentProfileHelp.setVisible model.help help_msg False }, Cmd.none )
 
         PrevHelp ->
-            ( { model | help = Student.Profile.Help.prev model.help }, Student.Profile.Help.scrollToPrevMsg model.help )
+            ( { model | help = StudentProfileHelp.prev model.help }, StudentProfileHelp.scrollToPrevMsg model.help )
 
         NextHelp ->
-            ( { model | help = Student.Profile.Help.next model.help }, Student.Profile.Help.scrollToNextMsg model.help )
+            ( { model | help = StudentProfileHelp.next model.help }, StudentProfileHelp.scrollToNextMsg model.help )
 
         Logout _ ->
-            ( model, Student.Profile.Resource.logout model.profile model.flags.csrftoken LoggedOut )
+            ( model, StudentProfileResource.logout model.profile model.flags.csrftoken LoggedOut )
 
         LoggedOut (Ok logout_resp) ->
             ( model, Ports.redirect logout_resp.redirect )

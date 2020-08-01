@@ -1,27 +1,26 @@
-module Student.Profile.Decode exposing
+module User.Student.Profile.Decode exposing
     ( studentConsentRespDecoder
     , studentProfileDecoder
     , username_valid_decoder
     )
 
+import InstructorAdmin.Text.Translations exposing (Phrase)
+import InstructorAdmin.Text.Translations.Decode as TextTranslationsDecode
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)
-import Student.Performance.Report exposing (PerformanceReport)
-import Student.Profile exposing (StudentProfileParams)
-import Student.Profile.Model
-
-import Student.Resource
-import Text.Translations exposing (Phrase)
-import Text.Translations.Decode
 import TextReader.Section.Decode
 import TextReader.TextWord
-import Util exposing (stringTupleDecoder)
+import User.Student.Performance.Report exposing (PerformanceReport)
+import User.Student.Profile as StudentProfile exposing (StudentProfile, StudentProfileParams)
+import User.Student.Profile.Model as StudentProfileModel
+import User.Student.Resource as StudentResource
+import Utils exposing (stringTupleDecoder)
 
 
-username_valid_decoder : Json.Decode.Decoder Student.Profile.Model.UsernameUpdate
+username_valid_decoder : Json.Decode.Decoder StudentProfileModel.UsernameUpdate
 username_valid_decoder =
-    Json.Decode.succeed Student.Profile.Model.UsernameUpdate
-        |> required "username" (Json.Decode.map (Student.Resource.toStudentUsername >> Just) Json.Decode.string)
+    Json.Decode.succeed StudentProfileModel.UsernameUpdate
+        |> required "username" (Json.Decode.map (StudentResource.toStudentUsername >> Just) Json.Decode.string)
         |> required "valid" (Json.Decode.nullable Json.Decode.bool)
         |> required "msg" (Json.Decode.nullable Json.Decode.string)
 
@@ -37,7 +36,7 @@ textWordParamsDecoder =
         |> required "word"
             (Json.Decode.map2 (\a b -> ( a, b ))
                 (Json.Decode.index 0 Json.Decode.string)
-                (Json.Decode.index 1 (Json.Decode.nullable Text.Translations.Decode.textGroupDetailsDecoder))
+                (Json.Decode.index 1 (Json.Decode.nullable TextTranslationsDecode.textGroupDetailsDecoder))
             )
 
 
@@ -59,9 +58,9 @@ performanceReportDecoder =
         |> required "pdf_link" Json.Decode.string
 
 
-studentProfileURIParamsDecoder : Json.Decode.Decoder Student.Profile.StudentURIParams
+studentProfileURIParamsDecoder : Json.Decode.Decoder StudentProfile.StudentURIParams
 studentProfileURIParamsDecoder =
-    Json.Decode.succeed Student.Profile.StudentURIParams
+    Json.Decode.succeed StudentProfile.StudentURIParams
         |> required "logout_uri" Json.Decode.string
         |> required "profile_uri" Json.Decode.string
 
@@ -77,13 +76,13 @@ studentProfileParamsDecoder =
         |> required "uris" studentProfileURIParamsDecoder
 
 
-studentProfileDecoder : Json.Decode.Decoder Student.Profile.StudentProfile
+studentProfileDecoder : Json.Decode.Decoder StudentProfile.StudentProfile
 studentProfileDecoder =
-    Json.Decode.map Student.Profile.initProfile studentProfileParamsDecoder
+    Json.Decode.map StudentProfile.initProfile studentProfileParamsDecoder
 
 
-studentConsentRespDecoder : Json.Decode.Decoder Student.Profile.Model.StudentConsentResp
+studentConsentRespDecoder : Json.Decode.Decoder StudentProfileModel.StudentConsentResp
 studentConsentRespDecoder =
     Json.Decode.map
-        Student.Profile.Model.StudentConsentResp
+        StudentProfileModel.StudentConsentResp
         (Json.Decode.field "consented" Json.Decode.bool)

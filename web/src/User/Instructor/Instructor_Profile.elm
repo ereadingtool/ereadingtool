@@ -1,19 +1,18 @@
-module Instructor.Instructor_Profile exposing (main, subscriptions, update, updateNewInviteEmail, view)
-
-import Dict
-import Html exposing (Html, div)
-import Instructor.Invite exposing (Email)
-import Instructor.Profile
-import Instructor.Profile.Flags exposing (Flags)
-import Instructor.Profile.Init
-import Instructor.Profile.Model exposing (Model)
-import Instructor.Profile.Msg exposing (Msg(..))
-import Instructor.Profile.View
-import Ports
-import User.Profile
-import Views
+module User.Instructor.Instructor_Profile exposing (main, subscriptions, update, updateNewInviteEmail, view)
 
 import Browser
+import Dict
+import Html exposing (Html, div)
+import Ports
+import User.Instructor.Invite exposing (Email)
+import User.Instructor.Profile as InstructorProfile
+import User.Instructor.Profile.Flags exposing (Flags)
+import User.Instructor.Profile.Init as InstructorProfileInit
+import User.Instructor.Profile.Model exposing (Model)
+import User.Instructor.Profile.Msg exposing (Msg(..))
+import User.Instructor.Profile.View as InstructorProfileView
+import User.Profile
+import Views
 
 
 subscriptions : Model -> Sub Msg
@@ -38,7 +37,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     let
         submitInvite =
-            Instructor.Profile.submitNewInvite model.flags.csrftoken model.instructor_invite_uri SubmittedNewInvite
+            InstructorProfile.submitNewInvite model.flags.csrftoken model.instructor_invite_uri SubmittedNewInvite
     in
     case msg of
         UpdateNewInviteEmail email ->
@@ -59,7 +58,7 @@ update msg model =
             )
 
         SubmittedNewInvite (Ok invite) ->
-            ( { model | profile = Instructor.Profile.addInvite model.profile invite }, Cmd.none )
+            ( { model | profile = InstructorProfile.addInvite model.profile invite }, Cmd.none )
 
         SubmittedNewInvite (Err err) ->
             let
@@ -69,7 +68,7 @@ update msg model =
             ( { model | errors = Dict.insert "invite" "Something went wrong." model.errors }, Cmd.none )
 
         LogOut _ ->
-            ( model, Instructor.Profile.logout model.profile model.flags.csrftoken LoggedOut )
+            ( model, InstructorProfile.logout model.profile model.flags.csrftoken LoggedOut )
 
         LoggedOut (Ok logout_resp) ->
             ( model, Ports.redirect logout_resp.redirect )
@@ -81,7 +80,7 @@ update msg model =
 main : Program Flags Model Msg
 main =
     Browser.element
-        { init = Instructor.Profile.Init.init
+        { init = InstructorProfileInit.init
         , view = view
         , subscriptions = subscriptions
         , update = update
@@ -96,6 +95,6 @@ view : Model -> Html Msg
 view model =
     div []
         [ Views.view_authed_header (User.Profile.fromInstructorProfile model.profile) model.menu_items LogOut
-        , Instructor.Profile.View.view_content model
+        , InstructorProfileView.view_content model
         , Views.view_footer
         ]

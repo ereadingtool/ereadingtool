@@ -1,9 +1,9 @@
-module Instructor.Profile.Msg exposing (Msg(..))
+module User.Instructor.Profile.Msg exposing (Msg(..))
 
 import Http
-import Instructor.Invite
 import Menu.Logout
 import Menu.Msg as MenuMsg
+import User.Instructor.Invite exposing (Email, InstructorInvite)
 
 
 
@@ -11,8 +11,8 @@ import Menu.Msg as MenuMsg
 
 
 type Msg
-    = UpdateNewInviteEmail Instructor.Invite.Email
-    | SubmittedNewInvite (Result Http.Error Instructor.Invite.InstructorInvite)
+    = UpdateNewInviteEmail Email
+    | SubmittedNewInvite (Result Http.Error InstructorInvite)
     | SubmitNewInvite
     | LogOut MenuMsg.Msg
     | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)

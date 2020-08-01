@@ -1,12 +1,12 @@
-module Instructor.Invite.Decode exposing (newInviteRespDecoder)
+module User.Instructor.Invite.Decode exposing (newInviteRespDecoder)
 
-import Instructor.Invite
 import Json.Decode
+import User.Instructor.Invite as InstructorInvite
 
 
-newInviteRespDecoder : Json.Decode.Decoder Instructor.Invite.InstructorInvite
+newInviteRespDecoder : Json.Decode.Decoder InstructorInvite.InstructorInvite
 newInviteRespDecoder =
-    Json.Decode.map3 Instructor.Invite.InstructorInvite
-        (Json.Decode.field "email" (Json.Decode.map Instructor.Invite.Email Json.Decode.string))
-        (Json.Decode.field "invite_code" (Json.Decode.map Instructor.Invite.InviteCode Json.Decode.string))
-        (Json.Decode.field "expiration" (Json.Decode.map Instructor.Invite.InviteExpiration Json.Decode.string))
+    Json.Decode.map3 InstructorInvite.InstructorInvite
+        (Json.Decode.field "email" (Json.Decode.map InstructorInvite.Email Json.Decode.string))
+        (Json.Decode.field "invite_code" (Json.Decode.map InstructorInvite.InviteCode Json.Decode.string))
+        (Json.Decode.field "expiration" (Json.Decode.map InstructorInvite.InviteExpiration Json.Decode.string))

@@ -1,11 +1,11 @@
-module SignUp exposing (..)
+module User.SignUp exposing (..)
 
 import Dict exposing (Dict)
 import Html exposing (Html, div)
 import Html.Attributes exposing (attribute, class, classList)
 import Html.Events exposing (onClick, onInput)
 import Menu.Msg as MenuMsg
-import Util exposing (isValidEmail)
+import Utils exposing (isValidEmail)
 import Views
 
 
