@@ -1,10 +1,10 @@
-module Instructor.View exposing (view_instructor_profile_header)
+module User.Instructor.View exposing (view_instructor_profile_header)
 
 import Html exposing (Html, div)
 import Html.Attributes exposing (attribute, class, classList, id)
 import Html.Events exposing (onClick)
-import Instructor.Profile exposing (InstructorProfile)
 import Menu.Msg exposing (Msg(..))
+import User.Instructor.Profile as InstructorProfile exposing (InstructorProfile)
 
 
 view_instructor_profile_link : InstructorProfile -> (Msg -> msg) -> Html msg
@@ -12,9 +12,9 @@ view_instructor_profile_link instructor_profile top_level_msg =
     div [ class "profile_dropdown_menu" ]
         [ div []
             [ Html.a
-                [ attribute "href" (Instructor.Profile.profileUriToString instructor_profile)
+                [ attribute "href" (InstructorProfile.profileUriToString instructor_profile)
                 ]
-                [ Html.text (Instructor.Profile.usernameToString (Instructor.Profile.username instructor_profile)) ]
+                [ Html.text (InstructorProfile.usernameToString (InstructorProfile.username instructor_profile)) ]
             ]
         , div [ classList [ ( "profile_dropdown_menu_overlay", True ) ] ]
             [ div

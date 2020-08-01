@@ -1,17 +1,17 @@
-module Student.Profile.Msg exposing (HelpMsgs, Msg(..))
+module User.Student.Profile.Msg exposing (HelpMsgs, Msg(..))
 
 import Http exposing (..)
 import Menu.Logout
 import Menu.Msg as MenuMsg
-import Student.Profile
-import Student.Profile.Help
-import Student.Profile.Model
+import User.Student.Profile exposing (StudentProfile)
+import User.Student.Profile.Help as StudentProfileHelp
+import User.Student.Profile.Model as StudentProfileModel
 
 
 type alias HelpMsgs msg =
     { next : msg
     , prev : msg
-    , close : Student.Profile.Help.StudentHelp -> msg
+    , close : StudentProfileHelp.StudentHelp -> msg
     }
 
 
@@ -20,21 +20,21 @@ type alias HelpMsgs msg =
 
 
 type Msg
-    = RetrieveStudentProfile (Result Error Student.Profile.StudentProfile)
+    = RetrieveStudentProfile (Result Error StudentProfile)
       -- preferred difficulty
     | UpdateDifficulty String
       -- username
     | ToggleUsernameUpdate
     | ToggleResearchConsent
-    | ValidUsername (Result Error Student.Profile.Model.UsernameUpdate)
+    | ValidUsername (Result Error StudentProfileModel.UsernameUpdate)
     | UpdateUsername String
     | SubmitUsernameUpdate
     | CancelUsernameUpdate
       -- profile update submission
-    | Submitted (Result Error Student.Profile.StudentProfile)
-    | SubmittedConsent (Result Error Student.Profile.Model.StudentConsentResp)
+    | Submitted (Result Error StudentProfile)
+    | SubmittedConsent (Result Error StudentProfileModel.StudentConsentResp)
       -- help messages
-    | CloseHelp Student.Profile.Help.StudentHelp
+    | CloseHelp StudentProfileHelp.StudentHelp
     | PrevHelp
     | NextHelp
       -- site-wide messages

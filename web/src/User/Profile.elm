@@ -1,4 +1,4 @@
-module Profile exposing (..)
+module User.Profile exposing (ProfileID, ProfileType, profileIDtoString)
 
 
 type ProfileID

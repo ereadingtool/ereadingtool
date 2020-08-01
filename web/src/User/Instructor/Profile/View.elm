@@ -1,25 +1,25 @@
-module Instructor.Profile.View exposing (view_content)
+module User.Instructor.Profile.View exposing (view_content)
 
 import Dict
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList, id)
 import Html.Events exposing (onClick, onInput)
-import Instructor.Invite
-import Instructor.Profile
-import Instructor.Profile.Model exposing (Model)
-import Instructor.Profile.Msg exposing (Msg(..))
+import User.Instructor.Invite as InstructorInvite exposing (InstructorInvite)
+import User.Instructor.Profile as InstructorProfile exposing (InstructorProfile)
+import User.Instructor.Profile.Model exposing (Model)
+import User.Instructor.Profile.Msg exposing (Msg(..))
 
 
-view_tags : List Instructor.Profile.Tag -> List (Html Msg)
+view_tags : List InstructorProfile.Tag -> List (Html Msg)
 view_tags tags =
     List.map (\tag -> div [] [ Html.text tag ]) tags
 
 
-view_text : Instructor.Profile.InstructorProfile -> Instructor.Profile.Text -> Html Msg
+view_text : InstructorProfile -> InstructorProfile.Text -> Html Msg
 view_text instructor_profile text =
     let
         instructor_username =
-            Instructor.Profile.usernameToString (Instructor.Profile.username instructor_profile)
+            InstructorProfile.usernameToString (InstructorProfile.username instructor_profile)
     in
     div [ class "text" ]
         [ div [ class "text_label" ] [ Html.text "Title" ]
@@ -43,15 +43,15 @@ view_text instructor_profile text =
         ]
 
 
-view_instructor_invite : Instructor.Invite.InstructorInvite -> Html Msg
+view_instructor_invite : InstructorInvite -> Html Msg
 view_instructor_invite invite =
     div [ class "invite" ]
         [ div [ class "label" ] [ Html.text "Email: " ]
-        , div [ class "value" ] [ Html.text (Instructor.Invite.emailToString (Instructor.Invite.email invite)) ]
+        , div [ class "value" ] [ Html.text (InstructorInvite.emailToString (InstructorInvite.email invite)) ]
         , div [ class "label" ] [ Html.text "Invite Code: " ]
-        , div [ class "value" ] [ Html.text (Instructor.Invite.codeToString (Instructor.Invite.inviteCode invite)) ]
+        , div [ class "value" ] [ Html.text (InstructorInvite.codeToString (InstructorInvite.inviteCode invite)) ]
         , div [ class "label" ] [ Html.text "Expiration: " ]
-        , div [ class "value" ] [ Html.text (Instructor.Invite.expirationToString (Instructor.Invite.inviteExpiration invite)) ]
+        , div [ class "value" ] [ Html.text (InstructorInvite.expirationToString (InstructorInvite.inviteExpiration invite)) ]
         ]
 
 
@@ -75,7 +75,7 @@ view_instructor_invite_create model =
         [ div [ id "input" ] <|
             [ Html.input
                 ([ attribute "size" "25"
-                 , onInput (Instructor.Invite.Email >> UpdateNewInviteEmail)
+                 , onInput (InstructorInvite.Email >> UpdateNewInviteEmail)
                  , attribute "placeholder" "Invite an instructor"
                  ]
                     ++ error_attrs
@@ -96,10 +96,10 @@ view_instructor_invite_create model =
 
 view_instructor_invites : Model -> List (Html Msg)
 view_instructor_invites model =
-    if Instructor.Profile.isAdmin model.profile then
+    if InstructorProfile.isAdmin model.profile then
         let
             invites =
-                Maybe.withDefault [] (Instructor.Profile.invites model.profile)
+                Maybe.withDefault [] (InstructorProfile.invites model.profile)
         in
         [ div [ class "invites" ]
             [ span [ class "profile_item_title" ] [ Html.text "Invitations" ]
@@ -117,7 +117,7 @@ view_instructor_invites model =
 
 view_texts : Model -> Html Msg
 view_texts model =
-    div [] (List.map (\text -> view_text model.profile text) (Instructor.Profile.texts model.profile))
+    div [] (List.map (\text -> view_text model.profile text) (InstructorProfile.texts model.profile))
 
 
 view_content : Model -> Html Msg
@@ -127,7 +127,7 @@ view_content model =
             [ div [ class "profile_item" ]
                 [ span [ class "profile_item_title" ] [ Html.text "Username" ]
                 , span [ class "profile_item_value" ]
-                    [ Html.text (Instructor.Profile.usernameToString (Instructor.Profile.username model.profile))
+                    [ Html.text (InstructorProfile.usernameToString (InstructorProfile.username model.profile))
                     ]
                 ]
             , div [ class "profile_item" ]

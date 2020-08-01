@@ -1,8 +1,8 @@
-module Instructor.Instructor_Login exposing (Flags, main)
+module User.Instructor.Instructor_Login exposing (Flags, main)
 
 import Browser
-import Login
-import User.Flags.UnAuthed exposing (UnAuthedUserFlags)
+import User.Login as Login
+import User.User.Flags.UnAuthed exposing (UnAuthedUserFlags)
 
 
 type alias Flags =

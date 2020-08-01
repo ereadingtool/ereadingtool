@@ -1,4 +1,4 @@
-module Student.Profile.Help exposing
+module User.Student.Profile.Help exposing
     ( StudentHelp
     , StudentProfileHelp
     , helpID

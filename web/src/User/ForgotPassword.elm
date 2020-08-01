@@ -1,4 +1,4 @@
-module ForgotPassword exposing (..)
+module User.ForgotPassword exposing (..)
 
 import Dict exposing (Dict)
 import Json.Decode

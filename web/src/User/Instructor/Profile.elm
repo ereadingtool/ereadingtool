@@ -1,4 +1,4 @@
-module Instructor.Profile exposing
+module User.Instructor.Profile exposing
     ( InstructorProfile
     , InstructorProfileParams
     , Tag
@@ -17,12 +17,12 @@ module Instructor.Profile exposing
 
 import Flags
 import Http
-import HttpHelpers
-import Instructor.Invite exposing (Email, InstructorInvite)
-import Instructor.Invite.Decode
-import Instructor.Invite.Encode
-import Instructor.Resource
 import Menu.Logout
+import User.Instructor.Invite as InstructorInvite exposing (Email, InstructorInvite)
+import User.Instructor.Invite.Decode as InstructorInviteDecode
+import User.Instructor.Invite.Encode as InstructorInviteEncode
+import User.Instructor.Resource as InstructorResource
+import Utils.HttpHelpers as HttpHelpers
 
 
 type alias Tag =
@@ -58,7 +58,7 @@ type alias InstructorProfileParams =
     { id : Maybe Int
     , texts : List Text
     , instructor_admin : Bool
-    , invites : Maybe (List Instructor.Invite.InviteParams)
+    , invites : Maybe (List InstructorInvite.InviteParams)
     , username : String
     , uris : InstructorURIParams
     }
@@ -69,15 +69,15 @@ type InstructorUsername
 
 
 type InstructorProfileURIs
-    = InstructorProfileURIs Instructor.Resource.InstructorLogoutURI Instructor.Resource.InstructorProfileURI
+    = InstructorProfileURIs InstructorResource.InstructorLogoutURI InstructorResource.InstructorProfileURI
 
 
-urisToLogoutUri : InstructorProfileURIs -> Instructor.Resource.InstructorLogoutURI
+urisToLogoutUri : InstructorProfileURIs -> InstructorResource.InstructorLogoutURI
 urisToLogoutUri (InstructorProfileURIs logout_uri _) =
     logout_uri
 
 
-urisToProfileUri : InstructorProfileURIs -> Instructor.Resource.InstructorProfileURI
+urisToProfileUri : InstructorProfileURIs -> InstructorResource.InstructorProfileURI
 urisToProfileUri (InstructorProfileURIs _ profile) =
     profile
 
@@ -89,8 +89,8 @@ type InstructorProfile
 initProfileURIs : InstructorURIParams -> InstructorProfileURIs
 initProfileURIs params =
     InstructorProfileURIs
-        (Instructor.Resource.toInstructorLogoutURI params.logout_uri)
-        (Instructor.Resource.toInstructorProfileURI params.profile_uri)
+        (InstructorResource.toInstructorLogoutURI params.logout_uri)
+        (InstructorResource.toInstructorProfileURI params.profile_uri)
 
 
 initProfile : InstructorProfileParams -> InstructorProfile
@@ -100,7 +100,7 @@ initProfile param =
         param.texts
         param.instructor_admin
         (param.invites
-            |> Maybe.map (List.map Instructor.Invite.new)
+            |> Maybe.map (List.map InstructorInvite.new)
         )
         (InstructorUsername param.username)
         (initProfileURIs param.uris)
@@ -109,7 +109,8 @@ initProfile param =
 addInvite : InstructorProfile -> InstructorInvite -> InstructorProfile
 addInvite (InstructorProfile id ts admin invitations uname logout_uri) invite =
     let
-        new_invites = Maybe.map (\i -> i ++ [ invite ]) invitations
+        new_invites =
+            Maybe.map (\i -> i ++ [ invite ]) invitations
     in
     InstructorProfile id ts admin new_invites uname logout_uri
 
@@ -139,24 +140,24 @@ uris (InstructorProfile _ _ _ _ _ instructorUris) =
     instructorUris
 
 
-logoutUri : InstructorProfile -> Instructor.Resource.InstructorLogoutURI
+logoutUri : InstructorProfile -> InstructorResource.InstructorLogoutURI
 logoutUri instructor_profile =
     urisToLogoutUri (uris instructor_profile)
 
 
 logoutUriToString : InstructorProfile -> String
 logoutUriToString instructor_profile =
-    Instructor.Resource.uriToString (Instructor.Resource.instructorLogoutURI (logoutUri instructor_profile))
+    InstructorResource.uriToString (InstructorResource.instructorLogoutURI (logoutUri instructor_profile))
 
 
-profileUri : InstructorProfile -> Instructor.Resource.InstructorProfileURI
+profileUri : InstructorProfile -> InstructorResource.InstructorProfileURI
 profileUri instructor_profile =
     urisToProfileUri (uris instructor_profile)
 
 
 profileUriToString : InstructorProfile -> String
 profileUriToString instructor_profile =
-    Instructor.Resource.uriToString (Instructor.Resource.instructorProfileURI (profileUri instructor_profile))
+    InstructorResource.uriToString (InstructorResource.instructorProfileURI (profileUri instructor_profile))
 
 
 texts : InstructorProfile -> List Text
@@ -173,7 +174,7 @@ logout instructor_profile csrftoken logout_msg =
     let
         request =
             HttpHelpers.post_with_headers
-                (Instructor.Resource.uriToString (Instructor.Resource.instructorLogoutURI (logoutUri instructor_profile)))
+                (InstructorResource.uriToString (InstructorResource.instructorLogoutURI (logoutUri instructor_profile)))
                 [ Http.header "X-CSRFToken" csrftoken ]
                 Http.emptyBody
                 Menu.Logout.logoutRespDecoder
@@ -183,22 +184,22 @@ logout instructor_profile csrftoken logout_msg =
 
 submitNewInvite :
     Flags.CSRFToken
-    -> Instructor.Resource.InstructorInviteURI
+    -> InstructorResource.InstructorInviteURI
     -> (Result Http.Error InstructorInvite -> msg)
     -> Email
     -> Cmd msg
 submitNewInvite csrftoken instructor_invite_uri msg email =
-    if Instructor.Invite.isValidEmail email then
+    if InstructorInvite.isValidEmail email then
         let
             encoded_new_invite =
-                Instructor.Invite.Encode.newInviteEncoder email
+                InstructorInviteEncode.newInviteEncoder email
 
             req =
                 HttpHelpers.post_with_headers
-                    (Instructor.Resource.uriToString (Instructor.Resource.instructorInviteURI instructor_invite_uri))
+                    (InstructorResource.uriToString (InstructorResource.instructorInviteURI instructor_invite_uri))
                     [ Http.header "X-CSRFToken" csrftoken ]
                     (Http.jsonBody encoded_new_invite)
-                    Instructor.Invite.Decode.newInviteRespDecoder
+                    InstructorInviteDecode.newInviteRespDecoder
         in
         Http.send msg req
 

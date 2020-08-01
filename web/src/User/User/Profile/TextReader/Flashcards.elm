@@ -1,10 +1,10 @@
-module User.Profile.TextReader.Flashcards exposing (..)
+module User.User.Profile.TextReader.Flashcards exposing (..)
 
-import Student.Profile
-import Text.Translations.Decode exposing (Flashcards)
+import InstructorAdmin.Text.Translations.Decode exposing (Flashcards)
 import TextReader.Flashcard.Student
 import TextReader.TextWord
 import User.Profile exposing (Profile)
+import User.Student.Profile exposing (StudentProfile)
 
 
 type ProfileFlashcards
@@ -12,7 +12,7 @@ type ProfileFlashcards
     | InstructorFlashcards
 
 
-initFlashcards : Profile -> Text.Translations.Decode.Flashcards -> ProfileFlashcards
+initFlashcards : Profile -> Flashcards -> ProfileFlashcards
 initFlashcards profile cards =
     case profile of
         User.Profile.Student student_profile ->
@@ -22,7 +22,7 @@ initFlashcards profile cards =
             InstructorFlashcards
 
 
-fromStudentFlashcards : Student.Profile.StudentProfile -> Text.Translations.Decode.Flashcards -> ProfileFlashcards
+fromStudentFlashcards : StudentProfile -> Flashcards -> ProfileFlashcards
 fromStudentFlashcards student_profile cards =
     let
         student_flashcards =

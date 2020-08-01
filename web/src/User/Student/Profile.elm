@@ -1,4 +1,4 @@
-module Student.Profile exposing
+module User.Student.Profile exposing
     ( StudentProfile
     , StudentProfileParams
     , StudentURIParams
@@ -15,8 +15,8 @@ module Student.Profile exposing
     , studentUserNameToString
     )
 
-import Student.Resource
 import Text.Model as Text
+import User.Student.Resource as StudentResource
 
 
 type alias StudentURIParams =
@@ -36,11 +36,11 @@ type alias StudentProfileParams =
 
 
 type StudentURIs
-    = StudentURIs Student.Resource.StudentLogoutURI Student.Resource.StudentProfileURI
+    = StudentURIs StudentResource.StudentLogoutURI StudentResource.StudentProfileURI
 
 
 type StudentProfile
-    = StudentProfile (Maybe Int) (Maybe Student.Resource.StudentUsername) Student.Resource.StudentEmail (Maybe Text.TextDifficulty) (List Text.TextDifficulty) StudentURIs
+    = StudentProfile (Maybe Int) (Maybe StudentResource.StudentUsername) StudentResource.StudentEmail (Maybe Text.TextDifficulty) (List Text.TextDifficulty) StudentURIs
 
 
 studentDifficultyPreference : StudentProfile -> Maybe Text.TextDifficulty
@@ -53,7 +53,7 @@ setStudentDifficultyPreference (StudentProfile id username email _ diffs logout_
     StudentProfile id username email (Just preference) diffs logout_uri
 
 
-setUserName : StudentProfile -> Student.Resource.StudentUsername -> StudentProfile
+setUserName : StudentProfile -> StudentResource.StudentUsername -> StudentProfile
 setUserName (StudentProfile id _ email diff_pref diffs logout_uri) new_username =
     StudentProfile id (Just new_username) email diff_pref diffs logout_uri
 
@@ -68,17 +68,17 @@ studentDifficulties (StudentProfile _ _ _ _ diffs _) =
     diffs
 
 
-studentUserName : StudentProfile -> Maybe Student.Resource.StudentUsername
+studentUserName : StudentProfile -> Maybe StudentResource.StudentUsername
 studentUserName (StudentProfile _ username _ _ _ _) =
     username
 
 
-studentUserNameToString : Student.Resource.StudentUsername -> String
+studentUserNameToString : StudentResource.StudentUsername -> String
 studentUserNameToString student_username =
-    Student.Resource.studentUserNameToString student_username
+    StudentResource.studentUserNameToString student_username
 
 
-studentEmail : StudentProfile -> Student.Resource.StudentEmail
+studentEmail : StudentProfile -> StudentResource.StudentEmail
 studentEmail (StudentProfile _ _ email _ _ _) =
     email
 
@@ -88,30 +88,30 @@ uris (StudentProfile _ _ _ _ _ studentUris) =
     studentUris
 
 
-logoutURI : StudentURIs -> Student.Resource.StudentLogoutURI
+logoutURI : StudentURIs -> StudentResource.StudentLogoutURI
 logoutURI (StudentURIs logout _) =
     logout
 
 
-profileURI : StudentURIs -> Student.Resource.StudentProfileURI
+profileURI : StudentURIs -> StudentResource.StudentProfileURI
 profileURI (StudentURIs _ profile) =
     profile
 
 
 profileUriToString : StudentProfile -> String
 profileUriToString student_profile =
-    Student.Resource.uriToString (Student.Resource.studentProfileURI (profileURI (uris student_profile)))
+    StudentResource.uriToString (StudentResource.studentProfileURI (profileURI (uris student_profile)))
 
 
-studentLogoutURI : StudentProfile -> Student.Resource.StudentLogoutURI
+studentLogoutURI : StudentProfile -> StudentResource.StudentLogoutURI
 studentLogoutURI student_profile =
     logoutURI (uris student_profile)
 
 
-initProfileUsername : Maybe String -> Maybe Student.Resource.StudentUsername
+initProfileUsername : Maybe String -> Maybe StudentResource.StudentUsername
 initProfileUsername name =
     name
-        |> Maybe.map Student.Resource.toStudentUsername
+        |> Maybe.map StudentResource.toStudentUsername
 
 
 initProfile : StudentProfileParams -> StudentProfile
@@ -119,10 +119,10 @@ initProfile params =
     StudentProfile
         params.id
         (initProfileUsername params.username)
-        (Student.Resource.toStudentEmail params.email)
+        (StudentResource.toStudentEmail params.email)
         params.difficulty_preference
         params.difficulties
         (StudentURIs
-            (Student.Resource.toStudentLogoutURI params.uris.logout_uri)
-            (Student.Resource.toStudentProfileURI params.uris.profile_uri)
+            (StudentResource.toStudentLogoutURI params.uris.logout_uri)
+            (StudentResource.toStudentProfileURI params.uris.profile_uri)
         )
