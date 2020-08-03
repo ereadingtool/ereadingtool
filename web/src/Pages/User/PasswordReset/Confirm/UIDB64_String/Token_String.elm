@@ -1,8 +1,8 @@
-module ForgotPassword.Token_String exposing (Flags, Model, Msg(..), flagsToResetPassURI, init, login_label, main, post_passwd_reset, reset_pass_encoder, subscriptions, update, view, view_content, view_errors, view_password_confirm_input, view_password_input, view_resp, view_show_passwd_toggle, view_submit)
+module Pages.User.PasswordReset.Confirm.UIDB64_String.Token_String exposing (Flags, Model, Msg(..), flagsToResetPassURI, init, login_label, main, post_passwd_reset, reset_pass_encoder, subscriptions, update, view, view_content, view_errors, view_password_confirm_input, view_password_input, view_resp, view_show_passwd_toggle, view_submit)
 
 import Dict exposing (Dict)
 import Flags
-import ForgotPassword exposing (PassResetConfirmResp, ResetPassURI, UserEmail, forgotPassConfirmRespDecoder)
+import User.ForgotPassword exposing (PassResetConfirmResp, ResetPassURI, UserEmail, forgotPassConfirmRespDecoder)
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList)
 import Html.Events exposing (onCheck, onClick, onInput)
@@ -33,14 +33,14 @@ type alias Model =
     , confirm_password : String
     , show_password : Bool
     , resp : PassResetConfirmResp
-    , reset_pass_uri : ForgotPassword.ResetPassURI
+    , reset_pass_uri : User.ForgotPassword.ResetPassURI
     , errors : Dict String String
     }
 
 
 flagsToResetPassURI : { a | reset_pass_endpoint : String } -> ResetPassURI
 flagsToResetPassURI flags =
-    ForgotPassword.ResetPassURI (ForgotPassword.URI flags.reset_pass_endpoint)
+    User.ForgotPassword.ResetPassURI (User.ForgotPassword.URI flags.reset_pass_endpoint)
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -49,7 +49,7 @@ init flags =
       , password = ""
       , confirm_password = ""
       , show_password = False
-      , resp = ForgotPassword.emptyPassResetResp
+      , resp = User.ForgotPassword.emptyPassResetResp
       , reset_pass_uri = flagsToResetPassURI flags
       , errors = Dict.fromList []
       }
@@ -57,16 +57,16 @@ init flags =
     )
 
 
-reset_pass_encoder : ForgotPassword.Password -> Encode.Value
+reset_pass_encoder : User.ForgotPassword.Password -> Encode.Value
 reset_pass_encoder password =
     Encode.object
-        [ ( "new_password1", Encode.string (ForgotPassword.password1toString (ForgotPassword.password1 password)) )
-        , ( "new_password2", Encode.string (ForgotPassword.password2toString (ForgotPassword.password2 password)) )
-        , ( "uidb64", Encode.string (ForgotPassword.uidb64toString (ForgotPassword.uidb64 password)) )
+        [ ( "new_password1", Encode.string (User.ForgotPassword.password1toString (User.ForgotPassword.password1 password)) )
+        , ( "new_password2", Encode.string (User.ForgotPassword.password2toString (User.ForgotPassword.password2 password)) )
+        , ( "uidb64", Encode.string (User.ForgotPassword.uidb64toString (User.ForgotPassword.uidb64 password)) )
         ]
 
 
-post_passwd_reset : ResetPassURI -> Flags.CSRFToken -> ForgotPassword.Password -> Cmd Msg
+post_passwd_reset : ResetPassURI -> Flags.CSRFToken -> User.ForgotPassword.Password -> Cmd Msg
 post_passwd_reset reset_pass_endpoint csrftoken password =
     let
         encoded_login_params =
@@ -74,7 +74,7 @@ post_passwd_reset reset_pass_endpoint csrftoken password =
 
         req =
             post_with_headers
-                (ForgotPassword.uriToString (ForgotPassword.resetPassURI reset_pass_endpoint))
+                (User.ForgotPassword.uriToString (User.ForgotPassword.resetPassURI reset_pass_endpoint))
                 [ Http.header "X-CSRFToken" csrftoken ]
                 (Http.jsonBody encoded_login_params)
                 forgotPassConfirmRespDecoder
@@ -91,7 +91,7 @@ update msg model =
         UpdatePassword pass ->
             ( { model
                 | password = pass
-                , resp = ForgotPassword.emptyPassResetResp
+                , resp = User.ForgotPassword.emptyPassResetResp
                 , errors =
                     Dict.fromList
                         (if pass /= model.confirm_password then
@@ -107,7 +107,7 @@ update msg model =
         UpdatePasswordConfirm confirm_pass ->
             ( { model
                 | confirm_password = confirm_pass
-                , resp = ForgotPassword.emptyPassResetResp
+                , resp = User.ForgotPassword.emptyPassResetResp
                 , errors =
                     Dict.fromList
                         (if confirm_pass /= model.password then
@@ -124,10 +124,10 @@ update msg model =
             ( { model | errors = Dict.fromList [] }
             , post_passwd_reset model.reset_pass_uri
                 model.flags.csrftoken
-                (ForgotPassword.Password
-                    (ForgotPassword.Password1 model.password)
-                    (ForgotPassword.Password2 model.confirm_password)
-                    (ForgotPassword.UIdb64 model.flags.uidb64)
+                (User.ForgotPassword.Password
+                    (User.ForgotPassword.Password1 model.password)
+                    (User.ForgotPassword.Password2 model.confirm_password)
+                    (User.ForgotPassword.UIdb64 model.flags.uidb64)
                 )
             )
 
@@ -143,9 +143,6 @@ update msg model =
 
                         _ ->
                             ( model, Cmd.none )
-
-                Http.BadPayload _ _ ->
-                    ( model, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )

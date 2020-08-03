@@ -104,15 +104,6 @@ studentUserNameToString (StudentUsername username) =
     username
 
 
-profileIDToStudentEndpointURI : StudentEndpointURI -> Profile.ProfileID -> StudentEndpointURI
-profileIDToStudentEndpointURI student_endpoint_uri profileID =
-    let
-        endpointURI =
-            uriToString (studentEndpointURI student_endpoint_uri)
-    in
-    StudentEndpointURI (URI (String.join "" [ endpointURI, Profile.profileIDtoString profileID ++ "/" ]))
-
-
 studentProfileURI : StudentProfileURI -> URI
 studentProfileURI (StudentProfileURI uri) =
     uri

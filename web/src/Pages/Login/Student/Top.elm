@@ -1,4 +1,4 @@
-module Login.Student.Top exposing
+module Pages.Login.Student.Top exposing
     ( Flags
     , view
     , view_acknowledgements_and_about_links

@@ -1,4 +1,4 @@
-module User.User.Flags.UnAuthed exposing (UnAuthedUserFlags)
+module User.Flags.UnAuthed exposing (UnAuthedUserFlags)
 
 import Flags exposing (UnAuthedFlags)
 

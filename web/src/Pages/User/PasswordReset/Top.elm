@@ -1,16 +1,16 @@
-module ForgotPassword.Top exposing (Flags, Model, Msg(..), flagsToForgotPassURI, forgot_pass_encoder, init, login_label, main, post_forgot_pass, subscriptions, update, view, view_content, view_email_input, view_errors, view_resp, view_submit)
+module Pages.User.PasswordReset.Top exposing (Flags, Model, Msg(..), flagsToForgotPassURI, forgot_pass_encoder, init, login_label, main, post_forgot_pass, subscriptions, update, view, view_content, view_email_input, view_errors, view_resp, view_submit)
 
 import Dict exposing (Dict)
 import Flags
-import ForgotPassword exposing (ForgotPassResp, ForgotPassURI, UserEmail, forgotPassRespDecoder)
+import User.ForgotPassword exposing (ForgotPassResp, ForgotPassURI, UserEmail, forgotPassRespDecoder)
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (..)
-import HttpHelpers exposing (post_with_headers)
+import Utils.HttpHelpers exposing (post_with_headers)
 import Json.Decode as Decode
 import Json.Encode as Encode
-import Util exposing (isValidEmail)
+import Utils exposing (isValidEmail)
 
 import Browser
 import Views
@@ -29,7 +29,7 @@ type Msg
 type alias Model =
     { flags : Flags
     , user_email : UserEmail
-    , forgot_pass_uri : ForgotPassword.ForgotPassURI
+    , forgot_pass_uri : User.ForgotPassword.ForgotPassURI
     , resp : ForgotPassResp
     , errors : Dict String String
     }
@@ -37,15 +37,15 @@ type alias Model =
 
 flagsToForgotPassURI : { a | forgot_pass_endpoint : String } -> ForgotPassURI
 flagsToForgotPassURI flags =
-    ForgotPassword.ForgotPassURI (ForgotPassword.URI flags.forgot_pass_endpoint)
+    User.ForgotPassword.ForgotPassURI (User.ForgotPassword.URI flags.forgot_pass_endpoint)
 
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( { flags = flags
-      , user_email = ForgotPassword.UserEmail ""
+      , user_email = User.ForgotPassword.UserEmail ""
       , forgot_pass_uri = flagsToForgotPassURI flags
-      , resp = ForgotPassword.emptyForgotPassResp
+      , resp = User.ForgotPassword.emptyForgotPassResp
       , errors = Dict.fromList []
       }
     , Cmd.none
@@ -55,7 +55,7 @@ init flags =
 forgot_pass_encoder : UserEmail -> Encode.Value
 forgot_pass_encoder user_email =
     Encode.object
-        [ ( "email", Encode.string (ForgotPassword.userEmailtoString user_email) )
+        [ ( "email", Encode.string (User.ForgotPassword.userEmailtoString user_email) )
         ]
 
 
@@ -67,7 +67,7 @@ post_forgot_pass forgot_pass_endpoint csrftoken user_email =
 
         req =
             post_with_headers
-                (ForgotPassword.uriToString (ForgotPassword.forgotPassURI forgot_pass_endpoint))
+                (User.ForgotPassword.uriToString (User.ForgotPassword.forgotPassURI forgot_pass_endpoint))
                 [ Http.header "X-CSRFToken" csrftoken ]
                 (Http.jsonBody encoded_login_params)
                 forgotPassRespDecoder
@@ -80,8 +80,8 @@ update msg model =
     case msg of
         UpdateEmail addr ->
             ( { model
-                | user_email = ForgotPassword.UserEmail addr
-                , resp = ForgotPassword.emptyForgotPassResp
+                | user_email = User.ForgotPassword.UserEmail addr
+                , resp = User.ForgotPassword.emptyForgotPassResp
                 , errors =
                     if isValidEmail addr || (addr == "") then
                         Dict.remove "email" model.errors
@@ -113,9 +113,6 @@ update msg model =
 
                         _ ->
                             ( model, Cmd.none )
-
-                Http.BadPayload _ _ ->
-                    ( model, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
@@ -160,7 +157,7 @@ view_submit model =
             Dict.member "email" model.errors
 
         button_disabled =
-            if has_error || ForgotPassword.userEmailisEmpty model.user_email then
+            if has_error || User.ForgotPassword.userEmailisEmpty model.user_email then
                 [ class "disabled" ]
 
             else
