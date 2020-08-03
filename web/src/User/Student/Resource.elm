@@ -24,8 +24,6 @@ module User.Student.Resource exposing
     , uriToString
     )
 
-import User.Profile as Profile
-
 
 type URI
     = URI String

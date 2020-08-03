@@ -32,7 +32,7 @@ import InstructorAdmin.Text.Translations.Word.Kind as TranslationsWordKind
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)
 import TextReader.TextWord
-import Util
+import Utils
 
 
 type alias TextWord =
@@ -175,7 +175,7 @@ textWordInstanceDecoder =
 
 grammemesDecoder : Json.Decode.Decoder (List ( String, String ))
 grammemesDecoder =
-    Json.Decode.list Util.stringTupleDecoder
+    Json.Decode.list Utils.stringTupleDecoder
 
 
 textWordDecoder : Json.Decode.Decoder TextWord
