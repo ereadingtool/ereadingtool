@@ -6,10 +6,13 @@ port module Api exposing
     , authErrorMessage
     , authResult
     , authSuccessMessage
+    , delete
     , exposeToken
     , get
     , login
     , logout
+    , post
+    , put
     , viewerChanges
     )
 
@@ -240,6 +243,81 @@ get url maybeCred toMsg decoder =
                 Nothing ->
                     []
         , body = Http.emptyBody
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
+
+put :
+    String
+    -> Maybe Cred
+    -> (Result Http.Error a -> msg)
+    -> Http.Body
+    -> Decode.Decoder a
+    -> Cmd msg
+put url maybeCred toMsg body decoder =
+    Http.request
+        { method = "PUT"
+        , url = url
+        , expect = Http.expectJson toMsg decoder
+        , headers =
+            case maybeCred of
+                Just cred ->
+                    [ credHeader cred ]
+
+                Nothing ->
+                    []
+        , body = body
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
+
+post :
+    String
+    -> Maybe Cred
+    -> (Result Http.Error a -> msg)
+    -> Http.Body
+    -> Decode.Decoder a
+    -> Cmd msg
+post url maybeCred toMsg body decoder =
+    Http.request
+        { method = "POST"
+        , url = url
+        , expect = Http.expectJson toMsg decoder
+        , headers =
+            case maybeCred of
+                Just cred ->
+                    [ credHeader cred ]
+
+                Nothing ->
+                    []
+        , body = body
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
+
+delete :
+    String
+    -> Maybe Cred
+    -> (Result Http.Error a -> msg)
+    -> Http.Body
+    -> Decode.Decoder a
+    -> Cmd msg
+delete url maybeCred toMsg body decoder =
+    Http.request
+        { method = "DELETE"
+        , url = url
+        , expect = Http.expectJson toMsg decoder
+        , headers =
+            case maybeCred of
+                Just cred ->
+                    [ credHeader cred ]
+
+                Nothing ->
+                    []
+        , body = body
         , timeout = Nothing
         , tracker = Nothing
         }
