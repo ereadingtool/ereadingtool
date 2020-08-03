@@ -22,7 +22,6 @@ import User.Instructor.Invite as InstructorInvite exposing (Email, InstructorInv
 import User.Instructor.Invite.Decode as InstructorInviteDecode
 import User.Instructor.Invite.Encode as InstructorInviteEncode
 import User.Instructor.Resource as InstructorResource
-import Utils.HttpHelpers as HttpHelpers
 
 
 type alias Tag =

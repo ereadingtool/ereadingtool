@@ -1,12 +1,12 @@
-module InstructorAdmin.Text.Translations.Msg exposing (Msg(..))
+module Text.Translations.Msg exposing (Msg(..))
 
 import Array exposing (Array)
 import Dict exposing (Dict)
 import Http
-import InstructorAdmin.Text.Translations as Translations exposing (Translation)
-import InstructorAdmin.Text.Translations.Decode as TranslationsDecode
-import InstructorAdmin.Text.Translations.TextWord exposing (TextWord)
-import InstructorAdmin.Text.Translations.Word.Instance exposing (WordInstance)
+import Text.Translations exposing (Translation)
+import Text.Translations.Decode
+import Text.Translations.TextWord exposing (TextWord)
+import Text.Translations.Word.Instance exposing (WordInstance)
 
 
 type Msg
@@ -35,12 +35,12 @@ type Msg
     | RemoveGrammeme WordInstance String
       -- result msgs
       -- words
-    | MergedWords (Result Http.Error TranslationsDecode.TextWordMergeResp)
+    | MergedWords (Result Http.Error Text.Translations.Decode.TextWordMergeResp)
     | DeletedTextWord (Result Http.Error TextWord)
     | UpdatedTextWord (Result Http.Error TextWord)
     | UpdatedTextWords (Result Http.Error (List TextWord))
       -- translations
-    | UpdateTextTranslations (Result Http.Error (Array (Dict Translations.Word (Array TextWord))))
+    | UpdateTextTranslations (Result Http.Error (Array (Dict Text.Translations.Word (Array TextWord))))
     | UpdateTextTranslation (Result Http.Error ( TextWord, Translation ))
     | SubmittedTextTranslation (Result Http.Error ( TextWord, Translation ))
-    | DeletedTranslation (Result Http.Error TranslationsDecode.TextWordTranslationDeleteResp)
+    | DeletedTranslation (Result Http.Error Text.Translations.Decode.TextWordTranslationDeleteResp)

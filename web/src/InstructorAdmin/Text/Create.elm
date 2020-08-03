@@ -3,11 +3,11 @@ module InstructorAdmin.Text.Create exposing (Flags, Mode(..), Model, Msg(..), Ta
 import Dict exposing (Dict)
 import Flags
 import Http
-import Instructor.Profile
+import User.Instructor.Profile
 import InstructorAdmin.Admin.Text
 import InstructorAdmin.Text.Translations as Translations
-import InstructorAdmin.Text.Translations.Model as TranslationsModel
-import InstructorAdmin.Text.Translations.Msg as TranslationsMsg
+import Text.Translations.Model as TranslationsModel
+import Text.Translations.Msg as TranslationsMsg
 import Json.Encode
 import Menu.Items
 import Menu.Logout
@@ -22,7 +22,7 @@ import Time
 
 type alias Flags =
     Flags.AuthedFlags
-        { instructor_profile : Instructor.Profile.InstructorProfileParams
+        { instructor_profile : User.Instructor.Profile.InstructorProfileParams
         , text : Maybe Json.Encode.Value
         , answer_feedback_limit : Int
         , text_endpoint_url : String
@@ -80,7 +80,7 @@ type Msg
     | UpdateTextCkEditors ( String, String )
     | TextJSONDecode (Result String TextComponent)
     | TextTagsDecode (Result String (Dict String String))
-    | ClearMessages Time.Time
+    | ClearMessages Time.Posix
     | AddTagInput String String
     | DeleteTag String
     | ToggleLock
@@ -98,7 +98,7 @@ type Msg
 type alias Model =
     { flags : Flags
     , mode : Mode
-    , profile : Instructor.Profile.InstructorProfile
+    , profile : User.Instructor.Profile.InstructorProfile
     , menu_items : Menu.Items.MenuItems
     , success_msg : Maybe String
     , error_msg : Maybe String
@@ -116,7 +116,7 @@ type alias TextViewParams =
     { text : Text.Model.Text
     , text_component : TextComponent
     , text_fields : Text.Field.TextFields
-    , profile : Instructor.Profile.InstructorProfile
+    , profile : User.Instructor.Profile.InstructorProfile
     , tags : Dict String String
     , selected_tab : Tab
     , write_locked : WriteLocked

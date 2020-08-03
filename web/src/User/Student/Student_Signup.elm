@@ -34,8 +34,7 @@ import Json.Encode as Encode
 import Menu.Msg as MenuMsg
 import Text.Model exposing (TextDifficulty)
 import User.SignUp as SignUp
-import User.User.Flags.UnAuthed exposing (UnAuthedUserFlags)
-import Utils.HttpHelpers exposing (post_with_headers)
+import User.Flags.UnAuthed exposing (UnAuthedUserFlags)
 import Views
 
 

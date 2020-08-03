@@ -7,7 +7,6 @@ import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (..)
-import Utils.HttpHelpers exposing (post_with_headers)
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Utils exposing (isValidEmail)

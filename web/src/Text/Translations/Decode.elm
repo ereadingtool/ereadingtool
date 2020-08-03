@@ -1,4 +1,4 @@
-module InstructorAdmin.Text.Translations.Decode exposing
+module Text.Translations.Decode exposing
     ( Flashcards
     , TextWord
     , TextWordMergeResp
@@ -17,7 +17,9 @@ module InstructorAdmin.Text.Translations.Decode exposing
 
 import Array exposing (Array)
 import Dict exposing (Dict)
-import InstructorAdmin.Text.Translations as Translations
+import Json.Decode
+import Json.Decode.Pipeline exposing (required)
+import Text.Translations
     exposing
         ( Phrase
         , SectionNumber(..)
@@ -27,10 +29,8 @@ import InstructorAdmin.Text.Translations as Translations
         , WordValues
         , Words
         )
-import InstructorAdmin.Text.Translations.TextWord as TranslationsTextWord
-import InstructorAdmin.Text.Translations.Word.Kind as TranslationsWordKind
-import Json.Decode
-import Json.Decode.Pipeline exposing (required)
+import Text.Translations.TextWord
+import Text.Translations.Word.Kind
 import TextReader.TextWord
 import Utils
 
@@ -51,7 +51,7 @@ type alias TextWords =
 
 
 type alias TextWordTranslationDeleteResp =
-    { text_word : TranslationsTextWord.TextWord
+    { text_word : Text.Translations.TextWord.TextWord
     , translation : Translation
     , deleted : Bool
     }
@@ -61,7 +61,7 @@ type alias TextWordMergeResp =
     { phrase : String
     , section : SectionNumber
     , instance : Int
-    , text_words : List TranslationsTextWord.TextWord
+    , text_words : List Text.Translations.TextWord.TextWord
     , grouped : Bool
     , error : Maybe String
     }
@@ -90,7 +90,7 @@ textWordMergeDecoder =
         |> required "error" (Json.Decode.nullable Json.Decode.string)
 
 
-textTranslationUpdateRespDecoder : Json.Decode.Decoder ( TranslationsTextWord.TextWord, Translation )
+textTranslationUpdateRespDecoder : Json.Decode.Decoder ( Text.Translations.TextWord.TextWord, Translation )
 textTranslationUpdateRespDecoder =
     Json.Decode.map2 (\a b -> ( a, b ))
         (Json.Decode.field "text_word" textWordInstanceDecoder)
@@ -105,12 +105,12 @@ textTranslationRemoveRespDecoder =
         |> required "deleted" Json.Decode.bool
 
 
-textWordDictInstancesDecoder : Json.Decode.Decoder (Array (Dict Translations.Word (Array TranslationsTextWord.TextWord)))
+textWordDictInstancesDecoder : Json.Decode.Decoder (Array (Dict Text.Translations.Word (Array Text.Translations.TextWord.TextWord)))
 textWordDictInstancesDecoder =
     Json.Decode.array (Json.Decode.dict (Json.Decode.array textWordInstanceDecoder))
 
 
-textWordInstancesDecoder : Json.Decode.Decoder (List TranslationsTextWord.TextWord)
+textWordInstancesDecoder : Json.Decode.Decoder (List Text.Translations.TextWord.TextWord)
 textWordInstancesDecoder =
     Json.Decode.list textWordInstanceDecoder
 
@@ -133,36 +133,36 @@ textGroupDetailsDecoder =
         |> required "length" Json.Decode.int
 
 
-wordDecoder : Json.Decode.Decoder TranslationsTextWord.WordKind
+wordDecoder : Json.Decode.Decoder Text.Translations.Word.Kind.WordKind
 wordDecoder =
     Json.Decode.field "word_type" Json.Decode.string
         |> Json.Decode.andThen wordHelpDecoder
 
 
-wordHelpDecoder : String -> Json.Decode.Decoder TranslationsTextWord.WordKind
+wordHelpDecoder : String -> Json.Decode.Decoder Text.Translations.Word.Kind.WordKind
 wordHelpDecoder wordType =
     case wordType of
         "single" ->
             Json.Decode.field "group"
-                (Json.Decode.map TranslationsTextWord.SingleWord (Json.Decode.nullable textGroupDetailsDecoder))
+                (Json.Decode.map Text.Translations.Word.Kind.SingleWord (Json.Decode.nullable textGroupDetailsDecoder))
 
         "compound" ->
-            Json.Decode.succeed TranslationsTextWord.CompoundWord
+            Json.Decode.succeed Text.Translations.Word.Kind.CompoundWord
 
         _ ->
             Json.Decode.fail "Unsupported word type"
 
 
-textWordEndpointsDecoder : Json.Decode.Decoder TranslationsTextWord.Endpoints
+textWordEndpointsDecoder : Json.Decode.Decoder Text.Translations.TextWord.Endpoints
 textWordEndpointsDecoder =
-    Json.Decode.succeed TranslationsTextWord.Endpoints
+    Json.Decode.succeed Text.Translations.TextWord.Endpoints
         |> required "text_word" Json.Decode.string
         |> required "translations" Json.Decode.string
 
 
-textWordInstanceDecoder : Json.Decode.Decoder TranslationsTextWord.TextWord
+textWordInstanceDecoder : Json.Decode.Decoder Text.Translations.TextWord.TextWord
 textWordInstanceDecoder =
-    Json.Decode.map8 TranslationsTextWord.new
+    Json.Decode.map8 Text.Translations.TextWord.new
         (Json.Decode.field "id" (Json.Decode.map TextWordId Json.Decode.int))
         (Json.Decode.field "text_section" (Json.Decode.map SectionNumber Json.Decode.int))
         (Json.Decode.field "instance" Json.Decode.int)

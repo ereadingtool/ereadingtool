@@ -1,4 +1,4 @@
-module InstructorAdmin.Text.Translations.TextWord exposing
+module Text.Translations.TextWord exposing
     ( Endpoints
     , TextWord
     , grammemeValue
@@ -22,7 +22,7 @@ module InstructorAdmin.Text.Translations.TextWord exposing
     )
 
 import Dict
-import InstructorAdmin.Text.Translations as Translations
+import Text.Translations
     exposing
         ( Grammemes
         , Instance
@@ -33,7 +33,7 @@ import InstructorAdmin.Text.Translations as Translations
         , Translation
         , Translations
         )
-import InstructorAdmin.Text.Translations.Word.Kind exposing (WordKind(..))
+import Text.Translations.Word.Kind exposing (WordKind(..))
 
 
 type alias Endpoints =
@@ -137,7 +137,7 @@ id (TextWord wordId _ _ _ _ _ _ _) =
 
 idToInt : TextWord -> Int
 idToInt textWord =
-    Translations.textWordIdToInt (id textWord)
+    Text.Translations.textWordIdToInt (id textWord)
 
 
 new :

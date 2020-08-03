@@ -2,8 +2,8 @@ module TextReader.TextWord exposing (..)
 
 import Dict exposing (Dict)
 import InstructorAdmin.Text.Translations exposing (..)
-import InstructorAdmin.Text.Translations.TextWord as TranslationsTextWord
-import InstructorAdmin.Text.Translations.Word.Kind as TranslationsWordKind
+import Text.Translations.TextWord as TranslationsTextWord
+import Text.Translations.Word.Kind as TranslationsWordKind
 
 
 type alias Translation =

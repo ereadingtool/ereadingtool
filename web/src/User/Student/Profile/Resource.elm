@@ -13,7 +13,6 @@ import User.Student.Profile.Decode as StudentProfileDecode
 import User.Student.Profile.Encode as StudentProfileEncode
 import User.Student.Profile.Msg exposing (Msg(..))
 import User.Student.Resource as StudentResource
-import Utils.HttpHelpers as HttpHelpers
 
 
 validateUsername : Flags.CSRFToken -> StudentResource.StudentUsernameValidURI -> String -> Cmd Msg

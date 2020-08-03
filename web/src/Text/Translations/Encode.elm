@@ -1,4 +1,4 @@
-module InstructorAdmin.Text.Translations.Encode exposing
+module Text.Translations.Encode exposing
     ( deleteTextTranslationEncode
     , grammemesEncoder
     , newTextTranslationEncoder
@@ -8,9 +8,9 @@ module InstructorAdmin.Text.Translations.Encode exposing
     )
 
 import Dict exposing (Dict)
-import InstructorAdmin.Text.Translations exposing (Translation)
-import InstructorAdmin.Text.Translations.TextWord as TranslationsTextWord exposing (TextWord)
 import Json.Encode as Encode
+import Text.Translations exposing (Translation)
+import Text.Translations.TextWord exposing (TextWord)
 
 
 textTranslationEncoder : Translation -> Encode.Value
@@ -29,8 +29,8 @@ textTranslationsMergeEncoder textWordTranslations textWords =
           , Encode.list Encode.object <|
                 List.map
                     (\tw ->
-                        [ ( "id", Encode.int (TranslationsTextWord.idToInt tw) )
-                        , ( "word_type", Encode.string (TranslationsTextWord.wordType tw) )
+                        [ ( "id", Encode.int (Text.Translations.TextWord.idToInt tw) )
+                        , ( "word_type", Encode.string (Text.Translations.TextWord.wordType tw) )
                         ]
                     )
                     textWords
@@ -64,7 +64,7 @@ textTranslationAsCorrectEncoder textTranslation =
 textWordMergeEncoder : List TextWord -> Encode.Value
 textWordMergeEncoder textWords =
     Encode.list Encode.int
-        (List.map (\textWord -> TranslationsTextWord.idToInt textWord) textWords)
+        (List.map (\textWord -> Text.Translations.TextWord.idToInt textWord) textWords)
 
 
 newTextTranslationEncoder : String -> Bool -> Encode.Value
@@ -91,6 +91,6 @@ encodeDict kName vValue dict =
 grammemesEncoder : TextWord -> Dict String String -> Encode.Value
 grammemesEncoder textWord grammemes =
     Encode.object
-        [ ( "word_type", Encode.string (TranslationsTextWord.wordType textWord) )
+        [ ( "word_type", Encode.string (Text.Translations.TextWord.wordType textWord) )
         , ( "grammemes", encodeDict identity Encode.string grammemes )
         ]

@@ -5,7 +5,7 @@ module User.Student.Profile.Decode exposing
     )
 
 import InstructorAdmin.Text.Translations exposing (Phrase)
-import InstructorAdmin.Text.Translations.Decode as TextTranslationsDecode
+import Text.Translations.Decode as TextTranslationsDecode
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)
 import TextReader.Section.Decode

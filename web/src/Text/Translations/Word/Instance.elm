@@ -1,4 +1,4 @@
-module InstructorAdmin.Text.Translations.Word.Instance exposing
+module Text.Translations.Word.Instance exposing
     ( WordInstance
     , canMergeWords
     , grammemeKeys
@@ -16,9 +16,9 @@ module InstructorAdmin.Text.Translations.Word.Instance exposing
     , wordInstanceSectionNumberToInt
     )
 
-import InstructorAdmin.Text.Translations as Translations exposing (Grammemes, Id, Instance, SectionNumber, Token)
-import InstructorAdmin.Text.Translations.TextWord as TranslationsTextWord exposing (TextWord)
 import Set exposing (Set)
+import Text.Translations exposing (Grammemes, Id, Instance, SectionNumber, Token)
+import Text.Translations.TextWord exposing (TextWord)
 
 
 type WordInstance
@@ -48,18 +48,18 @@ hasTextWord (WordInstance _ _ _ maybeTextWord) =
 grammemeValue : WordInstance -> String -> Maybe String
 grammemeValue wordInstance grammemeName =
     textWord wordInstance
-        |> Maybe.andThen (\tw -> TranslationsTextWord.grammemeValue tw grammemeName)
+        |> Maybe.andThen (\tw -> Text.Translations.TextWord.grammemeValue tw grammemeName)
 
 
 grammemeKeys : Set String
 grammemeKeys =
-    Translations.expectedGrammemeKeys
+    Text.Translations.expectedGrammemeKeys
 
 
 grammemes : WordInstance -> Maybe Grammemes
 grammemes wordInstance =
     textWord wordInstance
-        |> Maybe.andThen TranslationsTextWord.grammemes
+        |> Maybe.andThen Text.Translations.TextWord.grammemes
 
 
 sectionNumber : WordInstance -> SectionNumber
@@ -69,12 +69,12 @@ sectionNumber (WordInstance sectNum _ _ _) =
 
 wordInstanceSectionNumberToInt : WordInstance -> Int
 wordInstanceSectionNumberToInt wordInstance =
-    Translations.sectionNumberToInt (sectionNumber wordInstance)
+    Text.Translations.sectionNumberToInt (sectionNumber wordInstance)
 
 
 id : WordInstance -> Id
 id (WordInstance sectNum inst tok _) =
-    String.join "_" [ String.fromInt (Translations.sectionNumberToInt sectNum), String.fromInt inst, String.join "_" (String.words (String.toLower tok)) ]
+    String.join "_" [ String.fromInt (Text.Translations.sectionNumberToInt sectNum), String.fromInt inst, String.join "_" (String.words (String.toLower tok)) ]
 
 
 token : WordInstance -> Token

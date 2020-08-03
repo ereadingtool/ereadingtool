@@ -17,7 +17,6 @@ import Spa.Url exposing (Url)
 import User
 import User.Flags.UnAuthed exposing (UnAuthedUserFlags)
 import Utils exposing (isValidEmail)
-import Utils.HttpHelpers exposing (post_with_headers)
 import Views
 
 
