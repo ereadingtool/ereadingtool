@@ -1,4 +1,4 @@
-module Api.Endpoint exposing (Endpoint, request, test)
+module Api.Endpoint exposing (Endpoint, forgotPassword, request, test)
 
 import Http
 import Url.Builder exposing (QueryParameter)
@@ -54,3 +54,8 @@ request config =
 test : String -> Endpoint
 test baseUrl =
     url baseUrl [ "test" ] []
+
+
+forgotPassword : String -> Endpoint
+forgotPassword baseUrl =
+    url baseUrl [ "password", "reset" ] []

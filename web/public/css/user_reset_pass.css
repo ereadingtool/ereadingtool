@@ -1,0 +1,17 @@
+.login_box {
+    grid-gap: 10px;
+}
+
+.msg {
+    display: grid;
+    justify-content: center;
+}
+
+.login_label {
+    display: grid;
+    justify-content: center;
+}
+
+.disabled {
+    color: darkgrey;
+}

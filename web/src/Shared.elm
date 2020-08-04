@@ -113,14 +113,14 @@ view { page, toMsg } model =
     { title = page.title
     , body =
         [ div [ class "layout" ]
-            [ header [ class "navbar" ]
+            [ div [ class "page" ] page.body
+            , header [ class "navbar" ]
                 [ a [ class "link", href (Route.toString Route.Top) ] [ text "Homepage" ]
                 , a [ class "link", href (Route.toString Route.NotFound) ] [ text "Not found" ]
                 , a [ class "link", href (Route.toString Route.About) ] [ text "About" ]
                 , a [ class "link", href (Route.toString Route.Acknowledgments) ] [ text "Acknowledgments" ]
                 , a [ class "link", href (Route.toString Route.ProtectedApplicationTemplate) ] [ text "Protected" ]
                 ]
-            , div [ class "page" ] page.body
             , div []
                 [ div []
                     [ text ("Token: " ++ Api.exposeToken (Session.cred model.session)) ]
