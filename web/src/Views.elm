@@ -12,7 +12,7 @@ import Html.Attributes exposing (attribute, class, classList, id)
 import Menu.Items
 import Menu.Msg
 import Menu.View
-import User.Profile
+import User.Profile exposing (Profile)
 
 
 view_logo : List (Html.Attribute msg) -> Html msg
@@ -45,7 +45,7 @@ view_unauthed_header =
     view_header [] []
 
 
-view_authed_header : User.Profile.Profile -> Menu.Items.MenuItems -> (Menu.Msg.Msg -> msg) -> Html msg
+view_authed_header : Profile -> Menu.Items.MenuItems -> (Menu.Msg.Msg -> msg) -> Html msg
 view_authed_header profile menu_items top_level_menu_msg =
     view_header
         (Menu.View.view_top_menu menu_items profile top_level_menu_msg)

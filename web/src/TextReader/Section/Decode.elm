@@ -3,7 +3,7 @@ module TextReader.Section.Decode exposing (..)
 import Array exposing (Array)
 import Dict exposing (Dict)
 import InstructorAdmin.Text.Translations exposing (..)
-import InstructorAdmin.Text.Translations.Decode as TranslationsDecode
+import Text.Translations.Decode as TranslationsDecode
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)
 import TextReader.Question.Decode

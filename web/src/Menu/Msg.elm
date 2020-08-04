@@ -1,7 +1,7 @@
 module Menu.Msg exposing (Msg(..))
 
-import Instructor.Profile exposing (InstructorProfile)
-import Student.Profile exposing (StudentProfile)
+import User.Instructor.Profile exposing (InstructorProfile)
+import User.Student.Profile exposing (StudentProfile)
 
 
 type Msg
