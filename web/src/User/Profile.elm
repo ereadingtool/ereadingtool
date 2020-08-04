@@ -3,11 +3,11 @@ module User.Profile exposing (..)
 import Flags
 import Html exposing (Html, div)
 import Http exposing (..)
-import User.Instructor.Profile
-import User.Instructor.View
 import Menu.Logout
 import Menu.Msg exposing (Msg)
 import Profile exposing (..)
+import User.Instructor.Profile
+import User.Instructor.View
 import User.Student.Profile
 import User.Student.Profile.Decode
 import User.Student.Profile.Resource
@@ -77,11 +77,14 @@ retrieveStudentProfile :
 retrieveStudentProfile msg profile_id student_endpoint_uri =
     let
         request =
-            Http.get
-                (User.Student.Resource.uriToString (User.Student.Resource.studentEndpointURI student_endpoint_uri))
-                User.Student.Profile.Decode.studentProfileDecoder
+            Debug.todo
+
+        -- Http.get
+        --     (User.Student.Resource.uriToString (User.Student.Resource.studentEndpointURI student_endpoint_uri))
+        --     User.Student.Profile.Decode.studentProfileDecoder
     in
-    Http.send msg request
+    -- Http.send msg request
+    Debug.todo "retrieve student profile"
 
 
 logout : Profile -> Flags.CSRFToken -> (Result Http.Error Menu.Logout.LogOutResp -> msg) -> Cmd msg

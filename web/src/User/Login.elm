@@ -11,7 +11,6 @@ import Json.Decode
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode
 import Shared
-
 import Spa.Generated.Route as Route
 import Spa.Url exposing (Url)
 import User
@@ -71,6 +70,7 @@ init sharedModel urlParams =
       }
     , Cmd.none
     )
+
 
 paramsToLogin : Url Params -> Login
 paramsToLogin urlParams =
@@ -171,10 +171,10 @@ postLogin endpoint login_params =
             loginEncoder login_params
     in
     Http.post
-      { url = (User.uriToString (User.loginURI endpoint))
-      , body = (Http.jsonBody encoded_login_params)
-      , expect = Http.expectJson Submitted loginRespDecoder
-      }
+        { url = User.uriToString (User.loginURI endpoint)
+        , body = Http.jsonBody encoded_login_params
+        , expect = Http.expectJson Submitted loginRespDecoder
+        }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -215,13 +215,13 @@ update msg model =
         Submitted (Err error) ->
             case error of
                 Http.BadStatus resp ->
-                    case Json.Decode.decodeString (Json.Decode.dict Json.Decode.string) resp.body of
-                        Ok errors ->
-                            ( { model | errors = errors }, Cmd.none )
+                    Debug.todo "student login update"
 
-                        _ ->
-                            ( model, Cmd.none )
-
+                -- case Json.Decode.decodeString (Json.Decode.dict Json.Decode.string) resp.body of
+                --     Ok errors ->
+                --         ( { model | errors = errors }, Cmd.none )
+                --     _ ->
+                --         ( model, Cmd.none )
                 _ ->
                     ( model, Cmd.none )
 
