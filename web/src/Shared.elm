@@ -2,6 +2,7 @@ module Shared exposing
     ( Flags
     , Model
     , Msg
+    , difficulties
     , init
     , subscriptions
     , update
@@ -153,3 +154,16 @@ login =
 logout : Cmd msg
 logout =
     Api.logout ()
+
+
+
+-- DATA
+
+
+difficulties : List ( String, String )
+difficulties =
+    [ ( "intermediate_mid", "Intermediate-Mid" )
+    , ( "intermediate_high", "Intermediate-High" )
+    , ( "advanced_low", "Advanced-Low" )
+    , ( "advanced_mid", "Advanced-Mid" )
+    ]
