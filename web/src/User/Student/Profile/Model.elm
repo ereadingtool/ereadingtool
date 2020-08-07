@@ -2,7 +2,6 @@ module User.Student.Profile.Model exposing
     ( Model
     , StudentConsentResp
     , UsernameUpdate
-    , flagsToEndpoints
     )
 
 import Dict exposing (Dict)
@@ -25,27 +24,11 @@ type alias StudentConsentResp =
     { consented : Bool }
 
 
-type alias StudentEndpoints =
-    { student_endpoint_uri : StudentResource.StudentEndpointURI
-    , student_research_consent_uri : StudentResource.StudentResearchConsentURI
-    , student_username_validation_uri : StudentResource.StudentUsernameValidURI
-    }
-
-
-flagsToEndpoints : Flags -> StudentEndpoints
-flagsToEndpoints flags =
-    StudentEndpoints
-        (StudentResource.toStudentEndpointURI flags.student_endpoint)
-        (StudentResource.toStudentResearchConsentURI flags.student_research_consent_uri)
-        (StudentResource.toStudentUsernameValidURI flags.student_username_validation_uri)
-
-
 type alias Model =
     { flags : Flags
     , profile : StudentProfile
     , menu_items : Menu.Items.MenuItems
     , performance_report : PerformanceReport
-    , student_endpoints : StudentEndpoints
     , consenting_to_research : Bool
     , flashcards : Maybe (List String)
     , editing : Dict String Bool

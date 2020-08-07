@@ -16,7 +16,9 @@ module User.Instructor.Profile exposing
     )
 
 import Flags
+import Api
 import Http
+
 import Menu.Logout
 import User.Instructor.Invite as InstructorInvite exposing (Email, InstructorInvite)
 import User.Instructor.Invite.Decode as InstructorInviteDecode
@@ -166,41 +168,29 @@ texts (InstructorProfile _ instructorTexts _ _ _ _) =
 
 logout :
     InstructorProfile
-    -> Flags.CSRFToken
     -> (Result Http.Error Menu.Logout.LogOutResp -> msg)
     -> Cmd msg
-logout instructor_profile csrftoken logout_msg =
-    let
-        request =
-            HttpHelpers.post_with_headers
-                (InstructorResource.uriToString (InstructorResource.instructorLogoutURI (logoutUri instructor_profile)))
-                [ Http.header "X-CSRFToken" csrftoken ]
-                Http.emptyBody
-                Menu.Logout.logoutRespDecoder
-    in
-    Http.send logout_msg request
+logout instructor_profile logout_msg =
+    Api.post
+        (InstructorResource.uriToString (InstructorResource.instructorLogoutURI (logoutUri instructor_profile)))
+        Nothing
+        logout_msg
+        Http.emptyBody
+        Menu.Logout.logoutRespDecoder
 
 
 submitNewInvite :
-    Flags.CSRFToken
-    -> InstructorResource.InstructorInviteURI
+    InstructorResource.InstructorInviteURI
     -> (Result Http.Error InstructorInvite -> msg)
     -> Email
     -> Cmd msg
-submitNewInvite csrftoken instructor_invite_uri msg email =
+submitNewInvite instructor_invite_uri msg email =
     if InstructorInvite.isValidEmail email then
-        let
-            encoded_new_invite =
-                InstructorInviteEncode.newInviteEncoder email
-
-            req =
-                HttpHelpers.post_with_headers
-                    (InstructorResource.uriToString (InstructorResource.instructorInviteURI instructor_invite_uri))
-                    [ Http.header "X-CSRFToken" csrftoken ]
-                    (Http.jsonBody encoded_new_invite)
-                    InstructorInviteDecode.newInviteRespDecoder
-        in
-        Http.send msg req
-
+        Api.post
+            (InstructorResource.uriToString (InstructorResource.instructorInviteURI instructor_invite_uri))
+            Nothing
+            msg
+            (Http.jsonBody (InstructorInviteEncode.newInviteEncoder email))
+            InstructorInviteDecode.newInviteRespDecoder
     else
         Cmd.none

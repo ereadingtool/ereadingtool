@@ -1,25 +1,18 @@
-module Api.Endpoint exposing (Endpoint, request, test)
+module Api.Endpoint exposing (Endpoint, request, StudentEndpoint)
 
 import Http
 import Url.Builder exposing (QueryParameter)
+import Api.Config
+import Profile
 
 
-type Endpoint
-    = Endpoint String
+type Endpoint a
+    = Endpoint a String (List String) (Maybe (List QueryParameter))
 
 
-unwrap : Endpoint -> String
-unwrap (Endpoint val) =
-    val
-
-
-url : String -> List String -> List QueryParameter -> Endpoint
-url baseUrl paths queryParams =
-    Url.Builder.crossOrigin baseUrl
-        paths
-        queryParams
-        |> Endpoint
-
+unwrap : (Endpoint a) -> String
+unwrap (Endpoint _ baseUrl paths queryParams) =
+    Url.Builder.crossOrigin baseUrl paths (Maybe.withDefault [] queryParams)
 
 
 -- REQUESTS
@@ -28,7 +21,7 @@ url baseUrl paths queryParams =
 request :
     { method : String
     , headers : List Http.Header
-    , url : Endpoint
+    , url : Endpoint a
     , body : Http.Body
     , expect : Http.Expect msg
     , timeout : Maybe Float
@@ -51,6 +44,14 @@ request config =
 -- ENDPOINTS
 
 
-test : String -> Endpoint
-test baseUrl =
-    url baseUrl [ "test" ] []
+type StudentEndpoint
+    = StudentEndpoint
+
+
+studentEndpoint : Profile.ProfileID -> Api.Config.Config -> Endpoint StudentEndpoint
+studentEndpoint profileId config =
+    Endpoint
+      StudentEndpoint
+        (Api.Config.restApiUrl config)
+        ["api", "student", String.fromInt (Profile.profileID profileId)]
+        Nothing

@@ -21,7 +21,7 @@ import Api.Endpoint as Endpoint exposing (Endpoint)
 import Browser
 import Browser.Navigation as Nav
 import Http
-import Json.Decode as Decode exposing (Decoder, Value, field, string)
+import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Decode.Pipeline exposing (required)
 import Url exposing (Url)
 
@@ -225,7 +225,7 @@ credHeader (Cred token) =
 
 
 get :
-    Endpoint
+    Endpoint e
     -> Maybe Cred
     -> (Result Http.Error a -> msg)
     -> Decoder a

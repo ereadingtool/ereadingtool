@@ -1,6 +1,5 @@
 module User.Student.Resource exposing
     ( StudentEmail
-    , StudentEndpointURI
     , StudentLogoutURI
     , StudentProfileURI
     , StudentResearchConsentURI
@@ -9,13 +8,11 @@ module User.Student.Resource exposing
     , URI
     , studentConsentURI
     , studentEmailToString
-    , studentEndpointURI
     , studentLogoutURI
     , studentProfileURI
     , studentUserNameToString
     , studentUsernameValidURI
     , toStudentEmail
-    , toStudentEndpointURI
     , toStudentLogoutURI
     , toStudentProfileURI
     , toStudentResearchConsentURI
@@ -27,10 +24,6 @@ module User.Student.Resource exposing
 
 type URI
     = URI String
-
-
-type StudentEndpointURI
-    = StudentEndpointURI URI
 
 
 type StudentResearchConsentURI
@@ -56,10 +49,6 @@ type StudentEmail
 type StudentUsername
     = StudentUsername String
 
-
-toStudentEndpointURI : String -> StudentEndpointURI
-toStudentEndpointURI endpointURI =
-    StudentEndpointURI (URI endpointURI)
 
 
 toStudentResearchConsentURI : String -> StudentResearchConsentURI
@@ -104,11 +93,6 @@ studentUserNameToString (StudentUsername username) =
 
 studentProfileURI : StudentProfileURI -> URI
 studentProfileURI (StudentProfileURI uri) =
-    uri
-
-
-studentEndpointURI : StudentEndpointURI -> URI
-studentEndpointURI (StudentEndpointURI uri) =
     uri
 
 
