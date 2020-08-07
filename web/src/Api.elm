@@ -249,14 +249,14 @@ get url maybeCred toMsg decoder =
 
 
 put :
-    String
+    Endpoint
     -> Maybe Cred
-    -> (Result Http.Error a -> msg)
     -> Http.Body
+    -> (Result Http.Error a -> msg)
     -> Decode.Decoder a
     -> Cmd msg
-put url maybeCred toMsg body decoder =
-    Http.request
+put url maybeCred body toMsg decoder =
+    Endpoint.request
         { method = "PUT"
         , url = url
         , expect = Http.expectJson toMsg decoder
@@ -274,14 +274,14 @@ put url maybeCred toMsg body decoder =
 
 
 post :
-    String
+    Endpoint
     -> Maybe Cred
-    -> (Result Http.Error a -> msg)
     -> Http.Body
+    -> (Result Http.Error a -> msg)
     -> Decode.Decoder a
     -> Cmd msg
-post url maybeCred toMsg body decoder =
-    Http.request
+post url maybeCred body toMsg decoder =
+    Endpoint.request
         { method = "POST"
         , url = url
         , expect = Http.expectJson toMsg decoder
@@ -299,14 +299,14 @@ post url maybeCred toMsg body decoder =
 
 
 delete :
-    String
+    Endpoint
     -> Maybe Cred
-    -> (Result Http.Error a -> msg)
     -> Http.Body
+    -> (Result Http.Error a -> msg)
     -> Decode.Decoder a
     -> Cmd msg
-delete url maybeCred toMsg body decoder =
-    Http.request
+delete url maybeCred body toMsg decoder =
+    Endpoint.request
         { method = "DELETE"
         , url = url
         , expect = Http.expectJson toMsg decoder
