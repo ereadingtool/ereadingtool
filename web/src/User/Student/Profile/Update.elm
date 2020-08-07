@@ -39,7 +39,6 @@ update msg model =
 
         toggleResearchConsent =
             StudentProfileResource.toggleResearchConsent
-                model.flags.csrftoken
                 model.student_endpoints.student_research_consent_uri
                 model.profile
     in
@@ -105,7 +104,12 @@ update msg model =
             ( toggleUsernameUpdate model, Cmd.none )
 
         ToggleResearchConsent ->
-            ( model, toggleResearchConsent (not model.consenting_to_research) )
+            case StudentProfile.studentID model.profile of
+                Just studentID ->
+                    let
+                        endpoint = Api.Endpoint.studentResearchConsentEndpoint studentID
+                    in
+                        ( model, toggleResearchConsent endpoint model.config (not model.consenting_to_research) )
 
         SubmitUsernameUpdate ->
             case model.username_update.username of

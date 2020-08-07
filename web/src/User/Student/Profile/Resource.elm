@@ -7,33 +7,36 @@ module User.Student.Profile.Resource exposing
 
 import Http
 import Api
+import Api.Endpoint exposing (Endpoint, StudentEndpoint, StudentResearchConsentEndpoint, StudentUsernameValidEndpoint)
+
+import Api.Config
+
 import Menu.Logout
 import User.Student.Profile as StudentProfile
 import User.Student.Profile.Decode as StudentProfileDecode
 import User.Student.Profile.Encode as StudentProfileEncode
 import User.Student.Profile.Msg exposing (Msg(..))
-import User.Student.Resource as StudentResource
 
 
-validateUsername : StudentResource.StudentUsernameValidURI -> String -> Cmd Msg
-validateUsername username_valid_uri username =
+validateUsername : Endpoint StudentUsernameValidEndpoint -> String -> Cmd Msg
+validateUsername username_valid_endpoint username =
     Api.post
-        (StudentResource.uriToString (StudentResource.studentUsernameValidURI username_valid_uri))
+        username_valid_endpoint
         Nothing
-        ValidUsername
         (Http.jsonBody (StudentProfileEncode.username_valid_encode username))
+        ValidUsername
         StudentProfileDecode.username_valid_decoder
 
 
-updateProfile : StudentResource.StudentEndpointURI -> StudentProfile.StudentProfile -> Cmd Msg
-updateProfile student_endpoint_uri student_profile =
+updateProfile : Endpoint StudentEndpoint -> StudentProfile.StudentProfile -> Cmd Msg
+updateProfile student_endpoint student_profile =
     case StudentProfile.studentID student_profile of
         Just _ ->
             Api.put
-                (StudentResource.uriToString (StudentResource.studentEndpointURI student_endpoint_uri))
+                student_endpoint
                 Nothing
-                Submitted
                 (Http.jsonBody (StudentProfileEncode.profileEncoder student_profile))
+                Submitted
                 StudentProfileDecode.studentProfileDecoder
 
         Nothing ->
@@ -41,34 +44,25 @@ updateProfile student_endpoint_uri student_profile =
 
 
 toggleResearchConsent :
-    StudentResource.StudentResearchConsentURI
-    -> StudentProfile.StudentProfile
+    Endpoint StudentResearchConsentEndpoint
     -> Bool
     -> Cmd Msg
-toggleResearchConsent consent_method_uri student_profile consent =
-    case StudentProfile.studentID student_profile of
-        Just _ ->
-            Api.put
-                (StudentResource.uriToString (StudentResource.studentConsentURI consent_method_uri))
-                Nothing
-                SubmittedConsent
-                (Http.jsonBody (StudentProfileEncode.consentEncoder consent))
-                StudentProfileDecode.studentConsentRespDecoder
-
-        Nothing ->
-            Cmd.none
-
+toggleResearchConsent consent_method_endpoint consent =
+    Api.put
+        consent_method_endpoint
+        Nothing
+        (Http.jsonBody (StudentProfileEncode.consentEncoder consent))
+        SubmittedConsent
+        StudentProfileDecode.studentConsentRespDecoder
 
 logout :
-    StudentProfile.StudentProfile
+    Api.Config.Config
     -> (Result Http.Error Menu.Logout.LogOutResp -> msg)
     -> Cmd msg
-logout student_profile logout_msg =
+logout config logout_msg =
     Api.post
-        (StudentResource.uriToString
-            (StudentResource.studentLogoutURI (StudentProfile.studentLogoutURI student_profile))
-        )
+        (Api.Endpoint.studentLogoutEndpoint config)
         Nothing
-        logout_msg
         Http.emptyBody
+        logout_msg
         Menu.Logout.logoutRespDecoder

@@ -249,7 +249,7 @@ get url maybeCred toMsg decoder =
 
 
 put :
-    Endpoint
+    Endpoint e
     -> Maybe Cred
     -> Http.Body
     -> (Result Http.Error a -> msg)
@@ -274,7 +274,7 @@ put url maybeCred body toMsg decoder =
 
 
 post :
-    Endpoint
+    Endpoint e
     -> Maybe Cred
     -> Http.Body
     -> (Result Http.Error a -> msg)
@@ -299,7 +299,7 @@ post url maybeCred body toMsg decoder =
 
 
 delete :
-    Endpoint
+    Endpoint e
     -> Maybe Cred
     -> Http.Body
     -> (Result Http.Error a -> msg)

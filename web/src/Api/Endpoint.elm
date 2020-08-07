@@ -1,4 +1,6 @@
-module Api.Endpoint exposing (Endpoint, request, StudentEndpoint)
+module Api.Endpoint exposing
+  (Endpoint, request, StudentEndpoint, studentLogoutEndpoint, StudentResearchConsentEndpoint
+  , studentResearchConsentEndpoint, StudentUsernameValidEndpoint, studentValidUsernameEndpoint)
 
 import Http
 import Url.Builder exposing (QueryParameter)
@@ -48,10 +50,46 @@ type StudentEndpoint
     = StudentEndpoint
 
 
+type StudentLogoutEndpoint
+    = StudentLogoutEndpoint
+
+
+type StudentResearchConsentEndpoint
+    = StudentResearchConsentEndpoint
+
+
+type StudentUsernameValidEndpoint
+    = StudentUsernameValidEndpoint
+
+
+studentValidUsernameEndpoint : Api.Config.Config -> Endpoint StudentUsernameValidEndpoint
+studentValidUsernameEndpoint config =
+    Endpoint
+      StudentUsernameValidEndpoint
+        (Api.Config.restApiUrl config)
+        ["api", "username"]
+        Nothing
+
 studentEndpoint : Profile.ProfileID -> Api.Config.Config -> Endpoint StudentEndpoint
 studentEndpoint profileId config =
     Endpoint
       StudentEndpoint
         (Api.Config.restApiUrl config)
         ["api", "student", String.fromInt (Profile.profileID profileId)]
+        Nothing
+
+studentResearchConsentEndpoint : Profile.ProfileID -> Api.Config.Config -> Endpoint StudentResearchConsentEndpoint
+studentResearchConsentEndpoint profileId config =
+    Endpoint
+      StudentResearchConsentEndpoint
+        (Api.Config.restApiUrl config)
+        ["api", "student", String.fromInt (Profile.profileID profileId), "consent_to_research"]
+        Nothing
+
+studentLogoutEndpoint : Api.Config.Config -> Endpoint StudentLogoutEndpoint
+studentLogoutEndpoint config =
+    Endpoint
+      StudentLogoutEndpoint
+        (Api.Config.restApiUrl config)
+        ["api", "student", "logout"]
         Nothing
