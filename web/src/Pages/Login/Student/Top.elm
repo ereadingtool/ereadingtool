@@ -9,6 +9,7 @@ module Pages.Login.Student.Top exposing
 import Html exposing (Html, div)
 import Html.Attributes exposing (attribute, class, classList, id)
 import Shared
+import Spa.Document exposing (Document)
 import Spa.Page as Page exposing (Page)
 import User
 import User.Flags.UnAuthed exposing (UnAuthedUserFlags)
@@ -60,13 +61,15 @@ view_content model =
         ]
 
 
-view : User.Login.Model -> Html User.Login.Msg
+view : User.Login.Model -> Document User.Login.Msg
 view model =
-    div []
+    { title = "Student Login"
+    , body =
         [ Views.view_unauthed_header
         , view_content model
         , Views.view_footer
         ]
+    }
 
 
 save : User.Login.Model -> Shared.Model -> Shared.Model
