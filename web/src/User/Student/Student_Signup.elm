@@ -33,8 +33,8 @@ import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode
 import Menu.Msg as MenuMsg
 import Text.Model exposing (TextDifficulty)
-import User.SignUp as SignUp
 import User.Flags.UnAuthed exposing (UnAuthedUserFlags)
+import User.SignUp as SignUp
 import Views
 
 

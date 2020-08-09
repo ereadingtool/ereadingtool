@@ -5,12 +5,10 @@ module User.Student.Profile.Resource exposing
     , validateUsername
     )
 
-import Http
 import Api
-import Api.Endpoint exposing (Endpoint, StudentEndpoint, StudentResearchConsentEndpoint, StudentUsernameValidEndpoint)
-
 import Api.Config
-
+import Api.Endpoint exposing (Endpoint, StudentEndpoint, StudentResearchConsentEndpoint, StudentUsernameValidEndpoint)
+import Http
 import Menu.Logout
 import User.Student.Profile as StudentProfile
 import User.Student.Profile.Decode as StudentProfileDecode
@@ -54,6 +52,7 @@ toggleResearchConsent consent_method_endpoint consent =
         (Http.jsonBody (StudentProfileEncode.consentEncoder consent))
         SubmittedConsent
         StudentProfileDecode.studentConsentRespDecoder
+
 
 logout :
     Api.Config.Config

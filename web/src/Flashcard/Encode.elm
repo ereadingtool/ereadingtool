@@ -9,6 +9,7 @@ jsonToString : Json.Encode.Value -> String
 jsonToString =
     Json.Encode.encode 0
 
+
 commandRequestToString : CmdReq -> String
 commandRequestToString cmdReq =
     jsonToString <| sendCommand cmdReq

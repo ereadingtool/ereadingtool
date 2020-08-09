@@ -1,11 +1,12 @@
 module User.Profile exposing (..)
 
+import Api.Config
 import Html exposing (Html)
 import Http exposing (..)
-import User.Instructor.Profile
-import User.Instructor.View
 import Menu.Logout
 import Menu.Msg exposing (Msg)
+import User.Instructor.Profile
+import User.Instructor.View
 import User.Student.Profile
 import User.Student.Profile.Resource
 import User.Student.View
@@ -65,14 +66,14 @@ view_profile_header profile top_level_msg =
             Nothing
 
 
-logout : Profile -> (Result Http.Error Menu.Logout.LogOutResp -> msg) -> Cmd msg
-logout profile logout_msg =
+logout : Api.Config.Config -> Profile -> (Result Http.Error Menu.Logout.LogOutResp -> msg) -> Cmd msg
+logout config profile logout_msg =
     case profile of
-        Student student_profile ->
-            User.Student.Profile.Resource.logout student_profile logout_msg
+        Student _ ->
+            User.Student.Profile.Resource.logout config logout_msg
 
-        Instructor instructor_profile ->
-            User.Instructor.Profile.logout instructor_profile logout_msg
+        Instructor _ ->
+            User.Instructor.Profile.logout config logout_msg
 
         EmptyProfile ->
             Cmd.none

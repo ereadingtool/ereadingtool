@@ -2,12 +2,11 @@ module Question.Decode exposing (questionDecoder, questionsDecoder)
 
 import Answer.Decode
 import Array exposing (Array)
+import DateTime
 import Json.Decode
 import Json.Decode.Extra exposing (posix)
 import Json.Decode.Pipeline exposing (required)
 import Question.Model exposing (Question)
-
-import DateTime
 
 
 questionDecoder : Json.Decode.Decoder Question

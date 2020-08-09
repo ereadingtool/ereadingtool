@@ -1,20 +1,36 @@
 module Api.Endpoint exposing
-  (Endpoint, request, StudentEndpoint, studentLogoutEndpoint, StudentResearchConsentEndpoint
-  , studentResearchConsentEndpoint, StudentUsernameValidEndpoint, studentValidUsernameEndpoint)
+    ( Endpoint
+    , ForgotPasswordEndpoint
+    , InstructorInviteEndpoint
+    , InstructorLogoutEndpoint
+    , ResetPasswordConfirmEndpoint
+    , StudentEndpoint
+    , StudentResearchConsentEndpoint
+    , StudentUsernameValidEndpoint
+    , forgotPasswordEndpoint
+    , instructorInviteEndpoint
+    , instructorLogoutEndpoint
+    , passwordResetConfirmEndpoint
+    , request
+    , studentLogoutEndpoint
+    , studentResearchConsentEndpoint
+    , studentValidUsernameEndpoint
+    )
 
-import Http
-import Url.Builder exposing (QueryParameter)
 import Api.Config
+import Http
 import Profile
+import Url.Builder exposing (QueryParameter)
 
 
 type Endpoint a
     = Endpoint a String (List String) (Maybe (List QueryParameter))
 
 
-unwrap : (Endpoint a) -> String
+unwrap : Endpoint a -> String
 unwrap (Endpoint _ baseUrl paths queryParams) =
     Url.Builder.crossOrigin baseUrl paths (Maybe.withDefault [] queryParams)
+
 
 
 -- REQUESTS
@@ -62,34 +78,89 @@ type StudentUsernameValidEndpoint
     = StudentUsernameValidEndpoint
 
 
+type InstructorLogoutEndpoint
+    = InstructorLogoutEndpoint
+
+
+type InstructorInviteEndpoint
+    = InstructorInviteEndpoint
+
+
+type ForgotPasswordEndpoint
+    = ForgotPasswordEndpoint
+
+
+type ResetPasswordConfirmEndpoint
+    = ResetPasswordConfirmEndpoint
+
+
 studentValidUsernameEndpoint : Api.Config.Config -> Endpoint StudentUsernameValidEndpoint
 studentValidUsernameEndpoint config =
     Endpoint
-      StudentUsernameValidEndpoint
+        StudentUsernameValidEndpoint
         (Api.Config.restApiUrl config)
-        ["api", "username"]
+        [ "api", "username" ]
         Nothing
+
 
 studentEndpoint : Profile.ProfileID -> Api.Config.Config -> Endpoint StudentEndpoint
 studentEndpoint profileId config =
     Endpoint
-      StudentEndpoint
+        StudentEndpoint
         (Api.Config.restApiUrl config)
-        ["api", "student", String.fromInt (Profile.profileID profileId)]
+        [ "api", "student", String.fromInt (Profile.profileID profileId) ]
         Nothing
+
 
 studentResearchConsentEndpoint : Profile.ProfileID -> Api.Config.Config -> Endpoint StudentResearchConsentEndpoint
 studentResearchConsentEndpoint profileId config =
     Endpoint
-      StudentResearchConsentEndpoint
+        StudentResearchConsentEndpoint
         (Api.Config.restApiUrl config)
-        ["api", "student", String.fromInt (Profile.profileID profileId), "consent_to_research"]
+        [ "api", "student", String.fromInt (Profile.profileID profileId), "consent_to_research" ]
         Nothing
+
 
 studentLogoutEndpoint : Api.Config.Config -> Endpoint StudentLogoutEndpoint
 studentLogoutEndpoint config =
     Endpoint
-      StudentLogoutEndpoint
+        StudentLogoutEndpoint
         (Api.Config.restApiUrl config)
-        ["api", "student", "logout"]
+        [ "api", "student", "logout" ]
+        Nothing
+
+
+instructorLogoutEndpoint : Api.Config.Config -> Endpoint InstructorLogoutEndpoint
+instructorLogoutEndpoint config =
+    Endpoint
+        InstructorLogoutEndpoint
+        (Api.Config.restApiUrl config)
+        [ "api", "instructor", "logout" ]
+        Nothing
+
+
+instructorInviteEndpoint : Api.Config.Config -> Endpoint InstructorInviteEndpoint
+instructorInviteEndpoint config =
+    Endpoint
+        InstructorInviteEndpoint
+        (Api.Config.restApiUrl config)
+        [ "api", "instructor", "invite" ]
+        Nothing
+
+
+forgotPasswordEndpoint : Api.Config.Config -> Endpoint ForgotPasswordEndpoint
+forgotPasswordEndpoint config =
+    Endpoint
+        ForgotPasswordEndpoint
+        (Api.Config.restApiUrl config)
+        [ "api", "password", "reset" ]
+        Nothing
+
+
+passwordResetConfirmEndpoint : Api.Config.Config -> Endpoint ResetPasswordConfirmEndpoint
+passwordResetConfirmEndpoint config =
+    Endpoint
+        ResetPasswordConfirmEndpoint
+        (Api.Config.restApiUrl config)
+        [ "api", "password", "reset", "confirm" ]
         Nothing

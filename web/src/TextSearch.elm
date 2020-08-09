@@ -211,7 +211,7 @@ update msg model =
             ( { model | help = TextSearch.Help.next model.help }, TextSearch.Help.scrollToNextMsg model.help )
 
         LogOut _ ->
-            ( model, User.Profile.logout model.profile model.flags.csrftoken LoggedOut )
+            ( model, User.Profile.logout model.profile model.config LoggedOut )
 
         LoggedOut (Ok logout_resp) ->
             ( model, Ports.redirect logout_resp.redirect )

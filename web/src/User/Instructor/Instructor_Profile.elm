@@ -24,7 +24,7 @@ updateNewInviteEmail : Model -> Email -> Model
 updateNewInviteEmail model email =
     let
         validated_errors =
-            if Instructor.Invite.isValidEmail email || Instructor.Invite.isEmptyEmail email then
+            if User.Instructor.Invite.isValidEmail email || User.Instructor.Invite.isEmptyEmail email then
                 Dict.remove "invite" model.errors
 
             else
@@ -37,13 +37,13 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     let
         submitInvite =
-            InstructorProfile.submitNewInvite model.flags.csrftoken model.instructor_invite_uri SubmittedNewInvite
+            InstructorProfile.submitNewInvite (Api.Endpoint.instructorInviteEndpoint model.config) SubmittedNewInvite
     in
     case msg of
         UpdateNewInviteEmail email ->
             let
                 _ =
-                    Debug.log "erorrs" model.errors
+                    Debug.log "errors" model.errors
             in
             ( updateNewInviteEmail model email, Cmd.none )
 
@@ -68,7 +68,7 @@ update msg model =
             ( { model | errors = Dict.insert "invite" "Something went wrong." model.errors }, Cmd.none )
 
         LogOut _ ->
-            ( model, InstructorProfile.logout model.profile model.flags.csrftoken LoggedOut )
+            ( model, InstructorProfile.logout model.config LoggedOut )
 
         LoggedOut (Ok logout_resp) ->
             ( model, Ports.redirect logout_resp.redirect )

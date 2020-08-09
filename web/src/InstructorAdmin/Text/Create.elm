@@ -3,11 +3,8 @@ module InstructorAdmin.Text.Create exposing (Flags, Mode(..), Model, Msg(..), Ta
 import Dict exposing (Dict)
 import Flags
 import Http
-import User.Instructor.Profile
 import InstructorAdmin.Admin.Text
 import InstructorAdmin.Text.Translations as Translations
-import Text.Translations.Model as TranslationsModel
-import Text.Translations.Msg as TranslationsMsg
 import Json.Encode
 import Menu.Items
 import Menu.Logout
@@ -16,8 +13,11 @@ import Text.Component exposing (TextComponent)
 import Text.Decode
 import Text.Field exposing (TextAuthor, TextDifficulty, TextIntro, TextSource, TextTags, TextTitle)
 import Text.Model exposing (Text, TextDifficulty)
+import Text.Translations.Model as TranslationsModel
+import Text.Translations.Msg as TranslationsMsg
 import Text.Update
 import Time
+import User.Instructor.Profile
 
 
 type alias Flags =

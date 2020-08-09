@@ -2,10 +2,9 @@ module Flashcard.Msg exposing (..)
 
 import Flashcard.Mode
 import Http
+import Json.Decode
 import Menu.Logout
 import Menu.Msg as MenuMsg
-
-import Json.Decode
 import WebSocket
 
 

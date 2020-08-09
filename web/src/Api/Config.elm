@@ -1,4 +1,4 @@
-module Api.Config exposing (Config, restApiUrl, configDecoder, init)
+module Api.Config exposing (Config, configDecoder, init, restApiUrl)
 
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (custom, required)

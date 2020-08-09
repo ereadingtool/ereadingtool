@@ -1,16 +1,18 @@
-module Pages.User.PasswordReset.Confirm.UIDB64_String.Token_String exposing (Flags, Model, Msg(..), flagsToResetPassURI, init, login_label, main, post_passwd_reset, reset_pass_encoder, subscriptions, update, view, view_content, view_errors, view_password_confirm_input, view_password_input, view_resp, view_show_passwd_toggle, view_submit)
+module Pages.User.PasswordReset.Confirm.UIDB64_String.Token_String exposing (Flags, Model, Msg(..), flagsToResetPassURI, init, login_label, main, postPasswordResetConfirm, resetPasswordEncoder, subscriptions, update, view, view_content, view_errors, view_password_confirm_input, view_password_input, view_resp, view_show_passwd_toggle, view_submit)
 
+import Api
+import Api.Endpoint exposing (Endpoint, ResetPasswordConfirmEndpoint)
+import Browser
+import Browser.Navigation
 import Dict exposing (Dict)
 import Flags
-import User.ForgotPassword exposing (PassResetConfirmResp, ResetPassURI, UserEmail, forgotPassConfirmRespDecoder)
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList)
 import Html.Events exposing (onCheck, onClick, onInput)
 import Http exposing (..)
 import Json.Decode as Decode
 import Json.Encode as Encode
-import Browser
-import Browser.Navigation
+import User.ForgotPassword exposing (PassResetConfirmResp, ResetPassURI, UserEmail, forgotPassConfirmRespDecoder)
 import Views
 
 
@@ -56,8 +58,8 @@ init flags =
     )
 
 
-reset_pass_encoder : User.ForgotPassword.Password -> Encode.Value
-reset_pass_encoder password =
+resetPasswordEncoder : User.ForgotPassword.Password -> Encode.Value
+resetPasswordEncoder password =
     Encode.object
         [ ( "new_password1", Encode.string (User.ForgotPassword.password1toString (User.ForgotPassword.password1 password)) )
         , ( "new_password2", Encode.string (User.ForgotPassword.password2toString (User.ForgotPassword.password2 password)) )
@@ -65,20 +67,14 @@ reset_pass_encoder password =
         ]
 
 
-post_passwd_reset : ResetPassURI -> Flags.CSRFToken -> User.ForgotPassword.Password -> Cmd Msg
-post_passwd_reset reset_pass_endpoint csrftoken password =
-    let
-        encoded_login_params =
-            reset_pass_encoder password
-
-        req =
-            post_with_headers
-                (User.ForgotPassword.uriToString (User.ForgotPassword.resetPassURI reset_pass_endpoint))
-                [ Http.header "X-CSRFToken" csrftoken ]
-                (Http.jsonBody encoded_login_params)
-                forgotPassConfirmRespDecoder
-    in
-    Http.send Submitted req
+postPasswordResetConfirm : Endpoint ResetPasswordConfirmEndpoint -> User.ForgotPassword.Password -> Cmd Msg
+postPasswordResetConfirm resetPasswordEndpoint password =
+    Api.post
+        resetPasswordEndpoint
+        Nothing
+        (Http.jsonBody (resetPasswordEncoder password))
+        Submitted
+        forgotPassConfirmRespDecoder
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -121,8 +117,7 @@ update msg model =
 
         Submit ->
             ( { model | errors = Dict.fromList [] }
-            , post_passwd_reset model.reset_pass_uri
-                model.flags.csrftoken
+            , postPasswordResetConfirm (Api.Endpoint.passwordResetConfirmEndpoint model.config)
                 (User.ForgotPassword.Password
                     (User.ForgotPassword.Password1 model.password)
                     (User.ForgotPassword.Password2 model.confirm_password)
@@ -136,12 +131,7 @@ update msg model =
         Submitted (Err error) ->
             case error of
                 Http.BadStatus resp ->
-                    case Decode.decodeString (Decode.dict Decode.string) resp.body of
-                        Ok errors ->
-                            ( { model | errors = errors }, Cmd.none )
-
-                        _ ->
-                            ( model, Cmd.none )
+                    ( { model | errors = Dict.fromList [ ( "status_code", String.fromInt resp ) ] }, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )

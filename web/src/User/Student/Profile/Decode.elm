@@ -5,9 +5,9 @@ module User.Student.Profile.Decode exposing
     )
 
 import InstructorAdmin.Text.Translations exposing (Phrase)
-import Text.Translations.Decode as TextTranslationsDecode
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)
+import Text.Translations.Decode as TextTranslationsDecode
 import TextReader.Section.Decode
 import TextReader.TextWord
 import User.Student.Performance.Report exposing (PerformanceReport)

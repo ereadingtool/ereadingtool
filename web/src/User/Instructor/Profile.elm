@@ -15,10 +15,10 @@ module User.Instructor.Profile exposing
     , usernameToString
     )
 
-import Flags
 import Api
+import Api.Config
+import Api.Endpoint exposing (Endpoint, InstructorInviteEndpoint, InstructorLogoutEndpoint, instructorLogoutEndpoint)
 import Http
-
 import Menu.Logout
 import User.Instructor.Invite as InstructorInvite exposing (Email, InstructorInvite)
 import User.Instructor.Invite.Decode as InstructorInviteDecode
@@ -167,30 +167,31 @@ texts (InstructorProfile _ instructorTexts _ _ _ _) =
 
 
 logout :
-    InstructorProfile
+    Api.Config.Config
     -> (Result Http.Error Menu.Logout.LogOutResp -> msg)
     -> Cmd msg
-logout instructor_profile logout_msg =
+logout config logout_msg =
     Api.post
-        (InstructorResource.uriToString (InstructorResource.instructorLogoutURI (logoutUri instructor_profile)))
+        (instructorLogoutEndpoint config)
         Nothing
-        logout_msg
         Http.emptyBody
+        logout_msg
         Menu.Logout.logoutRespDecoder
 
 
 submitNewInvite :
-    InstructorResource.InstructorInviteURI
+    Endpoint InstructorInviteEndpoint
     -> (Result Http.Error InstructorInvite -> msg)
     -> Email
     -> Cmd msg
-submitNewInvite instructor_invite_uri msg email =
+submitNewInvite instructorInviteEndpoint msg email =
     if InstructorInvite.isValidEmail email then
         Api.post
-            (InstructorResource.uriToString (InstructorResource.instructorInviteURI instructor_invite_uri))
+            instructorInviteEndpoint
             Nothing
-            msg
             (Http.jsonBody (InstructorInviteEncode.newInviteEncoder email))
+            msg
             InstructorInviteDecode.newInviteRespDecoder
+
     else
         Cmd.none

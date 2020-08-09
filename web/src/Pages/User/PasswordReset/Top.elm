@@ -1,17 +1,18 @@
-module Pages.User.PasswordReset.Top exposing (Flags, Model, Msg(..), flagsToForgotPassURI, forgot_pass_encoder, init, login_label, main, post_forgot_pass, subscriptions, update, view, view_content, view_email_input, view_errors, view_resp, view_submit)
+module Pages.User.PasswordReset.Top exposing (Flags, Model, Msg(..), flagsToForgotPassURI, forgot_pass_encoder, init, login_label, main, postForgotPassword, subscriptions, update, view, view_content, view_email_input, view_errors, view_resp, view_submit)
 
+import Api
+import Api.Endpoint exposing (Endpoint, ForgotPasswordEndpoint)
+import Browser
 import Dict exposing (Dict)
 import Flags
-import User.ForgotPassword exposing (ForgotPassResp, ForgotPassURI, UserEmail, forgotPassRespDecoder)
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (..)
 import Json.Decode as Decode
 import Json.Encode as Encode
+import User.ForgotPassword exposing (ForgotPassResp, ForgotPassURI, UserEmail, forgotPassRespDecoder)
 import Utils exposing (isValidEmail)
-
-import Browser
 import Views
 
 
@@ -58,20 +59,14 @@ forgot_pass_encoder user_email =
         ]
 
 
-post_forgot_pass : ForgotPassURI -> Flags.CSRFToken -> UserEmail -> Cmd Msg
-post_forgot_pass forgot_pass_endpoint csrftoken user_email =
-    let
-        encoded_login_params =
-            forgot_pass_encoder user_email
-
-        req =
-            post_with_headers
-                (User.ForgotPassword.uriToString (User.ForgotPassword.forgotPassURI forgot_pass_endpoint))
-                [ Http.header "X-CSRFToken" csrftoken ]
-                (Http.jsonBody encoded_login_params)
-                forgotPassRespDecoder
-    in
-    Http.send Submitted req
+postForgotPassword : Endpoint ForgotPasswordEndpoint -> UserEmail -> Cmd Msg
+postForgotPassword forgotPasswordEndpoint user_email =
+    Api.post
+        forgotPasswordEndpoint
+        Nothing
+        (Http.jsonBody (forgot_pass_encoder user_email))
+        Submitted
+        forgotPassRespDecoder
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -93,7 +88,7 @@ update msg model =
 
         Submit ->
             ( { model | errors = Dict.fromList [] }
-            , post_forgot_pass model.forgot_pass_uri model.flags.csrftoken model.user_email
+            , postForgotPassword (Api.Endpoint.forgotPasswordEndpoint model.config) model.user_email
             )
 
         Submitted (Ok resp) ->
@@ -106,12 +101,7 @@ update msg model =
         Submitted (Err error) ->
             case error of
                 Http.BadStatus resp ->
-                    case Decode.decodeString (Decode.dict Decode.string) resp.body of
-                        Ok errors ->
-                            ( { model | errors = errors }, Cmd.none )
-
-                        _ ->
-                            ( model, Cmd.none )
+                    ( { model | errors = Dict.fromList [ ( "status code", String.fromInt resp ) ] }, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )

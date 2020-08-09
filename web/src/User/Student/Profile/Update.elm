@@ -107,9 +107,10 @@ update msg model =
             case StudentProfile.studentID model.profile of
                 Just studentID ->
                     let
-                        endpoint = Api.Endpoint.studentResearchConsentEndpoint studentID
+                        endpoint =
+                            Api.Endpoint.studentResearchConsentEndpoint studentID
                     in
-                        ( model, toggleResearchConsent endpoint model.config (not model.consenting_to_research) )
+                    ( model, toggleResearchConsent endpoint model.config (not model.consenting_to_research) )
 
         SubmitUsernameUpdate ->
             case model.username_update.username of

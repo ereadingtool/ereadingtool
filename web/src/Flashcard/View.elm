@@ -176,12 +176,11 @@ view_quality model _ q =
             ++ (if q == 0 then
                     [ Html.text " - most difficult" ]
 
-                else
-                    if q == 5 then
-                        [ Html.text " - easiest" ]
+                else if q == 5 then
+                    [ Html.text " - easiest" ]
 
-                    else
-                        []
+                else
+                    []
                )
 
 
@@ -196,7 +195,8 @@ view_rate_answer model card =
 view_rated_card : Model -> Flashcard -> Html Msg
 view_rated_card model card =
     let
-        rating = Maybe.withDefault "none" <| Maybe.map (String.fromInt) model.selected_quality
+        rating =
+            Maybe.withDefault "none" <| Maybe.map String.fromInt model.selected_quality
     in
     view_card model
         card

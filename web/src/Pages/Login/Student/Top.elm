@@ -8,15 +8,12 @@ module Pages.Login.Student.Top exposing
 
 import Html exposing (Html, div)
 import Html.Attributes exposing (attribute, class, classList, id)
-import User.Login
+import Shared
+import Spa.Page as Page exposing (Page)
 import User
 import User.Flags.UnAuthed exposing (UnAuthedUserFlags)
+import User.Login
 import Views
-
-import Shared
-
-import Spa.Page as Page exposing (Page)
-
 
 
 type alias Flags =
@@ -71,6 +68,7 @@ view model =
         , Views.view_footer
         ]
 
+
 save : User.Login.Model -> Shared.Model -> Shared.Model
 save model shared =
     shared
@@ -84,10 +82,10 @@ load shared safeModel =
 page : Page Flags User.Login.Model User.Login.Msg
 page =
     Page.application
-    { init = User.Login.init
-    , update = User.Login.update
-    , subscriptions = User.Login.subscriptions
-    , view = view
-    , save = save
-    , load = load
-    }
+        { init = User.Login.init
+        , update = User.Login.update
+        , subscriptions = User.Login.subscriptions
+        , view = view
+        , save = save
+        , load = load
+        }

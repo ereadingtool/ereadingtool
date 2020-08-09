@@ -50,7 +50,6 @@ type StudentUsername
     = StudentUsername String
 
 
-
 toStudentResearchConsentURI : String -> StudentResearchConsentURI
 toStudentResearchConsentURI consentURI =
     StudentResearchConsentURI (URI consentURI)
