@@ -1,4 +1,4 @@
-module Role exposing (Role, decoder, isInstructor, isStudent)
+module Role exposing (Role(..), decoder)
 
 import Json.Decode as Decode exposing (Decoder)
 
@@ -6,26 +6,6 @@ import Json.Decode as Decode exposing (Decoder)
 type Role
     = Student
     | Instructor
-
-
-isStudent : Role -> Bool
-isStudent role =
-    case role of
-        Student ->
-            True
-
-        Instructor ->
-            False
-
-
-isInstructor : Role -> Bool
-isInstructor role =
-    case role of
-        Student ->
-            False
-
-        Instructor ->
-            True
 
 
 decoder : String -> Decoder Role

@@ -13,7 +13,7 @@ module Spa.Page exposing
 -}
 
 import Browser.Navigation as Nav
-import Role exposing (Role)
+import Role exposing (Role(..))
 import Session
 import Shared
 import Spa.Document exposing (Document)
@@ -165,13 +165,14 @@ protectedStudentApplication page =
                 Just viewer ->
                     case Session.role shared.session of
                         Just role ->
-                            if Role.isStudent role then
-                                page.init shared url |> Tuple.mapFirst Just
+                            case role of
+                                Student ->
+                                    page.init shared url |> Tuple.mapFirst Just
 
-                            else
-                                ( Nothing
-                                , Nav.pushUrl url.key (Route.toString Route.Top)
-                                )
+                                Instructor ->
+                                    ( Nothing
+                                    , Nav.pushUrl url.key (Route.toString Route.Top)
+                                    )
 
                         Nothing ->
                             ( Nothing
@@ -236,13 +237,14 @@ protectedInstructorApplication page =
                 Just viewer ->
                     case Session.role shared.session of
                         Just role ->
-                            if Role.isInstructor role then
-                                page.init shared url |> Tuple.mapFirst Just
+                            case role of
+                                Student ->
+                                    ( Nothing
+                                    , Nav.pushUrl url.key (Route.toString Route.Top)
+                                    )
 
-                            else
-                                ( Nothing
-                                , Nav.pushUrl url.key (Route.toString Route.Top)
-                                )
+                                Instructor ->
+                                    page.init shared url |> Tuple.mapFirst Just
 
                         Nothing ->
                             ( Nothing
