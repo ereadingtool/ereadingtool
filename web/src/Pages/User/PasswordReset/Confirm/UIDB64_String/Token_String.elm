@@ -10,7 +10,7 @@ import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList)
 import Html.Events exposing (onCheck, onClick, onInput)
 import Http exposing (..)
-import Json.Decode as Decode
+
 import Json.Encode as Encode
 import User.ForgotPassword exposing (PassResetConfirmResp, ResetPassURI, UserEmail, forgotPassConfirmRespDecoder)
 import Views
@@ -34,7 +34,7 @@ type alias Model =
     , confirm_password : String
     , show_password : Bool
     , resp : PassResetConfirmResp
-    , reset_pass_uri : User.ForgotPassword.ResetPassURI
+    , resetPasswordConfirmEndpoint : Endpoint ResetPasswordConfirmEndpoint
     , errors : Dict String String
     }
 
@@ -51,7 +51,8 @@ init flags =
       , confirm_password = ""
       , show_password = False
       , resp = User.ForgotPassword.emptyPassResetResp
-      , reset_pass_uri = flagsToResetPassURI flags
+      -- Api.Endpoint.passwordResetConfirmEndpoint model.config
+      , resetPasswordConfirmEndpoint = (Debug.todo "resetPasswordConfirmEndpoint")
       , errors = Dict.fromList []
       }
     , Cmd.none
@@ -117,7 +118,7 @@ update msg model =
 
         Submit ->
             ( { model | errors = Dict.fromList [] }
-            , postPasswordResetConfirm (Api.Endpoint.passwordResetConfirmEndpoint model.config)
+            , postPasswordResetConfirm model.resetPasswordConfirmEndpoint
                 (User.ForgotPassword.Password
                     (User.ForgotPassword.Password1 model.password)
                     (User.ForgotPassword.Password2 model.confirm_password)

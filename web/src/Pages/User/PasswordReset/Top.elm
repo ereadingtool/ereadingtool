@@ -9,7 +9,7 @@ import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (..)
-import Json.Decode as Decode
+
 import Json.Encode as Encode
 import User.ForgotPassword exposing (ForgotPassResp, ForgotPassURI, UserEmail, forgotPassRespDecoder)
 import Utils exposing (isValidEmail)
@@ -29,7 +29,7 @@ type Msg
 type alias Model =
     { flags : Flags
     , user_email : UserEmail
-    , forgot_pass_uri : User.ForgotPassword.ForgotPassURI
+    , forgotPasswordEndpoint : Endpoint ForgotPasswordEndpoint
     , resp : ForgotPassResp
     , errors : Dict String String
     }
@@ -44,7 +44,8 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( { flags = flags
       , user_email = User.ForgotPassword.UserEmail ""
-      , forgot_pass_uri = flagsToForgotPassURI flags
+      -- (Api.Endpoint.forgotPasswordEndpoint model.config)
+      , forgotPasswordEndpoint = Debug.todo "forgotPasswordEndpoint"
       , resp = User.ForgotPassword.emptyForgotPassResp
       , errors = Dict.fromList []
       }
@@ -88,7 +89,7 @@ update msg model =
 
         Submit ->
             ( { model | errors = Dict.fromList [] }
-            , postForgotPassword (Api.Endpoint.forgotPasswordEndpoint model.config) model.user_email
+            , postForgotPassword model.forgotPasswordEndpoint model.user_email
             )
 
         Submitted (Ok resp) ->
