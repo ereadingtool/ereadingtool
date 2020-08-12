@@ -3,6 +3,7 @@ module Api.Endpoint exposing
     , forgotPassword
     , instructorSignup
     , request
+    , resetPassword
     , studentSignup
     , test
     )
@@ -66,6 +67,11 @@ test baseUrl =
 forgotPassword : String -> Endpoint
 forgotPassword baseUrl =
     url baseUrl [ "password", "reset" ] []
+
+
+resetPassword : String -> Endpoint
+resetPassword baseUrl =
+    url baseUrl [ "password", "reset", "confirm" ] []
 
 
 instructorSignup : String -> Endpoint

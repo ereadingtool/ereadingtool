@@ -117,8 +117,8 @@ forgotPassRespDecoder =
         |> required "body" Json.Decode.string
 
 
-forgotPassConfirmRespDecoder : Json.Decode.Decoder PassResetConfirmResp
-forgotPassConfirmRespDecoder =
+resetPasswordResponseDecoder : Json.Decode.Decoder PassResetConfirmResp
+resetPasswordResponseDecoder =
     Json.Decode.succeed PassResetConfirmResp
         |> required "errors" (Json.Decode.dict Json.Decode.string)
         |> required "body" Json.Decode.string
