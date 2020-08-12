@@ -2,10 +2,7 @@ module Pages.Signup.Instructor exposing
     ( Model
     , Msg
     , Params
-    , init
     , page
-    , subscriptions
-    , update
     )
 
 import Api exposing (post)

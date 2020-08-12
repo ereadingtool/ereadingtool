@@ -2,11 +2,7 @@ module Pages.Signup.Student exposing
     ( Model
     , Msg
     , Params
-    , init
     , page
-    , subscriptions
-    , update
-    , view
     )
 
 import Api exposing (post)
