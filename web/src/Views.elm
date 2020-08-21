@@ -18,7 +18,7 @@ import User.Profile exposing (Profile)
 view_logo : List (Html.Attribute msg) -> Html msg
 view_logo event_attr =
     Html.img
-        ([ attribute "src" "/static/img/star_logo.png"
+        ([ attribute "src" "/public/img/star_logo.png"
          , id "logo"
          , attribute "alt" "Steps To Advanced Reading Logo"
          ]

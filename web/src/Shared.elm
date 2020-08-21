@@ -2,6 +2,7 @@ module Shared exposing
     ( Flags
     , Model
     , Msg
+    , difficulties
     , init
     , subscriptions
     , update
@@ -15,6 +16,7 @@ import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 import Json.Encode as Encode
+import Role exposing (Role(..))
 import Session exposing (Session)
 import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
@@ -31,6 +33,7 @@ type alias Model =
     , key : Key
     , session : Session
     , config : Config
+    , role : Role
     , authMessage : String
     }
 
@@ -50,7 +53,7 @@ init flags url key =
         config =
             Config.init flags.maybeConfig
     in
-    ( Model url key session config ""
+    ( Model url key session config Student ""
     , Cmd.none
     )
 
@@ -89,7 +92,12 @@ update msg model =
             ( { model
                 | session = session
               }
-            , Cmd.none
+            , case model.role of
+                Student ->
+                    Browser.Navigation.replaceUrl model.key (Route.toString Route.ProtectedApplicationTemplate)
+
+                Instructor ->
+                    Browser.Navigation.replaceUrl model.key (Route.toString Route.ProtectedApplicationTemplate)
             )
 
 
@@ -113,14 +121,14 @@ view { page, toMsg } model =
     { title = page.title
     , body =
         [ div [ class "layout" ]
-            [ header [ class "navbar" ]
+            [ div [ class "page" ] page.body
+            , header [ class "navbar" ]
                 [ a [ class "link", href (Route.toString Route.Top) ] [ text "Homepage" ]
                 , a [ class "link", href (Route.toString Route.NotFound) ] [ text "Not found" ]
                 , a [ class "link", href (Route.toString Route.About) ] [ text "About" ]
                 , a [ class "link", href (Route.toString Route.Acknowledgments) ] [ text "Acknowledgments" ]
                 , a [ class "link", href (Route.toString Route.ProtectedApplicationTemplate) ] [ text "Protected" ]
                 ]
-            , div [ class "page" ] page.body
             , div []
                 [ div []
                     [ text ("Token: " ++ Api.exposeToken (Session.cred model.session)) ]
@@ -153,3 +161,16 @@ login =
 logout : Cmd msg
 logout =
     Api.logout ()
+
+
+
+-- DATA
+
+
+difficulties : List ( String, String )
+difficulties =
+    [ ( "intermediate_mid", "Intermediate-Mid" )
+    , ( "intermediate_high", "Intermediate-High" )
+    , ( "advanced_low", "Advanced-Low" )
+    , ( "advanced_mid", "Advanced-Mid" )
+    ]

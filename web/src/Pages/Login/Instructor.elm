@@ -1,4 +1,4 @@
-module Pages.Top exposing
+module Pages.Login.Instructor exposing
     ( Model
     , Msg
     , Params
@@ -49,7 +49,7 @@ type alias Model =
 
 init : Shared.Model -> Url Params -> ( Model, Cmd Msg )
 init shared { params } =
-    ( { role = Student
+    ( { role = Instructor
       , loginParams = LoginParams "" ""
       , errors = Dict.fromList []
       }
@@ -106,7 +106,7 @@ update msg model =
 
 view : Model -> Document Msg
 view model =
-    { title = "Student Login"
+    { title = "Instructor Login"
     , body =
         [ div []
             [ Views.view_unauthed_header
@@ -125,12 +125,9 @@ viewContent model =
             , onPasswordUpdate = UpdatePassword
             , onSubmittedForm = SubmittedLogin
             , signUpRoute = Route.Signup__Student
-            , otherLoginRole = "content editor"
-            , otherLoginRoute = Route.Login__Instructor
-            , maybeHelpMessage =
-                Just
-                    """When signing in, please note that this website is not connected to your university’s user account.
-                       If this is your first time using this website, please create a new account."""
+            , otherLoginRole = "student"
+            , otherLoginRoute = Route.Top
+            , maybeHelpMessage = Nothing
             , errors = model.errors
             }
         ]
