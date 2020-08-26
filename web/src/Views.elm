@@ -1,9 +1,7 @@
 module Views exposing
     ( view_authed_header
     , view_footer
-    , view_give_feedback
     , view_header
-    , view_report_problem
     , view_unauthed_header
     )
 
@@ -52,22 +50,21 @@ view_authed_header profile menu_items top_level_menu_msg =
         (Menu.View.view_lower_menu menu_items profile top_level_menu_msg)
 
 
-view_give_feedback : Html msg
-view_give_feedback =
-    div []
-        [ Html.a [ attribute "href" "https://goo.gl/forms/z5BKx36xBJR7XqQY2" ]
-            [ Html.text "Please give us feedback!"
-            ]
-        ]
 
-
-view_report_problem : Html msg
-view_report_problem =
-    div []
-        [ Html.a [ attribute "href" "https://goo.gl/forms/Wn5wWVHdmBKOxsFt2" ]
-            [ Html.text "Report a problem"
-            ]
-        ]
+-- view_give_feedback : Html msg
+-- view_give_feedback =
+--     div []
+--         [ Html.a [ attribute "href" "https://goo.gl/forms/z5BKx36xBJR7XqQY2" ]
+--             [ Html.text "Please give us feedback!"
+--             ]
+--         ]
+-- view_report_problem : Html msg
+-- view_report_problem =
+--     div []
+--         [ Html.a [ attribute "href" "https://goo.gl/forms/Wn5wWVHdmBKOxsFt2" ]
+--             [ Html.text "Report a problem"
+--             ]
+--         ]
 
 
 view_footer : Html msg

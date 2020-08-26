@@ -94,7 +94,7 @@ update msg model =
               }
             , case model.role of
                 Student ->
-                    Browser.Navigation.replaceUrl model.key (Route.toString Route.ProtectedApplicationTemplate)
+                    Browser.Navigation.replaceUrl model.key (Route.toString Route.Profile__Student)
 
                 Instructor ->
                     Browser.Navigation.replaceUrl model.key (Route.toString Route.ProtectedApplicationTemplate)

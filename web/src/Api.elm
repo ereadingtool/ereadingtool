@@ -221,7 +221,7 @@ application viewerDecoder config =
 
 credHeader : Cred -> Http.Header
 credHeader (Cred token) =
-    Http.header "authorization" token
+    Http.header "Authorization" ("Bearer " ++ token)
 
 
 get :
