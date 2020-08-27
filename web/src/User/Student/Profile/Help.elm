@@ -5,7 +5,7 @@ module User.Student.Profile.Help exposing
     , helpMsg
     , init
     , isVisible
-    , my_performanceHelp
+    , myPerformanceHelp
     , next
     , popupToOverlayID
     , preferredDifficultyHelp
@@ -42,8 +42,8 @@ usernameHelp =
      Your username will be visible to instructors and other students if you comment on any texts."""
 
 
-my_performanceHelp : StudentHelp
-my_performanceHelp =
+myPerformanceHelp : StudentHelp
+myPerformanceHelp =
     MyPerformanceHelp
         """As you use the website, make sure to check back here from time to time.
      You will be able to see the percentage of questions that you have answered correctly over varying time periods
@@ -74,7 +74,7 @@ searchTextsHelp =
 help_msgs : List StudentHelp
 help_msgs =
     [ usernameHelp
-    , my_performanceHelp
+    , myPerformanceHelp
     , preferredDifficultyHelp
     , profileHelp
     , searchTextsHelp

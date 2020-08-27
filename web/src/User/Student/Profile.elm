@@ -1,7 +1,8 @@
 module User.Student.Profile exposing
-    ( StudentProfile
+    ( StudentProfile(..)
     , StudentProfileParams
     , StudentURIParams
+    , StudentURIs(..)
     , initProfile
     , profileUriToString
     , setStudentDifficultyPreference

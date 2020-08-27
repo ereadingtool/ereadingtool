@@ -1,4 +1,9 @@
-module Pages.Profile.Student exposing (Model, Msg, Params, page)
+module Pages.Profile.Student exposing
+    ( Model
+    , Msg
+    , Params
+    , page
+    )
 
 -- module Student.Student_Profile exposing
 --     ( init
@@ -14,7 +19,13 @@ module Pages.Profile.Student exposing (Model, Msg, Params, page)
 -- import Student.Profile.View
 -- import HtmlParser
 -- import HtmlParser.Util
--- import Markdown
+-- import Menu.Item
+-- import Menu.Items
+-- import Menu.Logout
+-- import Menu.Msg as MenuMsg
+-- import Menu.View
+-- import User.Student.Profile.Resource as StudentProfileResource
+-- import User.Student.View as StudentView
 
 import Api
 import Api.Config as Config exposing (Config)
@@ -30,11 +41,7 @@ import Http exposing (..)
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode exposing (Value)
-import Menu.Item
-import Menu.Items
-import Menu.Logout
-import Menu.Msg as MenuMsg
-import Menu.View
+import Markdown
 import OrderedDict
 import Session exposing (Session)
 import Shared
@@ -53,22 +60,9 @@ import User.Student.Profile as StudentProfile
         , StudentURIs(..)
         )
 import User.Student.Profile.Help as Help exposing (StudentHelp)
-import User.Student.Profile.Resource as StudentProfileResource
 import User.Student.Resource as StudentResource
-import User.Student.View as StudentView
 import Utils
 import Views
-
-
-
--- main : Program Flags Model Msg
--- main =
---     Html.programWithFlags
---         { init = init
---         , view = view
---         , subscriptions = subscriptions
---         , update = Student.Profile.Update.update
---         }
 
 
 page : Page Params Model Msg
@@ -81,14 +75,6 @@ page =
         , save = save
         , load = load
         }
-
-
-
--- type alias StudentEndpoints =
---     { student_endpoint_uri : StudentResource.StudentEndpointURI
---     , student_research_consent_uri : StudentResource.StudentResearchConsentURI
---     , student_username_validation_uri : StudentResource.StudentUsernameValidURI
---     }
 
 
 type alias UsernameValidation =
@@ -127,16 +113,12 @@ type SafeModel
         , config : Config
         , navKey : Key
         , profile : StudentProfile
-
-        -- , flags : Flags
-        -- , menu_items : Menu.Items.MenuItems
         , performanceReport : PerformanceReport
-
-        -- , student_endpoints : StudentEndpoints
         , consentedToResearch : Bool
         , flashcards : Maybe (List String)
         , editing : Dict String Bool
         , errorMessage : String
+        , welcome : Bool
         , help : Help.StudentProfileHelp
         , usernameValidation : UsernameValidation
         , errors : Dict String String
@@ -146,7 +128,7 @@ type SafeModel
 fakeProfile : StudentProfile
 fakeProfile =
     StudentProfile
-        (Just 118)
+        (Just 0)
         (Just (StudentResource.toStudentUsername "fake name"))
         (StudentResource.toStudentEmail "test@email.com")
         Nothing
@@ -159,6 +141,10 @@ fakeProfile =
 
 init : Shared.Model -> Url Params -> ( SafeModel, Cmd Msg )
 init shared { params } =
+    let
+        help =
+            Help.init
+    in
     ( SafeModel
         { session = shared.session
         , config = shared.config
@@ -169,11 +155,12 @@ init shared { params } =
         , flashcards = Nothing
         , editing = Dict.empty
         , usernameValidation = { username = Nothing, valid = Nothing, msg = Nothing }
-        , help = Help.init
+        , welcome = True
+        , help = help
         , errorMessage = ""
         , errors = Dict.empty
         }
-    , Cmd.none
+    , Help.scrollToFirstMsg help
     )
 
 
@@ -203,12 +190,6 @@ init shared { params } =
 --     )
 --
 --
--- flagsToEndpoints : Flags -> StudentEndpoints
--- flagsToEndpoints flags =
---     StudentEndpoints
---         (StudentResource.toStudentEndpointURI flags.student_endpoint)
---         (StudentResource.toStudentResearchConsentURI flags.student_research_consent_uri)
---         (StudentResource.toStudentUsernameValidURI flags.student_username_validation_uri)
 -- UPDATE
 
 
@@ -227,9 +208,9 @@ type Msg
     | Submitted (Result Error StudentProfile)
     | SubmittedConsent (Result Error StudentConsentResp)
       -- help messages
-    | CloseHelp StudentHelp
-    | PrevHelp
-    | NextHelp
+    | CloseHint StudentHelp
+    | PreviousHint
+    | NextHint
       -- site-wide messages
     | Logout
 
@@ -350,13 +331,13 @@ update msg (SafeModel model) =
                 _ ->
                     ( SafeModel model, Cmd.none )
 
-        CloseHelp helpMessage ->
+        CloseHint helpMessage ->
             ( SafeModel { model | help = Help.setVisible model.help helpMessage False }, Cmd.none )
 
-        PrevHelp ->
+        PreviousHint ->
             ( SafeModel { model | help = Help.prev model.help }, Help.scrollToPrevMsg model.help )
 
-        NextHelp ->
+        NextHint ->
             ( SafeModel { model | help = Help.next model.help }, Help.scrollToNextMsg model.help )
 
         Logout ->
@@ -528,25 +509,6 @@ studentConsentRespDecoder =
 
 
 
--- SHARED
-
-
-save : SafeModel -> Shared.Model -> Shared.Model
-save model shared =
-    shared
-
-
-load : Shared.Model -> SafeModel -> ( SafeModel, Cmd Msg )
-load shared safeModel =
-    ( safeModel, Cmd.none )
-
-
-subscriptions : SafeModel -> Sub Msg
-subscriptions (SafeModel model) =
-    Sub.none
-
-
-
 -- VIEW
 
 
@@ -556,10 +518,6 @@ view (SafeModel model) =
     , body =
         [ div []
             [ viewHeader (SafeModel model)
-                { next = NextHelp
-                , prev = PrevHelp
-                , close = CloseHelp
-                }
             , viewContent (SafeModel model)
             , Views.view_footer
             ]
@@ -567,12 +525,11 @@ view (SafeModel model) =
     }
 
 
-viewHeader : SafeModel -> HelpMsgs msg -> Html Msg
-viewHeader safeModel helpMessages =
+viewHeader : SafeModel -> Html Msg
+viewHeader safeModel =
     Views.view_header
         (viewTopHeader safeModel)
-        -- (view_lower_level_menu model model.menu_items top_level_menu_msg help_msgs)
-        (viewLowerMenu safeModel helpMessages)
+        (viewLowerMenu safeModel)
 
 
 viewTopHeader : SafeModel -> List (Html Msg)
@@ -584,22 +541,18 @@ viewTopHeader safeModel =
                 (Route.toString Route.Profile__Student)
             ]
             [ text "Profile" ]
-        , viewProfileHint
-            safeModel
-            { onNext = NextHelp
-            , onPrevious = PrevHelp
-            , onClose = CloseHelp
-            }
         ]
     , div [ classList [ ( "menu_item", True ) ] ]
         [ a [ class "link", onClick Logout ]
             [ text "Logout" ]
         ]
+
+    -- , div [] [ viewProfileHint safeModel ]
     ]
 
 
-viewLowerMenu : SafeModel -> HelpMsgs msg -> List (Html Msg)
-viewLowerMenu (SafeModel model) helpMessages =
+viewLowerMenu : SafeModel -> List (Html Msg)
+viewLowerMenu (SafeModel model) =
     [ div
         [ classList
             [ ( "lower-menu-item", True )
@@ -608,7 +561,8 @@ viewLowerMenu (SafeModel model) helpMessages =
             ]
         ]
       <|
-        viewSearchTextsHint (SafeModel model) helpMessages
+        viewSearchTextsHint
+            (SafeModel model)
             ++ [ a
                     [ class "link"
                     , href (Route.toString Route.NotFound)
@@ -653,8 +607,7 @@ viewPreferredDifficulty (SafeModel model) =
             ++ [ span [ class "profile_item_title" ] [ Html.text "Preferred Difficulty" ]
                , span [ class "profile_item_value" ]
                     [ viewDifficulty (SafeModel model)
-
-                    -- , view_help_text_for_difficulty (StudentProfile.studentDifficultyPreference model.profile)
+                    , viewPreferredDifficultyHint (StudentProfile.studentDifficultyPreference model.profile)
                     ]
                ]
 
@@ -883,28 +836,7 @@ viewResearchConsent (SafeModel model) =
 
 
 
--- view_scores : TextReadingScore -> Html Msg
--- view_scores score =
---     div [ class "text_reading_item" ]
---         [ Html.text ("Score: " ++ String.fromInt score.complete_sections ++ " / " ++ String.fromInt score.num_of_sections)
---         ]
---
--- view_text_reading_actions : TextReading -> Html Msg
--- view_text_reading_actions text_reading =
---     let
---         action_label =
---             case text_reading.status of
---                 "complete" ->
---                     "Start Over"
---                 _ ->
---                     "Resume"
---     in
---     div [ class "text_reading_actions" ]
---         [ div []
---             [ Html.a [ attribute "href" (Text.Resource.textReadingURLToString text_reading.url) ] [ Html.text action_label ]
---             ]
---         ]
--- HINT
+-- HINTS
 
 
 viewUsernameHint : SafeModel -> List (Html Msg)
@@ -917,42 +849,44 @@ viewUsernameHint (SafeModel model) =
             { id = Help.popupToOverlayID usernameHelp
             , visible = Help.isVisible model.help usernameHelp
             , text = Help.helpMsg usernameHelp
-            , cancel_event = onClick (CloseHelp usernameHelp)
-            , next_event = onClick NextHelp
-            , prev_event = onClick PrevHelp
+            , cancel_event = onClick (CloseHint usernameHelp)
+            , next_event = onClick NextHint
+            , prev_event = onClick PreviousHint
             , addl_attributes = [ id (Help.helpID model.help usernameHelp) ]
             , arrow_placement = ArrowDown ArrowLeft
             }
     in
-    -- if model.flags.welcome then
-    --     [ Help.View.view_hint_overlay hintAttributes
-    --     ]
-    -- else
-    []
+    if model.welcome then
+        [ Help.View.view_hint_overlay hintAttributes
+        ]
+
+    else
+        []
 
 
 viewPerformanceHint : SafeModel -> List (Html Msg)
 viewPerformanceHint (SafeModel model) =
     let
         performanceHelp =
-            Help.my_performanceHelp
+            Help.myPerformanceHelp
 
         hintAttributes =
             { id = Help.popupToOverlayID performanceHelp
             , visible = Help.isVisible model.help performanceHelp
             , text = Help.helpMsg performanceHelp
-            , cancel_event = onClick (CloseHelp performanceHelp)
-            , next_event = onClick NextHelp
-            , prev_event = onClick PrevHelp
+            , cancel_event = onClick (CloseHint performanceHelp)
+            , next_event = onClick NextHint
+            , prev_event = onClick PreviousHint
             , addl_attributes = [ id (Help.helpID model.help performanceHelp) ]
             , arrow_placement = ArrowDown ArrowLeft
             }
     in
-    -- if model.flags.welcome then
-    --     [ Help.View.view_hint_overlay hintAttributes
-    --     ]
-    -- else
-    []
+    if model.welcome then
+        [ Help.View.view_hint_overlay hintAttributes
+        ]
+
+    else
+        []
 
 
 viewDifficultyHint : SafeModel -> List (Html Msg)
@@ -965,22 +899,23 @@ viewDifficultyHint (SafeModel model) =
             { id = Help.popupToOverlayID difficultyHelp
             , visible = Help.isVisible model.help difficultyHelp
             , text = Help.helpMsg difficultyHelp
-            , cancel_event = onClick (CloseHelp difficultyHelp)
-            , next_event = onClick NextHelp
-            , prev_event = onClick PrevHelp
+            , cancel_event = onClick (CloseHint difficultyHelp)
+            , next_event = onClick NextHint
+            , prev_event = onClick PreviousHint
             , addl_attributes = [ id (Help.helpID model.help difficultyHelp) ]
             , arrow_placement = ArrowDown ArrowLeft
             }
     in
-    -- if model.flags.welcome then
-    --     [ Help.View.view_hint_overlay hintAttributes
-    --     ]
-    -- else
-    []
+    if model.welcome then
+        [ Help.View.view_hint_overlay hintAttributes
+        ]
+
+    else
+        []
 
 
-viewSearchTextsHint : SafeModel -> HelpMsgs msg -> List (Html Msg)
-viewSearchTextsHint (SafeModel model) helpMessages =
+viewSearchTextsHint : SafeModel -> List (Html Msg)
+viewSearchTextsHint (SafeModel model) =
     let
         searchTextsHelp =
             Help.searchTextsHelp
@@ -989,29 +924,23 @@ viewSearchTextsHint (SafeModel model) helpMessages =
             { id = Help.popupToOverlayID searchTextsHelp
             , visible = Help.isVisible model.help searchTextsHelp
             , text = Help.helpMsg searchTextsHelp
-            , cancel_event = onClick (helpMessages.close searchTextsHelp)
-            , next_event = onClick helpMessages.next
-            , prev_event = onClick helpMessages.prev
+            , cancel_event = onClick (CloseHint searchTextsHelp)
+            , next_event = onClick NextHint
+            , prev_event = onClick PreviousHint
             , addl_attributes = [ id (Help.helpID model.help searchTextsHelp) ]
             , arrow_placement = ArrowUp ArrowLeft
             }
     in
-    -- if model.flags.welcome then
-    --     [ Help.View.view_hint_overlay hintAttributes
-    --     ]
-    -- else
-    []
+    if model.welcome then
+        [ Help.View.view_hint_overlay hintAttributes
+        ]
+
+    else
+        []
 
 
-viewProfileHint :
-    SafeModel
-    ->
-        { onNext : msg
-        , onPrevious : msg
-        , onClose : StudentHelp -> msg
-        }
-    -> Html msg
-viewProfileHint (SafeModel model) options =
+viewProfileHint : SafeModel -> Html Msg
+viewProfileHint (SafeModel model) =
     let
         profileHelp =
             Help.profileHelp
@@ -1020,82 +949,107 @@ viewProfileHint (SafeModel model) options =
             { id = Help.popupToOverlayID profileHelp
             , visible = Help.isVisible model.help profileHelp
             , text = Help.helpMsg profileHelp
-            , cancel_event = onClick (options.onClose profileHelp)
-            , next_event = onClick options.onNext
-            , prev_event = onClick options.onPrevious
+            , cancel_event = onClick (CloseHint profileHelp)
+            , next_event = onClick NextHint
+            , prev_event = onClick PreviousHint
             , addl_attributes = [ id (Help.helpID model.help profileHelp) ]
             , arrow_placement = ArrowUp ArrowRight
             }
     in
-    -- if model.flags.welcome then
-    --     [ Help.View.view_hint_overlay hintAttributes
-    --     ]
-    -- else
-    div [] []
+    if model.welcome then
+        div []
+            [ Help.View.view_hint_overlay hintAttributes
+            ]
+
+    else
+        div [] []
+
+
+viewPreferredDifficultyHint : Maybe Text.TextDifficulty -> Html Msg
+viewPreferredDifficultyHint text_difficulty =
+    let
+        default_msg =
+            """
+      Strategy: Select a reading level that matches your current comfort level.  Read broadly in those texts.
+      If you find that they are not particularly challenging after the 5-6th text, go back to your reader profile and
+      select the next higher proficiency level. Once you find a level that is challenging, but not impossible, read all
+      the texts on all the related topics for that level.  You will not need to select a difficulty level every time you
+      log in, but you can choose to change your difficulty level at any time.
+      """
+
+        difficulty_msgs =
+            OrderedDict.fromList
+                [ ( "intermediate_mid"
+                  , Markdown.toHtml [] """**Texts at the Intermediate Mid level** tend to be short public announcements,
+        selections from personal correspondence, clearly organized texts in very recognizable genres with clear
+        structure (like a biography, public opinion survey, etc.). Questions will focus on your ability to recognize
+        the main ideas of the text. Typically, students in second year Russian can attempt texts at this level. """
+                  )
+                , ( "intermediate_high"
+                  , Markdown.toHtml [] """**Texts at the Intermediate High level** will tend to be several paragraphs in length,
+        touching on topics of personal and/or public interest.  The texts will tell a story, give a description or
+        explanation of something related to the topic. At the intermediate high level, you may be able to get the main
+        idea of the text, but the supporting details may be elusive. Typically, students in third year Russian can
+        attempt texts at this level."""
+                  )
+                , ( "advanced_low"
+                  , Markdown.toHtml [] """**Texts at the Advanced Low level** will be multiple paragraphs in length, touching on
+        topics of public interest. They may be excerpts from straightforward literary texts, from newspapers relating
+        the circumstances related to an event of public interest.  Texts may related to present, past or future time
+        frames. Advanced Low texts will show a strong degree of internal cohesion and organization.  The paragraphs
+        cannot be rearranged without doing damage to the comprehensibility of the passage. At the Advanced low level,
+        you should be able to understand the main ideas of the passage as well as the supporting details.
+        Readers at the Advanced Low level can efficiently balance the use of background knowledge WITH linguistic
+        knowledge to determine the meaning of a text, although complicated word order may interfere with the reader’s
+        comprehension. Typically, students in fourth year Russian can attempt these texts. """
+                  )
+                , ( "advanced_mid"
+                  , Markdown.toHtml [] """**Texts at the Advanced Mid level** will be even longer than at the Advanced Low level.
+        They will address issues of public interest, and they may contain narratives, descriptions, explanations, and
+        some argumentation, laying out and justifying a particular point of view. At the Advanced Mid level, texts
+        contain cultural references that are important for following the author’s point of view and argumentation.
+        Texts may contain unusual plot twists and unexpected turns of events, but they do not confuse readers because
+        readers have a strong command of the vocabulary, syntax, rhetorical devices that organize texts. Readers at the
+        Advanced Mid level can handle the main ideas and the factual details of texts. Typically, strong students in
+        4th year Russian or in 5th year Russian can attempt texts at this level. """
+                  )
+                ]
+
+        default_list =
+            List.map (\( _, v ) -> div [ class "difficulty_desc" ] [ v ]) (OrderedDict.toList difficulty_msgs)
+
+        help_msg =
+            case text_difficulty of
+                Just difficulty ->
+                    case OrderedDict.get (Tuple.first difficulty) difficulty_msgs of
+                        Just difficulty_msg ->
+                            div [] [ difficulty_msg ]
+
+                        Nothing ->
+                            div [] (Html.text default_msg :: default_list)
+
+                Nothing ->
+                    div [] (Html.text default_msg :: default_list)
+    in
+    div [ class "difficulty_descs" ]
+        [ div [ class "text_readings_values" ] [ help_msg ]
+        ]
 
 
 
--- view_help_text_for_difficulty : Maybe Text.TextDifficulty -> Html Msg
--- view_help_text_for_difficulty text_difficulty =
---     let
---         default_msg =
---             """
---       Strategy: Select a reading level that matches your current comfort level.  Read broadly in those texts.
---       If you find that they are not particularly challenging after the 5-6th text, go back to your reader profile and
---       select the next higher proficiency level. Once you find a level that is challenging, but not impossible, read all
---       the texts on all the related topics for that level.  You will not need to select a difficulty level every time you
---       log in, but you can choose to change your difficulty level at any time.
---       """
---         difficulty_msgs =
---             OrderedDict.fromList
---                 [ ( "intermediate_mid"
---                   , Markdown.toHtml [] """**Texts at the Intermediate Mid level** tend to be short public announcements,
---         selections from personal correspondence, clearly organized texts in very recognizable genres with clear
---         structure (like a biography, public opinion survey, etc.). Questions will focus on your ability to recognize
---         the main ideas of the text. Typically, students in second year Russian can attempt texts at this level. """
---                   )
---                 , ( "intermediate_high"
---                   , Markdown.toHtml [] """**Texts at the Intermediate High level** will tend to be several paragraphs in length,
---         touching on topics of personal and/or public interest.  The texts will tell a story, give a description or
---         explanation of something related to the topic. At the intermediate high level, you may be able to get the main
---         idea of the text, but the supporting details may be elusive. Typically, students in third year Russian can
---         attempt texts at this level."""
---                   )
---                 , ( "advanced_low"
---                   , Markdown.toHtml [] """**Texts at the Advanced Low level** will be multiple paragraphs in length, touching on
---         topics of public interest. They may be excerpts from straightforward literary texts, from newspapers relating
---         the circumstances related to an event of public interest.  Texts may related to present, past or future time
---         frames. Advanced Low texts will show a strong degree of internal cohesion and organization.  The paragraphs
---         cannot be rearranged without doing damage to the comprehensibility of the passage. At the Advanced low level,
---         you should be able to understand the main ideas of the passage as well as the supporting details.
---         Readers at the Advanced Low level can efficiently balance the use of background knowledge WITH linguistic
---         knowledge to determine the meaning of a text, although complicated word order may interfere with the reader’s
---         comprehension. Typically, students in fourth year Russian can attempt these texts. """
---                   )
---                 , ( "advanced_mid"
---                   , Markdown.toHtml [] """**Texts at the Advanced Mid level** will be even longer than at the Advanced Low level.
---         They will address issues of public interest, and they may contain narratives, descriptions, explanations, and
---         some argumentation, laying out and justifying a particular point of view. At the Advanced Mid level, texts
---         contain cultural references that are important for following the author’s point of view and argumentation.
---         Texts may contain unusual plot twists and unexpected turns of events, but they do not confuse readers because
---         readers have a strong command of the vocabulary, syntax, rhetorical devices that organize texts. Readers at the
---         Advanced Mid level can handle the main ideas and the factual details of texts. Typically, strong students in
---         4th year Russian or in 5th year Russian can attempt texts at this level. """
---                   )
---                 ]
---         default_list =
---             List.map (\( _, v ) -> div [ class "difficulty_desc" ] [ v ]) (OrderedDict.toList difficulty_msgs)
---         help_msg =
---             case text_difficulty of
---                 Just difficulty ->
---                     case OrderedDict.get (Tuple.first difficulty) difficulty_msgs of
---                         Just difficulty_msg ->
---                             div [] [ difficulty_msg ]
---                         Nothing ->
---                             div [] (Html.text default_msg :: default_list)
---                 Nothing ->
---                     div [] (Html.text default_msg :: default_list)
---     in
---     div [ class "difficulty_descs" ]
---         [ div [ class "text_readings_values" ] [ help_msg ]
---         ]
+-- SHARED
+
+
+save : SafeModel -> Shared.Model -> Shared.Model
+save model shared =
+    shared
+
+
+load : Shared.Model -> SafeModel -> ( SafeModel, Cmd Msg )
+load shared safeModel =
+    ( safeModel, Cmd.none )
+
+
+subscriptions : SafeModel -> Sub Msg
+subscriptions (SafeModel model) =
+    Sub.none
