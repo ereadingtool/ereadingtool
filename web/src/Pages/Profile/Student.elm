@@ -5,38 +5,17 @@ module Pages.Profile.Student exposing
     , page
     )
 
--- module Student.Student_Profile exposing
---     ( init
---     , main
---     , subscriptions
---     , view
---     , view_content
---     )
--- import Student.Profile.Flags exposing (Flags)
--- import Student.Profile.Model exposing (..)
--- import Student.Profile.Msg exposing (..)
--- import Student.Profile.Update
--- import Student.Profile.View
--- import HtmlParser
--- import HtmlParser.Util
--- import Menu.Item
--- import Menu.Items
--- import Menu.Logout
--- import Menu.Msg as MenuMsg
--- import Menu.View
--- import User.Student.Profile.Resource as StudentProfileResource
--- import User.Student.View as StudentView
-
 import Api
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
-import Array
 import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
 import Help.View exposing (ArrowPlacement(..), ArrowPosition(..), view_hint_overlay)
 import Html exposing (..)
 import Html.Attributes exposing (attribute, class, classList, href, id)
 import Html.Events exposing (onClick, onInput)
+import Html.Parser
+import Html.Parser.Util
 import Http exposing (..)
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (required)
@@ -48,11 +27,8 @@ import Shared
 import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
-import Spa.Url as Url exposing (Url)
+import Spa.Url exposing (Url)
 import Text.Model as Text
-import Text.Reading.Model exposing (TextReading, TextReadingScore)
-import Text.Resource
-import User.Instructor.Profile exposing (username)
 import User.Student.Performance.Report as PerformanceReport exposing (PerformanceReport)
 import User.Student.Profile as StudentProfile
     exposing
@@ -86,13 +62,6 @@ type alias UsernameValidation =
 
 type alias StudentConsentResp =
     { consented : Bool }
-
-
-type alias HelpMsgs msg =
-    { next : msg
-    , prev : msg
-    , close : StudentHelp -> msg
-    }
 
 
 
@@ -165,31 +134,6 @@ init shared { params } =
 
 
 
--- init : Flags -> ( Model, Cmd Msg )
--- init flags =
---     let
---         student_help =
---             Student.Profile.Help.init
---         student_profile =
---             Student.Profile.initProfile flags.student_profile
---     in
---     ( { flags = flags
---       , student_endpoints = Student.Profile.Model.flagsToEndpoints flags
---       , profile = student_profile
---       , menu_items = Menu.Items.initMenuItems flags
---       , flashcards = flags.flashcards
---       , performance_report = flags.performance_report
---       , consenting_to_research = flags.consenting_to_research
---       , editing = Dict.empty
---       , username_update = { username = Nothing, valid = Nothing, msg = Nothing }
---       , help = student_help
---       , err_str = ""
---       , errors = Dict.empty
---       }
---     , Student.Profile.Help.scrollToFirstMsg student_help
---     )
---
---
 -- UPDATE
 
 
@@ -741,9 +685,7 @@ viewStudentPerformance (SafeModel model) =
             ++ [ span [ class "profile_item_title" ] [ Html.text "My Performance: " ]
                , span [ class "profile_item_value" ]
                     [ div [ class "performance_report" ]
-                        []
-
-                    -- (HtmlParser.Util.toVirtualDom <| HtmlParser.parse performanceReport.html)
+                        (performanceReportNode performanceReport.html)
                     ]
                , div [ class "performance_download_link" ]
                     [ Html.a [ attribute "href" performanceReport.pdf_link ]
@@ -751,6 +693,17 @@ viewStudentPerformance (SafeModel model) =
                         ]
                     ]
                ]
+
+
+performanceReportNode : String -> List (Html msg)
+performanceReportNode htmlString =
+    case Html.Parser.run htmlString of
+        Ok node ->
+            node
+                |> Html.Parser.Util.toVirtualDom
+
+        Err err ->
+            [ Html.text "Err processing performance report. Please contact us for help." ]
 
 
 viewFlashcards : SafeModel -> Html Msg
