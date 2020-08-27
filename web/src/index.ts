@@ -20,7 +20,7 @@ const app = Elm.Main.init({
 // LOGIN
 
 app.ports.login.subscribe(async (creds: Creds) => {
-  const response = await fetch(restApiUrl + 'token-auth/', {
+  const response = await fetch(restApiUrl + '/token-auth/', {
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
