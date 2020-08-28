@@ -1,4 +1,10 @@
-module InstructorAdmin.Admin.Text exposing (TextAPIEndpoint, URL, textAPIEndpointURL, textEndpointToString, toTextAPIEndpoint)
+module InstructorAdmin.Admin.Text exposing
+    ( TextAPIEndpoint
+    , URL
+    , textAPIEndpointURL
+    , textEndpointToString
+    , toTextAPIEndpoint
+    )
 
 
 type URL

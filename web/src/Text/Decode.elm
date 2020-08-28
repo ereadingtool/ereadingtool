@@ -22,7 +22,7 @@ import Json.Decode.Pipeline exposing (required)
 import Text.Model exposing (Text, TextDifficulty, TextListItem)
 import Text.Section.Decode
 import Text.Translations.Decode
-import Util
+import Utils
 
 
 type alias TextCreateResp =
@@ -91,7 +91,7 @@ textListItemDecoder =
         |> required "last_read_dt" (Json.Decode.nullable (Json.Decode.map DateTime.fromPosix posix))
         |> required "text_section_count" Json.Decode.int
         |> required "text_sections_complete" (Json.Decode.nullable Json.Decode.int)
-        |> required "questions_correct" (Json.Decode.nullable Util.intTupleDecoder)
+        |> required "questions_correct" (Json.Decode.nullable Utils.intTupleDecoder)
         |> required "uri" Json.Decode.string
         |> required "write_locker" (Json.Decode.nullable Json.Decode.string)
 
@@ -136,7 +136,7 @@ textDifficultiesDecoder =
 
 textDifficultyDecoder : Json.Decode.Decoder TextDifficulty
 textDifficultyDecoder =
-    Util.stringTupleDecoder
+    Utils.stringTupleDecoder
 
 
 decodeRespErrors : String -> Result Json.Decode.Error TextsRespError
