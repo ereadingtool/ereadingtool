@@ -2,20 +2,19 @@ module Pages.Text.Search exposing (Model, Msg, Params, page)
 
 -- import Profile.Flags as Flags
 
+import Api
 import Browser
 import Dict exposing (Dict)
 import Help.View exposing (ArrowPlacement(..), ArrowPosition(..))
 import Html exposing (..)
-import Html.Attributes exposing (attribute, class, classList, id)
+import Html.Attributes exposing (attribute, class, classList, href, id)
 import Html.Events exposing (onClick)
 import Http exposing (..)
 import InstructorAdmin.Admin.Text as AdminText
-import Menu.Items
-import Menu.Logout
-import Menu.Msg as MenuMsg
 import Ports exposing (clearInputText)
 import Shared
 import Spa.Document exposing (Document)
+import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url as Url exposing (Url)
 import Text.Decode
@@ -65,15 +64,11 @@ type SafeModel
     = SafeModel
         { results : List Text.Model.TextListItem
         , profile : User.Profile.Profile
-
-        -- , menu_items : Menu.Items.MenuItems
-        , text_search : TextSearch
-        , text_api_endpoint : AdminText.TextAPIEndpoint
+        , textSearch : TextSearch
+        , textApiEndpoint : AdminText.TextAPIEndpoint
         , help : TextSearch.Help.TextSearchHelp
-        , error_msg : Maybe String
+        , errorMessage : Maybe String
         , welcome : Bool
-
-        -- , flags : Flags
         }
 
 
@@ -82,7 +77,7 @@ type SafeModel
 --     Flags.Flags
 --         { text_difficulties : List Text.Model.TextDifficulty
 --         , text_statuses : List ( String, String )
---         , text_api_endpoint_url : String
+--         , textApiEndpoint_url : String
 --         , welcome : Bool
 --         , text_tags : List String
 --         }
@@ -110,68 +105,61 @@ fakeProfile =
 init : Shared.Model -> Url Params -> ( SafeModel, Cmd Msg )
 init shared { params } =
     let
-        tag_search =
+        tagSearch =
             Text.Search.Tag.new "text_tag_search"
                 (Text.Search.Option.newOptions
                     -- (List.map (\tag -> ( tag, tag )) flags.text_tags)
                     (List.map (\tag -> ( tag, tag )) [])
                 )
 
-        difficulty_search =
+        difficultySearch =
             Text.Search.Difficulty.new
                 "text_difficulty_search"
                 (Text.Search.Option.newOptions Shared.difficulties)
 
-        status_search =
+        statusSearch =
             Text.Search.ReadingStatus.new
                 "text_status_search"
                 -- (Text.Search.Option.newOptions flags.text_statuses)
                 (Text.Search.Option.newOptions [])
 
-        text_api_endpoint =
+        textApiEndpoint =
             -- AdminText.TextAPIEndpoint
-            --     (AdminText.URL flags.text_api_endpoint_url)
+            --     (AdminText.URL flags.textApiEndpointUrl)
             AdminText.toTextAPIEndpoint "text-api-endpoint"
 
-        default_search =
-            Text.Search.new text_api_endpoint tag_search difficulty_search status_search
+        defaultSearch =
+            Text.Search.new textApiEndpoint tagSearch difficultySearch statusSearch
 
         profile =
             fakeProfile
 
-        text_search =
+        textSearch =
             case profile of
                 User.Profile.Student student_profile ->
                     case StudentProfile.studentDifficultyPreference student_profile of
                         Just difficulty ->
-                            Text.Search.addDifficultyToSearch default_search (Tuple.first difficulty) True
+                            Text.Search.addDifficultyToSearch defaultSearch (Tuple.first difficulty) True
 
                         _ ->
-                            default_search
+                            defaultSearch
 
                 _ ->
-                    default_search
+                    defaultSearch
 
-        text_search_help =
+        textSearchHelp =
             TextSearch.Help.init
-
-        -- menu_items =
-        --     Menu.Items.initMenuItems flags
     in
     ( SafeModel
         { results = []
         , profile = fakeProfile
-
-        --   , menu_items = menu_items
-        , text_search = text_search
-        , text_api_endpoint = text_api_endpoint
-        , help = text_search_help
-        , error_msg = Nothing
+        , textSearch = textSearch
+        , textApiEndpoint = textApiEndpoint
+        , help = textSearchHelp
+        , errorMessage = Nothing
         , welcome = False
-
-        --   , flags = flags
         }
-      -- , updateResults text_api_endpoint text_search
+      -- , updateResults textApiEndpoint textSearch
     , Cmd.none
     )
 
@@ -190,8 +178,7 @@ type Msg
     | PrevHelp
     | NextHelp
       -- site-wide messages
-    | LogOut MenuMsg.Msg
-    | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
+    | Logout
 
 
 update : Msg -> SafeModel -> ( SafeModel, Cmd Msg )
@@ -199,45 +186,48 @@ update msg (SafeModel model) =
     case msg of
         AddDifficulty difficulty select ->
             let
-                new_text_search =
-                    Text.Search.addDifficultyToSearch model.text_search difficulty select
+                newTextSearch =
+                    Text.Search.addDifficultyToSearch model.textSearch difficulty select
             in
-            ( SafeModel { model | text_search = new_text_search, results = [] }
-              -- , updateResults model.text_api_endpoint new_text_search
+            ( SafeModel { model | textSearch = newTextSearch, results = [] }
+              -- , updateResults model.textApiEndpoint newTextSearch
             , Cmd.none
             )
 
         SelectStatus status selected ->
             let
-                status_search =
-                    Text.Search.statusSearch model.text_search
+                statusSearch =
+                    Text.Search.statusSearch model.textSearch
 
-                new_status_search =
-                    Text.Search.ReadingStatus.selectStatus status_search status selected
+                newStatusSearch =
+                    Text.Search.ReadingStatus.selectStatus statusSearch status selected
 
-                new_text_search =
-                    Text.Search.setStatusSearch model.text_search new_status_search
+                newTextSearch =
+                    Text.Search.setStatusSearch model.textSearch newStatusSearch
             in
-            ( SafeModel { model | text_search = new_text_search, results = [] }
-            , updateResults model.text_api_endpoint new_text_search
+            ( SafeModel { model | textSearch = newTextSearch, results = [] }
+            , updateResults model.textApiEndpoint newTextSearch
             )
 
-        SelectTag tag_name selected ->
+        SelectTag tagName selected ->
             let
-                tag_search =
-                    Text.Search.tagSearch model.text_search
+                tagSearch =
+                    Text.Search.tagSearch model.textSearch
 
-                tag_search_input_id =
-                    Text.Search.Tag.inputID tag_search
+                tagSearchInputId =
+                    Text.Search.Tag.inputID tagSearch
 
-                new_tag_search =
-                    Text.Search.Tag.select_tag tag_search tag_name selected
+                newTagSearch =
+                    Text.Search.Tag.select_tag tagSearch tagName selected
 
-                new_text_search =
-                    Text.Search.setTagSearch model.text_search new_tag_search
+                newTextSearch =
+                    Text.Search.setTagSearch model.textSearch newTagSearch
             in
-            ( SafeModel { model | text_search = new_text_search, results = [] }
-            , Cmd.batch [ clearInputText tag_search_input_id, updateResults model.text_api_endpoint new_text_search ]
+            ( SafeModel { model | textSearch = newTextSearch, results = [] }
+            , Cmd.batch
+                [ clearInputText tagSearchInputId
+                , updateResults model.textApiEndpoint newTextSearch
+                ]
             )
 
         TextSearch result ->
@@ -250,11 +240,11 @@ update msg (SafeModel model) =
                         _ =
                             Debug.log "error retrieving results" err
                     in
-                    ( SafeModel { model | error_msg = Just "An error occurred.  Please contact an administrator." }, Cmd.none )
+                    ( SafeModel { model | errorMessage = Just "An error occurred.  Please contact an administrator." }, Cmd.none )
 
-        CloseHelp help_msg ->
+        CloseHelp helpMessage ->
             ( SafeModel model
-              -- ( SafeModel { model | help = TextSearch.Help.setVisible model.help help_msg False }
+              -- ( SafeModel { model | help = TextSearch.Help.setVisible model.help helpMessage False }
             , Cmd.none
             )
 
@@ -272,37 +262,31 @@ update msg (SafeModel model) =
               -- , TextSearch.Help.scrollToNextMsg model.help
             )
 
-        LogOut _ ->
+        Logout ->
             ( SafeModel model
-            , Cmd.none
+            , Api.logout ()
               -- , User.Profile.logout model.profile model.flags.csrftoken LoggedOut
             )
 
-        LoggedOut (Ok logout_resp) ->
-            ( SafeModel model, Ports.redirect logout_resp.redirect )
-
-        LoggedOut (Err err) ->
-            ( SafeModel model, Cmd.none )
-
 
 updateResults : AdminText.TextAPIEndpoint -> TextSearch -> Cmd Msg
-updateResults text_api_endpoint text_search =
+updateResults textApiEndpoint textSearch =
     let
-        text_api_endpoint_url =
-            AdminText.textEndpointToString text_api_endpoint
+        textApiEndpointUrl =
+            AdminText.textEndpointToString textApiEndpoint
 
-        filter_params =
-            Text.Search.filterParams text_search
+        filterParams =
+            Text.Search.filterParams textSearch
 
-        query_string =
-            String.join "" [ text_api_endpoint_url, "?" ] ++ String.join "&" filter_params
+        queryString =
+            String.join "" [ textApiEndpointUrl, "?" ] ++ String.join "&" filterParams
 
         request =
             Debug.todo "query text list"
 
-        -- Http.get query_string Text.Decode.textListDecoder
+        -- Http.get queryString Text.Decode.textListDecoder
     in
-    if List.length filter_params > 0 then
+    if List.length filterParams > 0 then
         Debug.todo "text search request"
         -- Http.send TextSearch request
 
@@ -320,30 +304,79 @@ view (SafeModel model) =
     , body =
         [ div []
             -- [ Views.view_authed_header model.profile model.menu_items LogOut
-            [ view_content (SafeModel model)
+            [ viewHeader (SafeModel model)
+            , viewContent (SafeModel model)
             , Views.view_footer
             ]
         ]
     }
 
 
-view_content : SafeModel -> Html Msg
-view_content (SafeModel model) =
+viewHeader : SafeModel -> Html Msg
+viewHeader safeModel =
+    Views.view_header
+        (viewTopHeader safeModel)
+        (viewLowerMenu safeModel)
+
+
+viewTopHeader : SafeModel -> List (Html Msg)
+viewTopHeader safeModel =
+    [ div [ classList [ ( "menu_item", True ) ] ]
+        [ a
+            [ class "link"
+            , href
+                (Route.toString Route.Profile__Student)
+            ]
+            [ text "Profile" ]
+        ]
+    , div [ classList [ ( "menu_item", True ) ] ]
+        [ a [ class "link", onClick Logout ]
+            [ text "Logout" ]
+        ]
+    ]
+
+
+viewLowerMenu : SafeModel -> List (Html Msg)
+viewLowerMenu safeModel =
+    [ div
+        [ classList
+            [ ( "lower-menu-item", True )
+            ]
+        ]
+        [ a
+            [ class "link"
+            , href (Route.toString Route.Text__Search)
+            ]
+            [ text "Find a text to read" ]
+        ]
+    , div
+        [ classList [ ( "lower-menu-item", True ) ] ]
+        [ a
+            [ class "link"
+            , href (Route.toString Route.NotFound)
+            ]
+            [ text "Practice Flashcards" ]
+        ]
+    ]
+
+
+viewContent : SafeModel -> Html Msg
+viewContent (SafeModel model) =
     div [ id "text_search" ] <|
         (if model.welcome then
-            [ view_help_msg (SafeModel model) ]
+            [ viewHelpMessage ]
 
          else
             []
         )
-            ++ [ view_search_filters (SafeModel model)
-               , view_search_results model.results
-               , view_search_footer (SafeModel model)
+            ++ [ viewSearchFilters (SafeModel model)
+               , viewSearchResults model.results
+               , viewSearchFooter (SafeModel model)
                ]
 
 
-view_help_msg : SafeModel -> Html Msg
-view_help_msg model =
+viewHelpMessage : Html Msg
+viewHelpMessage =
     div [ id "text_search_help_msg" ]
         [ div []
             [ Html.text "Welcome."
@@ -361,33 +394,33 @@ view_help_msg model =
         ]
 
 
-view_search_filters : SafeModel -> Html Msg
-view_search_filters (SafeModel model) =
+viewSearchFilters : SafeModel -> Html Msg
+viewSearchFilters (SafeModel model) =
     div [ id "text_search_filters" ]
         [ div [ id "text_search_filters_label" ] [ Html.text "Filters" ]
         , div [ class "search_filter" ] <|
             [ div [ class "search_filter_title" ] [ Html.text "Difficulty" ]
-            , div [] (view_difficulties (Text.Search.difficultySearch model.text_search))
+            , div [] (viewDifficulties (Text.Search.difficultySearch model.textSearch))
             ]
-                ++ view_difficulty_filter_hint (SafeModel model)
+                ++ viewDifficultyFilterHint (SafeModel model)
         , div [ class "search_filter" ]
             [ div [ class "search_filter_title" ] [ Html.text "Tags" ]
             , div [] <|
-                [ view_tags (Text.Search.tagSearch model.text_search) ]
-                    ++ view_topic_filter_hint (SafeModel model)
+                [ viewTags (Text.Search.tagSearch model.textSearch) ]
+                    ++ viewTopicFilterHint (SafeModel model)
             ]
         , div [ class "search_filter" ] <|
             [ div [ class "search_filter_title" ] [ Html.text "Read Status" ]
-            , div [] (view_statuses (Text.Search.statusSearch model.text_search))
+            , div [] (viewStatuses (Text.Search.statusSearch model.textSearch))
             ]
-                ++ view_status_filter_hint (SafeModel model)
+                ++ viewStatusFilterHint (SafeModel model)
         ]
 
 
-view_search_results : List Text.Model.TextListItem -> Html Msg
-view_search_results textListItems =
+viewSearchResults : List Text.Model.TextListItem -> Html Msg
+viewSearchResults textListItems =
     let
-        view_search_result textItem =
+        viewSearchResult textItem =
             let
                 commaDelimitedTags =
                     case textItem.tags of
@@ -399,8 +432,8 @@ view_search_results textListItems =
 
                 sectionsCompleted =
                     case textItem.text_sections_complete of
-                        Just sections_complete ->
-                            String.fromInt sections_complete ++ " / " ++ String.fromInt textItem.text_section_count
+                        Just sectionsComplete ->
+                            String.fromInt sectionsComplete ++ " / " ++ String.fromInt textItem.text_section_count
 
                         Nothing ->
                             "0 / " ++ String.fromInt textItem.text_section_count
@@ -452,32 +485,32 @@ view_search_results textListItems =
                     ]
                 ]
     in
-    div [ id "text_search_results" ] (List.map view_search_result textListItems)
+    div [ id "text_search_results" ] (List.map viewSearchResult textListItems)
 
 
-view_search_footer : SafeModel -> Html Msg
-view_search_footer (SafeModel model) =
+viewSearchFooter : SafeModel -> Html Msg
+viewSearchFooter (SafeModel model) =
     let
-        results_length =
+        resultsLength =
             List.length model.results
 
         entries =
-            if results_length == 1 then
+            if resultsLength == 1 then
                 "entry"
 
             else
                 "entries"
 
-        success_txt =
-            String.join " " [ "Showing", String.fromInt results_length, entries ]
+        successText =
+            String.join " " [ "Showing", String.fromInt resultsLength, entries ]
 
         txt =
-            case model.error_msg of
-                Just msg ->
-                    msg
+            case model.errorMessage of
+                Just message ->
+                    message
 
                 Nothing ->
-                    success_txt
+                    successText
     in
     div [ id "footer_items" ]
         [ div [ id "footer", class "message" ]
@@ -486,57 +519,56 @@ view_search_footer (SafeModel model) =
         ]
 
 
-view_tags : TagSearch -> Html Msg
-view_tags tag_search =
+viewTags : TagSearch -> Html Msg
+viewTags tagSearch =
     let
         tags =
-            Text.Search.Tag.optionsToDict tag_search
+            Text.Search.Tag.optionsToDict tagSearch
 
-        tag_search_id =
-            Text.Search.Tag.inputID tag_search
-
-        view_tag tag_search_option =
+        -- tag_search_id =
+        --     Text.Search.Tag.inputID tagSearch
+        viewTag tagSearchOption =
             let
                 selected =
-                    Text.Search.Option.selected tag_search_option
+                    Text.Search.Option.selected tagSearchOption
 
-                tag_value =
-                    Text.Search.Option.value tag_search_option
+                tagValue =
+                    Text.Search.Option.value tagSearchOption
 
-                tag_label =
-                    Text.Search.Option.label tag_search_option
+                tagLabel =
+                    Text.Search.Option.label tagSearchOption
             in
             div
-                [ onClick (SelectTag tag_value (not selected))
+                [ onClick (SelectTag tagValue (not selected))
                 , classList
                     [ ( "text_tag", True )
                     , ( "text_tag_selected", selected )
                     ]
                 ]
-                [ Html.text tag_label
+                [ Html.text tagLabel
                 ]
     in
     div [ id "text_tags" ]
-        [ div [ class "text_tags" ] (List.map view_tag (Dict.values tags))
+        [ div [ class "text_tags" ] (List.map viewTag (Dict.values tags))
         ]
 
 
-view_difficulties : DifficultySearch -> List (Html Msg)
-view_difficulties difficulty_search =
+viewDifficulties : DifficultySearch -> List (Html Msg)
+viewDifficulties difficultySearch =
     let
         difficulties =
-            Text.Search.Difficulty.options difficulty_search
+            Text.Search.Difficulty.options difficultySearch
 
-        view_difficulty difficulty_search_option =
+        viewDifficulty difficultySearchOption =
             let
                 selected =
-                    Text.Search.Option.selected difficulty_search_option
+                    Text.Search.Option.selected difficultySearchOption
 
                 value =
-                    Text.Search.Option.value difficulty_search_option
+                    Text.Search.Option.value difficultySearchOption
 
                 label =
-                    Text.Search.Option.label difficulty_search_option
+                    Text.Search.Option.label difficultySearchOption
             in
             div
                 [ classList [ ( "difficulty_option", True ), ( "difficulty_option_selected", selected ) ]
@@ -545,22 +577,22 @@ view_difficulties difficulty_search =
                 [ Html.text label
                 ]
     in
-    List.map view_difficulty difficulties
+    List.map viewDifficulty difficulties
 
 
-view_statuses : TextReadStatusSearch -> List (Html Msg)
-view_statuses status_search =
+viewStatuses : TextReadStatusSearch -> List (Html Msg)
+viewStatuses statusSearch =
     let
         statuses =
-            Text.Search.ReadingStatus.options status_search
+            Text.Search.ReadingStatus.options statusSearch
 
-        view_status ( value, status_option ) =
+        viewStatus ( value, statusOption ) =
             let
                 selected =
-                    Text.Search.Option.selected status_option
+                    Text.Search.Option.selected statusOption
 
                 label =
-                    Text.Search.Option.label status_option
+                    Text.Search.Option.label statusOption
 
                 status =
                     Text.Search.ReadingStatus.valueToStatus value
@@ -572,24 +604,24 @@ view_statuses status_search =
                 [ Html.text label
                 ]
     in
-    List.map view_status <| List.map (\option -> ( Text.Search.Option.value option, option )) statuses
+    List.map viewStatus <| List.map (\option -> ( Text.Search.Option.value option, option )) statuses
 
 
 
 -- HINTS
 
 
-view_topic_filter_hint : SafeModel -> List (Html Msg)
-view_topic_filter_hint (SafeModel model) =
+viewTopicFilterHint : SafeModel -> List (Html Msg)
+viewTopicFilterHint (SafeModel model) =
     let
-        topic_filter_help =
+        topicFilterHelp =
             TextSearch.Help.topic_filter_help
 
-        hint_attributes =
-            { id = TextSearch.Help.popupToID topic_filter_help
-            , visible = TextSearch.Help.isVisible model.help topic_filter_help
-            , text = TextSearch.Help.helpMsg topic_filter_help
-            , cancel_event = onClick (CloseHelp topic_filter_help)
+        hintAttributes =
+            { id = TextSearch.Help.popupToID topicFilterHelp
+            , visible = TextSearch.Help.isVisible model.help topicFilterHelp
+            , text = TextSearch.Help.helpMsg topicFilterHelp
+            , cancel_event = onClick (CloseHelp topicFilterHelp)
             , next_event = onClick NextHelp
             , prev_event = onClick PrevHelp
             , addl_attributes = [ class "difficulty_filter_hint" ]
@@ -597,24 +629,24 @@ view_topic_filter_hint (SafeModel model) =
             }
     in
     if model.welcome then
-        [ Help.View.view_hint_overlay hint_attributes
+        [ Help.View.view_hint_overlay hintAttributes
         ]
 
     else
         []
 
 
-view_difficulty_filter_hint : SafeModel -> List (Html Msg)
-view_difficulty_filter_hint (SafeModel model) =
+viewDifficultyFilterHint : SafeModel -> List (Html Msg)
+viewDifficultyFilterHint (SafeModel model) =
     let
-        difficulty_filter_help =
+        difficultyFilterHelp =
             TextSearch.Help.difficulty_filter_help
 
-        hint_attributes =
-            { id = TextSearch.Help.popupToID difficulty_filter_help
-            , visible = TextSearch.Help.isVisible model.help difficulty_filter_help
-            , text = TextSearch.Help.helpMsg difficulty_filter_help
-            , cancel_event = onClick (CloseHelp difficulty_filter_help)
+        hintAttributes =
+            { id = TextSearch.Help.popupToID difficultyFilterHelp
+            , visible = TextSearch.Help.isVisible model.help difficultyFilterHelp
+            , text = TextSearch.Help.helpMsg difficultyFilterHelp
+            , cancel_event = onClick (CloseHelp difficultyFilterHelp)
             , next_event = onClick NextHelp
             , prev_event = onClick PrevHelp
             , addl_attributes = [ class "difficulty_filter_hint" ]
@@ -622,24 +654,24 @@ view_difficulty_filter_hint (SafeModel model) =
             }
     in
     if model.welcome then
-        [ Help.View.view_hint_overlay hint_attributes
+        [ Help.View.view_hint_overlay hintAttributes
         ]
 
     else
         []
 
 
-view_status_filter_hint : SafeModel -> List (Html Msg)
-view_status_filter_hint (SafeModel model) =
+viewStatusFilterHint : SafeModel -> List (Html Msg)
+viewStatusFilterHint (SafeModel model) =
     let
-        status_filter_help =
+        statusFilterHelp =
             TextSearch.Help.status_filter_help
 
-        hint_attributes =
-            { id = TextSearch.Help.popupToID status_filter_help
-            , visible = TextSearch.Help.isVisible model.help status_filter_help
-            , text = TextSearch.Help.helpMsg status_filter_help
-            , cancel_event = onClick (CloseHelp status_filter_help)
+        hintAttributes =
+            { id = TextSearch.Help.popupToID statusFilterHelp
+            , visible = TextSearch.Help.isVisible model.help statusFilterHelp
+            , text = TextSearch.Help.helpMsg statusFilterHelp
+            , cancel_event = onClick (CloseHelp statusFilterHelp)
             , next_event = onClick NextHelp
             , prev_event = onClick PrevHelp
             , addl_attributes = [ class "status_filter_hint" ]
@@ -647,7 +679,7 @@ view_status_filter_hint (SafeModel model) =
             }
     in
     if model.welcome then
-        [ Help.View.view_hint_overlay hint_attributes
+        [ Help.View.view_hint_overlay hintAttributes
         ]
 
     else
