@@ -8,6 +8,7 @@ from django.http import HttpResponse, HttpRequest, HttpResponseForbidden
 from django.urls import reverse
 
 from django.views.generic import TemplateView, View
+from django.http import JsonResponse
 
 from user.forms import InstructorSignUpForm, InstructorLoginForm, InstructorInviteForm
 
@@ -17,6 +18,8 @@ from user.views.api import APIView
 from user.views.mixin import ProfileView
 
 from mixins.view import NoAuthElmLoadJsView, ElmLoadJsInstructorBaseView
+
+from jwt_auth.views import jwt_encode_token, jwt_get_json_with_token
 
 
 Form = TypeVar('Form', bound=forms.Form)
@@ -104,20 +107,33 @@ class InstructorSignupAPIView(APIView):
 
 
 class InstructorLoginAPIView(APIView):
-    def form(self, request: HttpRequest, params: Dict) -> Form:
-        return InstructorLoginForm(request, params)
+    http_method_names = ['post']
 
-    def post_success(self, request: HttpRequest, instructor_login_form: Form) -> HttpResponse:
+    def form(self, request: HttpRequest, params: Dict) -> Form:
+        return InstructorLoginForm(params)
+
+    def post_success(self, request: HttpRequest, instructor_login_form: Form) -> JsonResponse:
         reader_user = instructor_login_form.get_user()
+
+        token = jwt_encode_token(
+            instructor_login_form.cleaned_data['user'], instructor_login_form.cleaned_data.get('orig_iat')
+        )
 
         if hasattr(reader_user, 'student'):
             return self.post_error({'all': 'Something went wrong.  Please try a different username and password.'})
 
-        login(self.request, reader_user)
+        jwt_payload = jwt_get_json_with_token(token)
 
         instructor = reader_user.instructor
 
-        return HttpResponse(json.dumps({'id': instructor.pk, 'redirect': reverse('instructor-profile')}))
+        # customize payload re-using only the 'original issued at time' and expiration
+        final_payload = {
+            'id': instructor.pk,
+            'orig_iat': jwt_payload['orig_iat'],
+            'exp': jwt_payload['exp']
+        }
+
+        return JsonResponse(jwt_get_json_with_token(token))
 
 
 class InstructorLogoutAPIView(LoginRequiredMixin, View):
