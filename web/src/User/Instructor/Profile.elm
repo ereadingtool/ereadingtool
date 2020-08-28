@@ -172,13 +172,16 @@ logout :
 logout instructor_profile csrftoken logout_msg =
     let
         request =
-            HttpHelpers.post_with_headers
-                (InstructorResource.uriToString (InstructorResource.instructorLogoutURI (logoutUri instructor_profile)))
-                [ Http.header "X-CSRFToken" csrftoken ]
-                Http.emptyBody
-                Menu.Logout.logoutRespDecoder
+            Debug.todo
+
+        -- HttpHelpers.post_with_headers
+        --     (InstructorResource.uriToString (InstructorResource.instructorLogoutURI (logoutUri instructor_profile)))
+        --     [ Http.header "X-CSRFToken" csrftoken ]
+        --     Http.emptyBody
+        --     Menu.Logout.logoutRespDecoder
     in
-    Http.send logout_msg request
+    -- Http.send logout_msg request
+    Debug.todo "instructor logout"
 
 
 submitNewInvite :
@@ -194,13 +197,16 @@ submitNewInvite csrftoken instructor_invite_uri msg email =
                 InstructorInviteEncode.newInviteEncoder email
 
             req =
-                HttpHelpers.post_with_headers
-                    (InstructorResource.uriToString (InstructorResource.instructorInviteURI instructor_invite_uri))
-                    [ Http.header "X-CSRFToken" csrftoken ]
-                    (Http.jsonBody encoded_new_invite)
-                    InstructorInviteDecode.newInviteRespDecoder
+                Debug.todo
+
+            -- HttpHelpers.post_with_headers
+            --     (InstructorResource.uriToString (InstructorResource.instructorInviteURI instructor_invite_uri))
+            --     [ Http.header "X-CSRFToken" csrftoken ]
+            --     (Http.jsonBody encoded_new_invite)
+            --     InstructorInviteDecode.newInviteRespDecoder
         in
-        Http.send msg req
+        -- Http.send msg req
+        Debug.todo "instructor submit new invite"
 
     else
         Cmd.none

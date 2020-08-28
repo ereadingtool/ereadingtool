@@ -5,18 +5,18 @@ module User.Student.Profile.Help exposing
     , helpMsg
     , init
     , isVisible
-    , my_performance_help
+    , myPerformanceHelp
     , next
     , popupToOverlayID
-    , preferred_difficulty_help
+    , preferredDifficultyHelp
     , prev
+    , profileHelp
     , scrollToFirstMsg
     , scrollToNextMsg
     , scrollToPrevMsg
-    , search_menu_item_help
+    , searchTextsHelp
     , setVisible
-    , username_help
-    , username_menu_item_help
+    , usernameHelp
     )
 
 import Help exposing (HelpMsgID, HelpMsgOverlayID, HelpMsgStr, HelpMsgVisible)
@@ -35,55 +35,56 @@ type StudentProfileHelp
     = StudentProfileHelp (Help StudentHelp)
 
 
-username_help : StudentHelp
-username_help =
+usernameHelp : StudentHelp
+usernameHelp =
     UsernameHelp
         """You can create a new username that is distinct from your email address if you choose.
      Your username will be visible to instructors and other students if you comment on any texts."""
 
 
-my_performance_help : StudentHelp
-my_performance_help =
+myPerformanceHelp : StudentHelp
+myPerformanceHelp =
     MyPerformanceHelp
         """As you use the website, make sure to check back here from time to time.
      You will be able to see the percentage of questions that you have answered correctly over varying time periods
      and difficulties."""
 
 
-preferred_difficulty_help : StudentHelp
-preferred_difficulty_help =
+preferredDifficultyHelp : StudentHelp
+preferredDifficultyHelp =
     PreferredDifficultyHelp
         """Please choose a difficulty level. If you have taken proficiency tests, it would be advisable to start out
      reading texts at your current proficiency level.  If you’ve not taken a Flagship Proficiency test yet,
      then you can use these brief descriptions to pick the level that is closest to your current abilities."""
 
 
-username_menu_item_help : StudentHelp
-username_menu_item_help =
+profileHelp : StudentHelp
+profileHelp =
     UsernameMenuItemHelp
         """You can return to this profile page at any time, by clicking on your username in the top right corner of the
     screen. Hovering over your username, you can see the option to log out."""
 
 
-search_menu_item_help : StudentHelp
-search_menu_item_help =
+searchTextsHelp : StudentHelp
+searchTextsHelp =
     SearchTextsMenuItemHelp
         """To select a text to read, go to the Search Texts option that is in the menu bar on each page of the website."""
 
 
 help_msgs : List StudentHelp
 help_msgs =
-    [ username_help
-    , my_performance_help
-    , preferred_difficulty_help
-    , username_menu_item_help
-    , search_menu_item_help
+    [ usernameHelp
+    , myPerformanceHelp
+    , preferredDifficultyHelp
+    , profileHelp
+    , searchTextsHelp
     ]
 
 
 init : StudentProfileHelp
 init =
-    StudentProfileHelp (Help.PopUp.init help_msgs popupToOverlayID popupToID)
+    StudentProfileHelp
+        (Help.PopUp.init help_msgs popupToOverlayID popupToID)
 
 
 help : StudentProfileHelp -> Help StudentHelp

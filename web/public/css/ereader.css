@@ -41,7 +41,8 @@ body {
     grid-gap: 0;
     grid-template-rows: 73px;
 
-    grid-template-columns: auto auto;
+    /* grid-template-columns: auto auto; */
+    grid-template-columns: 15fr 1fr;
 
     background: #f9f9f9;
 
@@ -63,7 +64,8 @@ body {
 .menu {
     display: grid;
 
-    grid-template-columns: 1fr auto 1fr;
+    /* grid-template-columns: 1fr auto 1fr; */
+    grid-template-columns: 1fr 1fr;
 
     grid-column-gap: 0;
 

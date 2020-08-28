@@ -29,7 +29,7 @@ type alias HelpMsgAttributes msg =
 view_cancel_btn : Html.Attribute msg -> Html msg
 view_cancel_btn event_attr =
     Html.img
-        [ attribute "src" "/static/img/cancel.svg"
+        [ attribute "src" "/public/img/cancel.svg"
         , attribute "height" "13px"
         , attribute "width" "13px"
         , class "cursor"

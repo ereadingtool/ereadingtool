@@ -1,11 +1,14 @@
 module Api.Endpoint exposing
     ( Endpoint
+    , consentToResearch
     , forgotPassword
     , instructorSignup
     , request
     , resetPassword
+    , studentProfile
     , studentSignup
     , test
+    , validateUsername
     )
 
 import Http
@@ -76,9 +79,24 @@ resetPassword baseUrl =
 
 instructorSignup : String -> Endpoint
 instructorSignup baseUrl =
-    url baseUrl [ "instructor", "signup" ] []
+    url baseUrl [ "api", "instructor", "signup" ] []
 
 
 studentSignup : String -> Endpoint
 studentSignup baseUrl =
-    url baseUrl [ "student", "signup" ] []
+    url baseUrl [ "api", "student", "signup" ] []
+
+
+studentProfile : String -> Int -> Endpoint
+studentProfile baseUrl id =
+    url baseUrl [ "api", "student", String.fromInt id ] []
+
+
+consentToResearch : String -> Int -> Endpoint
+consentToResearch baseUrl id =
+    url baseUrl [ "api", "student", String.fromInt id, "consent_to_research" ] []
+
+
+validateUsername : String -> Endpoint
+validateUsername baseUrl =
+    url baseUrl [ "api", "username/" ] []
