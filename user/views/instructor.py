@@ -127,13 +127,11 @@ class InstructorLoginAPIView(APIView):
         instructor = reader_user.instructor
 
         # customize payload re-using only the 'original issued at time' and expiration
-        final_payload = {
+        return JsonResponse({
             'id': instructor.pk,
             'orig_iat': jwt_payload['orig_iat'],
             'exp': jwt_payload['exp']
-        }
-
-        return JsonResponse(jwt_get_json_with_token(token))
+        })
 
 
 class InstructorLogoutAPIView(LoginRequiredMixin, View):
