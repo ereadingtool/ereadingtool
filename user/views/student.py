@@ -16,8 +16,11 @@ from user.views.api import APIView
 from user.views.mixin import ProfileView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from mixins.view import ElmLoadJsStudentBaseView, NoAuthElmLoadJsView
+from django.http import JsonResponse
 
 from django.template import loader
+
+from jwt_auth.views import jwt_encode_token, jwt_get_json_with_token
 
 
 Form = TypeVar('Form', bound=forms.Form)
@@ -164,10 +167,10 @@ class StudentAPIConsentToResearchView(LoginRequiredMixin, APIView):
     # returns permission denied HTTP message rather than redirect to login
     raise_exception = True
 
-    def form(self, request: HttpRequest, params: dict, **kwargs) -> forms.ModelForm:
+    def form(self, request: HttpRequest, params: Dict, **kwargs) -> forms.ModelForm:
         return StudentConsentForm(params, **kwargs)
 
-    def put_error(self, errors: dict) -> HttpResponse:
+    def put_error(self, errors: Dict) -> HttpResponse:
         return HttpResponse(json.dumps(errors), status=400)
 
     def put_success(self, request: HttpRequest, student_form: Union[Form, forms.ModelForm]) -> HttpResponse:
@@ -212,7 +215,7 @@ class StudentAPIView(LoginRequiredMixin, APIView):
     # returns permission denied HTTP message rather than redirect to login
     raise_exception = True
 
-    def form(self, request: HttpRequest, params: dict, **kwargs) -> forms.ModelForm:
+    def form(self, request: HttpRequest, params: Dict, **kwargs) -> forms.ModelForm:
         return StudentForm(params, **kwargs)
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
@@ -238,7 +241,7 @@ class StudentAPIView(LoginRequiredMixin, APIView):
     def post_success(self, request: HttpRequest, form: Form) -> HttpResponse:
         raise NotImplementedError
 
-    def put_error(self, errors: dict) -> HttpResponse:
+    def put_error(self, errors: Dict) -> HttpResponse:
         return HttpResponse(json.dumps(errors), status=400)
 
     def put_success(self, request: HttpRequest, student_form: Union[Form, forms.ModelForm]) -> HttpResponse:
@@ -280,7 +283,7 @@ class StudentAPIView(LoginRequiredMixin, APIView):
 
 
 class StudentSignupAPIView(APIView):
-    def form(self, request: HttpRequest, params: dict) -> forms.ModelForm:
+    def form(self, request: HttpRequest, params: Dict) -> forms.ModelForm:
         return StudentSignUpForm(params)
 
     def post_success(self, request: HttpRequest, student_signup_form: Form) -> HttpResponse:
@@ -302,26 +305,32 @@ class StudentLogoutAPIView(LoginRequiredMixin, View):
 
 
 class StudentLoginAPIView(APIView):
-    def form(self, request: HttpRequest, params: dict) -> Form:
+    def form(self, request: HttpRequest, params: Dict) -> Form:
         return StudentLoginForm(request, params)
 
-    def post_success(self, request: HttpRequest, student_login_form: Form) -> HttpResponse:
+    def post_success(self, request: HttpRequest, student_login_form: Form) -> JsonResponse:
         reader_user = student_login_form.get_user()
+
+        token = jwt_encode_token(
+            reader_user, student_login_form.cleaned_data.get('orig_iat')
+        )
 
         if hasattr(reader_user, 'instructor'):
             return self.post_error({'all': 'Something went wrong.  Please try a different username and password.'})
 
-        login(self.request, reader_user)
+        jwt_payload = jwt_get_json_with_token(token)
 
         student = reader_user.student
 
-        return HttpResponse(json.dumps({'id': student.pk, 'redirect': reverse('student-profile')}))
+        jwt_payload['id'] = student.pk
+
+        return JsonResponse(jwt_payload)
 
 
 class StudentSignUpView(TemplateView):
     template_name = 'student/signup.html'
 
-    def get_context_data(self, **kwargs) -> dict:
+    def get_context_data(self, **kwargs) -> Dict:
         context = super(StudentSignUpView, self).get_context_data(**kwargs)
 
         context['title'] = 'Student Signup'

@@ -38,7 +38,7 @@ class APIView(View):
         if not errors:
             errors['all'] = 'An unspecified error has occurred.'
 
-        return JsonResponse(json.dumps(errors), status=400)
+        return JsonResponse(errors, status=400)
 
     def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         errors = params = {}

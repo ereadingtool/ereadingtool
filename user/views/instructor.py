@@ -110,13 +110,13 @@ class InstructorLoginAPIView(APIView):
     http_method_names = ['post']
 
     def form(self, request: HttpRequest, params: Dict) -> Form:
-        return InstructorLoginForm(params)
+        return InstructorLoginForm(request, params)
 
     def post_success(self, request: HttpRequest, instructor_login_form: Form) -> JsonResponse:
         reader_user = instructor_login_form.get_user()
 
         token = jwt_encode_token(
-            instructor_login_form.cleaned_data['user'], instructor_login_form.cleaned_data.get('orig_iat')
+            reader_user, instructor_login_form.cleaned_data.get('orig_iat')
         )
 
         if hasattr(reader_user, 'student'):
@@ -124,14 +124,9 @@ class InstructorLoginAPIView(APIView):
 
         jwt_payload = jwt_get_json_with_token(token)
 
-        instructor = reader_user.instructor
+        jwt_payload['id'] = reader_user.instructor.pk
 
-        # customize payload re-using only the 'original issued at time' and expiration
-        return JsonResponse({
-            'id': instructor.pk,
-            'orig_iat': jwt_payload['orig_iat'],
-            'exp': jwt_payload['exp']
-        })
+        return JsonResponse(jwt_payload)
 
 
 class InstructorLogoutAPIView(LoginRequiredMixin, View):

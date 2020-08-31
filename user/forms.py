@@ -4,8 +4,6 @@ from django.contrib.auth.forms import AuthenticationForm as BaseAuthenticationFo
 from django.core.validators import validate_email
 from django.utils.translation import ugettext_lazy as _
 
-from jwt_auth.forms import JSONWebTokenForm
-
 from invite.models import Invite
 from text.models import TextDifficulty
 from user.instructor.models import Instructor
@@ -156,11 +154,11 @@ class AuthenticationForm(BaseAuthenticationForm):
         return username
 
 
-class InstructorLoginForm(JSONWebTokenForm):
+class InstructorLoginForm(AuthenticationForm):
     pass
 
 
-class StudentLoginForm(JSONWebTokenForm):
+class StudentLoginForm(AuthenticationForm):
     pass
 
 
