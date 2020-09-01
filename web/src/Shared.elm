@@ -4,7 +4,9 @@ module Shared exposing
     , Msg
     , difficulties
     , init
+    , statuses
     , subscriptions
+    , tags
     , update
     , view
     )
@@ -173,4 +175,36 @@ difficulties =
     , ( "intermediate_high", "Intermediate-High" )
     , ( "advanced_low", "Advanced-Low" )
     , ( "advanced_mid", "Advanced-Mid" )
+    ]
+
+
+tags : List String
+tags =
+    [ "Culture"
+    , "Music"
+    , "Film"
+    , "Literary Arts"
+    , "Visual Arts"
+    , "Sports"
+    , "Internal Affairs"
+    , "History"
+    , "Biography"
+    , "News Briefs"
+    , "Economics/Business"
+    , "Medicine/Health Care"
+    , "Science/Technology"
+    , "Human Interest"
+    , "Society and Societal Trends"
+    , "International Relations"
+    , "Public Policy"
+    , "Other"
+    , "Kazakhstan"
+    ]
+
+
+statuses : List ( String, String )
+statuses =
+    [ ( "unread", "Unread" )
+    , ( "in_progress", "In Progress" )
+    , ( "read", "Read" )
     ]

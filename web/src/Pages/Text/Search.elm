@@ -1,9 +1,9 @@
 module Pages.Text.Search exposing (Model, Msg, Params, page)
 
--- import Profile.Flags as Flags
-
 import Api
-import Browser
+import Api.Config as Config exposing (Config)
+import Api.Endpoint as Endpoint
+import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
 import Help.View exposing (ArrowPlacement(..), ArrowPosition(..))
 import Html exposing (..)
@@ -12,6 +12,7 @@ import Html.Events exposing (onClick)
 import Http exposing (..)
 import InstructorAdmin.Admin.Text as AdminText
 import Ports exposing (clearInputText)
+import Session exposing (Session)
 import Shared
 import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
@@ -31,7 +32,6 @@ import User.Student.Profile as StudentProfile
         ( StudentProfile(..)
         , StudentURIs(..)
         )
-import User.Student.Resource as StudentResource
 import Utils.Date
 import Views
 
@@ -62,7 +62,10 @@ type alias Model =
 
 type SafeModel
     = SafeModel
-        { results : List Text.Model.TextListItem
+        { session : Session
+        , config : Config
+        , navKey : Key
+        , results : List Text.Model.TextListItem
         , profile : User.Profile.Profile
         , textSearch : TextSearch
         , textApiEndpoint : AdminText.TextAPIEndpoint
@@ -70,17 +73,6 @@ type SafeModel
         , errorMessage : Maybe String
         , welcome : Bool
         }
-
-
-
--- type alias Flags =
---     Flags.Flags
---         { text_difficulties : List Text.Model.TextDifficulty
---         , text_statuses : List ( String, String )
---         , textApiEndpoint_url : String
---         , welcome : Bool
---         , text_tags : List String
---         }
 
 
 fakeProfile : Profile
@@ -91,7 +83,7 @@ fakeProfile =
                 { id = Just 0
                 , username = Just "fake name"
                 , email = "test@email.com"
-                , difficulty_preference = Nothing
+                , difficulty_preference = Just ( "intermediate_mid", "Intermediate-Mid" )
                 , difficulties = Shared.difficulties
                 , uris =
                     { logout_uri = "logout"
@@ -108,8 +100,7 @@ init shared { params } =
         tagSearch =
             Text.Search.Tag.new "text_tag_search"
                 (Text.Search.Option.newOptions
-                    -- (List.map (\tag -> ( tag, tag )) flags.text_tags)
-                    (List.map (\tag -> ( tag, tag )) [])
+                    (List.map (\tag -> ( tag, tag )) Shared.tags)
                 )
 
         difficultySearch =
@@ -120,13 +111,10 @@ init shared { params } =
         statusSearch =
             Text.Search.ReadingStatus.new
                 "text_status_search"
-                -- (Text.Search.Option.newOptions flags.text_statuses)
-                (Text.Search.Option.newOptions [])
+                (Text.Search.Option.newOptions Shared.statuses)
 
         textApiEndpoint =
-            -- AdminText.TextAPIEndpoint
-            --     (AdminText.URL flags.textApiEndpointUrl)
-            AdminText.toTextAPIEndpoint "text-api-endpoint"
+            AdminText.toTextAPIEndpoint "ignored-endpoint"
 
         defaultSearch =
             Text.Search.new textApiEndpoint tagSearch difficultySearch statusSearch
@@ -151,7 +139,10 @@ init shared { params } =
             TextSearch.Help.init
     in
     ( SafeModel
-        { results = []
+        { session = shared.session
+        , config = shared.config
+        , navKey = shared.key
+        , results = []
         , profile = fakeProfile
         , textSearch = textSearch
         , textApiEndpoint = textApiEndpoint
@@ -159,8 +150,7 @@ init shared { params } =
         , errorMessage = Nothing
         , welcome = False
         }
-      -- , updateResults textApiEndpoint textSearch
-    , Cmd.none
+    , updateResults shared.session shared.config textSearch
     )
 
 
@@ -190,8 +180,7 @@ update msg (SafeModel model) =
                     Text.Search.addDifficultyToSearch model.textSearch difficulty select
             in
             ( SafeModel { model | textSearch = newTextSearch, results = [] }
-              -- , updateResults model.textApiEndpoint newTextSearch
-            , Cmd.none
+            , updateResults model.session model.config newTextSearch
             )
 
         SelectStatus status selected ->
@@ -206,7 +195,7 @@ update msg (SafeModel model) =
                     Text.Search.setStatusSearch model.textSearch newStatusSearch
             in
             ( SafeModel { model | textSearch = newTextSearch, results = [] }
-            , updateResults model.textApiEndpoint newTextSearch
+            , updateResults model.session model.config newTextSearch
             )
 
         SelectTag tagName selected ->
@@ -226,7 +215,7 @@ update msg (SafeModel model) =
             ( SafeModel { model | textSearch = newTextSearch, results = [] }
             , Cmd.batch
                 [ clearInputText tagSearchInputId
-                , updateResults model.textApiEndpoint newTextSearch
+                , updateResults model.session model.config newTextSearch
                 ]
             )
 
@@ -265,30 +254,24 @@ update msg (SafeModel model) =
         Logout ->
             ( SafeModel model
             , Api.logout ()
-              -- , User.Profile.logout model.profile model.flags.csrftoken LoggedOut
             )
 
 
-updateResults : AdminText.TextAPIEndpoint -> TextSearch -> Cmd Msg
-updateResults textApiEndpoint textSearch =
+updateResults : Session -> Config -> TextSearch -> Cmd Msg
+updateResults session config textSearch =
     let
-        textApiEndpointUrl =
-            AdminText.textEndpointToString textApiEndpoint
-
         filterParams =
             Text.Search.filterParams textSearch
 
-        queryString =
-            String.join "" [ textApiEndpointUrl, "?" ] ++ String.join "&" filterParams
-
-        request =
-            Debug.todo "query text list"
-
-        -- Http.get queryString Text.Decode.textListDecoder
+        queryParameters =
+            List.map Endpoint.filterToStringQueryParam filterParams
     in
     if List.length filterParams > 0 then
-        Debug.todo "text search request"
-        -- Http.send TextSearch request
+        Api.get
+            (Endpoint.textSearch (Config.restApiUrl config) queryParameters)
+            (Session.cred session)
+            TextSearch
+            Text.Decode.textListDecoder
 
     else
         Cmd.none
@@ -303,7 +286,6 @@ view (SafeModel model) =
     { title = "Search Texts"
     , body =
         [ div []
-            -- [ Views.view_authed_header model.profile model.menu_items LogOut
             [ viewHeader (SafeModel model)
             , viewContent (SafeModel model)
             , Views.view_footer
