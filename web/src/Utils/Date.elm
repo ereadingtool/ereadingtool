@@ -1,7 +1,7 @@
 module Utils.Date exposing (monthDayYearFormat)
 
-import Calendar
 import DateTime
+import Time
 
 
 padZero : Int -> Int -> String
@@ -18,11 +18,11 @@ padZero zeros num =
             String.fromInt num
 
 
-hour_min_sec_fmt : DateTime.DateTime -> String
-hour_min_sec_fmt date =
+hourMinSecFmt : DateTime.DateTime -> String
+hourMinSecFmt date =
     String.join " "
         [ String.join ":"
-            [ padZero 1 (DateTime.getHours date - 12)
+            [ padZero 1 (DateTime.getHours date)
             , padZero 1 (DateTime.getMinutes date)
             , padZero 1 (DateTime.getSeconds date)
             ]
@@ -39,12 +39,64 @@ amPMFormat date =
         "PM"
 
 
+
+-- monthDayYearFormat : DateTime.DateTime -> String
+-- monthDayYearFormat date =
+--     List.foldr (++) "" <|
+--         List.map (\s -> s ++ "  ")
+--             [ String.fromInt <| Calendar.monthToInt <| DateTime.getMonth date
+--             , (String.fromInt <| DateTime.getDay date) ++ ","
+--             , hourMinSecFmt date
+--             , String.fromInt <| DateTime.getYear date
+--             ]
+
+
 monthDayYearFormat : DateTime.DateTime -> String
 monthDayYearFormat date =
     List.foldr (++) "" <|
         List.map (\s -> s ++ "  ")
-            [ String.fromInt <| Calendar.monthToInt <| DateTime.getMonth date
+            [ toMonthString <| DateTime.getMonth date
             , (String.fromInt <| DateTime.getDay date) ++ ","
-            , hour_min_sec_fmt date
+            , hourMinSecFmt date
             , String.fromInt <| DateTime.getYear date
             ]
+
+
+toMonthString : Time.Month -> String
+toMonthString month =
+    case month of
+        Time.Jan ->
+            "Jan"
+
+        Time.Feb ->
+            "Feb"
+
+        Time.Mar ->
+            "Mar"
+
+        Time.Apr ->
+            "Apr"
+
+        Time.May ->
+            "May"
+
+        Time.Jun ->
+            "Jun"
+
+        Time.Jul ->
+            "Jul"
+
+        Time.Aug ->
+            "Aug"
+
+        Time.Sep ->
+            "Sep"
+
+        Time.Oct ->
+            "Oct"
+
+        Time.Nov ->
+            "Nov"
+
+        Time.Dec ->
+            "Dec"
