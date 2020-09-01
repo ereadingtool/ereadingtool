@@ -4,12 +4,12 @@ import Api
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
 import Browser.Navigation exposing (Key)
-import Dict exposing (Dict)
+import Dict
 import Help.View exposing (ArrowPlacement(..), ArrowPosition(..))
 import Html exposing (..)
 import Html.Attributes exposing (attribute, class, classList, href, id)
 import Html.Events exposing (onClick)
-import Http exposing (..)
+import Http
 import InstructorAdmin.Admin.Text as AdminText
 import Ports exposing (clearInputText)
 import Session exposing (Session)
@@ -17,15 +17,15 @@ import Shared
 import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
-import Spa.Url as Url exposing (Url)
+import Spa.Url exposing (Url)
 import Text.Decode
-import Text.Model exposing (Text)
+import Text.Model
 import Text.Search exposing (TextSearch)
 import Text.Search.Difficulty exposing (DifficultySearch)
 import Text.Search.Option
 import Text.Search.ReadingStatus exposing (TextReadStatus, TextReadStatusSearch)
 import Text.Search.Tag exposing (TagSearch)
-import TextSearch.Help exposing (TextSearchHelp)
+import TextSearch.Help
 import User.Profile exposing (Profile)
 import User.Student.Profile as StudentProfile
     exposing
@@ -148,7 +148,7 @@ init shared { params } =
         , textApiEndpoint = textApiEndpoint
         , help = textSearchHelp
         , errorMessage = Nothing
-        , welcome = False
+        , welcome = True
         }
     , updateResults shared.session shared.config textSearch
     )
@@ -164,9 +164,9 @@ type Msg
     | SelectStatus TextReadStatus Bool
     | TextSearch (Result Http.Error (List Text.Model.TextListItem))
       -- help messages
-    | CloseHelp TextSearch.Help.TextHelp
-    | PrevHelp
-    | NextHelp
+    | CloseHint TextSearch.Help.TextHelp
+    | PreviousHint
+    | NextHint
       -- site-wide messages
     | Logout
 
@@ -231,24 +231,19 @@ update msg (SafeModel model) =
                     in
                     ( SafeModel { model | errorMessage = Just "An error occurred.  Please contact an administrator." }, Cmd.none )
 
-        CloseHelp helpMessage ->
-            ( SafeModel model
-              -- ( SafeModel { model | help = TextSearch.Help.setVisible model.help helpMessage False }
+        CloseHint helpMessage ->
+            ( SafeModel { model | help = TextSearch.Help.setVisible model.help helpMessage False }
             , Cmd.none
             )
 
-        PrevHelp ->
-            ( SafeModel model
-              -- ( SafeModel { model | help = TextSearch.Help.prev model.help }
-            , Cmd.none
-              -- , TextSearch.Help.scrollToPrevMsg model.help
+        PreviousHint ->
+            ( SafeModel { model | help = TextSearch.Help.prev model.help }
+            , TextSearch.Help.scrollToPrevMsg model.help
             )
 
-        NextHelp ->
-            ( SafeModel model
-              -- ( SafeModel { model | help = TextSearch.Help.next model.help }
-            , Cmd.none
-              -- , TextSearch.Help.scrollToNextMsg model.help
+        NextHint ->
+            ( SafeModel { model | help = TextSearch.Help.next model.help }
+            , TextSearch.Help.scrollToNextMsg model.help
             )
 
         Logout ->
@@ -507,8 +502,6 @@ viewTags tagSearch =
         tags =
             Text.Search.Tag.optionsToDict tagSearch
 
-        -- tag_search_id =
-        --     Text.Search.Tag.inputID tagSearch
         viewTag tagSearchOption =
             let
                 selected =
@@ -603,9 +596,9 @@ viewTopicFilterHint (SafeModel model) =
             { id = TextSearch.Help.popupToID topicFilterHelp
             , visible = TextSearch.Help.isVisible model.help topicFilterHelp
             , text = TextSearch.Help.helpMsg topicFilterHelp
-            , cancel_event = onClick (CloseHelp topicFilterHelp)
-            , next_event = onClick NextHelp
-            , prev_event = onClick PrevHelp
+            , cancel_event = onClick (CloseHint topicFilterHelp)
+            , next_event = onClick NextHint
+            , prev_event = onClick PreviousHint
             , addl_attributes = [ class "difficulty_filter_hint" ]
             , arrow_placement = ArrowUp ArrowLeft
             }
@@ -628,9 +621,9 @@ viewDifficultyFilterHint (SafeModel model) =
             { id = TextSearch.Help.popupToID difficultyFilterHelp
             , visible = TextSearch.Help.isVisible model.help difficultyFilterHelp
             , text = TextSearch.Help.helpMsg difficultyFilterHelp
-            , cancel_event = onClick (CloseHelp difficultyFilterHelp)
-            , next_event = onClick NextHelp
-            , prev_event = onClick PrevHelp
+            , cancel_event = onClick (CloseHint difficultyFilterHelp)
+            , next_event = onClick NextHint
+            , prev_event = onClick PreviousHint
             , addl_attributes = [ class "difficulty_filter_hint" ]
             , arrow_placement = ArrowUp ArrowLeft
             }
@@ -653,9 +646,9 @@ viewStatusFilterHint (SafeModel model) =
             { id = TextSearch.Help.popupToID statusFilterHelp
             , visible = TextSearch.Help.isVisible model.help statusFilterHelp
             , text = TextSearch.Help.helpMsg statusFilterHelp
-            , cancel_event = onClick (CloseHelp statusFilterHelp)
-            , next_event = onClick NextHelp
-            , prev_event = onClick PrevHelp
+            , cancel_event = onClick (CloseHint statusFilterHelp)
+            , next_event = onClick NextHint
+            , prev_event = onClick PreviousHint
             , addl_attributes = [ class "status_filter_hint" ]
             , arrow_placement = ArrowUp ArrowLeft
             }
