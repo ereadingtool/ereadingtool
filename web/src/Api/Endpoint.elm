@@ -1,6 +1,7 @@
 module Api.Endpoint exposing
     ( Endpoint
     , consentToResearch
+    , filterToStringQueryParam
     , forgotPassword
     , instructorSignup
     , request
@@ -8,6 +9,7 @@ module Api.Endpoint exposing
     , studentProfile
     , studentSignup
     , test
+    , textSearch
     , validateUsername
     )
 
@@ -87,6 +89,10 @@ studentSignup baseUrl =
     url baseUrl [ "api", "student", "signup" ] []
 
 
+
+-- PROFILE
+
+
 studentProfile : String -> Int -> Endpoint
 studentProfile baseUrl id =
     url baseUrl [ "api", "student", String.fromInt id ] []
@@ -100,3 +106,34 @@ consentToResearch baseUrl id =
 validateUsername : String -> Endpoint
 validateUsername baseUrl =
     url baseUrl [ "api", "username/" ] []
+
+
+
+-- TEXT SEARCH
+
+
+textSearch : String -> List QueryParameter -> Endpoint
+textSearch baseUrl queryParameters =
+    url baseUrl [ "api", "text/" ] queryParameters
+
+
+
+-- QUERY PARAMS
+
+
+{-| This conversion is meant to provide interoperability with the old way of
+building querystrings. It would be better to build these as QueryParamters
+from the start instead of converting after the fact.
+-}
+filterToStringQueryParam : String -> QueryParameter
+filterToStringQueryParam val =
+    let
+        keyValueList =
+            String.split "=" val
+    in
+    case keyValueList of
+        key :: value :: [] ->
+            Url.Builder.string key value
+
+        _ ->
+            Url.Builder.string "bad" "param"

@@ -509,7 +509,7 @@ viewLowerMenu (SafeModel model) =
             (SafeModel model)
             ++ [ a
                     [ class "link"
-                    , href (Route.toString Route.NotFound)
+                    , href (Route.toString Route.Text__Search)
                     ]
                     [ text "Find a text to read" ]
                ]

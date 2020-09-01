@@ -10,8 +10,8 @@ module Text.Search exposing
     , tagSearch
     )
 
-import Admin.Text
 import Dict exposing (Dict)
+import InstructorAdmin.Admin.Text as AdminText
 import Text.Search.Difficulty exposing (DifficultySearch)
 import Text.Search.Option exposing (SearchOption)
 import Text.Search.ReadingStatus exposing (TextReadStatusSearch)
@@ -19,10 +19,10 @@ import Text.Search.Tag exposing (TagSearch)
 
 
 type TextSearch
-    = TextSearch Admin.Text.TextAPIEndpoint TagSearch DifficultySearch TextReadStatusSearch
+    = TextSearch AdminText.TextAPIEndpoint TagSearch DifficultySearch TextReadStatusSearch
 
 
-new : Admin.Text.TextAPIEndpoint -> TagSearch -> DifficultySearch -> TextReadStatusSearch -> TextSearch
+new : AdminText.TextAPIEndpoint -> TagSearch -> DifficultySearch -> TextReadStatusSearch -> TextSearch
 new endpoint tag_search difficulty_search status_search =
     TextSearch endpoint tag_search difficulty_search status_search
 

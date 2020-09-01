@@ -1,33 +1,83 @@
 module Utils.Date exposing (monthDayYearFormat)
 
-import Calendar
 import DateTime
+import Time
 
 
-padZero : Int -> Int -> String
-padZero zeros num =
-    case String.toInt <| "1" ++ String.repeat (zeros - 1) "0" of
-        Just places ->
-            if num > places then
-                String.fromInt num
-
-            else
-                String.repeat zeros "0" ++ String.fromInt num
-
-        _ ->
-            String.fromInt num
+monthDayYearFormat : DateTime.DateTime -> String
+monthDayYearFormat date =
+    String.join " "
+        [ toMonthString <| DateTime.getMonth date
+        , (String.fromInt <| DateTime.getDay date) ++ ","
+        , hourMinSecFormat date
+        , String.fromInt <| DateTime.getYear date
+        ]
 
 
-hour_min_sec_fmt : DateTime.DateTime -> String
-hour_min_sec_fmt date =
+toMonthString : Time.Month -> String
+toMonthString month =
+    case month of
+        Time.Jan ->
+            "Jan"
+
+        Time.Feb ->
+            "Feb"
+
+        Time.Mar ->
+            "Mar"
+
+        Time.Apr ->
+            "Apr"
+
+        Time.May ->
+            "May"
+
+        Time.Jun ->
+            "Jun"
+
+        Time.Jul ->
+            "Jul"
+
+        Time.Aug ->
+            "Aug"
+
+        Time.Sep ->
+            "Sep"
+
+        Time.Oct ->
+            "Oct"
+
+        Time.Nov ->
+            "Nov"
+
+        Time.Dec ->
+            "Dec"
+
+
+hourMinSecFormat : DateTime.DateTime -> String
+hourMinSecFormat date =
     String.join " "
         [ String.join ":"
-            [ padZero 1 (DateTime.getHours date - 12)
-            , padZero 1 (DateTime.getMinutes date)
-            , padZero 1 (DateTime.getSeconds date)
+            [ String.fromInt (toTwelveHourClock (DateTime.getHours date))
+            , padZero (DateTime.getMinutes date)
+            , padZero (DateTime.getSeconds date)
             ]
         , amPMFormat date
         ]
+
+
+padZero : Int -> String
+padZero num =
+    if num < 10 then
+        "0" ++ String.fromInt num
+
+    else
+        String.fromInt num
+
+
+toTwelveHourClock : Int -> Int
+toTwelveHourClock hour =
+    modBy 12 (hour + 11) + 1
 
 
 amPMFormat : DateTime.DateTime -> String
@@ -37,14 +87,3 @@ amPMFormat date =
 
     else
         "PM"
-
-
-monthDayYearFormat : DateTime.DateTime -> String
-monthDayYearFormat date =
-    List.foldr (++) "" <|
-        List.map (\s -> s ++ "  ")
-            [ String.fromInt <| Calendar.monthToInt <| DateTime.getMonth date
-            , (String.fromInt <| DateTime.getDay date) ++ ","
-            , hour_min_sec_fmt date
-            , String.fromInt <| DateTime.getYear date
-            ]
