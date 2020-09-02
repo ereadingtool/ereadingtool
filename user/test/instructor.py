@@ -78,7 +78,7 @@ class TestInstructorUser(TestUserBase, TestCase):
         self.assertEquals(resp.status_code, 403)
 
     def test_instructor_invite_can_expire(self):
-        admin_client = self.login(Client(), user=self.instructor_admin_user, password=self.instructor_admin_password)
+        admin_client = self.instructor_login(Client(), user=self.instructor_admin_user, password=self.instructor_admin_password)
 
         invitee_email = 'test-invite@test.com'
 
@@ -108,7 +108,7 @@ class TestInstructorUser(TestUserBase, TestCase):
         self.assertIn('invite_code', resp_content)
 
     def test_instructor_invite(self):
-        admin_client = self.login(Client(), user=self.instructor_admin_user, password=self.instructor_admin_password)
+        admin_client = self.instructor_login(Client(), user=self.instructor_admin_user, password=self.instructor_admin_password)
 
         invitee_email = 'test-invite@test.com'
 

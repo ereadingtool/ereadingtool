@@ -8,6 +8,7 @@ from django.http import HttpResponse, HttpRequest, HttpResponseForbidden
 from django.urls import reverse
 
 from django.views.generic import TemplateView, View
+from django.http import JsonResponse
 
 from user.forms import InstructorSignUpForm, InstructorLoginForm, InstructorInviteForm
 
@@ -17,6 +18,8 @@ from user.views.api import APIView
 from user.views.mixin import ProfileView
 
 from mixins.view import NoAuthElmLoadJsView, ElmLoadJsInstructorBaseView
+
+from jwt_auth.views import jwt_encode_token, jwt_get_json_with_token
 
 
 Form = TypeVar('Form', bound=forms.Form)
@@ -104,20 +107,26 @@ class InstructorSignupAPIView(APIView):
 
 
 class InstructorLoginAPIView(APIView):
+    http_method_names = ['post']
+
     def form(self, request: HttpRequest, params: Dict) -> Form:
         return InstructorLoginForm(request, params)
 
-    def post_success(self, request: HttpRequest, instructor_login_form: Form) -> HttpResponse:
+    def post_success(self, request: HttpRequest, instructor_login_form: Form) -> JsonResponse:
         reader_user = instructor_login_form.get_user()
+
+        token = jwt_encode_token(
+            reader_user, instructor_login_form.cleaned_data.get('orig_iat')
+        )
 
         if hasattr(reader_user, 'student'):
             return self.post_error({'all': 'Something went wrong.  Please try a different username and password.'})
 
-        login(self.request, reader_user)
+        jwt_payload = jwt_get_json_with_token(token)
 
-        instructor = reader_user.instructor
+        jwt_payload['id'] = reader_user.instructor.pk
 
-        return HttpResponse(json.dumps({'id': instructor.pk, 'redirect': reverse('instructor-profile')}))
+        return JsonResponse(jwt_payload)
 
 
 class InstructorLogoutAPIView(LoginRequiredMixin, View):

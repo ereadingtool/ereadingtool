@@ -72,17 +72,28 @@ class TestUser(TestCase):
 
         return user, user_passwd, instructor
 
-    def login(self, client: Client,
+    def instructor_login(self, client: Client,
+              user: Optional[ReaderUser] = None,
+              username: Optional[AnyStr] = None,
+              password: Optional[AnyStr] = None) -> Client:
+        return self.login(client, reverse_lazy('api-instructor-login'), user, username, password)
+
+    def student_login(self, client: Client,
+              user: Optional[ReaderUser] = None,
+              username: Optional[AnyStr] = None,
+              password: Optional[AnyStr] = None) -> Client:
+        return self.login(client, reverse_lazy('api-student-login'), user, username, password)
+
+    def login(self, client: Client, endpoint,
               user: Optional[ReaderUser] = None,
               username: Optional[AnyStr] = None,
               password: Optional[AnyStr] = None) -> Client:
 
         # get JWT token
-        login_resp = client.post(reverse_lazy('jwt-token-auth'),
-                                          json.dumps({
-                                           'username': username or user.username,
-                                           'password': password
-                                          }), content_type='application/json')
+        login_resp = client.post(endpoint, json.dumps({
+            'username': username or user.username,
+            'password': password
+        }), content_type='application/json')
 
         login_resp_json = json.loads(login_resp.content.decode('utf8'))
 
@@ -103,7 +114,7 @@ class TestUser(TestCase):
         else:
             user, user_passwd = user_and_pass
 
-        client = self.login(client, user=user, password=user_passwd)
+        client = self.instructor_login(client, user=user, password=user_passwd)
 
         return client
 
@@ -114,7 +125,7 @@ class TestUser(TestCase):
         else:
             user, user_passwd = user_and_pass
 
-        client = self.login(client, user=user, password=user_passwd)
+        client = self.student_login(client, user=user, password=user_passwd)
 
         return client
 
