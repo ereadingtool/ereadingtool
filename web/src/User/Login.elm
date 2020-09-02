@@ -14,6 +14,7 @@ import Utils
 type alias LoginParams =
     { username : String
     , password : String
+    , role : String
     }
 
 
@@ -28,6 +29,7 @@ login loginParams =
             Encode.object
                 [ ( "username", Encode.string loginParams.username )
                 , ( "password", Encode.string loginParams.password )
+                , ( "role", Encode.string loginParams.role )
                 ]
     in
     Api.login creds

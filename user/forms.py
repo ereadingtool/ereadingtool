@@ -1,20 +1,14 @@
 from django import forms
-from django.db.models import Sum, F, DateTimeField
-from django.db.models.functions import Now
-
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import AuthenticationForm as BaseAuthenticationForm
 from django.core.validators import validate_email
-
 from django.utils.translation import ugettext_lazy as _
 
-from text.models import TextDifficulty
-from user.models import ReaderUser
-
-from user.instructor.models import Instructor
-from user.student.models import Student
-
 from invite.models import Invite
+from text.models import TextDifficulty
+from user.instructor.models import Instructor
+from user.models import ReaderUser
+from user.student.models import Student
 
 
 class SignUpForm(forms.ModelForm):

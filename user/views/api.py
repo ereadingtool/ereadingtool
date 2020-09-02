@@ -1,10 +1,10 @@
 import json
 
 from django import forms
-from django.http import HttpResponse, HttpRequest
+from django.http import JsonResponse, HttpRequest
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
-from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import View
 
@@ -13,11 +13,11 @@ class APIView(View):
     def form(self, request: HttpRequest, params: dict) -> 'forms.Form':
         raise NotImplementedError
 
-    def post_success(self, request: HttpRequest, form: 'forms.Form') -> HttpResponse:
+    def post_success(self, request: HttpRequest, form: 'forms.Form') -> JsonResponse:
         raise NotImplementedError
 
     @method_decorator(sensitive_post_parameters())
-    @method_decorator(csrf_protect)
+    @method_decorator(csrf_exempt)
     @method_decorator(never_cache)
     def dispatch(self, request, *args, **kwargs):
         return super(APIView, self).dispatch(request, *args, **kwargs)
@@ -31,16 +31,16 @@ class APIView(View):
 
         return errors
 
-    def post_json_error(self, error: json.JSONDecodeError) -> HttpResponse:
-        return HttpResponse(errors={"errors": {'json': str(error)}}, status=400)
+    def post_json_error(self, error: json.JSONDecodeError) -> JsonResponse:
+        return JsonResponse(errors={"errors": {'json': str(error)}}, status=400)
 
-    def post_error(self, errors: dict) -> HttpResponse:
+    def post_error(self, errors: dict) -> JsonResponse:
         if not errors:
             errors['all'] = 'An unspecified error has occurred.'
 
-        return HttpResponse(json.dumps(errors), status=400)
+        return JsonResponse(errors, status=400)
 
-    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+    def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         errors = params = {}
 
         try:

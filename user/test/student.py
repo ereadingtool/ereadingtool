@@ -206,7 +206,7 @@ class TestStudentUser(TestData, TestUser, TestCase):
 
         student_anonymous_client = self.test_student_signup(student_signup_params)
 
-        student_client = self.login(
+        student_client = self.student_login(
             student_anonymous_client,
             username=student_signup_params['email'], password=student_signup_params['password']
         )
