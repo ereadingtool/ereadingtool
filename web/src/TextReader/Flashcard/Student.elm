@@ -1,8 +1,8 @@
 module TextReader.Flashcard.Student exposing (..)
 
 import Dict exposing (Dict)
-import InstructorAdmin.Text.Translations.Decode as TranslationsDecode exposing (Flashcards, TextWord)
-import Student.Profile exposing (StudentProfile)
+import Text.Translations.Decode as TranslationsDecode exposing (Flashcards, TextWord)
+import User.Student.Profile exposing (StudentProfile)
 import TextReader.TextWord
 
 

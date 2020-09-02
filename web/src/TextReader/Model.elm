@@ -3,7 +3,7 @@ module TextReader.Model exposing (..)
 import Dict exposing (Dict)
 import InstructorAdmin.Text.Translations exposing (Id, Instance, Phrase)
 import Menu.Items
-import Profile.Flags as Flags
+-- import Profile.Flags as Flags
 import Text.Resource
 import TextReader.Answer.Model exposing (Answer, AnswerCorrect, TextAnswer)
 import TextReader.Section.Model exposing (Section)
@@ -13,11 +13,11 @@ import User.Profile
 import User.Profile.TextReader.Flashcards
 
 
-type Progress
-    = Init
-    | ViewIntro
-    | ViewSection Section
-    | Complete TextScores
+-- type Progress
+--     = Init
+--     | ViewIntro
+--     | ViewSection Section
+--     | Complete TextScores
 
 
 type alias Exception =
@@ -123,23 +123,23 @@ type alias TextScores =
     }
 
 
-type alias Flags =
-    Flags.Flags
-        { text_id : Int
-        , text_url : String
-        , flashcards : List TextReader.TextWord.TextWordParams
-        , text_reader_ws_addr : String
-        }
+-- type alias Flags =
+--     Flags.Flags
+--         { text_id : Int
+--         , text_url : String
+--         , flashcards : List TextReader.TextWord.TextWordParams
+--         , text_reader_ws_addr : String
+--         }
 
 
-type alias Model =
-    { text : Text
-    , text_url : Text.Resource.TextReadingURL
-    , profile : User.Profile.Profile
-    , menu_items : Menu.Items.MenuItems
-    , flashcard : User.Profile.TextReader.Flashcards.ProfileFlashcards
-    , progress : Progress
-    , gloss : Gloss
-    , exception : Maybe Exception
-    , flags : Flags
-    }
+-- type alias Model =
+--     { text : Text
+--     , text_url : Text.Resource.TextReadingURL
+--     , profile : User.Profile.Profile
+--     , menu_items : Menu.Items.MenuItems
+--     , flashcard : User.Profile.TextReader.Flashcards.ProfileFlashcards
+--     , progress : Progress
+--     , gloss : Gloss
+--     , exception : Maybe Exception
+--     , flags : Flags
+--     }
