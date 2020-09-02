@@ -50,7 +50,7 @@ type alias Model =
 init : Shared.Model -> Url Params -> ( Model, Cmd Msg )
 init shared { params } =
     ( { role = Instructor
-      , loginParams = LoginParams "" ""
+      , loginParams = LoginParams "" "" "instructor"
       , errors = Dict.fromList []
       }
     , Cmd.none
