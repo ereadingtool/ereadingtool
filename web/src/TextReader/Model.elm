@@ -1,9 +1,10 @@
 module TextReader.Model exposing (..)
 
+-- import Profile.Flags as Flags
+
 import Dict exposing (Dict)
 import InstructorAdmin.Text.Translations exposing (Id, Instance, Phrase)
 import Menu.Items
--- import Profile.Flags as Flags
 import Text.Resource
 import TextReader.Answer.Model exposing (Answer, AnswerCorrect, TextAnswer)
 import TextReader.Section.Model exposing (Section)
@@ -11,6 +12,7 @@ import TextReader.Text.Model exposing (Text)
 import TextReader.TextWord
 import User.Profile
 import User.Profile.TextReader.Flashcards
+
 
 
 -- type Progress
@@ -98,21 +100,21 @@ selected reader_word gls =
     Dict.member (identifier reader_word) gls
 
 
-type CmdReq
-    = NextReq
-    | PrevReq
-    | AnswerReq TextAnswer
-    | AddToFlashcardsReq TextReaderWord
-    | RemoveFromFlashcardsReq TextReaderWord
 
-
-type CmdResp
-    = StartResp Text
-    | InProgressResp Section
-    | CompleteResp TextScores
-    | AddToFlashcardsResp TextReader.TextWord.TextWord
-    | RemoveFromFlashcardsResp TextReader.TextWord.TextWord
-    | ExceptionResp Exception
+-- type CmdReq
+--     = NextReq
+--     | PrevReq
+--     | AnswerReq TextAnswer
+--     | AddToFlashcardsReq TextReaderWord
+--     | RemoveFromFlashcardsReq TextReaderWord
+--
+-- type CmdResp
+--     = StartResp Text
+--     | InProgressResp Section
+--     | CompleteResp TextScores
+--     | AddToFlashcardsResp TextReader.TextWord.TextWord
+--     | RemoveFromFlashcardsResp TextReader.TextWord.TextWord
+--     | ExceptionResp Exception
 
 
 type alias TextScores =
@@ -123,6 +125,7 @@ type alias TextScores =
     }
 
 
+
 -- type alias Flags =
 --     Flags.Flags
 --         { text_id : Int
@@ -130,8 +133,6 @@ type alias TextScores =
 --         , flashcards : List TextReader.TextWord.TextWordParams
 --         , text_reader_ws_addr : String
 --         }
-
-
 -- type alias Model =
 --     { text : Text
 --     , text_url : Text.Resource.TextReadingURL

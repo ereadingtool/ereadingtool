@@ -1,4 +1,10 @@
-module Api.Config exposing (Config, restApiUrl, configDecoder, init)
+module Api.Config exposing
+    ( Config
+    , configDecoder
+    , init
+    , restApiUrl
+    , websocketBaseUrl
+    )
 
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (custom, required)
@@ -10,6 +16,7 @@ type Config
 
 type alias Internals =
     { restApiUrl : String
+    , websocketBaseUrl : String
     }
 
 
@@ -22,12 +29,18 @@ init maybeConfig =
         Nothing ->
             Config
                 { restApiUrl = "https://api.stepstoadvancedreading.org"
+                , websocketBaseUrl = "wss://api.stepstoadvancedreading.org"
                 }
 
 
 restApiUrl : Config -> String
 restApiUrl (Config internals) =
     internals.restApiUrl
+
+
+websocketBaseUrl : Config -> String
+websocketBaseUrl (Config internals) =
+    internals.websocketBaseUrl
 
 
 
@@ -44,3 +57,4 @@ internalsDecoder : Decoder Internals
 internalsDecoder =
     Decode.succeed Internals
         |> required "restApiUrl" Decode.string
+        |> required "websocketBaseUrl" Decode.string

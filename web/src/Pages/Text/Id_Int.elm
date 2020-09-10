@@ -1,12 +1,9 @@
 module Pages.Text.Id_Int exposing (Model, Msg, Params, page)
 
--- import Http
-
 import Api
 import Api.Config as Config exposing (Config)
-import Api.Endpoint as Endpoint
+import Api.WebSocket as WebSocket
 import Array exposing (Array)
-import Browser
 import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
 import Html exposing (..)
@@ -15,10 +12,10 @@ import Html.Events exposing (onClick, onMouseLeave)
 import Html.Parser
 import Html.Parser.Util
 import Json.Decode
-import Menu.Items
-import Menu.Logout
-import Menu.Msg as MenuMsg
+import Json.Decode.Pipeline exposing (required)
+import Json.Encode as Encode exposing (Value)
 import Ports
+import Role exposing (Role(..))
 import Session exposing (Session)
 import Shared
 import Spa.Document exposing (Document)
@@ -27,20 +24,16 @@ import Spa.Page as Page exposing (Page)
 import Spa.Url as Url exposing (Url)
 import Text.Section.Words.Tag
 import TextReader.Answer.Model exposing (TextAnswer)
-import TextReader.Decode
 import TextReader.Model exposing (..)
-import TextReader.Msg exposing (Msg(..))
 import TextReader.Question.Model exposing (TextQuestion)
+import TextReader.Section.Decode
 import TextReader.Section.Model exposing (Section, Words)
+import TextReader.Text.Decode
 import TextReader.Text.Model exposing (Text)
 import TextReader.TextWord
-import TextReader.Update exposing (..)
-import TextReader.View exposing (..)
-import TextReader.WebSocket
 import User.Profile exposing (Profile)
 import User.Profile.TextReader.Flashcards
 import Views
-import WebSocket
 
 
 page : Page Params Model Msg
@@ -76,16 +69,14 @@ type alias Model =
 
 type SafeModel
     = SafeModel
-        { text : Text
+        { session : Session
+        , config : Config
+        , text : Text
         , profile : User.Profile.Profile
         , flashcard : User.Profile.TextReader.Flashcards.ProfileFlashcards
         , progress : Progress
         , gloss : Gloss
         , exception : Maybe Exception
-
-        -- , text_url : Text.Resource.TextReadingURL
-        -- , flags : Flags
-        -- , menu_items : Menu.Items.MenuItems
         }
 
 
@@ -122,26 +113,24 @@ init : Shared.Model -> Url Params -> ( SafeModel, Cmd Msg )
 init shared { params } =
     let
         profile =
-            --         User.Profile.initProfile flags
+            -- User.Profile.initProfile flags
             fakeProfile
 
-        --     textReaderAddr =
-        --         TextReader.WebSocket.toAddress flags.text_reader_ws_addr
-        text_words_with_flashcards =
+        textWordsWithFlashcards =
             -- List.map TextReader.TextWord.newFromParams flags.flashcards
             List.map TextReader.TextWord.newFromParams []
 
-        --     menuItems =
-        --         Menu.Items.initMenuItems flags
         flashcards =
             User.Profile.TextReader.Flashcards.initFlashcards
                 profile
                 (Dict.fromList <|
-                    List.map (\text_word -> ( TextReader.TextWord.phrase text_word, text_word )) text_words_with_flashcards
+                    List.map (\textWord -> ( TextReader.TextWord.phrase textWord, textWord )) textWordsWithFlashcards
                 )
     in
     ( SafeModel
-        { text = TextReader.Text.Model.emptyText
+        { session = shared.session
+        , config = shared.config
+        , text = TextReader.Text.Model.emptyText
         , gloss = Dict.empty
         , profile = profile
         , flashcard = flashcards
@@ -149,13 +138,22 @@ init shared { params } =
 
         --   , progress = Init
         , progress = ViewIntro
-
-        --   , text_url = Text.Resource.TextReadingURL (Text.Resource.URL flags.text_url)
-        --   , flags = flags
-        --   , menu_items = menuItems
         }
-      -- , TextReader.WebSocket.connect textReaderAddr ""
-    , Cmd.none
+    , Api.websocketConnect
+        { name = "textreader"
+        , address =
+            Config.websocketBaseUrl shared.config
+                ++ (case shared.role of
+                        Student ->
+                            "/student"
+
+                        Instructor ->
+                            "/instructor"
+                   )
+                ++ "/text_read/"
+                ++ String.fromInt params.id
+                ++ "/"
+        }
     )
 
 
@@ -174,16 +172,36 @@ type Msg
     | ToggleGloss TextReaderWord
     | AddToFlashcards TextReaderWord
     | RemoveFromFlashcards TextReaderWord
-      -- | WebSocketResp (Result Json.Decode.Error WebSocket.WebSocketMsg)
+    | WebSocketResponse (Result Json.Decode.Error WebSocket.WebSocketMsg)
     | Logout
+
+
+type CommandRequest
+    = NextRequest
+    | PreviousRequest
+    | AnswerRequest TextAnswer
+    | AddToFlashcardsRequest TextReaderWord
+    | RemoveFromFlashcardsRequest TextReaderWord
+
+
+type CommandResponse
+    = StartResponse Text
+    | InProgressResponse Section
+    | CompleteResponse TextScores
+    | AddToFlashcardsResponse TextReader.TextWord.TextWord
+    | RemoveFromFlashcardsResponse TextReader.TextWord.TextWord
+    | ExceptionResponse Exception
 
 
 update : Msg -> SafeModel -> ( SafeModel, Cmd Msg )
 update msg (SafeModel model) =
     let
         sendCommand =
-            \cmdRequest ->
-                TextReader.WebSocket.sendCommand cmdRequest
+            \commandRequest ->
+                Api.websocketSend
+                    { name = "textreader"
+                    , content = encodeCommand commandRequest
+                    }
     in
     case msg of
         Gloss reader_word ->
@@ -203,17 +221,17 @@ update msg (SafeModel model) =
 
         AddToFlashcards reader_word ->
             ( SafeModel model
-            , sendCommand <| AddToFlashcardsReq reader_word
+            , sendCommand <| AddToFlashcardsRequest reader_word
             )
 
         RemoveFromFlashcards reader_word ->
             ( SafeModel model
-            , sendCommand <| RemoveFromFlashcardsReq reader_word
+            , sendCommand <| RemoveFromFlashcardsRequest reader_word
             )
 
-        Select text_answer ->
+        Select textAnswer ->
             ( SafeModel model
-            , sendCommand <| AnswerReq text_answer
+            , sendCommand <| AnswerRequest textAnswer
             )
 
         ViewFeedback _ _ _ _ ->
@@ -229,58 +247,175 @@ update msg (SafeModel model) =
 
         NextSection ->
             ( SafeModel model
-            , sendCommand NextReq
+            , sendCommand NextRequest
             )
 
         PrevSection ->
             ( SafeModel model
-            , sendCommand PrevReq
+            , sendCommand PreviousRequest
             )
 
-        -- WebSocketResp str ->
-        -- TextReader.Update.handleWSResp model str
-        -- handleWSResp (SafeModel model) str
+        WebSocketResponse (Ok response) ->
+            handleWebsocketResponse (SafeModel model) response
+
+        WebSocketResponse (Err _) ->
+            ( SafeModel model, Cmd.none )
+
         Logout ->
             ( SafeModel model
-              -- , User.Profile.logout model.profile model.flags.csrftoken LoggedOut
             , Api.logout ()
             )
 
 
-routeCmdResp : SafeModel -> CmdResp -> ( SafeModel, Cmd Msg )
-routeCmdResp (SafeModel model) cmd_resp =
-    case cmd_resp of
-        StartResp text ->
+routeCommandResponse : SafeModel -> CommandResponse -> ( SafeModel, Cmd Msg )
+routeCommandResponse (SafeModel model) commandResponse =
+    case commandResponse of
+        StartResponse text ->
             ( SafeModel { model | text = text, exception = Nothing, progress = ViewIntro }, Cmd.none )
 
-        InProgressResp section ->
+        InProgressResponse section ->
             ( SafeModel { model | exception = Nothing, progress = ViewSection section }, Cmd.none )
 
-        CompleteResp text_scores ->
+        CompleteResponse text_scores ->
             ( SafeModel { model | exception = Nothing, progress = Complete text_scores }, Cmd.none )
 
-        AddToFlashcardsResp text_word ->
-            ( SafeModel { model | flashcard = User.Profile.TextReader.Flashcards.addFlashcard model.flashcard text_word }, Cmd.none )
+        AddToFlashcardsResponse textWord ->
+            ( SafeModel { model | flashcard = User.Profile.TextReader.Flashcards.addFlashcard model.flashcard textWord }, Cmd.none )
 
-        RemoveFromFlashcardsResp text_word ->
-            ( SafeModel { model | flashcard = User.Profile.TextReader.Flashcards.removeFlashcard model.flashcard text_word }, Cmd.none )
+        RemoveFromFlashcardsResponse textWord ->
+            ( SafeModel { model | flashcard = User.Profile.TextReader.Flashcards.removeFlashcard model.flashcard textWord }, Cmd.none )
 
-        ExceptionResp exception ->
+        ExceptionResponse exception ->
             ( SafeModel { model | exception = Just exception }, Cmd.none )
 
 
-handleWSResp : SafeModel -> String -> ( SafeModel, Cmd Msg )
-handleWSResp (SafeModel model) str =
-    case Json.Decode.decodeString TextReader.Decode.wsRespDecoder str of
-        Ok cmd_resp ->
-            routeCmdResp (SafeModel model) cmd_resp
+handleWebsocketResponse : SafeModel -> WebSocket.WebSocketMsg -> ( SafeModel, Cmd Msg )
+handleWebsocketResponse (SafeModel model) message =
+    case message of
+        WebSocket.Data { name, data } ->
+            case Json.Decode.decodeString wsRespDecoder data of
+                Ok commandResponse ->
+                    routeCommandResponse (SafeModel model) commandResponse
 
-        Err err ->
+                Err err ->
+                    let
+                        _ =
+                            Debug.log "websocket decode error" err
+                    in
+                    ( SafeModel model, Cmd.none )
+
+        WebSocket.Error err ->
             let
                 _ =
-                    Debug.log "websocket decode error" err
+                    Debug.log "server error response" err
             in
             ( SafeModel model, Cmd.none )
+
+
+
+-- ENCODE
+
+
+encodeCommand : CommandRequest -> Value
+encodeCommand commandRequest =
+    case commandRequest of
+        NextRequest ->
+            Encode.object
+                [ ( "command", Encode.string "next" )
+                ]
+
+        PreviousRequest ->
+            Encode.object
+                [ ( "command", Encode.string "prev" )
+                ]
+
+        AnswerRequest textAnswer ->
+            let
+                textReaderAnswer =
+                    TextReader.Answer.Model.answer textAnswer
+            in
+            Encode.object
+                [ ( "command", Encode.string "answer" )
+                , ( "answer_id", Encode.int textReaderAnswer.id )
+                ]
+
+        AddToFlashcardsRequest reader_word ->
+            Encode.object
+                [ ( "command", Encode.string "add_flashcard_phrase" )
+                , ( "instance", Encode.string (String.fromInt (TextReader.Model.instance reader_word)) )
+                , ( "phrase", Encode.string (TextReader.Model.phrase reader_word) )
+                ]
+
+        RemoveFromFlashcardsRequest reader_word ->
+            Encode.object
+                [ ( "command", Encode.string "remove_flashcard_phrase" )
+                , ( "instance", Encode.string (String.fromInt (TextReader.Model.instance reader_word)) )
+                , ( "phrase", Encode.string (TextReader.Model.phrase reader_word) )
+                ]
+
+
+
+-- DECODE
+
+
+wsRespDecoder : Json.Decode.Decoder CommandResponse
+wsRespDecoder =
+    Json.Decode.field "command" Json.Decode.string |> Json.Decode.andThen commandRespDecoder
+
+
+commandRespDecoder : String -> Json.Decode.Decoder CommandResponse
+commandRespDecoder cmdStr =
+    case cmdStr of
+        "intro" ->
+            startDecoder
+
+        "in_progress" ->
+            sectionDecoder InProgressResponse
+
+        "exception" ->
+            Json.Decode.map ExceptionResponse (Json.Decode.field "result" exceptionDecoder)
+
+        "complete" ->
+            Json.Decode.map CompleteResponse (Json.Decode.field "result" textScoresDecoder)
+
+        "add_flashcard_phrase" ->
+            Json.Decode.map
+                AddToFlashcardsResponse
+                (Json.Decode.field "result" TextReader.Section.Decode.textWordInstanceDecoder)
+
+        "remove_flashcard_phrase" ->
+            Json.Decode.map
+                RemoveFromFlashcardsResponse
+                (Json.Decode.field "result" TextReader.Section.Decode.textWordInstanceDecoder)
+
+        _ ->
+            Json.Decode.fail ("Command " ++ cmdStr ++ " not supported")
+
+
+startDecoder : Json.Decode.Decoder CommandResponse
+startDecoder =
+    Json.Decode.map StartResponse (Json.Decode.field "result" TextReader.Text.Decode.textDecoder)
+
+
+sectionDecoder : (Section -> CommandResponse) -> Json.Decode.Decoder CommandResponse
+sectionDecoder commandResponse =
+    Json.Decode.map commandResponse (Json.Decode.field "result" TextReader.Section.Decode.sectionDecoder)
+
+
+exceptionDecoder : Json.Decode.Decoder Exception
+exceptionDecoder =
+    Json.Decode.succeed Exception
+        |> required "code" Json.Decode.string
+        |> required "error_msg" Json.Decode.string
+
+
+textScoresDecoder : Json.Decode.Decoder TextScores
+textScoresDecoder =
+    Json.Decode.succeed TextScores
+        |> required "num_of_sections" Json.Decode.int
+        |> required "complete_sections" Json.Decode.int
+        |> required "section_scores" Json.Decode.int
+        |> required "possible_section_scores" Json.Decode.int
 
 
 
@@ -288,13 +423,13 @@ handleWSResp (SafeModel model) str =
 
 
 view : SafeModel -> Document Msg
-view safeModel =
+view (SafeModel model) =
     -- TODO: change title to to title of text
     { title = "Text"
     , body =
         [ div []
-            [ viewHeader safeModel
-            , viewContent safeModel
+            [ viewHeader (SafeModel model)
+            , viewContent (SafeModel model)
             , Views.view_footer
             ]
         ]
@@ -307,20 +442,20 @@ viewContent (SafeModel model) =
         content =
             case model.progress of
                 ViewIntro ->
-                    [ view_text_introduction model.text
+                    [ viewTextIntroduction model.text
                     , div [ id "nav", onClick NextSection ]
                         [ div [ class "start-btn" ] [ Html.text "Start" ]
                         ]
                     ]
 
                 ViewSection section ->
-                    [ view_text_section (SafeModel model) section
-                    , view_exceptions (SafeModel model)
-                    , div [ id "nav" ] [ view_prev_btn, view_next_btn ]
+                    [ viewTextSection (SafeModel model) section
+                    , viewExceptions (SafeModel model)
+                    , div [ id "nav" ] [ viewPreviousButton, viewNextButton ]
                     ]
 
                 Complete text_scores ->
-                    [ view_text_complete (SafeModel model) text_scores ]
+                    [ viewTextComplete (SafeModel model) text_scores ]
 
                 _ ->
                     []
@@ -328,108 +463,108 @@ viewContent (SafeModel model) =
     div [ id "text-section" ] content
 
 
-view_text_introduction : Text -> Html Msg
-view_text_introduction text =
+viewTextIntroduction : Text -> Html Msg
+viewTextIntroduction text =
     div [ attribute "id" "text-intro" ]
         -- (Html.Parser.Util.toVirtualDom <| Html.Parser.parse text.introduction)
         []
 
 
-view_text_section : SafeModel -> Section -> Html Msg
-view_text_section (SafeModel model) text_reader_section =
+viewTextSection : SafeModel -> Section -> Html Msg
+viewTextSection (SafeModel model) textReaderSection =
     let
-        text_section =
-            TextReader.Section.Model.textSection text_reader_section
+        textSection =
+            TextReader.Section.Model.textSection textReaderSection
 
-        text_body_vdom =
+        textBodyVdom =
             Text.Section.Words.Tag.tagWordsAndToVDOM
-                (tagWord (SafeModel model) text_reader_section)
-                (isPartOfCompoundWord text_reader_section)
-                -- (HtmlParser.parse text_section.body)
+                (tagWord (SafeModel model) textReaderSection)
+                (isPartOfCompoundWord textReaderSection)
+                -- (HtmlParser.parse textSection.body)
                 []
 
         section_title =
-            "Section " ++ String.fromInt (text_section.order + 1) ++ "/" ++ String.fromInt text_section.num_of_sections
+            "Section " ++ String.fromInt (textSection.order + 1) ++ "/" ++ String.fromInt textSection.num_of_sections
     in
     div [ id "text-body" ] <|
         [ div [ id "title" ] [ Html.text section_title ]
-        , div [ id "body" ] text_body_vdom
-        , view_questions text_reader_section
+        , div [ id "body" ] textBodyVdom
+        , viewQuestions textReaderSection
         ]
 
 
-view_questions : Section -> Html Msg
-view_questions section =
+viewQuestions : Section -> Html Msg
+viewQuestions section =
     let
         text_reader_questions =
             TextReader.Section.Model.questions section
     in
-    div [ id "questions" ] (Array.toList <| Array.map (view_question section) text_reader_questions)
+    div [ id "questions" ] (Array.toList <| Array.map (viewQuestion section) text_reader_questions)
 
 
-view_question : Section -> TextQuestion -> Html Msg
-view_question text_section text_question =
+viewQuestion : Section -> TextQuestion -> Html Msg
+viewQuestion textSection textQuestion =
     let
         question =
-            TextReader.Question.Model.question text_question
+            TextReader.Question.Model.question textQuestion
 
         answers =
-            TextReader.Question.Model.answers text_question
+            TextReader.Question.Model.answers textQuestion
 
-        text_question_id =
+        textQuestionId =
             String.join "_" [ "question", String.fromInt question.order ]
     in
-    div [ class "question", attribute "id" text_question_id ]
+    div [ class "question", attribute "id" textQuestionId ]
         [ div [ class "question-body" ] [ Html.text question.body ]
         , div [ class "answers" ]
-            (Array.toList <| Array.map (view_answer text_section text_question) answers)
+            (Array.toList <| Array.map (viewAnswer textSection textQuestion) answers)
         ]
 
 
-view_answer : Section -> TextQuestion -> TextAnswer -> Html Msg
-view_answer text_section text_question text_answer =
+viewAnswer : Section -> TextQuestion -> TextAnswer -> Html Msg
+viewAnswer textSection textQuestion textAnswer =
     let
-        question_answered =
-            TextReader.Question.Model.answered text_question
+        questionAnswered =
+            TextReader.Question.Model.answered textQuestion
 
-        on_click =
-            if question_answered then
-                onClick (ViewFeedback text_section text_question text_answer True)
+        onclick =
+            if questionAnswered then
+                onClick (ViewFeedback textSection textQuestion textAnswer True)
 
             else
-                onClick (Select text_answer)
+                onClick (Select textAnswer)
 
         answer =
-            TextReader.Answer.Model.answer text_answer
+            TextReader.Answer.Model.answer textAnswer
 
-        answer_selected =
-            TextReader.Answer.Model.selected text_answer
+        answerSelected =
+            TextReader.Answer.Model.selected textAnswer
 
-        is_correct =
-            TextReader.Answer.Model.correct text_answer
+        isCorrect =
+            TextReader.Answer.Model.correct textAnswer
 
-        view_feedback =
-            TextReader.Answer.Model.feedback_viewable text_answer
+        viewFeedback =
+            TextReader.Answer.Model.feedback_viewable textAnswer
     in
     div
         [ classList <|
             [ ( "answer", True )
-            , ( "answer-selected", answer_selected )
+            , ( "answer-selected", answerSelected )
             ]
-                ++ (if answer_selected || view_feedback then
-                        if is_correct then
-                            [ ( "correct", is_correct ) ]
+                ++ (if answerSelected || viewFeedback then
+                        if isCorrect then
+                            [ ( "correct", isCorrect ) ]
 
                         else
-                            [ ( "incorrect", not is_correct ) ]
+                            [ ( "incorrect", not isCorrect ) ]
 
                     else
                         []
                    )
-        , on_click
+        , onclick
         ]
-        [ div [ classList [ ( "answer-text", True ), ( "bolder", answer_selected ) ] ] [ Html.text answer.text ]
-        , if answer_selected || view_feedback then
+        [ div [ classList [ ( "answer-text", True ), ( "bolder", answerSelected ) ] ] [ Html.text answer.text ]
+        , if answerSelected || viewFeedback then
             div [ class "answer-feedback" ] [ Html.em [] [ Html.text answer.feedback ] ]
 
           else
@@ -437,8 +572,8 @@ view_answer text_section text_question text_answer =
         ]
 
 
-view_exceptions : SafeModel -> Html Msg
-view_exceptions (SafeModel model) =
+viewExceptions : SafeModel -> Html Msg
+viewExceptions (SafeModel model) =
     div [ class "exception" ]
         (case model.exception of
             Just exception ->
@@ -450,22 +585,22 @@ view_exceptions (SafeModel model) =
         )
 
 
-view_prev_btn : Html Msg
-view_prev_btn =
+viewPreviousButton : Html Msg
+viewPreviousButton =
     div [ onClick PrevSection, class "prev-btn" ]
         [ Html.text "Previous"
         ]
 
 
-view_next_btn : Html Msg
-view_next_btn =
+viewNextButton : Html Msg
+viewNextButton =
     div [ onClick NextSection, class "next-btn" ]
         [ Html.text "Next"
         ]
 
 
-view_text_complete : SafeModel -> TextScores -> Html Msg
-view_text_complete (SafeModel model) scores =
+viewTextComplete : SafeModel -> TextScores -> Html Msg
+viewTextComplete (SafeModel model) scores =
     div [ id "complete" ]
         [ div [ attribute "id" "text-score" ]
             [ div []
@@ -478,16 +613,16 @@ view_text_complete (SafeModel model) scores =
                     )
                 ]
             ]
-        , view_text_conclusion model.text
+        , viewTextConclusion model.text
         , div [ id "nav" ]
-            [ view_prev_btn
+            [ viewPreviousButton
             , div [ onClick StartOver ] [ Html.text "Start Over" ]
             ]
         ]
 
 
-view_text_conclusion : Text -> Html Msg
-view_text_conclusion text =
+viewTextConclusion : Text -> Html Msg
+viewTextConclusion text =
     div [ attribute "id" "text-conclusion" ]
         -- (HtmlParser.Util.toVirtualDom <| HtmlParser.parse (Maybe.withDefault "" text.conclusion))
         []
@@ -496,8 +631,8 @@ view_text_conclusion text =
 isPartOfCompoundWord : Section -> Int -> String -> Maybe ( Int, Int, Int )
 isPartOfCompoundWord section instance word =
     case TextReader.Section.Model.getTextWord section instance word of
-        Just text_word ->
-            case TextReader.TextWord.group text_word of
+        Just textWord ->
+            case TextReader.TextWord.group textWord of
                 Just group ->
                     Just ( group.instance, group.pos, group.length )
 
@@ -509,25 +644,25 @@ isPartOfCompoundWord section instance word =
 
 
 tagWord : SafeModel -> Section -> Int -> String -> Html Msg
-tagWord (SafeModel model) text_reader_section instance token =
+tagWord (SafeModel model) textReaderSection instance token =
     let
         id =
             String.join "_" [ String.fromInt instance, token ]
 
-        textreader_textword =
-            TextReader.Section.Model.getTextWord text_reader_section instance token
+        textreaderTextword =
+            TextReader.Section.Model.getTextWord textReaderSection instance token
 
-        reader_word =
-            TextReader.Model.new id instance token textreader_textword
+        readerWord =
+            TextReader.Model.new id instance token textreaderTextword
     in
     -- case token == " " of
     --     True ->
     --         VirtualDom.text token
     --     False ->
-    --         case textreader_textword of
+    --         case textreaderTextword of
     --             Just text_word ->
     --                 if TextReader.TextWord.hasTranslations text_word then
-    --                     view_defined_word model reader_word text_word token
+    --                     view_defined_word model readerWord text_word token
     --                 else
     --                     VirtualDom.text token
     --             Nothing ->
@@ -634,8 +769,6 @@ viewTopHeader safeModel =
         [ a [ class "link", onClick Logout ]
             [ text "Logout" ]
         ]
-
-    -- , div [] [ viewProfileHint safeModel ]
     ]
 
 
@@ -683,5 +816,7 @@ load shared safeModel =
 
 subscriptions : SafeModel -> Sub Msg
 subscriptions _ =
-    -- TextReader.WebSocket.listen
-    Sub.none
+    Api.websocketReceive
+        (\websocketMessage ->
+            WebSocketResponse websocketMessage
+        )

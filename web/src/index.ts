@@ -5,7 +5,9 @@ type User = { user: { token: string } };
 type Creds = { email: string; password: string; role: string };
 
 const restApiUrl: string = process.env.RESTAPIURL;
+const websocketBaseUrl: string = process.env.WEBSOCKETBASEURL;
 const authStoreKey: string = 'user';
+let mySockets = {};
 
 // INIT
 
@@ -13,7 +15,7 @@ const user: User = JSON.parse(localStorage.getItem(authStoreKey));
 
 const app = Elm.Main.init({
   node: document.getElementById('main'),
-  flags: { restApiUrl, ...user },
+  flags: { restApiUrl, websocketBaseUrl, ...user }
 });
 
 // LOGIN
@@ -27,17 +29,17 @@ app.ports.login.subscribe(async (creds: Creds) => {
   } else {
     app.ports.onAuthResponse.send({
       result: 'error',
-      message: 'An internal error occured. Please contact the developers.',
+      message: 'An internal error occured. Please contact the developers.'
     });
   }
 
   const response = await fetch(restApiUrl + loginEndpoint, {
     headers: {
       Accept: 'application/json',
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     },
     method: 'POST',
-    body: JSON.stringify(creds),
+    body: JSON.stringify(creds)
   });
   const jsonResponse = await response.json(); // { token: "JWTToken"}
 
@@ -50,12 +52,12 @@ app.ports.login.subscribe(async (creds: Creds) => {
     if (errorMessage) {
       app.ports.onAuthResponse.send({
         result: 'error',
-        message: errorMessage,
+        message: errorMessage
       });
     } else {
       app.ports.onAuthResponse.send({
         result: 'error',
-        message: 'An internal error occured. Please contact the developers.',
+        message: 'An internal error occured. Please contact the developers.'
       });
     }
   }
@@ -90,3 +92,35 @@ window.addEventListener(
   },
   false
 );
+
+// WEBSOCKETS
+
+const sendSocketCommand = wat => {
+  console.log('ssc: ' + JSON.stringify(wat, null, 4));
+  if (wat.cmd == 'connect') {
+    // console.log("connecting!");
+    // let socket = new WebSocket(wat.address, wat.protocol);
+    let socket = new WebSocket(wat.address);
+    socket.onmessage = function (event) {
+      // console.log( "onmessage: " +  JSON.stringify(event.data, null, 4));
+      app.ports.receiveSocketMsg.send({
+        name: wat.name,
+        msg: 'data',
+        data: event.data
+      });
+    };
+    mySockets[wat.name] = socket;
+  } else if (wat.cmd == 'send') {
+    console.log('sending to socket: ' + wat.name);
+    mySockets[wat.name].send(wat.content);
+  } else if (wat.cmd == 'close') {
+    console.log('closing socket: ' + wat.name);
+    mySockets[wat.name].close();
+    delete mySockets[wat.name];
+  }
+};
+
+app.ports.sendSocketCommand.subscribe(config => {
+  console.log(config);
+  sendSocketCommand(config);
+});

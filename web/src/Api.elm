@@ -14,10 +14,14 @@ port module Api exposing
     , post
     , put
     , viewerChanges
+    , websocketConnect
+    , websocketReceive
+    , websocketSend
     )
 
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint exposing (Endpoint)
+import Api.WebSocket as WebSocket exposing (WebSocketCmd, WebSocketMsg)
 import Browser
 import Browser.Navigation as Nav
 import Http
@@ -321,3 +325,40 @@ delete url maybeCred body toMsg decoder =
         , timeout = Nothing
         , tracker = Nothing
         }
+
+
+
+-- WEBSOCKETS
+
+
+port receiveSocketMsg : (Value -> msg) -> Sub msg
+
+
+port sendSocketCommand : Value -> Cmd msg
+
+
+
+-- wsSend : WebSocketCmd -> Cmd msg
+-- wsSend command =
+
+
+websocketConnect : { name : String, address : String } -> Cmd msg
+websocketConnect { name, address } =
+    WebSocket.send sendSocketCommand <|
+        WebSocket.Connect
+            { name = name, address = address, protocol = "" }
+
+
+websocketSend : { name : String, content : Value } -> Cmd msg
+websocketSend message =
+    let
+        dbg =
+            Debug.log "ws message out" message
+    in
+    WebSocket.send sendSocketCommand <|
+        WebSocket.Send message
+
+
+websocketReceive : (Result Decode.Error WebSocketMsg -> msg) -> Sub msg
+websocketReceive toMsg =
+    receiveSocketMsg <| WebSocket.receive toMsg
