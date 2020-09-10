@@ -12,19 +12,6 @@ import Url exposing (Url)
 import Viewer
 
 
-
--- main : Program Flags Model Msg
--- main =
---     Browser.application
---         { init = init
---         , update = update
---         , subscriptions = subscriptions
---         , view = view >> Document.toBrowserDocument
---         , onUrlRequest = LinkClicked
---         , onUrlChange = UrlChanged
---         }
-
-
 main : Program Value Model Msg
 main =
     Api.application Viewer.decoder

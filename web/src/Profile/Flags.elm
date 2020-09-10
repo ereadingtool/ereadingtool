@@ -1,8 +1,8 @@
 module Profile.Flags exposing (Flags)
 
 import Flags
-import Instructor.Profile
-import Student.Profile
+import User.Instructor.Profile as InstructorProfile
+import User.Student.Profile as StudentProfile
 
 
 type alias UnAuthedFlags =
@@ -15,6 +15,6 @@ type alias Flags a =
         { a
             | profile_id : Int
             , profile_type : String
-            , instructor_profile : Maybe Instructor.Profile.InstructorProfileParams
-            , student_profile : Maybe Student.Profile.StudentProfileParams
+            , instructor_profile : Maybe InstructorProfile.InstructorProfileParams
+            , student_profile : Maybe StudentProfile.StudentProfileParams
         }
