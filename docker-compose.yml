@@ -1,0 +1,37 @@
+version: "3.8"
+services:
+  django_backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.django
+    container_name: django_backend
+    env_file:
+      - secrets.env
+    environment:
+        # change depending on prod or dev server 
+      - VIRTUAL_HOST=api.ereadingtool.com
+    expose:
+      - "8000" 
+
+  node_frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.node
+    container_name: node_frontend
+    environment:
+        - VIRTUAL_HOST=ereadingtool.com
+    expose:
+      - "80"
+
+  nginx-proxy:
+    expose:
+      - "1234"
+      - "8000"
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+      # - "443:443" # SSL yet to happen
+    restart: "always"
+    # Gives control to access the docker daemon
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
