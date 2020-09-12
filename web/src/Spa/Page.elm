@@ -136,10 +136,16 @@ protectedApplication page =
                     Sub.none
     , save = \_ shared -> shared
     , load =
-        \shared model ->
+        \shared maybeModel ->
             case Session.viewer shared.session of
                 Just viewer ->
-                    ( model, Cmd.none )
+                    case maybeModel of
+                        Just model ->
+                            page.load shared model
+                                |> Tuple.mapFirst Just
+
+                        Nothing ->
+                            ( Nothing, Cmd.none )
 
                 Nothing ->
                     ( Nothing

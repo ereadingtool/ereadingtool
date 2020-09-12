@@ -29,12 +29,9 @@ import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
 import Text.Model as Text
+import User.Profile as Profile
 import User.Student.Performance.Report as PerformanceReport exposing (PerformanceReport)
-import User.Student.Profile as StudentProfile
-    exposing
-        ( StudentProfile(..)
-        , StudentURIs(..)
-        )
+import User.Student.Profile as StudentProfile exposing (StudentProfile)
 import User.Student.Profile.Help as Help exposing (StudentHelp)
 import User.Student.Resource as StudentResource
 import Utils
@@ -94,20 +91,6 @@ type SafeModel
         }
 
 
-fakeProfile : StudentProfile
-fakeProfile =
-    StudentProfile
-        (Just 0)
-        (Just (StudentResource.toStudentUsername "fake name"))
-        (StudentResource.toStudentEmail "test@email.com")
-        Nothing
-        Shared.difficulties
-        (StudentURIs
-            (StudentResource.toStudentLogoutURI "")
-            (StudentResource.toStudentProfileURI "")
-        )
-
-
 init : Shared.Model -> Url Params -> ( SafeModel, Cmd Msg )
 init shared { params } =
     let
@@ -118,7 +101,7 @@ init shared { params } =
         { session = shared.session
         , config = shared.config
         , navKey = shared.key
-        , profile = fakeProfile
+        , profile = Profile.toStudentProfile shared.profile
         , performanceReport = PerformanceReport.emptyPerformanceReport
         , consentedToResearch = False
         , flashcards = Nothing
@@ -293,7 +276,7 @@ update msg (SafeModel model) =
 putProfile :
     Session
     -> Config
-    -> StudentProfile.StudentProfile
+    -> StudentProfile
     -> Cmd Msg
 putProfile session config profile =
     case StudentProfile.studentID profile of
@@ -303,7 +286,7 @@ putProfile session config profile =
                 (Session.cred session)
                 (Http.jsonBody (profileEncoder profile))
                 Submitted
-                studentProfileDecoder
+                StudentProfile.decoder
 
         Nothing ->
             Cmd.none
@@ -396,45 +379,6 @@ consentEncoder consented =
 
 
 -- DECODE
-
-
-type alias StudentProfileParams =
-    { id : Maybe Int
-    , username : Maybe String
-    , email : String
-    , difficulty_preference : Maybe Text.TextDifficulty
-    , difficulties : List Text.TextDifficulty
-    , uris : StudentURIParams
-    }
-
-
-type alias StudentURIParams =
-    { logout_uri : String
-    , profile_uri : String
-    }
-
-
-studentProfileDecoder : Decoder StudentProfile.StudentProfile
-studentProfileDecoder =
-    Decode.map StudentProfile.initProfile studentProfileParamsDecoder
-
-
-studentProfileParamsDecoder : Decoder StudentProfileParams
-studentProfileParamsDecoder =
-    Decode.succeed StudentProfileParams
-        |> required "id" (Decode.nullable Decode.int)
-        |> required "username" (Decode.nullable Decode.string)
-        |> required "email" Decode.string
-        |> required "difficultyPreference" (Decode.nullable Utils.stringTupleDecoder)
-        |> required "difficulties" (Decode.list Utils.stringTupleDecoder)
-        |> required "uris" studentProfileURIParamsDecoder
-
-
-studentProfileURIParamsDecoder : Decoder StudentURIParams
-studentProfileURIParamsDecoder =
-    Decode.succeed StudentURIParams
-        |> required "logout_uri" Decode.string
-        |> required "profile_uri" Decode.string
 
 
 usernameValidationDecoder : Decode.Decoder UsernameValidation
@@ -999,8 +943,10 @@ save model shared =
 
 
 load : Shared.Model -> SafeModel -> ( SafeModel, Cmd Msg )
-load shared safeModel =
-    ( safeModel, Cmd.none )
+load shared (SafeModel model) =
+    ( SafeModel { model | profile = Profile.toStudentProfile shared.profile }
+    , Cmd.none
+    )
 
 
 subscriptions : SafeModel -> Sub Msg

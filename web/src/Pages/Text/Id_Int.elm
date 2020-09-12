@@ -33,6 +33,7 @@ import TextReader.Text.Model exposing (Text)
 import TextReader.TextWord
 import User.Profile exposing (Profile)
 import User.Profile.TextReader.Flashcards
+import Viewer
 import Views
 
 
@@ -90,39 +91,16 @@ type SafeModel
 --         }
 
 
-fakeProfile : Profile
-fakeProfile =
-    User.Profile.initProfile <|
-        { student_profile =
-            Just
-                { id = Just 0
-                , username = Just "fake name"
-                , email = "test@email.com"
-                , difficulty_preference = Just ( "intermediate_mid", "Intermediate-Mid" )
-                , difficulties = Shared.difficulties
-                , uris =
-                    { logout_uri = "logout"
-                    , profile_uri = "profile"
-                    }
-                }
-        , instructor_profile = Nothing
-        }
-
-
 init : Shared.Model -> Url Params -> ( SafeModel, Cmd Msg )
 init shared { params } =
     let
-        profile =
-            -- User.Profile.initProfile flags
-            fakeProfile
-
         textWordsWithFlashcards =
             -- List.map TextReader.TextWord.newFromParams flags.flashcards
             List.map TextReader.TextWord.newFromParams []
 
         flashcards =
             User.Profile.TextReader.Flashcards.initFlashcards
-                profile
+                shared.profile
                 (Dict.fromList <|
                     List.map (\textWord -> ( TextReader.TextWord.phrase textWord, textWord )) textWordsWithFlashcards
                 )
@@ -132,28 +110,33 @@ init shared { params } =
         , config = shared.config
         , text = TextReader.Text.Model.emptyText
         , gloss = Dict.empty
-        , profile = profile
+        , profile = shared.profile
         , flashcard = flashcards
         , exception = Nothing
 
         --   , progress = Init
         , progress = ViewIntro
         }
-    , Api.websocketConnect
-        { name = "textreader"
-        , address =
-            Config.websocketBaseUrl shared.config
-                ++ (case shared.role of
-                        Student ->
-                            "/student"
+    , case Session.viewer shared.session of
+        Just viewer ->
+            Api.websocketConnect
+                { name = "textreader"
+                , address =
+                    Config.websocketBaseUrl shared.config
+                        ++ (case Viewer.role viewer of
+                                Student ->
+                                    "/student"
 
-                        Instructor ->
-                            "/instructor"
-                   )
-                ++ "/text_read/"
-                ++ String.fromInt params.id
-                ++ "/"
-        }
+                                Instructor ->
+                                    "/instructor"
+                           )
+                        ++ "/text_read/"
+                        ++ String.fromInt params.id
+                        ++ "/"
+                }
+
+        Nothing ->
+            Cmd.none
     )
 
 

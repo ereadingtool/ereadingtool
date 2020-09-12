@@ -26,12 +26,8 @@ import Text.Search.Option
 import Text.Search.ReadingStatus exposing (TextReadStatus, TextReadStatusSearch)
 import Text.Search.Tag exposing (TagSearch)
 import TextSearch.Help
-import User.Profile exposing (Profile)
+import User.Profile
 import User.Student.Profile as StudentProfile
-    exposing
-        ( StudentProfile(..)
-        , StudentURIs(..)
-        )
 import Utils.Date
 import Views
 
@@ -75,25 +71,6 @@ type SafeModel
         }
 
 
-fakeProfile : Profile
-fakeProfile =
-    User.Profile.initProfile <|
-        { student_profile =
-            Just
-                { id = Just 0
-                , username = Just "fake name"
-                , email = "test@email.com"
-                , difficulty_preference = Just ( "intermediate_mid", "Intermediate-Mid" )
-                , difficulties = Shared.difficulties
-                , uris =
-                    { logout_uri = "logout"
-                    , profile_uri = "profile"
-                    }
-                }
-        , instructor_profile = Nothing
-        }
-
-
 init : Shared.Model -> Url Params -> ( SafeModel, Cmd Msg )
 init shared { params } =
     let
@@ -119,11 +96,8 @@ init shared { params } =
         defaultSearch =
             Text.Search.new textApiEndpoint tagSearch difficultySearch statusSearch
 
-        profile =
-            fakeProfile
-
         textSearch =
-            case profile of
+            case shared.profile of
                 User.Profile.Student student_profile ->
                     case StudentProfile.studentDifficultyPreference student_profile of
                         Just difficulty ->
@@ -143,7 +117,7 @@ init shared { params } =
         , config = shared.config
         , navKey = shared.key
         , results = []
-        , profile = fakeProfile
+        , profile = shared.profile
         , textSearch = textSearch
         , textApiEndpoint = textApiEndpoint
         , help = textSearchHelp

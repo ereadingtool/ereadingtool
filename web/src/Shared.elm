@@ -13,16 +13,26 @@ module Shared exposing
 
 import Api exposing (AuthError, AuthSuccess)
 import Api.Config as Config exposing (Config)
+import Api.Endpoint as Endpoint
 import Browser.Navigation exposing (Key)
 import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
+import Http exposing (Error)
+import Id exposing (Id)
 import Json.Encode as Encode
 import Role exposing (Role(..))
 import Session exposing (Session)
 import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
 import Url exposing (Url)
+import User.Profile as Profile exposing (Profile)
+import User.Student.Profile as StudentProfile
+    exposing
+        ( StudentProfile(..)
+        , StudentURIs(..)
+        )
+import User.Student.Resource as StudentResource
 import Viewer exposing (Viewer)
 
 
@@ -35,7 +45,7 @@ type alias Model =
     , key : Key
     , session : Session
     , config : Config
-    , role : Role
+    , profile : Profile
     , authMessage : String
     }
 
@@ -55,8 +65,21 @@ init flags url key =
         config =
             Config.init flags.maybeConfig
     in
-    ( Model url key session config Student ""
-    , Cmd.none
+    ( Model url key session config Profile.emptyProfile ""
+    , case Session.viewer session of
+        Just viewer ->
+            case Viewer.role viewer of
+                Student ->
+                    Cmd.batch
+                        [ requestStudentProfile session config (Viewer.id viewer)
+                        , Browser.Navigation.replaceUrl key (Route.toString Route.Profile__Student)
+                        ]
+
+                Instructor ->
+                    Cmd.none
+
+        Nothing ->
+            Cmd.none
     )
 
 
@@ -69,6 +92,7 @@ type Msg
     | Logout
     | GotAuthResult (Result AuthError AuthSuccess)
     | GotSession Session
+    | GotStudentProfile (Result Error StudentProfile)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -81,26 +105,73 @@ update msg model =
             ( model, logout )
 
         GotAuthResult (Ok authSuccess) ->
-            ( { model | authMessage = Api.authSuccessMessage authSuccess }, Cmd.none )
+            ( { model | authMessage = Api.authSuccessMessage authSuccess }
+            , Cmd.none
+            )
 
         GotAuthResult (Err authError) ->
-            ( { model | authMessage = Api.authErrorMessage authError }, Cmd.none )
+            ( { model | authMessage = Api.authErrorMessage authError }
+            , Cmd.none
+            )
 
         GotSession session ->
-            let
-                dbg =
-                    Debug.log "session" session
-            in
             ( { model
                 | session = session
               }
-            , case model.role of
-                Student ->
-                    Browser.Navigation.replaceUrl model.key (Route.toString Route.Profile__Student)
+            , case Session.viewer session of
+                Just viewer ->
+                    case Viewer.role viewer of
+                        Student ->
+                            Cmd.batch
+                                [ requestStudentProfile session model.config (Viewer.id viewer)
+                                , Browser.Navigation.replaceUrl model.key (Route.toString Route.Profile__Student)
+                                ]
 
-                Instructor ->
-                    Browser.Navigation.replaceUrl model.key (Route.toString Route.ProtectedApplicationTemplate)
+                        Instructor ->
+                            Browser.Navigation.replaceUrl model.key (Route.toString Route.ProtectedApplicationTemplate)
+
+                Nothing ->
+                    Cmd.none
             )
+
+        GotStudentProfile (Ok studentProfile) ->
+            ( { model | profile = Profile.fromStudentProfile studentProfile }
+            , Cmd.none
+            )
+
+        GotStudentProfile (Err err) ->
+            ( { model | profile = Profile.fromStudentProfile fakeStudentProfile }
+              -- ( model
+            , Cmd.none
+            )
+
+
+{-| TODO: remove this placeholder when integration with backend is complete
+-}
+fakeStudentProfile : StudentProfile
+fakeStudentProfile =
+    StudentProfile
+        (Just 0)
+        (Just (StudentResource.toStudentUsername "someuser"))
+        (StudentResource.toStudentEmail "user@email.com")
+        (Just ( "intermediate_mid", "Intermediate-Mid" ))
+        difficulties
+        (StudentURIs
+            (StudentResource.toStudentLogoutURI "")
+            (StudentResource.toStudentProfileURI "")
+        )
+
+
+requestStudentProfile : Session -> Config -> Id -> Cmd Msg
+requestStudentProfile session config id =
+    Api.get
+        (Endpoint.studentProfile
+            (Config.restApiUrl config)
+            (Id.id id)
+        )
+        (Session.cred session)
+        GotStudentProfile
+        StudentProfile.decoder
 
 
 subscriptions : Model -> Sub Msg

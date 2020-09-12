@@ -9,6 +9,10 @@ import Profile exposing (..)
 import User.Instructor.Profile
 import User.Instructor.View
 import User.Student.Profile
+    exposing
+        ( StudentProfile(..)
+        , StudentURIs(..)
+        )
 import User.Student.Profile.Decode
 import User.Student.Profile.Resource
 import User.Student.Resource
@@ -49,6 +53,40 @@ initProfile flags =
 
                 Nothing ->
                     EmptyProfile
+
+
+{-| TODO: probably best to get rid of this empty default student profile
+somehow. This may take a fundamental restructuring of the way that
+the Profile type works. Some pages require a StudentProfile or
+InstructorProfile and it may be better to have them take a Profile and
+act accordingly.
+-}
+toStudentProfile : Profile -> User.Student.Profile.StudentProfile
+toStudentProfile profile =
+    case profile of
+        Student studentProfile ->
+            studentProfile
+
+        _ ->
+            StudentProfile
+                (Just 0)
+                (Just (User.Student.Resource.toStudentUsername ""))
+                (User.Student.Resource.toStudentEmail "")
+                Nothing
+                difficulties
+                (StudentURIs
+                    (User.Student.Resource.toStudentLogoutURI "")
+                    (User.Student.Resource.toStudentProfileURI "")
+                )
+
+
+difficulties : List ( String, String )
+difficulties =
+    [ ( "intermediate_mid", "Intermediate-Mid" )
+    , ( "intermediate_high", "Intermediate-High" )
+    , ( "advanced_low", "Advanced-Low" )
+    , ( "advanced_mid", "Advanced-Mid" )
+    ]
 
 
 emptyProfile : Profile

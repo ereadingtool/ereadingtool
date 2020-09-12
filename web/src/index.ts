@@ -1,7 +1,7 @@
 // @ts-expect-error
 import { Elm } from './Main.elm';
 
-type User = { user: { token: string } };
+type User = { user: { id: number; token: string; role: string } };
 type Creds = { email: string; password: string; role: string };
 
 const restApiUrl: string = process.env.RESTAPIURL;
@@ -44,7 +44,9 @@ app.ports.login.subscribe(async (creds: Creds) => {
   const jsonResponse = await response.json(); // { token: "JWTToken"}
 
   if (response.ok) {
-    const user: User = { user: { token: jsonResponse.token } };
+    const user: User = {
+      user: { id: jsonResponse.id, token: jsonResponse.token, role: creds.role }
+    };
     localStorage.setItem(authStoreKey, JSON.stringify(user));
     app.ports.onAuthStoreChange.send(user);
   } else {
