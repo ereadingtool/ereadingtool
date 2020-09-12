@@ -40,7 +40,7 @@ import Views
 
 page : Page Params Model Msg
 page =
-    Page.protectedApplication
+    Page.protectedStudentApplication
         { init = init
         , update = update
         , subscriptions = subscriptions
