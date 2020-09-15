@@ -95,7 +95,7 @@ studentSignup baseUrl =
 
 studentProfile : String -> Int -> Endpoint
 studentProfile baseUrl id =
-    url baseUrl [ "api", "student", String.fromInt id ] []
+    url baseUrl [ "api", "student", String.fromInt id ++ "/" ] []
 
 
 consentToResearch : String -> Int -> Endpoint

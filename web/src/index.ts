@@ -1,7 +1,8 @@
 // @ts-expect-error
 import { Elm } from './Main.elm';
 
-type User = { user: { token: string } };
+type User = { user: { id: number; token: string; role: string } };
+type ShowHelp = { showHelp: boolean };
 type Creds = { email: string; password: string; role: string };
 
 const restApiUrl: string = process.env.RESTAPIURL;
@@ -12,10 +13,22 @@ let mySockets = {};
 // INIT
 
 const user: User = JSON.parse(localStorage.getItem(authStoreKey));
+let showHelp: ShowHelp = JSON.parse(localStorage.getItem('showHelp'));
+
+if (showHelp === null) {
+  showHelp = { showHelp: true };
+  localStorage.setItem('showHelp', JSON.stringify(showHelp));
+}
 
 const app = Elm.Main.init({
   node: document.getElementById('main'),
-  flags: { restApiUrl, websocketBaseUrl, ...user }
+  flags: { restApiUrl, websocketBaseUrl, ...showHelp, ...user }
+});
+
+// HELP
+
+app.ports.toggleShowHelp.subscribe(showHelp => {
+  localStorage.setItem('showHelp', JSON.stringify(showHelp));
 });
 
 // LOGIN
@@ -44,7 +57,9 @@ app.ports.login.subscribe(async (creds: Creds) => {
   const jsonResponse = await response.json(); // { token: "JWTToken"}
 
   if (response.ok) {
-    const user: User = { user: { token: jsonResponse.token } };
+    const user: User = {
+      user: { id: jsonResponse.id, token: jsonResponse.token, role: creds.role }
+    };
     localStorage.setItem(authStoreKey, JSON.stringify(user));
     app.ports.onAuthStoreChange.send(user);
   } else {
