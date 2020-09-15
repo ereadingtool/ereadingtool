@@ -76,7 +76,7 @@ init flags url key =
                         ]
 
                 Instructor ->
-                    Cmd.none
+                    Browser.Navigation.replaceUrl key (Route.toString Route.Profile__Instructor)
 
         Nothing ->
             Cmd.none
@@ -128,7 +128,7 @@ update msg model =
                                 ]
 
                         Instructor ->
-                            Browser.Navigation.replaceUrl model.key (Route.toString Route.ProtectedApplicationTemplate)
+                            Browser.Navigation.replaceUrl model.key (Route.toString Route.Profile__Instructor)
 
                 Nothing ->
                     Cmd.none

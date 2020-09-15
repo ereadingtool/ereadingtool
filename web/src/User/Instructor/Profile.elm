@@ -1,10 +1,12 @@
 module User.Instructor.Profile exposing
-    ( InstructorProfile
+    ( InstructorProfile(..)
     , InstructorProfileParams
+    , InstructorUsername(..)
     , Tag
     , Text
     , addInvite
     , initProfile
+    , initProfileURIs
     , invites
     , isAdmin
     , logout

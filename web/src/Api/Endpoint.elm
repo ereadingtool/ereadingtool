@@ -4,6 +4,7 @@ module Api.Endpoint exposing
     , filterToStringQueryParam
     , forgotPassword
     , instructorSignup
+    , inviteInstructor
     , request
     , resetPassword
     , studentProfile
@@ -115,6 +116,15 @@ validateUsername baseUrl =
 textSearch : String -> List QueryParameter -> Endpoint
 textSearch baseUrl queryParameters =
     url baseUrl [ "api", "text/" ] queryParameters
+
+
+
+-- INVITE
+
+
+inviteInstructor : String -> Endpoint
+inviteInstructor baseUrl =
+    url baseUrl [ "api", "instructor", "invite" ] []
 
 
 

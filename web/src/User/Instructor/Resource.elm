@@ -7,6 +7,7 @@ module User.Instructor.Resource exposing
     , instructorInviteURI
     , instructorLogoutURI
     , instructorProfileURI
+    , toInstructorInviteURI
     , toInstructorLogoutURI
     , toInstructorProfileURI
     , uriToString
@@ -37,6 +38,11 @@ toURI uri =
 flagsToInstructorURI : { a | instructor_invite_uri : String } -> InstructorInviteURI
 flagsToInstructorURI flags =
     InstructorInviteURI (URI flags.instructor_invite_uri)
+
+
+toInstructorInviteURI : String -> InstructorInviteURI
+toInstructorInviteURI uri =
+    InstructorInviteURI (URI uri)
 
 
 instructorProfileURI : InstructorProfileURI -> URI
