@@ -139,7 +139,7 @@ viewContent model =
 
 save : Model -> Shared.Model -> Shared.Model
 save model shared =
-    { shared | role = model.role }
+    shared
 
 
 load : Shared.Model -> Model -> ( Model, Cmd Msg )

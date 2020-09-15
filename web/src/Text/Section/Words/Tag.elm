@@ -9,14 +9,16 @@ module Text.Section.Words.Tag exposing
 import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Attributes
-import HtmlParser
+import Html.Parser 
 import Regex
-import VirtualDom
+-- import VirtualDom
 
 
 punctuation_re : Regex.Regex
 punctuation_re =
-    Regex.regex "[?!.,»«—\\-();]"
+    -- Regex.regex "[?!.,»«—\\-();]"
+    Maybe.withDefault Regex.never <|
+        Regex.fromString "[?!.,»«—\\-();]"
 
 
 hasPunctuation : String -> Bool
@@ -28,7 +30,8 @@ maybeParseWordWithPunctuation : String -> List String
 maybeParseWordWithPunctuation str =
     let
         matches =
-            Regex.find (Regex.AtMost 1) punctuation_re str
+            -- Regex.find (Regex.AtMost 1) punctuation_re str
+            Regex.findAtMost 1 punctuation_re str
 
         end_of_str_index =
             String.length str
@@ -139,12 +142,12 @@ parseCompoundWords is_part_of_compound_word token_occurrences =
 tagWordAndToVDOM :
     (Int -> String -> Html msg)
     -> (Int -> String -> Maybe ( Int, Int, Int ))
-    -> HtmlParser.Node
+    -> Html.Parser.Node
     -> ( List (Html msg), Dict String Int )
     -> ( List (Html msg), Dict String Int )
 tagWordAndToVDOM tag_word is_part_of_compound_word node ( html, occurrences ) =
     case node of
-        HtmlParser.Text str ->
+        Html.Parser.Text str ->
             let
                 word_tokens =
                     List.concat <|
@@ -161,7 +164,7 @@ tagWordAndToVDOM tag_word is_part_of_compound_word node ( html, occurrences ) =
             in
             ( html ++ new_nodes, token_occurrences )
 
-        HtmlParser.Element name attrs nodes ->
+        Html.Parser.Element name attrs nodes ->
             let
                 ( new_msgs, new_occurrences ) =
                     tagWordsToVDOMWithFreqs tag_word is_part_of_compound_word occurrences nodes
@@ -169,20 +172,21 @@ tagWordAndToVDOM tag_word is_part_of_compound_word node ( html, occurrences ) =
                 new_node =
                     Html.node
                         name
-                        (List.map (\( name, value ) -> Html.Attributes.attribute name value) attrs)
+                        (List.map (\( nm, value ) -> Html.Attributes.attribute nm value) attrs)
                         new_msgs
             in
             ( html ++ [ new_node ], new_occurrences )
 
-        (HtmlParser.Comment str) as comment ->
-            ( html ++ [ VirtualDom.text "" ], occurrences )
+        (Html.Parser.Comment str) as comment ->
+            -- ( html ++ [ VirtualDom.text "" ], occurrences )
+            ( html ++ [  ], occurrences )
 
 
 tagWordsToVDOMWithFreqs :
     (Int -> String -> Html msg)
     -> (Int -> String -> Maybe ( Int, Int, Int ))
     -> Dict String Int
-    -> List HtmlParser.Node
+    -> List Html.Parser.Node
     -> ( List (Html msg), Dict String Int )
 tagWordsToVDOMWithFreqs tag_word is_part_of_compound_word occurrences nodes =
     List.foldl (tagWordAndToVDOM tag_word is_part_of_compound_word) ( [], occurrences ) nodes
@@ -191,7 +195,7 @@ tagWordsToVDOMWithFreqs tag_word is_part_of_compound_word occurrences nodes =
 tagWordsAndToVDOM :
     (Int -> String -> Html msg)
     -> (Int -> String -> Maybe ( Int, Int, Int ))
-    -> List HtmlParser.Node
+    -> List Html.Parser.Node
     -> List (Html msg)
 tagWordsAndToVDOM tag_word is_part_of_compound_word nodes =
     Tuple.first <|
