@@ -140,26 +140,9 @@ update msg model =
             )
 
         GotStudentProfile (Err err) ->
-            ( { model | profile = Profile.fromStudentProfile fakeStudentProfile }
-              -- ( model
+            ( model
             , Cmd.none
             )
-
-
-{-| TODO: remove this placeholder when integration with backend is complete
--}
-fakeStudentProfile : StudentProfile
-fakeStudentProfile =
-    StudentProfile
-        (Just 0)
-        (Just (StudentResource.toStudentUsername "someuser"))
-        (StudentResource.toStudentEmail "user@email.com")
-        (Just ( "intermediate_mid", "Intermediate-Mid" ))
-        difficulties
-        (StudentURIs
-            (StudentResource.toStudentLogoutURI "")
-            (StudentResource.toStudentProfileURI "")
-        )
 
 
 requestStudentProfile : Session -> Config -> Id -> Cmd Msg

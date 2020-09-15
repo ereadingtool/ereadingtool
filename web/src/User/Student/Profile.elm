@@ -157,4 +157,5 @@ paramsDecoder =
 
 decoder : Decoder StudentProfile
 decoder =
-    Decode.map initProfile paramsDecoder
+    Decode.field "profile" paramsDecoder
+        |> Decode.map initProfile
