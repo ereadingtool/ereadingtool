@@ -13,6 +13,7 @@ port module Api exposing
     , logout
     , post
     , put
+    , toggleShowHelp
     , viewerChanges
     , websocketConnect
     , websocketReceive
@@ -65,6 +66,13 @@ exposeToken maybeCred =
 
         Nothing ->
             ""
+
+
+
+-- HELP
+
+
+port toggleShowHelp : Value -> Cmd msg
 
 
 

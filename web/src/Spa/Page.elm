@@ -136,7 +136,14 @@ protectedApplication page =
 
                 Nothing ->
                     Sub.none
-    , save = \_ shared -> shared
+    , save =
+        \maybeModel shared ->
+            case maybeModel of
+                Just model ->
+                    page.save model shared
+
+                Nothing ->
+                    shared
     , load =
         \shared maybeModel ->
             case Session.viewer shared.session of
@@ -207,7 +214,14 @@ protectedStudentApplication page =
 
                 Nothing ->
                     Sub.none
-    , save = \_ shared -> shared
+    , save =
+        \maybeModel shared ->
+            case maybeModel of
+                Just model ->
+                    page.save model shared
+
+                Nothing ->
+                    shared
     , load =
         \shared maybeModel ->
             case Session.viewer shared.session of
@@ -278,7 +292,14 @@ protectedInstructorApplication page =
 
                 Nothing ->
                     Sub.none
-    , save = \_ shared -> shared
+    , save =
+        \maybeModel shared ->
+            case maybeModel of
+                Just model ->
+                    page.save model shared
+
+                Nothing ->
+                    shared
     , load =
         \shared maybeModel ->
             case Session.viewer shared.session of

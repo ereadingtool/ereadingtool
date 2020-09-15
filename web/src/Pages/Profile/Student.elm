@@ -84,7 +84,6 @@ type SafeModel
         , flashcards : Maybe (List String)
         , editing : Dict String Bool
         , errorMessage : String
-        , welcome : Bool
         , help : Help.StudentProfileHelp
         , usernameValidation : UsernameValidation
         , errors : Dict String String
@@ -107,7 +106,6 @@ init shared { params } =
         , flashcards = Nothing
         , editing = Dict.empty
         , usernameValidation = { username = Nothing, valid = Nothing, msg = Nothing }
-        , welcome = True
         , help = help
         , errorMessage = ""
         , errors = Dict.empty
@@ -135,6 +133,7 @@ type Msg
     | Submitted (Result Error StudentProfile)
     | SubmittedConsent (Result Error StudentConsentResp)
       -- help messages
+    | ToggleShowHelp
     | CloseHint StudentHelp
     | PreviousHint
     | NextHint
@@ -257,6 +256,13 @@ update msg (SafeModel model) =
 
                 _ ->
                     ( SafeModel model, Cmd.none )
+
+        ToggleShowHelp ->
+            ( SafeModel { model | config = Config.mapShowHelp not model.config }
+            , Api.toggleShowHelp <|
+                Config.encodeShowHelp <|
+                    not (Config.showHelp model.config)
+            )
 
         CloseHint helpMessage ->
             ( SafeModel { model | help = Help.setVisible model.help helpMessage False }, Cmd.none )
@@ -479,6 +485,7 @@ viewContent (SafeModel model) =
             , viewFeedbackLinks
             , viewFlashcards (SafeModel model)
             , viewResearchConsent (SafeModel model)
+            , viewShowHelp (SafeModel model)
             , if not (String.isEmpty model.errorMessage) then
                 span [ attribute "class" "error" ] [ Html.text "error: ", Html.text model.errorMessage ]
 
@@ -732,8 +739,61 @@ viewResearchConsent (SafeModel model) =
         ]
 
 
+viewShowHelp : SafeModel -> Html Msg
+viewShowHelp (SafeModel model) =
+    div [] <|
+        [ div [ id "show-help" ]
+            [ span [ class "profile_item_title" ] [ Html.text "Show Hints" ]
+            , span []
+                [ Html.text """
+          Turn the site tutorials on or off.
+          """
+                ]
+            , span [ class "value" ] <|
+                [ div
+                    [ classList
+                        [ ( "check-box", True )
+                        , ( "check-box-selected", Config.showHelp model.config )
+                        ]
+                    , onClick ToggleShowHelp
+                    ]
+                    []
+                , div [ class "check-box-text" ] [ Html.text "Show hints" ]
+                ]
+            ]
+        ]
+            ++ viewShowHelpHint (SafeModel model)
+
+
 
 -- HINTS
+
+
+viewShowHelpHint : SafeModel -> List (Html Msg)
+viewShowHelpHint (SafeModel model) =
+    let
+        showHintsHelp =
+            Help.showHintsHelp
+
+        hintAttributes =
+            { id = Help.popupToOverlayID showHintsHelp
+            , visible = Help.isVisible model.help showHintsHelp
+            , text = Help.helpMsg showHintsHelp
+            , cancel_event = onClick (CloseHint showHintsHelp)
+            , next_event = onClick NextHint
+            , prev_event = onClick PreviousHint
+            , addl_attributes = [ id (Help.helpID model.help showHintsHelp) ]
+
+            -- , arrow_placement = ArrowDown ArrowLeft
+            , arrow_placement = ArrowUp ArrowLeft
+            }
+    in
+    if Config.showHelp model.config then
+        [ Help.View.view_hint_overlay hintAttributes
+        ]
+
+    else
+        []
 
 
 viewUsernameHint : SafeModel -> List (Html Msg)
@@ -753,7 +813,7 @@ viewUsernameHint (SafeModel model) =
             , arrow_placement = ArrowDown ArrowLeft
             }
     in
-    if model.welcome then
+    if Config.showHelp model.config then
         [ Help.View.view_hint_overlay hintAttributes
         ]
 
@@ -778,7 +838,7 @@ viewPerformanceHint (SafeModel model) =
             , arrow_placement = ArrowDown ArrowLeft
             }
     in
-    if model.welcome then
+    if Config.showHelp model.config then
         [ Help.View.view_hint_overlay hintAttributes
         ]
 
@@ -803,7 +863,7 @@ viewDifficultyHint (SafeModel model) =
             , arrow_placement = ArrowDown ArrowLeft
             }
     in
-    if model.welcome then
+    if Config.showHelp model.config then
         [ Help.View.view_hint_overlay hintAttributes
         ]
 
@@ -828,38 +888,12 @@ viewSearchTextsHint (SafeModel model) =
             , arrow_placement = ArrowUp ArrowLeft
             }
     in
-    if model.welcome then
+    if Config.showHelp model.config then
         [ Help.View.view_hint_overlay hintAttributes
         ]
 
     else
         []
-
-
-viewProfileHint : SafeModel -> Html Msg
-viewProfileHint (SafeModel model) =
-    let
-        profileHelp =
-            Help.profileHelp
-
-        hintAttributes =
-            { id = Help.popupToOverlayID profileHelp
-            , visible = Help.isVisible model.help profileHelp
-            , text = Help.helpMsg profileHelp
-            , cancel_event = onClick (CloseHint profileHelp)
-            , next_event = onClick NextHint
-            , prev_event = onClick PreviousHint
-            , addl_attributes = [ id (Help.helpID model.help profileHelp) ]
-            , arrow_placement = ArrowUp ArrowRight
-            }
-    in
-    if model.welcome then
-        div []
-            [ Help.View.view_hint_overlay hintAttributes
-            ]
-
-    else
-        div [] []
 
 
 viewPreferredDifficultyHint : Maybe Text.TextDifficulty -> Html Msg
@@ -938,8 +972,8 @@ viewPreferredDifficultyHint text_difficulty =
 
 
 save : SafeModel -> Shared.Model -> Shared.Model
-save model shared =
-    shared
+save (SafeModel model) shared =
+    { shared | config = model.config }
 
 
 load : Shared.Model -> SafeModel -> ( SafeModel, Cmd Msg )

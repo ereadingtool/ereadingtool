@@ -67,7 +67,8 @@ type SafeModel
         , textApiEndpoint : AdminText.TextAPIEndpoint
         , help : TextSearch.Help.TextSearchHelp
         , errorMessage : Maybe String
-        , welcome : Bool
+
+        -- , welcome : Bool
         }
 
 
@@ -122,7 +123,8 @@ init shared { params } =
         , textApiEndpoint = textApiEndpoint
         , help = textSearchHelp
         , errorMessage = Nothing
-        , welcome = True
+
+        -- , welcome = Config.showHelp shared.config
         }
     , updateResults shared.session shared.config textSearch
     )
@@ -314,7 +316,7 @@ viewLowerMenu safeModel =
 viewContent : SafeModel -> Html Msg
 viewContent (SafeModel model) =
     div [ id "text_search" ] <|
-        (if model.welcome then
+        (if Config.showHelp model.config then
             [ viewHelpMessage ]
 
          else
@@ -577,7 +579,7 @@ viewTopicFilterHint (SafeModel model) =
             , arrow_placement = ArrowUp ArrowLeft
             }
     in
-    if model.welcome then
+    if Config.showHelp model.config then
         [ Help.View.view_hint_overlay hintAttributes
         ]
 
@@ -602,7 +604,7 @@ viewDifficultyFilterHint (SafeModel model) =
             , arrow_placement = ArrowUp ArrowLeft
             }
     in
-    if model.welcome then
+    if Config.showHelp model.config then
         [ Help.View.view_hint_overlay hintAttributes
         ]
 
@@ -627,7 +629,7 @@ viewStatusFilterHint (SafeModel model) =
             , arrow_placement = ArrowUp ArrowLeft
             }
     in
-    if model.welcome then
+    if Config.showHelp model.config then
         [ Help.View.view_hint_overlay hintAttributes
         ]
 
