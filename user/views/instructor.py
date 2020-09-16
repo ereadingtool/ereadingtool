@@ -76,6 +76,9 @@ class InstructorView(ProfileView):
     login_url = Instructor.login_url
 
 
+class InstructorAPIView(LoginRequiredMixin, APIView):
+    pass
+
 class InstructorInviteAPIView(LoginRequiredMixin, APIView):
     login_url = Instructor.login_url
 
