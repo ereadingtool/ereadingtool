@@ -198,7 +198,7 @@ requestStudentProfile session config id =
 requestInstructorProfile : Session -> Config -> Id -> Cmd Msg
 requestInstructorProfile session config id =
     Api.get
-        (Endpoint.studentProfile
+        (Endpoint.instructorProfile
             (Config.restApiUrl config)
             (Id.id id)
         )
