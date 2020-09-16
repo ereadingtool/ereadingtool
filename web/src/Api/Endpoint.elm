@@ -3,7 +3,9 @@ module Api.Endpoint exposing
     , consentToResearch
     , filterToStringQueryParam
     , forgotPassword
+    , instructorProfile
     , instructorSignup
+    , inviteInstructor
     , request
     , resetPassword
     , studentProfile
@@ -98,6 +100,11 @@ studentProfile baseUrl id =
     url baseUrl [ "api", "student", String.fromInt id ++ "/" ] []
 
 
+instructorProfile : String -> Int -> Endpoint
+instructorProfile baseUrl id =
+    url baseUrl [ "api", "instructor", String.fromInt id ++ "/" ] []
+
+
 consentToResearch : String -> Int -> Endpoint
 consentToResearch baseUrl id =
     url baseUrl [ "api", "student", String.fromInt id, "consent_to_research" ] []
@@ -115,6 +122,15 @@ validateUsername baseUrl =
 textSearch : String -> List QueryParameter -> Endpoint
 textSearch baseUrl queryParameters =
     url baseUrl [ "api", "text/" ] queryParameters
+
+
+
+-- INVITE
+
+
+inviteInstructor : String -> Endpoint
+inviteInstructor baseUrl =
+    url baseUrl [ "api", "instructor", "invite" ] []
 
 
 
