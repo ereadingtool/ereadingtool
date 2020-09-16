@@ -1,13 +1,13 @@
 module User.Student.Profile.Decode exposing
     ( studentConsentRespDecoder
     , studentProfileDecoder
-    , username_valid_decoder
+    , usernameValidationDecoder
     )
 
 import InstructorAdmin.Text.Translations exposing (Phrase)
-import Text.Translations.Decode as TextTranslationsDecode
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)
+import Text.Translations.Decode as TextTranslationsDecode
 import TextReader.Section.Decode
 import TextReader.TextWord
 import User.Student.Performance.Report exposing (PerformanceReport)
@@ -17,8 +17,8 @@ import User.Student.Resource as StudentResource
 import Utils exposing (stringTupleDecoder)
 
 
-username_valid_decoder : Json.Decode.Decoder StudentProfileModel.UsernameUpdate
-username_valid_decoder =
+usernameValidationDecoder : Json.Decode.Decoder StudentProfileModel.UsernameUpdate
+usernameValidationDecoder =
     Json.Decode.succeed StudentProfileModel.UsernameUpdate
         |> required "username" (Json.Decode.map (StudentResource.toStudentUsername >> Just) Json.Decode.string)
         |> required "valid" (Json.Decode.nullable Json.Decode.bool)

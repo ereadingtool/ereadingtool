@@ -1,6 +1,8 @@
 module TextReader.Msg exposing (..)
 
+import Api.WebSocket as WebSocket exposing (WebSocketCmd)
 import Http
+import Json.Decode
 import Menu.Logout
 import Menu.Msg as MenuMsg
 import TextReader.Answer.Model exposing (TextAnswer)
@@ -8,8 +10,6 @@ import TextReader.Model exposing (TextReaderWord)
 import TextReader.Question.Model exposing (TextQuestion)
 import TextReader.Section.Model exposing (Section)
 
-import Json.Decode
-import WebSocket
 
 type Msg
     = Select TextAnswer

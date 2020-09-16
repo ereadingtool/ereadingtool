@@ -1,6 +1,6 @@
 module User.Profile.TextReader.Flashcards exposing (..)
 
-import InstructorAdmin.Text.Translations.Decode exposing (Flashcards)
+import Text.Translations.Decode exposing (Flashcards)
 import TextReader.Flashcard.Student
 import TextReader.TextWord
 import User.Profile exposing (Profile)

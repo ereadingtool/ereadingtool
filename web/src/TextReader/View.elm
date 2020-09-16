@@ -5,8 +5,8 @@ import Dict exposing (Dict)
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList, id)
 import Html.Events exposing (onClick, onMouseLeave)
-import HtmlParser
-import HtmlParser.Util
+import Html.Parser
+import Html.Parser.Util
 import Text.Section.Words.Tag
 import TextReader.Answer.Model exposing (TextAnswer)
 import TextReader.Model exposing (..)
@@ -16,7 +16,7 @@ import TextReader.Section.Model exposing (Section, Words)
 import TextReader.Text.Model exposing (Text)
 import TextReader.TextWord
 import User.Profile.TextReader.Flashcards
-import VirtualDom
+-- import VirtualDom
 
 
 tagWord : Model -> Section -> Int -> String -> Html Msg
@@ -31,21 +31,22 @@ tagWord model text_reader_section instance token =
         reader_word =
             TextReader.Model.new id instance token textreader_textword
     in
-    case token == " " of
-        True ->
-            VirtualDom.text token
+    -- case token == " " of
+    --     True ->
+    --         VirtualDom.text token
 
-        False ->
-            case textreader_textword of
-                Just text_word ->
-                    if TextReader.TextWord.hasTranslations text_word then
-                        view_defined_word model reader_word text_word token
+    --     False ->
+    --         case textreader_textword of
+    --             Just text_word ->
+    --                 if TextReader.TextWord.hasTranslations text_word then
+    --                     view_defined_word model reader_word text_word token
 
-                    else
-                        VirtualDom.text token
+    --                 else
+    --                     VirtualDom.text token
 
-                Nothing ->
-                    VirtualDom.text token
+    --             Nothing ->
+    --                 VirtualDom.text token
+    Html.text ""
 
 
 view_defined_word : Model -> TextReader.Model.TextReaderWord -> TextReader.TextWord.TextWord -> String -> Html Msg
