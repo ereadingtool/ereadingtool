@@ -23,6 +23,7 @@ import User.Instructor.Profile as InstructorProfile
         , InstructorUsername(..)
         )
 import User.Instructor.Resource as InstructorResource
+import User.Profile as Profile
 import Views
 
 
@@ -73,27 +74,12 @@ init shared { params } =
     ( SafeModel
         { session = shared.session
         , config = shared.config
-        , profile = fakeProfile
+        , profile = Profile.toInstructorProfile shared.profile
         , newInviteEmail = Nothing
         , errors = Dict.empty
         }
     , Cmd.none
     )
-
-
-fakeProfile : InstructorProfile
-fakeProfile =
-    InstructorProfile
-        (Just 0)
-        []
-        True
-        (Just [])
-        (InstructorProfile.InstructorUsername "fakeInstructor")
-        (InstructorProfile.initProfileURIs
-            { logout_uri = "fakeLogoutURI"
-            , profile_uri = "fakeProfileURI"
-            }
-        )
 
 
 
@@ -393,8 +379,10 @@ save model shared =
 
 
 load : Shared.Model -> SafeModel -> ( SafeModel, Cmd Msg )
-load shared safeModel =
-    ( safeModel, Cmd.none )
+load shared (SafeModel model) =
+    ( SafeModel { model | profile = Profile.toInstructorProfile shared.profile }
+    , Cmd.none
+    )
 
 
 

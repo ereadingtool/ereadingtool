@@ -26,6 +26,11 @@ import Session exposing (Session)
 import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
 import Url exposing (Url)
+import User.Instructor.Profile as InstructorProfile
+    exposing
+        ( InstructorProfile(..)
+        , InstructorUsername(..)
+        )
 import User.Profile as Profile exposing (Profile)
 import User.Student.Profile as StudentProfile
     exposing
@@ -76,7 +81,10 @@ init flags url key =
                         ]
 
                 Instructor ->
-                    Browser.Navigation.replaceUrl key (Route.toString Route.Profile__Instructor)
+                    Cmd.batch
+                        [ requestInstructorProfile session config (Viewer.id viewer)
+                        , Browser.Navigation.replaceUrl key (Route.toString Route.Profile__Instructor)
+                        ]
 
         Nothing ->
             Cmd.none
@@ -93,6 +101,7 @@ type Msg
     | GotAuthResult (Result AuthError AuthSuccess)
     | GotSession Session
     | GotStudentProfile (Result Error StudentProfile)
+    | GotInstructorProfile (Result Error InstructorProfile)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -128,7 +137,10 @@ update msg model =
                                 ]
 
                         Instructor ->
-                            Browser.Navigation.replaceUrl model.key (Route.toString Route.Profile__Instructor)
+                            Cmd.batch
+                                [ requestInstructorProfile session model.config (Viewer.id viewer)
+                                , Browser.Navigation.replaceUrl model.key (Route.toString Route.Profile__Instructor)
+                                ]
 
                 Nothing ->
                     Cmd.none
@@ -144,6 +156,32 @@ update msg model =
             , Cmd.none
             )
 
+        GotInstructorProfile (Ok instructorProfile) ->
+            ( { model | profile = Profile.fromInstructorProfile instructorProfile }
+            , Cmd.none
+            )
+
+        GotInstructorProfile (Err err) ->
+            -- ( model
+            ( { model | profile = Profile.fromInstructorProfile fakeInstructorProfile }
+            , Cmd.none
+            )
+
+
+fakeInstructorProfile : InstructorProfile
+fakeInstructorProfile =
+    InstructorProfile
+        (Just 0)
+        []
+        True
+        (Just [])
+        (InstructorProfile.InstructorUsername "fakeInstructor")
+        (InstructorProfile.initProfileURIs
+            { logout_uri = "fakeLogoutURI"
+            , profile_uri = "fakeProfileURI"
+            }
+        )
+
 
 requestStudentProfile : Session -> Config -> Id -> Cmd Msg
 requestStudentProfile session config id =
@@ -155,6 +193,18 @@ requestStudentProfile session config id =
         (Session.cred session)
         GotStudentProfile
         StudentProfile.decoder
+
+
+requestInstructorProfile : Session -> Config -> Id -> Cmd Msg
+requestInstructorProfile session config id =
+    Api.get
+        (Endpoint.studentProfile
+            (Config.restApiUrl config)
+            (Id.id id)
+        )
+        (Session.cred session)
+        GotInstructorProfile
+        InstructorProfile.decoder
 
 
 subscriptions : Model -> Sub Msg

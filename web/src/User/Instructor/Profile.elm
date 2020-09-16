@@ -5,6 +5,7 @@ module User.Instructor.Profile exposing
     , Tag
     , Text
     , addInvite
+    , decoder
     , initProfile
     , initProfileURIs
     , invites
@@ -19,6 +20,8 @@ module User.Instructor.Profile exposing
 
 import Flags
 import Http
+import Json.Decode as Decode exposing (Decoder)
+import Json.Decode.Pipeline exposing (required)
 import Menu.Logout
 import User.Instructor.Invite as InstructorInvite exposing (Email, InstructorInvite)
 import User.Instructor.Invite.Decode as InstructorInviteDecode
@@ -57,11 +60,18 @@ type alias InstructorURIParams =
 
 type alias InstructorProfileParams =
     { id : Maybe Int
-    , texts : List Text
+    , username : String
     , instructor_admin : Bool
     , invites : Maybe (List InstructorInvite.InviteParams)
-    , username : String
+    , texts : List Text
     , uris : InstructorURIParams
+    }
+
+
+type alias InviteParams =
+    { email : String
+    , invite_code : String
+    , expiration : String
     }
 
 
@@ -212,3 +222,59 @@ submitNewInvite csrftoken instructor_invite_uri msg email =
 
     else
         Cmd.none
+
+
+
+-- DECODE
+
+
+decoder : Decoder InstructorProfile
+decoder =
+    Decode.field "profile" paramsDecoder
+        |> Decode.map initProfile
+
+
+paramsDecoder : Decoder InstructorProfileParams
+paramsDecoder =
+    Decode.succeed InstructorProfileParams
+        |> required "id" (Decode.nullable Decode.int)
+        |> required "username" Decode.string
+        |> required "instructor_admin" Decode.bool
+        |> required "invites" (Decode.nullable (Decode.list inviteDecoder))
+        |> required "texts" (Decode.list textDecoder)
+        |> required "uris" uriParamsDecoder
+
+
+textDecoder : Decoder Text
+textDecoder =
+    Decode.succeed Text
+        |> required "id" Decode.int
+        |> required "title" Decode.string
+        |> required "introduction" Decode.string
+        |> required "author" Decode.string
+        |> required "source" Decode.string
+        |> required "difficulty" Decode.string
+        |> required "conclusion" (Decode.nullable Decode.string)
+        |> required "created_by" Decode.string
+        |> required "last_modified_by" (Decode.nullable Decode.string)
+        |> required "created_dt" Decode.string
+        |> required "modified_dt" Decode.string
+        |> required "write_locker" (Decode.nullable Decode.string)
+        |> required "tags" (Decode.list Decode.string)
+        |> required "text_section_count" Decode.int
+        |> required "edit_uri" Decode.string
+
+
+inviteDecoder : Decoder InviteParams
+inviteDecoder =
+    Decode.succeed InviteParams
+        |> required "email" Decode.string
+        |> required "invite_code" Decode.string
+        |> required "expiration" Decode.string
+
+
+uriParamsDecoder : Decoder InstructorURIParams
+uriParamsDecoder =
+    Decode.succeed InstructorURIParams
+        |> required "logout_uri" Decode.string
+        |> required "profile_uri" Decode.string

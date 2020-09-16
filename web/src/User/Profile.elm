@@ -7,6 +7,10 @@ import Menu.Logout
 import Menu.Msg exposing (Msg)
 import Profile exposing (..)
 import User.Instructor.Profile
+    exposing
+        ( InstructorProfile(..)
+        , InstructorUsername(..)
+        )
 import User.Instructor.View
 import User.Student.Profile
     exposing
@@ -55,7 +59,7 @@ initProfile flags =
                     EmptyProfile
 
 
-{-| TODO: probably best to get rid of this empty default student profile
+{-| TODO: probably best to get rid of these empty default profiles
 somehow. This may take a fundamental restructuring of the way that
 the Profile type works. Some pages require a StudentProfile or
 InstructorProfile and it may be better to have them take a Profile and
@@ -77,6 +81,26 @@ toStudentProfile profile =
                 (StudentURIs
                     (User.Student.Resource.toStudentLogoutURI "")
                     (User.Student.Resource.toStudentProfileURI "")
+                )
+
+
+toInstructorProfile : Profile -> User.Instructor.Profile.InstructorProfile
+toInstructorProfile profile =
+    case profile of
+        Instructor instructorProfile ->
+            instructorProfile
+
+        _ ->
+            InstructorProfile
+                (Just 0)
+                []
+                True
+                (Just [])
+                (User.Instructor.Profile.InstructorUsername "")
+                (User.Instructor.Profile.initProfileURIs
+                    { logout_uri = ""
+                    , profile_uri = ""
+                    }
                 )
 
 
