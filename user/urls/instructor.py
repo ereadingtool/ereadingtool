@@ -1,8 +1,8 @@
 from django.urls import path
-from user.views.instructor import (InstructorSignupAPIView, InstructorLoginAPIView, InstructorLogoutAPIView,
-                                   InstructorSignUpView, InstructorLoginView, InstructorProfileView,
-                                   InstructorInviteAPIView, ElmLoadJsInstructorProfileView,
-                                   ElmLoadJsInstructorNoAuthView)
+from user.views.instructor import (InstructorAPIView, InstructorSignupAPIView, InstructorLoginAPIView, 
+                                   InstructorLogoutAPIView, InstructorSignUpView, InstructorLoginView,
+                                   InstructorProfileView, InstructorInviteAPIView, 
+                                   ElmLoadJsInstructorProfileView, ElmLoadJsInstructorNoAuthView)
 
 
 api_urlpatterns = [
@@ -10,6 +10,7 @@ api_urlpatterns = [
     path('api/instructor/signup/', InstructorSignupAPIView.as_view(), name='api-instructor-signup'),
     path('api/instructor/login/', InstructorLoginAPIView.as_view(), name='api-instructor-login'),
     path('api/instructor/logout/', InstructorLogoutAPIView.as_view(), name='api-instructor-logout'),
+    path('api/instructor/<int:pk>/', InstructorAPIView.as_view(), name='api-instructor')
 ]
 
 elm_load_urlpatterns = [

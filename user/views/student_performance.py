@@ -10,8 +10,6 @@ from user.student.models import Student
 
 
 class StudentPerformancePDFView(LoginRequiredMixin, View):
-    # returns permission denied HTTP message rather than redirect to login
-    raise_exception = True
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if not Student.objects.filter(pk=kwargs['pk']).exists():

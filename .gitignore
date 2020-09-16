@@ -177,3 +177,7 @@ Generated/
 
 #node
 node_modules/
+
+# Docker
+secrets.env
+ereadingtool.com
