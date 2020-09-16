@@ -165,7 +165,6 @@ class StudentView(ProfileView):
 
 class StudentAPIConsentToResearchView(LoginRequiredMixin, APIView):
     # returns permission denied HTTP message rather than redirect to login
-    raise_exception = True
 
     def form(self, request: HttpRequest, params: Dict, **kwargs) -> forms.ModelForm:
         return StudentConsentForm(params, **kwargs)

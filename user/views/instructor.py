@@ -77,7 +77,10 @@ class InstructorView(ProfileView):
 
 
 class InstructorAPIView(LoginRequiredMixin, APIView):
-    pass
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        if not Instructor.objects.get(pk=kwargs['pk']):
+            return HttpResponse(status=400)
+        
 
 class InstructorInviteAPIView(LoginRequiredMixin, APIView):
     login_url = Instructor.login_url
