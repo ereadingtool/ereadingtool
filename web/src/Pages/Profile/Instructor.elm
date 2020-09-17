@@ -351,7 +351,7 @@ viewLowerMenu (SafeModel model) =
         [ classList [ ( "lower-menu-item", True ) ] ]
         [ a
             [ class "link"
-            , href (Route.toString Route.NotFound)
+            , href (Route.toString Route.Text__EditorSearch)
             ]
             [ text "Find a text to edit" ]
         ]
