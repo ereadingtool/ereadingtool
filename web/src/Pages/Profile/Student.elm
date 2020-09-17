@@ -411,67 +411,11 @@ view (SafeModel model) =
     { title = "Student Profile"
     , body =
         [ div []
-            [ viewHeader (SafeModel model)
-            , viewContent (SafeModel model)
+            [ viewContent (SafeModel model)
             , Views.view_footer
             ]
         ]
     }
-
-
-viewHeader : SafeModel -> Html Msg
-viewHeader safeModel =
-    Views.view_header
-        (viewTopHeader safeModel)
-        (viewLowerMenu safeModel)
-
-
-viewTopHeader : SafeModel -> List (Html Msg)
-viewTopHeader safeModel =
-    [ div [ classList [ ( "menu_item", True ) ] ]
-        [ a
-            [ class "link"
-            , href
-                (Route.toString Route.Profile__Student)
-            ]
-            [ text "Profile" ]
-        ]
-    , div [ classList [ ( "menu_item", True ) ] ]
-        [ a [ class "link", onClick Logout ]
-            [ text "Logout" ]
-        ]
-
-    -- , div [] [ viewProfileHint safeModel ]
-    ]
-
-
-viewLowerMenu : SafeModel -> List (Html Msg)
-viewLowerMenu (SafeModel model) =
-    [ div
-        [ classList
-            [ ( "lower-menu-item", True )
-
-            -- , ( "lower-menu-item-selected", Menu.Item.selected menu_item )
-            ]
-        ]
-      <|
-        viewSearchTextsHint
-            (SafeModel model)
-            ++ [ a
-                    [ class "link"
-                    , href (Route.toString Route.Text__Search)
-                    ]
-                    [ text "Find a text to read" ]
-               ]
-    , div
-        [ classList [ ( "lower-menu-item", True ) ] ]
-        [ a
-            [ class "link"
-            , href (Route.toString Route.NotFound)
-            ]
-            [ text "Practice Flashcards" ]
-        ]
-    ]
 
 
 viewContent : SafeModel -> Html Msg

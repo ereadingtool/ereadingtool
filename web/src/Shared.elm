@@ -16,8 +16,8 @@ import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
 import Browser.Navigation exposing (Key)
 import Html exposing (..)
-import Html.Attributes exposing (class, href)
-import Html.Events exposing (onClick)
+import Html.Attributes exposing (attribute, class, classList, href, id)
+import Html.Events exposing (onClick, onInput)
 import Http exposing (Error)
 import Id exposing (Id)
 import Json.Encode as Encode
@@ -96,23 +96,16 @@ init flags url key =
 
 
 type Msg
-    = Login
-    | Logout
-    | GotAuthResult (Result AuthError AuthSuccess)
+    = GotAuthResult (Result AuthError AuthSuccess)
     | GotSession Session
     | GotStudentProfile (Result Error StudentProfile)
     | GotInstructorProfile (Result Error InstructorProfile)
+    | Logout
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Login ->
-            ( model, login )
-
-        Logout ->
-            ( model, logout )
-
         GotAuthResult (Ok authSuccess) ->
             ( { model | authMessage = Api.authSuccessMessage authSuccess }
             , Cmd.none
@@ -165,6 +158,11 @@ update msg model =
             -- ( model
             ( { model | profile = Profile.fromInstructorProfile fakeInstructorProfile }
             , Cmd.none
+            )
+
+        Logout ->
+            ( model
+            , Api.logout ()
             )
 
 
@@ -227,46 +225,116 @@ view { page, toMsg } model =
     { title = page.title
     , body =
         [ div [ class "layout" ]
-            [ div [ class "page" ] page.body
-            , header [ class "navbar" ]
-                [ a [ class "link", href (Route.toString Route.Top) ] [ text "Homepage" ]
-                , a [ class "link", href (Route.toString Route.NotFound) ] [ text "Not found" ]
-                , a [ class "link", href (Route.toString Route.About) ] [ text "About" ]
-                , a [ class "link", href (Route.toString Route.Acknowledgments) ] [ text "Acknowledgments" ]
-                , a [ class "link", href (Route.toString Route.ProtectedApplicationTemplate) ] [ text "Protected" ]
-                ]
-            , div []
-                [ div []
-                    [ text ("Token: " ++ Api.exposeToken (Session.cred model.session)) ]
-                , div [] [ text ("REST API URL: " ++ Config.restApiUrl model.config) ]
-                , button [ onClick (toMsg Login) ] [ text "Login" ]
-                , button [ onClick (toMsg Logout) ] [ text "Logout" ]
-                , div [] [ text ("Auth Message: " ++ model.authMessage) ]
-                ]
+            [ viewHeader model toMsg
+            , div [ class "page" ] page.body
             ]
         ]
     }
 
 
-
--- AUTH
-
-
-login : Cmd msg
-login =
-    let
-        creds =
-            Encode.object
-                [ ( "username", Encode.string "test@email.com" )
-                , ( "password", Encode.string "password" )
+viewHeader : Model -> (Msg -> msg) -> Html msg
+viewHeader model toMsg =
+    div [] <|
+        case Session.viewer model.session of
+            Just viewer ->
+                [ div [ id "header" ]
+                    [ viewLogo
+                    , div [ class "menu" ] <|
+                        viewTopHeader (Viewer.role viewer) toMsg
+                    ]
+                , div [ id "lower-menu" ]
+                    [ div [ id "lower-menu-items" ] <|
+                        viewLowerMenu (Viewer.role viewer)
+                    ]
                 ]
-    in
-    Api.login creds
+
+            Nothing ->
+                [ div [ id "header" ]
+                    [ viewLogo ]
+                , div [ id "lower-menu" ] []
+                ]
 
 
-logout : Cmd msg
-logout =
-    Api.logout ()
+viewLogo : Html msg
+viewLogo =
+    Html.img
+        [ attribute "src" "/public/img/star_logo.png"
+        , id "logo"
+        , attribute "alt" "Steps To Advanced Reading Logo"
+        ]
+        []
+
+
+viewTopHeader : Role -> (Msg -> msg) -> List (Html msg)
+viewTopHeader role toMsg =
+    [ div [ classList [ ( "menu_item", True ) ] ]
+        [ a
+            [ class "link"
+            , href <|
+                case role of
+                    Student ->
+                        Route.toString Route.Profile__Student
+
+                    Instructor ->
+                        Route.toString Route.Profile__Instructor
+            ]
+            [ text "Profile" ]
+        ]
+    , div [ classList [ ( "menu_item", True ) ] ]
+        [ a [ class "link", onClick (toMsg Logout) ]
+            [ text "Logout" ]
+        ]
+    ]
+
+
+viewLowerMenu : Role -> List (Html msg)
+viewLowerMenu role =
+    case role of
+        Student ->
+            [ div
+                [ classList [ ( "lower-menu-item", True ) ] ]
+                [ a
+                    [ class "link"
+                    , href (Route.toString Route.Text__Search)
+                    ]
+                    [ text "Find a text to read" ]
+                ]
+            , div
+                [ classList [ ( "lower-menu-item", True ) ] ]
+                [ a
+                    [ class "link"
+                    , href (Route.toString Route.NotFound)
+                    ]
+                    [ text "Practice Flashcards" ]
+                ]
+            ]
+
+        Instructor ->
+            [ div
+                [ classList [ ( "lower-menu-item", True ) ] ]
+                [ a
+                    [ class "link"
+                    , href (Route.toString Route.Text__EditorSearch)
+                    ]
+                    [ text "Find a text to edit" ]
+                ]
+            , div
+                [ classList [ ( "lower-menu-item", True ) ] ]
+                [ a
+                    [ class "link"
+                    , href (Route.toString Route.Text__Search)
+                    ]
+                    [ text "Find a text to read" ]
+                ]
+            , div
+                [ classList [ ( "lower-menu-item", True ) ] ]
+                [ a
+                    [ class "link"
+                    , href (Route.toString Route.NotFound)
+                    ]
+                    [ text "Create a new text" ]
+                ]
+            ]
 
 
 

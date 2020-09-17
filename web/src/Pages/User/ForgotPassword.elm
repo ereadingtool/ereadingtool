@@ -151,8 +151,7 @@ view model =
     { title = "Forgot Password"
     , body =
         [ div []
-            [ Views.view_unauthed_header
-            , viewContent model
+            [ viewContent model
             , Views.view_footer
             ]
         ]

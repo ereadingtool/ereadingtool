@@ -224,8 +224,7 @@ view model =
     { title = "Instructor Signup"
     , body =
         [ div []
-            [ Views.view_unauthed_header
-            , div [ classList [ ( "signup", True ) ] ]
+            [ div [ classList [ ( "signup", True ) ] ]
                 [ div [ class "signup_title" ] [ Html.text "Instructor Signup" ]
                 , div [ classList [ ( "signup_box", True ) ] ] <|
                     SignUp.view_email_input UpdateEmail model
