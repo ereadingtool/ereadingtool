@@ -10,21 +10,23 @@ module User.Student.Profile.Help exposing
     , popupToOverlayID
     , preferredDifficultyHelp
     , prev
-    , profileHelp
     , scrollToFirstMsg
     , scrollToNextMsg
     , scrollToPrevMsg
     , searchTextsHelp
     , setVisible
+    , showHintsHelp
     , usernameHelp
     )
 
+import Api.Config exposing (showHelp)
 import Help exposing (HelpMsgID, HelpMsgOverlayID, HelpMsgStr, HelpMsgVisible)
 import Help.PopUp exposing (Help)
 
 
 type StudentHelp
-    = UsernameHelp HelpMsgStr
+    = ShowHintsHelp HelpMsgStr
+    | UsernameHelp HelpMsgStr
     | MyPerformanceHelp HelpMsgStr
     | PreferredDifficultyHelp HelpMsgStr
     | UsernameMenuItemHelp HelpMsgStr
@@ -40,6 +42,13 @@ usernameHelp =
     UsernameHelp
         """You can create a new username that is distinct from your email address if you choose.
      Your username will be visible to instructors and other students if you comment on any texts."""
+
+
+showHintsHelp : StudentHelp
+showHintsHelp =
+    ShowHintsHelp
+        """Welcome to the Steps to Advanced Reading! The following tutorial will walk you through
+        using this app. You can turn off the tutorial here and come back to turn it on at any time."""
 
 
 myPerformanceHelp : StudentHelp
@@ -58,13 +67,6 @@ preferredDifficultyHelp =
      then you can use these brief descriptions to pick the level that is closest to your current abilities."""
 
 
-profileHelp : StudentHelp
-profileHelp =
-    UsernameMenuItemHelp
-        """You can return to this profile page at any time, by clicking on your username in the top right corner of the
-    screen. Hovering over your username, you can see the option to log out."""
-
-
 searchTextsHelp : StudentHelp
 searchTextsHelp =
     SearchTextsMenuItemHelp
@@ -73,10 +75,10 @@ searchTextsHelp =
 
 help_msgs : List StudentHelp
 help_msgs =
-    [ usernameHelp
+    [ showHintsHelp
+    , usernameHelp
     , myPerformanceHelp
     , preferredDifficultyHelp
-    , profileHelp
     , searchTextsHelp
     ]
 
@@ -135,6 +137,9 @@ scrollToFirstMsg student_profile_help =
 helpMsg : StudentHelp -> HelpMsgStr
 helpMsg help_msg =
     case help_msg of
+        ShowHintsHelp hintsHelp ->
+            hintsHelp
+
         UsernameHelp unameHelp ->
             unameHelp
 
@@ -154,6 +159,9 @@ helpMsg help_msg =
 popupToID : StudentHelp -> HelpMsgID
 popupToID studentHelp =
     case studentHelp of
+        ShowHintsHelp _ ->
+            "help_hints"
+
         UsernameHelp _ ->
             "username_hint"
 

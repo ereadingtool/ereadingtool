@@ -13,16 +13,23 @@ port module Api exposing
     , logout
     , post
     , put
+    , toggleShowHelp
     , viewerChanges
+    , websocketConnect
+    , websocketReceive
+    , websocketSend
     )
 
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint exposing (Endpoint)
+import Api.WebSocket as WebSocket exposing (WebSocketCmd, WebSocketMsg)
 import Browser
 import Browser.Navigation as Nav
 import Http
+import Id exposing (Id)
 import Json.Decode as Decode exposing (Decoder, Value, field, string)
 import Json.Decode.Pipeline exposing (required)
+import Role exposing (Role)
 import Url exposing (Url)
 
 
@@ -59,6 +66,13 @@ exposeToken maybeCred =
 
         Nothing ->
             ""
+
+
+
+-- HELP
+
+
+port toggleShowHelp : Value -> Cmd msg
 
 
 
@@ -146,27 +160,31 @@ Otherwise, we have a guest.
 port onAuthStoreChange : (Value -> msg) -> Sub msg
 
 
-viewerChanges : (Maybe viewer -> msg) -> Decoder (Cred -> viewer) -> Sub msg
+viewerChanges : (Maybe viewer -> msg) -> Decoder (Cred -> Id -> Role -> viewer) -> Sub msg
 viewerChanges toMsg decoder =
     onAuthStoreChange (\val -> toMsg (decodeFromChange decoder val))
 
 
-decodeFromChange : Decoder (Cred -> viewer) -> Value -> Maybe viewer
+decodeFromChange : Decoder (Cred -> Id -> Role -> viewer) -> Value -> Maybe viewer
 decodeFromChange viewerDecoder val =
     Decode.decodeValue (storageDecoder viewerDecoder) val
         |> Result.toMaybe
 
 
-storageDecoder : Decoder (Cred -> viewer) -> Decoder viewer
+storageDecoder : Decoder (Cred -> Id -> Role -> viewer) -> Decoder viewer
 storageDecoder viewerDecoder =
     Decode.field "user" (decoderFromCred viewerDecoder)
 
 
-decoderFromCred : Decoder (Cred -> a) -> Decoder a
+decoderFromCred : Decoder (Cred -> Id -> Role -> a) -> Decoder a
 decoderFromCred decoder =
-    Decode.map2 (\fromCred cred -> fromCred cred)
+    Decode.map4 (\fromCred cred -> fromCred cred)
         decoder
         credDecoder
+        (Decode.field "id" Id.decoder)
+        (Decode.field "role" Decode.string
+            |> Decode.andThen Role.decoder
+        )
 
 
 
@@ -180,7 +198,7 @@ access to the token to this module.
 
 -}
 application :
-    Decoder (Cred -> viewer)
+    Decoder (Cred -> Id -> Role -> viewer)
     ->
         { init : { maybeConfig : Maybe Config, maybeViewer : Maybe viewer } -> Url -> Nav.Key -> ( model, Cmd msg )
         , onUrlChange : Url -> msg
@@ -321,3 +339,40 @@ delete url maybeCred body toMsg decoder =
         , timeout = Nothing
         , tracker = Nothing
         }
+
+
+
+-- WEBSOCKETS
+
+
+port receiveSocketMsg : (Value -> msg) -> Sub msg
+
+
+port sendSocketCommand : Value -> Cmd msg
+
+
+
+-- wsSend : WebSocketCmd -> Cmd msg
+-- wsSend command =
+
+
+websocketConnect : { name : String, address : String } -> Cmd msg
+websocketConnect { name, address } =
+    WebSocket.send sendSocketCommand <|
+        WebSocket.Connect
+            { name = name, address = address, protocol = "" }
+
+
+websocketSend : { name : String, content : Value } -> Cmd msg
+websocketSend message =
+    let
+        dbg =
+            Debug.log "ws message out" message
+    in
+    WebSocket.send sendSocketCommand <|
+        WebSocket.Send message
+
+
+websocketReceive : (Result Decode.Error WebSocketMsg -> msg) -> Sub msg
+websocketReceive toMsg =
+    receiveSocketMsg <| WebSocket.receive toMsg

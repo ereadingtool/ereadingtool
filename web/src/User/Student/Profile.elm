@@ -3,6 +3,7 @@ module User.Student.Profile exposing
     , StudentProfileParams
     , StudentURIParams
     , StudentURIs(..)
+    , decoder
     , initProfile
     , profileUriToString
     , setStudentDifficultyPreference
@@ -16,8 +17,11 @@ module User.Student.Profile exposing
     , studentUserNameToString
     )
 
+import Json.Decode as Decode exposing (Decoder)
+import Json.Decode.Pipeline exposing (required)
 import Text.Model as Text
 import User.Student.Resource as StudentResource
+import Utils
 
 
 type alias StudentURIParams =
@@ -127,3 +131,31 @@ initProfile params =
             (StudentResource.toStudentLogoutURI params.uris.logout_uri)
             (StudentResource.toStudentProfileURI params.uris.profile_uri)
         )
+
+
+
+-- DECODE
+
+
+uriParamsDecoder : Decoder StudentURIParams
+uriParamsDecoder =
+    Decode.succeed StudentURIParams
+        |> required "logout_uri" Decode.string
+        |> required "profile_uri" Decode.string
+
+
+paramsDecoder : Decoder StudentProfileParams
+paramsDecoder =
+    Decode.succeed StudentProfileParams
+        |> required "id" (Decode.nullable Decode.int)
+        |> required "username" (Decode.nullable Decode.string)
+        |> required "email" Decode.string
+        |> required "difficulty_preference" (Decode.nullable Utils.stringTupleDecoder)
+        |> required "difficulties" (Decode.list Utils.stringTupleDecoder)
+        |> required "uris" uriParamsDecoder
+
+
+decoder : Decoder StudentProfile
+decoder =
+    Decode.field "profile" paramsDecoder
+        |> Decode.map initProfile

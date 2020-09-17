@@ -179,5 +179,5 @@ Generated/
 node_modules/
 
 # Docker
-ereadingtool.com
 secrets.env
+ereadingtool.com

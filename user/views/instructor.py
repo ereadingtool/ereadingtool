@@ -76,6 +76,20 @@ class InstructorView(ProfileView):
     login_url = Instructor.login_url
 
 
+class InstructorAPIView(LoginRequiredMixin, APIView):
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        if not Instructor.objects.get(pk=kwargs['pk']):
+            return HttpResponse(status=400)
+
+        instructor = Instructor.objects.get(pk=kwargs['pk'])
+
+        instructor_dict = instructor.to_dict()
+
+        return HttpResponse(json.dumps({
+            'profile': instructor_dict,
+        }))
+
+
 class InstructorInviteAPIView(LoginRequiredMixin, APIView):
     login_url = Instructor.login_url
 

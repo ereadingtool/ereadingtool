@@ -1,7 +1,7 @@
 module Spa.Page exposing
     ( Page
     , static, sandbox, element, application
-    , protectedApplication
+    , protectedApplication, protectedInstructorApplication, protectedStudentApplication
     )
 
 {-|
@@ -13,11 +13,13 @@ module Spa.Page exposing
 -}
 
 import Browser.Navigation as Nav
+import Role exposing (Role(..))
 import Session
 import Shared
 import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
 import Spa.Url exposing (Url)
+import Viewer
 
 
 type alias Page params model msg =
@@ -134,12 +136,181 @@ protectedApplication page =
 
                 Nothing ->
                     Sub.none
-    , save = \_ shared -> shared
+    , save =
+        \maybeModel shared ->
+            case maybeModel of
+                Just model ->
+                    page.save model shared
+
+                Nothing ->
+                    shared
     , load =
-        \shared model ->
+        \shared maybeModel ->
             case Session.viewer shared.session of
                 Just viewer ->
-                    ( model, Cmd.none )
+                    case maybeModel of
+                        Just model ->
+                            page.load shared model
+                                |> Tuple.mapFirst Just
+
+                        Nothing ->
+                            ( Nothing, Cmd.none )
+
+                Nothing ->
+                    ( Nothing
+                    , Nav.pushUrl shared.key (Route.toString Route.Top)
+                    )
+    }
+
+
+protectedStudentApplication :
+    { init : Shared.Model -> Url params -> ( model, Cmd msg )
+    , update : msg -> model -> ( model, Cmd msg )
+    , view : model -> Document msg
+    , subscriptions : model -> Sub msg
+    , save : model -> Shared.Model -> Shared.Model
+    , load : Shared.Model -> model -> ( model, Cmd msg )
+    }
+    -> Page params (Maybe model) msg
+protectedStudentApplication page =
+    { init =
+        \shared url ->
+            case Session.viewer shared.session of
+                Just viewer ->
+                    case Viewer.role viewer of
+                        Student ->
+                            page.init shared url |> Tuple.mapFirst Just
+
+                        Instructor ->
+                            ( Nothing
+                            , Nav.pushUrl url.key (Route.toString Route.Login__Instructor)
+                            )
+
+                Nothing ->
+                    ( Nothing
+                    , Nav.pushUrl url.key (Route.toString Route.Top)
+                    )
+    , update =
+        \msg maybeModel ->
+            case maybeModel of
+                Just model ->
+                    page.update msg model |> Tuple.mapFirst Just
+
+                Nothing ->
+                    ( Nothing, Cmd.none )
+    , view =
+        \maybeModel ->
+            case maybeModel of
+                Just model ->
+                    page.view model
+
+                Nothing ->
+                    { title = "Redirecting to login page", body = [] }
+    , subscriptions =
+        \maybeModel ->
+            case maybeModel of
+                Just model ->
+                    page.subscriptions model
+
+                Nothing ->
+                    Sub.none
+    , save =
+        \maybeModel shared ->
+            case maybeModel of
+                Just model ->
+                    page.save model shared
+
+                Nothing ->
+                    shared
+    , load =
+        \shared maybeModel ->
+            case Session.viewer shared.session of
+                Just viewer ->
+                    case maybeModel of
+                        Just model ->
+                            page.load shared model
+                                |> Tuple.mapFirst Just
+
+                        Nothing ->
+                            ( Nothing, Cmd.none )
+
+                Nothing ->
+                    ( Nothing
+                    , Nav.pushUrl shared.key (Route.toString Route.Top)
+                    )
+    }
+
+
+protectedInstructorApplication :
+    { init : Shared.Model -> Url params -> ( model, Cmd msg )
+    , update : msg -> model -> ( model, Cmd msg )
+    , view : model -> Document msg
+    , subscriptions : model -> Sub msg
+    , save : model -> Shared.Model -> Shared.Model
+    , load : Shared.Model -> model -> ( model, Cmd msg )
+    }
+    -> Page params (Maybe model) msg
+protectedInstructorApplication page =
+    { init =
+        \shared url ->
+            case Session.viewer shared.session of
+                Just viewer ->
+                    case Viewer.role viewer of
+                        Student ->
+                            ( Nothing
+                            , Nav.pushUrl url.key (Route.toString Route.Profile__Student)
+                            )
+
+                        Instructor ->
+                            page.init shared url |> Tuple.mapFirst Just
+
+                Nothing ->
+                    ( Nothing
+                    , Nav.pushUrl url.key (Route.toString Route.Top)
+                    )
+    , update =
+        \msg maybeModel ->
+            case maybeModel of
+                Just model ->
+                    page.update msg model |> Tuple.mapFirst Just
+
+                Nothing ->
+                    ( Nothing, Cmd.none )
+    , view =
+        \maybeModel ->
+            case maybeModel of
+                Just model ->
+                    page.view model
+
+                Nothing ->
+                    { title = "Redirecting to login page", body = [] }
+    , subscriptions =
+        \maybeModel ->
+            case maybeModel of
+                Just model ->
+                    page.subscriptions model
+
+                Nothing ->
+                    Sub.none
+    , save =
+        \maybeModel shared ->
+            case maybeModel of
+                Just model ->
+                    page.save model shared
+
+                Nothing ->
+                    shared
+    , load =
+        \shared maybeModel ->
+            case Session.viewer shared.session of
+                Just viewer ->
+                    case maybeModel of
+                        Just model ->
+                            page.load shared model
+                                |> Tuple.mapFirst Just
+
+                        Nothing ->
+                            ( Nothing, Cmd.none )
 
                 Nothing ->
                     ( Nothing
