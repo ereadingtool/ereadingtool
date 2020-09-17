@@ -238,7 +238,7 @@ viewHeader model toMsg =
         case Session.viewer model.session of
             Just viewer ->
                 [ div [ id "header" ]
-                    [ viewLogo
+                    [ viewLogo model.session
                     , div [ class "menu" ] <|
                         viewTopHeader (Viewer.role viewer) toMsg
                     ]
@@ -250,19 +250,34 @@ viewHeader model toMsg =
 
             Nothing ->
                 [ div [ id "header" ]
-                    [ viewLogo ]
+                    [ viewLogo model.session ]
                 , div [ id "lower-menu" ] []
                 ]
 
 
-viewLogo : Html msg
-viewLogo =
-    Html.img
-        [ attribute "src" "/public/img/star_logo.png"
-        , id "logo"
-        , attribute "alt" "Steps To Advanced Reading Logo"
+viewLogo : Session -> Html msg
+viewLogo session =
+    a
+        [ href <|
+            case Session.viewer session of
+                Just viewer ->
+                    case Viewer.role viewer of
+                        Student ->
+                            Route.toString Route.Profile__Student
+
+                        Instructor ->
+                            Route.toString Route.Profile__Instructor
+
+                Nothing ->
+                    Route.toString Route.Top
         ]
-        []
+        [ Html.img
+            [ attribute "src" "/public/img/star_logo.png"
+            , id "logo"
+            , attribute "alt" "Steps To Advanced Reading Logo"
+            ]
+            []
+        ]
 
 
 viewTopHeader : Role -> (Msg -> msg) -> List (Html msg)
