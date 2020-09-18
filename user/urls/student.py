@@ -9,6 +9,7 @@ from user.views.student_performance import StudentPerformancePDFView
 api_urlpatterns = [
     path('api/student/signup/', StudentSignupAPIView.as_view(), name='api-student-signup'),
     path('api/student/login/', StudentLoginAPIView.as_view(), name='api-student-login'),
+    # TODO: this route is unused since the client side simply invalidates the JWT
     path('api/student/logout/', StudentLogoutAPIView.as_view(), name='api-student-logout'),
     path('api/student/<int:pk>/', StudentAPIView.as_view(), name='api-student'),
     path('api/student/<int:pk>/consent_to_research/', StudentAPIConsentToResearchView.as_view(),

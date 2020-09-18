@@ -296,6 +296,7 @@ class StudentSignupAPIView(APIView):
         return HttpResponse(json.dumps({'id': student.pk, 'redirect': reverse('student-login')}))
 
 
+# TODO: this route is unused since the client side simply invalidates the JWT
 class StudentLogoutAPIView(LoginRequiredMixin, View):
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         logout(request)
@@ -305,16 +306,19 @@ class StudentLogoutAPIView(LoginRequiredMixin, View):
 
 class StudentLoginAPIView(APIView):
     """
-    This class handles the student's login by returning a jwt_token to the client 
+    This class handles the student's login by returning a JWT to the client 
     """
     def form(self, request: HttpRequest, params: Dict) -> Form:
         return StudentLoginForm(request, params)
 
-    # TODO: how do we know there was a successful form validation here?
-    # That is required before calling `get_user()`
     def post_success(self, request: HttpRequest, student_login_form: Form) -> JsonResponse:
-        
-        # `get_user()`
+        """
+        Form validation is done in user/views/api.py so we assume the form fields are valid.
+        This function will get the user `pk` and generate a token using that value. The token's 
+        life span can be changed in settings.py by way of `JWT_EXPIRATION_DELTA`
+        Args: HttpRequest: presumably a POST. Form: a Django type holding form data, aliased up top.
+        Returns: JsonResponse containing the new JWT
+        """        
         reader_user = student_login_form.get_user()
 
         token = jwt_encode_token(
@@ -331,11 +335,10 @@ class StudentLoginAPIView(APIView):
         # payload now contains string 'Bearer', the token, and the expiration time JWT_EXPIRATION_DELTA (in seconds)
         jwt_payload = jwt_get_json_with_token(token)
 
-        student = reader_user.student
-
         # manually add the field `[id]` to the jwt payload
-        jwt_payload['id'] = student.pk
+        jwt_payload['id'] = reader_user.student.pk
 
+        # return to the dispatcher to send out an HTTP response
         return JsonResponse(jwt_payload)
 
 
@@ -353,6 +356,7 @@ class StudentSignUpView(TemplateView):
         return context
 
 
+# TODO
 class StudentLoginView(TemplateView):
     template_name = 'student/login.html'
 
@@ -364,6 +368,7 @@ class StudentLoginView(TemplateView):
         return context
 
 
+# TODO
 class StudentProfileView(StudentView, TemplateView):
     template_name = 'student/profile.html'
 
@@ -374,7 +379,7 @@ class StudentProfileView(StudentView, TemplateView):
 
         return context
 
-
+# TODO
 class StudentFlashcardView(StudentView, TemplateView):
     template_name = 'student/flashcards.html'
 

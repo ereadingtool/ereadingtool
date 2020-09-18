@@ -127,19 +127,26 @@ class InstructorLoginAPIView(APIView):
         return InstructorLoginForm(request, params)
 
     def post_success(self, request: HttpRequest, instructor_login_form: Form) -> JsonResponse:
+
+        # Assume successful form validation
         reader_user = instructor_login_form.get_user()
 
         token = jwt_encode_token(
+            # cleaned_data sanitizes the form fields https://docs.djangoproject.com/en/3.1/ref/forms/api/#accessing-clean-data
+            # orig_iat means "original issued at" https://tools.ietf.org/html/rfc7519
             reader_user, instructor_login_form.cleaned_data.get('orig_iat')
         )
-
+        # not sure if this is the best way to go about failing out if you're a student...
         if hasattr(reader_user, 'student'):
             return self.post_error({'all': 'Something went wrong.  Please try a different username and password.'})
 
+        # payload now contains string 'Bearer', the token, and the expiration time JWT_EXPIRATION_DELTA (in seconds)
         jwt_payload = jwt_get_json_with_token(token)
 
+        # manually add the field `[id]` to the jwt payload
         jwt_payload['id'] = reader_user.instructor.pk
 
+        # return to the dispatcher to send out an HTTP response
         return JsonResponse(jwt_payload)
 
 
