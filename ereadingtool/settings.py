@@ -39,6 +39,8 @@ YANDEX_DEFINITION_API_KEY = os.getenv('YANDEX_DEFINITION_API_KEY')
 # days
 INVITATION_EXPIRY = 30
 
+JWT_EXPIRATION_DELTA = 86400
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -102,7 +104,7 @@ LOGGING = {
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
-DEBUG = False 
+DEBUG = True 
 DEV = False
 
 ALLOWED_HOSTS = ['0.0.0.0',
