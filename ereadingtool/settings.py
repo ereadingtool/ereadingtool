@@ -29,6 +29,10 @@ CHANNEL_LAYERS = {
 
 ADMINS = [('Andrew', 'als2@pdx.edu'), ('EReader', 'ereader@pdx.edu')]
 
+# Prevents CommondMiddleware from `APPEND_SLASH` (defaulted to `True`)
+# adding a forward slash to all URLs sent to the backend (by way of 301)
+APPEND_SLASH = False
+
 YANDEX_TRANSLATION_API_KEY = os.getenv('YANDEX_TRANSLATION_API_KEY')
 YANDEX_DEFINITION_API_KEY = os.getenv('YANDEX_DEFINITION_API_KEY')
 
@@ -98,7 +102,7 @@ LOGGING = {
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
-DEBUG = False
+DEBUG = False 
 DEV = False
 
 ALLOWED_HOSTS = ['0.0.0.0',

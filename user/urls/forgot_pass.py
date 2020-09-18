@@ -6,8 +6,8 @@ from user.views.forgot_password import ElmLoadPassResetConfirmView, ElmLoadPassw
 
 
 api_urlpatterns = [
-    path('api/password/reset/', PasswordResetAPIView.as_view(), name='api-password-reset'),
-    path('api/password/reset/confirm/', PasswordResetConfirmAPIView.as_view(), name='api-password-reset-confirm'),
+    path('api/password/reset', PasswordResetAPIView.as_view(), name='api-password-reset'),
+    path('api/password/reset/confirm', PasswordResetConfirmAPIView.as_view(), name='api-password-reset-confirm'),
 ]
 
 urlpatterns = [
