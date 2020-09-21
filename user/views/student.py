@@ -309,6 +309,7 @@ class StudentLoginAPIView(APIView):
     This class handles the student's login by returning a JWT to the client 
     """
     def form(self, request: HttpRequest, params: Dict) -> Form:
+        # This class appears to just be an `AuthenticationForm` since it simply passes
         return StudentLoginForm(request, params)
 
     def post_success(self, request: HttpRequest, student_login_form: Form) -> JsonResponse:
@@ -328,6 +329,7 @@ class StudentLoginAPIView(APIView):
         )
 
         # not sure if this is the best way to go about failing out if you're an instructor...
+        # TODO: Move this logic into the form validator
         if hasattr(reader_user, 'instructor'):
             return self.post_error({'all': 'Something went wrong.  Please try a different username and password.'})
 

@@ -148,6 +148,7 @@ class AuthenticationForm(BaseAuthenticationForm):
         if user.exists():
             try:
                 username = user.get().username
+            # Does this exception happen if the database contains two of the same record?
             except ReaderUser.MultipleObjectsReturned:
                 pass
 
@@ -158,6 +159,8 @@ class InstructorLoginForm(AuthenticationForm):
     pass
 
 
+# TODO: StudentLoginAPIView `post_success()` contains code to confirm that the person
+# attempting to login isn't an instructor. Instead this method should be dispatched...
 class StudentLoginForm(AuthenticationForm):
     pass
 
