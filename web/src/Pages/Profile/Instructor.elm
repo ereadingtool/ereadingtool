@@ -177,11 +177,10 @@ newInviteResponseDecoder =
 
 view : SafeModel -> Document Msg
 view (SafeModel model) =
-    { title = "ProtectedApplicationTemplate"
+    { title = "Instructor Profile"
     , body =
         [ div []
-            [ viewHeader (SafeModel model)
-            , viewContent (SafeModel model)
+            [ viewContent (SafeModel model)
             , Views.view_footer
             ]
         ]
@@ -315,58 +314,6 @@ viewInstructorInviteCreate (SafeModel model) =
             [ Html.input [ onClick SubmittedNewInvite, attribute "type" "button", attribute "value" "Submit" ] []
             ]
         ]
-
-
-
--- VIEW: HEADER
-
-
-viewHeader : SafeModel -> Html Msg
-viewHeader safeModel =
-    Views.view_header
-        (viewTopHeader safeModel)
-        (viewLowerMenu safeModel)
-
-
-viewTopHeader : SafeModel -> List (Html Msg)
-viewTopHeader safeModel =
-    [ div [ classList [ ( "menu_item", True ) ] ]
-        [ a
-            [ class "link"
-            , href
-                (Route.toString Route.Profile__Instructor)
-            ]
-            [ text "Profile" ]
-        ]
-    , div [ classList [ ( "menu_item", True ) ] ]
-        [ a [ class "link", onClick Logout ]
-            [ text "Logout" ]
-        ]
-    ]
-
-
-viewLowerMenu : SafeModel -> List (Html Msg)
-viewLowerMenu (SafeModel model) =
-    [ div
-        [ classList [ ( "lower-menu-item", True ) ] ]
-        [ a
-            [ class "link"
-            , href (Route.toString Route.Text__EditorSearch)
-            ]
-            [ text "Find a text to edit" ]
-        ]
-    , div
-        [ classList
-            [ ( "lower-menu-item", True )
-            ]
-        ]
-        [ a
-            [ class "link"
-            , href (Route.toString Route.Text__Search)
-            ]
-            [ text "Find a text to read" ]
-        ]
-    ]
 
 
 

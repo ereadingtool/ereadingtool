@@ -109,8 +109,7 @@ view model =
     { title = "Instructor Login"
     , body =
         [ div []
-            [ Views.view_unauthed_header
-            , viewContent model
+            [ viewContent model
             , Views.view_footer
             ]
         ]
@@ -124,7 +123,7 @@ viewContent model =
             { onEmailUpdate = UpdateEmail
             , onPasswordUpdate = UpdatePassword
             , onSubmittedForm = SubmittedLogin
-            , signUpRoute = Route.Signup__Student
+            , signUpRoute = Route.Signup__Instructor
             , otherLoginRole = "student"
             , otherLoginRoute = Route.Top
             , maybeHelpMessage = Nothing

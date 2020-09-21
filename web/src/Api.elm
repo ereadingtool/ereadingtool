@@ -7,7 +7,6 @@ port module Api exposing
     , authResult
     , authSuccessMessage
     , delete
-    , exposeToken
     , get
     , login
     , logout
@@ -50,22 +49,6 @@ credDecoder : Decoder Cred
 credDecoder =
     Decode.succeed Cred
         |> required "token" Decode.string
-
-
-{-| Exposes the token outside this module
-
-TODO: remove this. This should be considered a temporary measure for use while transitioning the
-backend communication layer.
-
--}
-exposeToken : Maybe Cred -> String
-exposeToken maybeCred =
-    case maybeCred of
-        Just (Cred val) ->
-            val
-
-        Nothing ->
-            ""
 
 
 

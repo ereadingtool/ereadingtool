@@ -109,8 +109,7 @@ view model =
     { title = "Student Login"
     , body =
         [ div []
-            [ Views.view_unauthed_header
-            , viewContent model
+            [ viewContent model
             , Views.view_footer
             ]
         ]
