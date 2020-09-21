@@ -43,89 +43,89 @@ type TextComponent
 
 
 init : Text -> TextComponent
-init text =
+init txt =
     TextComponent
-        text
+        txt
         init_text_fields
-        (tags_to_dict text.tags)
-        (Text.Section.Component.Group.fromTextSections text.sections)
+        (tags_to_dict txt.tags)
+        (Text.Section.Component.Group.fromTextSections txt.sections)
 
 
 text : TextComponent -> Text
-text (TextComponent text _ text_tags component_group) =
+text (TextComponent txt _ text_tags component_group) =
     Text.set_tags
-        (Text.set_sections text (Text.Section.Component.Group.toTextSections component_group))
+        (Text.set_sections txt (Text.Section.Component.Group.toTextSections component_group))
         (Just <| Dict.keys text_tags)
 
 
 text_fields : TextComponent -> TextFields
-text_fields (TextComponent _ text_fields _ _) =
-    text_fields
+text_fields (TextComponent _ textFields _ _) =
+    textFields
 
 
 set_text_fields : TextComponent -> TextFields -> TextComponent
-set_text_fields text_component text_fields =
+set_text_fields text_component _ =
     text_component
 
 
 set_intro_editable : TextComponent -> Bool -> TextComponent
-set_intro_editable (TextComponent text text_fields text_tags component_group) editable =
+set_intro_editable (TextComponent txt textFields text_tags component_group) editable =
     let
         (Text.Field.TextIntro intro_field_attrs) =
-            Text.Field.intro text_fields
+            Text.Field.intro textFields
 
         new_text_fields =
-            Text.Field.set_intro text_fields { intro_field_attrs | error = False, editable = editable }
+            Text.Field.set_intro textFields { intro_field_attrs | error = False, editable = editable }
     in
-    TextComponent text new_text_fields text_tags component_group
+    TextComponent txt new_text_fields text_tags component_group
 
 
 set_conclusion_editable : TextComponent -> Bool -> TextComponent
-set_conclusion_editable (TextComponent text text_fields text_tags component_group) editable =
+set_conclusion_editable (TextComponent txt textFields text_tags component_group) editable =
     let
         (Text.Field.TextConclusion conclusion_field_attrs) =
-            Text.Field.conclusion text_fields
+            Text.Field.conclusion textFields
 
         new_text_fields =
-            Text.Field.set_conclusion text_fields { conclusion_field_attrs | error = False, editable = editable }
+            Text.Field.set_conclusion textFields { conclusion_field_attrs | error = False, editable = editable }
     in
-    TextComponent text new_text_fields text_tags component_group
+    TextComponent txt new_text_fields text_tags component_group
 
 
 set_title_editable : TextComponent -> Bool -> TextComponent
-set_title_editable (TextComponent text text_fields text_tags component_group) editable =
+set_title_editable (TextComponent txt textFields text_tags component_group) editable =
     let
         (Text.Field.TextTitle title_field_attrs) =
-            Text.Field.title text_fields
+            Text.Field.title textFields
 
         new_text_fields =
-            Text.Field.set_title text_fields { title_field_attrs | error = False, editable = editable }
+            Text.Field.set_title textFields { title_field_attrs | error = False, editable = editable }
     in
-    TextComponent text new_text_fields text_tags component_group
+    TextComponent txt new_text_fields text_tags component_group
 
 
 set_author_editable : TextComponent -> Bool -> TextComponent
-set_author_editable (TextComponent text text_fields text_tags component_group) editable =
+set_author_editable (TextComponent txt textFields text_tags component_group) editable =
     let
         (Text.Field.TextAuthor text_author_attrs) =
-            Text.Field.author text_fields
+            Text.Field.author textFields
 
         new_text_fields =
-            Text.Field.set_author text_fields { text_author_attrs | error = False, editable = editable }
+            Text.Field.set_author textFields { text_author_attrs | error = False, editable = editable }
     in
-    TextComponent text new_text_fields text_tags component_group
+    TextComponent txt new_text_fields text_tags component_group
 
 
 set_source_editable : TextComponent -> Bool -> TextComponent
-set_source_editable (TextComponent text text_fields text_tags component_group) editable =
+set_source_editable (TextComponent txt textFields text_tags component_group) editable =
     let
         (Text.Field.TextSource text_source_attrs) =
-            Text.Field.source text_fields
+            Text.Field.source textFields
 
         new_text_fields =
-            Text.Field.set_source text_fields { text_source_attrs | error = False, editable = editable }
+            Text.Field.set_source textFields { text_source_attrs | error = False, editable = editable }
     in
-    TextComponent text new_text_fields text_tags component_group
+    TextComponent txt new_text_fields text_tags component_group
 
 
 text_section_components : TextComponent -> TextSectionComponentGroup
@@ -134,8 +134,8 @@ text_section_components (TextComponent _ _ _ components) =
 
 
 set_text_section_components : TextComponent -> TextSectionComponentGroup -> TextComponent
-set_text_section_components (TextComponent text fields text_tags _) new_components =
-    TextComponent text fields text_tags new_components
+set_text_section_components (TextComponent txt fields text_tags _) new_components =
+    TextComponent txt fields text_tags new_components
 
 
 
@@ -143,25 +143,25 @@ set_text_section_components (TextComponent text fields text_tags _) new_componen
 
 
 set_text_attribute : TextComponent -> TextAttributeName -> String -> TextComponent
-set_text_attribute ((TextComponent text fields text_tags components) as text_component) attr_name value =
+set_text_attribute ((TextComponent txt fields text_tags components) as text_component) attr_name value =
     case attr_name of
         "title" ->
-            TextComponent { text | title = value } fields text_tags components
+            TextComponent { txt | title = value } fields text_tags components
 
         "introduction" ->
-            TextComponent { text | introduction = value } fields text_tags components
+            TextComponent { txt | introduction = value } fields text_tags components
 
         "author" ->
-            TextComponent { text | author = value } fields text_tags components
+            TextComponent { txt | author = value } fields text_tags components
 
         "source" ->
-            TextComponent { text | source = value } fields text_tags components
+            TextComponent { txt | source = value } fields text_tags components
 
         "difficulty" ->
-            TextComponent { text | difficulty = value } fields text_tags components
+            TextComponent { txt | difficulty = value } fields text_tags components
 
         "conclusion" ->
-            TextComponent { text | conclusion = Just value } fields text_tags components
+            TextComponent { txt | conclusion = Just value } fields text_tags components
 
         _ ->
             text_component
@@ -203,14 +203,14 @@ reinitialize_ck_editors text_component =
 
 
 update_text_errors : TextComponent -> Dict String String -> TextComponent
-update_text_errors (TextComponent text fields text_tags components) errors =
+update_text_errors (TextComponent txt fields text_tags components) errors =
     let
         _ =
             Debug.log "text errors" errors
 
         new_text_component =
             TextComponent
-                text
+                txt
                 (Array.foldr Text.Field.update_error fields (Array.fromList <| Dict.toList errors))
                 text_tags
                 components
@@ -222,8 +222,8 @@ update_text_errors (TextComponent text fields text_tags components) errors =
 
 
 tags_to_dict : Maybe (List String) -> Dict String String
-tags_to_dict tags =
-    case tags of
+tags_to_dict tgs =
+    case tgs of
         Just tags_list ->
             Dict.fromList <| List.map (\tag -> ( tag, tag )) tags_list
 
@@ -237,7 +237,7 @@ tags (TextComponent _ _ text_tags _) =
 
 
 add_tag : TextComponent -> String -> TextComponent
-add_tag ((TextComponent text fields text_tags components) as text_component) tag =
+add_tag ((TextComponent txt fields text_tags components) as text_component) tag =
     let
         text_tag_field =
             Text.Field.tags fields
@@ -251,24 +251,24 @@ add_tag ((TextComponent text fields text_tags components) as text_component) tag
         new_text_component_fields =
             Text.Field.set_tags fields new_text_tag_field_attrs
     in
-    TextComponent text new_text_component_fields (Dict.insert tag tag text_tags) components
+    TextComponent txt new_text_component_fields (Dict.insert tag tag text_tags) components
 
 
 remove_tag : TextComponent -> String -> TextComponent
-remove_tag ((TextComponent text fields text_tags components) as text_component) tag =
-    TextComponent text fields (Dict.remove tag text_tags) components
+remove_tag ((TextComponent txt fields text_tags components) as text_component) tag =
+    TextComponent txt fields (Dict.remove tag text_tags) components
 
 
 post_toggle_title : TextComponent -> Cmd msg
-post_toggle_title ((TextComponent text fields text_tags components) as text_component) =
+post_toggle_title ((TextComponent _ fields text_tags components) as text_component) =
     Text.Field.post_toggle_title (Text.Field.title fields)
 
 
 post_toggle_author : TextComponent -> Cmd msg
-post_toggle_author ((TextComponent text fields text_tags components) as text_component) =
+post_toggle_author ((TextComponent _ fields text_tags components) as text_component) =
     Text.Field.post_toggle_author (Text.Field.author fields)
 
 
 post_toggle_source : TextComponent -> Cmd msg
-post_toggle_source ((TextComponent text fields text_tags components) as text_component) =
+post_toggle_source ((TextComponent _ fields text_tags components) as text_component) =
     Text.Field.post_toggle_source (Text.Field.source fields)

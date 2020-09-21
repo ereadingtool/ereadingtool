@@ -14,6 +14,7 @@ module Text.Translations.Model exposing
     , inputGrammeme
     , instanceCount
     , isMergingWords
+    , isPartOfCompoundWord
     , mergeState
     , mergingWord
     , mergingWordInstances
@@ -29,6 +30,7 @@ module Text.Translations.Model exposing
     , uneditWord
     , updateTextTranslation
     , updateTranslationsForWord
+    , wordInstanceKey
     )
 
 import Array exposing (Array)

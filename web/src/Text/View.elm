@@ -1,18 +1,18 @@
 module Text.View exposing (view_text)
 
-import Date.Utils
 import Dict
 import Html exposing (..)
 import Html.Attributes exposing (attribute, class, classList)
 import Html.Events exposing (onBlur, onClick, onInput)
-import Instructor.Profile
+import InstructorAdmin.Text.Create exposing (..)
 import Text.Component
-import Text.Create exposing (..)
 import Text.Field exposing (TextAuthor, TextConclusion, TextDifficulty, TextIntro, TextSource, TextTags, TextTitle)
 import Text.Section.View
 import Text.Tags.View
 import Text.Translations.View
 import Text.Update
+import User.Instructor.Profile as InstructorProfile
+import Utils.Date
 
 
 view_text_date : TextViewParams -> Html Msg
@@ -24,7 +24,7 @@ view_text_date params =
                     Just last_modified_by ->
                         [ span []
                             [ Html.text
-                                ("Last Modified by " ++ last_modified_by ++ " on " ++ Date.Utils.monthDayYearFormat modified_dt)
+                                ("Last Modified by " ++ last_modified_by ++ " on " ++ Utils.Date.monthDayYearFormat modified_dt)
                             ]
                         ]
 
@@ -40,7 +40,7 @@ view_text_date params =
                             Just created_by ->
                                 [ span []
                                     [ Html.text
-                                        ("Created by " ++ created_by ++ " on " ++ Date.Utils.monthDayYearFormat created_dt)
+                                        ("Created by " ++ created_by ++ " on " ++ Utils.Date.monthDayYearFormat created_dt)
                                     ]
                                 ]
 
@@ -215,7 +215,7 @@ view_text_lock params =
             view_edit_text_lock params
 
         ReadOnlyMode write_locker ->
-            if write_locker == Instructor.Profile.usernameToString (Instructor.Profile.username params.profile) then
+            if write_locker == InstructorProfile.usernameToString (InstructorProfile.username params.profile) then
                 view_edit_text_lock params
 
             else
@@ -226,7 +226,7 @@ view_text_lock params =
 
 
 view_author : TextViewParams -> (TextViewParams -> TextAuthor -> Html Msg) -> TextAuthor -> Html Msg
-view_author params edit_author text_author =
+view_author params editAuthor text_author =
     let
         text_author_attrs =
             Text.Field.text_author_attrs text_author
@@ -234,7 +234,7 @@ view_author params edit_author text_author =
     div [ attribute "id" "text_author_view", attribute "class" "text_property" ] <|
         [ div [] [ Html.text "Text Author" ]
         , if text_author_attrs.editable then
-            div [] [ edit_author params text_author ]
+            div [] [ editAuthor params text_author ]
 
           else
             div

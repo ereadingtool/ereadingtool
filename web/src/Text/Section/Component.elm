@@ -128,7 +128,7 @@ switch_editable text_field =
 
 
 update_errors : TextSectionComponent -> ( String, String ) -> TextSectionComponent
-update_errors ((TextSectionComponent text attr fields question_fields) as text_section) ( field_id, field_error ) =
+update_errors ((TextSectionComponent text attr fields questionFields) as textSection) ( field_id, field_error ) =
     {- error keys could be
           body
        || (question_i_answers)
@@ -145,20 +145,20 @@ update_errors ((TextSectionComponent text attr fields question_fields) as text_s
     case first_key of
         Just fst ->
             if List.member fst [ "body" ] then
-                case get_field text_section fst of
+                case get_field textSection fst of
                     Just field ->
-                        set_field text_section (update_field_error field field_error)
+                        set_field textSection (update_field_error field field_error)
 
                     Nothing ->
-                        text_section
+                        textSection
                 -- no matching field name
 
             else
                 -- update questions/answers errors
-                TextSectionComponent text attr fields (Question.Field.update_errors question_fields ( field_id, field_error ))
+                TextSectionComponent text attr fields (Question.Field.update_errors questionFields ( field_id, field_error ))
 
         _ ->
-            text_section
+            textSection
 
 
 
@@ -195,87 +195,87 @@ body_id text_section_component =
 
 
 body : TextSectionComponent -> TextSectionField
-body (TextSectionComponent text attr fields question_fields) =
+body (TextSectionComponent text attr fields _) =
     fields.body
 
 
 update_body : TextSectionComponent -> String -> TextSectionComponent
-update_body (TextSectionComponent text attr fields question_fields) body =
-    TextSectionComponent { text | body = body } attr fields question_fields
+update_body (TextSectionComponent text attr fields questionFields) bdy =
+    TextSectionComponent { text | body = bdy } attr fields questionFields
 
 
 text_section : TextSectionComponent -> TextSection
-text_section (TextSectionComponent text_section attr fields question_fields) =
-    text_section
+text_section (TextSectionComponent textSection attr fields _) =
+    textSection
 
 
 attributes : TextSectionComponent -> TextSectionComponentAttributes
-attributes (TextSectionComponent text attr fields question_fields) =
+attributes (TextSectionComponent text attr fields _) =
     attr
 
 
 index : TextSectionComponent -> Int
-index text_section =
+index textSection =
     let
         attrs =
-            attributes text_section
+            attributes textSection
     in
     attrs.index
 
 
 set_index : TextSectionComponent -> Int -> TextSectionComponent
-set_index (TextSectionComponent text attr fields question_fields) index =
+set_index (TextSectionComponent text attr fields questionFields) idx =
     let
         body_field =
             fields.body
 
         new_body_field =
-            { body_field | id = generate_text_section_field_id index "body" }
+            { body_field | id = generate_text_section_field_id idx "body" }
     in
     TextSectionComponent
-        { text | order = index }
-        { attr | index = index }
+        { text | order = idx }
+        { attr | index = idx }
         { fields | body = new_body_field }
-        question_fields
+        questionFields
 
 
 set_question : TextSectionComponent -> QuestionField -> TextSectionComponent
-set_question (TextSectionComponent text attr fields question_fields) question_field =
+set_question (TextSectionComponent text attr fields questionFields) question_field =
     let
         question_index =
             Question.Field.index question_field
     in
-    TextSectionComponent text attr fields (Array.set question_index question_field question_fields)
+    TextSectionComponent text attr fields (Array.set question_index question_field questionFields)
 
 
 set_answer : TextSectionComponent -> Answer.Field.AnswerField -> TextSectionComponent
-set_answer (TextSectionComponent text attr fields question_fields) answer_field =
-    TextSectionComponent text attr fields (Question.Field.set_answer_field question_fields answer_field)
+set_answer (TextSectionComponent text attr fields questionFields) answer_field =
+    TextSectionComponent text attr fields (Question.Field.set_answer_field questionFields answer_field)
 
 
 set_answer_text : TextSectionComponent -> Answer.Field.AnswerField -> String -> TextSectionComponent
-set_answer_text text_section answer_field answer_text =
-    set_answer text_section (Answer.Field.set_answer_text answer_field answer_text)
+set_answer_text textSection answer_field answer_text =
+    set_answer textSection (Answer.Field.set_answer_text answer_field answer_text)
 
 
 set_answer_correct : TextSectionComponent -> Answer.Field.AnswerField -> TextSectionComponent
-set_answer_correct text_section answer_field =
-    case Question.Field.question_field_for_answer (question_fields text_section) answer_field of
+set_answer_correct textSection answer_field =
+    case Question.Field.question_field_for_answer (question_fields textSection) answer_field of
         Just question_field ->
-            set_question text_section (Question.Field.set_answer_correct question_field answer_field)
+            set_question textSection (Question.Field.set_answer_correct question_field answer_field)
 
         _ ->
-            text_section
+            textSection
 
 
 set_answer_feedback : TextSectionComponent -> Answer.Field.AnswerField -> String -> TextSectionComponent
-set_answer_feedback text_section answer_field feedback =
-    case Question.Field.question_field_for_answer (question_fields text_section) answer_field of
+set_answer_feedback textSection answer_field feedback =
+    case Question.Field.question_field_for_answer (question_fields textSection) answer_field of
         Just question_field ->
-            set_question text_section (Question.Field.set_answer_feedback question_field answer_field feedback)
+            set_question textSection (Question.Field.set_answer_feedback question_field answer_field feedback)
 
         _ ->
-            text_section
+            textSection
 
 
 
@@ -325,13 +325,13 @@ delete_answer text_section_component answer_field =
 
 
 set_field_value : TextSectionComponent -> FieldName -> String -> TextSectionComponent
-set_field_value (TextSectionComponent text attr fields question_fields) field_name value =
+set_field_value (TextSectionComponent text attr fields questionFields) field_name value =
     case field_name of
         "body" ->
-            TextSectionComponent { text | body = value } attr fields question_fields
+            TextSectionComponent { text | body = value } attr fields questionFields
 
         _ ->
-            TextSectionComponent text attr fields question_fields
+            TextSectionComponent text attr fields questionFields
 
 
 update_field_error : TextSectionField -> String -> TextSectionField
@@ -340,7 +340,7 @@ update_field_error text_field error_string =
 
 
 get_field : TextSectionComponent -> FieldName -> Maybe TextSectionField
-get_field (TextSectionComponent text attr fields question_fields) field_name =
+get_field (TextSectionComponent text attr fields _) field_name =
     case field_name of
         "body" ->
             Just fields.body
@@ -350,42 +350,42 @@ get_field (TextSectionComponent text attr fields question_fields) field_name =
 
 
 set_field : TextSectionComponent -> TextSectionField -> TextSectionComponent
-set_field ((TextSectionComponent text attr fields question_fields) as text_section) new_text_field =
+set_field ((TextSectionComponent text attr fields questionFields) as textSection) new_text_field =
     case new_text_field.name of
         "body" ->
-            TextSectionComponent text attr { fields | body = new_text_field } question_fields
+            TextSectionComponent text attr { fields | body = new_text_field } questionFields
 
         _ ->
-            text_section
+            textSection
 
 
 question_fields : TextSectionComponent -> Array QuestionField
-question_fields (TextSectionComponent text attr fields question_fields) =
-    question_fields
+question_fields (TextSectionComponent text attr fields questionFields) =
+    questionFields
 
 
 update_question_field : TextSectionComponent -> QuestionField -> TextSectionComponent
-update_question_field (TextSectionComponent text attr fields question_fields) question_field =
-    TextSectionComponent text attr fields (Question.Field.update_question_field question_field question_fields)
+update_question_field (TextSectionComponent text attr fields questionFields) question_field =
+    TextSectionComponent text attr fields (Question.Field.update_question_field question_field questionFields)
 
 
 delete_question_field : TextSectionComponent -> QuestionField -> TextSectionComponent
-delete_question_field (TextSectionComponent text attr fields question_fields) question_field =
-    TextSectionComponent text attr fields (Question.Field.delete_question_field question_field question_fields)
+delete_question_field (TextSectionComponent text attr fields questionFields) question_field =
+    TextSectionComponent text attr fields (Question.Field.delete_question_field question_field questionFields)
 
 
 delete_selected_question_fields : TextSectionComponent -> TextSectionComponent
-delete_selected_question_fields (TextSectionComponent text attr fields question_fields) =
-    TextSectionComponent text attr fields (Question.Field.delete_selected question_fields)
+delete_selected_question_fields (TextSectionComponent text attr fields questionFields) =
+    TextSectionComponent text attr fields (Question.Field.delete_selected questionFields)
 
 
 add_new_question : TextSectionComponent -> TextSectionComponent
-add_new_question (TextSectionComponent text attr fields question_fields) =
-    TextSectionComponent text attr fields (Question.Field.add_new_question attr.index question_fields)
+add_new_question (TextSectionComponent text attr fields questionFields) =
+    TextSectionComponent text attr fields (Question.Field.add_new_question attr.index questionFields)
 
 
 toggle_question_menu : TextSectionComponent -> QuestionField -> TextSectionComponent
-toggle_question_menu text_section question_field =
+toggle_question_menu textSection question_field =
     let
         visible =
             if Question.Field.menu_visible question_field then
@@ -394,7 +394,7 @@ toggle_question_menu text_section question_field =
             else
                 True
     in
-    set_question text_section (Question.Field.set_menu_visible question_field visible)
+    set_question textSection (Question.Field.set_menu_visible question_field visible)
 
 
 toTextSection : TextSectionComponent -> TextSection

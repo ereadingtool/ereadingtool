@@ -1,13 +1,13 @@
 module Text.Field exposing
-    ( TextAuthor
-    , TextConclusion
+    ( TextAuthor(..)
+    , TextConclusion(..)
     , TextDifficulty
     , TextFieldAttributes
     , TextFields
-    , TextIntro
-    , TextSource
+    , TextIntro(..)
+    , TextSource(..)
     , TextTags
-    , TextTitle
+    , TextTitle(..)
     , author
     , conclusion
     , difficulty

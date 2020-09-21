@@ -5,7 +5,7 @@ import Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import HtmlParser
+import Html.Parser as HtmlParser
 import OrderedDict
 import Set
 import Text.Section.Model
@@ -15,7 +15,10 @@ import Text.Translations.Model exposing (..)
 import Text.Translations.Msg exposing (..)
 import Text.Translations.TextWord exposing (TextWord)
 import Text.Translations.Word.Instance exposing (WordInstance)
-import VirtualDom
+
+
+
+-- import VirtualDom
 
 
 wordInstanceOnClick : Model -> (Msg -> msg) -> WordInstance -> Html.Attribute msg
@@ -42,7 +45,8 @@ tagWord model parentMsg sectionNumber instance originalToken =
             String.toLower originalToken
     in
     if token == " " then
-        VirtualDom.text token
+        -- VirtualDom.text token
+        Html.div [] []
 
     else
         let
@@ -70,7 +74,8 @@ tagWord model parentMsg sectionNumber instance originalToken =
                     ]
                 , wordInstanceOnClick model parentMsg wordInstance
                 ]
-                [ VirtualDom.text originalToken
+                -- [ VirtualDom.text originalToken
+                [ Html.div [] []
                 ]
             , view_edit model parentMsg wordInstance
             ]
@@ -83,11 +88,12 @@ tagSection model msg section =
             SectionNumber section.order
     in
     div [ id ("section-" ++ String.fromInt section.order), class "section" ]
-        (Text.Section.Words.Tag.tagWordsAndToVDOM
-            (tagWord model msg section.order)
-            (isPartOfCompoundWord model sectionNumber)
-            (HtmlParser.parse section.body)
-        )
+        -- (Text.Section.Words.Tag.tagWordsAndToVDOM
+        --     (tagWord model msg section.order)
+        --     (isPartOfCompoundWord model sectionNumber)
+        --     (HtmlParser.parse section.body)
+        -- )
+        []
 
 
 view_edit : Model -> (Msg -> msg) -> WordInstance -> Html msg
@@ -194,10 +200,11 @@ view_delete_text_word parentMsg wordInstance =
     in
     div [ class "text-word-option" ]
         (case textWord wordInstance of
-            Just textWord ->
+            -- Just textWord ->
+            Just word ->
                 [ div
                     [ attribute "title" "Delete this word instance from glossing."
-                    , onClick (parentMsg (DeleteTextWord textWord))
+                    , onClick (parentMsg (DeleteTextWord word))
                     ]
                     [ Html.text "Delete"
                     ]
@@ -390,7 +397,7 @@ view_add_grammemes model msg wordInstance =
             Text.Translations.Model.editingGrammemeValue model wordInstance
     in
     div [ class "add" ]
-        [ select [ onInput (SelectGrammemeForEditing wordinstance >> msg) ]
+        [ select [ onInput (SelectGrammemeForEditing wordInstance >> msg) ]
             (List.map (\grammeme -> option [ value grammeme ] [ Html.text grammeme ]) grammemeKeys)
         , div [ onInput (InputGrammeme wordInstance >> msg) ]
             [ Html.input [ placeholder "add/edit a grammeme..", value grammemeValue ] []
