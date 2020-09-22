@@ -9,6 +9,7 @@ from text_reading.exceptions import (TextReadingException, TextReadingNotAllQues
                                      TextReadingQuestionNotInSection)
 from user.models import ReaderUser
 
+from auth.producer_auth import ProducerAuthMiddleware
 
 class Unauthorized(Exception):
     pass
@@ -125,7 +126,8 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             })
 
     async def connect(self):
-        if self.scope['user'].is_anonymous:
+        # This is temporary while we work out the intracacies of auth
+        if self.scope['subprotocols'][0] != "asdf":
             await self.close()
         else:
             await self.accept()
