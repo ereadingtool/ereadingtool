@@ -10,6 +10,10 @@ from text.phrase.models import TextPhrase
 from user.models import ReaderUser
 from user.student.models import Student
 
+# TODO: remove this once we can figure out how to get `self.student = self.scope['user'].student` working
+# Temporary while we get Student Profile working
+from text.models import TextDifficulty
+from django.urls import reverse
 
 class StudentTextReaderConsumer(TextReaderConsumer):
     def __init__(self, *args, **kwargs):
@@ -19,7 +23,24 @@ class StudentTextReaderConsumer(TextReaderConsumer):
 
     @database_sync_to_async
     def start_reading(self):
-        self.student = self.scope['user'].student
+        # TODO: Dead code, attempt at making a student from scratch (stupid)
+        # difficulties = [[text_difficulty.slug, text_difficulty.name]
+        #                 for text_difficulty in TextDifficulty.objects.all()]
+        # self.student = {
+        #     'id': self.scope['user']['user_id'],
+        #     'username': self.scope['user']['username'] if self.scope['user']['username'] else None,
+        #     'email': self.scope['user']['email'],
+        #     'difficulty_preference': None,
+        #     'difficulties': difficulties,
+        #     'uris': {
+        #         'logout_uri': reverse('api-student-logout'),
+        #         'profile_uri': reverse('student-profile')
+        #     }
+        # }
+
+        # TODO: Why isn't this working? 
+        # Warning: potentially breaks reading progress history
+        # self.student = self.scope['user'].student
 
         return StudentTextReading.start_or_resume(student=self.student, text=self.text)
 
