@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 # from jwt import decode # or this?
 
 # Temporary parsing function
-# TODO: Would this need to be async?
+# TODO: does this need to be async?
 async def temp_parse_qs(qs):
     """ This function exists because the `query_string` still contains some of the URL """
     new_qs = b''
@@ -32,6 +32,7 @@ async def temp_parse_qs(qs):
 #   "exp": 1600976678
 # }
 # secret key is DJANGO_SECRET_KEY
+# TODO: return type should be all things user related that are valid or a `None` indicating a redirect to login
 async def jwt_validation(query_string):
     # create a method to validate the jwt
     if not query_string:
@@ -42,6 +43,10 @@ async def jwt_validation(query_string):
         secret_key = os.getenv('DJANGO_SECRET_KEY')
         try:
             jwt_decoded = jwt.decode(query_string, secret_key, algorithms=['HS256'])
+
+            # TODO: check the database to confirm that the username exists both student and instructor fields
+            # TODO: check the time to confirm it hasn't expired
+            # TODO: return {'is_authenticated': <BOOL>, 'pk': <USER_ID?>}
             return jwt_decoded
         except InvalidTokenError: 
             return None
@@ -81,17 +86,22 @@ class ProducerAuthMiddlewareInstance:
         # populated).
         # TODO: Recreate the user object since that'll be needed by base.py
         self.scope['user'] = await jwt_validation(self.scope["query_string"])
-
+        if not self.scope['user']:
+            # TODO: The user has not be authenticated, 403?
+            pass
 
         # TODO: Validate JWT here
             # if the jwt is valid set that is_authenticated to True
             # else the user is not authenticated 
                 # they should be directed to login again
                 # their token should be reset
+        # TODO: There's an issue here, need to add `/student/text_read/<int>/` to the `scope['path']`
         # Instantiate our inner application
         try:
+            self.scope['path'] = '/student/text_read/23/'
+            self.scope['user']['is_authenticated'] = True
             inner = self.inner(self.scope)
+            return await inner(receive, send)
         except ValueError:
             pass
-
-        return await inner(receive, send)
+            # TODO: his seems to happen when there isn't a proper route. 404?
