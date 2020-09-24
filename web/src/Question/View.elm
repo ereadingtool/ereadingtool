@@ -125,7 +125,7 @@ view_question_menu params field =
     div [ classList [ ( "question_menu", True ) ] ]
         [ div []
             [ Html.img
-                [ attribute "src" "/static/img/action_arrow.svg"
+                [ attribute "src" "/public/img/action_arrow.svg"
                 , onClick (params.msg (ToggleQuestionMenu params.text_section_component field))
                 ]
                 []
@@ -178,7 +178,7 @@ view_add_question : (Msg -> msg) -> TextSectionComponent -> Html msg
 view_add_question msg text_component =
     div [ classList [ ( "add_question", True ) ], onClick (msg (AddQuestion text_component)) ]
         [ Html.img
-            [ attribute "src" "/static/img/add.svg"
+            [ attribute "src" "/public/img/add.svg"
             , attribute "height" "20px"
             , attribute "width" "20px"
             ]
@@ -199,7 +199,7 @@ view_delete_selected : (Msg -> msg) -> TextSectionComponent -> Html msg
 view_delete_selected msg text_component =
     div [ classList [ ( "delete_question", True ) ], onClick (msg (DeleteSelectedQuestions text_component)) ]
         [ Html.img
-            [ attribute "src" "/static/img/delete_question.svg"
+            [ attribute "src" "/public/img/delete_question.svg"
             , attribute "height" "20px"
             , attribute "width" "20px"
             ]

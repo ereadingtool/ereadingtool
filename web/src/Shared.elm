@@ -345,7 +345,7 @@ viewLowerMenu role =
                 [ classList [ ( "lower-menu-item", True ) ] ]
                 [ a
                     [ class "link"
-                    , href (Route.toString Route.NotFound)
+                    , href (Route.toString Route.Text__Create)
                     ]
                     [ text "Create a new text" ]
                 ]

@@ -2,6 +2,7 @@ module Text.Field exposing
     ( TextAuthor(..)
     , TextConclusion(..)
     , TextDifficulty
+    , TextField(..)
     , TextFieldAttributes
     , TextFields
     , TextIntro(..)
@@ -36,6 +37,16 @@ module Text.Field exposing
 
 import Field
 import Ports exposing (addClassToCKEditor, ckEditor, selectAllInputText)
+
+
+type TextField
+    = Title TextTitle
+    | Intro TextIntro
+    | Tags TextTags
+    | Author TextAuthor
+    | Source TextSource
+    | Difficulty TextDifficulty
+    | Conclusion TextConclusion
 
 
 type alias TextFieldAttributes =

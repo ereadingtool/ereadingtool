@@ -1,6 +1,7 @@
 module Api.Endpoint exposing
     ( Endpoint
     , consentToResearch
+    , createText
     , filterToStringQueryParam
     , forgotPassword
     , instructorProfile
@@ -10,7 +11,8 @@ module Api.Endpoint exposing
     , resetPassword
     , studentProfile
     , studentSignup
-    , test
+    , text
+    , textLock
     , textSearch
     , validateUsername
     )
@@ -66,11 +68,6 @@ request config =
 -- ENDPOINTS
 
 
-test : String -> Endpoint
-test baseUrl =
-    url baseUrl [ "test" ] []
-
-
 forgotPassword : String -> Endpoint
 forgotPassword baseUrl =
     url baseUrl [ "password", "reset" ] []
@@ -122,6 +119,30 @@ validateUsername baseUrl =
 textSearch : String -> List QueryParameter -> Endpoint
 textSearch baseUrl queryParameters =
     url baseUrl [ "api", "text/" ] queryParameters
+
+
+
+-- TEXT CREATE AND EDIT
+
+
+createText : String -> Endpoint
+createText baseUrl =
+    url baseUrl [ "api", "text/" ] []
+
+
+text : String -> Int -> Maybe (List QueryParameter) -> Endpoint
+text baseUrl id maybeQueryParameters =
+    case maybeQueryParameters of
+        Just queryParameters ->
+            url baseUrl [ "api", "text", String.fromInt id ++ "/" ] queryParameters
+
+        Nothing ->
+            url baseUrl [ "api", "text", String.fromInt id ++ "/" ] []
+
+
+textLock : String -> Int -> Endpoint
+textLock baseUrl id =
+    url baseUrl [ "api", "text", String.fromInt id, "lock/" ] []
 
 
 
