@@ -132,8 +132,8 @@ init shared { params } =
                            )
                         ++ "/text_read/"
                         ++ String.fromInt params.id
-                        ++ "/"
                 }
+                (Session.cred shared.session)
 
         Nothing ->
             Cmd.none
@@ -411,8 +411,7 @@ view (SafeModel model) =
     { title = "Text"
     , body =
         [ div []
-            [ viewHeader (SafeModel model)
-            , viewContent (SafeModel model)
+            [ viewContent (SafeModel model)
             , Views.view_footer
             ]
         ]
@@ -728,58 +727,7 @@ tagWord (SafeModel model) textReaderSection instance token =
 --             , view_flashcard_options model reader_word
 --             ]
 --         ]
--- VIEW: HEADER
-
-
-viewHeader : SafeModel -> Html Msg
-viewHeader safeModel =
-    Views.view_header
-        (viewTopHeader safeModel)
-        (viewLowerMenu safeModel)
-
-
-viewTopHeader : SafeModel -> List (Html Msg)
-viewTopHeader safeModel =
-    [ div [ classList [ ( "menu_item", True ) ] ]
-        [ a
-            [ class "link"
-            , href
-                (Route.toString Route.Profile__Student)
-            ]
-            [ text "Profile" ]
-        ]
-    , div [ classList [ ( "menu_item", True ) ] ]
-        [ a [ class "link", onClick Logout ]
-            [ text "Logout" ]
-        ]
-    ]
-
-
-viewLowerMenu : SafeModel -> List (Html Msg)
-viewLowerMenu (SafeModel model) =
-    [ div
-        [ classList
-            [ ( "lower-menu-item", True )
-            ]
-        ]
-        [ a
-            [ class "link"
-            , href (Route.toString Route.Text__Search)
-            ]
-            [ text "Find a text to read" ]
-        ]
-    , div
-        [ classList [ ( "lower-menu-item", True ) ] ]
-        [ a
-            [ class "link"
-            , href (Route.toString Route.NotFound)
-            ]
-            [ text "Practice Flashcards" ]
-        ]
-    ]
-
-
-
+--
 -- SHARED
 
 

@@ -112,8 +112,7 @@ view (SafeModel model) =
     { title = "Editor Search"
     , body =
         [ div []
-            [ viewHeader (SafeModel model)
-            , viewTexts (SafeModel model)
+            [ viewTexts (SafeModel model)
             , viewFooter (SafeModel model)
             ]
         ]
@@ -194,58 +193,6 @@ viewFooter (SafeModel model) =
                 Html.text <| "Showing " ++ String.fromInt (List.length model.texts) ++ " entries"
             ]
         ]
-
-
-
--- VIEW: HEADER
-
-
-viewHeader : SafeModel -> Html Msg
-viewHeader safeModel =
-    Views.view_header
-        (viewTopHeader safeModel)
-        (viewLowerMenu safeModel)
-
-
-viewTopHeader : SafeModel -> List (Html Msg)
-viewTopHeader safeModel =
-    [ div [ classList [ ( "menu_item", True ) ] ]
-        [ a
-            [ class "link"
-            , href
-                (Route.toString Route.Profile__Instructor)
-            ]
-            [ text "Profile" ]
-        ]
-    , div [ classList [ ( "menu_item", True ) ] ]
-        [ a [ class "link", onClick Logout ]
-            [ text "Logout" ]
-        ]
-    ]
-
-
-viewLowerMenu : SafeModel -> List (Html Msg)
-viewLowerMenu (SafeModel model) =
-    [ div
-        [ classList [ ( "lower-menu-item", True ) ] ]
-        [ a
-            [ class "link"
-            , href (Route.toString Route.Text__EditorSearch)
-            ]
-            [ text "Find a text to edit" ]
-        ]
-    , div
-        [ classList
-            [ ( "lower-menu-item", True )
-            ]
-        ]
-        [ a
-            [ class "link"
-            , href (Route.toString Route.Text__Search)
-            ]
-            [ text "Find a text to read" ]
-        ]
-    ]
 
 
 

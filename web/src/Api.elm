@@ -7,7 +7,6 @@ port module Api exposing
     , authResult
     , authSuccessMessage
     , delete
-    , exposeToken
     , get
     , login
     , logout
@@ -50,22 +49,6 @@ credDecoder : Decoder Cred
 credDecoder =
     Decode.succeed Cred
         |> required "token" Decode.string
-
-
-{-| Exposes the token outside this module
-
-TODO: remove this. This should be considered a temporary measure for use while transitioning the
-backend communication layer.
-
--}
-exposeToken : Maybe Cred -> String
-exposeToken maybeCred =
-    case maybeCred of
-        Just (Cred val) ->
-            val
-
-        Nothing ->
-            ""
 
 
 
@@ -356,11 +339,22 @@ port sendSocketCommand : Value -> Cmd msg
 -- wsSend command =
 
 
-websocketConnect : { name : String, address : String } -> Cmd msg
-websocketConnect { name, address } =
-    WebSocket.send sendSocketCommand <|
-        WebSocket.Connect
-            { name = name, address = address, protocol = "" }
+websocketConnect :
+    { name : String, address : String }
+    -> Maybe Cred
+    -> Cmd msg
+websocketConnect { name, address } maybeCred =
+    case maybeCred of
+        Just (Cred token) ->
+            WebSocket.send sendSocketCommand <|
+                WebSocket.Connect
+                    { name = name
+                    , address = address ++ "?" ++ token
+                    , protocol = ""
+                    }
+
+        Nothing ->
+            Cmd.none
 
 
 websocketSend : { name : String, content : Value } -> Cmd msg
