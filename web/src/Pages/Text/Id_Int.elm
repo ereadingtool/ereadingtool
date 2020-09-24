@@ -132,8 +132,8 @@ init shared { params } =
                            )
                         ++ "/text_read/"
                         ++ String.fromInt params.id
-                        ++ "/"
                 }
+                (Session.cred shared.session)
 
         Nothing ->
             Cmd.none
