@@ -6,32 +6,6 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-# from os import getenv # why doesn't this work?
-# from jwt import decode # or this?
-
-# Temporary parsing function
-# TODO: does this need to be async?
-async def temp_parse_qs(qs):
-    """ This function exists because the `query_string` still contains some of the URL """
-    new_qs = b''
-    for i in range(0, len(qs)):
-        if chr(qs[-i]) == '/':
-            new_qs = qs[:-i]
-
-    return new_qs
-
-
-# {
-#   "typ": "JWT",
-#   "alg": "HS256"
-# }
-# {
-#   "user_id": 149,
-#   "email": "jeffreydelamare@gmail.com",
-#   "username": "jeffreydelamare@gmail.com",
-#   "exp": 1600976678
-# }
-# secret key is DJANGO_SECRET_KEY
 # TODO: return type should be all things user related that are valid or a `None` indicating a redirect to login
 async def jwt_validation(query_string):
     # create a method to validate the jwt
@@ -39,7 +13,7 @@ async def jwt_validation(query_string):
         # Then the querystring is empty
         pass
     else:
-        query_string = await temp_parse_qs(query_string[6:])
+        #query_string = await temp_parse_qs(query_string[6:])
         secret_key = os.getenv('DJANGO_SECRET_KEY')
         try:
             jwt_decoded = jwt.decode(query_string, secret_key, algorithms=['HS256'])
@@ -54,7 +28,6 @@ async def jwt_validation(query_string):
             # Token is not valid
 
     # TODO: make exception that jwt is invalid
-
         # return AnonymousUser()
 
 
@@ -98,10 +71,9 @@ class ProducerAuthMiddlewareInstance:
         # TODO: There's an issue here, need to add `/student/text_read/<int>/` to the `scope['path']`
         # Instantiate our inner application
         try:
-            self.scope['path'] = '/student/text_read/23/'
             self.scope['user']['is_authenticated'] = True
             inner = self.inner(self.scope)
             return await inner(receive, send)
         except ValueError:
             pass
-            # TODO: his seems to happen when there isn't a proper route. 404?
+            # TODO: this seems to happen when there isn't a proper route. 404?
