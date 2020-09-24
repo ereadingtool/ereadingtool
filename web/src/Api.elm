@@ -339,11 +339,22 @@ port sendSocketCommand : Value -> Cmd msg
 -- wsSend command =
 
 
-websocketConnect : { name : String, address : String } -> Cmd msg
-websocketConnect { name, address } =
-    WebSocket.send sendSocketCommand <|
-        WebSocket.Connect
-            { name = name, address = address, protocol = "" }
+websocketConnect :
+    { name : String, address : String }
+    -> Maybe Cred
+    -> Cmd msg
+websocketConnect { name, address } maybeCred =
+    case maybeCred of
+        Just (Cred token) ->
+            WebSocket.send sendSocketCommand <|
+                WebSocket.Connect
+                    { name = name
+                    , address = address ++ "?" ++ token
+                    , protocol = ""
+                    }
+
+        Nothing ->
+            Cmd.none
 
 
 websocketSend : { name : String, content : Value } -> Cmd msg
