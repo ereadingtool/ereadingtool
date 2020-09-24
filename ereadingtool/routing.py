@@ -14,8 +14,8 @@ application = ProtocolTypeRouter({
     'websocket': AllowedHostsOriginValidator(ProducerAuthMiddleware(
         URLRouter([
             # text reading
-            url(r'^student/text_read/(?P<text_id>\d+)/$', StudentTextReaderConsumer),
-            url(r'^instructor/text_read/(?P<text_id>\d+)/$', InstructorTextReaderConsumer),
+            url(r'^student/text_read/(?P<text_id>\d+)$', StudentTextReaderConsumer),
+            url(r'^instructor/text_read/(?P<text_id>\d+)$', InstructorTextReaderConsumer),
 
             # flashcards
             url(r'^student/flashcards/$', StudentFlashcardSessionConsumer),
