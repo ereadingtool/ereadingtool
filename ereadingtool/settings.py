@@ -104,7 +104,7 @@ LOGGING = {
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
-DEBUG = True 
+DEBUG = False 
 DEV = False
 
 ALLOWED_HOSTS = ['0.0.0.0',
