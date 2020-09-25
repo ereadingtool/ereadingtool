@@ -10,10 +10,6 @@ from text.phrase.models import TextPhrase
 from user.models import ReaderUser
 from user.student.models import Student
 
-# TODO: remove this once we can figure out how to get `self.student = self.scope['user'].student` working
-# Temporary while we get Student Profile working
-from text.models import TextDifficulty
-from django.urls import reverse
 
 class StudentTextReaderConsumer(TextReaderConsumer):
     def __init__(self, *args, **kwargs):

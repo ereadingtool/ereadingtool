@@ -17,10 +17,9 @@ class Unauthorized(Exception):
 
 @database_sync_to_async
 def get_text_or_error(text_id: int, user: ReaderUser):
-    # if not user.is_authenticated:
-        # raise Unauthorized
-    if not user['is_authenticated']:
-        pass
+    if not user.is_authenticated:
+        raise Unauthorized
+
     text = Text.objects.get(pk=text_id)
 
     return text
