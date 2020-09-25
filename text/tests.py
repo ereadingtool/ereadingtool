@@ -339,7 +339,7 @@ class TestText(TestData, TestUser, TestCase):
 
             addl_search = '&'.join([f'{k}={v}' for (k, v) in addl_filters])
 
-            resp = self.student.get(f'/api/text/?{status_search}&{addl_search}')
+            resp = self.student.get(f'/api/text?{status_search}&{addl_search}')
 
             self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
@@ -403,7 +403,7 @@ class TestText(TestData, TestUser, TestCase):
         # tag search should be ORed
         tag_search = '&'.join([f'tag={tag}' for tag in test_tags])
 
-        resp = self.student.get(f'/api/text/?{tag_search}')
+        resp = self.student.get(f'/api/text?{tag_search}')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
