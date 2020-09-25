@@ -23,24 +23,9 @@ class StudentTextReaderConsumer(TextReaderConsumer):
 
     @database_sync_to_async
     def start_reading(self):
-        # TODO: Dead code, attempt at making a student from scratch (stupid)
-        # difficulties = [[text_difficulty.slug, text_difficulty.name]
-        #                 for text_difficulty in TextDifficulty.objects.all()]
-        # self.student = {
-        #     'id': self.scope['user']['user_id'],
-        #     'username': self.scope['user']['username'] if self.scope['user']['username'] else None,
-        #     'email': self.scope['user']['email'],
-        #     'difficulty_preference': None,
-        #     'difficulties': difficulties,
-        #     'uris': {
-        #         'logout_uri': reverse('api-student-logout'),
-        #         'profile_uri': reverse('student-profile')
-        #     }
-        # }
-
         # TODO: Why isn't this working? 
         # Warning: potentially breaks reading progress history
-        # self.student = self.scope['user'].student
+        self.student = self.scope['user'].student
 
         return StudentTextReading.start_or_resume(student=self.student, text=self.text)
 

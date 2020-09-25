@@ -20,16 +20,11 @@ async def jwt_validation(query_string):
 
             # TODO: check the database to confirm that the username exists both student and instructor fields
             # TODO: check the time to confirm it hasn't expired
-            # TODO: return {'is_authenticated': <BOOL>, 'pk': <USER_ID?>}
+            # TODO: need to figure out how to return a user object here...
             return jwt_decoded
         except InvalidTokenError: 
-            return None
-            pass
             # Token is not valid
-
-    # TODO: make exception that jwt is invalid
-        # return AnonymousUser()
-
+            return None
 
 class ProducerAuthMiddleware:
     """
@@ -59,7 +54,7 @@ class ProducerAuthMiddlewareInstance:
         # populated).
         # TODO: Recreate the user object since that'll be needed by base.py
         self.scope['user'] = await jwt_validation(self.scope["query_string"])
-        if not self.scope['user']:
+        if not self.scope['user'] or not self.scope['user']['is_authenticated']:
             # TODO: The user has not be authenticated, 403?
             pass
 
@@ -68,10 +63,12 @@ class ProducerAuthMiddlewareInstance:
             # else the user is not authenticated 
                 # they should be directed to login again
                 # their token should be reset
-        # TODO: There's an issue here, need to add `/student/text_read/<int>/` to the `scope['path']`
-        # Instantiate our inner application
         try:
+
+            # TODO: get rid of this line of code
             self.scope['user']['is_authenticated'] = True
+
+            # Instantiate our inner application
             inner = self.inner(self.scope)
             return await inner(receive, send)
         except ValueError:
