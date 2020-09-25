@@ -41,10 +41,8 @@ async def jwt_validation(scope):
                 instructor = list(Instructor.objects.filter(user_id=jwt_decoded['user_id']))[0]
 
                 # TODO: there may be need to make user an object and have the student object be a member
-                user = jwt_decoded
-                user['instructor'] = instructor
-                user['is_authenticated'] = True
-                return user
+                
+                return instructor.user
             else:
                 # path error, same result
                 raise InvalidTokenError
