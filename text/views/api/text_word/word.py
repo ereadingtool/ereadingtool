@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpRequest, HttpResponseServerError
 from django.http import HttpResponseNotAllowed
 from django.urls import reverse_lazy
-from django.views.generic import View
+from ereadingtool.views import APIView
 
 from django.db import transaction, DatabaseError
 from django.core.exceptions import ObjectDoesNotExist
@@ -18,7 +18,7 @@ from text.translations.models import TextWord
 from text.phrase.models import TextPhrase, TextPhraseTranslation
 
 
-class TextWordAPIView(LoginRequiredMixin, View):
+class TextWordAPIView(LoginRequiredMixin, APIView):
     login_url = reverse_lazy('instructor-login')
     allowed_methods = ['post', 'put', 'delete']
 
@@ -83,7 +83,7 @@ class TextWordAPIView(LoginRequiredMixin, View):
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
 
 
-class TextWordTranslationsAPIView(LoginRequiredMixin, View):
+class TextWordTranslationsAPIView(LoginRequiredMixin, APIView):
     login_url = reverse_lazy('instructor-login')
     allowed_methods = ['put', 'post', 'delete']
 

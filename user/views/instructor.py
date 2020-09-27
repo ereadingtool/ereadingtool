@@ -143,7 +143,7 @@ class InstructorLoginAPIView(APIView):
         return JsonResponse(jwt_payload)
 
 
-class InstructorLogoutAPIView(LoginRequiredMixin, View):
+class InstructorLogoutAPIView(LoginRequiredMixin, APIView):
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         logout(request)
 
