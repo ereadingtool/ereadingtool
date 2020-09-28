@@ -9,7 +9,7 @@ from django.http import HttpResponse, HttpRequest, HttpResponseServerError
 from django.http import HttpResponseNotAllowed
 from django.urls import reverse
 from django.urls import reverse_lazy
-from django.views.generic import View
+from ereadingtool.views import APIView
 
 from mixins.model import WriteLocked
 from question.forms import QuestionForm, AnswerForm
@@ -35,7 +35,7 @@ def or_filters(filters):
     return status_filter
 
 
-class TextAPIView(LoginRequiredMixin, View):
+class TextAPIView(LoginRequiredMixin, APIView):
     login_url = reverse_lazy('instructor-login')
     allowed_methods = ['get', 'put', 'post', 'delete']
 
