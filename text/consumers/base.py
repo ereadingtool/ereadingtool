@@ -129,8 +129,8 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         if not self.scope['user'] or not self.scope['user'].is_authenticated:
             await self.accept()
-            await self.send(text_data="Your user is not authenticated.")
-            await self.close() # We can specify a connection closed code here.
+            await self.send(text_data="403 Forbidden")
+            await self.close(code=403) # We can specify a connection closed code here.
         else:
             await self.accept()
 
