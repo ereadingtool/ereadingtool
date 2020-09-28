@@ -2,6 +2,7 @@ from typing import AnyStr
 
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer
 
 from question.models import Answer
 from text.models import Text
@@ -126,9 +127,10 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             })
 
     async def connect(self):
-        # This is temporary while we work out the intracacies of auth
-        if self.scope['subprotocols'][0] != "asdf":
-            await self.close()
+        if not self.scope['user'] or not self.scope['user'].is_authenticated:
+            await self.accept()
+            await self.send(text_data="Your user is not authenticated.")
+            await self.close() # We can specify a connection closed code here.
         else:
             await self.accept()
 

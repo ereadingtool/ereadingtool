@@ -9,12 +9,12 @@ from django.utils.translation import gettext_lazy as _  # TODO marked for deleti
 from user.student.models import Student
 from user.instructor.models import Instructor
 from user.models import ReaderUser
+from django.http import HttpResponse
 
 async def jwt_validation(scope):
     """ Take JWT from query string to check the user against the db and validate its timestamp """
     if not scope['query_string']:
         return None
-    # TODO: what if the user field is already populated
     else:
         secret_key = os.getenv('DJANGO_SECRET_KEY')
         try:
@@ -41,7 +41,6 @@ async def jwt_validation(scope):
                 instructor = list(Instructor.objects.filter(user_id=jwt_decoded['user_id']))[0]
 
                 # TODO: there may be need to make user an object and have the student object be a member
-                
                 return instructor.user
             else:
                 # path error, same result
@@ -75,17 +74,13 @@ class ProducerAuthMiddlewareInstance:
 
     async def __call__(self, receive, send):
         """ Look up user from query string and validate their JWT. """
-
         self.scope['user'] = await jwt_validation(self.scope)
         
-        if not self.scope['user'] or not self.scope['user'].is_authenticated:
-            # TODO: The user has not be authenticated, 403?
-            pass
-
         try:
             # Instantiate our inner application
             inner = self.inner(self.scope)
             return await inner(receive, send)
         except ValueError:
-            # TODO: this seems to happen when there isn't a proper route. 404?
+            # I think the connection will be cleaned up by a WebSocket DISCONNECT from 
+            # within the Channels library
             pass
