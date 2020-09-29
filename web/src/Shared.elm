@@ -2,6 +2,7 @@ module Shared exposing
     ( Flags
     , Model
     , Msg
+    , answerFeedbackCharacterLimit
     , difficulties
     , init
     , statuses
@@ -395,3 +396,8 @@ statuses =
     , ( "in_progress", "In Progress" )
     , ( "read", "Read" )
     ]
+
+
+answerFeedbackCharacterLimit : Int
+answerFeedbackCharacterLimit =
+    2048

@@ -1,27 +1,29 @@
 module Pages.Text.Create exposing (..)
 
 -- import HttpHelpers exposing (delete_with_headers, post_with_headers, put_with_headers)
+-- import Text.Section.Decode
+-- import Text.Section.View
+-- import Text.Tags.View
+-- import Text.Translations.Decode
+-- import InstructorAdmin.Admin.Text as AdminText
+-- import Json.Encode
+-- import Array
+-- import Utils
+-- import Utils.Date
+-- import Json.Decode.Extra exposing (posix)
+-- import Json.Decode.Pipeline exposing (required)
 
 import Api
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
-import Array
 import Browser.Navigation
-import DateTime
 import Debug
 import Dict exposing (Dict)
-import Flags
 import Html exposing (..)
-import Html.Attributes exposing (attribute, class, classList)
-import Html.Events exposing (onBlur, onClick, onInput)
+import Html.Attributes exposing (attribute)
 import Http
-import InstructorAdmin.Admin.Text as AdminText
 import InstructorAdmin.Text.Translations as Translations
-import Iso8601
 import Json.Decode as Decode
-import Json.Decode.Extra exposing (posix)
-import Json.Decode.Pipeline exposing (required)
-import Json.Encode
 import Ports exposing (ckEditorUpdate, clearInputText, confirm, confirmation)
 import Session exposing (Session)
 import Shared
@@ -35,21 +37,11 @@ import Text.Decode
 import Text.Encode
 import Text.Field
     exposing
-        ( TextAuthor
-        , TextConclusion
-        , TextDifficulty
+        ( TextDifficulty
         , TextField(..)
-        , TextIntro
-        , TextSource
-        , TextTags
-        , TextTitle
         )
 import Text.Model exposing (Text, TextDifficulty, TextListItem)
-import Text.Section.Decode
-import Text.Section.View
 import Text.Subscriptions
-import Text.Tags.View
-import Text.Translations.Decode
 import Text.Translations.Model as TranslationsModel
 import Text.Translations.Msg as TranslationsMsg
 import Text.Translations.Subscriptions
@@ -61,9 +53,6 @@ import TextEdit exposing (Mode(..), Tab(..))
 import Time
 import User.Instructor.Profile as InstructorProfile exposing (InstructorProfile)
 import User.Profile as Profile
-import Utils
-import Utils.Date
-import Views
 
 
 page : Page Params Model Msg
@@ -137,10 +126,6 @@ fakeTranslationFlags =
 
 init : Shared.Model -> Url Params -> ( SafeModel, Cmd Msg )
 init shared { params } =
-    -- let
-    --     textApiEndpoint =
-    --         Admin.Text.toTextAPIEndpoint flags.text_endpoint_url
-    -- in
     ( SafeModel
         { session = shared.session
         , config = shared.config
@@ -151,7 +136,11 @@ init shared { params } =
         , text_component = Text.Component.emptyTextComponent
         , textDifficulties = Shared.difficulties
         , textTranslationsModel = Nothing
-        , tags = Dict.fromList []
+
+        -- , tags = Dict.fromList []
+        , tags =
+            Dict.fromList <|
+                List.map (\tag -> ( tag, tag )) Shared.tags
         , selectedTab = TextTab
         , writeLocked = False
         }
@@ -160,7 +149,7 @@ init shared { params } =
       --     , textJSONtoComponent flags.text
       --     , tagsToDict flags.tags
       --     ]
-    , Cmd.none
+    , Task.perform (\_ -> InitTextFieldEditors) (Task.succeed Nothing)
     )
 
 
@@ -176,17 +165,17 @@ type Msg
     | SubmittedTextDelete
     | ConfirmedTextDelete Bool
     | GotTextDeleted (Result Http.Error Text.Decode.TextDeleteResp)
+    | InitTextFieldEditors
     | ToggleEditable TextField Bool
     | UpdateTextAttributes String String
     | UpdateTextCkEditors ( String, String )
-    | ClearMessages Time.Posix
     | AddTagInput String String
     | DeleteTag String
     | ToggleLock
     | TextLocked (Result Http.Error Text.Decode.TextLockResp)
     | TextUnlocked (Result Http.Error Text.Decode.TextLockResp)
-    | InitTextFieldEditors
     | ToggleTab Tab
+    | ClearMessages Time.Posix
     | TextJSONDecode (Result String TextComponent)
     | TextTagsDecode (Result String (Dict String String))
     | TextTranslationMsg TranslationsMsg.Msg
@@ -355,9 +344,6 @@ update msg (SafeModel model) =
             , Text.Component.initialize_text_field_ck_editors model.text_component
             )
 
-        ClearMessages _ ->
-            ( SafeModel { model | successMessage = Nothing }, Cmd.none )
-
         ToggleEditable textField editable ->
             let
                 ( textComponent, postToggleCmds ) =
@@ -382,6 +368,58 @@ update msg (SafeModel model) =
             in
             ( SafeModel { model | text_component = textComponent }
             , postToggleCmds textComponent
+            )
+
+        UpdateTextAttributes attrName attrValue ->
+            ( SafeModel { model | text_component = Text.Component.set_text_attribute model.text_component attrName attrValue }
+            , Cmd.none
+            )
+
+        UpdateTextCkEditors ( ckId, ckText ) ->
+            let
+                textIntroInputId =
+                    (Text.Field.text_intro_attrs
+                        (Text.Field.intro (Text.Component.text_fields model.text_component))
+                    ).input_id
+
+                textConclusionInputId =
+                    (Text.Field.text_conclusion_attrs
+                        (Text.Field.conclusion (Text.Component.text_fields model.text_component))
+                    ).input_id
+            in
+            if ckId == textIntroInputId then
+                ( SafeModel { model | text_component = Text.Component.set_text_attribute model.text_component "introduction" ckText }
+                , Cmd.none
+                )
+
+            else if ckId == textConclusionInputId then
+                ( SafeModel { model | text_component = Text.Component.set_text_attribute model.text_component "conclusion" ckText }
+                , Cmd.none
+                )
+
+            else
+                ( SafeModel model, Cmd.none )
+
+        AddTagInput inputId input ->
+            if Dict.member input model.tags then
+                ( SafeModel
+                    { model
+                        | text_component =
+                            Text.Component.add_tag model.text_component input
+                    }
+                , clearInputText inputId
+                )
+
+            else
+                ( SafeModel model, Cmd.none )
+
+        DeleteTag tag ->
+            ( SafeModel
+                { model
+                    | text_component =
+                        Text.Component.remove_tag model.text_component tag
+                }
+            , Cmd.none
             )
 
         ToggleLock ->
@@ -411,6 +449,33 @@ update msg (SafeModel model) =
                 }
             , Cmd.none
             )
+
+        TextLocked (Err err) ->
+            case err of
+                Http.BadStatus resp ->
+                    let
+                        _ =
+                            Debug.log "update error bad status" resp
+                    in
+                    -- case Text.Decode.decodeRespErrors resp.body of
+                    --     Ok errors ->
+                    --         let
+                    --             errors_str =
+                    --                 String.join " and " (Dict.values errors)
+                    --         in
+                    --         ( SafeModel { model | success_msg = Just <| "Error trying to lock the text: " ++ errors_str }, Cmd.none )
+                    --     _ ->
+                    ( SafeModel model, Cmd.none )
+
+                Http.BadBody resp ->
+                    let
+                        _ =
+                            Debug.log "update error bad payload" resp
+                    in
+                    ( SafeModel model, Cmd.none )
+
+                _ ->
+                    ( SafeModel model, Cmd.none )
 
         TextUnlocked (Ok textUnlockedResp) ->
             ( SafeModel
@@ -454,75 +519,6 @@ update msg (SafeModel model) =
                 _ ->
                     ( SafeModel model, Cmd.none )
 
-        TextLocked (Err err) ->
-            case err of
-                Http.BadStatus resp ->
-                    let
-                        _ =
-                            Debug.log "update error bad status" resp
-                    in
-                    -- case Text.Decode.decodeRespErrors resp.body of
-                    --     Ok errors ->
-                    --         let
-                    --             errors_str =
-                    --                 String.join " and " (Dict.values errors)
-                    --         in
-                    --         ( SafeModel { model | success_msg = Just <| "Error trying to lock the text: " ++ errors_str }, Cmd.none )
-                    --     _ ->
-                    ( SafeModel model, Cmd.none )
-
-                Http.BadBody resp ->
-                    let
-                        _ =
-                            Debug.log "update error bad payload" resp
-                    in
-                    ( SafeModel model, Cmd.none )
-
-                _ ->
-                    ( SafeModel model, Cmd.none )
-
-        UpdateTextAttributes attrName attrValue ->
-            ( SafeModel { model | text_component = Text.Component.set_text_attribute model.text_component attrName attrValue }
-            , Cmd.none
-            )
-
-        UpdateTextCkEditors ( ckId, ckText ) ->
-            let
-                textIntroInputId =
-                    (Text.Field.text_intro_attrs
-                        (Text.Field.intro (Text.Component.text_fields model.text_component))
-                    ).input_id
-
-                textConclusionInputId =
-                    (Text.Field.text_conclusion_attrs
-                        (Text.Field.conclusion (Text.Component.text_fields model.text_component))
-                    ).input_id
-            in
-            if ckId == textIntroInputId then
-                ( SafeModel { model | text_component = Text.Component.set_text_attribute model.text_component "introduction" ckText }
-                , Cmd.none
-                )
-
-            else if ckId == textConclusionInputId then
-                ( SafeModel { model | text_component = Text.Component.set_text_attribute model.text_component "conclusion" ckText }
-                , Cmd.none
-                )
-
-            else
-                ( SafeModel model, Cmd.none )
-
-        AddTagInput inputId input ->
-            if Dict.member input model.tags then
-                ( SafeModel { model | text_component = Text.Component.add_tag model.text_component input }
-                , clearInputText inputId
-                )
-
-            else
-                ( SafeModel model, Cmd.none )
-
-        DeleteTag tag ->
-            ( SafeModel { model | text_component = Text.Component.remove_tag model.text_component tag }, Cmd.none )
-
         ToggleTab tab ->
             let
                 postToggleCmd =
@@ -533,6 +529,11 @@ update msg (SafeModel model) =
                         Cmd.none
             in
             ( SafeModel { model | selectedTab = tab }, postToggleCmd )
+
+        ClearMessages _ ->
+            ( SafeModel { model | successMessage = Nothing }
+            , Cmd.none
+            )
 
         TextJSONDecode result ->
             case result of
@@ -760,7 +761,9 @@ deleteLock session config text =
 
 tagsToDict : List String -> Cmd Msg
 tagsToDict tagList =
-    Task.attempt TextTagsDecode (Task.succeed <| Dict.fromList (List.map (\tag -> ( tag, tag )) tagList))
+    Task.attempt
+        TextTagsDecode
+        (Task.succeed <| Dict.fromList (List.map (\tag -> ( tag, tag )) tagList))
 
 
 
@@ -812,9 +815,7 @@ view (SafeModel model) =
             , Text.View.view_text
                 textViewParams
                 messages
-                -- TODO: replace this flag somehow
-                -- model.flags.answer_feedback_limit
-                1
+                Shared.answerFeedbackCharacterLimit
             ]
         ]
     }

@@ -139,3 +139,91 @@ app.ports.sendSocketCommand.subscribe(config => {
   console.log(config);
   sendSocketCommand(config);
 });
+
+// INPUTS
+
+app.ports.clearInputText.subscribe(id => {
+  // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
+  window.requestAnimationFrame(() => {
+    const input = document.getElementById(id) as HTMLInputElement;
+
+    if (input) {
+      input.value = '';
+    }
+  });
+});
+
+app.ports.selectAllInputText.subscribe(id => {
+  // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
+  window.requestAnimationFrame(() => {
+    const input = document.getElementById(id) as HTMLInputElement;
+
+    if (input) {
+      input.focus();
+      input.setSelectionRange(0, -1);
+    }
+  });
+});
+
+// SCROLL
+
+app.ports.scrollTo.subscribe(id => {
+  // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
+  window.requestAnimationFrame(() => {
+    const elem = document.getElementById(id);
+
+    if (elem) {
+      elem.scrollIntoView(false);
+    }
+  });
+});
+
+// EDITOR
+
+app.ports.ckEditor.subscribe(id => {
+  // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
+  window.requestAnimationFrame(() => {
+    if (window.CKEDITOR) {
+      // implicit detach
+      if (window.CKEDITOR.instances[id]) {
+        window.CKEDITOR.instances[id].destroy();
+      }
+
+      window.CKEDITOR.inline(id).on('change', function (evt) {
+        console.log(evt.editor.getData());
+        app.ports.ckEditorUpdate.send([id, evt.editor.getData()]);
+      });
+    }
+  });
+});
+
+// app.ports.addClassToCKEditor.subscribe(([ckeditorInstance, className]) => {
+//   // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
+//   window.requestAnimationFrame(() => {
+//     if (CKEDITOR) {
+//       const elem = document.getElementById(ckeditorInstance)
+//         .nextSibling as HTMLElement;
+
+//       if (elem) {
+//         elem.classList.add(className);
+//       }
+//     }
+//   });
+// });
+
+app.ports.ckEditorSetHtml.subscribe(([id, html]) => {
+  // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
+  window.requestAnimationFrame(function (timestamp) {
+    if (window.CKEDITOR) {
+      window.CKEDITOR.instances[id].setData(html);
+    }
+  });
+});
+
+app.ports.confirm.subscribe(msg => {
+  // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
+  window.requestAnimationFrame(() => {
+    const confirm = window.confirm(msg);
+    app.ports.confirmation.send(confirm);
+  });
+});
