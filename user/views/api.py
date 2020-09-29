@@ -22,8 +22,7 @@ class APIView(View):
     @method_decorator(csrf_exempt)
     @method_decorator(never_cache)
     def dispatch(self, request, *args, **kwargs):
-        # entry point for requests and utlimately sends out the response. Dispatches to the appropriate view?
-        # https://stackoverflow.com/questions/47808652/what-is-dispatch-used-for-in-django
+
         return super(APIView, self).dispatch(request, *args, **kwargs)
 
     def format_form_errors(self, form: 'forms.Form') -> dict:
@@ -45,7 +44,6 @@ class APIView(View):
 
         return JsonResponse(errors, status=400)
 
-    # This is where form validation is done
     def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         """
         APIView.dispatch() calls this method if the HttpRequest is of type POST
@@ -61,7 +59,6 @@ class APIView(View):
 
         form = self.form(request, params)
         
-        # `is_valid()` has the ability to determine if a user enters invalid creds
         form_is_valid = form.is_valid()
         
         if form_is_valid and form.__class__ == AuthenticationForm:
