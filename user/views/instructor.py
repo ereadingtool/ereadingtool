@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.views.generic import TemplateView, View
 from django.http import JsonResponse
 
-from user.forms import InstructorSignUpForm, InstructorLoginForm, InstructorInviteForm
+from user.forms import AuthenticationForm, InstructorSignUpForm, InstructorInviteForm
 
 from user.instructor.models import Instructor
 
@@ -124,7 +124,7 @@ class InstructorLoginAPIView(APIView):
     http_method_names = ['post']
 
     def form(self, request: HttpRequest, params: Dict) -> Form:
-        return InstructorLoginForm(request, params)
+        return AuthenticationForm(request, params)
 
     def post_success(self, request: HttpRequest, instructor_login_form: Form) -> JsonResponse:
 

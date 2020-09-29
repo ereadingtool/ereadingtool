@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.views.generic import TemplateView, View
 
 from text.models import TextDifficulty
-from user.forms import StudentSignUpForm, StudentLoginForm, StudentForm, StudentConsentForm
+from user.forms import AuthenticationForm, StudentConsentForm, StudentForm, StudentSignUpForm
 from user.student.models import Student
 from user.views.api import APIView
 from user.views.mixin import ProfileView
@@ -310,7 +310,7 @@ class StudentLoginAPIView(APIView):
     """
     def form(self, request: HttpRequest, params: Dict) -> Form:
         # This class appears to just be an `AuthenticationForm` since it simply passes
-        return StudentLoginForm(request, params)
+        return AuthenticationForm(request, params)
 
     def post_success(self, request: HttpRequest, student_login_form: Form) -> JsonResponse:
         """
