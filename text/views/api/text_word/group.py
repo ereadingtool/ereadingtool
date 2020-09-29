@@ -5,13 +5,13 @@ from django.db import models
 from django.db import transaction
 from django.http import HttpResponse, HttpRequest, HttpResponseServerError
 from django.urls import reverse_lazy
-from django.views.generic import View
+from ereadingtool.views import APIView
 
 from text.translations.group.models import TextWordGroup, TextGroupWord
 from text.translations.models import TextWord
 
 
-class TextWordGroupAPIView(LoginRequiredMixin, View):
+class TextWordGroupAPIView(LoginRequiredMixin, APIView):
     model = TextWordGroup
 
     login_url = reverse_lazy('instructor-login')

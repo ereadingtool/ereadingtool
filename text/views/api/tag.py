@@ -5,12 +5,12 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpRequest, HttpResponseServerError
 from django.http import HttpResponseNotAllowed
 from django.urls import reverse_lazy
-from django.views.generic import View
+from ereadingtool.views import APIView
 
 from text.models import Text
 
 
-class TextTagAPIView(LoginRequiredMixin, View):
+class TextTagAPIView(LoginRequiredMixin, APIView):
     login_url = reverse_lazy('instructor-login')
 
     model = Text

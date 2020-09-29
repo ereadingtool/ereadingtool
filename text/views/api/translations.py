@@ -5,7 +5,7 @@ import jsonschema
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpRequest, HttpResponseServerError
 from django.urls import reverse_lazy
-from django.views.generic import View
+from ereadingtool.views import APIView
 
 from django.db import transaction, DatabaseError
 from django.core.exceptions import ObjectDoesNotExist
@@ -13,7 +13,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from text.phrase.models import TextPhrase, TextPhraseTranslation
 
 
-class TextTranslationMatchAPIView(LoginRequiredMixin, View):
+class TextTranslationMatchAPIView(LoginRequiredMixin, APIView):
     login_url = reverse_lazy('instructor-login')
     allowed_methods = ['put']
 
