@@ -2,11 +2,14 @@ module Api.Endpoint exposing
     ( Endpoint
     , consentToResearch
     , createText
+    , createTranslation
     , filterToStringQueryParam
     , forgotPassword
     , instructorProfile
     , instructorSignup
     , inviteInstructor
+    , matchTranslation
+    , mergeWords
     , request
     , resetPassword
     , studentProfile
@@ -14,7 +17,9 @@ module Api.Endpoint exposing
     , text
     , textLock
     , textSearch
+    , translation
     , validateUsername
+    , word
     )
 
 import Http
@@ -130,19 +135,67 @@ createText baseUrl =
     url baseUrl [ "api", "text/" ] []
 
 
-text : String -> Int -> Maybe (List QueryParameter) -> Endpoint
-text baseUrl id maybeQueryParameters =
-    case maybeQueryParameters of
-        Just queryParameters ->
-            url baseUrl [ "api", "text", String.fromInt id ++ "/" ] queryParameters
-
-        Nothing ->
-            url baseUrl [ "api", "text", String.fromInt id ++ "/" ] []
+text : String -> Int -> List ( String, String ) -> Endpoint
+text baseUrl id queryParameters =
+    url baseUrl
+        [ "api", "text", String.fromInt id ++ "/" ]
+        (List.map
+            (\qp ->
+                Url.Builder.string
+                    (Tuple.first qp)
+                    (Tuple.second qp)
+            )
+            queryParameters
+        )
 
 
 textLock : String -> Int -> Endpoint
 textLock baseUrl id =
     url baseUrl [ "api", "text", String.fromInt id, "lock/" ] []
+
+
+
+-- WORDS AND TRANSLATIONS
+
+
+word : String -> Int -> Endpoint
+word baseUrl id =
+    url baseUrl [ "api", "text", "word", String.fromInt id ] []
+
+
+mergeWords : String -> Endpoint
+mergeWords baseUrl =
+    url baseUrl [ "api", "text", "word", "compound" ] []
+
+
+createTranslation : String -> Int -> Endpoint
+createTranslation baseUrl wordId =
+    url baseUrl
+        [ "api"
+        , "text"
+        , "word"
+        , String.fromInt wordId
+        , "translation"
+        ]
+        []
+
+
+translation : String -> Int -> Int -> Endpoint
+translation baseUrl wordId translationId =
+    url baseUrl
+        [ "api"
+        , "text"
+        , "word"
+        , String.fromInt wordId
+        , "translation"
+        , String.fromInt translationId
+        ]
+        []
+
+
+matchTranslation : String -> Endpoint
+matchTranslation baseUrl =
+    url baseUrl [ "api", "text", "translations", "match" ] []
 
 
 

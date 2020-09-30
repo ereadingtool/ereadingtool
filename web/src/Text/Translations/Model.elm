@@ -33,9 +33,11 @@ module Text.Translations.Model exposing
     , wordInstanceKey
     )
 
+import Api.Config exposing (Config)
 import Array exposing (Array)
 import Dict exposing (Dict)
 import OrderedDict exposing (OrderedDict)
+import Session exposing (Session)
 import Text.Model
 import Text.Translations
 import Text.Translations.TextWord
@@ -58,6 +60,8 @@ type alias Model =
     , text : Text.Model.Text
     , text_id : Int
     , new_translations : Dict String String
+    , session : Session
+    , config : Config
     , add_as_text_word_endpoint : Text.Translations.AddTextWordEndpoint
     , merge_textword_endpoint : Text.Translations.MergeTextWordEndpoint
     , text_translation_match_endpoint : Text.Translations.TextTranslationMatchEndpoint
@@ -78,6 +82,8 @@ init flags text_id text =
     , text_id = text_id
     , new_translations = Dict.empty
     , flags = flags
+    , session = flags.session
+    , config = flags.config
     , add_as_text_word_endpoint = Text.Translations.AddTextWordEndpoint (Text.Translations.URL flags.add_as_text_word_endpoint_url)
     , merge_textword_endpoint = Text.Translations.MergeTextWordEndpoint (Text.Translations.URL flags.merge_textword_endpoint_url)
     , text_translation_match_endpoint =

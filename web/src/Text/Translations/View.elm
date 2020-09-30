@@ -294,7 +294,7 @@ view_text_word_translation msg textWord translation =
     div [ classList [ ( "translation", True ) ] ]
         [ div
             [ classList [ ( "editable", True ), ( "phrase", True ) ]
-            , onClick (msg (MakeCorrectForContext translation))
+            , onClick (msg (MakeCorrectForContext textWord translation))
             ]
             [ Html.text translation.text ]
         , div [ class "icons" ] <|

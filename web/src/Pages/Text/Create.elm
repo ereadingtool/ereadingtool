@@ -93,6 +93,7 @@ type SafeModel
         , errorMessage : Maybe String
         , text_component : TextComponent
         , textDifficulties : List Text.Model.TextDifficulty
+        , translationsInit : Translations.Flags
         , textTranslationsModel : Maybe TranslationsModel.Model
         , tags : Dict String String
         , writeLocked : Bool
@@ -112,18 +113,6 @@ type SafeModel
 --         }
 
 
-{-| TODO: replace this with Endpoints or a new API endpoint to get what
-we need.
--}
-fakeTranslationFlags : Translations.Flags
-fakeTranslationFlags =
-    { add_as_text_word_endpoint_url = "placeholder"
-    , merge_textword_endpoint_url = "placeholder"
-    , text_translation_match_endpoint = "placeholder"
-    , csrftoken = "placeholder"
-    }
-
-
 init : Shared.Model -> Url Params -> ( SafeModel, Cmd Msg )
 init shared { params } =
     ( SafeModel
@@ -135,6 +124,14 @@ init shared { params } =
         , profile = Profile.toInstructorProfile shared.profile
         , text_component = Text.Component.emptyTextComponent
         , textDifficulties = Shared.difficulties
+        , translationsInit =
+            { session = shared.session
+            , config = shared.config
+            , add_as_text_word_endpoint_url = "legacyEndpoint"
+            , merge_textword_endpoint_url = "legacyEndpoint"
+            , text_translation_match_endpoint = "legacyEndpoint"
+            , csrftoken = "legacyToken"
+            }
         , textTranslationsModel = Nothing
 
         -- , tags = Dict.fromList []
@@ -567,7 +564,11 @@ update msg (SafeModel model) =
                                     [ Text.Component.reinitialize_ck_editors textComponent
 
                                     -- , Text.Translations.Update.retrieveTextWords TextTranslationMsg model.text_api_endpoint text.id
-                                    , Cmd.none
+                                    , Text.Translations.Update.retrieveTextWords
+                                        model.session
+                                        model.config
+                                        TextTranslationMsg
+                                        text.id
                                     ]
                                 )
 
@@ -580,14 +581,18 @@ update msg (SafeModel model) =
                                             , mode = EditMode
                                             , textTranslationsModel =
                                                 -- Just (TranslationsModel.init model.flags.translation_flags id text)
-                                                Just (TranslationsModel.init fakeTranslationFlags id text)
+                                                Just (TranslationsModel.init model.translationsInit id text)
                                             , successMessage = Just <| "editing '" ++ text.title ++ "' text"
                                         }
                                     , Cmd.batch
                                         [ Text.Component.reinitialize_ck_editors textComponent
 
                                         -- , Text.Translations.Update.retrieveTextWords TextTranslationMsg model.text_api_endpoint text.id
-                                        , Cmd.none
+                                        , Text.Translations.Update.retrieveTextWords
+                                            model.session
+                                            model.config
+                                            TextTranslationMsg
+                                            text.id
                                         ]
                                     )
 
@@ -646,7 +651,7 @@ getText :
     -> Cmd Msg
 getText session config textId =
     Api.get
-        (Endpoint.text (Config.restApiUrl config) textId Nothing)
+        (Endpoint.text (Config.restApiUrl config) textId [])
         (Session.cred session)
         GotText
         Text.Decode.textDecoder
@@ -675,7 +680,7 @@ updateText session config text =
     case text.id of
         Just textId ->
             Api.put
-                (Endpoint.text (Config.restApiUrl config) textId Nothing)
+                (Endpoint.text (Config.restApiUrl config) textId [])
                 (Session.cred session)
                 (Http.jsonBody (Text.Encode.textEncoder text))
                 GotTextUpdated
@@ -694,7 +699,7 @@ deleteText session config text =
     case text.id of
         Just textId ->
             Api.delete
-                (Endpoint.text (Config.restApiUrl config) textId Nothing)
+                (Endpoint.text (Config.restApiUrl config) textId [])
                 (Session.cred session)
                 Http.emptyBody
                 GotTextDeleted

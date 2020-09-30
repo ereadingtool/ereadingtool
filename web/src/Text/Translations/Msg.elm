@@ -23,7 +23,7 @@ type Msg
     | CloseEditWord WordInstance
     | DeleteTextWord TextWord
       -- translations
-    | MakeCorrectForContext Translation
+    | MakeCorrectForContext TextWord Translation
     | UpdateNewTranslationForTextWord TextWord String
     | SubmitNewTranslationForTextWord TextWord
     | DeleteTranslation TextWord Translation
