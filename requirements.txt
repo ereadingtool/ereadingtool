@@ -21,5 +21,4 @@ Twisted[tls,http2]
 pytz
 webstack-django-jwt-auth
 django-cors-headers
-# this is new
 PyJWT

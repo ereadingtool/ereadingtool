@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.views.generic import TemplateView, View
 from django.http import JsonResponse
 
-from user.forms import InstructorSignUpForm, InstructorLoginForm, InstructorInviteForm
+from user.forms import AuthenticationForm, InstructorSignUpForm, InstructorInviteForm
 
 from user.instructor.models import Instructor
 
@@ -124,7 +124,7 @@ class InstructorLoginAPIView(APIView):
     http_method_names = ['post']
 
     def form(self, request: HttpRequest, params: Dict) -> Form:
-        return InstructorLoginForm(request, params)
+        return AuthenticationForm(request, params)
 
     def post_success(self, request: HttpRequest, instructor_login_form: Form) -> JsonResponse:
 
@@ -136,9 +136,6 @@ class InstructorLoginAPIView(APIView):
             # orig_iat means "original issued at" https://tools.ietf.org/html/rfc7519
             reader_user, instructor_login_form.cleaned_data.get('orig_iat')
         )
-        # not sure if this is the best way to go about failing out if you're a student...
-        if hasattr(reader_user, 'student'):
-            return self.post_error({'all': 'Something went wrong.  Please try a different username and password.'})
 
         # payload now contains string 'Bearer', the token, and the expiration time JWT_EXPIRATION_DELTA (in seconds)
         jwt_payload = jwt_get_json_with_token(token)
