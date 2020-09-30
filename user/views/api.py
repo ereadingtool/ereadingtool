@@ -4,12 +4,12 @@ from django import forms
 from django.http import JsonResponse, HttpRequest
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.debug import sensitive_post_parameters
-from django.views.generic import View
+
+from ereadingtool.views import APIView as EreadingToolAPIView
 
 
-class APIView(View):
+class APIView(EreadingToolAPIView):
     def form(self, request: HttpRequest, params: dict) -> 'forms.Form':
         raise NotImplementedError
 
@@ -17,7 +17,6 @@ class APIView(View):
         raise NotImplementedError
 
     @method_decorator(sensitive_post_parameters())
-    @method_decorator(csrf_exempt)
     @method_decorator(never_cache)
     def dispatch(self, request, *args, **kwargs):
         # entry point for requests and utlimately sends out the response. Dispatches to the appropriate view?
@@ -34,7 +33,7 @@ class APIView(View):
         return errors
 
     def post_json_error(self, error: json.JSONDecodeError) -> JsonResponse:
-        return JsonResponse(errors={"errors": {'json': str(error)}}, status=400)
+        return JsonResponse({"errors": {'json': str(error)}}, status=400)
 
     def post_error(self, errors: dict) -> JsonResponse:
         """ Things went wrong in the `post()` method below."""

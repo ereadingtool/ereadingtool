@@ -149,8 +149,8 @@ class InstructorLoginAPIView(APIView):
         # return to the dispatcher to send out an HTTP response
         return JsonResponse(jwt_payload)
 
-# TODO: this route is unused since the client side simply invalidates the JWT
-class InstructorLogoutAPIView(LoginRequiredMixin, View):
+
+class InstructorLogoutAPIView(LoginRequiredMixin, APIView):
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         logout(request)
 

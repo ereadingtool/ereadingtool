@@ -191,7 +191,7 @@ class StudentAPIConsentToResearchView(LoginRequiredMixin, APIView):
         try:
             params = json.loads(request.body.decode('utf8'))
         except json.JSONDecodeError as e:
-            return self.put_json_error(e)
+            return self.post_json_error(e)
 
         if 'difficulty_preference' in params:
             try:
@@ -211,7 +211,6 @@ class StudentAPIConsentToResearchView(LoginRequiredMixin, APIView):
 
 
 class StudentAPIView(LoginRequiredMixin, APIView):
-
     def form(self, request: HttpRequest, params: Dict, **kwargs) -> forms.ModelForm:
         return StudentForm(params, **kwargs)
 
@@ -226,11 +225,11 @@ class StudentAPIView(LoginRequiredMixin, APIView):
 
         student_dict = student.to_dict()
 
-
         # TODO: Hot patch
         # student_dict.pop('flashcards')
 
-        student_performance_report = None # student_dict.pop('performance_report')
+        # student_dict.pop('performance_report')
+        student_performance_report = None
 
         return HttpResponse(json.dumps({
             'profile': student_dict,
@@ -262,7 +261,7 @@ class StudentAPIView(LoginRequiredMixin, APIView):
         try:
             params = json.loads(request.body.decode('utf8'))
         except json.JSONDecodeError as e:
-            return self.put_json_error(e)
+            return self.post_json_error(e)
 
         if 'difficulty_preference' in params:
             try:
@@ -296,8 +295,7 @@ class StudentSignupAPIView(APIView):
         return HttpResponse(json.dumps({'id': student.pk, 'redirect': reverse('student-login')}))
 
 
-# TODO: this route is unused since the client side simply invalidates the JWT
-class StudentLogoutAPIView(LoginRequiredMixin, View):
+class StudentLogoutAPIView(LoginRequiredMixin, APIView):
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         logout(request)
 

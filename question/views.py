@@ -4,6 +4,7 @@ from django.db.models import ObjectDoesNotExist
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.views.generic import View
+from ereadingtool.views import APIView
 
 from text.models import Text
 from question.models import Question
@@ -11,7 +12,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 
 
-class QuestionAPIView(LoginRequiredMixin, View):
+class QuestionAPIView(LoginRequiredMixin, APIView):
     model = Question
     login_url = reverse_lazy('student-login')
 
