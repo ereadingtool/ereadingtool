@@ -52,8 +52,7 @@ class TestInstructorUser(TestUserBase, TestCase):
     def setup_admin_instructor(self):
         self.instructor_admin_user, self.instructor_admin_password = self.new_user(
             username='ereader@pdx.edu',
-            password='test-p4ssw0rd!',
-            is_staff=True
+            password='test-p4ssw0rd!'
         )
 
         admin_instructor = self.new_instructor_with_user(self.instructor_admin_user, admin=True)

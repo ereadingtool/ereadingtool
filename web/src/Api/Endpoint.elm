@@ -103,8 +103,7 @@ studentProfile baseUrl id =
 
 instructorProfile : String -> Int -> Endpoint
 instructorProfile baseUrl id =
-    -- url baseUrl [ "api", "instructor", String.fromInt id ++ "/" ] []
-    url baseUrl [ "api", "instructor", String.fromInt id ] []
+    url baseUrl [ "api", "instructor", String.fromInt id ++ "/" ] []
 
 
 consentToResearch : String -> Int -> Endpoint
