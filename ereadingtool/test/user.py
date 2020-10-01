@@ -37,8 +37,8 @@ class TestUser(TestCase):
 
         self.fake.seed_locale('en_US', random.randint(0, 100))
 
-    def new_user(self, password: AnyStr = None, username: AnyStr = None) -> (ReaderUser, AnyStr):
-        user = ReaderUser(is_active=True, username=username or ''.join(random.choices(
+    def new_user(self, password: AnyStr = None, username: AnyStr = None, is_staff: AnyStr = False) -> (ReaderUser, AnyStr):
+        user = ReaderUser(is_active=True, is_staff=is_staff, username=username or ''.join(random.choices(
             string.ascii_uppercase + string.digits + string.ascii_lowercase, k=8)))
 
         user.email = self.fake['en-US'].email()
@@ -66,7 +66,7 @@ class TestUser(TestCase):
         return instructor
 
     def new_instructor(self) -> (ReaderUser, AnyStr, Instructor):
-        user, user_passwd = self.new_user()
+        user, user_passwd = self.new_user(is_staff=True)
 
         instructor = self.new_instructor_with_user(user)
 
