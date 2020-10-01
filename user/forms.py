@@ -155,16 +155,6 @@ class AuthenticationForm(BaseAuthenticationForm):
         return username
 
 
-class InstructorLoginForm(AuthenticationForm):
-    pass
-
-
-# TODO: StudentLoginAPIView `post_success()` contains code to confirm that the person
-# attempting to login isn't an instructor. Instead this method should be dispatched...
-class StudentLoginForm(AuthenticationForm):
-    pass
-
-
 class StudentConsentForm(forms.ModelForm):
     class Meta:
         model = Student
