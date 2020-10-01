@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.views.generic import TemplateView, View
 
 from text.models import TextDifficulty
-from user.forms import StudentSignUpForm, StudentLoginForm, StudentForm, StudentConsentForm
+from user.forms import AuthenticationForm, StudentSignUpForm, StudentForm, StudentConsentForm
 from user.student.models import Student
 from user.views.api import APIView
 from user.views.mixin import ProfileView
@@ -308,7 +308,7 @@ class StudentLoginAPIView(APIView):
     """
     def form(self, request: HttpRequest, params: Dict) -> Form:
         # This class appears to just be an `AuthenticationForm` since it simply passes
-        return StudentLoginForm(request, params)
+        return AuthenticationForm(request, params)
 
     def post_success(self, request: HttpRequest, student_login_form: Form) -> JsonResponse:
         """
@@ -325,12 +325,6 @@ class StudentLoginAPIView(APIView):
             # orig_iat means "original issued at" https://tools.ietf.org/html/rfc7519
             reader_user, student_login_form.cleaned_data.get('orig_iat') 
         )
-
-        # not sure if this is the best way to go about failing out if you're an instructor...
-        # TODO: Move this logic into the form validator
-        if hasattr(reader_user, 'instructor'):
-            return self.post_error({'all': 'Something went wrong.  Please try a different username and password.'})
-
 
         # payload now contains string 'Bearer', the token, and the expiration time JWT_EXPIRATION_DELTA (in seconds)
         jwt_payload = jwt_get_json_with_token(token)
