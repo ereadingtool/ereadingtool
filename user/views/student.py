@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.views.generic import TemplateView, View
 
 from text.models import TextDifficulty
-from user.forms import StudentSignUpForm, StudentLoginForm, StudentForm, StudentConsentForm
+from user.forms import AuthenticationForm, StudentConsentForm, StudentForm, StudentSignUpForm
 from user.student.models import Student
 from user.views.api import APIView
 from user.views.mixin import ProfileView
@@ -164,7 +164,6 @@ class StudentView(ProfileView):
 
 
 class StudentAPIConsentToResearchView(LoginRequiredMixin, APIView):
-    # returns permission denied HTTP message rather than redirect to login
 
     def form(self, request: HttpRequest, params: Dict, **kwargs) -> forms.ModelForm:
         return StudentConsentForm(params, **kwargs)
@@ -303,25 +302,36 @@ class StudentLogoutAPIView(LoginRequiredMixin, APIView):
 
 
 class StudentLoginAPIView(APIView):
+    """
+    This class handles the student's login by returning a JWT to the client 
+    """
     def form(self, request: HttpRequest, params: Dict) -> Form:
-        return StudentLoginForm(request, params)
+        # This class appears to just be an `AuthenticationForm` since it simply passes
+        return AuthenticationForm(request, params)
 
     def post_success(self, request: HttpRequest, student_login_form: Form) -> JsonResponse:
+        """
+        Form validation is done in user/views/api.py so we assume the form fields are valid.
+        This function will get the user `pk` and generate a token using that value. The token's 
+        life span can be changed in settings.py by way of `JWT_EXPIRATION_DELTA`
+        Args: HttpRequest: presumably a POST. Form: a Django type holding form data, aliased up top.
+        Returns: JsonResponse containing the new JWT
+        """        
         reader_user = student_login_form.get_user()
 
         token = jwt_encode_token(
-            reader_user, student_login_form.cleaned_data.get('orig_iat')
+            # cleaned_data sanitizes the form fields https://docs.djangoproject.com/en/3.1/ref/forms/api/#accessing-clean-data
+            # orig_iat means "original issued at" https://tools.ietf.org/html/rfc7519
+            reader_user, student_login_form.cleaned_data.get('orig_iat') 
         )
 
-        if hasattr(reader_user, 'instructor'):
-            return self.post_error({'all': 'Something went wrong.  Please try a different username and password.'})
-
+        # payload now contains string 'Bearer', the token, and the expiration time JWT_EXPIRATION_DELTA (in seconds)
         jwt_payload = jwt_get_json_with_token(token)
 
-        student = reader_user.student
+        # manually add the field `[id]` to the jwt payload
+        jwt_payload['id'] = reader_user.student.pk
 
-        jwt_payload['id'] = student.pk
-
+        # return to the dispatcher to send out an HTTP response
         return JsonResponse(jwt_payload)
 
 
@@ -339,6 +349,7 @@ class StudentSignUpView(TemplateView):
         return context
 
 
+# TODO
 class StudentLoginView(TemplateView):
     template_name = 'student/login.html'
 
@@ -350,6 +361,7 @@ class StudentLoginView(TemplateView):
         return context
 
 
+# TODO
 class StudentProfileView(StudentView, TemplateView):
     template_name = 'student/profile.html'
 
@@ -360,7 +372,7 @@ class StudentProfileView(StudentView, TemplateView):
 
         return context
 
-
+# TODO
 class StudentFlashcardView(StudentView, TemplateView):
     template_name = 'student/flashcards.html'
 

@@ -154,14 +154,6 @@ class AuthenticationForm(BaseAuthenticationForm):
         return username
 
 
-class InstructorLoginForm(AuthenticationForm):
-    pass
-
-
-class StudentLoginForm(AuthenticationForm):
-    pass
-
-
 class StudentConsentForm(forms.ModelForm):
     class Meta:
         model = Student

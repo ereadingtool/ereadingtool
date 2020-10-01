@@ -31,6 +31,7 @@ init maybeConfig =
         Just config ->
             config
 
+        -- Here the URL has been changed for local development
         Nothing ->
             Config
                 { restApiUrl = "https://api.stepstoadvancedreading.org"

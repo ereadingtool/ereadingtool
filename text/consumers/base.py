@@ -2,6 +2,7 @@ from typing import AnyStr
 
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer
 
 from question.models import Answer
 from text.models import Text
@@ -9,6 +10,7 @@ from text_reading.exceptions import (TextReadingException, TextReadingNotAllQues
                                      TextReadingQuestionNotInSection)
 from user.models import ReaderUser
 
+from auth.producer_auth import ProducerAuthMiddleware
 
 class Unauthorized(Exception):
     pass
@@ -125,8 +127,11 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             })
 
     async def connect(self):
-        if self.scope['user'].is_anonymous:
-            await self.close()
+        if not self.scope['user'] or not self.scope['user'].is_authenticated:
+            await self.accept()
+            # 1002 indicates that an endpoint is terminating the connection due
+            # to a protocol error.
+            await self.close(code=1002) 
         else:
             await self.accept()
 

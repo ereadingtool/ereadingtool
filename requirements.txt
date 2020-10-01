@@ -21,3 +21,4 @@ Twisted[tls,http2]
 pytz
 webstack-django-jwt-auth
 django-cors-headers
+PyJWT
