@@ -3,6 +3,7 @@ module Api.Endpoint exposing
     , consentToResearch
     , createText
     , createTranslation
+    , createWord
     , filterToStringQueryParam
     , forgotPassword
     , instructorProfile
@@ -155,7 +156,12 @@ textLock baseUrl id =
 
 
 
--- WORDS AND TRANSLATIONS
+-- WORDS
+
+
+createWord : String -> Endpoint
+createWord baseUrl =
+    url baseUrl [ "api", "text", "word" ] []
 
 
 word : String -> Int -> Endpoint
@@ -166,6 +172,10 @@ word baseUrl id =
 mergeWords : String -> Endpoint
 mergeWords baseUrl =
     url baseUrl [ "api", "text", "word", "compound" ] []
+
+
+
+-- TRANSLATIONS
 
 
 createTranslation : String -> Int -> Endpoint

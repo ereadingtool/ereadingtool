@@ -3,8 +3,6 @@ module Text.Translations.Update exposing
     , update
     )
 
--- import HttpHelpers
-
 import Api
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
@@ -49,7 +47,6 @@ update parentMsg msg model =
 
         MakeCorrectForContext textWord translation ->
             ( model
-              -- , updateTranslationAsCorrect parentMsg model.flags.csrftoken translation
             , updateTranslationAsCorrect model.session model.config parentMsg textWord translation
             )
 
@@ -129,7 +126,6 @@ update parentMsg msg model =
             in
             -- merge
             ( newModel
-              -- , postMergeWords parentMsg newModel model.flags.csrftoken mergingWordInstances
             , postMergeWords model.session model.config parentMsg mergingWordInstances
             )
 
@@ -172,14 +168,13 @@ update parentMsg msg model =
 
         AddTextWord wordInstance ->
             ( model
-            , addAsTextWord parentMsg model model.flags.csrftoken wordInstance
+            , addAsTextWord model.session model.config parentMsg model wordInstance
             )
 
         SubmitNewTranslationForTextWord textWord ->
             case Text.Translations.Model.getNewTranslationForWord model textWord of
                 Just translationText ->
                     ( model
-                      -- , postTranslation parentMsg model.flags.csrftoken textWord translationText True
                     , postTranslation model.session model.config parentMsg textWord translationText True
                     )
 
@@ -201,7 +196,6 @@ update parentMsg msg model =
 
         DeleteTranslation textWord textTranslation ->
             ( model
-              -- , deleteTranslation parentMsg model.flags.csrftoken textWord textTranslation
             , deleteTranslation model.session model.config parentMsg textWord textTranslation
             )
 
@@ -230,7 +224,6 @@ update parentMsg msg model =
 
         SaveEditedGrammemes wordInstance ->
             ( model
-              -- , updateGrammemes parentMsg model.flags.csrftoken wordInstance model.editing_grammemes
             , updateGrammemes model.session model.config parentMsg wordInstance model.editing_grammemes
             )
 
@@ -243,7 +236,6 @@ mergeWords parentMsg model _ wordInstances =
     if Text.Translations.Word.Instance.canMergeWords wordInstances then
         -- all word instances are ready to merge
         ( model
-          -- , postMergeWords parentMsg model model.flags.csrftoken wordInstances
         , postMergeWords model.session model.config parentMsg wordInstances
         )
 
@@ -290,36 +282,24 @@ handleAddTextWords parentMsg _ result =
 --             Http.jsonBody encodedTextWord
 --     in
 --     HttpHelpers.post_with_headers endpointUri headers body Text.Translations.Decode.textWordInstanceDecoder
---
--- addAsTextWord : (Msg -> msg) -> Model -> Flags.CSRFToken -> WordInstance -> Cmd msg
--- addAsTextWord parentMsg model csrftoken wordInstance =
---     Http.send (parentMsg << UpdatedTextWord) (addAsTextWordRequest model csrftoken wordInstance)
 
 
-addAsTextWord : (Msg -> msg) -> Model -> Flags.CSRFToken -> WordInstance -> Cmd msg
-addAsTextWord parentMsg model csrftoken wordInstance =
-    -- Http.send (parentMsg << UpdatedTextWord) (addAsTextWordRequest model csrftoken wordInstance)
-    Debug.todo "add as text word request"
-
-
-
--- postMergeWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> Cmd msg
--- postMergeWords parentMsg model csrftoken wordInstances =
---     let
---         endpointUrl =
---             Text.Translations.mergeTextWordEndpointToString model.merge_textword_endpoint
---         headers =
---             [ Http.header "X-CSRFToken" csrftoken ]
---         textWords =
---             List.filterMap (\instance -> Text.Translations.Word.Instance.textWord instance) wordInstances
---         encodedTextWordIds =
---             Text.Translations.Encode.textWordMergeEncoder textWords
---         body =
---             Http.jsonBody encodedTextWordIds
---         request =
---             HttpHelpers.post_with_headers endpointUrl headers body Text.Translations.Decode.textWordMergeDecoder
---     in
---     Http.send (parentMsg << MergedWords) request
+addAsTextWord :
+    Session
+    -> Config
+    -> (Msg -> msg)
+    -> Model
+    -> WordInstance
+    -> Cmd msg
+addAsTextWord session config toMsg model wordInstance =
+    Api.post
+        (Endpoint.createWord (Config.restApiUrl config))
+        (Session.cred session)
+        (Http.jsonBody <|
+            Text.Translations.Word.Instance.Encode.textWordAddEncoder model.text_id wordInstance
+        )
+        (UpdatedTextWord >> toMsg)
+        Text.Translations.Decode.textWordInstanceDecoder
 
 
 postMergeWords :
@@ -362,7 +342,6 @@ matchTranslations parentMsg model wordInstance =
                 Just newTranslations ->
                     let
                         matchTransltns =
-                            -- putMatchTranslations parentMsg model.text_translation_match_endpoint model.flags.csrftoken
                             putMatchTranslations model.session model.config parentMsg
                     in
                     case Text.Translations.Model.getTextWords model sectionNumber word of
@@ -380,26 +359,6 @@ matchTranslations parentMsg model wordInstance =
         -- no text word
         Nothing ->
             Cmd.none
-
-
-
--- deleteTranslation : (Msg -> msg) -> Flags.CSRFToken -> TextWord -> Translation -> Cmd msg
--- deleteTranslation msg csrftoken _ translation =
---     let
---         headers =
---             [ Http.header "X-CSRFToken" csrftoken ]
---         encodedTranslation =
---             Text.Translations.Encode.deleteTextTranslationEncode translation.id
---         body =
---             Http.jsonBody encodedTranslation
---         request =
---             HttpHelpers.delete_with_headers
---                 translation.endpoint
---                 headers
---                 body
---                 Text.Translations.Decode.textTranslationRemoveRespDecoder
---     in
---     Http.send (msg << DeletedTranslation) request
 
 
 deleteTranslation :
@@ -424,24 +383,6 @@ deleteTranslation session config toMsg word translation =
         Text.Translations.Decode.textTranslationRemoveRespDecoder
 
 
-
--- putMatchTranslations : (Msg -> msg) -> TextTranslationMatchEndpoint -> Flags.CSRFToken -> List Translation -> List TextWord -> Cmd msg
--- putMatchTranslations msg textTranslationApiMatchEndpoint csrftoken translations textWords =
---     let
---         endpointUri =
---             Text.Translations.textTransMatchEndpointToString textTranslationApiMatchEndpoint
---         headers =
---             [ Http.header "X-CSRFToken" csrftoken ]
---         encodedMergeRequest =
---             Text.Translations.Encode.textTranslationsMergeEncoder translations textWords
---         body =
---             Http.jsonBody encodedMergeRequest
---         request =
---             HttpHelpers.put_with_headers endpointUri headers body Text.Translations.Decode.textWordInstancesDecoder
---     in
---     Http.send (msg << UpdatedTextWords) request
-
-
 putMatchTranslations :
     Session
     -> Config
@@ -458,33 +399,6 @@ putMatchTranslations session config toMsg translations textWords =
         )
         (UpdatedTextWords >> toMsg)
         Text.Translations.Decode.textWordInstancesDecoder
-
-
-
--- updateGrammemes : (Msg -> msg) -> Flags.CSRFToken -> WordInstance -> Dict String String -> Cmd msg
--- updateGrammemes msg csrftoken wordInstance grammemes =
---     case Text.Translations.Word.Instance.textWord wordInstance of
---         Just textWord ->
---             let
---                 headers =
---                     [ Http.header "X-CSRFToken" csrftoken ]
---                 textWordEndpoint =
---                     Text.Translations.TextWord.textWordEndpoint textWord
---                 encodedGrammemes =
---                     Text.Translations.Encode.grammemesEncoder textWord grammemes
---                 body =
---                     Http.jsonBody encodedGrammemes
---                 request =
---                     HttpHelpers.put_with_headers
---                         textWordEndpoint
---                         headers
---                         body
---                         Text.Translations.Decode.textWordInstanceDecoder
---             in
---             Http.send (msg << UpdatedTextWord) request
---         -- no text word to update
---         Nothing ->
---             Cmd.none
 
 
 updateGrammemes :
@@ -514,24 +428,6 @@ updateGrammemes session config toMsg wordInstance grammemes =
             Cmd.none
 
 
-
--- postTranslation : (Msg -> msg) -> Flags.CSRFToken -> TextWord -> String -> Bool -> Cmd msg
--- postTranslation msg csrftoken textWord translationText correctForContext =
---     let
---         endpointUri =
---             Text.Translations.TextWord.translationsEndpoint textWord
---         headers =
---             [ Http.header "X-CSRFToken" csrftoken ]
---         encodedTranslation =
---             Text.Translations.Encode.newTextTranslationEncoder translationText correctForContext
---         body =
---             Http.jsonBody encodedTranslation
---         request =
---             HttpHelpers.post_with_headers endpointUri headers body Text.Translations.Decode.textTranslationUpdateRespDecoder
---     in
---     Http.send (msg << SubmittedTextTranslation) request
-
-
 postTranslation :
     Session
     -> Config
@@ -551,26 +447,6 @@ postTranslation session config toMsg textWord translationText correctForContext 
         )
         (SubmittedTextTranslation >> toMsg)
         Text.Translations.Decode.textTranslationUpdateRespDecoder
-
-
-
--- updateTranslationAsCorrect : (Msg -> msg) -> Flags.CSRFToken -> Translation -> Cmd msg
--- updateTranslationAsCorrect msg csrftoken translation =
---     let
---         headers =
---             [ Http.header "X-CSRFToken" csrftoken ]
---         encodedTranslation =
---             Text.Translations.Encode.textTranslationAsCorrectEncoder { translation | correct_for_context = True }
---         body =
---             Http.jsonBody encodedTranslation
---         request =
---             HttpHelpers.put_with_headers
---                 translation.endpoint
---                 headers
---                 body
---                 Text.Translations.Decode.textTranslationUpdateRespDecoder
---     in
---     Http.send (msg << UpdateTextTranslation) request
 
 
 updateTranslationAsCorrect :
@@ -594,25 +470,6 @@ updateTranslationAsCorrect session config toMsg textWord translation =
         )
         (UpdateTextTranslation >> toMsg)
         Text.Translations.Decode.textTranslationUpdateRespDecoder
-
-
-
--- retrieveTextWords msg textApiEndpoint textId =
---     case textId of
---         Just id ->
---             let
---                 textApiEndpointUrl =
---                     Admin.Text.textEndpointToString textApiEndpoint
---                 request =
---                     Http.get
---                         (String.join "?"
---                             [ String.join "" [ textApiEndpointUrl, String.fromInt id, "/" ], "text_words=list" ]
---                         )
---                         Text.Translations.Decode.textWordDictInstancesDecoder
---             in
---             Http.send (msg << UpdateTextTranslations) request
---         Nothing ->
---             Cmd.none
 
 
 retrieveTextWords :
