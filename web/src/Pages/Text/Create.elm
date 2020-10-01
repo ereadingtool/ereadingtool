@@ -1,18 +1,5 @@
 module Pages.Text.Create exposing (..)
 
--- import HttpHelpers exposing (delete_with_headers, post_with_headers, put_with_headers)
--- import Text.Section.Decode
--- import Text.Section.View
--- import Text.Tags.View
--- import Text.Translations.Decode
--- import InstructorAdmin.Admin.Text as AdminText
--- import Json.Encode
--- import Array
--- import Utils
--- import Utils.Date
--- import Json.Decode.Extra exposing (posix)
--- import Json.Decode.Pipeline exposing (required)
-
 import Api
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
@@ -30,23 +17,17 @@ import Shared
 import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
-import Spa.Url as Url exposing (Url)
+import Spa.Url exposing (Url)
 import Task
 import Text.Component exposing (TextComponent)
 import Text.Decode
 import Text.Encode
-import Text.Field
-    exposing
-        ( TextDifficulty
-        , TextField(..)
-        )
-import Text.Model exposing (Text, TextDifficulty, TextListItem)
+import Text.Field exposing (TextField(..))
+import Text.Model exposing (Text)
 import Text.Subscriptions
 import Text.Translations.Model as TranslationsModel
 import Text.Translations.Msg as TranslationsMsg
-import Text.Translations.Subscriptions
 import Text.Translations.Update
-import Text.Translations.View
 import Text.Update
 import Text.View
 import TextEdit exposing (Mode(..), Tab(..))
@@ -101,18 +82,6 @@ type SafeModel
         }
 
 
-
--- type alias Flags =
---     Flags.AuthedFlags
---         { instructor_profile : User.Instructor.Profile.InstructorProfileParams
---         , text : Maybe Json.Encode.Value
---         , answer_feedback_limit : Int
---         , text_endpoint_url : String
---         , translation_flags : Translations.Flags
---         , tags : List String
---         }
-
-
 init : Shared.Model -> Url Params -> ( SafeModel, Cmd Msg )
 init shared { params } =
     ( SafeModel
@@ -133,19 +102,12 @@ init shared { params } =
             , csrftoken = "legacyToken"
             }
         , textTranslationsModel = Nothing
-
-        -- , tags = Dict.fromList []
         , tags =
             Dict.fromList <|
                 List.map (\tag -> ( tag, tag )) Shared.tags
         , selectedTab = TextTab
         , writeLocked = False
         }
-      -- , Cmd.batch
-      --     [ retrieveTextDifficultyOptions textApiEndpoint
-      --     , textJSONtoComponent flags.text
-      --     , tagsToDict flags.tags
-      --     ]
     , Task.perform (\_ -> InitTextFieldEditors) (Task.succeed Nothing)
     )
 
@@ -156,7 +118,6 @@ init shared { params } =
 
 type Msg
     = SubmittedText
-    | GotText (Result Http.Error Text)
     | GotTextCreated (Result Http.Error Text.Decode.TextCreateResp)
     | GotTextUpdated (Result Http.Error Text.Decode.TextUpdateResp)
     | SubmittedTextDelete
@@ -173,7 +134,6 @@ type Msg
     | TextUnlocked (Result Http.Error Text.Decode.TextLockResp)
     | ToggleTab Tab
     | ClearMessages Time.Posix
-    | TextJSONDecode (Result String TextComponent)
     | TextTagsDecode (Result String (Dict String String))
     | TextTranslationMsg TranslationsMsg.Msg
     | TextComponentMsg Text.Update.Msg
@@ -201,16 +161,6 @@ update msg (SafeModel model) =
                     , postText model.session model.config text
                     )
 
-        GotText (Ok text) ->
-            ( SafeModel { model | text_component = Text.Component.init text }
-            , Cmd.none
-            )
-
-        GotText (Err err) ->
-            ( SafeModel model
-            , Cmd.none
-            )
-
         GotTextCreated (Ok textCreateResp) ->
             let
                 text =
@@ -221,7 +171,9 @@ update msg (SafeModel model) =
                     | successMessage = Just <| String.join " " [ " created '" ++ text.title ++ "'" ]
                     , mode = EditMode
                 }
-            , Browser.Navigation.load textCreateResp.redirect
+            , Browser.Navigation.load <|
+                Route.toString <|
+                    Route.Text__Edit__Id_Int { id = textCreateResp.id }
             )
 
         GotTextCreated (Err err) ->
@@ -532,93 +484,6 @@ update msg (SafeModel model) =
             , Cmd.none
             )
 
-        TextJSONDecode result ->
-            case result of
-                Ok textComponent ->
-                    let
-                        text =
-                            Text.Component.text textComponent
-                    in
-                    case text.write_locker of
-                        Just writeLocker ->
-                            if writeLocker /= InstructorProfile.usernameToString (InstructorProfile.username model.profile) then
-                                ( SafeModel
-                                    { model
-                                        | text_component = textComponent
-                                        , mode = ReadOnlyMode writeLocker
-                                        , errorMessage = Just <| "READONLY: text is currently being edited by " ++ writeLocker
-                                        , writeLocked = True
-                                    }
-                                , Text.Component.reinitialize_ck_editors textComponent
-                                )
-
-                            else
-                                ( SafeModel
-                                    { model
-                                        | text_component = textComponent
-                                        , mode = EditMode
-                                        , successMessage = Just <| "editing '" ++ text.title ++ "' text"
-                                        , writeLocked = True
-                                    }
-                                , Cmd.batch
-                                    [ Text.Component.reinitialize_ck_editors textComponent
-
-                                    -- , Text.Translations.Update.retrieveTextWords TextTranslationMsg model.text_api_endpoint text.id
-                                    , Text.Translations.Update.retrieveTextWords
-                                        model.session
-                                        model.config
-                                        TextTranslationMsg
-                                        text.id
-                                    ]
-                                )
-
-                        Nothing ->
-                            case text.id of
-                                Just id ->
-                                    ( SafeModel
-                                        { model
-                                            | text_component = textComponent
-                                            , mode = EditMode
-                                            , textTranslationsModel =
-                                                -- Just (TranslationsModel.init model.flags.translation_flags id text)
-                                                Just (TranslationsModel.init model.translationsInit id text)
-                                            , successMessage = Just <| "editing '" ++ text.title ++ "' text"
-                                        }
-                                    , Cmd.batch
-                                        [ Text.Component.reinitialize_ck_editors textComponent
-
-                                        -- , Text.Translations.Update.retrieveTextWords TextTranslationMsg model.text_api_endpoint text.id
-                                        , Text.Translations.Update.retrieveTextWords
-                                            model.session
-                                            model.config
-                                            TextTranslationMsg
-                                            text.id
-                                        ]
-                                    )
-
-                                Nothing ->
-                                    ( SafeModel
-                                        { model
-                                            | text_component = textComponent
-                                            , mode = EditMode
-                                            , errorMessage = Just <| "Something went wrong: no valid text id"
-                                        }
-                                    , Text.Component.reinitialize_ck_editors textComponent
-                                    )
-
-                Err err ->
-                    let
-                        _ =
-                            Debug.log "text decode error" err
-                    in
-                    ( SafeModel
-                        { model
-                            | errorMessage = Just <| "Something went wrong loading the text from the server."
-                            , successMessage = Just <| "Editing a new text"
-                        }
-                    , Cmd.none
-                    )
-
         TextTagsDecode result ->
             case result of
                 Ok tagDict ->
@@ -642,19 +507,6 @@ update msg (SafeModel model) =
 
                 Nothing ->
                     ( SafeModel model, Cmd.none )
-
-
-getText :
-    Session
-    -> Config
-    -> Int
-    -> Cmd Msg
-getText session config textId =
-    Api.get
-        (Endpoint.text (Config.restApiUrl config) textId [])
-        (Session.cred session)
-        GotText
-        Text.Decode.textDecoder
 
 
 postText :
@@ -745,23 +597,6 @@ deleteLock session config text =
 
         _ ->
             Cmd.none
-
-
-
--- textJSONtoComponent : Maybe Json.Encode.Value -> Cmd Msg
--- textJSONtoComponent text =
---     case text of
---         Just json ->
---             Task.attempt TextJSONDecode
---                 (case Decode.decodeValue Text.Decode.textDecoder json of
---                     Ok decodedText ->
---                         Task.succeed (Text.Component.init decodedText)
---                     Err err ->
---                         Task.fail err
---                 )
---         Nothing ->
---             -- CreateMode, initialize the text field editors
---             Task.attempt (\_ -> InitTextFieldEditors) (Task.succeed Nothing)
 
 
 tagsToDict : List String -> Cmd Msg
