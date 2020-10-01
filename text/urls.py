@@ -10,33 +10,33 @@ from text.views.api.text_word.group import TextWordGroupAPIView
 
 
 urlpatterns = [
-    path('api/text/word/compound/', TextWordGroupAPIView.as_view(), name='text-word-group-api'),
-    path('api/text/word/<int:pk>/compound/', TextWordGroupAPIView.as_view(), name='text-word-group-api'),
+    path('api/text/word/compound', TextWordGroupAPIView.as_view(), name='text-word-group-api'),
+    path('api/text/word/<int:pk>/compound', TextWordGroupAPIView.as_view(), name='text-word-group-api'),
 
-    path('api/text/word/<int:pk>/', TextWordAPIView.as_view(),
+    path('api/text/word/<int:pk>', TextWordAPIView.as_view(),
          name='text-word-api'),
 
-    path('api/text/word/', TextWordAPIView.as_view(),
+    path('api/text/word', TextWordAPIView.as_view(),
          name='text-word-api'),
 
-    path('api/text/translations/match/', TextTranslationMatchAPIView.as_view(),
+    path('api/text/translations/match', TextTranslationMatchAPIView.as_view(),
          name='text-translation-match-method'),
 
-    path('api/text/word/<int:pk>/translation/<int:tr_pk>/', TextWordTranslationsAPIView.as_view(),
+    path('api/text/word/<int:pk>/translation/<int:tr_pk>', TextWordTranslationsAPIView.as_view(),
          name='text-word-translation-api'),
 
-    path('api/text/word/<int:pk>/translation/', TextWordTranslationsAPIView.as_view(),
+    path('api/text/word/<int:pk>/translation', TextWordTranslationsAPIView.as_view(),
          name='text-word-translation-api'),
 
-    path('api/text/<int:pk>/', TextAPIView.as_view(), name='text-item-api'),
-    path('api/text/', TextAPIView.as_view(), name='text-api'),
+    path('api/text/<int:pk>', TextAPIView.as_view(), name='text-item-api'),
+    path('api/text', TextAPIView.as_view(), name='text-api'),
 
-    path('api/text/<int:pk>/tag/', TextTagAPIView.as_view(), name='text-tag-api'),
-    path('api/text/<int:pk>/lock/', TextLockAPIView.as_view(), name='text-lock-api'),
+    path('api/text/<int:pk>/tag', TextTagAPIView.as_view(), name='text-tag-api'),
+    path('api/text/<int:pk>/lock', TextLockAPIView.as_view(), name='text-lock-api'),
 
     path('text/search/load_elm.js', TextSearchLoadElm.as_view(), name='text-search-load-elm'),
-    path('text/search/', TextSearchView.as_view(), name='text-search'),
+    path('text/search', TextSearchView.as_view(), name='text-search'),
 
     path('text/<int:pk>/load_elm.js', TextLoadElm.as_view(), name='text-load-elm'),
-    path('text/<int:pk>/', TextView.as_view(), name='text'),
+    path('text/<int:pk>', TextView.as_view(), name='text'),
 ]

@@ -19,6 +19,8 @@ class APIView(EreadingToolAPIView):
     @method_decorator(sensitive_post_parameters())
     @method_decorator(never_cache)
     def dispatch(self, request, *args, **kwargs):
+        # entry point for requests and utlimately sends out the response. Dispatches to the appropriate view?
+        # https://stackoverflow.com/questions/47808652/what-is-dispatch-used-for-in-django
         return super(APIView, self).dispatch(request, *args, **kwargs)
 
     def format_form_errors(self, form: 'forms.Form') -> dict:
@@ -34,12 +36,19 @@ class APIView(EreadingToolAPIView):
         return JsonResponse({"errors": {'json': str(error)}}, status=400)
 
     def post_error(self, errors: dict) -> JsonResponse:
+        """ Things went wrong in the `post()` method below."""
         if not errors:
             errors['all'] = 'An unspecified error has occurred.'
 
         return JsonResponse(errors, status=400)
 
+    # This is where form validation is done
     def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+        """
+        APIView.dispatch() calls this method if the HttpRequest is of type POST
+        It includes logic to determine if the form fields are valid, therefore it
+        is considered a "bounded form". It also checks the credentials. 
+        """
         errors = params = {}
 
         try:
@@ -49,6 +58,7 @@ class APIView(EreadingToolAPIView):
 
         form = self.form(request, params)
 
+        # `is_valid()` has the ability to determine if a user enters invalid creds
         form_is_valid = form.is_valid()
 
         if not form_is_valid:

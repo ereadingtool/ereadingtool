@@ -36,9 +36,9 @@ app.ports.toggleShowHelp.subscribe(showHelp => {
 app.ports.login.subscribe(async (creds: Creds) => {
   let loginEndpoint: string;
   if (creds.role === 'student') {
-    loginEndpoint = '/api/student/login/';
+    loginEndpoint = '/api/student/login';
   } else if (creds.role === 'instructor') {
-    loginEndpoint = '/api/instructor/login/';
+    loginEndpoint = '/api/instructor/login';
   } else {
     app.ports.onAuthResponse.send({
       result: 'error',

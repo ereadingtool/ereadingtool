@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/2.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
-
+import datetime
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -29,11 +29,17 @@ CHANNEL_LAYERS = {
 
 ADMINS = [('Andrew', 'als2@pdx.edu'), ('EReader', 'ereader@pdx.edu')]
 
+# Prevents CommondMiddleware from `APPEND_SLASH` (defaulted to `True`)
+# adding a forward slash to all URLs sent to the backend (by way of 301)
+APPEND_SLASH = False
+
 YANDEX_TRANSLATION_API_KEY = os.getenv('YANDEX_TRANSLATION_API_KEY')
 YANDEX_DEFINITION_API_KEY = os.getenv('YANDEX_DEFINITION_API_KEY')
 
 # days
 INVITATION_EXPIRY = 30
+
+JWT_EXPIRATION_DELTA = datetime.timedelta(seconds=86400)
 
 LOGGING = {
     'version': 1,

@@ -25,15 +25,16 @@ from ereadingtool.views import AcknowledgementView, AboutView
 
 from user.views.username import username
 
+# TODO it seems to search through these and not thoose in user/urls/student.py
 urlpatterns = [
     path('load_elm.js', ElmLoadJsView.as_view(), name='load-elm'),
     path('load_elm_unauth.js', NoAuthElmLoadJsView.as_view(), name='load-elm-unauth'),
 
-    path("token-auth/", jwt_auth_views.jwt_token, name='jwt-token-auth'),
-    path("token-refresh/", jwt_auth_views.refresh_jwt_token, name='jwt-token-refresh'),
+    path("token-auth", jwt_auth_views.jwt_token, name='jwt-token-auth'),
+    path("token-refresh", jwt_auth_views.refresh_jwt_token, name='jwt-token-refresh'),
 
-    path('acknowledgements/', AcknowledgementView.as_view(), name='acknowledgements'),
-    path('about/', AboutView.as_view(), name='about'),
+    path('acknowledgements', AcknowledgementView.as_view(), name='acknowledgements'),
+    path('about', AboutView.as_view(), name='about'),
 
     path('', include('user.urls.instructor')),
     path('', include('user.urls.student')),
@@ -42,11 +43,13 @@ urlpatterns = [
     path('', include('flashcards.urls')),
     path('', include('text.urls')),
 
-    path('api/username/', username, name='username-api'),
-    path('api/question/', include('question.urls')),
+    path('api/username', username, name='username-api'),
+    path('api/question', include('question.urls')),
 
-    path('admin/', include('instructor_admin.urls')),
+    path('admin', include('instructor_admin.urls')),
 
+
+    # leaving this slashed endpoint for now, not sure if anything is hardcoded by the framework
     path('django-admin/', admin.site.urls),
 
     path('', RedirectView.as_view(url=reverse_lazy('student-login'))),

@@ -6,11 +6,11 @@ from user.views.instructor import (InstructorAPIView, InstructorSignupAPIView, I
 
 
 api_urlpatterns = [
-    path('api/instructor/invite/', InstructorInviteAPIView.as_view(), name='api-instructor-invite'),
-    path('api/instructor/signup/', InstructorSignupAPIView.as_view(), name='api-instructor-signup'),
-    path('api/instructor/login/', InstructorLoginAPIView.as_view(), name='api-instructor-login'),
-    path('api/instructor/logout/', InstructorLogoutAPIView.as_view(), name='api-instructor-logout'),
-    path('api/instructor/<int:pk>/', InstructorAPIView.as_view(), name='api-instructor')
+    path('api/instructor/invite', InstructorInviteAPIView.as_view(), name='api-instructor-invite'),
+    path('api/instructor/signup', InstructorSignupAPIView.as_view(), name='api-instructor-signup'),
+    path('api/instructor/login', InstructorLoginAPIView.as_view(), name='api-instructor-login'),
+    # TODO: this route is unused since the client side simply invalidates the JWT
+    path('api/instructor/logout', InstructorLogoutAPIView.as_view(), name='api-instructor-logout'),
 ]
 
 elm_load_urlpatterns = [

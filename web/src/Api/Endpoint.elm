@@ -100,7 +100,8 @@ studentSignup baseUrl =
 
 studentProfile : String -> Int -> Endpoint
 studentProfile baseUrl id =
-    url baseUrl [ "api", "student", String.fromInt id ++ "/" ] []
+    -- url baseUrl [ "api", "student", String.fromInt id ++ "/" ] []
+    url baseUrl [ "api", "student", String.fromInt id ] []
 
 
 instructorProfile : String -> Int -> Endpoint
@@ -115,7 +116,7 @@ consentToResearch baseUrl id =
 
 validateUsername : String -> Endpoint
 validateUsername baseUrl =
-    url baseUrl [ "api", "username/" ] []
+    url baseUrl [ "api", "username" ] []
 
 
 
@@ -124,7 +125,7 @@ validateUsername baseUrl =
 
 textSearch : String -> List QueryParameter -> Endpoint
 textSearch baseUrl queryParameters =
-    url baseUrl [ "api", "text/" ] queryParameters
+    url baseUrl [ "api", "text" ] queryParameters
 
 
 
