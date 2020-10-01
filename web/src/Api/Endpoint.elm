@@ -100,13 +100,11 @@ studentSignup baseUrl =
 
 studentProfile : String -> Int -> Endpoint
 studentProfile baseUrl id =
-    -- url baseUrl [ "api", "student", String.fromInt id ++ "/" ] []
     url baseUrl [ "api", "student", String.fromInt id ] []
 
 
 instructorProfile : String -> Int -> Endpoint
 instructorProfile baseUrl id =
-    -- url baseUrl [ "api", "instructor", String.fromInt id ++ "/" ] []
     url baseUrl [ "api", "instructor", String.fromInt id ] []
 
 
@@ -135,13 +133,13 @@ textSearch baseUrl queryParameters =
 
 createText : String -> Endpoint
 createText baseUrl =
-    url baseUrl [ "api", "text/" ] []
+    url baseUrl [ "api", "text" ] []
 
 
 text : String -> Int -> List ( String, String ) -> Endpoint
 text baseUrl id queryParameters =
     url baseUrl
-        [ "api", "text", String.fromInt id ++ "/" ]
+        [ "api", "text", String.fromInt id ]
         (List.map
             (\qp ->
                 Url.Builder.string
@@ -154,7 +152,7 @@ text baseUrl id queryParameters =
 
 textLock : String -> Int -> Endpoint
 textLock baseUrl id =
-    url baseUrl [ "api", "text", String.fromInt id, "lock/" ] []
+    url baseUrl [ "api", "text", String.fromInt id, "lock" ] []
 
 
 
