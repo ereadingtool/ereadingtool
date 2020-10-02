@@ -318,7 +318,7 @@ viewLowerMenu role =
                 [ classList [ ( "lower-menu-item", True ) ] ]
                 [ a
                     [ class "link"
-                    , href (Route.toString Route.NotFound)
+                    , href (Route.toString Route.Flashcards__Student)
                     ]
                     [ text "Practice Flashcards" ]
                 ]
