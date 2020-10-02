@@ -10,8 +10,8 @@ textEncoder text =
     let
         conclusion =
             case text.conclusion of
-                Just conclusion ->
-                    [ ( "conclusion", Encode.string conclusion ) ]
+                Just concln ->
+                    [ ( "conclusion", Encode.string concln ) ]
 
                 Nothing ->
                     []
@@ -24,14 +24,20 @@ textEncoder text =
         , ( "difficulty", Encode.string text.difficulty )
         , ( "text_sections", textSectionsEncoder text.sections )
         , ( "tags"
-          , Encode.list
-                (case text.tags of
+          , Encode.list Encode.string <|
+                case text.tags of
                     Just tags ->
-                        List.map (\tag -> Encode.string tag) tags
+                        tags
 
-                    _ ->
+                    Nothing ->
                         []
-                )
+            --   , Encode.list
+            --         (case text.tags of
+            --             Just tags ->
+            --                 List.map (\tag -> Encode.string tag) tags
+            --             _ ->
+            --                 []
+            --         )
           )
         ]
             ++ conclusion

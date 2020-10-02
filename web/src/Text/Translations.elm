@@ -26,8 +26,10 @@ module Text.Translations exposing
     , textWordIdToInt
     )
 
+import Api.Config exposing (Config)
 import Dict exposing (Dict)
 import Flags
+import Session exposing (Session)
 import Set exposing (Set)
 
 
@@ -117,7 +119,9 @@ type MergeState
 
 
 type alias Flags =
-    { add_as_text_word_endpoint_url : String
+    { session : Session
+    , config : Config
+    , add_as_text_word_endpoint_url : String
     , merge_textword_endpoint_url : String
     , text_translation_match_endpoint : String
     , csrftoken : Flags.CSRFToken

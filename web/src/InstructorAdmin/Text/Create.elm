@@ -1,13 +1,23 @@
-module InstructorAdmin.Text.Create exposing (Flags, Mode(..), Model, Msg(..), Tab(..), TextField(..), TextViewParams)
+module InstructorAdmin.Text.Create exposing
+    ( Flags
+    , Mode(..)
+    , Model
+    , Msg(..)
+    , Tab(..)
+    , TextField(..)
+    , TextViewParams
+    )
+
+{-| TODO: The contents of this module have been moved to TextEdit.elm
+or lifted into individual pages. It should be safe to remove it on clean
+up.
+-}
 
 import Dict exposing (Dict)
 import Flags
 import Http
-import User.Instructor.Profile
 import InstructorAdmin.Admin.Text
 import InstructorAdmin.Text.Translations as Translations
-import Text.Translations.Model as TranslationsModel
-import Text.Translations.Msg as TranslationsMsg
 import Json.Encode
 import Menu.Items
 import Menu.Logout
@@ -16,8 +26,11 @@ import Text.Component exposing (TextComponent)
 import Text.Decode
 import Text.Field exposing (TextAuthor, TextDifficulty, TextIntro, TextSource, TextTags, TextTitle)
 import Text.Model exposing (Text, TextDifficulty)
+import Text.Translations.Model as TranslationsModel
+import Text.Translations.Msg as TranslationsMsg
 import Text.Update
 import Time
+import User.Instructor.Profile
 
 
 type alias Flags =

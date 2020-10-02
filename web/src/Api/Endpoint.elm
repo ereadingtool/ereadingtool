@@ -1,18 +1,26 @@
 module Api.Endpoint exposing
     ( Endpoint
     , consentToResearch
+    , createText
+    , createTranslation
+    , createWord
     , filterToStringQueryParam
     , forgotPassword
     , instructorProfile
     , instructorSignup
     , inviteInstructor
+    , matchTranslation
+    , mergeWords
     , request
     , resetPassword
     , studentProfile
     , studentSignup
-    , test
+    , text
+    , textLock
     , textSearch
+    , translation
     , validateUsername
+    , word
     )
 
 import Http
@@ -66,11 +74,6 @@ request config =
 -- ENDPOINTS
 
 
-test : String -> Endpoint
-test baseUrl =
-    url baseUrl [ "test" ] []
-
-
 forgotPassword : String -> Endpoint
 forgotPassword baseUrl =
     url baseUrl [ "password", "reset" ] []
@@ -97,13 +100,11 @@ studentSignup baseUrl =
 
 studentProfile : String -> Int -> Endpoint
 studentProfile baseUrl id =
-    -- url baseUrl [ "api", "student", String.fromInt id ++ "/" ] []
     url baseUrl [ "api", "student", String.fromInt id ] []
 
 
 instructorProfile : String -> Int -> Endpoint
 instructorProfile baseUrl id =
-    -- url baseUrl [ "api", "instructor", String.fromInt id ++ "/" ] []
     url baseUrl [ "api", "instructor", String.fromInt id ] []
 
 
@@ -124,6 +125,87 @@ validateUsername baseUrl =
 textSearch : String -> List QueryParameter -> Endpoint
 textSearch baseUrl queryParameters =
     url baseUrl [ "api", "text" ] queryParameters
+
+
+
+-- TEXT CREATE AND EDIT
+
+
+createText : String -> Endpoint
+createText baseUrl =
+    url baseUrl [ "api", "text" ] []
+
+
+text : String -> Int -> List ( String, String ) -> Endpoint
+text baseUrl id queryParameters =
+    url baseUrl
+        [ "api", "text", String.fromInt id ]
+        (List.map
+            (\qp ->
+                Url.Builder.string
+                    (Tuple.first qp)
+                    (Tuple.second qp)
+            )
+            queryParameters
+        )
+
+
+textLock : String -> Int -> Endpoint
+textLock baseUrl id =
+    url baseUrl [ "api", "text", String.fromInt id, "lock" ] []
+
+
+
+-- WORDS
+
+
+createWord : String -> Endpoint
+createWord baseUrl =
+    url baseUrl [ "api", "text", "word" ] []
+
+
+word : String -> Int -> Endpoint
+word baseUrl id =
+    url baseUrl [ "api", "text", "word", String.fromInt id ] []
+
+
+mergeWords : String -> Endpoint
+mergeWords baseUrl =
+    url baseUrl [ "api", "text", "word", "compound" ] []
+
+
+
+-- TRANSLATIONS
+
+
+createTranslation : String -> Int -> Endpoint
+createTranslation baseUrl wordId =
+    url baseUrl
+        [ "api"
+        , "text"
+        , "word"
+        , String.fromInt wordId
+        , "translation"
+        ]
+        []
+
+
+translation : String -> Int -> Int -> Endpoint
+translation baseUrl wordId translationId =
+    url baseUrl
+        [ "api"
+        , "text"
+        , "word"
+        , String.fromInt wordId
+        , "translation"
+        , String.fromInt translationId
+        ]
+        []
+
+
+matchTranslation : String -> Endpoint
+matchTranslation baseUrl =
+    url baseUrl [ "api", "text", "translations", "match" ] []
 
 
 

@@ -48,7 +48,7 @@ update msg model =
         text_section_group =
             Text.Component.text_section_components model.text_component
 
-        update =
+        updt =
             Text.Section.Component.Group.update_components text_section_group
                 >> Text.Component.set_text_section_components model.text_component
     in
@@ -78,7 +78,7 @@ update msg model =
         UpdateTextValue text_component field_name input ->
             ( { model
                 | text_component =
-                    update
+                    updt
                         (Text.Section.Component.set_field_value text_component field_name input)
               }
             , Cmd.none
@@ -88,16 +88,16 @@ update msg model =
             case String.split "_" ckeditor_id of
                 [ "textsection", i, "body" ] ->
                     case String.toInt i of
-                        Ok i ->
+                        Just i_ ->
                             ( { model
                                 | text_component =
                                     Text.Component.set_text_section_components model.text_component
-                                        (Text.Section.Component.Group.update_body_for_section_index text_section_group i ckeditor_text)
+                                        (Text.Section.Component.Group.update_body_for_section_index text_section_group i_ ckeditor_text)
                               }
                             , Cmd.none
                             )
 
-                        _ ->
+                        Nothing ->
                             ( model, Cmd.none )
 
                 -- not a valid index
@@ -107,17 +107,17 @@ update msg model =
         -- not interested in this update
         -- question msgs
         AddQuestion text_component ->
-            ( { model | text_component = update (Text.Section.Component.add_new_question text_component) }, Cmd.none )
+            ( { model | text_component = updt (Text.Section.Component.add_new_question text_component) }, Cmd.none )
 
         UpdateQuestionField text_component question_field ->
-            ( { model | text_component = update (Text.Section.Component.update_question_field text_component question_field) }
+            ( { model | text_component = updt (Text.Section.Component.update_question_field text_component question_field) }
             , Cmd.none
             )
 
         UpdateQuestionFieldValue text_component question_field value ->
             ( { model
                 | text_component =
-                    update
+                    updt
                         (Text.Section.Component.update_question_field text_component
                             (Question.Field.set_question_body question_field value)
                         )
@@ -128,7 +128,7 @@ update msg model =
         DeleteQuestion text_component question_field ->
             ( { model
                 | text_component =
-                    update
+                    updt
                         (Text.Section.Component.delete_question_field text_component question_field)
               }
             , Cmd.none
@@ -141,7 +141,7 @@ update msg model =
             in
             ( { model
                 | text_component =
-                    update
+                    updt
                         (Text.Section.Component.update_question_field text_component new_question_field)
               }
             , Cmd.none
@@ -150,7 +150,7 @@ update msg model =
         DeleteSelectedQuestions text_component ->
             ( { model
                 | text_component =
-                    update
+                    updt
                         (Text.Section.Component.delete_selected_question_fields text_component)
               }
             , Cmd.none
@@ -159,7 +159,7 @@ update msg model =
         ToggleQuestionMenu text_component question_field ->
             ( { model
                 | text_component =
-                    update
+                    updt
                         (Text.Section.Component.toggle_question_menu text_component question_field)
               }
             , Cmd.none
@@ -167,17 +167,17 @@ update msg model =
 
         -- answer msgs
         UpdateAnswerField text_component answer_field ->
-            ( { model | text_component = update (Text.Section.Component.set_answer text_component answer_field) }, Cmd.none )
+            ( { model | text_component = updt (Text.Section.Component.set_answer text_component answer_field) }, Cmd.none )
 
         UpdateAnswerFieldValue text_component answer_field text ->
-            ( { model | text_component = update (Text.Section.Component.set_answer_text text_component answer_field text) }
+            ( { model | text_component = updt (Text.Section.Component.set_answer_text text_component answer_field text) }
             , Cmd.none
             )
 
         UpdateAnswerFeedbackValue text_component answer_field feedback ->
             ( { model
                 | text_component =
-                    update
+                    updt
                         (Text.Section.Component.set_answer_feedback text_component answer_field feedback)
               }
             , Cmd.none
@@ -186,7 +186,7 @@ update msg model =
         UpdateAnswerFieldCorrect text_component answer_field correct ->
             ( { model
                 | text_component =
-                    update
+                    updt
                         (Text.Section.Component.set_answer_correct text_component answer_field)
               }
             , Cmd.none
@@ -195,7 +195,7 @@ update msg model =
         AddAnswer text_section_component answer_field ->
             ( { model
                 | text_component =
-                    update
+                    updt
                         (Text.Section.Component.add_answer text_section_component answer_field)
               }
             , Cmd.none
@@ -204,7 +204,7 @@ update msg model =
         DeleteAnswer text_section_component answer_field ->
             ( { model
                 | text_component =
-                    update
+                    updt
                         (Text.Section.Component.delete_answer text_section_component answer_field)
               }
             , Cmd.none
@@ -223,16 +223,16 @@ update msg model =
 
                 new_text_component =
                     case field of
-                        Text field ->
-                            Text.Section.Component.set_field text_component (Text.Section.Component.switch_editable field)
+                        Text fld ->
+                            Text.Section.Component.set_field text_component (Text.Section.Component.switch_editable fld)
 
-                        Question field ->
-                            Text.Section.Component.set_question text_component (Question.Field.switch_editable field)
+                        Question fld ->
+                            Text.Section.Component.set_question text_component (Question.Field.switch_editable fld)
 
-                        Answer field ->
-                            Text.Section.Component.set_answer text_component (Answer.Field.switch_editable field)
+                        Answer fld ->
+                            Text.Section.Component.set_answer text_component (Answer.Field.switch_editable fld)
             in
-            ( { model | text_component = update new_text_component }, Cmd.batch <| extra_cmds ++ [ post_toggle_field field ] )
+            ( { model | text_component = updt new_text_component }, Cmd.batch <| extra_cmds ++ [ post_toggle_field field ] )
 
 
 post_toggle_field : Field -> Cmd msg
@@ -240,14 +240,14 @@ post_toggle_field field =
     let
         ( field_editable, field_id ) =
             case field of
-                Text field ->
-                    ( Text.Section.Component.editable field, Text.Section.Component.text_field_id field )
+                Text fld ->
+                    ( Text.Section.Component.editable fld, Text.Section.Component.text_field_id fld )
 
-                Question field ->
-                    ( Question.Field.editable field, Question.Field.id field )
+                Question fld ->
+                    ( Question.Field.editable fld, Question.Field.id fld )
 
-                Answer field ->
-                    ( Answer.Field.editable field, Answer.Field.id field )
+                Answer fld ->
+                    ( Answer.Field.editable fld, Answer.Field.id fld )
     in
     if not field_editable then
         selectAllInputText field_id
