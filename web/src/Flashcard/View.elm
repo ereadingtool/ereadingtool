@@ -6,7 +6,7 @@ import Flashcard.Msg exposing (Msg(..))
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList, id)
 import Html.Events exposing (onClick, onDoubleClick, onInput)
-import Util
+import Utils
 
 
 view_mode_choice : Model -> Flashcard.Mode.ModeChoiceDesc -> Html Msg
@@ -151,7 +151,7 @@ view_reviewed_only_card model card =
 
 view_input_answer : Model -> Flashcard -> Html Msg
 view_input_answer _ _ =
-    div [ id "answer_input", Util.onEnterUp SubmitAnswer ]
+    div [ id "answer_input", Utils.onEnterUp SubmitAnswer ]
         [ Html.input [ onInput InputAnswer, attribute "placeholder" "Type an answer.." ] []
         , div [ id "submit" ]
             [ div [ id "button", onClick SubmitAnswer ] [ Html.text "Submit" ]
@@ -176,12 +176,11 @@ view_quality model _ q =
             ++ (if q == 0 then
                     [ Html.text " - most difficult" ]
 
-                else
-                    if q == 5 then
-                        [ Html.text " - easiest" ]
+                else if q == 5 then
+                    [ Html.text " - easiest" ]
 
-                    else
-                        []
+                else
+                    []
                )
 
 
@@ -196,7 +195,8 @@ view_rate_answer model card =
 view_rated_card : Model -> Flashcard -> Html Msg
 view_rated_card model card =
     let
-        rating = Maybe.withDefault "none" <| Maybe.map (String.fromInt) model.selected_quality
+        rating =
+            Maybe.withDefault "none" <| Maybe.map String.fromInt model.selected_quality
     in
     view_card model
         card

@@ -137,14 +137,16 @@ translationOrPhrase flashcard =
 
 type alias Model =
     { profile : User.Profile.Profile
-    , menu_items : Menu.Items.MenuItems
+
+    -- , menu_items : Menu.Items.MenuItems
     , mode : Maybe Mode
     , session_state : SessionState
     , exception : Maybe Exception
     , connect : Bool
     , answer : String
     , selected_quality : Maybe Int
-    , flags : Flags
+
+    -- , flags : Flags
     }
 
 

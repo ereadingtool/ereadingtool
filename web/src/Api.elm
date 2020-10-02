@@ -15,6 +15,7 @@ port module Api exposing
     , toggleShowHelp
     , viewerChanges
     , websocketConnect
+    , websocketDisconnect
     , websocketReceive
     , websocketSend
     )
@@ -370,3 +371,10 @@ websocketSend message =
 websocketReceive : (Result Decode.Error WebSocketMsg -> msg) -> Sub msg
 websocketReceive toMsg =
     receiveSocketMsg <| WebSocket.receive toMsg
+
+
+websocketDisconnect : String -> Cmd msg
+websocketDisconnect name =
+    -- weSend <| WebSocket.Close { name = name }
+    WebSocket.send sendSocketCommand <|
+        WebSocket.Close { name = name }
