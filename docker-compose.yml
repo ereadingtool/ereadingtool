@@ -9,7 +9,8 @@ services:
       - secrets.env
     environment:
         # change depending on prod or dev server 
-      - VIRTUAL_HOST=api.ereadingtool.com
+      - VIRTUAL_HOST=api.steps2ar.org
+      - LETSENCRYPT_HOST=api.steps2ar.org
     expose:
       - "8000" 
 
@@ -19,19 +20,57 @@ services:
       dockerfile: Dockerfile.node
     container_name: node_frontend
     environment:
-        - VIRTUAL_HOST=ereadingtool.com
+        - VIRTUAL_HOST=steps2ar.org
+        - LETSENCRYPT_HOST=steps2ar.org
     expose:
       - "80"
 
   nginx-proxy:
+    container_name: nginx-proxy
     expose:
       - "1234"
       - "8000"
     image: jwilder/nginx-proxy
     ports:
       - "80:80"
-      # - "443:443" # SSL yet to happen
-    restart: "always"
-    # Gives control to access the docker daemon
+      - "443:443"
+    restart: always
+    # Gives control to access the docker daemon 
+    # TODO: in a secure setup we don't actually want this
+    # https://raesene.github.io/blog/2016/03/06/The-Dangers-Of-Docker.sock/
     volumes:
+      - conf:/etc/nginx/conf.d
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - dhparam:/etc/nginx/dhparam
+      - certs:/etc/nginx/certs:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
+    labels:
+      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
+    depends_on:
+      - django_backend
+      - node_frontend
+
+  letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: nginx_proxy_le
+    volumes:
+      - certs:/etc/nginx/certs:rw
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - NGINX_PROXY_CONTAINER=nginx-proxy
+      - DEFAULT_EMAIL=ereader@pdx.edu
+    depends_on:
+      - nginx-proxy
+    restart: always
+  
+  # Networked containers on bridge mode by default
+
+volumes:
+  conf:
+  vhost:
+  html:
+  dhparam:
+  certs:
