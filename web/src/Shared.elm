@@ -2,6 +2,7 @@ module Shared exposing
     ( Flags
     , Model
     , Msg
+    , answerFeedbackCharacterLimit
     , difficulties
     , init
     , statuses
@@ -318,7 +319,7 @@ viewLowerMenu role =
                 [ classList [ ( "lower-menu-item", True ) ] ]
                 [ a
                     [ class "link"
-                    , href (Route.toString Route.NotFound)
+                    , href (Route.toString Route.Flashcards__Student)
                     ]
                     [ text "Practice Flashcards" ]
                 ]
@@ -345,7 +346,7 @@ viewLowerMenu role =
                 [ classList [ ( "lower-menu-item", True ) ] ]
                 [ a
                     [ class "link"
-                    , href (Route.toString Route.NotFound)
+                    , href (Route.toString Route.Text__Create)
                     ]
                     [ text "Create a new text" ]
                 ]
@@ -395,3 +396,8 @@ statuses =
     , ( "in_progress", "In Progress" )
     , ( "read", "Read" )
     ]
+
+
+answerFeedbackCharacterLimit : Int
+answerFeedbackCharacterLimit =
+    2048

@@ -108,6 +108,7 @@ DEBUG = False
 DEV = False
 
 ALLOWED_HOSTS = ['0.0.0.0',
+                 'localhost',
                  '142.93.20.73',
                  'stepstoadvancedreading.org',
                  'steps2advancedreading.org',

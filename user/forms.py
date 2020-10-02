@@ -148,6 +148,7 @@ class AuthenticationForm(BaseAuthenticationForm):
         if user.exists():
             try:
                 username = user.get().username
+            # Does this exception happen if the database contains two of the same record?
             except ReaderUser.MultipleObjectsReturned:
                 pass
 

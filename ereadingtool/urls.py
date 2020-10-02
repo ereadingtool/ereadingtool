@@ -25,6 +25,7 @@ from ereadingtool.views import AcknowledgementView, AboutView
 
 from user.views.username import username
 
+# TODO it seems to search through these and not thoose in user/urls/student.py
 urlpatterns = [
     path('load_elm.js', ElmLoadJsView.as_view(), name='load-elm'),
     path('load_elm_unauth.js', NoAuthElmLoadJsView.as_view(), name='load-elm-unauth'),

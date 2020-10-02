@@ -157,7 +157,7 @@ view_editable_answer params num_of_answers answer_field =
                             [ Html.img
                                 [ attribute "title" title_text_add
                                 , attribute "alt" title_text_add
-                                , attribute "src" "/static/img/add.svg"
+                                , attribute "src" "/public/img/add.svg"
                                 , attribute "height" "18px"
                                 , attribute "width" "18px"
                                 ]
@@ -173,7 +173,7 @@ view_editable_answer params num_of_answers answer_field =
                             [ Html.img
                                 [ attribute "title" title_text_delete
                                 , attribute "alt" title_text_delete
-                                , attribute "src" "/static/img/delete.svg"
+                                , attribute "src" "/public/img/delete.svg"
                                 , attribute "height" "18px"
                                 , attribute "width" "18px"
                                 ]

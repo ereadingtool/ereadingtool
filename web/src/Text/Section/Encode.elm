@@ -16,6 +16,8 @@ textSectionEncoder text =
 
 textSectionsEncoder : Array TextSection -> Encode.Value
 textSectionsEncoder texts =
-    Encode.list <|
-        Array.toList <|
-            Array.map (\text -> textSectionEncoder text) texts
+    -- Encode.list <|
+    --     Array.toList <|
+    --         Array.map (\text -> textSectionEncoder text) texts
+    Encode.list textSectionEncoder <|
+        Array.toList texts

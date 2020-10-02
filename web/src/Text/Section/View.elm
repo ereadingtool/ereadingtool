@@ -106,7 +106,7 @@ view_text_section_component msg text_difficulties answer_feedback_limit text_sec
                , Question.View.view_question_buttons msg text_section_component
                , div [ class "cursor", onClick (msg <| DeleteTextSection text_section_component) ]
                     [ Html.img
-                        [ attribute "src" "/static/img/delete.svg"
+                        [ attribute "src" "/public/img/delete.svg"
                         , attribute "height" "18px"
                         , attribute "width" "18px"
                         ]

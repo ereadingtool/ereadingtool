@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.views.generic import TemplateView, View
 
 from text.models import TextDifficulty
-from user.forms import AuthenticationForm, StudentConsentForm, StudentForm, StudentSignUpForm
+from user.forms import AuthenticationForm, StudentSignUpForm, StudentForm, StudentConsentForm
 from user.student.models import Student
 from user.views.api import APIView
 from user.views.mixin import ProfileView
@@ -164,6 +164,7 @@ class StudentView(ProfileView):
 
 
 class StudentAPIConsentToResearchView(LoginRequiredMixin, APIView):
+    # returns permission denied HTTP message rather than redirect to login
 
     def form(self, request: HttpRequest, params: Dict, **kwargs) -> forms.ModelForm:
         return StudentConsentForm(params, **kwargs)
