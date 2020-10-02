@@ -20,6 +20,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/ckeditor": "^4.9.10",
     "@types/node": "^12.12.50",
     "chokidar-cli": "2.1.0",
     "cssnano": "^4.1.10",

@@ -39,16 +39,16 @@ update_error ( field_id, field_error ) text_section_components =
     case error_key of
         "textsection" :: index :: _ ->
             case String.toInt index of
-                Ok i ->
+                Just i ->
                     case Array.get i text_section_components of
-                        Just text_section_component ->
+                        Just textSectionComponent ->
                             let
                                 -- only pass the relevant part of the error key
                                 text_component_error =
                                     String.join "_" (List.drop 2 error_key)
 
                                 new_text_component_with_errors =
-                                    Text.Section.Component.update_errors text_section_component ( text_component_error, field_error )
+                                    Text.Section.Component.update_errors textSectionComponent ( text_component_error, field_error )
                             in
                             Array.set i new_text_component_with_errors text_section_components
 
@@ -56,7 +56,7 @@ update_error ( field_id, field_error ) text_section_components =
                             text_section_components
 
                 -- section doesn't exist in the group
-                _ ->
+                Nothing ->
                     text_section_components
 
         -- not a valid index string
@@ -95,13 +95,13 @@ add_new_text_section (TextSectionComponentGroup text_components) =
 
 
 delete_text_section : TextSectionComponentGroup -> TextSectionComponent -> TextSectionComponentGroup
-delete_text_section (TextSectionComponentGroup text_components) text_section_component =
+delete_text_section (TextSectionComponentGroup text_components) textSectionComponent =
     let
         index =
             Text.Section.Component.index
 
         component_index =
-            index text_section_component
+            index textSectionComponent
 
         new_sections =
             Array.indexedMap (\i text_component -> Text.Section.Component.set_index text_component i) <|

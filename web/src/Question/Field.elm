@@ -123,9 +123,9 @@ update_errors question_fields ( field_id, field_error ) =
     case error_key of
         "question" :: questnIdx :: "answer" :: answer_index :: feedback ->
             case String.toInt questnIdx of
-                Ok i ->
+                Just i ->
                     case String.toInt answer_index of
-                        Ok j ->
+                        Just j ->
                             case get_question_field question_fields i of
                                 Just question_field ->
                                     case Answer.Field.get_answer_field (answers question_field) j of
@@ -146,17 +146,17 @@ update_errors question_fields ( field_id, field_error ) =
                                     question_fields
 
                         -- question field does not exist
-                        _ ->
+                        Nothing ->
                             question_fields
 
                 -- not a valid answer index
-                _ ->
+                Nothing ->
                     question_fields
 
         -- not a valid question index
         "question" :: questnIdx :: field :: [] ->
             case String.toInt questnIdx of
-                Ok i ->
+                Just i ->
                     case get_question_field question_fields i of
                         Just question_field ->
                             update_question_field (update_error question_field field_error) question_fields
@@ -165,7 +165,7 @@ update_errors question_fields ( field_id, field_error ) =
                             question_fields
 
                 -- question field not present
-                _ ->
+                Nothing ->
                     question_fields
 
         -- not a valid question index

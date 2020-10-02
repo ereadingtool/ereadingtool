@@ -19,7 +19,7 @@ view_tag : (String -> msg) -> String -> Html msg
 view_tag delete_msg tag =
     div [ class "text_tag" ]
         [ Html.img
-            [ attribute "src" "/static/img/cancel.svg"
+            [ attribute "src" "/public/img/cancel.svg"
             , attribute "height" "13px"
             , attribute "width" "13px"
             , class "cursor"
