@@ -76,20 +76,37 @@ init flags url key =
         Just viewer ->
             case Viewer.role viewer of
                 Student ->
-                    Cmd.batch
-                        [ requestStudentProfile session config (Viewer.id viewer)
-                        , Browser.Navigation.replaceUrl key (Route.toString Route.Profile__Student)
-                        ]
+                    if List.any (\path -> url.path == path) publicPaths then
+                        Cmd.batch
+                            [ requestStudentProfile session config (Viewer.id viewer)
+                            , Browser.Navigation.replaceUrl key (Route.toString Route.Profile__Student)
+                            ]
+
+                    else
+                        requestStudentProfile session config (Viewer.id viewer)
 
                 Instructor ->
-                    Cmd.batch
-                        [ requestInstructorProfile session config (Viewer.id viewer)
-                        , Browser.Navigation.replaceUrl key (Route.toString Route.Profile__Instructor)
-                        ]
+                    if List.any (\path -> url.path == path) publicPaths then
+                        Cmd.batch
+                            [ requestInstructorProfile session config (Viewer.id viewer)
+                            , Browser.Navigation.replaceUrl key (Route.toString Route.Profile__Instructor)
+                            ]
+
+                    else
+                        requestInstructorProfile session config (Viewer.id viewer)
 
         Nothing ->
             Cmd.none
     )
+
+
+publicPaths : List String
+publicPaths =
+    [ "/"
+    , "/login/instructor"
+    , "/signup/student"
+    , "/signup/instructor"
+    ]
 
 
 
