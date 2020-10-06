@@ -22,6 +22,8 @@ from django.template import loader
 
 from jwt_auth.views import jwt_encode_token, jwt_get_json_with_token
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 Form = TypeVar('Form', bound=forms.Form)
 
@@ -162,54 +164,25 @@ class StudentView(ProfileView):
     profile_model = Student
     login_url = Student.login_url
 
-
+# Method decorator required for PUT method
+@method_decorator(csrf_exempt, name='dispatch')
 class StudentAPIConsentToResearchView(LoginRequiredMixin, APIView):
     # returns permission denied HTTP message rather than redirect to login
 
     def form(self, request: HttpRequest, params: Dict, **kwargs) -> forms.ModelForm:
         return StudentConsentForm(params, **kwargs)
 
-    def put_error(self, errors: Dict) -> HttpResponse:
-        return HttpResponse(json.dumps(errors), status=400)
+    def put_error(self, status, errors: Dict) -> HttpResponse:
+        return HttpResponse(json.dumps(errors), status=status)
 
     def put_success(self, request: HttpRequest, student_form: Union[Form, forms.ModelForm]) -> HttpResponse:
         student = student_form.save()
 
         return HttpResponse(json.dumps({'consented': student.is_consenting_to_research}))
 
-    def put(self, request, *args, **kwargs) -> HttpResponse:
-        errors = params = {}
 
-        if not Student.objects.filter(pk=kwargs['pk']).exists():
-            return HttpResponse(status=400)
-
-        student = Student.objects.get(pk=kwargs['pk'])
-
-        if student.user != self.request.user:
-            return HttpResponseForbidden()
-
-        try:
-            params = json.loads(request.body.decode('utf8'))
-        except json.JSONDecodeError as e:
-            return self.post_json_error(e)
-
-        if 'difficulty_preference' in params:
-            try:
-                params['difficulty_preference'] = TextDifficulty.objects.get(slug=params['difficulty_preference']).pk
-            except TextDifficulty.DoesNotExist:
-                pass
-
-        form = self.form(request, params, instance=student)
-
-        if not form.is_valid():
-            errors = self.format_form_errors(form)
-
-        if errors:
-            return self.put_error(errors)
-        else:
-            return self.put_success(request, form)
-
-
+# Method decorator required for PUT method
+@method_decorator(csrf_exempt, name='dispatch')
 class StudentAPIView(LoginRequiredMixin, APIView):
     def form(self, request: HttpRequest, params: Dict, **kwargs) -> forms.ModelForm:
         return StudentForm(params, **kwargs)
@@ -225,59 +198,26 @@ class StudentAPIView(LoginRequiredMixin, APIView):
 
         student_dict = student.to_dict()
 
-        # TODO: Hot patch
-        # student_dict.pop('flashcards')
-
-        # student_dict.pop('performance_report')
-        student_performance_report = None
+        if 'performance_report' in student_dict:
+            student_performance_report = student_dict.pop('performance_report')
+        else:
+            student_performance_report = None
 
         return HttpResponse(json.dumps({
             'profile': student_dict,
             'performance_report': student_performance_report,
         }))
-
+        
     def post_success(self, request: HttpRequest, form: Form) -> HttpResponse:
         raise NotImplementedError
 
-    def put_error(self, errors: Dict) -> HttpResponse:
-        return HttpResponse(json.dumps(errors), status=400)
+    def put_error(self, status, errors: Dict) -> HttpResponse:
+        return HttpResponse(json.dumps(errors), status=status)
 
     def put_success(self, request: HttpRequest, student_form: Union[Form, forms.ModelForm]) -> HttpResponse:
         student = student_form.save()
 
         return HttpResponse(json.dumps(student.to_dict()))
-
-    def put(self, request, *args, **kwargs) -> HttpResponse:
-        errors = params = {}
-
-        if not Student.objects.filter(pk=kwargs['pk']).exists():
-            return HttpResponse(status=400)
-
-        student = Student.objects.get(pk=kwargs['pk'])
-
-        if student.user != self.request.user:
-            return HttpResponseForbidden()
-
-        try:
-            params = json.loads(request.body.decode('utf8'))
-        except json.JSONDecodeError as e:
-            return self.post_json_error(e)
-
-        if 'difficulty_preference' in params:
-            try:
-                params['difficulty_preference'] = TextDifficulty.objects.get(slug=params['difficulty_preference']).pk
-            except TextDifficulty.DoesNotExist:
-                pass
-
-        form = self.form(request, params, instance=student)
-
-        if not form.is_valid():
-            errors = self.format_form_errors(form)
-
-        if errors:
-            return self.put_error(errors)
-        else:
-            return self.put_success(request, form)
 
 
 class StudentSignupAPIView(APIView):

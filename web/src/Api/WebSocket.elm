@@ -5,6 +5,7 @@ module Api.WebSocket exposing
     , encodeCmd
     , receive
     , send
+    , Address, flashcards, textReader, unwrap
     )
 
 {-| NOTE: We modified this package:<https://github.com/bburdette/websocket> and adapted it
@@ -62,6 +63,45 @@ where the actual websocket sending and receiving will take place. See the README
 
 import Json.Decode as JD
 import Json.Encode as JE
+import Role exposing (Role(..))
+import Url.Builder exposing (QueryParameter)
+
+
+type Address
+    = Address String
+
+
+unwrap : Address -> String
+unwrap (Address val) =
+    val
+
+
+url : String -> List String -> List QueryParameter -> Address
+url baseUrl paths queryParams =
+    Url.Builder.crossOrigin baseUrl
+        paths
+        queryParams
+        |> Address
+
+
+textReader : String -> Role -> Int -> Address
+textReader baseUrl role textId =
+    case role of
+        Student ->
+            url baseUrl [ "student", "text_read", String.fromInt textId ] []
+
+        Instructor ->
+            url baseUrl [ "instructor", "text_read", String.fromInt textId ] []
+
+
+flashcards : String -> Role -> Address
+flashcards baseUrl role =
+    case role of
+        Student ->
+            url baseUrl [ "student", "flashcards" ] []
+
+        Instructor ->
+            url baseUrl [ "instructor", "flashcards" ] []
 
 
 {-| use send to make a websocket convenience function,

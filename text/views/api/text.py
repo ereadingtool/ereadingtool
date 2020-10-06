@@ -18,6 +18,8 @@ from question.models import Question
 from text.forms import TextForm, TextSectionForm, ModelForm
 from text.models import TextDifficulty, Text, TextSection, text_statuses
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 Student = TypeVar('Student')
 Instructor = TypeVar('Instructor')
@@ -34,7 +36,7 @@ def or_filters(filters):
 
     return status_filter
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class TextAPIView(LoginRequiredMixin, APIView):
     login_url = reverse_lazy('instructor-login')
     allowed_methods = ['get', 'put', 'post', 'delete']

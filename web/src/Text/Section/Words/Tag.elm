@@ -9,9 +9,8 @@ module Text.Section.Words.Tag exposing
 import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Attributes
-import Html.Parser 
+import Html.Parser
 import Regex
--- import VirtualDom
 
 
 punctuation_re : Regex.Regex
@@ -178,8 +177,7 @@ tagWordAndToVDOM tag_word is_part_of_compound_word node ( html, occurrences ) =
             ( html ++ [ new_node ], new_occurrences )
 
         (Html.Parser.Comment str) as comment ->
-            -- ( html ++ [ VirtualDom.text "" ], occurrences )
-            ( html ++ [  ], occurrences )
+            ( html ++ [ Html.text "" ], occurrences )
 
 
 tagWordsToVDOMWithFreqs :
