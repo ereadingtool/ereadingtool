@@ -22,7 +22,7 @@ port module Api exposing
 
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint exposing (Endpoint)
-import Api.WebSocket as WebSocket exposing (WebSocketCmd, WebSocketMsg)
+import Api.WebSocket as WebSocket exposing (Address, WebSocketCmd, WebSocketMsg)
 import Browser
 import Browser.Navigation as Nav
 import Http
@@ -335,13 +335,8 @@ port receiveSocketMsg : (Value -> msg) -> Sub msg
 port sendSocketCommand : Value -> Cmd msg
 
 
-
--- wsSend : WebSocketCmd -> Cmd msg
--- wsSend command =
-
-
 websocketConnect :
-    { name : String, address : String }
+    { name : String, address : Address }
     -> Maybe Cred
     -> Cmd msg
 websocketConnect { name, address } maybeCred =
@@ -350,7 +345,7 @@ websocketConnect { name, address } maybeCred =
             WebSocket.send sendSocketCommand <|
                 WebSocket.Connect
                     { name = name
-                    , address = address ++ "?" ++ token
+                    , address = WebSocket.unwrap address ++ "?" ++ token
                     , protocol = ""
                     }
 
@@ -360,10 +355,6 @@ websocketConnect { name, address } maybeCred =
 
 websocketSend : { name : String, content : Value } -> Cmd msg
 websocketSend message =
-    let
-        dbg =
-            Debug.log "ws message out" message
-    in
     WebSocket.send sendSocketCommand <|
         WebSocket.Send message
 
@@ -375,6 +366,5 @@ websocketReceive toMsg =
 
 websocketDisconnect : String -> Cmd msg
 websocketDisconnect name =
-    -- weSend <| WebSocket.Close { name = name }
     WebSocket.send sendSocketCommand <|
         WebSocket.Close { name = name }

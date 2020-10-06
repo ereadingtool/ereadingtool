@@ -76,15 +76,9 @@ init shared { params } =
             Api.websocketConnect
                 { name = "flashcard"
                 , address =
-                    Config.websocketBaseUrl shared.config
-                        ++ (case Viewer.role viewer of
-                                Student ->
-                                    "/student"
-
-                                Instructor ->
-                                    "/instructor"
-                           )
-                        ++ "/flashcards"
+                    WebSocket.flashcards
+                        (Config.websocketBaseUrl shared.config)
+                        (Viewer.role viewer)
                 }
                 (Session.cred shared.session)
 

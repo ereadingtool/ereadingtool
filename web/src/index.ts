@@ -111,13 +111,17 @@ window.addEventListener(
 // WEBSOCKETS
 
 const sendSocketCommand = wat => {
-  console.log('ssc: ' + JSON.stringify(wat, null, 4));
+  // console.log('ssc: ' + JSON.stringify(wat, null, 4));
   if (wat.cmd == 'connect') {
+    // implicit disconnect on new socket connection, explicit would be better
+    if (mySockets[wat.name]) {
+      mySockets[wat.name].close();
+    }
+
     // console.log("connecting!");
-    // let socket = new WebSocket(wat.address, wat.protocol);
     let socket = new WebSocket(wat.address);
     socket.onmessage = function (event) {
-      // console.log( "onmessage: " +  JSON.stringify(event.data, null, 4));
+      // console.log("onmessage: " + JSON.stringify(event.data, null, 4));
       app.ports.receiveSocketMsg.send({
         name: wat.name,
         msg: 'data',
@@ -126,10 +130,10 @@ const sendSocketCommand = wat => {
     };
     mySockets[wat.name] = socket;
   } else if (wat.cmd == 'send') {
-    console.log('sending to socket: ' + wat.name);
-    mySockets[wat.name].send(wat.content);
+    // console.log('sending to socket: ' + wat.name);
+    mySockets[wat.name].send(JSON.stringify(wat.content));
   } else if (wat.cmd == 'close') {
-    console.log('closing socket: ' + wat.name);
+    // console.log('closing socket: ' + wat.name);
     mySockets[wat.name].close();
     delete mySockets[wat.name];
   }
