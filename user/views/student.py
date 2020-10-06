@@ -198,11 +198,10 @@ class StudentAPIView(LoginRequiredMixin, APIView):
 
         student_dict = student.to_dict()
 
-        # TODO: Hot patch
-        # student_dict.pop('flashcards')
-
-        # student_dict.pop('performance_report')
-        student_performance_report = None
+        if 'performance_report' in student_dict:
+            student_performance_report = student_dict.pop('performance_report')
+        else:
+            student_performance_report = None
 
         return HttpResponse(json.dumps({
             'profile': student_dict,
