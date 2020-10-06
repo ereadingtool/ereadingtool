@@ -36,7 +36,7 @@
 
   padding-top: 25px;
 
-  grid-template-columns: 50% 50%;
+  grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
 
   grid-template-rows: minmax(25px, 50px);
   align-items: center;
@@ -54,6 +54,28 @@
 }
 
 #nav > div:hover {
+  background-color: #00458a;
+}
+
+#nav > a {
+  text-decoration: none;
+}
+
+#nav > a > span {
+  display: block;
+
+  text-align: center;
+  color: white;
+
+  background-color: #0054a6;
+
+  cursor: pointer;
+
+  margin-right: 5px;
+  transition: background 0.3s ease-out;
+}
+
+#nav > a > span:hover {
   background-color: #00458a;
 }
 
@@ -244,5 +266,11 @@
 
   #text-section {
     padding-top: 0;
+  }
+
+  #nav {
+    grid-template-columns: repeat(auto-fit, minmax(275px, 1fr));
+
+    row-gap: 20px;
   }
 }
