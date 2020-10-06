@@ -27,7 +27,7 @@ import TextReader.Answer.Model exposing (TextAnswer)
 import TextReader.Model exposing (..)
 import TextReader.Question.Model exposing (TextQuestion)
 import TextReader.Section.Decode
-import TextReader.Section.Model exposing (Section, Words)
+import TextReader.Section.Model exposing (Section, TextSection, Words)
 import TextReader.Text.Decode
 import TextReader.Text.Model exposing (Text)
 import TextReader.TextWord
@@ -72,6 +72,7 @@ type SafeModel
     = SafeModel
         { session : Session
         , config : Config
+        , navKey : Key
         , text : Text
         , profile : User.Profile.Profile
         , flashcard : User.Profile.TextReader.Flashcards.ProfileFlashcards
@@ -81,20 +82,12 @@ type SafeModel
         }
 
 
-
--- type alias Flags =
---     Flags.Flags
---         { text_id : Int
---         , text_url : String
---         , flashcards : List TextReader.TextWord.TextWordParams
---         , text_reader_ws_addr : String
---         }
-
-
 init : Shared.Model -> Url Params -> ( SafeModel, Cmd Msg )
 init shared { params } =
     let
         textWordsWithFlashcards =
+            -- Note: Flashcards have been deactivated. We will want to request them from
+            -- an endpoint instead of from flags if we bring them back.
             -- List.map TextReader.TextWord.newFromParams flags.flashcards
             List.map TextReader.TextWord.newFromParams []
 
@@ -108,30 +101,23 @@ init shared { params } =
     ( SafeModel
         { session = shared.session
         , config = shared.config
+        , navKey = shared.key
         , text = TextReader.Text.Model.emptyText
         , gloss = Dict.empty
         , profile = shared.profile
         , flashcard = flashcards
         , exception = Nothing
-
-        --   , progress = Init
-        , progress = ViewIntro
+        , progress = Init
         }
     , case Session.viewer shared.session of
         Just viewer ->
             Api.websocketConnect
                 { name = "textreader"
                 , address =
-                    Config.websocketBaseUrl shared.config
-                        ++ (case Viewer.role viewer of
-                                Student ->
-                                    "/student"
-
-                                Instructor ->
-                                    "/instructor"
-                           )
-                        ++ "/text_read/"
-                        ++ String.fromInt params.id
+                    WebSocket.textReader
+                        (Config.websocketBaseUrl shared.config)
+                        (Viewer.role viewer)
+                        params.id
                 }
                 (Session.cred shared.session)
 
@@ -224,8 +210,8 @@ update msg (SafeModel model) =
 
         StartOver ->
             ( SafeModel model
-              -- , Ports.redirect (Text.Resource.textReadingURLToString model.text_url)
-            , Cmd.none
+            , Browser.Navigation.replaceUrl model.navKey <|
+                Route.toString (Route.Text__Id_Int { id = model.text.id })
             )
 
         NextSection ->
@@ -407,7 +393,6 @@ textScoresDecoder =
 
 view : SafeModel -> Document Msg
 view (SafeModel model) =
-    -- TODO: change title to to title of text
     { title = "Text"
     , body =
         [ div []
@@ -445,11 +430,18 @@ viewContent (SafeModel model) =
     div [ id "text-section" ] content
 
 
+
+-- VIEW: INTRODUCTION
+
+
 viewTextIntroduction : Text -> Html Msg
 viewTextIntroduction text =
-    div [ attribute "id" "text-intro" ]
-        -- (Html.Parser.Util.toVirtualDom <| Html.Parser.parse text.introduction)
-        []
+    div [ attribute "id" "text-intro" ] <|
+        htmlNode text.introduction
+
+
+
+-- VIEW: SECTION
 
 
 viewTextSection : SafeModel -> Section -> Html Msg
@@ -459,18 +451,22 @@ viewTextSection (SafeModel model) textReaderSection =
             TextReader.Section.Model.textSection textReaderSection
 
         textBodyVdom =
-            Text.Section.Words.Tag.tagWordsAndToVDOM
-                (tagWord (SafeModel model) textReaderSection)
-                (isPartOfCompoundWord textReaderSection)
-                -- (HtmlParser.parse textSection.body)
-                []
+            case Html.Parser.run textSection.body of
+                Ok nodes ->
+                    Text.Section.Words.Tag.tagWordsAndToVDOM
+                        (tagWord (SafeModel model) textReaderSection)
+                        (isPartOfCompoundWord textReaderSection)
+                        nodes
+
+                Err err ->
+                    [ Html.text "Error processing text. Please contact us for help." ]
 
         section_title =
             "Section " ++ String.fromInt (textSection.order + 1) ++ "/" ++ String.fromInt textSection.num_of_sections
     in
     div [ id "text-body" ] <|
         [ div [ id "title" ] [ Html.text section_title ]
-        , div [ id "body" ] textBodyVdom
+        , div [ id "text" ] textBodyVdom
         , viewQuestions textReaderSection
         ]
 
@@ -496,7 +492,7 @@ viewQuestion textSection textQuestion =
         textQuestionId =
             String.join "_" [ "question", String.fromInt question.order ]
     in
-    div [ class "question", attribute "id" textQuestionId ]
+    div [ class "reader-question", attribute "id" textQuestionId ]
         [ div [ class "question-body" ] [ Html.text question.body ]
         , div [ class "answers" ]
             (Array.toList <| Array.map (viewAnswer textSection textQuestion) answers)
@@ -581,6 +577,10 @@ viewNextButton =
         ]
 
 
+
+-- VIEW: CONCLUSION
+
+
 viewTextComplete : SafeModel -> TextScores -> Html Msg
 viewTextComplete (SafeModel model) scores =
     div [ id "complete" ]
@@ -605,9 +605,128 @@ viewTextComplete (SafeModel model) scores =
 
 viewTextConclusion : Text -> Html Msg
 viewTextConclusion text =
-    div [ attribute "id" "text-conclusion" ]
-        -- (HtmlParser.Util.toVirtualDom <| HtmlParser.parse (Maybe.withDefault "" text.conclusion))
-        []
+    div [ attribute "id" "text-conclusion" ] <|
+        htmlNode (Maybe.withDefault "" text.conclusion)
+
+
+
+-- VIEW: WORD
+
+
+tagWord : SafeModel -> Section -> Int -> String -> Html Msg
+tagWord (SafeModel model) textReaderSection instance token =
+    let
+        id =
+            String.join "_" [ String.fromInt instance, token ]
+
+        textreaderTextword =
+            TextReader.Section.Model.getTextWord textReaderSection instance token
+
+        readerWord =
+            TextReader.Model.new id instance token textreaderTextword
+    in
+    if token == " " then
+        Html.text token
+
+    else
+        case textreaderTextword of
+            Just text_word ->
+                if TextReader.TextWord.hasTranslations text_word then
+                    viewDefinedWord (SafeModel model) readerWord text_word token
+
+                else
+                    Html.text token
+
+            Nothing ->
+                Html.text token
+
+
+viewDefinedWord : SafeModel -> TextReader.Model.TextReaderWord -> TextReader.TextWord.TextWord -> String -> Html Msg
+viewDefinedWord (SafeModel model) reader_word text_word token =
+    Html.node "span"
+        [ classList
+            [ ( "defined-word", True )
+            , ( "cursor", True )
+            ]
+        , onClick (ToggleGloss reader_word)
+        ]
+        [ span [ classList [ ( "highlighted", TextReader.Model.glossed reader_word model.gloss ) ] ]
+            [ Html.text token
+            ]
+        , viewGloss (SafeModel model) reader_word text_word
+        ]
+
+
+viewGloss : SafeModel -> TextReaderWord -> TextReader.TextWord.TextWord -> Html Msg
+viewGloss (SafeModel model) reader_word text_word =
+    span []
+        [ span
+            [ classList [ ( "gloss-overlay", True ), ( "gloss-menu", True ) ]
+            , onMouseLeave (UnGloss reader_word)
+            , classList [ ( "hidden", not (TextReader.Model.selected reader_word model.gloss) ) ]
+            ]
+            [ viewWordAndGrammemes reader_word text_word
+            , viewTranslations (TextReader.TextWord.translations text_word)
+
+            -- , viewFlashcardOptions (SafeModel model) reader_word
+            ]
+        ]
+
+
+viewWordAndGrammemes : TextReaderWord -> TextReader.TextWord.TextWord -> Html Msg
+viewWordAndGrammemes reader_word text_word =
+    div []
+        [ Html.text <| TextReader.Model.phrase reader_word ++ " (" ++ TextReader.TextWord.grammemesToString text_word ++ ")"
+        ]
+
+
+viewTranslations : Maybe (List TextReader.TextWord.Translation) -> Html Msg
+viewTranslations defs =
+    div [ class "translations" ]
+        (case defs of
+            Just translations ->
+                List.map view_translation (List.filter (\tr -> tr.correct_for_context) translations)
+
+            Nothing ->
+                []
+        )
+
+
+view_translation : TextReader.TextWord.Translation -> Html Msg
+view_translation translation =
+    div [ class "translation" ] [ Html.text translation.text ]
+
+
+viewFlashcardOptions : SafeModel -> TextReaderWord -> Html Msg
+viewFlashcardOptions (SafeModel model) reader_word =
+    let
+        phrase =
+            TextReader.Model.phrase reader_word
+
+        flashcards =
+            Maybe.withDefault Dict.empty (User.Profile.TextReader.Flashcards.flashcards model.flashcard)
+
+        add =
+            div [ class "cursor", onClick (AddToFlashcards reader_word) ] [ Html.text "Add to Flashcards" ]
+
+        remove =
+            div [ class "cursor", onClick (RemoveFromFlashcards reader_word) ] [ Html.text "Remove from Flashcards" ]
+    in
+    div [ class "gloss-flashcard-options" ]
+        (if Dict.member phrase flashcards then
+            [ remove ]
+
+         else
+            [ add ]
+        )
+
+
+viewFlashcardWords : SafeModel -> Html Msg
+viewFlashcardWords (SafeModel model) =
+    div []
+        (List.map (\( normal_form, text_word ) -> div [] [ Html.text normal_form ])
+            (Dict.toList <| Maybe.withDefault Dict.empty <| User.Profile.TextReader.Flashcards.flashcards model.flashcard)
+        )
 
 
 isPartOfCompoundWord : Section -> Int -> String -> Maybe ( Int, Int, Int )
@@ -625,109 +744,22 @@ isPartOfCompoundWord section instance word =
             Nothing
 
 
-tagWord : SafeModel -> Section -> Int -> String -> Html Msg
-tagWord (SafeModel model) textReaderSection instance token =
-    let
-        id =
-            String.join "_" [ String.fromInt instance, token ]
 
-        textreaderTextword =
-            TextReader.Section.Model.getTextWord textReaderSection instance token
+-- VIEW : HTML NODE
 
-        readerWord =
-            TextReader.Model.new id instance token textreaderTextword
-    in
-    -- case token == " " of
-    --     True ->
-    --         VirtualDom.text token
-    --     False ->
-    --         case textreaderTextword of
-    --             Just text_word ->
-    --                 if TextReader.TextWord.hasTranslations text_word then
-    --                     view_defined_word model readerWord text_word token
-    --                 else
-    --                     VirtualDom.text token
-    --             Nothing ->
-    --                 VirtualDom.text token
-    Html.text ""
+
+htmlNode : String -> List (Html msg)
+htmlNode htmlString =
+    case Html.Parser.run htmlString of
+        Ok node ->
+            node
+                |> Html.Parser.Util.toVirtualDom
+
+        Err err ->
+            [ Html.text "Error processing text. Please contact us for help." ]
 
 
 
--- view_defined_word : Model -> TextReader.Model.TextReaderWord -> TextReader.TextWord.TextWord -> String -> Html Msg
--- view_defined_word model reader_word text_word token =
---     Html.node "span"
---         [ classList
---             [ ( "defined-word", True )
---             , ( "cursor", True )
---             ]
---         , onClick (ToggleGloss reader_word)
---         ]
---         [ span [ classList [ ( "highlighted", TextReader.Model.glossed reader_word model.gloss ) ] ]
---             [ VirtualDom.text token
---             ]
---         , view_gloss model reader_word text_word
---         ]
---
--- view_translation : TextReader.TextWord.Translation -> Html Msg
--- view_translation translation =
---     div [ class "translation" ] [ Html.text translation.text ]
---
--- view_translations : Maybe (List TextReader.TextWord.Translation) -> Html Msg
--- view_translations defs =
---     div [ class "translations" ]
---         (case defs of
---             Just translations ->
---                 List.map view_translation (List.filter (\tr -> tr.correct_for_context) translations)
---             Nothing ->
---                 []
---         )
---
--- view_word_and_grammemes : TextReaderWord -> TextReader.TextWord.TextWord -> Html Msg
--- view_word_and_grammemes reader_word text_word =
---     div []
---         [ Html.text <| TextReader.Model.phrase reader_word ++ " (" ++ TextReader.TextWord.grammemesToString text_word ++ ")"
---         ]
---
--- view_flashcard_words : Model -> Html Msg
--- view_flashcard_words model =
---     div []
---         (List.map (\( normal_form, text_word ) -> div [] [ Html.text normal_form ])
---             (Dict.toList <| Maybe.withDefault Dict.empty <| User.Profile.TextReader.Flashcards.flashcards model.flashcard)
---         )
---
--- view_flashcard_options : Model -> TextReaderWord -> Html Msg
--- view_flashcard_options model reader_word =
---     let
---         phrase =
---             TextReader.Model.phrase reader_word
---         flashcards =
---             Maybe.withDefault Dict.empty (User.Profile.TextReader.Flashcards.flashcards model.flashcard)
---         add =
---             div [ class "cursor", onClick (AddToFlashcards reader_word) ] [ Html.text "Add to Flashcards" ]
---         remove =
---             div [ class "cursor", onClick (RemoveFromFlashcards reader_word) ] [ Html.text "Remove from Flashcards" ]
---     in
---     div [ class "gloss-flashcard-options" ]
---         (if Dict.member phrase flashcards then
---             [ remove ]
---          else
---             [ add ]
---         )
---
--- view_gloss : Model -> TextReaderWord -> TextReader.TextWord.TextWord -> Html Msg
--- view_gloss model reader_word text_word =
---     span []
---         [ span
---             [ classList [ ( "gloss-overlay", True ), ( "gloss-menu", True ) ]
---             , onMouseLeave (UnGloss reader_word)
---             , classList [ ( "hidden", not (TextReader.Model.selected reader_word model.gloss) ) ]
---             ]
---             [ view_word_and_grammemes reader_word text_word
---             , view_translations (TextReader.TextWord.translations text_word)
---             , view_flashcard_options model reader_word
---             ]
---         ]
---
 -- SHARED
 
 

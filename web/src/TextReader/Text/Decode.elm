@@ -1,6 +1,7 @@
 module TextReader.Text.Decode exposing (..)
 
 import DateTime
+import Iso8601
 import Json.Decode
 import Json.Decode.Extra exposing (posix)
 import Json.Decode.Pipeline exposing (required)
@@ -20,5 +21,5 @@ textDecoder =
         |> required "created_by" (Json.Decode.nullable Json.Decode.string)
         |> required "last_modified_by" (Json.Decode.nullable Json.Decode.string)
         |> required "tags" (Json.Decode.nullable (Json.Decode.list Json.Decode.string))
-        |> required "created_dt" (Json.Decode.nullable (Json.Decode.map DateTime.fromPosix posix))
-        |> required "modified_dt" (Json.Decode.nullable (Json.Decode.map DateTime.fromPosix posix))
+        |> required "created_dt" (Json.Decode.nullable (Json.Decode.map DateTime.fromPosix Iso8601.decoder))
+        |> required "modified_dt" (Json.Decode.nullable (Json.Decode.map DateTime.fromPosix Iso8601.decoder))
