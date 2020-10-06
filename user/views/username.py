@@ -2,10 +2,11 @@ import json
 
 from django.http import HttpResponse, HttpRequest
 from django.core.exceptions import ValidationError
+from django.views.decorators.csrf import csrf_exempt
 
 from user.models import ReaderUser
 
-
+@csrf_exempt
 def username(request: HttpRequest) -> HttpResponse:
     if not request.user.is_authenticated:
         return HttpResponse(status=400)
