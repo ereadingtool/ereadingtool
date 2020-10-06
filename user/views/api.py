@@ -8,7 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import View
 from user.forms import AuthenticationForm
-
+from user.student.models import Student
+from text.models import TextDifficulty
 
 class APIView(View):
     def form(self, request: HttpRequest, params: dict) -> 'forms.Form':
@@ -78,3 +79,36 @@ class APIView(View):
         else: 
             errors = self.format_form_errors(form)
             return self.post_error(errors)
+
+
+    def put(self, request, *args, **kwargs) -> JsonResponse:
+        errors = params = {}
+
+        if not Student.objects.filter(pk=kwargs['pk']).exists():
+            self.put_error(400, {})
+
+        student = Student.objects.get(pk=kwargs['pk'])
+
+        if student.user != self.request.user:
+            return self.put_error(403, {})
+
+        try:
+            params = json.loads(request.body.decode('utf8'))
+        except json.JSONDecodeError as e:
+            return self.post_json_error(e)
+
+        if 'difficulty_preference' in params:
+            try:
+                params['difficulty_preference'] = TextDifficulty.objects.get(slug=params['difficulty_preference']).pk
+            except TextDifficulty.DoesNotExist:
+                pass
+
+        form = self.form(request, params, instance=student)
+
+        if not form.is_valid():
+            errors = self.format_form_errors(form)
+
+        if errors:
+            return self.put_error(400, errors)
+        else:
+            return self.put_success(request, form)

@@ -8,7 +8,10 @@ from ereadingtool.views import APIView
 
 from text.models import Text
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
+@method_decorator(csrf_exempt, name='dispatch')
 class TextLockAPIView(LoginRequiredMixin, APIView):
     login_url = reverse_lazy('instructor-login')
 
