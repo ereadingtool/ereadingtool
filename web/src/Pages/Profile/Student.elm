@@ -580,7 +580,7 @@ viewStudentPerformance (SafeModel model) =
                     ]
                , div [ class "performance_download_link" ]
                     [ Html.a [ attribute "href" performanceReport.pdf_link ]
-                        [ Html.text "Download as PDF"
+                        [ Html.text "Download the \"My Performance\" table as a PDF"
                         ]
                     ]
                ]
