@@ -169,10 +169,6 @@ class StudentView(ProfileView):
 class StudentAPIConsentToResearchView(LoginRequiredMixin, APIView):
     # returns permission denied HTTP message rather than redirect to login
 
-    def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
-        if not Student.objects.filter(pk=kwargs['pk']).count():
-            return HttpResponse(status=400)
-
     def form(self, request: HttpRequest, params: Dict, **kwargs) -> forms.ModelForm:
         return StudentConsentForm(params, **kwargs)
 
@@ -223,8 +219,12 @@ class StudentAPIView(LoginRequiredMixin, APIView):
 
     def put_success(self, request: HttpRequest, student_form: Union[Form, forms.ModelForm]) -> HttpResponse:
         student = student_form.save()
+        
+        student_dict = student.to_dict()
 
-        return HttpResponse(json.dumps(student.to_dict()))
+        return HttpResponse(json.dumps({
+            'profile': student_dict
+        }))
 
 
 class StudentSignupAPIView(APIView):
