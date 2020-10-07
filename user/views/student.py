@@ -169,6 +169,10 @@ class StudentView(ProfileView):
 class StudentAPIConsentToResearchView(LoginRequiredMixin, APIView):
     # returns permission denied HTTP message rather than redirect to login
 
+    def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
+        if not Student.objects.filter(pk=kwargs['pk']).count():
+            return HttpResponse(status=400)
+
     def form(self, request: HttpRequest, params: Dict, **kwargs) -> forms.ModelForm:
         return StudentConsentForm(params, **kwargs)
 
@@ -202,7 +206,6 @@ class StudentAPIView(LoginRequiredMixin, APIView):
             performance_report = {
                 'html' : loader.render_to_string('student_performance_report.html', {
                                                  'performance_report': student.performance.to_dict()}),
-                'pdf_link' : "steps2ar.org/profile/student/" + str(student.id) + "/performance_report.pdf"
             }
         except Exception as e:
             performance_report = None
