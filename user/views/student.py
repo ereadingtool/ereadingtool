@@ -198,14 +198,18 @@ class StudentAPIView(LoginRequiredMixin, APIView):
 
         student_dict = student.to_dict()
 
-        if 'performance_report' in student_dict:
-            student_performance_report = student_dict.pop('performance_report')
-        else:
-            student_performance_report = None
+        try:
+            performance_report = {
+                'html' : loader.render_to_string('student_performance_report.html', {
+                                                 'performance_report': student.performance.to_dict()}),
+                'pdf_link' : "steps2ar.org/profile/student/" + str(student.id) + "/performance_report.pdf"
+            }
+        except Exception as e:
+            performance_report = None
 
         return HttpResponse(json.dumps({
             'profile': student_dict,
-            'performance_report': student_performance_report,
+            'performance_report': performance_report
         }))
         
     def post_success(self, request: HttpRequest, form: Form) -> HttpResponse:
