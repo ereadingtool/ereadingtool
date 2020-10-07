@@ -119,19 +119,18 @@ init shared { params } =
 
 
 type Msg
-    = RetrieveStudentProfile (Result Error StudentProfile)
-      -- preferred difficulty
-    | UpdateDifficulty String
+    = GotProfile (Result Error StudentProfile)
       -- username
     | ToggleUsernameUpdate
-    | ToggleResearchConsent
-    | ValidUsername (Result Error UsernameValidation)
     | UpdateUsername String
+    | GotUsernameValidation (Result Error UsernameValidation)
     | SubmitUsernameUpdate
     | CancelUsernameUpdate
-      -- profile update submission
-    | Submitted (Result Error StudentProfile)
-    | SubmittedConsent (Result Error StudentConsentResp)
+      -- preferred difficulty
+    | SubmitDifficulty String
+      -- research consent
+    | ToggleResearchConsent
+    | GotConsent (Result Error StudentConsentResp)
       -- help messages
     | ToggleShowHelp
     | CloseHint StudentHelp
@@ -144,23 +143,30 @@ type Msg
 update : Msg -> SafeModel -> ( SafeModel, Cmd Msg )
 update msg (SafeModel model) =
     case msg of
-        RetrieveStudentProfile (Ok profile) ->
-            let
-                usernameValidation =
-                    model.usernameValidation
-
-                newUsernameValidation =
-                    { usernameValidation | username = StudentProfile.studentUserName profile }
-            in
-            ( SafeModel { model | profile = profile, usernameValidation = newUsernameValidation }
+        GotProfile (Ok studentProfile) ->
+            ( SafeModel { model | profile = studentProfile, editing = Dict.fromList [] }
             , Cmd.none
             )
 
-        -- handle user-friendly msgs
-        RetrieveStudentProfile (Err _) ->
-            ( SafeModel { model | errorMessage = "Error retrieving student profile!" }
-            , Cmd.none
-            )
+        GotProfile (Err err) ->
+            case err of
+                Http.BadStatus resp ->
+                    ( SafeModel { model | errorMessage = "Could not update student profile" }
+                    , Cmd.none
+                    )
+
+                Http.BadBody _ ->
+                    ( SafeModel { model | errorMessage = "Could not update student profile" }
+                    , Cmd.none
+                    )
+
+                _ ->
+                    ( SafeModel { model | errorMessage = "Could not update student profile" }
+                    , Cmd.none
+                    )
+
+        ToggleUsernameUpdate ->
+            ( toggleUsernameUpdate (SafeModel model), Cmd.none )
 
         UpdateUsername name ->
             let
@@ -174,10 +180,10 @@ update msg (SafeModel model) =
             , validateUsername model.session model.config name
             )
 
-        ValidUsername (Ok usernameValidation) ->
+        GotUsernameValidation (Ok usernameValidation) ->
             ( SafeModel { model | usernameValidation = usernameValidation }, Cmd.none )
 
-        ValidUsername (Err error) ->
+        GotUsernameValidation (Err error) ->
             case error of
                 Http.BadStatus resp ->
                     ( SafeModel model, Cmd.none )
@@ -188,7 +194,25 @@ update msg (SafeModel model) =
                 _ ->
                     ( SafeModel model, Cmd.none )
 
-        UpdateDifficulty difficulty ->
+        SubmitUsernameUpdate ->
+            case model.usernameValidation.username of
+                Just username ->
+                    let
+                        newProfile =
+                            StudentProfile.setUserName model.profile username
+                    in
+                    ( SafeModel { model | profile = newProfile }
+                        |> toggleUsernameUpdate
+                    , putProfile model.session model.config newProfile
+                    )
+
+                Nothing ->
+                    ( SafeModel model, Cmd.none )
+
+        CancelUsernameUpdate ->
+            ( toggleUsernameUpdate (SafeModel model), Cmd.none )
+
+        SubmitDifficulty difficulty ->
             let
                 newDifficultyPreference =
                     ( difficulty, difficulty )
@@ -200,9 +224,6 @@ update msg (SafeModel model) =
             , putProfile model.session model.config newProfile
             )
 
-        ToggleUsernameUpdate ->
-            ( toggleUsernameUpdate (SafeModel model), Cmd.none )
-
         ToggleResearchConsent ->
             ( SafeModel model
             , putResearchConsent
@@ -212,50 +233,25 @@ update msg (SafeModel model) =
                 (not model.consentedToResearch)
             )
 
-        SubmitUsernameUpdate ->
-            case model.usernameValidation.username of
-                Just username ->
-                    let
-                        newProfile =
-                            StudentProfile.setUserName model.profile username
-                    in
-                    ( SafeModel { model | profile = newProfile }
-                    , putProfile model.session model.config newProfile
-                    )
-
-                Nothing ->
-                    ( SafeModel model, Cmd.none )
-
-        CancelUsernameUpdate ->
-            ( toggleUsernameUpdate (SafeModel model), Cmd.none )
-
-        Submitted (Ok studentProfile) ->
-            ( SafeModel { model | profile = studentProfile, editing = Dict.fromList [] }, Cmd.none )
-
-        Submitted (Err err) ->
-            case err of
-                Http.BadStatus resp ->
-                    ( SafeModel model, Cmd.none )
-
-                Http.BadBody _ ->
-                    ( SafeModel model, Cmd.none )
-
-                _ ->
-                    ( SafeModel model, Cmd.none )
-
-        SubmittedConsent (Ok resp) ->
+        GotConsent (Ok resp) ->
             ( SafeModel { model | consentedToResearch = resp.consented }, Cmd.none )
 
-        SubmittedConsent (Err err) ->
+        GotConsent (Err err) ->
             case err of
                 Http.BadStatus resp ->
-                    ( SafeModel model, Cmd.none )
+                    ( SafeModel { model | errorMessage = "Could not update research consent" }
+                    , Cmd.none
+                    )
 
                 Http.BadBody _ ->
-                    ( SafeModel model, Cmd.none )
+                    ( SafeModel { model | errorMessage = "Could not update research consent" }
+                    , Cmd.none
+                    )
 
                 _ ->
-                    ( SafeModel model, Cmd.none )
+                    ( SafeModel { model | errorMessage = "Could not update research consent" }
+                    , Cmd.none
+                    )
 
         ToggleShowHelp ->
             ( SafeModel { model | config = Config.mapShowHelp not model.config }
@@ -291,7 +287,7 @@ putProfile session config profile =
                 (Endpoint.studentProfile (Config.restApiUrl config) studentId)
                 (Session.cred session)
                 (Http.jsonBody (profileEncoder profile))
-                Submitted
+                GotProfile
                 StudentProfile.decoder
 
         Nothing ->
@@ -311,7 +307,7 @@ putResearchConsent session config studentProfile consent =
                 (Endpoint.consentToResearch (Config.restApiUrl config) studentId)
                 (Session.cred session)
                 (Http.jsonBody (consentEncoder consent))
-                SubmittedConsent
+                GotConsent
                 studentConsentRespDecoder
 
         Nothing ->
@@ -328,7 +324,7 @@ validateUsername session config name =
         (Endpoint.validateUsername (Config.restApiUrl config))
         (Session.cred session)
         (Http.jsonBody (usernameEncoder name))
-        ValidUsername
+        GotUsernameValidation
         usernameValidationDecoder
 
 
@@ -458,7 +454,7 @@ viewDifficulty (SafeModel model) =
             Tuple.first (Maybe.withDefault ( "", "" ) (StudentProfile.studentDifficultyPreference model.profile))
     in
     div []
-        [ Html.select [ onInput UpdateDifficulty ]
+        [ Html.select [ onInput SubmitDifficulty ]
             [ Html.optgroup []
                 (List.map
                     (\( k, v ) ->
@@ -473,7 +469,7 @@ viewDifficulty (SafeModel model) =
                             )
                             [ Html.text v ]
                     )
-                    (StudentProfile.studentDifficulties model.profile)
+                    Shared.difficulties
                 )
             ]
         ]
@@ -676,9 +672,6 @@ viewResearchConsent (SafeModel model) =
                 ]
                 []
             , div [ class "check-box-text" ] [ Html.text "I consent to research." ]
-            ]
-        , Html.a [ attribute "href" "https://sites.google.com/pdx.edu/star-russian/home" ]
-            [ Html.text "here"
             ]
         ]
 
@@ -917,7 +910,10 @@ viewPreferredDifficultyHint text_difficulty =
 
 save : SafeModel -> Shared.Model -> Shared.Model
 save (SafeModel model) shared =
-    { shared | config = model.config }
+    { shared
+        | config = model.config
+        , profile = Profile.fromStudentProfile model.profile
+    }
 
 
 load : Shared.Model -> SafeModel -> ( SafeModel, Cmd Msg )
