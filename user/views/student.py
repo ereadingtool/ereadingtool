@@ -169,6 +169,14 @@ class StudentView(ProfileView):
 class StudentAPIConsentToResearchView(LoginRequiredMixin, APIView):
     # returns permission denied HTTP message rather than redirect to login
 
+    def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
+        if not Student.objects.filter(pk=kwargs['pk']).count():
+            return HttpResponse(status=400)
+
+        student = Student.objects.get(pk=kwargs['pk']) 
+
+        return HttpResponse(json.dumps({'consented': student.is_consenting_to_research}))
+
     def form(self, request: HttpRequest, params: Dict, **kwargs) -> forms.ModelForm:
         return StudentConsentForm(params, **kwargs)
 
@@ -198,14 +206,17 @@ class StudentAPIView(LoginRequiredMixin, APIView):
 
         student_dict = student.to_dict()
 
-        if 'performance_report' in student_dict:
-            student_performance_report = student_dict.pop('performance_report')
-        else:
-            student_performance_report = None
+        try:
+            performance_report = {
+                'html' : loader.render_to_string('student_performance_report.html', {
+                                                 'performance_report': student.performance.to_dict()}),
+            }
+        except Exception as e:
+            performance_report = None
 
         return HttpResponse(json.dumps({
             'profile': student_dict,
-            'performance_report': student_performance_report,
+            'performance_report': performance_report
         }))
         
     def post_success(self, request: HttpRequest, form: Form) -> HttpResponse:
@@ -216,8 +227,12 @@ class StudentAPIView(LoginRequiredMixin, APIView):
 
     def put_success(self, request: HttpRequest, student_form: Union[Form, forms.ModelForm]) -> HttpResponse:
         student = student_form.save()
+        
+        student_dict = student.to_dict()
 
-        return HttpResponse(json.dumps(student.to_dict()))
+        return HttpResponse(json.dumps({
+            'profile': student_dict
+        }))
 
 
 class StudentSignupAPIView(APIView):
