@@ -416,7 +416,9 @@ view (SafeModel model) =
 viewContent : SafeModel -> Html Msg
 viewContent (SafeModel model) =
     div [ classList [ ( "profile", True ) ] ]
-        [ div [ classList [ ( "profile_items", True ) ] ]
+        [ div [ class "profile-title" ]
+            [ Html.text "Student Profile" ]
+        , div [ classList [ ( "profile_items", True ) ] ]
             [ viewPreferredDifficulty (SafeModel model)
             , viewUsername (SafeModel model)
             , viewUserEmail (SafeModel model)
