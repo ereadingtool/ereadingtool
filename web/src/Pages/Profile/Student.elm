@@ -101,7 +101,7 @@ init shared { params } =
         , config = shared.config
         , navKey = shared.key
         , profile = Profile.toStudentProfile shared.profile
-        , consentedToResearch = False
+        , consentedToResearch = shared.researchConsent
         , flashcards = Nothing
         , editing = Dict.empty
         , usernameValidation = { username = Nothing, valid = Nothing, msg = Nothing }
@@ -924,12 +924,17 @@ save (SafeModel model) shared =
     { shared
         | config = model.config
         , profile = Profile.fromStudentProfile model.profile
+        , researchConsent = model.consentedToResearch
     }
 
 
 load : Shared.Model -> SafeModel -> ( SafeModel, Cmd Msg )
 load shared (SafeModel model) =
-    ( SafeModel { model | profile = Profile.toStudentProfile shared.profile }
+    ( SafeModel
+        { model
+            | profile = Profile.toStudentProfile shared.profile
+            , consentedToResearch = shared.researchConsent
+        }
     , Cmd.none
     )
 
