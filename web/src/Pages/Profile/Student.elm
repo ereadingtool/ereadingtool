@@ -35,6 +35,7 @@ import User.Student.Profile as StudentProfile exposing (StudentProfile)
 import User.Student.Profile.Help as Help exposing (StudentHelp)
 import User.Student.Resource as StudentResource
 import Utils
+import Viewer exposing (Viewer)
 import Views
 
 
@@ -79,7 +80,6 @@ type SafeModel
         , config : Config
         , navKey : Key
         , profile : StudentProfile
-        , performanceReport : PerformanceReport
         , consentedToResearch : Bool
         , flashcards : Maybe (List String)
         , editing : Dict String Bool
@@ -101,7 +101,6 @@ init shared { params } =
         , config = shared.config
         , navKey = shared.key
         , profile = Profile.toStudentProfile shared.profile
-        , performanceReport = PerformanceReport.emptyPerformanceReport
         , consentedToResearch = False
         , flashcards = Nothing
         , editing = Dict.empty
@@ -569,7 +568,7 @@ viewStudentPerformance : SafeModel -> Html Msg
 viewStudentPerformance (SafeModel model) =
     let
         performanceReport =
-            model.performanceReport
+            StudentProfile.performanceReport model.profile
     in
     div [ class "performance" ] <|
         viewPerformanceHint (SafeModel model)
@@ -579,7 +578,19 @@ viewStudentPerformance (SafeModel model) =
                         (performanceReportNode performanceReport.html)
                     ]
                , div [ class "performance_download_link" ]
-                    [ Html.a [ attribute "href" performanceReport.pdf_link ]
+                    [ Html.a
+                        [ attribute "href" <|
+                            Config.restApiUrl model.config
+                                ++ "/profile/student/"
+                                ++ (case StudentProfile.studentID model.profile of
+                                        Just id ->
+                                            String.fromInt id
+
+                                        Nothing ->
+                                            "0"
+                                   )
+                                ++ "/performance_report.pdf"
+                        ]
                         [ Html.text "Download the \"My Performance\" table as a PDF"
                         ]
                     ]
