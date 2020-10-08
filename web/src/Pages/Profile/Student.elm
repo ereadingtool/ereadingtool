@@ -574,8 +574,9 @@ viewStudentPerformance (SafeModel model) =
         viewPerformanceHint (SafeModel model)
             ++ [ span [ class "profile_item_title" ] [ Html.text "My Performance: " ]
                , span [ class "profile_item_value" ]
-                    [ div [ class "performance_report" ]
-                        (performanceReportNode performanceReport.html)
+                    [ div [ class "performance_report" ] []
+
+                    -- (performanceReportNode performanceReport.html)
                     ]
                , div [ class "performance_download_link" ]
                     [ Html.a
