@@ -40,3 +40,11 @@ services:
     depends_on:
       - node_frontend
       - django_backend
+
+  redis:
+    container_name: redis
+    expose:
+      - "6379" 
+    image: redis
+    depends_on:
+      - django_backend
