@@ -1,0 +1,52 @@
+server {
+        # where are the certs..
+        # ssl_certificate <some_dir>
+        # ssl_certificaate_key <some_dir>
+
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        root /var/www/steps2ar.org/html;
+
+        index index.html index.htm index.nginx-debian.html;
+
+        server_name steps2ar.org www.steps2ar.org;
+
+        location / {
+                # https://gist.github.com/pauloricardomg/7084524
+
+                # If request comes from allowed subdomain
+                # (*.steps2ar.org) then we enable CORS
+                if ($http_origin ~* (https?:\/\/([a-z0-9-]+\.)*steps2ar\.org(:[0-9]+)?$)) {
+                        set $cors "1";
+                }
+
+                # OPTIONS indicates a CORS pre-flight request
+                if ($request_method = 'OPTIONS') {
+                        set $cors "${cors}o";
+                }
+
+                # Append CORS headers to any request from
+                # allowed CORS domain, except OPTIONS
+                if ($cors = "1") {
+                        add_header 'Access-Control-Allow-Origin' $http_origin;
+                        add_header 'Access-Control-Allow-Credentials' 'true';
+                        proxy_pass      http://django_backend:8000;
+                }
+
+                # OPTIONS (pre-flight) request from allowed
+                # CORS domain. return return response directly
+                if ($cors = "1o") {
+                        add_header 'Access-Control-Allow-Origin' $http_origin;
+                        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, PUT, DELETE';
+                        add_header 'Access-Control-Allow-Credentials' 'true';
+                        add_header 'Access-Control-Allow-Headers' 'Origin,Content-Type,Accept';
+                        add_header Content-Length 0;
+                        add_header Content-Type text/plain;
+                        return 204;
+                }
+
+                # Requests from non-allowed CORS domains TODO: Do we want this?
+                # proxy_pass http://django_backend:8000;
+        }
+}

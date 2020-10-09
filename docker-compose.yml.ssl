@@ -1,0 +1,42 @@
+version: "3.8"
+services:
+  django_backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.django
+    container_name: django_backend
+    env_file:
+      - secrets.env
+    environment:
+        # change depending on prod or dev server
+      - VIRTUAL_HOST=api.steps2ar.org
+      - LETSENCRYPT_HOST=api.steps2ar.org
+    expose:
+      - "8000"
+
+  node_frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.node
+    container_name: node_frontend
+    environment:
+        - VIRTUAL_HOST=steps2ar.org
+        - LETSENCRYPT_HOST=steps2ar.org
+    expose:
+      - "80"
+
+  nginx-proxy:
+    container_name: nginx-proxy
+    expose:
+      - "1234"
+      - "8000"
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+    # Gives control to access the docker daemon
+    # TODO: in a secure setup we don't actually want this
+    # https://raesene.github.io/blog/2016/03/06/The-Dangers-Of-Docker.sock/
+    volumes:
+"docker-compose.yml.ssl" 80L, 1972C                                                                                                                                                                 1,1           Top

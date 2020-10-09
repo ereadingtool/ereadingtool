@@ -4,31 +4,35 @@ WORKDIR '/app'
 
 RUN apt update -y \
     && apt upgrade -y \
+    && mkdir logs \
+    && touch logs/access.log \
+    && touch logs/error.log \
     && git clone https://github.com/ereadingtool/ereadingtool.git \
     && curl -L -o elm.gz https://github.com/elm/compiler/releases/download/0.19.1/binary-for-linux-64-bit.gz \
     && gunzip elm.gz \
     && chmod +x elm \
     && mv elm /usr/local/bin \
     && cd ereadingtool \
-    && git checkout upgrade/staging \
+    && git checkout upgrade/proxy-ssl \
     && cd web \
     && npm install -g parcel-bundler \
     && npm install \
     && npm run build:staging \
     && apt-get install -y nginx \
-    && mkdir -p /var/www/ereadingtool.com/html \
-    && chown -R $USER:$USER /var/www/ereadingtool.com/html \
+    && mkdir -p /var/www/steps2ar.org/html \
+    && chown -R $USER:$USER /var/www/steps2ar.org/html \
     && chmod -R 755 /var/www \
-    && cp -r dist/* /var/www/ereadingtool.com/html/
+    && cp -r dist/* /var/www/steps2ar.org/html/
 
-COPY ereadingtool.com /etc/nginx/sites-available/
+COPY steps2ar.org /etc/nginx/sites-available/
 
-RUN ln -s /etc/nginx/sites-available/ereadingtool.com /etc/nginx/sites-enabled/ \
+RUN ln -s /etc/nginx/sites-available/steps2ar.org /etc/nginx/sites-enabled/ \
     && rm /etc/nginx/sites-enabled/default
 
 CMD ["nginx", "-g", "daemon off;"]
 
 EXPOSE 80
 
-# docker build -f Dockerfile.node -t ereadingtool/node .
-# docker run -p 80:80 -dit ereadingtool/node
+# TODO: Working with upgrade/proxy-ssl here
+# TODO: Could have added nginx-modules FROM ubuntu compile nginx from source get more_set_headers
+# https://github.com/openresty/headers-more-nginx-module#installation
