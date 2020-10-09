@@ -10,9 +10,8 @@ services:
     environment:
         # change depending on prod or dev server 
       - VIRTUAL_HOST=api.steps2ar.org
-      - LETSENCRYPT_HOST=api.steps2ar.org
     expose:
-      - "8000" 
+      - "8000"
 
   node_frontend:
     build:
@@ -20,59 +19,24 @@ services:
       dockerfile: Dockerfile.node
     container_name: node_frontend
     environment:
-        - VIRTUAL_HOST=steps2ar.org
-        - LETSENCRYPT_HOST=steps2ar.org
+      - VIRTUAL_HOST=steps2ar.org
     expose:
       - "80"
+    depends_on:
+      - django_backend
 
   nginx-proxy:
-    container_name: nginx_proxy
+    container_name: nginx-proxy
     expose:
       - "1234"
       - "8000"
     image: jwilder/nginx-proxy
     ports:
       - "80:80"
-      - "443:443"
-    # Gives control to access the docker daemon 
-    # TODO: in a secure setup we don't actually want this
-    # https://raesene.github.io/blog/2016/03/06/The-Dangers-Of-Docker.sock/
+        # - "443:443"
+    restart: "always"
     volumes:
-      - conf:/etc/nginx/conf.d
-      - vhost:/etc/nginx/vhost.d
-      - html:/usr/share/nginx/html
-      - dhparam:/etc/nginx/dhparam
-      - certs:/etc/nginx/certs:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
     depends_on:
-      - django_backend
       - node_frontend
-    restart: always
-
-  letsencrypt:
-    image: jrcs/letsencrypt-nginx-proxy-companion
-    container_name: nginx-proxy-le
-    volumes:
-      - certs:/etc/nginx/certs:rw
-      - vhost:/etc/nginx/vhost.d
-      - html:/usr/share/nginx/html
-      - dhparam:/etc/nginx/dhparam
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    environment:
-      - NGINX_PROXY_CONTAINER=nginx-proxy
-      - DEFAULT_EMAIL=ereader@pdx.edu
-    depends_on:
-      - nginx-proxy
-    restart: always
-
-volumes:
-  conf:
-  vhost:
-  html:
-  dhparam:
-  certs:
-
-networks:
-  default:
-    external:
-      name: nginx-proxy
+      - django_backend
