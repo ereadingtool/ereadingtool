@@ -11,7 +11,6 @@ api_urlpatterns = [
     path('api/instructor/login', InstructorLoginAPIView.as_view(), name='api-instructor-login'),
     # TODO: this route is unused since the client side simply invalidates the JWT
     path('api/instructor/logout', InstructorLogoutAPIView.as_view(), name='api-instructor-logout'),
-    path('api/instructor/<int:pk>', InstructorAPIView.as_view(), name='api-instructor'),
     path('api/instructor/<int:pk>', InstructorAPIView.as_view(), name='api-instructor')
 ]
 
