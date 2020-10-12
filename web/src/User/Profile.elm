@@ -12,6 +12,7 @@ import User.Instructor.Profile
         , InstructorUsername(..)
         )
 import User.Instructor.View
+import User.Student.Performance.Report as PerformanceReport exposing (PerformanceReport)
 import User.Student.Profile
     exposing
         ( StudentProfile(..)
@@ -53,7 +54,7 @@ initProfile flags =
         Nothing ->
             case flags.student_profile of
                 Just student_profile_params ->
-                    Student (User.Student.Profile.initProfile student_profile_params)
+                    Student (User.Student.Profile.initProfile student_profile_params PerformanceReport.emptyPerformanceReport)
 
                 Nothing ->
                     EmptyProfile
@@ -82,6 +83,7 @@ toStudentProfile profile =
                     (User.Student.Resource.toStudentLogoutURI "")
                     (User.Student.Resource.toStudentProfileURI "")
                 )
+                PerformanceReport.emptyPerformanceReport
 
 
 toInstructorProfile : Profile -> User.Instructor.Profile.InstructorProfile
