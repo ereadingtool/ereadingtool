@@ -21,6 +21,7 @@ import Html.Attributes exposing (attribute, class, classList, href, id)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (Error)
 import Id exposing (Id)
+import Json.Decode as Decode
 import Json.Encode as Encode
 import Role exposing (Role(..))
 import Session exposing (Session)
@@ -52,6 +53,7 @@ type alias Model =
     , session : Session
     , config : Config
     , profile : Profile
+    , researchConsent : Bool
     , authMessage : String
     }
 
@@ -71,7 +73,7 @@ init flags url key =
         config =
             Config.init flags.maybeConfig
     in
-    ( Model url key session config Profile.emptyProfile ""
+    ( Model url key session config Profile.emptyProfile False ""
     , case Session.viewer session of
         Just viewer ->
             case Viewer.role viewer of
@@ -79,11 +81,15 @@ init flags url key =
                     if List.any (\path -> url.path == path) publicPaths then
                         Cmd.batch
                             [ requestStudentProfile session config (Viewer.id viewer)
+                            , getResearchConsent session config (Viewer.id viewer)
                             , Browser.Navigation.replaceUrl key (Route.toString Route.Profile__Student)
                             ]
 
                     else
-                        requestStudentProfile session config (Viewer.id viewer)
+                        Cmd.batch
+                            [ requestStudentProfile session config (Viewer.id viewer)
+                            , getResearchConsent session config (Viewer.id viewer)
+                            ]
 
                 Instructor ->
                     if List.any (\path -> url.path == path) publicPaths then
@@ -117,6 +123,7 @@ type Msg
     = GotAuthResult (Result AuthError AuthSuccess)
     | GotSession Session
     | GotStudentProfile (Result Error StudentProfile)
+    | GotResearchConsent (Result Error Bool)
     | GotInstructorProfile (Result Error InstructorProfile)
     | Logout
 
@@ -144,6 +151,7 @@ update msg model =
                         Student ->
                             Cmd.batch
                                 [ requestStudentProfile session model.config (Viewer.id viewer)
+                                , getResearchConsent session model.config (Viewer.id viewer)
                                 , Browser.Navigation.replaceUrl model.key (Route.toString Route.Profile__Student)
                                 ]
 
@@ -163,6 +171,16 @@ update msg model =
             )
 
         GotStudentProfile (Err err) ->
+            ( model
+            , Cmd.none
+            )
+
+        GotResearchConsent (Ok researchConsent) ->
+            ( { model | researchConsent = researchConsent }
+            , Cmd.none
+            )
+
+        GotResearchConsent (Err err) ->
             ( model
             , Cmd.none
             )
@@ -209,6 +227,19 @@ requestStudentProfile session config id =
         (Session.cred session)
         GotStudentProfile
         StudentProfile.decoder
+
+
+getResearchConsent :
+    Session
+    -> Config
+    -> Id
+    -> Cmd Msg
+getResearchConsent session config id =
+    Api.get
+        (Endpoint.consentToResearch (Config.restApiUrl config) (Id.id id))
+        (Session.cred session)
+        GotResearchConsent
+        (Decode.field "consented" Decode.bool)
 
 
 requestInstructorProfile : Session -> Config -> Id -> Cmd Msg

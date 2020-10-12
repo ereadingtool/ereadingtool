@@ -5,6 +5,7 @@ module User.Student.Profile exposing
     , StudentURIs(..)
     , decoder
     , initProfile
+    , performanceReport
     , profileUriToString
     , setStudentDifficultyPreference
     , setUserName
@@ -18,8 +19,10 @@ module User.Student.Profile exposing
     )
 
 import Json.Decode as Decode exposing (Decoder)
-import Json.Decode.Pipeline exposing (required)
+import Json.Decode.Pipeline exposing (hardcoded, required)
+import Task exposing (perform)
 import Text.Model as Text
+import User.Student.Performance.Report exposing (PerformanceReport)
 import User.Student.Resource as StudentResource
 import Utils
 
@@ -45,36 +48,36 @@ type StudentURIs
 
 
 type StudentProfile
-    = StudentProfile (Maybe Int) (Maybe StudentResource.StudentUsername) StudentResource.StudentEmail (Maybe Text.TextDifficulty) (List Text.TextDifficulty) StudentURIs
+    = StudentProfile (Maybe Int) (Maybe StudentResource.StudentUsername) StudentResource.StudentEmail (Maybe Text.TextDifficulty) (List Text.TextDifficulty) StudentURIs PerformanceReport
 
 
 studentDifficultyPreference : StudentProfile -> Maybe Text.TextDifficulty
-studentDifficultyPreference (StudentProfile _ _ _ diff_pref _ _) =
+studentDifficultyPreference (StudentProfile _ _ _ diff_pref _ _ _) =
     diff_pref
 
 
 setStudentDifficultyPreference : StudentProfile -> Text.TextDifficulty -> StudentProfile
-setStudentDifficultyPreference (StudentProfile id username email _ diffs logout_uri) preference =
-    StudentProfile id username email (Just preference) diffs logout_uri
+setStudentDifficultyPreference (StudentProfile id username email _ diffs logout_uri perfReport) preference =
+    StudentProfile id username email (Just preference) diffs logout_uri perfReport
 
 
 setUserName : StudentProfile -> StudentResource.StudentUsername -> StudentProfile
-setUserName (StudentProfile id _ email diff_pref diffs logout_uri) new_username =
-    StudentProfile id (Just new_username) email diff_pref diffs logout_uri
+setUserName (StudentProfile id _ email diff_pref diffs logout_uri perfReport) new_username =
+    StudentProfile id (Just new_username) email diff_pref diffs logout_uri perfReport
 
 
 studentID : StudentProfile -> Maybe Int
-studentID (StudentProfile id _ _ _ _ _) =
+studentID (StudentProfile id _ _ _ _ _ _) =
     id
 
 
 studentDifficulties : StudentProfile -> List Text.TextDifficulty
-studentDifficulties (StudentProfile _ _ _ _ diffs _) =
+studentDifficulties (StudentProfile _ _ _ _ diffs _ _) =
     diffs
 
 
 studentUserName : StudentProfile -> Maybe StudentResource.StudentUsername
-studentUserName (StudentProfile _ username _ _ _ _) =
+studentUserName (StudentProfile _ username _ _ _ _ _) =
     username
 
 
@@ -84,12 +87,12 @@ studentUserNameToString student_username =
 
 
 studentEmail : StudentProfile -> StudentResource.StudentEmail
-studentEmail (StudentProfile _ _ email _ _ _) =
+studentEmail (StudentProfile _ _ email _ _ _ _) =
     email
 
 
 uris : StudentProfile -> StudentURIs
-uris (StudentProfile _ _ _ _ _ studentUris) =
+uris (StudentProfile _ _ _ _ _ studentUris _) =
     studentUris
 
 
@@ -113,14 +116,19 @@ studentLogoutURI student_profile =
     logoutURI (uris student_profile)
 
 
+performanceReport : StudentProfile -> PerformanceReport
+performanceReport (StudentProfile _ _ _ _ _ _ report) =
+    report
+
+
 initProfileUsername : Maybe String -> Maybe StudentResource.StudentUsername
 initProfileUsername name =
     name
         |> Maybe.map StudentResource.toStudentUsername
 
 
-initProfile : StudentProfileParams -> StudentProfile
-initProfile params =
+initProfile : StudentProfileParams -> PerformanceReport -> StudentProfile
+initProfile params perfReport =
     StudentProfile
         params.id
         (initProfileUsername params.username)
@@ -131,6 +139,7 @@ initProfile params =
             (StudentResource.toStudentLogoutURI params.uris.logout_uri)
             (StudentResource.toStudentProfileURI params.uris.profile_uri)
         )
+        perfReport
 
 
 
@@ -142,6 +151,12 @@ uriParamsDecoder =
     Decode.succeed StudentURIParams
         |> required "logout_uri" Decode.string
         |> required "profile_uri" Decode.string
+
+
+performanceReportDecoder : Decoder PerformanceReport
+performanceReportDecoder =
+    Decode.succeed PerformanceReport
+        |> required "html" Decode.string
 
 
 paramsDecoder : Decoder StudentProfileParams
@@ -157,5 +172,6 @@ paramsDecoder =
 
 decoder : Decoder StudentProfile
 decoder =
-    Decode.field "profile" paramsDecoder
-        |> Decode.map initProfile
+    Decode.map2 initProfile
+        (Decode.field "profile" paramsDecoder)
+        (Decode.field "performance_report" performanceReportDecoder)
