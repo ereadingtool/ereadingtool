@@ -1,6 +1,7 @@
 module User.Student.Profile.Decode exposing
-    ( studentConsentRespDecoder
-    , studentProfileDecoder
+    (  studentConsentRespDecoder
+       -- , studentProfileDecoder
+
     , usernameValidationDecoder
     )
 
@@ -51,11 +52,12 @@ wordTextWordDecoder =
         )
 
 
-performanceReportDecoder : Json.Decode.Decoder PerformanceReport
-performanceReportDecoder =
-    Json.Decode.succeed PerformanceReport
-        |> required "html" Json.Decode.string
-        |> required "pdf_link" Json.Decode.string
+
+-- performanceReportDecoder : Json.Decode.Decoder PerformanceReport
+-- performanceReportDecoder =
+--     Json.Decode.succeed PerformanceReport
+--         |> required "html" Json.Decode.string
+--         |> required "pdf_link" Json.Decode.string
 
 
 studentProfileURIParamsDecoder : Json.Decode.Decoder StudentProfile.StudentURIParams
@@ -65,20 +67,20 @@ studentProfileURIParamsDecoder =
         |> required "profile_uri" Json.Decode.string
 
 
-studentProfileParamsDecoder : Json.Decode.Decoder StudentProfileParams
-studentProfileParamsDecoder =
-    Json.Decode.succeed StudentProfileParams
-        |> required "id" (Json.Decode.nullable Json.Decode.int)
-        |> required "username" (Json.Decode.nullable Json.Decode.string)
-        |> required "email" Json.Decode.string
-        |> required "difficulty_preference" (Json.Decode.nullable stringTupleDecoder)
-        |> required "difficulties" (Json.Decode.list stringTupleDecoder)
-        |> required "uris" studentProfileURIParamsDecoder
 
-
-studentProfileDecoder : Json.Decode.Decoder StudentProfile.StudentProfile
-studentProfileDecoder =
-    Json.Decode.map StudentProfile.initProfile studentProfileParamsDecoder
+-- studentProfileParamsDecoder : Json.Decode.Decoder StudentProfileParams
+-- studentProfileParamsDecoder =
+--     Json.Decode.succeed StudentProfileParams
+--         |> required "id" (Json.Decode.nullable Json.Decode.int)
+--         |> required "username" (Json.Decode.nullable Json.Decode.string)
+--         |> required "email" Json.Decode.string
+--         |> required "difficulty_preference" (Json.Decode.nullable stringTupleDecoder)
+--         |> required "difficulties" (Json.Decode.list stringTupleDecoder)
+--         |> required "uris" studentProfileURIParamsDecoder
+--
+-- studentProfileDecoder : Json.Decode.Decoder StudentProfile.StudentProfile
+-- studentProfileDecoder =
+--     Json.Decode.map StudentProfile.initProfile studentProfileParamsDecoder
 
 
 studentConsentRespDecoder : Json.Decode.Decoder StudentProfileModel.StudentConsentResp
