@@ -18,7 +18,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from mixins.view import ElmLoadJsStudentBaseView, NoAuthElmLoadJsView
 from django.http import JsonResponse
 
-from django.template import loader
+#from django.template import loader
 
 from jwt_auth.views import jwt_encode_token, jwt_get_json_with_token
 
@@ -207,11 +207,8 @@ class StudentAPIView(LoginRequiredMixin, APIView):
         student_dict = student.to_dict()
 
         try:
-            performance_report = {
-                'html' : loader.render_to_string('student_performance_report.html', {
-                                                 'performance_report': student.performance.to_dict()}),
-            }
-        except Exception as e:
+            performance_report = json.dumps(student.performance.to_dict())
+        except:
             performance_report = None
 
         return HttpResponse(json.dumps({
