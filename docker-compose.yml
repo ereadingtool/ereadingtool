@@ -30,9 +30,7 @@ services:
     restart: always
 
   nginx-proxy:
-    build:
-      context: .
-      dockerfile: Dockerfile.nginx
+    image: nginx-alpine 
     container_name: nginx-proxy
     expose:
       - "1234"
