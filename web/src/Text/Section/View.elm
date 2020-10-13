@@ -90,7 +90,7 @@ view_text_section_component msg text_difficulties answer_feedback_limit text_sec
             , field = field
             }
     in
-    [ div [ attribute "class" "text" ] <|
+    [ div [ classList [ ( "text", True ), ( "edit-text-section", True ) ] ] <|
         [ -- text attributes
           div [ classList [ ( "text_properties", True ) ] ]
             [ div [ classList [ ( "body", True ) ] ]

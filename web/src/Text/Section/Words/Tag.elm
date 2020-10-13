@@ -10,6 +10,7 @@ import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Attributes
 import Html.Parser
+import Html.Parser.Util
 import Regex
 
 

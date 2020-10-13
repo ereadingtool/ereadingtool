@@ -67,6 +67,7 @@ type SafeModel
     = SafeModel
         { session : Session
         , config : Config
+        , id : Int
         , mode : Mode
         , profile : InstructorProfile
         , successMessage : Maybe String
@@ -86,6 +87,7 @@ init shared { params } =
     ( SafeModel
         { session = shared.session
         , config = shared.config
+        , id = params.id
 
         -- the writeLocker is a instructor username string,
         -- and we don't know who it is until we retrieve the text
@@ -727,7 +729,7 @@ view (SafeModel model) =
             , onTextTranslationMsg = TextTranslationMsg
             }
     in
-    { title = "Create Text"
+    { title = "Edit Text | " ++ String.fromInt model.id
     , body =
         [ div []
             [ viewMessages (SafeModel model)
