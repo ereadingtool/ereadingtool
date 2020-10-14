@@ -200,9 +200,8 @@ view_password_input ( toggle_msg, update_msg, update_confirm_msg ) model =
 view_submit : msg -> a -> List (Html msg)
 view_submit submit_msg model =
     [ signupLabel
-        (Html.span [ class "cursor", class "signup_submit", class "button", onClick submit_msg ]
-            [ Html.text "Sign Up"
-            ]
+        (div [ class "button", onClick submit_msg, class "cursor" ]
+            [ div [ class "signup_submit" ] [ Html.span [] [ Html.text "Sign Up" ] ] ]
         )
     ]
 

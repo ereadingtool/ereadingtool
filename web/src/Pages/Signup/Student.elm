@@ -226,7 +226,7 @@ viewStudentWelcomeMsg =
     in
     div [ class "welcome_msg" ]
         [ span [ class "headline" ] [ Html.text welcomeTitle ]
-        , div [ class "msg" ]
+        , div [ class "welcome-msg-text" ]
             [ Html.p []
                 [ Html.text
                     """The purpose of this site is to help students improve their reading proficiency in Flagship
