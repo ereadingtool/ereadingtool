@@ -311,7 +311,7 @@ viewErrors model =
 
 viewShowPasswordToggle : Model -> List (Html Msg)
 viewShowPasswordToggle model =
-    [ span []
+    [ div [ class "password-reset-show" ]
         [ Html.input
             ([ attribute "type" "checkbox", onCheck ToggleShowPassword ]
                 ++ (if model.showPassword then
@@ -322,7 +322,7 @@ viewShowPasswordToggle model =
                    )
             )
             []
-        , Html.text "Show Password"
+        , Html.label [] [ Html.text "Show Password" ]
         ]
     ]
 

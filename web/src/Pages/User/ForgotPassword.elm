@@ -230,7 +230,7 @@ viewErrors model =
 viewResponse : ForgotPassResp -> Html Msg
 viewResponse forgotPasswordResponse =
     if not (String.isEmpty forgotPasswordResponse.body) then
-        div [ class "msg" ]
+        div [ class "password-reset-msg" ]
             [ span [] [ Html.text forgotPasswordResponse.body ]
             ]
 
