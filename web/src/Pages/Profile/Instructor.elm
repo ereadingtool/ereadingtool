@@ -61,14 +61,6 @@ type SafeModel
         }
 
 
-
--- type alias Flags =
---     Flags.AuthedFlags
---         { instructor_invite_uri : String
---         , instructorProfile : InstructorProfile.InstructorProfileParams
---         }
-
-
 init : Shared.Model -> Url Params -> ( SafeModel, Cmd Msg )
 init shared { params } =
     ( SafeModel
@@ -190,19 +182,20 @@ view (SafeModel model) =
 viewContent : SafeModel -> Html Msg
 viewContent (SafeModel model) =
     div [ classList [ ( "profile", True ) ] ]
-        [ div [ classList [ ( "profile_items", True ) ] ] <|
-            [ div [ class "profile_item" ]
+        [ div [ classList [ ( "instructor-profile-items", True ) ] ] <|
+            [ div [ class "profile_item" ] <|
                 [ span [ class "profile_item_title" ] [ Html.text "Username" ]
                 , span [ class "profile_item_value" ]
                     [ Html.text (InstructorProfile.usernameToString (InstructorProfile.username model.profile))
                     ]
                 ]
-            , div [ class "profile_item" ]
-                [ span [ class "profile_item_title" ] [ Html.text "Texts" ]
-                , span [ class "profile_item_value" ] [ viewTexts (SafeModel model) ]
-                ]
             ]
                 ++ viewInstructorInvites (SafeModel model)
+                ++ [ div [ class "instructor-profile-texts" ]
+                        [ span [ class "profile_item_title" ] [ Html.text "Texts" ]
+                        , span [ class "profile_item_value" ] [ viewTexts (SafeModel model) ]
+                        ]
+                   ]
         ]
 
 
@@ -217,7 +210,7 @@ viewText instructorProfile text =
         instructorUsername =
             InstructorProfile.usernameToString (InstructorProfile.username instructorProfile)
     in
-    div [ class "text" ]
+    div [ class "instructor-profile-text" ]
         [ div [ class "text_label" ] [ Html.text "Title" ]
         , div [ class "text_value" ] [ Html.text text.title ]
         , div [ class "text_label" ] [ Html.text "Difficulty" ]
@@ -234,7 +227,11 @@ viewText instructorProfile text =
             ]
         , div [ class "text_label" ] [ Html.text "Tags" ]
         , div [ class "text_value" ] (viewTags text.tags)
-        , div [ class "text_label" ] [ Html.a [ attribute "href" text.edit_uri ] [ Html.text "Edit Text" ] ]
+        , div [ class "text_label" ]
+            [ Html.a
+                [ attribute "href" (Route.toString (Route.Text__Edit__Id_Int { id = text.id })) ]
+                [ Html.text "Edit Text" ]
+            ]
         , div [] []
         ]
 
@@ -251,7 +248,7 @@ viewInstructorInvites (SafeModel model) =
             invites =
                 Maybe.withDefault [] (InstructorProfile.invites model.profile)
         in
-        [ div [ class "invites" ]
+        [ div [ class "profile_item invites" ]
             [ span [ class "profile_item_title" ] [ Html.text "Invitations" ]
             , span [ class "profile_item_value" ]
                 [ div [ class "list" ] <|

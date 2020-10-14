@@ -1,48 +1,79 @@
-.text {
-    display: grid;
+.instructor-profile-text {
+  display: grid;
 
-    grid-template-columns: 50% 50%;
-    margin: 5px;
-    padding: 5px 25px 0 15px;
+  grid-template-columns: 50% 50%;
+  margin-bottom: 10px;
+  padding: 5px 25px 0 15px;
 
-    border: solid 0.5px lightgrey;
+  border: solid 0.5px lightgrey;
 }
 
-.text > div {
-    margin: 2px 0 7px 0;
+.instructor-profile-text > div {
+  margin: 2px 0 7px 0;
 }
 
 .invites {
-    grid-column: 1;
+  grid-template-columns: auto;
+  grid-template-rows: 25px 35px;
 
-    grid-template-columns: auto;
-    grid-template-rows: 25px 35px;
-
-    margin-bottom: 15px;
+  margin-bottom: 15px;
 }
 
 .invite {
-    margin-top: 15px;
+  margin-top: 15px;
 }
 
 .invite > .label {
-    margin-top: 5px;
+  margin-top: 5px;
 }
 
 .invite > .value {
-    font-size: larger;
+  font-size: larger;
 }
 
 #create_invite {
-    margin-top: 15px;
+  /* margin-top: 15px; */
 }
 
 #create_invite > #submit {
-    margin-top: 5px;
+  margin-top: 5px;
 }
 
 .invites > .profile_item_value > .list {
-    display: grid;
+  display: grid;
 
-    grid-template-columns: auto;
+  grid-template-columns: auto;
+}
+
+.instructor-profile-items {
+  display: grid;
+  grid-column: content;
+
+  padding: 25px;
+  margin-top: 30px;
+
+  grid-template-columns: 50% 50%;
+  grid-template-rows: 1fr auto;
+
+  border: solid 0.5px lightgrey;
+
+  grid-row-gap: 35px;
+  grid-column-gap: 10px;
+}
+
+.instructor-profile-texts {
+  display: grid;
+
+  grid-template-columns: auto;
+  margin-bottom: 15px;
+}
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 768px) {
+  .instructor-profile-items {
+    display: flex;
+    flex-direction: column;
+
+    margin-top: 15px;
+    grid-template-columns: 50% 50%;
+  }
 }
