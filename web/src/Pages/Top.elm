@@ -9,6 +9,7 @@ import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (classList)
 import Http exposing (..)
+import Ports
 import Role exposing (Role(..))
 import Shared
 import Spa.Document exposing (Document)
@@ -53,7 +54,10 @@ init shared { params } =
       , loginParams = LoginParams "" "" "student"
       , errors = Dict.fromList []
       }
-    , Cmd.none
+    , Cmd.batch
+        [ Ports.clearInputText "email-input"
+        , Ports.clearInputText "password-input"
+        ]
     )
 
 

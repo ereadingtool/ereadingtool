@@ -10,10 +10,11 @@ import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
 import Dict exposing (Dict)
 import Html exposing (Html, div, span)
-import Html.Attributes exposing (attribute, class, classList)
+import Html.Attributes exposing (attribute, class, classList, id)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (..)
 import Json.Encode as Encode
+import Ports
 import Session exposing (Session)
 import Shared
 import Spa.Document exposing (Document)
@@ -66,7 +67,7 @@ init shared { params } =
       , resp = ForgotPassword.emptyForgotPassResp
       , errors = Dict.fromList []
       }
-    , Cmd.none
+    , Ports.clearInputText "email-input"
     )
 
 
@@ -188,7 +189,8 @@ viewEmailInput model =
     in
     [ loginLabel [] (span [] [ Html.text "E-mail address:" ])
     , Html.input
-        ([ attribute "size" "25"
+        ([ id "email-input"
+         , attribute "size" "25"
          , onInput UpdateEmail
          ]
             ++ emailError

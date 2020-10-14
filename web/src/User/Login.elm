@@ -86,7 +86,8 @@ viewEmailInput { onEmailUpdate, errors } =
     in
     [ div [] [ span [] [ Html.text "E-mail Address:" ] ]
     , Html.input
-        ([ attribute "size" "25"
+        ([ id "email-input"
+         , attribute "size" "25"
          , onInput onEmailUpdate
          ]
             ++ emailErrorClass
@@ -127,7 +128,8 @@ viewPasswordInput { onPasswordUpdate, onSubmittedForm, errors } =
     [ div []
         [ span [] [ Html.text "Password:" ] ]
     , Html.input
-        ([ attribute "size" "35"
+        ([ id "password-input"
+         , attribute "size" "35"
          , attribute "type" "password"
          , onInput onPasswordUpdate
          , Utils.onEnterUp onSubmittedForm
