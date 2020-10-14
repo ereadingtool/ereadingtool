@@ -86,7 +86,6 @@ view_text_title params messages edit_view text_title =
             Text.Field.text_title_attrs text_title
     in
     div
-        -- [ onClick (ToggleEditable (Title text_title) True)
         [ onClick (messages.onToggleEditable (Title text_title) True)
         , attribute "id" text_title_attrs.id
         , classList [ ( "input_error", text_title_attrs.error ) ]
@@ -130,11 +129,7 @@ edit_text_title params messages text_title =
         [ attribute "id" text_title_attrs.input_id
         , attribute "type" "text"
         , attribute "value" params.text.title
-
-        -- , onInput (UpdateTextAttributes "title")
         , onInput (messages.onUpdateTextAttributes "title")
-
-        -- , onBlur (ToggleEditable (Title text_title) False)
         , onBlur (messages.onToggleEditable (Title text_title) False)
         ]
         []
@@ -160,8 +155,6 @@ view_text_conclusion params onUpdateTextAttributes text_conclusion =
             [ textarea
                 [ attribute "id" text_conclusion_attrs.input_id
                 , classList [ ( "text_conclusion", True ), ( "input_error", text_conclusion_attrs.error ) ]
-
-                -- , onInput (UpdateTextAttributes "conclusion")
                 , onInput (onUpdateTextAttributes "conclusion")
                 ]
                 [ Html.text (Maybe.withDefault "" params.text.conclusion) ]
@@ -224,8 +217,6 @@ edit_text_introduction params onUpdateTextAttributes text_intro =
         [ textarea
             [ attribute "id" text_intro_attrs.input_id
             , classList [ ( "text_introduction", True ), ( "input_error", text_intro_attrs.error ) ]
-
-            -- , onInput (UpdateTextAttributes "introduction")
             , onInput (onUpdateTextAttributes "introduction")
             ]
             [ Html.text params.text.introduction ]
@@ -249,7 +240,6 @@ view_edit_text_tags params onAddTagInput onDeleteTag text_tags =
         tag_attrs =
             Text.Field.text_tags_attrs text_tags
     in
-    -- Text.Tags.View.view_tags "add_tag" tag_list tags ( onInput (AddTagInput "add_tag"), DeleteTag ) tag_attrs
     Text.Tags.View.view_tags "add_tag" tag_list tags ( onInput (onAddTagInput "add_tag"), onDeleteTag ) tag_attrs
 
 
@@ -275,8 +265,6 @@ view_edit_text_lock params onToggleLock =
             [ attribute "id" "lock_box"
             , classList
                 [ ( "dimgray_bg", write_locked ) ]
-
-            -- , onClick ToggleLock
             , onClick onToggleLock
             ]
             [ div
@@ -344,8 +332,6 @@ view_author params messages editAuthor text_author =
             div
                 [ attribute "id" text_author_attrs.id
                 , attribute "class" "editable"
-
-                -- , onClick (ToggleEditable (Author text_author) True)
                 , onClick (messages.onToggleEditable (Author text_author) True)
                 ]
                 [ div [] [ Html.text params.text.author ]
@@ -377,11 +363,7 @@ edit_author params messages text_author =
         , attribute "value" params.text.author
         , attribute "id" text_author_attrs.input_id
         , classList [ ( "input_error", text_author_attrs.error ) ]
-
-        -- , onInput (UpdateTextAttributes "author")
         , onInput (messages.onUpdateTextAttributes "author")
-
-        -- , onBlur (ToggleEditable (Author text_author) False)
         , onBlur (messages.onToggleEditable (Author text_author) False)
         ]
         [ Html.text params.text.author ]
@@ -396,7 +378,6 @@ edit_difficulty params onUpdateTextAttributes text_difficulty =
     div [ attribute "class" "text_property" ]
         [ div [] [ Html.text "Text Difficulty" ]
         , Html.select
-            -- [ onInput (UpdateTextAttributes "difficulty")
             [ onInput (onUpdateTextAttributes "difficulty")
             ]
             [ Html.optgroup []
@@ -451,7 +432,6 @@ view_source params messages edit_view text_source =
 
     else
         div
-            -- [ onClick (ToggleEditable (Source text_source) True)
             [ onClick (messages.onToggleEditable (Source text_source) True)
             , classList [ ( "text_property", True ), ( "input_error", text_source_attrs.error ) ]
             ]
@@ -488,11 +468,7 @@ edit_source params messages text_source =
             [ attribute "id" text_source_attrs.input_id
             , attribute "type" "text"
             , attribute "value" params.text.source
-
-            -- , onInput (UpdateTextAttributes "source")
             , onInput (messages.onUpdateTextAttributes "source")
-
-            -- , onBlur (ToggleEditable (Source text_source) False)
             , onBlur (messages.onToggleEditable (Source text_source) False)
             ]
             []
@@ -565,7 +541,6 @@ view_submit :
     -> Html msg
 view_submit messages =
     div [ classList [ ( "submit_section", True ) ] ]
-        -- [ div [ attribute "class" "submit", onClick (TextComponentMsg Text.Update.AddTextSection) ]
         [ div [ attribute "class" "submit", onClick (messages.onTextComponentMsg Text.Update.AddTextSection) ]
             [ Html.img
                 [ attribute "src" "/public/img/add_text_section.svg"
@@ -575,8 +550,6 @@ view_submit messages =
                 []
             , Html.text "Add Text Section"
             ]
-
-        -- , div [ attribute "class" "submit", onClick DeleteText ]
         , div [ attribute "class" "submit", onClick messages.onDeleteText ]
             [ Html.text "Delete Text"
             , Html.img
@@ -587,8 +560,6 @@ view_submit messages =
                 []
             ]
         , div [] []
-
-        -- , div [ attribute "class" "submit", onClick SubmitText ]
         , div [ attribute "class" "submit", onClick messages.onSubmitText ]
             [ Html.img
                 [ attribute "src" "/public/img/save_disk.svg"
@@ -607,12 +578,9 @@ view_tab_menu :
     -> Html msg
 view_tab_menu params onToggleTab =
     div [ attribute "id" "tabs_menu" ]
-        -- [ div [ classList [ ( "selected", params.selected_tab == TextTab ) ], onClick (ToggleTab TextTab) ]
         [ div [ classList [ ( "selected", params.selected_tab == TextTab ) ], onClick (onToggleTab TextTab) ]
             [ Html.text "Text"
             ]
-
-        -- , div [ classList [ ( "selected", params.selected_tab == TranslationsTab ) ], onClick (ToggleTab TranslationsTab) ]
         , div [ classList [ ( "selected", params.selected_tab == TranslationsTab ) ], onClick (onToggleTab TranslationsTab) ]
             [ Html.text "Translations"
             ]
@@ -642,8 +610,6 @@ view_text_tab params messages answer_feedback_limit =
             , onAddTagInput = messages.onAddTagInput
             , onDeleteTag = messages.onDeleteTag
             }
-
-        -- , Text.Section.View.view_text_section_components TextComponentMsg
         , Text.Section.View.view_text_section_components messages.onTextComponentMsg
             (Text.Component.text_section_components params.text_component)
             answer_feedback_limit
@@ -669,7 +635,6 @@ view_translations_tab :
     -> Html msg
 view_translations_tab params onTextTranslationMsg =
     Text.Translations.View.view_translations
-        -- params.text_translation_msg
         onTextTranslationMsg
         params.text_translations_model
 
@@ -695,7 +660,6 @@ view_tab_contents params messages onTextTranslationMsg answer_feedback_limit =
             view_text_tab params messages answer_feedback_limit
 
         TranslationsTab ->
-            -- view_translations_tab params
             view_translations_tab params onTextTranslationMsg
 
 
@@ -717,7 +681,6 @@ view_text :
     -> Html msg
 view_text params messages answer_feedback_limit =
     div [ attribute "id" "tabs" ]
-        -- [ view_tab_menu params
         [ view_tab_menu params messages.onToggleTab
         , div [ attribute "id" "tabs_contents" ]
             [ view_tab_contents params
