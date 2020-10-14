@@ -84,7 +84,7 @@ viewEmailInput { onEmailUpdate, errors } =
             else
                 []
     in
-    [ div [] [ span [] [ Html.text "E-mail Address:" ] ]
+    [ div [ class "login_label" ] [ span [] [ Html.text "E-mail Address:" ] ]
     , Html.input
         ([ id "email-input"
          , attribute "size" "25"
@@ -125,7 +125,7 @@ viewPasswordInput { onPasswordUpdate, onSubmittedForm, errors } =
                 Nothing ->
                     Html.text ""
     in
-    [ div []
+    [ div [ class "login_label" ]
         [ span [] [ Html.text "Password:" ] ]
     , Html.input
         ([ id "password-input"

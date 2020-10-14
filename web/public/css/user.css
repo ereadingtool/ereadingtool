@@ -39,7 +39,7 @@ input {
 .login_label,
 .signup_label {
   display: inline-block;
-  padding-top: 15px;
+  padding-top: 20px;
   -webkit-padding-before: 2.5%;
 }
 

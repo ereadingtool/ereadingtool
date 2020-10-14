@@ -242,7 +242,7 @@ viewResponse forgotPasswordResponse =
 
 loginLabel : List (Html.Attribute Msg) -> Html Msg -> Html Msg
 loginLabel attributes html =
-    div (attribute "class" "loginLabel" :: attributes)
+    div (attribute "class" "login_label" :: attributes)
         [ html
         ]
 
