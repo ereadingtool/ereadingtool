@@ -455,7 +455,7 @@ viewDifficulty (SafeModel model) =
             Tuple.first (Maybe.withDefault ( "", "" ) (StudentProfile.studentDifficultyPreference model.profile))
     in
     div []
-        [ Html.select [ onInput SubmitDifficulty ]
+        [ Html.select [ onInput SubmitDifficulty, class "difficulty-select" ]
             [ Html.optgroup []
                 (List.map
                     (\( k, v ) ->

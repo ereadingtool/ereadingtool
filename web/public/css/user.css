@@ -184,6 +184,12 @@ select {
   }
 }
 
+.difficulty-select {
+  width: auto;
+  background-color: white;
+  border: 1px solid black;
+}
+
 /* CSS fixes to deal with incorrect styles */
 .signup_submit {
   width: 100%;
