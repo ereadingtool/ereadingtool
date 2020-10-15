@@ -12,7 +12,7 @@ import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
 import Html exposing (Html, div)
 import Html.Attributes exposing (attribute, class, classList)
-import Html.Events exposing (onInput)
+import Html.Events exposing (onClick, onInput)
 import Http exposing (..)
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)
@@ -21,6 +21,7 @@ import Menu.Msg as MenuMsg
 import Session exposing (Session)
 import Shared
 import Spa.Document exposing (Document)
+import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
 import User.SignUp as SignUp
@@ -131,7 +132,7 @@ update msg model =
 
         Submitted (Ok resp) ->
             ( model
-            , Browser.Navigation.replaceUrl model.navKey (SignUp.uriToString (SignUp.redirectURI resp.redirect))
+            , Browser.Navigation.replaceUrl model.navKey (Route.toString Route.Login__Instructor)
             )
 
         Submitted (Err err) ->
@@ -230,7 +231,25 @@ view model =
                     SignUp.view_email_input UpdateEmail model
                         ++ SignUp.view_password_input ( ToggleShowPassword, UpdatePassword, UpdateConfirmPassword ) model
                         ++ viewInviteCodeInput model
-                        ++ SignUp.view_submit Submit model
+                        ++ [ Html.div
+                                [ attribute "class" "signup_label" ]
+                                [ if
+                                    not (Dict.isEmpty model.errors)
+                                        || String.isEmpty model.signup_params.email
+                                        || String.isEmpty model.signup_params.password
+                                        || String.isEmpty model.signup_params.confirm_password
+                                        || String.isEmpty model.signup_params.invite_code
+                                  then
+                                    div [ class "button", class "disabled" ]
+                                        [ div [ class "signup_submit" ] [ Html.span [] [ Html.text "Sign Up" ] ]
+                                        ]
+
+                                  else
+                                    div [ class "button", onClick Submit, class "cursor" ]
+                                        [ div [ class "signup_submit" ] [ Html.span [] [ Html.text "Sign Up" ] ]
+                                        ]
+                                ]
+                           ]
                 ]
             , Views.view_footer
             ]
@@ -245,7 +264,7 @@ viewInviteCodeInput model =
             Dict.member "invite_code" model.errors
 
         err_msg =
-            [ SignUp.signupLabel
+            [ SignUp.validationError
                 (Html.em [] [ Html.text (Maybe.withDefault "" (Dict.get "invite_code" model.errors)) ])
             ]
     in

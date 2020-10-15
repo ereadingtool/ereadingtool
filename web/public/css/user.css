@@ -39,8 +39,14 @@ input {
 .login_label,
 .signup_label {
   display: inline-block;
-  padding-top: 15px;
+  padding-top: 20px;
   -webkit-padding-before: 2.5%;
+}
+
+.validation-error {
+  display: inline-block;
+  padding-top: 5px;
+  -webkit-padding-before: 0.5%;
 }
 
 .signup_submit,
@@ -87,6 +93,13 @@ select {
 
 .welcome_msg > .headline {
   padding-bottom: 15px;
+}
+
+.welcome-msg-text {
+  display: grid;
+
+  grid-column: 1;
+  grid-row: 2;
 }
 
 #acknowledgements-and-about {
@@ -175,4 +188,10 @@ select {
   width: auto;
   background-color: white;
   border: 1px solid black;
+}
+
+/* CSS fixes to deal with incorrect styles */
+.signup_submit {
+  width: 100%;
+  padding: 15px 0;
 }

@@ -10,10 +10,11 @@ import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
 import Dict exposing (Dict)
 import Html exposing (Html, div, span)
-import Html.Attributes exposing (attribute, class, classList)
+import Html.Attributes exposing (attribute, class, classList, id)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (..)
 import Json.Encode as Encode
+import Ports
 import Session exposing (Session)
 import Shared
 import Spa.Document exposing (Document)
@@ -66,7 +67,7 @@ init shared { params } =
       , resp = ForgotPassword.emptyForgotPassResp
       , errors = Dict.fromList []
       }
-    , Cmd.none
+    , Ports.clearInputText "email-input"
     )
 
 
@@ -174,7 +175,7 @@ viewEmailInput model =
         errorHTML =
             case Dict.get "email" model.errors of
                 Just errMsg ->
-                    loginLabel [] (Html.em [] [ Html.text errMsg ])
+                    validationError (Html.em [] [ Html.text errMsg ])
 
                 Nothing ->
                     Html.text ""
@@ -188,7 +189,8 @@ viewEmailInput model =
     in
     [ loginLabel [] (span [] [ Html.text "E-mail address:" ])
     , Html.input
-        ([ attribute "size" "25"
+        ([ id "email-input"
+         , attribute "size" "25"
          , onInput UpdateEmail
          ]
             ++ emailError
@@ -230,7 +232,7 @@ viewErrors model =
 viewResponse : ForgotPassResp -> Html Msg
 viewResponse forgotPasswordResponse =
     if not (String.isEmpty forgotPasswordResponse.body) then
-        div [ class "msg" ]
+        div [ class "password-reset-msg" ]
             [ span [] [ Html.text forgotPasswordResponse.body ]
             ]
 
@@ -240,7 +242,14 @@ viewResponse forgotPasswordResponse =
 
 loginLabel : List (Html.Attribute Msg) -> Html Msg -> Html Msg
 loginLabel attributes html =
-    div (attribute "class" "loginLabel" :: attributes)
+    div (attribute "class" "login_label" :: attributes)
+        [ html
+        ]
+
+
+validationError : Html Msg -> Html Msg
+validationError html =
+    div [ class "validation-error" ]
         [ html
         ]
 
