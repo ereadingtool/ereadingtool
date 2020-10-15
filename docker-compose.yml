@@ -11,6 +11,7 @@ services:
         # change depending on prod or dev server 
       - VIRTUAL_HOST=api.steps2ar.org
       - LETSENCRYPT_HOST=api.steps2ar.org
+      - DJANGO_LOG_LEVEL=DEBUG
     expose:
       - "8000"
     restart: always
@@ -30,7 +31,7 @@ services:
     restart: always
 
   nginx-proxy:
-    image: nginx-alpine 
+    image: nginx:alpine
     container_name: nginx-proxy
     expose:
       - "1234"
@@ -47,6 +48,7 @@ services:
       - html:/usr/share/nginx/html
       - dhparam:/etc/nginx/dhparam
       - certs:/etc/nginx/certs:ro
+      - ${PWD}/cors.conf:/etc/nginx/vhost.d/default_location
     depends_on:
       - django_backend
       - node_frontend
@@ -65,7 +67,7 @@ services:
       - certs:/etc/nginx/certs:ro
       - ./nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
-    restart: always
+    restart: always 
 
   letsencrypt:
     image: jrcs/letsencrypt-nginx-proxy-companion
@@ -90,7 +92,7 @@ services:
     image: redis:alpine
     container_name: redis
     expose:
-      - "6379" 
+      - "6379"
     depends_on:
       - django_backend
     restart: always
