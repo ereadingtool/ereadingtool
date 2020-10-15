@@ -63,11 +63,6 @@ LOGGING = {
         }
     },
     'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': '/app/logs/django_debug.log'
-        },
         'console_info': {
             'level': 'INFO',
             'filters': ['require_debug_true'],
