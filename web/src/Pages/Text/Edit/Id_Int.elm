@@ -728,8 +728,16 @@ view (SafeModel model) =
             , onDeleteTag = DeleteTag
             , onTextTranslationMsg = TextTranslationMsg
             }
+
+        title =
+            (Text.Component.text model.text_component).title
     in
-    { title = "Edit Text | " ++ String.fromInt model.id
+    { title =
+        if String.isEmpty title then
+            "Editing"
+
+        else
+            "Editing | " ++ title
     , body =
         [ div []
             [ viewMessages (SafeModel model)
