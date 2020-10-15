@@ -218,7 +218,7 @@ viewPasswordInput model =
         errorHTML =
             case Dict.get "password" model.errors of
                 Just err_msg ->
-                    loginLabel [] (Html.em [] [ Html.text err_msg ])
+                    validationError (Html.em [] [ Html.text err_msg ])
 
                 Nothing ->
                     Html.text ""
@@ -257,7 +257,7 @@ viewPasswordConfirmInput model =
         errorHTML =
             case Dict.get "confirmPassword" model.errors of
                 Just errMsg ->
-                    loginLabel [] (Html.em [] [ Html.text errMsg ])
+                    validationError (Html.em [] [ Html.text errMsg ])
 
                 Nothing ->
                     Html.text ""
@@ -305,7 +305,7 @@ viewErrors : Model -> List (Html Msg)
 viewErrors model =
     List.map
         (\( k, v ) ->
-            loginLabel [] (span [ attribute "class" "errors" ] [ Html.em [] [ Html.text v ] ])
+            validationError (span [ attribute "class" "errors" ] [ Html.em [] [ Html.text v ] ])
         )
         (Dict.toList model.errors)
 
@@ -372,6 +372,13 @@ viewSubmit model =
 loginLabel : List (Html.Attribute Msg) -> Html Msg -> Html Msg
 loginLabel attributes html =
     div (attribute "class" "login_label" :: attributes)
+        [ html
+        ]
+
+
+validationError : Html msg -> Html msg
+validationError html =
+    div [ class "validation-error" ]
         [ html
         ]
 

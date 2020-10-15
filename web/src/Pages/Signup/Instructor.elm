@@ -264,7 +264,7 @@ viewInviteCodeInput model =
             Dict.member "invite_code" model.errors
 
         err_msg =
-            [ SignUp.signupLabel
+            [ SignUp.validationError
                 (Html.em [] [ Html.text (Maybe.withDefault "" (Dict.get "invite_code" model.errors)) ])
             ]
     in

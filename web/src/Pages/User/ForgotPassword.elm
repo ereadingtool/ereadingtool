@@ -175,7 +175,7 @@ viewEmailInput model =
         errorHTML =
             case Dict.get "email" model.errors of
                 Just errMsg ->
-                    loginLabel [] (Html.em [] [ Html.text errMsg ])
+                    validationError (Html.em [] [ Html.text errMsg ])
 
                 Nothing ->
                     Html.text ""
@@ -243,6 +243,13 @@ viewResponse forgotPasswordResponse =
 loginLabel : List (Html.Attribute Msg) -> Html Msg -> Html Msg
 loginLabel attributes html =
     div (attribute "class" "login_label" :: attributes)
+        [ html
+        ]
+
+
+validationError : Html Msg -> Html Msg
+validationError html =
+    div [ class "validation-error" ]
         [ html
         ]
 

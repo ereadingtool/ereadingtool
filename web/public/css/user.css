@@ -43,6 +43,12 @@ input {
   -webkit-padding-before: 2.5%;
 }
 
+.validation-error {
+  display: inline-block;
+  padding-top: 5px;
+  -webkit-padding-before: 0.5%;
+}
+
 .signup_submit,
 .login_submit {
   display: grid;
