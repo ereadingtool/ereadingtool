@@ -5,6 +5,7 @@ module Pages.User.ResetPassword.Uidb64_String.Token_String exposing
     , page
     )
 
+import Answer.Field exposing (attributes)
 import Api exposing (post)
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
@@ -346,9 +347,26 @@ viewSubmit model =
             else
                 [ onClick Submit, class "cursor" ]
     in
-    [ loginLabel (class "button" :: buttonDisabled)
-        (div [ class "login_submit" ] [ span [] [ Html.text "Change Password" ] ])
-    ]
+    if hasError || emptyPasswords || not passwordsMatch then
+        [ div
+            [ classList
+                [ ( "button", True )
+                , ( "disabled", True )
+                ]
+            ]
+            [ div [ class "login_submit" ] [ span [] [ Html.text "Change Password" ] ] ]
+        ]
+
+    else
+        [ div
+            [ classList
+                [ ( "button", True )
+                , ( "cursor", True )
+                ]
+            , onClick Submit
+            ]
+            [ div [ class "login_submit" ] [ span [] [ Html.text "Change Password" ] ] ]
+        ]
 
 
 loginLabel : List (Html.Attribute Msg) -> Html Msg -> Html Msg

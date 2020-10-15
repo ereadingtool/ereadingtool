@@ -12,7 +12,7 @@ import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList)
-import Html.Events exposing (onInput)
+import Html.Events exposing (onClick, onInput)
 import Http exposing (..)
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)
@@ -21,6 +21,7 @@ import Menu.Msg as MenuMsg
 import Session exposing (Session)
 import Shared
 import Spa.Document exposing (Document)
+import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
 import Text.Model exposing (TextDifficulty)
@@ -139,9 +140,15 @@ update msg model =
             ( SignUp.submit model, postSignup model.session model.config model.signup_params )
 
         Submitted (Ok resp) ->
-            ( model, Browser.Navigation.replaceUrl model.navKey (SignUp.uriToString (SignUp.redirectURI resp.redirect)) )
+            ( model
+            , Browser.Navigation.replaceUrl model.navKey (Route.toString Route.Top)
+            )
 
         Submitted (Err error) ->
+            let
+                dbg =
+                    Debug.log "errors" error
+            in
             case error of
                 Http.BadStatus resp ->
                     ( model, Cmd.none )
@@ -214,7 +221,24 @@ viewContent model =
             SignUp.view_email_input UpdateEmail model
                 ++ SignUp.view_password_input ( ToggleShowPassword, UpdatePassword, UpdateConfirmPassword ) model
                 ++ viewDifficultyChoices model
-                ++ SignUp.view_submit Submit model
+                ++ [ Html.div
+                        [ attribute "class" "signup_label" ]
+                        [ if
+                            not (Dict.isEmpty model.errors)
+                                || String.isEmpty model.signup_params.email
+                                || String.isEmpty model.signup_params.password
+                                || String.isEmpty model.signup_params.confirm_password
+                          then
+                            div [ class "button", class "disabled" ]
+                                [ div [ class "signup_submit" ] [ Html.span [] [ Html.text "Sign Up" ] ]
+                                ]
+
+                          else
+                            div [ class "button", onClick Submit, class "cursor" ]
+                                [ div [ class "signup_submit" ] [ Html.span [] [ Html.text "Sign Up" ] ]
+                                ]
+                        ]
+                   ]
         ]
 
 

@@ -4,7 +4,7 @@ import Api
 import Dict exposing (Dict)
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList, id)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick, onInput, onSubmit)
 import Http exposing (..)
 import Json.Encode as Encode
 import Spa.Generated.Route as Route exposing (Route)
@@ -40,7 +40,8 @@ login loginParams =
 
 
 viewLoginForm :
-    { onEmailUpdate : String -> msg
+    { loginParams : LoginParams
+    , onEmailUpdate : String -> msg
     , onPasswordUpdate : String -> msg
     , onSubmittedForm : msg
     , signUpRoute : Route
@@ -64,7 +65,10 @@ viewLoginForm loginOptions =
                 , otherLoginRole = loginOptions.otherLoginRole
                 , otherLoginRoute = loginOptions.otherLoginRoute
                 }
-            ++ viewSubmit loginOptions.onSubmittedForm
+            ++ viewSubmit
+                { loginParams = loginOptions.loginParams
+                , onSubmittedForm = loginOptions.onSubmittedForm
+                }
             ++ viewHelpMessages loginOptions.maybeHelpMessage
             ++ viewLinks
             ++ viewErrors loginOptions.errors
@@ -194,12 +198,24 @@ viewOtherLoginOption { otherRole, otherRoute } =
 
 
 viewSubmit :
-    msg
+    { loginParams : LoginParams
+    , onSubmittedForm : msg
+    }
     -> List (Html msg)
-viewSubmit onSubmittedForm =
-    [ div [ class "button", onClick onSubmittedForm, class "cursor" ]
-        [ div [ class "login_submit" ] [ span [] [ Html.text "Login" ] ] ]
-    ]
+viewSubmit options =
+    if
+        String.isEmpty options.loginParams.username
+            || String.isEmpty options.loginParams.password
+    then
+        [ div [ class "button", class "disabled" ]
+            [ div [ class "login_submit" ] [ Html.span [] [ Html.text "Login" ] ]
+            ]
+        ]
+
+    else
+        [ div [ class "button", onClick options.onSubmittedForm, class "cursor" ]
+            [ div [ class "login_submit" ] [ span [] [ Html.text "Login" ] ] ]
+        ]
 
 
 viewHelpMessages : Maybe String -> List (Html msg)

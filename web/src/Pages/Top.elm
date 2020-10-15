@@ -124,7 +124,8 @@ viewContent : Model -> Html Msg
 viewContent model =
     div [ classList [ ( "login", True ) ] ]
         [ Login.viewLoginForm
-            { onEmailUpdate = UpdateEmail
+            { loginParams = model.loginParams
+            , onEmailUpdate = UpdateEmail
             , onPasswordUpdate = UpdatePassword
             , onSubmittedForm = SubmittedLogin
             , signUpRoute = Route.Signup__Student

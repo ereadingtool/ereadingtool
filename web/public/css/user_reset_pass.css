@@ -16,6 +16,7 @@
 }
 
 .disabled {
+  cursor: not-allowed;
   color: #e6e6e6;
   background-color: #546c84;
 }
