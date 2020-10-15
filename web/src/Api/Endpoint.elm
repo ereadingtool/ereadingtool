@@ -76,12 +76,12 @@ request config =
 
 forgotPassword : String -> Endpoint
 forgotPassword baseUrl =
-    url baseUrl [ "password", "reset" ] []
+    url baseUrl [ "api", "password", "reset" ] []
 
 
 resetPassword : String -> Endpoint
 resetPassword baseUrl =
-    url baseUrl [ "password", "reset", "confirm" ] []
+    url baseUrl [ "api", "password", "reset", "confirm" ] []
 
 
 instructorSignup : String -> Endpoint
