@@ -5,6 +5,7 @@ module Pages.User.ResetPassword.Uidb64_String.Token_String exposing
     , page
     )
 
+import Answer.Field exposing (attributes)
 import Api exposing (post)
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
@@ -217,7 +218,7 @@ viewPasswordInput model =
         errorHTML =
             case Dict.get "password" model.errors of
                 Just err_msg ->
-                    loginLabel [] (Html.em [] [ Html.text err_msg ])
+                    validationError (Html.em [] [ Html.text err_msg ])
 
                 Nothing ->
                     Html.text ""
@@ -256,7 +257,7 @@ viewPasswordConfirmInput model =
         errorHTML =
             case Dict.get "confirmPassword" model.errors of
                 Just errMsg ->
-                    loginLabel [] (Html.em [] [ Html.text errMsg ])
+                    validationError (Html.em [] [ Html.text errMsg ])
 
                 Nothing ->
                     Html.text ""
@@ -304,14 +305,14 @@ viewErrors : Model -> List (Html Msg)
 viewErrors model =
     List.map
         (\( k, v ) ->
-            loginLabel [] (span [ attribute "class" "errors" ] [ Html.em [] [ Html.text v ] ])
+            validationError (span [ attribute "class" "errors" ] [ Html.em [] [ Html.text v ] ])
         )
         (Dict.toList model.errors)
 
 
 viewShowPasswordToggle : Model -> List (Html Msg)
 viewShowPasswordToggle model =
-    [ span []
+    [ div [ class "password-reset-show" ]
         [ Html.input
             ([ attribute "type" "checkbox", onCheck ToggleShowPassword ]
                 ++ (if model.showPassword then
@@ -322,7 +323,7 @@ viewShowPasswordToggle model =
                    )
             )
             []
-        , Html.text "Show Password"
+        , Html.label [] [ Html.text "Show Password" ]
         ]
     ]
 
@@ -346,14 +347,38 @@ viewSubmit model =
             else
                 [ onClick Submit, class "cursor" ]
     in
-    [ loginLabel (class "button" :: buttonDisabled)
-        (div [ class "login_submit" ] [ span [] [ Html.text "Change Password" ] ])
-    ]
+    if hasError || emptyPasswords || not passwordsMatch then
+        [ div
+            [ classList
+                [ ( "button", True )
+                , ( "disabled", True )
+                ]
+            ]
+            [ div [ class "login_submit" ] [ span [] [ Html.text "Change Password" ] ] ]
+        ]
+
+    else
+        [ div
+            [ classList
+                [ ( "button", True )
+                , ( "cursor", True )
+                ]
+            , onClick Submit
+            ]
+            [ div [ class "login_submit" ] [ span [] [ Html.text "Change Password" ] ] ]
+        ]
 
 
 loginLabel : List (Html.Attribute Msg) -> Html Msg -> Html Msg
 loginLabel attributes html =
     div (attribute "class" "login_label" :: attributes)
+        [ html
+        ]
+
+
+validationError : Html msg -> Html msg
+validationError html =
+    div [ class "validation-error" ]
         [ html
         ]
 

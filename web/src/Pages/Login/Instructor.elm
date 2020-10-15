@@ -9,6 +9,7 @@ import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (classList)
 import Http exposing (..)
+import Ports
 import Role exposing (Role(..))
 import Shared
 import Spa.Document exposing (Document)
@@ -53,7 +54,10 @@ init shared { params } =
       , loginParams = LoginParams "" "" "instructor"
       , errors = Dict.fromList []
       }
-    , Cmd.none
+    , Cmd.batch
+        [ Ports.clearInputText "email-input"
+        , Ports.clearInputText "password-input"
+        ]
     )
 
 
@@ -120,7 +124,8 @@ viewContent : Model -> Html Msg
 viewContent model =
     div [ classList [ ( "login", True ) ] ]
         [ Login.viewLoginForm
-            { onEmailUpdate = UpdateEmail
+            { loginParams = model.loginParams
+            , onEmailUpdate = UpdateEmail
             , onPasswordUpdate = UpdatePassword
             , onSubmittedForm = SubmittedLogin
             , signUpRoute = Route.Signup__Instructor

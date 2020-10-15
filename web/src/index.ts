@@ -63,11 +63,29 @@ app.ports.login.subscribe(async (creds: Creds) => {
     localStorage.setItem(authStoreKey, JSON.stringify(user));
     app.ports.onAuthStoreChange.send(user);
   } else {
-    const errorMessage = jsonResponse.all;
-    if (errorMessage) {
+    const authErrorMessage = jsonResponse.all;
+    const usernameMissingError = jsonResponse.username;
+    const passwordMissingError = jsonResponse.password;
+
+    if (usernameMissingError && passwordMissingError) {
       app.ports.onAuthResponse.send({
         result: 'error',
-        message: errorMessage
+        message: 'E-mail address and password fields are required.'
+      });
+    } else if (usernameMissingError) {
+      app.ports.onAuthResponse.send({
+        result: 'error',
+        message: 'E-mail address field is required.'
+      });
+    } else if (passwordMissingError) {
+      app.ports.onAuthResponse.send({
+        result: 'error',
+        message: 'Password field is required.'
+      });
+    } else if (authErrorMessage) {
+      app.ports.onAuthResponse.send({
+        result: 'error',
+        message: authErrorMessage
       });
     } else {
       app.ports.onAuthResponse.send({
