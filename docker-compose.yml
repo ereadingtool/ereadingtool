@@ -10,6 +10,7 @@ services:
     environment:
         # change depending on prod or dev server 
       - VIRTUAL_HOST=api.steps2ar.org
+      - VIRTUAL_PORT=8000
       - LETSENCRYPT_HOST=api.steps2ar.org
       - DJANGO_LOG_LEVEL=DEBUG
     expose:

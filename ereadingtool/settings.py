@@ -19,7 +19,8 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [('localhost', 6379)],
+            # When the container spawns it's aliased to "redis" see docker insepct <redis_container> output
+            'hosts': [('redis', 6379)], 
         },
     },
 }
