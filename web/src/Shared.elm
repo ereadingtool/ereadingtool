@@ -15,17 +15,20 @@ module Shared exposing
 import Api exposing (AuthError, AuthSuccess)
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
+import Browser.Dom
 import Browser.Navigation exposing (Key)
 import Html exposing (..)
 import Html.Attributes exposing (attribute, class, classList, href, id)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (Error)
 import Id exposing (Id)
+import Json.Decode as Decode
 import Json.Encode as Encode
 import Role exposing (Role(..))
 import Session exposing (Session)
 import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
+import Task
 import Url exposing (Url)
 import User.Instructor.Profile as InstructorProfile
     exposing
@@ -52,6 +55,7 @@ type alias Model =
     , session : Session
     , config : Config
     , profile : Profile
+    , researchConsent : Bool
     , authMessage : String
     }
 
@@ -71,7 +75,7 @@ init flags url key =
         config =
             Config.init flags.maybeConfig
     in
-    ( Model url key session config Profile.emptyProfile ""
+    ( Model url key session config Profile.emptyProfile False ""
     , case Session.viewer session of
         Just viewer ->
             case Viewer.role viewer of
@@ -79,11 +83,15 @@ init flags url key =
                     if List.any (\path -> url.path == path) publicPaths then
                         Cmd.batch
                             [ requestStudentProfile session config (Viewer.id viewer)
+                            , getResearchConsent session config (Viewer.id viewer)
                             , Browser.Navigation.replaceUrl key (Route.toString Route.Profile__Student)
                             ]
 
                     else
-                        requestStudentProfile session config (Viewer.id viewer)
+                        Cmd.batch
+                            [ requestStudentProfile session config (Viewer.id viewer)
+                            , getResearchConsent session config (Viewer.id viewer)
+                            ]
 
                 Instructor ->
                     if List.any (\path -> url.path == path) publicPaths then
@@ -117,6 +125,7 @@ type Msg
     = GotAuthResult (Result AuthError AuthSuccess)
     | GotSession Session
     | GotStudentProfile (Result Error StudentProfile)
+    | GotResearchConsent (Result Error Bool)
     | GotInstructorProfile (Result Error InstructorProfile)
     | Logout
 
@@ -144,6 +153,7 @@ update msg model =
                         Student ->
                             Cmd.batch
                                 [ requestStudentProfile session model.config (Viewer.id viewer)
+                                , getResearchConsent session model.config (Viewer.id viewer)
                                 , Browser.Navigation.replaceUrl model.key (Route.toString Route.Profile__Student)
                                 ]
 
@@ -163,6 +173,16 @@ update msg model =
             )
 
         GotStudentProfile (Err err) ->
+            ( model
+            , Cmd.none
+            )
+
+        GotResearchConsent (Ok researchConsent) ->
+            ( { model | researchConsent = researchConsent }
+            , Cmd.none
+            )
+
+        GotResearchConsent (Err err) ->
             ( model
             , Cmd.none
             )
@@ -211,6 +231,19 @@ requestStudentProfile session config id =
         StudentProfile.decoder
 
 
+getResearchConsent :
+    Session
+    -> Config
+    -> Id
+    -> Cmd Msg
+getResearchConsent session config id =
+    Api.get
+        (Endpoint.consentToResearch (Config.restApiUrl config) (Id.id id))
+        (Session.cred session)
+        GotResearchConsent
+        (Decode.field "consented" Decode.bool)
+
+
 requestInstructorProfile : Session -> Config -> Id -> Cmd Msg
 requestInstructorProfile session config id =
     Api.get
@@ -257,12 +290,10 @@ viewHeader model toMsg =
             Just viewer ->
                 [ div [ id "header" ]
                     [ viewLogo model.session
-                    , div [ class "menu" ] <|
-                        viewTopHeader (Viewer.role viewer) toMsg
-                    ]
-                , div [ id "lower-menu" ]
-                    [ div [ id "lower-menu-items" ] <|
-                        viewLowerMenu (Viewer.role viewer)
+                    , div [ class "content-menu" ] <|
+                        viewContentHeader (Viewer.role viewer)
+                    , div [ class "profile-menu" ] <|
+                        viewProfileHeader (Viewer.role viewer) toMsg
                     ]
                 ]
 
@@ -290,7 +321,7 @@ viewLogo session =
                     Route.toString Route.Top
         ]
         [ Html.img
-            [ attribute "src" "/public/img/star_logo.png"
+            [ attribute "src" "/public/img/star_logo.svg"
             , id "logo"
             , attribute "alt" "Steps To Advanced Reading Logo"
             ]
@@ -298,11 +329,61 @@ viewLogo session =
         ]
 
 
-viewTopHeader : Role -> (Msg -> msg) -> List (Html msg)
-viewTopHeader role toMsg =
-    [ div [ classList [ ( "menu_item", True ) ] ]
+viewContentHeader : Role -> List (Html msg)
+viewContentHeader role =
+    case role of
+        Student ->
+            [ div
+                [ class "nav-item" ]
+                [ a
+                    [ class "link"
+                    , href (Route.toString Route.Text__Search)
+                    ]
+                    [ text "Texts" ]
+                ]
+            , div
+                [ class "nav-item" ]
+                [ a
+                    [ class "link"
+                    , href (Route.toString Route.Flashcards__Student)
+                    ]
+                    [ text "Flashcards" ]
+                ]
+            ]
+
+        Instructor ->
+            [ div
+                [ class "nav-item" ]
+                [ a
+                    [ class "link"
+                    , href (Route.toString Route.Text__Search)
+                    ]
+                    [ text "Texts" ]
+                ]
+            , div
+                [ class "nav-item" ]
+                [ a
+                    [ class "link"
+                    , href (Route.toString Route.Text__EditorSearch)
+                    ]
+                    [ text "Edit" ]
+                ]
+            , div
+                [ class "nav-item" ]
+                [ a
+                    [ class "link"
+                    , href (Route.toString Route.Text__Create)
+                    ]
+                    [ text "Create" ]
+                ]
+            ]
+
+
+viewProfileHeader : Role -> (Msg -> msg) -> List (Html msg)
+viewProfileHeader role toMsg =
+    [ div []
         [ a
-            [ class "link"
+            [ class "nav-item"
             , href <|
                 case role of
                     Student ->
@@ -313,61 +394,11 @@ viewTopHeader role toMsg =
             ]
             [ text "Profile" ]
         ]
-    , div [ classList [ ( "menu_item", True ) ] ]
-        [ a [ class "link", onClick (toMsg Logout) ]
+    , div []
+        [ a [ class "nav-item", onClick (toMsg Logout) ]
             [ text "Logout" ]
         ]
     ]
-
-
-viewLowerMenu : Role -> List (Html msg)
-viewLowerMenu role =
-    case role of
-        Student ->
-            [ div
-                [ classList [ ( "lower-menu-item", True ) ] ]
-                [ a
-                    [ class "link"
-                    , href (Route.toString Route.Text__Search)
-                    ]
-                    [ text "Find a text to read" ]
-                ]
-            , div
-                [ classList [ ( "lower-menu-item", True ) ] ]
-                [ a
-                    [ class "link"
-                    , href (Route.toString Route.Flashcards__Student)
-                    ]
-                    [ text "Practice Flashcards" ]
-                ]
-            ]
-
-        Instructor ->
-            [ div
-                [ classList [ ( "lower-menu-item", True ) ] ]
-                [ a
-                    [ class "link"
-                    , href (Route.toString Route.Text__EditorSearch)
-                    ]
-                    [ text "Find a text to edit" ]
-                ]
-            , div
-                [ classList [ ( "lower-menu-item", True ) ] ]
-                [ a
-                    [ class "link"
-                    , href (Route.toString Route.Text__Search)
-                    ]
-                    [ text "Find a text to read" ]
-                ]
-            , div
-                [ classList [ ( "lower-menu-item", True ) ] ]
-                [ a
-                    [ class "link"
-                    , href (Route.toString Route.Text__Create)
-                    ]
-                    [ text "Create a new text" ]
-                ]
-            ]
 
 
 

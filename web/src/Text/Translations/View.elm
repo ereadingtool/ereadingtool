@@ -5,7 +5,8 @@ import Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Html.Parser as HtmlParser
+import Html.Parser
+import Html.Parser.Util
 import OrderedDict
 import Set
 import Text.Section.Model
@@ -15,10 +16,6 @@ import Text.Translations.Model exposing (..)
 import Text.Translations.Msg exposing (..)
 import Text.Translations.TextWord exposing (TextWord)
 import Text.Translations.Word.Instance exposing (WordInstance)
-
-
-
--- import VirtualDom
 
 
 wordInstanceOnClick : Model -> (Msg -> msg) -> WordInstance -> Html.Attribute msg
@@ -45,8 +42,7 @@ tagWord model parentMsg sectionNumber instance originalToken =
             String.toLower originalToken
     in
     if token == " " then
-        -- VirtualDom.text token
-        Html.div [] []
+        Html.text token
 
     else
         let
@@ -74,8 +70,7 @@ tagWord model parentMsg sectionNumber instance originalToken =
                     ]
                 , wordInstanceOnClick model parentMsg wordInstance
                 ]
-                -- [ VirtualDom.text originalToken
-                [ Html.div [] []
+                [ Html.text originalToken
                 ]
             , view_edit model parentMsg wordInstance
             ]
@@ -88,12 +83,21 @@ tagSection model msg section =
             SectionNumber section.order
     in
     div [ id ("section-" ++ String.fromInt section.order), class "section" ]
-        -- (Text.Section.Words.Tag.tagWordsAndToVDOM
-        --     (tagWord model msg section.order)
-        --     (isPartOfCompoundWord model sectionNumber)
-        --     (HtmlParser.parse section.body)
-        -- )
-        []
+        (Text.Section.Words.Tag.tagWordsAndToVDOM
+            (tagWord model msg section.order)
+            (isPartOfCompoundWord model sectionNumber)
+            (htmlNode section.body)
+        )
+
+
+htmlNode : String -> List Html.Parser.Node
+htmlNode htmlString =
+    case Html.Parser.run htmlString of
+        Ok node ->
+            node
+
+        Err err ->
+            []
 
 
 view_edit : Model -> (Msg -> msg) -> WordInstance -> Html msg
@@ -200,7 +204,6 @@ view_delete_text_word parentMsg wordInstance =
     in
     div [ class "text-word-option" ]
         (case textWord wordInstance of
-            -- Just textWord ->
             Just word ->
                 [ div
                     [ attribute "title" "Delete this word instance from glossing."
@@ -220,7 +223,7 @@ view_correct_for_context correct =
     if correct then
         [ div [ class "correct_checkmark", attribute "title" "Correct for the context." ]
             [ Html.img
-                [ attribute "src" "/static/img/circle_check.svg"
+                [ attribute "src" "/public/img/circle_check.svg"
                 , attribute "height" "12px"
                 , attribute "width" "12px"
                 ]
@@ -240,7 +243,7 @@ view_add_as_text_word msg wordInstance =
             ]
         , div []
             [ Html.img
-                [ attribute "src" "/static/img/add.svg"
+                [ attribute "src" "/public/img/add.svg"
                 , attribute "height" "17px"
                 , attribute "width" "17px"
                 , attribute "title" "Add a new translation."
@@ -256,15 +259,16 @@ view_add_translation msg textWord =
     div [ class "add_translation" ]
         [ div []
             [ Html.input
-                [ attribute "type" "text"
+                [ class "text-translation-input"
+                , attribute "type" "text"
                 , placeholder "Add a translation"
                 , onInput (UpdateNewTranslationForTextWord textWord >> msg)
                 ]
                 []
             ]
-        , div []
+        , div [ class "edit-translations-icon" ]
             [ Html.img
-                [ attribute "src" "/static/img/add.svg"
+                [ attribute "src" "/public/img/add.svg"
                 , attribute "height" "17px"
                 , attribute "width" "17px"
                 , attribute "title" "Add a new translation."
@@ -279,7 +283,7 @@ view_translation_delete : (Msg -> msg) -> TextWord -> Translation -> Html msg
 view_translation_delete msg textWord translation =
     div [ class "translation_delete" ]
         [ Html.img
-            [ attribute "src" "/static/img/delete.svg"
+            [ attribute "src" "/public/img/delete.svg"
             , attribute "height" "17px"
             , attribute "width" "17px"
             , attribute "title" "Delete this translation."
@@ -306,7 +310,7 @@ view_text_word_translation msg textWord translation =
 view_exit_btn : Html msg
 view_exit_btn =
     Html.img
-        [ attribute "src" "/static/img/cancel.svg"
+        [ attribute "src" "/public/img/cancel.svg"
         , attribute "height" "13px"
         , attribute "width" "13px"
         , class "cursor"
@@ -400,11 +404,16 @@ view_add_grammemes model msg wordInstance =
         [ select [ onInput (SelectGrammemeForEditing wordInstance >> msg) ]
             (List.map (\grammeme -> option [ value grammeme ] [ Html.text grammeme ]) grammemeKeys)
         , div [ onInput (InputGrammeme wordInstance >> msg) ]
-            [ Html.input [ placeholder "add/edit a grammeme..", value grammemeValue ] []
+            [ Html.input
+                [ class "text-translation-input"
+                , placeholder "add/edit a grammeme.."
+                , value grammemeValue
+                ]
+                []
             ]
-        , div []
+        , div [ class "edit-translations-icon" ]
             [ Html.img
-                [ attribute "src" "/static/img/save.svg"
+                [ attribute "src" "/public/img/save.svg"
                 , attribute "height" "17px"
                 , attribute "width" "17px"
                 , attribute "title" "Save edited grammemes."

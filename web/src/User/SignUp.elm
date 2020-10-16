@@ -36,6 +36,13 @@ signupLabel html =
     Html.div [ attribute "class" "signup_label" ] [ html ]
 
 
+validationError : Html msg -> Html msg
+validationError html =
+    div [ class "validation-error" ]
+        [ html
+        ]
+
+
 submit : { b | errors : Dict comparable v } -> { b | errors : Dict comparable v }
 submit model =
     { model | errors = Dict.fromList [] }
@@ -125,7 +132,7 @@ view_email_input update_email_msg model =
         errMsgHTML =
             case Dict.get "email" model.errors of
                 Just errMsg ->
-                    signupLabel (Html.em [] [ Html.text errMsg ])
+                    validationError (Html.em [] [ Html.text errMsg ])
 
                 Nothing ->
                     Html.text ""
@@ -152,7 +159,7 @@ view_password_input ( toggle_msg, update_msg, update_confirm_msg ) model =
         confirm_err_msg =
             case Dict.get "confirm_password" model.errors of
                 Just err_msg ->
-                    signupLabel (Html.em [] [ Html.text err_msg ])
+                    validationError (Html.em [] [ Html.text err_msg ])
 
                 Nothing ->
                     Html.text ""
@@ -160,7 +167,7 @@ view_password_input ( toggle_msg, update_msg, update_confirm_msg ) model =
         password_err_msg =
             case Dict.get "password" model.errors of
                 Just err_msg ->
-                    signupLabel (Html.em [] [ Html.text err_msg ])
+                    validationError (Html.em [] [ Html.text err_msg ])
 
                 Nothing ->
                     Html.text ""
@@ -200,9 +207,8 @@ view_password_input ( toggle_msg, update_msg, update_confirm_msg ) model =
 view_submit : msg -> a -> List (Html msg)
 view_submit submit_msg model =
     [ signupLabel
-        (Html.span [ class "cursor", class "signup_submit", class "button", onClick submit_msg ]
-            [ Html.text "Sign Up"
-            ]
+        (div [ class "button", onClick submit_msg, class "cursor" ]
+            [ div [ class "signup_submit" ] [ Html.span [] [ Html.text "Sign Up" ] ] ]
         )
     ]
 

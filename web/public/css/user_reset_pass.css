@@ -1,17 +1,34 @@
 .login_box {
-    grid-gap: 10px;
+  grid-gap: 10px;
 }
 
-.msg {
-    display: grid;
-    justify-content: center;
+.password-reset-msg {
+  display: grid;
+  /* justify-content: center; */
+
+  grid-column: 1;
+  grid-row: auto;
 }
 
 .login_label {
-    display: grid;
-    justify-content: center;
+  display: grid;
+  /* justify-content: center; */
 }
 
 .disabled {
-    color: darkgrey;
+  cursor: not-allowed;
+  color: #f2f2f2;
+  background-color: #7599bd;
+}
+
+.disabled:hover {
+  background-color: #7599bd;
+}
+
+.password-reset-show {
+  display: grid;
+  padding-top: 5px;
+  justify-content: left;
+
+  grid-template-columns: 20px 100px;
 }
