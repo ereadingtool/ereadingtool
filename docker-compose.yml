@@ -50,7 +50,7 @@ services:
       - html:/usr/share/nginx/html
       - dhparam:/etc/nginx/dhparam
       - certs:/etc/nginx/certs:ro
-      - ${PWD}/cors.conf:/etc/nginx/vhost.d/default_location
+      - ${PWD}/cors.conf:/etc/nginx/vhost.d/api.steps2ar.org
     depends_on:
       - django_backend
       - node_frontend
@@ -84,7 +84,6 @@ services:
       - NGINX_DOCKER_GEN_CONTAINER=docker-gen
       - DEFAULT_EMAIL=ereader@pdx.edu
       # Turn on for testing
-      # WARNING: will generate cert in volume certs names _test_steps2ar.org 
       #- ACME_CA_URI=https://acme-staging-v02.api.letsencrypt.org/directory
     restart: always
     depends_on:
