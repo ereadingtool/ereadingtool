@@ -1,0 +1,21 @@
+server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        access_log /app/logs/access.log;
+        error_log /app/logs/error.log warn;
+
+        root /var/www/steps2ar.org/html;
+
+        index index.html index.htm index.nginx-debian.html;
+
+        server_name steps2ar.org www.steps2ar.org;
+
+        location / {
+                try_files $uri @redirect;
+        }
+
+        location @redirect {
+                return 301 http://steps2ar.org;
+        }
+}

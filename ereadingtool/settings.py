@@ -19,7 +19,8 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [('localhost', 6379)],
+            # When the container spawns it's aliased to "redis" see docker insepct <redis_container> output
+            'hosts': [('redis', 6379)], 
         },
     },
 }
@@ -104,7 +105,7 @@ LOGGING = {
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
-DEBUG = False
+DEBUG = True 
 DEV = False
 
 ALLOWED_HOSTS = ['0.0.0.0',
@@ -112,7 +113,8 @@ ALLOWED_HOSTS = ['0.0.0.0',
                  '142.93.20.73',
                  'stepstoadvancedreading.org',
                  'steps2advancedreading.org',
-                 'steps2ar.org']
+                 'steps2ar.org',
+                 'api.steps2ar.org']
 
 CSP_DEFAULT_SRC = ("'self'",)
 CSP_SCRIPT_SRC = ("'self'",)

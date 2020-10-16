@@ -1,14 +1,26 @@
 FROM python:3
-
+  
+# Not sure if this will also create the directory
 WORKDIR '/app'
 
-RUN apt update \
-    && apt upgrade \
+RUN apt update -y \
+    && apt upgrade -y \
+    && mkdir logs \
+    && touch logs/access.log \
+    && touch logs/error.log \
     && git clone https://github.com/ereadingtool/ereadingtool.git \
     && cd ereadingtool \
     && git checkout upgrade/staging \
     && pip install -r requirements.txt
 
+COPY ./db.sqlite3 /app/ereadingtool/
+
 CMD ["python", "/app/ereadingtool/manage.py", "runserver", "0.0.0.0:8000"]
 
+# Show ports for testing
 EXPOSE 8000
+
+# docker build -f Dockerfile.django -t ereadingtool/django .
+# docker run -dit -p 80:8000 ereadingtool/django
+#
+# TODO: Working with upgrade/proxy-ssl here
