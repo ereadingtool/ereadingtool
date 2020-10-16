@@ -17,12 +17,12 @@
 
 .disabled {
   cursor: not-allowed;
-  color: #e6e6e6;
-  background-color: #546c84;
+  color: #f2f2f2;
+  background-color: #7599bd;
 }
 
 .disabled:hover {
-  background-color: #546c84;
+  background-color: #7599bd;
 }
 
 .password-reset-show {
