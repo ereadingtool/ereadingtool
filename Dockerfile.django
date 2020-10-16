@@ -10,7 +10,7 @@ RUN apt update -y \
     && touch logs/error.log \
     && git clone https://github.com/ereadingtool/ereadingtool.git \
     && cd ereadingtool \
-    && git checkout upgrade/proxy-ssl \
+    && git checkout upgrade/staging \
     && pip install -r requirements.txt
 
 COPY ./db.sqlite3 /app/ereadingtool/
