@@ -23,7 +23,7 @@ table td {
 
   margin-top: 20px;
 
-  font-size: x-large;
+  font-size: 2rem;
 }
 
 .profile_items {
@@ -277,17 +277,13 @@ table td {
 }
 
 @media only screen and (min-device-width: 320px) and (max-device-width: 768px) {
-  #header {
-    padding-left: 10px;
-  }
-
   #lower-menu {
     margin-top: 15px;
   }
 
   .profile {
-    display: flex;
     font-size: 11px;
+    grid-template-columns: 10% [content] auto 10%;
   }
 
   .footer_items {
