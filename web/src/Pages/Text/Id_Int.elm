@@ -73,6 +73,7 @@ type SafeModel
         { session : Session
         , config : Config
         , navKey : Key
+        , id : Int
         , text : Text
         , profile : User.Profile.Profile
         , flashcard : User.Profile.TextReader.Flashcards.ProfileFlashcards
@@ -102,6 +103,7 @@ init shared { params } =
         { session = shared.session
         , config = shared.config
         , navKey = shared.key
+        , id = params.id
         , text = TextReader.Text.Model.emptyText
         , gloss = Dict.empty
         , profile = shared.profile
@@ -393,7 +395,15 @@ textScoresDecoder =
 
 view : SafeModel -> Document Msg
 view (SafeModel model) =
-    { title = "Text"
+    { title = "Reading | " ++ String.fromInt model.id
+
+    {- This would be better, but we need to add title to all websocket
+       responses
+    -}
+    -- if String.isEmpty model.text.title then
+    --     "Reading"
+    -- else
+    --     "Reading | " ++ model.text.title
     , body =
         [ div []
             [ viewContent (SafeModel model)
