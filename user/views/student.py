@@ -5,6 +5,7 @@ from typing import TypeVar, Dict, Union
 from django import forms
 from django.contrib.auth import login, logout
 from django.http import HttpResponse, HttpRequest, HttpResponseForbidden
+from django.template import loader
 from django.urls import reverse
 
 from django.views.generic import TemplateView, View
@@ -26,6 +27,7 @@ from django.views.decorators.csrf import csrf_exempt
 Form = TypeVar('Form', bound=forms.Form)
 
 
+# TODO: I think that this is marked for deletion (remove loader import once done)
 class ElmLoadJsStudentProfileView(ElmLoadJsStudentBaseView):
     def get_context_data(self, **kwargs) -> Dict:
         context = super(ElmLoadJsStudentProfileView, self).get_context_data(**kwargs)
