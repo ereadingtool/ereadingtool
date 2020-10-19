@@ -389,37 +389,51 @@ viewSearchResults textListItems =
                     ]
                 ]
     in
-    div [ id "text_search_results" ] (List.map viewSearchResult textListItems)
+    if List.isEmpty textListItems then
+        div [] []
+
+    else
+        div [ id "text_search_results" ] (List.map viewSearchResult textListItems)
 
 
 viewSearchFooter : SafeModel -> Html Msg
 viewSearchFooter (SafeModel model) =
     let
-        resultsLength =
-            List.length model.results
-
         entries =
-            if resultsLength == 1 then
+            if List.length model.results == 1 then
                 "entry"
 
             else
                 "entries"
-
-        successText =
-            String.join " " [ "Showing", String.fromInt resultsLength, entries ]
-
-        txt =
-            case model.errorMessage of
-                Just message ->
-                    message
-
-                Nothing ->
-                    successText
     in
     div [ id "footer_items" ]
         [ div [ id "footer", class "message" ]
-            [ Html.text txt
+            [ case model.errorMessage of
+                Just message ->
+                    Html.text message
+
+                Nothing ->
+                    if List.isEmpty model.results then
+                        viewLoader
+
+                    else
+                        Html.text <|
+                            String.join " " <|
+                                [ "Showing"
+                                , String.fromInt (List.length model.results)
+                                , entries
+                                ]
             ]
+        ]
+
+
+viewLoader : Html Msg
+viewLoader =
+    div [ class "loader" ]
+        [ div [ class "loader-dot" ] []
+        , div [ class "loader-dot" ] []
+        , div [ class "loader-dot" ] []
+        , div [ class "loader-dot" ] []
         ]
 
 
