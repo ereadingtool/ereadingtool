@@ -207,7 +207,7 @@ class StudentAPIView(LoginRequiredMixin, APIView):
         student_dict = student.to_dict()
 
         try:
-            performance_report = json.dumps(student.performance.to_dict())
+            performance_report = student.performance.to_dict()
         except:
             performance_report = None
 
