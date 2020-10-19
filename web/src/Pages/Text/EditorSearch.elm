@@ -187,11 +187,21 @@ viewFooter (SafeModel model) =
     div [ classList [ ( "footer_items", True ) ] ]
         [ div [ classList [ ( "footer", True ), ( "message", True ) ] ]
             [ if model.loading then
-                Html.text "Loading..."
+                viewLoader
 
               else
                 Html.text <| "Showing " ++ String.fromInt (List.length model.texts) ++ " entries"
             ]
+        ]
+
+
+viewLoader : Html Msg
+viewLoader =
+    div [ class "loader" ]
+        [ div [ class "loader-dot" ] []
+        , div [ class "loader-dot" ] []
+        , div [ class "loader-dot" ] []
+        , div [ class "loader-dot" ] []
         ]
 
 
