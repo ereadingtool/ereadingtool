@@ -12,7 +12,10 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from text.phrase.models import TextPhrase, TextPhraseTranslation
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
+@method_decorator(csrf_exempt, name='dispatch')
 class TextTranslationMatchAPIView(LoginRequiredMixin, APIView):
     login_url = reverse_lazy('instructor-login')
     allowed_methods = ['put']
