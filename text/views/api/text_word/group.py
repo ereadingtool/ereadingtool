@@ -6,11 +6,12 @@ from django.db import transaction
 from django.http import HttpResponse, HttpRequest, HttpResponseServerError
 from django.urls import reverse_lazy
 from ereadingtool.views import APIView
-
 from text.translations.group.models import TextWordGroup, TextGroupWord
 from text.translations.models import TextWord
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class TextWordGroupAPIView(LoginRequiredMixin, APIView):
     model = TextWordGroup
 
