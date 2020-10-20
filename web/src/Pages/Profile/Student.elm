@@ -583,16 +583,15 @@ viewStudentPerformance (SafeModel model) =
                , div [ class "performance_download_link" ]
                     [ Html.a
                         [ attribute "href" <|
-                            Config.restApiUrl model.config
-                                ++ "/profile/student/"
-                                ++ (case StudentProfile.studentID model.profile of
-                                        Just id ->
-                                            String.fromInt id
+                            case StudentProfile.studentID model.profile of
+                                Just id ->
+                                    Api.performanceReportLink
+                                        (Config.restApiUrl model.config)
+                                        (Session.cred model.session)
+                                        id
 
-                                        Nothing ->
-                                            "0"
-                                   )
-                                ++ "/performance_report.pdf"
+                                Nothing ->
+                                    ""
                         ]
                         [ Html.text "Download the \"My Performance\" table as a PDF"
                         ]
