@@ -12,7 +12,7 @@ import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
 import Help.View exposing (ArrowPlacement(..), ArrowPosition(..), view_hint_overlay)
 import Html exposing (..)
-import Html.Attributes exposing (attribute, class, classList, href, id)
+import Html.Attributes exposing (attribute, class, classList, href, id, rowspan)
 import Html.Events exposing (onClick, onInput)
 import Html.Parser
 import Html.Parser.Util
@@ -30,8 +30,8 @@ import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
 import Text.Model as Text
 import User.Profile as Profile
-import User.Student.Performance.Report as PerformanceReport exposing (PerformanceReport)
-import User.Student.Profile as StudentProfile exposing (StudentProfile)
+import User.Student.Performance.Report as PerformanceReport exposing (PerformanceMetrics, PerformanceReport)
+import User.Student.Profile as StudentProfile exposing (StudentProfile, performanceReport)
 import User.Student.Profile.Help as Help exposing (StudentHelp)
 import User.Student.Resource as StudentResource
 import Utils
@@ -576,9 +576,9 @@ viewStudentPerformance (SafeModel model) =
         viewPerformanceHint (SafeModel model)
             ++ [ span [ class "profile_item_title" ] [ Html.text "My Performance: " ]
                , span [ class "profile_item_value" ]
-                    [ div [ class "performance_report" ] []
-
-                    -- (performanceReportNode performanceReport.html)
+                    [ div [ class "performance_report" ]
+                        [ viewPerformanceReportTable (StudentProfile.performanceReport model.profile)
+                        ]
                     ]
                , div [ class "performance_download_link" ]
                     [ Html.a
@@ -600,15 +600,73 @@ viewStudentPerformance (SafeModel model) =
                ]
 
 
-performanceReportNode : String -> List (Html msg)
-performanceReportNode htmlString =
-    case Html.Parser.run htmlString of
-        Ok node ->
-            node
-                |> Html.Parser.Util.toVirtualDom
+viewPerformanceReportTable : PerformanceReport -> Html Msg
+viewPerformanceReportTable performanceReport =
+    div []
+        [ table [] <|
+            [ tr []
+                [ th [] [ text "Level" ]
+                , th [] [ text "Time Period" ]
+                , th [] [ text "Number of Texts Read" ]
+                , th [] [ text "Percent Correct" ]
+                ]
+            ]
+                ++ viewPerformanceLevelRow "All" performanceReport.all
+                ++ viewPerformanceLevelRow "Intermediate-Mid" performanceReport.intermediateMid
+                ++ viewPerformanceLevelRow "Intermediate-High" performanceReport.intermediateHigh
+                ++ viewPerformanceLevelRow "Advanced-Low" performanceReport.advancedLow
+                ++ viewPerformanceLevelRow "Advanced-Mid" performanceReport.advancedMid
+        ]
 
-        Err err ->
-            [ Html.text "Err processing performance report. Please contact us for help." ]
+
+viewPerformanceLevelRow : String -> Dict String PerformanceMetrics -> List (Html Msg)
+viewPerformanceLevelRow level metricsDict =
+    let
+        cumulative =
+            PerformanceReport.metrics "cumulative" metricsDict
+
+        currentMonth =
+            PerformanceReport.metrics "current_month" metricsDict
+
+        pastMonth =
+            PerformanceReport.metrics "past_month" metricsDict
+    in
+    [ tr []
+        [ td [ rowspan 4 ] [ text level ]
+        ]
+    , tr []
+        [ td [] [ text "Cumulative" ]
+        , td [] [ viewTextsReadCell cumulative ]
+        , td [] [ viewPercentCorrectCell cumulative ]
+        ]
+    , tr []
+        [ td [] [ text "Current Month" ]
+        , td [] [ viewTextsReadCell currentMonth ]
+        , td [] [ viewPercentCorrectCell currentMonth ]
+        ]
+    , tr []
+        [ td [] [ text "Past Month" ]
+        , td [] [ viewTextsReadCell pastMonth ]
+        , td [] [ viewPercentCorrectCell pastMonth ]
+        ]
+    ]
+
+
+viewTextsReadCell : PerformanceMetrics -> Html Msg
+viewTextsReadCell metrics =
+    text <|
+        String.join " " <|
+            [ String.fromInt metrics.textsComplete
+            , "out of"
+            , String.fromInt metrics.totalTexts
+            ]
+
+
+viewPercentCorrectCell : PerformanceMetrics -> Html Msg
+viewPercentCorrectCell metrics =
+    text <|
+        String.fromFloat metrics.percentCorrect
+            ++ "%"
 
 
 viewFlashcards : SafeModel -> Html Msg
