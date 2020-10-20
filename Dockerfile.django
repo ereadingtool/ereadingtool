@@ -1,6 +1,5 @@
 FROM python:3
   
-# Not sure if this will also create the directory
 WORKDIR '/app'
 
 RUN apt update -y \
@@ -17,10 +16,4 @@ COPY ./db.sqlite3 /app/ereadingtool/
 
 CMD ["python", "/app/ereadingtool/manage.py", "runserver", "0.0.0.0:8000"]
 
-# Show ports for testing
 EXPOSE 8000
-
-# docker build -f Dockerfile.django -t ereadingtool/django .
-# docker run -dit -p 80:8000 ereadingtool/django
-#
-# TODO: Working with upgrade/proxy-ssl here

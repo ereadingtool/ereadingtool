@@ -32,7 +32,3 @@ RUN ln -s /etc/nginx/sites-available/steps2ar.org /etc/nginx/sites-enabled/ \
 CMD ["nginx", "-g", "daemon off;"]
 
 EXPOSE 80
-
-# TODO: Working with upgrade/proxy-ssl here
-# TODO: Could have added nginx-modules FROM ubuntu compile nginx from source get more_set_headers
-# https://github.com/openresty/headers-more-nginx-module#installation

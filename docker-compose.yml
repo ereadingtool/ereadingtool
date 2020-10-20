@@ -8,11 +8,9 @@ services:
     env_file:
       - secrets.env
     environment:
-        # change depending on prod or dev server 
       - VIRTUAL_HOST=api.steps2ar.org
       - VIRTUAL_PORT=8000
       - LETSENCRYPT_HOST=api.steps2ar.org
-      - DJANGO_LOG_LEVEL=DEBUG
     expose:
       - "8000"
       - "6379"
@@ -41,9 +39,6 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    # Gives control to access the docker daemon
-    # TODO: in a secure setup we don't actually want this
-    # https://raesene.github.io/blog/2016/03/06/The-Dangers-Of-Docker.sock/
     volumes:
       - conf:/etc/nginx/conf.d
       - vhost:/etc/nginx/vhost.d
