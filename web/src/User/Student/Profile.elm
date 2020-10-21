@@ -22,7 +22,7 @@ import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (hardcoded, required)
 import Task exposing (perform)
 import Text.Model as Text
-import User.Student.Performance.Report exposing (PerformanceReport)
+import User.Student.Performance.Report as PerformanceReport exposing (PerformanceReport)
 import User.Student.Resource as StudentResource
 import Utils
 
@@ -153,12 +153,6 @@ uriParamsDecoder =
         |> required "profile_uri" Decode.string
 
 
-performanceReportDecoder : Decoder PerformanceReport
-performanceReportDecoder =
-    Decode.succeed PerformanceReport
-        |> required "html" Decode.string
-
-
 paramsDecoder : Decoder StudentProfileParams
 paramsDecoder =
     Decode.succeed StudentProfileParams
@@ -174,4 +168,4 @@ decoder : Decoder StudentProfile
 decoder =
     Decode.map2 initProfile
         (Decode.field "profile" paramsDecoder)
-        (Decode.field "performance_report" performanceReportDecoder)
+        (Decode.field "performance_report" PerformanceReport.performanceReportDecoder)

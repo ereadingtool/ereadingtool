@@ -11,6 +11,7 @@ module Api.Endpoint exposing
     , inviteInstructor
     , matchTranslation
     , mergeWords
+    , performanceReportLink
     , request
     , resetPassword
     , studentProfile
@@ -25,6 +26,7 @@ module Api.Endpoint exposing
 
 import Http
 import Url.Builder exposing (QueryParameter)
+import User.Student.Performance.Report exposing (performanceReportDecoder)
 
 
 type Endpoint
@@ -215,6 +217,21 @@ matchTranslation baseUrl =
 inviteInstructor : String -> Endpoint
 inviteInstructor baseUrl =
     url baseUrl [ "api", "instructor", "invite" ] []
+
+
+
+-- LINKS
+
+
+performanceReportLink : String -> Int -> String -> String
+performanceReportLink baseUrl id token =
+    Url.Builder.crossOrigin baseUrl
+        [ "profile"
+        , "student"
+        , String.fromInt id
+        , "performance_report.pdf"
+        ]
+        [ Url.Builder.string "token" token ]
 
 
 
