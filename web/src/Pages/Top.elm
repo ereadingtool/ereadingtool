@@ -129,6 +129,7 @@ viewContent model =
             , onPasswordUpdate = UpdatePassword
             , onSubmittedForm = SubmittedLogin
             , signUpRoute = Route.Signup__Student
+            , loginRole = "Student Login"
             , otherLoginRole = "content editor"
             , otherLoginRoute = Route.Login__Instructor
             , maybeHelpMessage =
