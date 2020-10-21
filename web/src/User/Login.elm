@@ -56,7 +56,6 @@ viewLoginForm loginOptions =
     div [ classList [ ( "login_box", True ) ] ] <|
         viewLoginFormTitle loginOptions.loginRole
             ++ viewEmailInput
-            -- viewEmailInput
                 { onEmailUpdate = loginOptions.onEmailUpdate
                 , errors = loginOptions.errors 
                 }
@@ -81,9 +80,7 @@ viewLoginForm loginOptions =
 
 viewLoginFormTitle : String -> List (Html msg)
 viewLoginFormTitle loginRole = 
-    [ div [] 
-        [ Html.text loginRole ]
-    ] 
+    [ div [ class "login_role" ] [ Html.text loginRole ] ] 
 
 viewEmailInput :
     { onEmailUpdate : String -> msg
