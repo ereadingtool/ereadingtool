@@ -45,6 +45,7 @@ viewLoginForm :
     , onPasswordUpdate : String -> msg
     , onSubmittedForm : msg
     , signUpRoute : Route
+    , loginRole: String
     , otherLoginRole : String
     , otherLoginRoute : Route
     , maybeHelpMessage : Maybe String
@@ -53,8 +54,12 @@ viewLoginForm :
     -> Html msg
 viewLoginForm loginOptions =
     div [ classList [ ( "login_box", True ) ] ] <|
-        viewEmailInput
-            { onEmailUpdate = loginOptions.onEmailUpdate, errors = loginOptions.errors }
+        viewLoginFormTitle loginOptions.loginRole
+            ++ viewEmailInput
+            -- viewEmailInput
+                { onEmailUpdate = loginOptions.onEmailUpdate
+                , errors = loginOptions.errors 
+                }
             ++ viewPasswordInput
                 { onPasswordUpdate = loginOptions.onPasswordUpdate
                 , onSubmittedForm = loginOptions.onSubmittedForm
@@ -73,6 +78,12 @@ viewLoginForm loginOptions =
             ++ viewLinks
             ++ viewErrors loginOptions.errors
 
+
+viewLoginFormTitle : String -> List (Html msg)
+viewLoginFormTitle loginRole = 
+    [ div [] 
+        [ Html.text loginRole ]
+    ] 
 
 viewEmailInput :
     { onEmailUpdate : String -> msg
