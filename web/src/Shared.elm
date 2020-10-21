@@ -56,8 +56,14 @@ type alias Model =
     , config : Config
     , profile : Profile
     , researchConsent : Bool
+    , menuVisibility : MenuVisibility
     , authMessage : String
     }
+
+
+type MenuVisibility
+    = Visible
+    | Hidden
 
 
 type alias Flags =
@@ -75,7 +81,7 @@ init flags url key =
         config =
             Config.init flags.maybeConfig
     in
-    ( Model url key session config Profile.emptyProfile False ""
+    ( Model url key session config Profile.emptyProfile False Hidden ""
     , case Session.viewer session of
         Just viewer ->
             case Viewer.role viewer of
@@ -127,6 +133,7 @@ type Msg
     | GotStudentProfile (Result Error StudentProfile)
     | GotResearchConsent (Result Error Bool)
     | GotInstructorProfile (Result Error InstructorProfile)
+    | ToggleMenuVisibility
     | Logout
 
 
@@ -146,6 +153,7 @@ update msg model =
         GotSession session ->
             ( { model
                 | session = session
+                , menuVisibility = Hidden
               }
             , case Session.viewer session of
                 Just viewer ->
@@ -195,6 +203,16 @@ update msg model =
         GotInstructorProfile (Err err) ->
             -- ( model
             ( { model | profile = Profile.fromInstructorProfile fakeInstructorProfile }
+            , Cmd.none
+            )
+
+        ToggleMenuVisibility ->
+            ( case model.menuVisibility of
+                Visible ->
+                    { model | menuVisibility = Hidden }
+
+                Hidden ->
+                    { model | menuVisibility = Visible }
             , Cmd.none
             )
 
@@ -290,18 +308,49 @@ viewHeader model toMsg =
             Just viewer ->
                 [ div [ id "header" ]
                     [ viewLogo model.session
-                    , div [ class "content-menu" ] <|
+                    , viewMenuIcon toMsg
+                    , div
+                        [ case model.menuVisibility of
+                            Visible ->
+                                class "content-menu"
+
+                            Hidden ->
+                                classList [ ( "content-menu", True ), ( "hidden-menu", True ) ]
+                        ]
+                      <|
                         viewContentHeader (Viewer.role viewer)
-                    , div [ class "profile-menu" ] <|
+                    , div
+                        [ case model.menuVisibility of
+                            Visible ->
+                                class "profile-menu"
+
+                            Hidden ->
+                                classList [ ( "profile-menu", True ), ( "hidden-menu", True ) ]
+                        ]
+                      <|
                         viewProfileHeader (Viewer.role viewer) toMsg
                     ]
                 ]
 
             Nothing ->
                 [ div [ id "header" ]
-                    [ viewLogo model.session ]
-                , div [ id "lower-menu" ] []
+                    [ viewLogo model.session
+                    , viewMenuIcon toMsg
+                    ]
                 ]
+
+
+viewMenuIcon : (Msg -> msg) -> Html msg
+viewMenuIcon toMsg =
+    div
+        [ class "menu-icon"
+        ]
+        [ img
+            [ attribute "src" "/public/img/menu.svg"
+            , onClick (toMsg ToggleMenuVisibility)
+            ]
+            []
+        ]
 
 
 viewLogo : Session -> Html msg
@@ -336,7 +385,7 @@ viewContentHeader role =
             [ div
                 [ class "nav-item" ]
                 [ a
-                    [ class "link"
+                    [ class "nav-link"
                     , href (Route.toString Route.Text__Search)
                     ]
                     [ text "Texts" ]
@@ -344,7 +393,7 @@ viewContentHeader role =
             , div
                 [ class "nav-item" ]
                 [ a
-                    [ class "link"
+                    [ class "nav-link"
                     , href (Route.toString Route.Flashcards__Student)
                     ]
                     [ text "Flashcards" ]
@@ -355,7 +404,7 @@ viewContentHeader role =
             [ div
                 [ class "nav-item" ]
                 [ a
-                    [ class "link"
+                    [ class "nav-link"
                     , href (Route.toString Route.Text__Search)
                     ]
                     [ text "Texts" ]
@@ -363,7 +412,7 @@ viewContentHeader role =
             , div
                 [ class "nav-item" ]
                 [ a
-                    [ class "link"
+                    [ class "nav-link"
                     , href (Route.toString Route.Text__EditorSearch)
                     ]
                     [ text "Edit" ]
@@ -371,7 +420,7 @@ viewContentHeader role =
             , div
                 [ class "nav-item" ]
                 [ a
-                    [ class "link"
+                    [ class "nav-link"
                     , href (Route.toString Route.Text__Create)
                     ]
                     [ text "Create" ]
@@ -381,9 +430,9 @@ viewContentHeader role =
 
 viewProfileHeader : Role -> (Msg -> msg) -> List (Html msg)
 viewProfileHeader role toMsg =
-    [ div []
+    [ div [ class "nav-item" ]
         [ a
-            [ class "nav-item"
+            [ class "nav-link"
             , href <|
                 case role of
                     Student ->
@@ -394,8 +443,8 @@ viewProfileHeader role toMsg =
             ]
             [ text "Profile" ]
         ]
-    , div []
-        [ a [ class "nav-item", onClick (toMsg Logout) ]
+    , div [ class "nav-item " ]
+        [ a [ onClick (toMsg Logout), class "nav-link" ]
             [ text "Logout" ]
         ]
     ]

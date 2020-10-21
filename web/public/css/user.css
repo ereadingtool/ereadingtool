@@ -121,10 +121,6 @@ select {
     width: 100%;
   }
 
-  #header {
-    padding-left: 10px;
-  }
-
   select {
     height: 50px;
   }
