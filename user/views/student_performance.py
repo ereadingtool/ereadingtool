@@ -18,14 +18,13 @@ class StudentPerformancePDFView(View):
         if not Student.objects.filter(pk=kwargs['pk']).exists():
             return HttpResponse(status=400)
 
-        student = Student.objects.get(pk=kwargs['pk'])
-
-        # do the jwt auth here
-        verified_user = jwt_validation(self.request.scope)
+        jwt_user = jwt_validation(self.request.scope)
 
         # confirm the user_id from the URL is the same as the JWT's
-        if verified_user == None or student.pk != verified_user.pk:
+        if jwt_user == None or jwt_user.pk != kwargs['pk']:
             return HttpResponse(status=403)
+
+        student = Student.objects.get(pk=kwargs['pk'])
 
         today = dt.now()
 
