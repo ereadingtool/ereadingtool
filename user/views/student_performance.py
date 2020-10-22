@@ -1,3 +1,5 @@
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 import pdfkit
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.base import ContentFile
@@ -8,8 +10,9 @@ from django.views.generic import View
 
 from user.student.models import Student
 
+from auth.normal_auth import jwt_validation
 
-class StudentPerformancePDFView(LoginRequiredMixin, View):
+class StudentPerformancePDFView(View):
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if not Student.objects.filter(pk=kwargs['pk']).exists():
@@ -17,8 +20,12 @@ class StudentPerformancePDFView(LoginRequiredMixin, View):
 
         student = Student.objects.get(pk=kwargs['pk'])
 
-        if student.user != self.request.user:
-            return HttpResponseForbidden()
+        # do the jwt auth here
+        verified_user = jwt_validation(self.request.scope)
+
+        # confirm the user_id from the URL is the same as the JWT's
+        if verified_user == None or student.pk != verified_user.pk:
+            return HttpResponse(status=403)
 
         today = dt.now()
 
