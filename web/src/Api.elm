@@ -10,6 +10,7 @@ port module Api exposing
     , get
     , login
     , logout
+    , performanceReportLink
     , post
     , put
     , toggleShowHelp
@@ -30,6 +31,7 @@ import Id exposing (Id)
 import Json.Decode as Decode exposing (Decoder, Value, field, string)
 import Json.Decode.Pipeline exposing (required)
 import Role exposing (Role)
+import Task exposing (perform)
 import Url exposing (Url)
 
 
@@ -323,6 +325,17 @@ delete url maybeCred body toMsg decoder =
         , timeout = Nothing
         , tracker = Nothing
         }
+
+
+performanceReportLink : String -> Maybe Cred -> Int -> String
+performanceReportLink baseUrl maybeCred id =
+    Endpoint.performanceReportLink baseUrl id <|
+        case maybeCred of
+            Just (Cred cred) ->
+                cred
+
+            Nothing ->
+                ""
 
 
 

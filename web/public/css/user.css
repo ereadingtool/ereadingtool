@@ -43,6 +43,12 @@ input {
   -webkit-padding-before: 2.5%;
 }
 
+.login_role {
+  font-size: 32px;
+  display: grid;
+  align-items: center;
+}
+
 .validation-error {
   display: inline-block;
   padding-top: 5px;
@@ -119,10 +125,6 @@ select {
   select,
   input {
     width: 100%;
-  }
-
-  #header {
-    padding-left: 10px;
   }
 
   select {

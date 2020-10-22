@@ -10,6 +10,11 @@ table th {
 table td {
   padding: 5px;
   text-align: center;
+  border: 1px solid #a9a9a9;
+}
+
+table th {
+  border: 1px solid #a9a9a9;
 }
 
 .profile {
