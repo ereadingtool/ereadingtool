@@ -121,10 +121,6 @@ type MergeState
 type alias Flags =
     { session : Session
     , config : Config
-    , add_as_text_word_endpoint_url : String
-    , merge_textword_endpoint_url : String
-    , text_translation_match_endpoint : String
-    , csrftoken : Flags.CSRFToken
     }
 
 

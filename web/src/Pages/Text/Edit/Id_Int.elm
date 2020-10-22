@@ -100,10 +100,6 @@ init shared { params } =
         , translationsInit =
             { session = shared.session
             , config = shared.config
-            , add_as_text_word_endpoint_url = "legacyEndpoint"
-            , merge_textword_endpoint_url = "legacyEndpoint"
-            , text_translation_match_endpoint = "legacyEndpoint"
-            , csrftoken = "legacyToken"
             }
         , textTranslationsModel = Nothing
         , tags =
