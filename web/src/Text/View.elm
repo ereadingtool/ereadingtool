@@ -540,34 +540,67 @@ view_submit :
     }
     -> Html msg
 view_submit messages =
-    div [ classList [ ( "submit_section", True ) ] ]
-        [ div [ attribute "class" "submit", onClick (messages.onTextComponentMsg Text.Update.AddTextSection) ]
-            [ Html.img
-                [ attribute "src" "/public/img/add_text_section.svg"
-                , attribute "height" "20px"
-                , attribute "width" "20px"
+    -- div [ classList [ ( "submit-section", True ) ] ]
+    --     [ div [ attribute "class" "submit", onClick (messages.onTextComponentMsg Text.Update.AddTextSection) ]
+    --         [ Html.img
+    --             [ attribute "src" "/public/img/add_text_section.svg"
+    --             , attribute "height" "20px"
+    --             , attribute "width" "20px"
+    --             ]
+    --             []
+    --         , Html.text "Add Text Section"
+    --         ]
+    --     , div [ attribute "class" "submit", onClick messages.onDeleteText ]
+    --         [ Html.text "Delete Text"
+    --         , Html.img
+    --             [ attribute "src" "/public/img/delete.svg"
+    --             , attribute "height" "18px"
+    --             , attribute "width" "18px"
+    --             ]
+    --             []
+    --         ]
+    --     , div [] []
+    --     , div [ attribute "class" "submit", onClick messages.onSubmitText ]
+    --         [ Html.img
+    --             [ attribute "src" "/public/img/save_disk.svg"
+    --             , attribute "height" "20px"
+    --             , attribute "width" "20px"
+    --             ]
+    --             []
+    --         , Html.text "Save Text"
+    --         ]
+    --     ]
+    div [ classList [ ( "submit-section", True ) ] ]
+        [ div [ class "left-submit-section" ]
+            [ div [ attribute "class" "submit-item", onClick (messages.onTextComponentMsg Text.Update.AddTextSection) ]
+                [ Html.img
+                    [ attribute "src" "/public/img/add_text_section.svg"
+                    , attribute "height" "20px"
+                    , attribute "width" "20px"
+                    ]
+                    []
+                , span [] [ Html.text "Add Text Section" ]
                 ]
-                []
-            , Html.text "Add Text Section"
             ]
-        , div [ attribute "class" "submit", onClick messages.onDeleteText ]
-            [ Html.text "Delete Text"
-            , Html.img
-                [ attribute "src" "/public/img/delete.svg"
-                , attribute "height" "18px"
-                , attribute "width" "18px"
+        , div [ class "right-submit-section" ]
+            [ div [ attribute "class" "submit-item", onClick messages.onDeleteText ]
+                [ Html.img
+                    [ attribute "src" "/public/img/delete.svg"
+                    , attribute "height" "18px"
+                    , attribute "width" "18px"
+                    ]
+                    []
+                , span [] [ Html.text "Delete Text" ]
                 ]
-                []
-            ]
-        , div [] []
-        , div [ attribute "class" "submit", onClick messages.onSubmitText ]
-            [ Html.img
-                [ attribute "src" "/public/img/save_disk.svg"
-                , attribute "height" "20px"
-                , attribute "width" "20px"
+            , div [ attribute "class" "submit-item", onClick messages.onSubmitText ]
+                [ Html.img
+                    [ attribute "src" "/public/img/save_disk.svg"
+                    , attribute "height" "20px"
+                    , attribute "width" "20px"
+                    ]
+                    []
+                , span [] [ Html.text "Save Text" ]
                 ]
-                []
-            , Html.text "Save Text"
             ]
         ]
 
