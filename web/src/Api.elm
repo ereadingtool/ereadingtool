@@ -12,6 +12,7 @@ port module Api exposing
     , logout
     , performanceReportLink
     , post
+    , postTask
     , put
     , toggleShowHelp
     , viewerChanges
@@ -31,7 +32,7 @@ import Id exposing (Id)
 import Json.Decode as Decode exposing (Decoder, Value, field, string)
 import Json.Decode.Pipeline exposing (required)
 import Role exposing (Role)
-import Task exposing (perform)
+import Task exposing (Task, perform)
 import Url exposing (Url)
 
 
@@ -325,6 +326,59 @@ delete url maybeCred body toMsg decoder =
         , timeout = Nothing
         , tracker = Nothing
         }
+
+
+postTask :
+    Endpoint
+    -> Maybe Cred
+    -> Http.Body
+    -> Decode.Decoder a
+    -> Task Http.Error a
+postTask url maybeCred body decoder =
+    Endpoint.task
+        { method = "POST"
+        , url = url
+        , headers =
+            case maybeCred of
+                Just cred ->
+                    [ credHeader cred ]
+
+                Nothing ->
+                    []
+        , body = body
+        , resolver =
+            Http.stringResolver <|
+                handleJsonResponse decoder
+        , timeout = Nothing
+        }
+
+
+handleJsonResponse : Decoder a -> Http.Response String -> Result Http.Error a
+handleJsonResponse decoder response =
+    case response of
+        Http.BadUrl_ url ->
+            Err (Http.BadUrl url)
+
+        Http.Timeout_ ->
+            Err Http.Timeout
+
+        Http.BadStatus_ { statusCode } _ ->
+            Err (Http.BadStatus statusCode)
+
+        Http.NetworkError_ ->
+            Err Http.NetworkError
+
+        Http.GoodStatus_ _ body ->
+            case Decode.decodeString decoder body of
+                Err _ ->
+                    Err (Http.BadBody body)
+
+                Ok result ->
+                    Ok result
+
+
+
+-- EXTERNAL LINKS
 
 
 performanceReportLink : String -> Maybe Cred -> Int -> String

@@ -12,7 +12,7 @@ import Flags
 import Http
 import InstructorAdmin.Admin.Text as AdminText
 import Session exposing (Session)
-import Task
+import Task exposing (Task)
 import Text.Translations exposing (..)
 import Text.Translations.Decode
 import Text.Translations.Encode
@@ -232,11 +232,11 @@ update parentMsg msg model =
 
 
 mergeWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> ( Model, Cmd msg )
-mergeWords parentMsg model _ wordInstances =
+mergeWords toMsg model _ wordInstances =
     if Text.Translations.Word.Instance.canMergeWords wordInstances then
         -- all word instances are ready to merge
         ( model
-        , postMergeWords model.session model.config parentMsg wordInstances
+        , postMergeWords model.session model.config toMsg wordInstances
         )
 
     else
@@ -247,9 +247,15 @@ mergeWords parentMsg model _ wordInstances =
                 List.filter (Text.Translations.Word.Instance.hasTextWord >> not) wordInstances
         in
         ( setGlobalEditLock model True
-          -- , attemptToAddTextWords parentMsg model model.flags.csrftoken wordInstancesWithNoTextWords
-        , Cmd.none
+        , attemptToAddTextWords model wordInstancesWithNoTextWords toMsg
         )
+
+
+attemptToAddTextWords : Model -> List WordInstance -> (Msg -> msg) -> Cmd msg
+attemptToAddTextWords model wordInstancesWithNoTextWord toMsg =
+    Task.attempt (handleAddTextWords toMsg wordInstancesWithNoTextWord) <|
+        Task.sequence <|
+            List.map (addAsTextWordRequest model) wordInstancesWithNoTextWord
 
 
 handleAddTextWords : (Msg -> msg) -> List WordInstance -> Result Http.Error (List TextWord) -> msg
@@ -262,26 +268,15 @@ handleAddTextWords parentMsg _ result =
             (AddedTextWordsForMerge >> parentMsg) textWords
 
 
-
--- attemptToAddTextWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> Cmd msg
--- attemptToAddTextWords parentMsg model csrftoken wordInstancesWithNoTextWord =
---     Task.attempt (handleAddTextWords parentMsg wordInstancesWithNoTextWord) <|
---         Task.sequence <|
---             List.map Http.toTask <|
---                 List.map (addAsTextWordRequest model csrftoken) wordInstancesWithNoTextWord
--- addAsTextWordRequest : Model -> Flags.CSRFToken -> WordInstance -> Http.Request TextWord
--- addAsTextWordRequest model csrftoken wordInstance =
---     let
---         endpointUri =
---             Text.Translations.addTextWordEndpointToString model.add_as_text_word_endpoint
---         headers =
---             [ Http.header "X-CSRFToken" csrftoken ]
---         encodedTextWord =
---             Text.Translations.Word.Instance.Encode.textWordAddEncoder model.text_id wordInstance
---         body =
---             Http.jsonBody encodedTextWord
---     in
---     HttpHelpers.post_with_headers endpointUri headers body Text.Translations.Decode.textWordInstanceDecoder
+addAsTextWordRequest : Model -> WordInstance -> Task Http.Error TextWord
+addAsTextWordRequest model wordInstance =
+    Api.postTask
+        (Endpoint.createWord (Config.restApiUrl model.config))
+        (Session.cred model.session)
+        (Http.jsonBody <|
+            Text.Translations.Word.Instance.Encode.textWordAddEncoder model.text_id wordInstance
+        )
+        Text.Translations.Decode.textWordInstanceDecoder
 
 
 addAsTextWord :

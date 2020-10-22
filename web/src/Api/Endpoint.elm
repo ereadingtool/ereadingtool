@@ -16,6 +16,7 @@ module Api.Endpoint exposing
     , resetPassword
     , studentProfile
     , studentSignup
+    , task
     , text
     , textLock
     , textSearch
@@ -25,6 +26,7 @@ module Api.Endpoint exposing
     )
 
 import Http
+import Task exposing (Task)
 import Url.Builder exposing (QueryParameter)
 import User.Student.Performance.Report exposing (performanceReportDecoder)
 
@@ -69,6 +71,30 @@ request config =
         , expect = config.expect
         , timeout = config.timeout
         , tracker = config.tracker
+        }
+
+
+
+-- TASKS
+
+
+task :
+    { method : String
+    , headers : List Http.Header
+    , url : Endpoint
+    , body : Http.Body
+    , resolver : Http.Resolver Http.Error a
+    , timeout : Maybe Float
+    }
+    -> Task Http.Error a
+task config =
+    Http.task
+        { method = config.method
+        , headers = config.headers
+        , url = unwrap config.url
+        , body = config.body
+        , resolver = config.resolver
+        , timeout = config.timeout
         }
 
 
@@ -220,7 +246,7 @@ inviteInstructor baseUrl =
 
 
 
--- LINKS
+-- EXTERNAL LINKS
 
 
 performanceReportLink : String -> Int -> String -> String
