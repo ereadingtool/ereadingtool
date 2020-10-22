@@ -50,7 +50,9 @@ type alias Grammemes =
 
 type alias Model =
     { -- from the server, a dictionary of TextWords indexed by section number
-      words : Array (Dict Text.Translations.Word (Array Text.Translations.TextWord.TextWord))
+      session : Session
+    , config : Config
+    , words : Array (Dict Text.Translations.Word (Array Text.Translations.TextWord.TextWord))
     , merging_words : OrderedDict String Text.Translations.Word.Instance.WordInstance
     , editing_grammeme : Maybe String
     , editing_grammemes : Dict String String
@@ -60,18 +62,14 @@ type alias Model =
     , text : Text.Model.Text
     , text_id : Int
     , new_translations : Dict String String
-    , session : Session
-    , config : Config
-    , add_as_text_word_endpoint : Text.Translations.AddTextWordEndpoint
-    , merge_textword_endpoint : Text.Translations.MergeTextWordEndpoint
-    , text_translation_match_endpoint : Text.Translations.TextTranslationMatchEndpoint
-    , flags : Text.Translations.Flags
     }
 
 
 init : Text.Translations.Flags -> Int -> Text.Model.Text -> Model
 init flags text_id text =
-    { words = Array.empty
+    { session = flags.session
+    , config = flags.config
+    , words = Array.empty
     , merging_words = OrderedDict.empty
     , editing_words = Dict.empty
     , editing_grammeme = Nothing
@@ -81,13 +79,6 @@ init flags text_id text =
     , text = text
     , text_id = text_id
     , new_translations = Dict.empty
-    , flags = flags
-    , session = flags.session
-    , config = flags.config
-    , add_as_text_word_endpoint = Text.Translations.AddTextWordEndpoint (Text.Translations.URL flags.add_as_text_word_endpoint_url)
-    , merge_textword_endpoint = Text.Translations.MergeTextWordEndpoint (Text.Translations.URL flags.merge_textword_endpoint_url)
-    , text_translation_match_endpoint =
-        Text.Translations.TextTranslationMatchEndpoint (Text.Translations.URL flags.text_translation_match_endpoint)
     }
 
 

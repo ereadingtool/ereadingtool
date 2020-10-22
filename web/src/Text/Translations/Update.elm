@@ -70,7 +70,7 @@ update parentMsg msg model =
             ( model, Cmd.none )
 
         MergeWords wordInstances ->
-            mergeWords parentMsg model model.flags.csrftoken wordInstances
+            mergeWords parentMsg model wordInstances
 
         MergedWords (Ok mergeResp) ->
             if mergeResp.grouped then
@@ -231,8 +231,8 @@ update parentMsg msg model =
             ( model, Cmd.none )
 
 
-mergeWords : (Msg -> msg) -> Model -> Flags.CSRFToken -> List WordInstance -> ( Model, Cmd msg )
-mergeWords toMsg model _ wordInstances =
+mergeWords : (Msg -> msg) -> Model -> List WordInstance -> ( Model, Cmd msg )
+mergeWords toMsg model wordInstances =
     if Text.Translations.Word.Instance.canMergeWords wordInstances then
         -- all word instances are ready to merge
         ( model
