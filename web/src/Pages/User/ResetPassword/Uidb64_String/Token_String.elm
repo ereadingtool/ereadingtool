@@ -323,7 +323,7 @@ viewShowPasswordToggle model =
                    )
             )
             []
-        , Html.label [] [ Html.text "Show Password" ]
+        , Html.label [ class "show-password-label" ] [ Html.text "Show Password" ]
         ]
     ]
 

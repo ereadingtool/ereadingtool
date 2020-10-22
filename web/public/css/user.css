@@ -127,6 +127,10 @@ select {
     width: 100%;
   }
 
+  .button {
+    height: 40px;
+  }
+
   select {
     height: 50px;
   }
@@ -162,10 +166,6 @@ select {
 
     margin-left: 20px;
     margin-right: 20px;
-  }
-
-  .signup_submit {
-    margin-top: 50px;
   }
 
   .signup_box > input,

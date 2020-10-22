@@ -4,7 +4,6 @@
 
 .password-reset-msg {
   display: grid;
-  /* justify-content: center; */
 
   grid-column: 1;
   grid-row: auto;
@@ -12,7 +11,6 @@
 
 .login_label {
   display: grid;
-  /* justify-content: center; */
 }
 
 .disabled {
@@ -31,4 +29,8 @@
   justify-content: left;
 
   grid-template-columns: 20px 100px;
+}
+
+.show-password-label {
+  padding: 3px 0 0 5px;
 }
