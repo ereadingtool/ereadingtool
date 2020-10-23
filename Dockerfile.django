@@ -4,6 +4,7 @@ WORKDIR '/app'
 
 RUN apt update -y \
     && apt upgrade -y \
+    && apt install wktohtmlpdf \
     && mkdir logs \
     && touch logs/access.log \
     && touch logs/error.log \

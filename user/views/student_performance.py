@@ -1,7 +1,4 @@
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
 import pdfkit
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.base import ContentFile
 from django.http import HttpResponse, HttpRequest, HttpResponseForbidden
 from django.template import loader
@@ -22,7 +19,7 @@ class StudentPerformancePDFView(View):
 
         # confirm the user_id from the URL is the same as the JWT's
         if jwt_user == None or jwt_user.pk != kwargs['pk']:
-            return HttpResponse(status=403)
+            return HttpResponseForbidden()
 
         student = Student.objects.get(pk=kwargs['pk'])
 
