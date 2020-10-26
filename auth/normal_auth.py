@@ -1,9 +1,11 @@
 import os
 import time
 import jwt
+from functools import wraps
 from jwt.exceptions import InvalidTokenError
 from user.student.models import Student
 from user.instructor.models import Instructor
+from django.http import HttpResponseForbidden
 
 def jwt_validation(scope):
     """ Take JWT from query string to check the user against the db and validate its timestamp """
@@ -32,3 +34,26 @@ def jwt_validation(scope):
                 raise InvalidTokenError
         except InvalidTokenError: 
             return None
+
+
+def jwt_valid(func):
+        # @wraps
+        def validate(*args, **kwargs):
+            if not args[0].request.scope['query_string']:
+                return HttpResponseForbidden
+            else:
+                secret_key = os.getenv('DJANGO_SECRET_KEY')
+                scope = args[0].request.scope
+                try:
+                    qs = scope['query_string'][6:] if scope['query_string'][:6] == b'token=' else scope['query_string']
+                    jwt_decoded = jwt.decode(qs, secret_key, algorithms=['HS256'])
+
+                    if jwt_decoded['exp'] <= time.time():
+                        # then their token has expired 
+                        raise HttpResponseForbidden
+
+                except: 
+                    return HttpResponseForbidden
+                
+            return func(*args, **kwargs)
+        return validate

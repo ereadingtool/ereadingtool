@@ -6,11 +6,12 @@ from django.utils import timezone as dt
 from django.views.generic import View
 
 from user.student.models import Student
-
+from auth.normal_auth import jwt_valid
 from auth.normal_auth import jwt_validation
 
 class StudentPerformancePDFView(View):
 
+    @jwt_valid
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if not Student.objects.filter(pk=kwargs['pk']).exists():
             return HttpResponse(status=400)
