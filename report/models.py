@@ -120,7 +120,7 @@ class StudentPerformanceReport(object):
 
         performance['all']['title'] = 'All Levels'
 
-        for difficulty in TextDifficulty.objects.annotate(total_texts=models.Count('texts')).all():
+        for difficulty in TextDifficulty.objects.annotate(total_texts=models.Count('texts')).order_by('id').all():
             performance[difficulty.slug] = {
                 'title': '',
                 'categories': {
