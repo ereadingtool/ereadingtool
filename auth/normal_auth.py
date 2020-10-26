@@ -1,7 +1,6 @@
 import os
 import time
 import jwt
-from functools import wraps
 from jwt.exceptions import InvalidTokenError
 from user.student.models import Student
 from user.instructor.models import Instructor
@@ -36,8 +35,8 @@ def jwt_validation(scope):
             return None
 
 
-def jwt_valid(func):
-        # @wraps
+def jwt_valid(http_error: str):
+    def decorator(func):
         def validate(*args, **kwargs):
             if not args[0].request.scope['query_string']:
                 return HttpResponseForbidden
@@ -54,6 +53,7 @@ def jwt_valid(func):
 
                 except: 
                     return HttpResponseForbidden
-                
+    
             return func(*args, **kwargs)
         return validate
+    return decorator

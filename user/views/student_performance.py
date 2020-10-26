@@ -11,7 +11,7 @@ from auth.normal_auth import jwt_validation
 
 class StudentPerformancePDFView(View):
 
-    @jwt_valid
+    @jwt_valid('')
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if not Student.objects.filter(pk=kwargs['pk']).exists():
             return HttpResponse(status=400)
