@@ -16,19 +16,15 @@ import Html.Attributes exposing (attribute, class, classList)
 import Html.Events exposing (onCheck, onClick, onInput)
 import Http exposing (..)
 import Http.Detailed
-import Json.Decode as Decode
+import Json.Decode as Decode exposing (Decoder)
+import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode
 import Session exposing (Session)
 import Shared
 import Spa.Document exposing (Document)
+import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
-import User.ForgotPassword as ForgotPassword
-    exposing
-        ( PassResetConfirmResp
-        , resetPasswordResponseDecoder
-        , uidb64
-        )
 import Views
 
 
@@ -42,6 +38,19 @@ page =
         , save = save
         , load = load
         }
+
+
+type alias PasswordResetParams =
+    { password : String
+    , confirmPassword : String
+    , uidb64 : String
+    }
+
+
+type alias PasswordResetResponse =
+    { errors : Dict String String
+    , body : String
+    }
 
 
 
@@ -63,7 +72,7 @@ type alias Model =
     , password : String
     , confirmPassword : String
     , showPassword : Bool
-    , resp : PassResetConfirmResp
+    , response : PasswordResetResponse
     , errors : Dict String String
     }
 
@@ -78,8 +87,11 @@ init shared { params } =
       , password = ""
       , confirmPassword = ""
       , showPassword = False
-      , resp = ForgotPassword.emptyPassResetResp
-      , errors = Dict.fromList []
+      , response =
+            { errors = Dict.empty
+            , body = ""
+            }
+      , errors = Dict.empty
       }
     , Cmd.none
     )
@@ -90,11 +102,11 @@ init shared { params } =
 
 
 type Msg
-    = Submit
-    | Submitted (Result (Http.Detailed.Error String) ( Http.Metadata, PassResetConfirmResp ))
+    = ToggleShowPassword Bool
     | UpdatePassword String
-    | UpdatePasswordConfirm String
-    | ToggleShowPassword Bool
+    | UpdateConfirmPassword String
+    | SubmittedForm
+    | GotResetResponse (Result (Http.Detailed.Error String) ( Http.Metadata, PasswordResetResponse ))
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -106,7 +118,7 @@ update msg model =
         UpdatePassword pass ->
             ( { model
                 | password = pass
-                , resp = ForgotPassword.emptyPassResetResp
+                , response = emptyResponse
                 , errors =
                     Dict.fromList
                         (if pass /= model.confirmPassword then
@@ -119,10 +131,10 @@ update msg model =
             , Cmd.none
             )
 
-        UpdatePasswordConfirm confirmPassword ->
+        UpdateConfirmPassword confirmPassword ->
             ( { model
                 | confirmPassword = confirmPassword
-                , resp = ForgotPassword.emptyPassResetResp
+                , response = emptyResponse
                 , errors =
                     Dict.fromList
                         (if confirmPassword /= model.password then
@@ -135,23 +147,22 @@ update msg model =
             , Cmd.none
             )
 
-        Submit ->
+        SubmittedForm ->
             ( { model | errors = Dict.fromList [] }
             , postPasswordReset model.session
                 model.config
-                (ForgotPassword.Password
-                    (ForgotPassword.Password1 model.password)
-                    (ForgotPassword.Password2 model.confirmPassword)
-                    (ForgotPassword.UIdb64 model.uidb64)
-                )
+                { password = model.password
+                , confirmPassword = model.confirmPassword
+                , uidb64 = model.uidb64
+                }
             )
 
-        Submitted (Ok ( metadata, resp )) ->
-            ( { model | resp = resp }
-            , Browser.Navigation.replaceUrl model.navKey resp.redirect
+        GotResetResponse (Ok ( metadata, response )) ->
+            ( { model | response = response }
+            , Browser.Navigation.replaceUrl model.navKey (Route.toString Route.Top)
             )
 
-        Submitted (Err error) ->
+        GotResetResponse (Err error) ->
             case error of
                 Http.Detailed.BadStatus metadata body ->
                     ( { model | errors = errorBodyToDict body }
@@ -167,27 +178,41 @@ update msg model =
                     )
 
 
-postPasswordReset : Session -> Config -> ForgotPassword.Password -> Cmd Msg
-postPasswordReset session config password =
+postPasswordReset : Session -> Config -> PasswordResetParams -> Cmd Msg
+postPasswordReset session config passwordResetParams =
     let
         encodedResetParams =
-            resetPasswordEncoder password
+            resetPasswordEncoder passwordResetParams
     in
     Api.postDetailed
         (Endpoint.resetPassword (Config.restApiUrl config))
         (Session.cred session)
         (Http.jsonBody encodedResetParams)
-        Submitted
+        GotResetResponse
         resetPasswordResponseDecoder
 
 
-resetPasswordEncoder : ForgotPassword.Password -> Encode.Value
-resetPasswordEncoder password =
+resetPasswordEncoder : PasswordResetParams -> Encode.Value
+resetPasswordEncoder { password, confirmPassword, uidb64 } =
     Encode.object
-        [ ( "new_password1", Encode.string (ForgotPassword.password1toString (ForgotPassword.password1 password)) )
-        , ( "new_password2", Encode.string (ForgotPassword.password2toString (ForgotPassword.password2 password)) )
-        , ( "uidb64", Encode.string (ForgotPassword.uidb64toString (ForgotPassword.uidb64 password)) )
+        [ ( "new_password1", Encode.string password )
+        , ( "new_password2", Encode.string confirmPassword )
+        , ( "uidb64", Encode.string uidb64 )
         ]
+
+
+resetPasswordResponseDecoder : Decoder PasswordResetResponse
+resetPasswordResponseDecoder =
+    Decode.succeed PasswordResetResponse
+        |> required "errors" (Decode.dict Decode.string)
+        |> required "body" Decode.string
+
+
+emptyResponse : PasswordResetResponse
+emptyResponse =
+    { errors = Dict.empty
+    , body = ""
+    }
 
 
 errorBodyToDict : String -> Dict String String
@@ -231,7 +256,7 @@ viewContent model =
 viewPasswordInput : Model -> List (Html Msg)
 viewPasswordInput model =
     let
-        errorHTML =
+        errorMessage =
             case Dict.get "password" model.errors of
                 Just err_msg ->
                     validationError (Html.em [] [ Html.text err_msg ])
@@ -262,15 +287,15 @@ viewPasswordInput model =
             ++ showPassword
         )
         []
-    , errorHTML
-    , viewResponse model.resp
+    , errorMessage
+    , viewResponse model.response
     ]
 
 
 viewPasswordConfirmInput : Model -> List (Html Msg)
 viewPasswordConfirmInput model =
     let
-        errorHTML =
+        errorMessage =
             case Dict.get "confirmPassword" model.errors of
                 Just errMsg ->
                     validationError (Html.em [] [ Html.text errMsg ])
@@ -278,7 +303,7 @@ viewPasswordConfirmInput model =
                 Nothing ->
                     Html.text ""
 
-        passwdError =
+        passwordError =
             if Dict.member "confirmPassword" model.errors || Dict.member "all" model.errors then
                 [ attribute "class" "input_error" ]
 
@@ -295,18 +320,18 @@ viewPasswordConfirmInput model =
     [ loginLabel [] (span [] [ Html.text "Confirm Password" ])
     , Html.input
         ([ attribute "size" "25"
-         , onInput UpdatePasswordConfirm
+         , onInput UpdateConfirmPassword
          ]
-            ++ passwdError
+            ++ passwordError
             ++ showPassword
         )
         []
-    , errorHTML
-    , viewResponse model.resp
+    , errorMessage
+    , viewResponse model.response
     ]
 
 
-viewResponse : PassResetConfirmResp -> Html Msg
+viewResponse : PasswordResetResponse -> Html Msg
 viewResponse resetPasswordResponse =
     if not (String.isEmpty resetPasswordResponse.body) then
         div [ class "msg" ]
@@ -328,15 +353,18 @@ viewErrors model =
 
 viewShowPasswordToggle : Model -> List (Html Msg)
 viewShowPasswordToggle model =
+    let
+        showPasswordChecked =
+            if model.showPassword then
+                [ attribute "checked" "true" ]
+
+            else
+                []
+    in
     [ div [ class "password-reset-show" ]
         [ Html.input
             ([ attribute "type" "checkbox", onCheck ToggleShowPassword ]
-                ++ (if model.showPassword then
-                        [ attribute "checked" "true" ]
-
-                    else
-                        []
-                   )
+                ++ showPasswordChecked
             )
             []
         , Html.label [ class "show-password-label" ] [ Html.text "Show Password" ]
@@ -346,24 +374,11 @@ viewShowPasswordToggle model =
 
 viewSubmit : Model -> List (Html Msg)
 viewSubmit model =
-    let
-        hasError =
-            Dict.member "password" model.errors || Dict.member "confirmPassword" model.errors
-
-        emptyPasswords =
-            String.isEmpty model.password && String.isEmpty model.confirmPassword
-
-        passwordsMatch =
-            model.password == model.confirmPassword
-
-        buttonDisabled =
-            if hasError || emptyPasswords || not passwordsMatch then
-                [ class "disabled" ]
-
-            else
-                [ onClick Submit, class "cursor" ]
-    in
-    if hasError || emptyPasswords || not passwordsMatch then
+    if
+        (Dict.member "password" model.errors || Dict.member "confirmPassword" model.errors)
+            || (String.isEmpty model.password || String.isEmpty model.confirmPassword)
+            || (model.password /= model.confirmPassword)
+    then
         [ div
             [ classList
                 [ ( "button", True )
@@ -379,7 +394,7 @@ viewSubmit model =
                 [ ( "button", True )
                 , ( "cursor", True )
                 ]
-            , onClick Submit
+            , onClick SubmittedForm
             ]
             [ div [ class "login_submit" ] [ span [] [ Html.text "Change Password" ] ] ]
         ]
