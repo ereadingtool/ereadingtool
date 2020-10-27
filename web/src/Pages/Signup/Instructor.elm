@@ -26,6 +26,7 @@ import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
 import User.SignUp as SignUp
+import Utils exposing (isValidEmail)
 import Views
 
 
@@ -41,22 +42,16 @@ page =
         }
 
 
-type alias InviteCode =
-    String
-
-
 type alias SignUpParams =
     { email : String
     , password : String
-    , confirm_password : String
-    , invite_code : InviteCode
+    , confirmPassword : String
+    , inviteCode : String
     }
 
 
-type alias SignUpResp =
-    { id : SignUp.UserID
-    , redirect : SignUp.RedirectURI
-    }
+type alias SignUpResponse =
+    { id : Int }
 
 
 
@@ -71,8 +66,8 @@ type alias Model =
     { session : Session
     , config : Config
     , navKey : Key
-    , signup_params : SignUpParams
-    , show_passwords : Bool
+    , signupParams : SignUpParams
+    , showPasswords : Bool
     , errors : Dict String String
     }
 
@@ -82,14 +77,14 @@ init shared { params } =
     ( { session = shared.session
       , config = shared.config
       , navKey = shared.key
-      , signup_params =
+      , signupParams =
             { email = ""
             , password = ""
-            , confirm_password = ""
-            , invite_code = ""
+            , confirmPassword = ""
+            , inviteCode = ""
             }
-      , show_passwords = False
-      , errors = Dict.fromList []
+      , showPasswords = False
+      , errors = Dict.empty
       }
     , Cmd.none
     )
@@ -105,38 +100,59 @@ type Msg
     | UpdatePassword String
     | UpdateConfirmPassword String
     | UpdateInviteCode String
-    | Submitted (Result (Http.Detailed.Error String) ( Http.Metadata, SignUpResp ))
-    | Submit
-    | Logout MenuMsg.Msg
+    | SubmittedForm
+    | CompletedSignup (Result (Http.Detailed.Error String) ( Http.Metadata, SignUpResponse ))
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         ToggleShowPassword ->
-            ( SignUp.toggle_show_password model, Cmd.none )
+            ( { model | showPasswords = not model.showPasswords }
+            , Cmd.none
+            )
 
         UpdatePassword password ->
-            ( SignUp.update_password model password, Cmd.none )
+            ( model
+                |> updateSignupParams (\signupParams -> { signupParams | password = password })
+            , Cmd.none
+            )
 
         UpdateConfirmPassword confirmPassword ->
-            ( SignUp.update_confirm_password model confirmPassword, Cmd.none )
+            ( { model
+                | errors = validatePasswordsMatch model.signupParams.password confirmPassword model.errors
+              }
+                |> updateSignupParams (\signupParams -> { signupParams | confirmPassword = confirmPassword })
+            , Cmd.none
+            )
 
-        UpdateEmail addr ->
-            ( SignUp.update_email model addr, Cmd.none )
+        UpdateEmail email ->
+            ( { model
+                | errors = validateEmail email model.errors
+              }
+                |> updateSignupParams (\signupParams -> { signupParams | email = email })
+            , Cmd.none
+            )
 
         UpdateInviteCode inviteCode ->
-            ( updateInviteCode model inviteCode, Cmd.none )
+            ( { model
+                | errors = validateInviteCode inviteCode model.errors
+              }
+                |> updateSignupParams (\signupParams -> { signupParams | inviteCode = inviteCode })
+            , Cmd.none
+            )
 
-        Submit ->
-            ( model, postSignup model.session model.config model.signup_params )
+        SubmittedForm ->
+            ( { model | errors = Dict.empty }
+            , postSignup model.session model.config model.signupParams
+            )
 
-        Submitted (Ok resp) ->
+        CompletedSignup (Ok resp) ->
             ( model
             , Browser.Navigation.replaceUrl model.navKey (Route.toString Route.Top)
             )
 
-        Submitted (Err error) ->
+        CompletedSignup (Err error) ->
             case error of
                 Http.Detailed.BadStatus metadata body ->
                     ( { model | errors = errorBodyToDict body }
@@ -151,35 +167,48 @@ update msg model =
                     , Cmd.none
                     )
 
-        Logout _ ->
-            ( model, Cmd.none )
+
+updateSignupParams : (SignUpParams -> SignUpParams) -> Model -> Model
+updateSignupParams transform model =
+    { model | signupParams = transform model.signupParams }
 
 
-updateInviteCode : Model -> InviteCode -> Model
-updateInviteCode model inviteCode =
+validateEmail : String -> Dict String String -> Dict String String
+validateEmail email errors =
+    if isValidEmail email || (email == "") then
+        Dict.remove "email" errors
+
+    else
+        Dict.insert "email" "This e-mail is invalid" errors
+
+
+validatePasswordsMatch : String -> String -> Dict String String -> Dict String String
+validatePasswordsMatch password confirmPassword errors =
+    if confirmPassword == password then
+        Dict.remove "password" (Dict.remove "confirm_password" errors)
+
+    else
+        Dict.insert "confirm_password" "Passwords don't match." errors
+
+
+validateInviteCode : String -> Dict String String -> Dict String String
+validateInviteCode inviteCode errors =
     let
-        signupParams =
-            model.signup_params
-
         ( validInviteCode, inviteCodeError ) =
-            isValidInviteCodeLength inviteCode
+            validateInviteCodeLength inviteCode
     in
-    { model
-        | signup_params = { signupParams | invite_code = inviteCode }
-        , errors =
-            if validInviteCode || (inviteCode == "") then
-                Dict.remove "invite_code" model.errors
+    if validInviteCode || (inviteCode == "") then
+        Dict.remove "invite_code" errors
 
-            else
-                Dict.insert
-                    "invite_code"
-                    ("This invite code is " ++ Maybe.withDefault "" inviteCodeError ++ ".")
-                    model.errors
-    }
+    else
+        Dict.insert
+            "invite_code"
+            ("This invite code is " ++ Maybe.withDefault "" inviteCodeError ++ ".")
+            errors
 
 
-isValidInviteCodeLength : InviteCode -> ( Bool, Maybe String )
-isValidInviteCodeLength inviteCode =
+validateInviteCodeLength : String -> ( Bool, Maybe String )
+validateInviteCodeLength inviteCode =
     if String.length inviteCode > 64 then
         ( False, Just "too long" )
 
@@ -191,17 +220,17 @@ isValidInviteCodeLength inviteCode =
 
 
 postSignup : Session -> Config -> SignUpParams -> Cmd Msg
-postSignup session config signup_params =
+postSignup session config signupParams =
     let
         encodedSignupParams =
-            signUpEncoder signup_params
+            signUpEncoder signupParams
     in
     Api.postDetailed
         (Endpoint.studentSignup (Config.restApiUrl config))
         (Session.cred session)
         (Http.jsonBody encodedSignupParams)
-        Submitted
-        signUpRespDecoder
+        CompletedSignup
+        signUpResponseDecoder
 
 
 signUpEncoder : SignUpParams -> Encode.Value
@@ -209,16 +238,15 @@ signUpEncoder signupParams =
     Encode.object
         [ ( "email", Encode.string signupParams.email )
         , ( "password", Encode.string signupParams.password )
-        , ( "confirm_password", Encode.string signupParams.confirm_password )
-        , ( "invite_code", Encode.string signupParams.invite_code )
+        , ( "confirm_password", Encode.string signupParams.confirmPassword )
+        , ( "invite_code", Encode.string signupParams.inviteCode )
         ]
 
 
-signUpRespDecoder : Json.Decode.Decoder SignUpResp
-signUpRespDecoder =
-    Json.Decode.succeed SignUpResp
-        |> required "id" (Json.Decode.map SignUp.UserID Json.Decode.int)
-        |> required "redirect" (Json.Decode.map (SignUp.URI >> SignUp.RedirectURI) Json.Decode.string)
+signUpResponseDecoder : Json.Decode.Decoder SignUpResponse
+signUpResponseDecoder =
+    Json.Decode.succeed SignUpResponse
+        |> required "id" Json.Decode.int
 
 
 errorBodyToDict : String -> Dict String String
@@ -243,25 +271,34 @@ view model =
             [ div [ classList [ ( "signup", True ) ] ]
                 [ div [ class "signup_title" ] [ Html.text "Instructor Signup" ]
                 , div [ classList [ ( "signup_box", True ) ] ] <|
-                    SignUp.view_email_input UpdateEmail model
-                        ++ SignUp.view_password_input ( ToggleShowPassword, UpdatePassword, UpdateConfirmPassword ) model
+                    SignUp.viewEmailInput
+                        { errors = model.errors
+                        , onEmailInput = UpdateEmail
+                        }
+                        ++ SignUp.viewPasswordInputs
+                            { showPasswords = model.showPasswords
+                            , errors = model.errors
+                            , onShowPasswordToggle = ToggleShowPassword
+                            , onPasswordInput = UpdatePassword
+                            , onConfirmPasswordInput = UpdateConfirmPassword
+                            }
                         ++ viewInviteCodeInput model
                         ++ SignUp.viewInternalErrorMessage model.errors
                         ++ [ Html.div
                                 [ attribute "class" "signup_label" ]
                                 [ if
                                     not (Dict.isEmpty model.errors)
-                                        || String.isEmpty model.signup_params.email
-                                        || String.isEmpty model.signup_params.password
-                                        || String.isEmpty model.signup_params.confirm_password
-                                        || String.isEmpty model.signup_params.invite_code
+                                        || String.isEmpty model.signupParams.email
+                                        || String.isEmpty model.signupParams.password
+                                        || String.isEmpty model.signupParams.confirmPassword
+                                        || String.isEmpty model.signupParams.inviteCode
                                   then
                                     div [ class "button", class "disabled" ]
                                         [ div [ class "signup_submit" ] [ Html.span [] [ Html.text "Sign Up" ] ]
                                         ]
 
                                   else
-                                    div [ class "button", onClick Submit, class "cursor" ]
+                                    div [ class "button", onClick SubmittedForm, class "cursor" ]
                                         [ div [ class "signup_submit" ] [ Html.span [] [ Html.text "Sign Up" ] ]
                                         ]
                                 ]
@@ -276,32 +313,30 @@ view model =
 viewInviteCodeInput : Model -> List (Html Msg)
 viewInviteCodeInput model =
     let
-        err =
-            Dict.member "invite_code" model.errors
-
-        err_msg =
-            [ SignUp.validationError
-                (Html.em [] [ Html.text (Maybe.withDefault "" (Dict.get "invite_code" model.errors)) ])
-            ]
-    in
-    [ SignUp.signupLabel (Html.span [] [ Html.text "Invite Code " ])
-    , Html.input
-        ([ attribute "size" "25", onInput UpdateInviteCode ]
-            ++ (if err then
-                    [ attribute "class" "input_error" ]
-
-                else
-                    []
-               )
-        )
-        []
-    ]
-        ++ (if err then
-                err_msg
+        errorMessage =
+            if Dict.member "invite_code" model.errors then
+                [ SignUp.viewValidationError
+                    (Html.em [] [ Html.text (Maybe.withDefault "" (Dict.get "invite_code" model.errors)) ])
+                ]
 
             else
                 []
-           )
+
+        errorClass =
+            if Dict.member "invite_code" model.errors then
+                [ attribute "class" "input_error" ]
+
+            else
+                []
+    in
+    [ Html.div [ attribute "class" "signup_label" ]
+        [ Html.span [] [ Html.text "Invite Code " ]
+        ]
+    , Html.input
+        ([ attribute "size" "25", onInput UpdateInviteCode ] ++ errorClass)
+        []
+    ]
+        ++ errorMessage
 
 
 

@@ -8,7 +8,7 @@ import Html exposing (..)
 import Html.Attributes exposing (attribute, class, classList, href, id)
 import Html.Events exposing (onClick, onInput)
 import Http
-import Json.Decode
+import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode exposing (Value)
 import Session exposing (Session)
 import Shared
@@ -155,12 +155,12 @@ inviteEncoder email =
         ]
 
 
-newInviteResponseDecoder : Json.Decode.Decoder InstructorInvite.InstructorInvite
+newInviteResponseDecoder : Decoder InstructorInvite.InstructorInvite
 newInviteResponseDecoder =
-    Json.Decode.map3 InstructorInvite.InstructorInvite
-        (Json.Decode.field "email" (Json.Decode.map InstructorInvite.Email Json.Decode.string))
-        (Json.Decode.field "invite_code" (Json.Decode.map InstructorInvite.InviteCode Json.Decode.string))
-        (Json.Decode.field "expiration" (Json.Decode.map InstructorInvite.InviteExpiration Json.Decode.string))
+    Decode.map3 InstructorInvite.InstructorInvite
+        (Decode.field "email" (Decode.map InstructorInvite.Email Decode.string))
+        (Decode.field "invite_code" (Decode.map InstructorInvite.InviteCode Decode.string))
+        (Decode.field "expiration" (Decode.map InstructorInvite.InviteExpiration Decode.string))
 
 
 

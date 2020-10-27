@@ -17,6 +17,7 @@ import Html.Events exposing (onClick, onInput)
 import Html.Parser
 import Html.Parser.Util
 import Http exposing (..)
+import Http.Detailed
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode exposing (Value)
@@ -122,7 +123,8 @@ type Msg
       -- username
     | ToggleUsernameUpdate
     | UpdateUsername String
-    | GotUsernameValidation (Result Error UsernameValidation)
+      -- | GotUsernameValidation (Result Error UsernameValidation)
+    | GotUsernameValidation (Result (Http.Detailed.Error String) ( Http.Metadata, UsernameValidation ))
     | SubmitUsernameUpdate
     | CancelUsernameUpdate
       -- preferred difficulty
@@ -179,19 +181,26 @@ update msg (SafeModel model) =
             , validateUsername model.session model.config name
             )
 
-        GotUsernameValidation (Ok usernameValidation) ->
-            ( SafeModel { model | usernameValidation = usernameValidation }, Cmd.none )
+        GotUsernameValidation (Ok ( metadata, usernameValidation )) ->
+            ( SafeModel { model | usernameValidation = usernameValidation }
+            , Cmd.none
+            )
 
         GotUsernameValidation (Err error) ->
             case error of
-                Http.BadStatus resp ->
-                    ( SafeModel model, Cmd.none )
-
-                Http.BadBody _ ->
-                    ( SafeModel model, Cmd.none )
+                Http.Detailed.BadStatus metadata body ->
+                    ( SafeModel { model | errors = errorBodyToDict body }
+                    , Cmd.none
+                    )
 
                 _ ->
-                    ( SafeModel model, Cmd.none )
+                    ( SafeModel
+                        { model
+                            | errors =
+                                Dict.fromList [ ( "internal", "An internal error occured. Please contact the developers." ) ]
+                        }
+                    , Cmd.none
+                    )
 
         SubmitUsernameUpdate ->
             case model.usernameValidation.username of
@@ -319,12 +328,22 @@ validateUsername :
     -> String
     -> Cmd Msg
 validateUsername session config name =
-    Api.post
+    Api.postDetailed
         (Endpoint.validateUsername (Config.restApiUrl config))
         (Session.cred session)
         (Http.jsonBody (usernameEncoder name))
         GotUsernameValidation
         usernameValidationDecoder
+
+
+errorBodyToDict : String -> Dict String String
+errorBodyToDict body =
+    case Decode.decodeString (Decode.dict Decode.string) body of
+        Ok dict ->
+            dict
+
+        Err err ->
+            Dict.fromList [ ( "internal", "An internal error occured. Please contact the developers." ) ]
 
 
 toggleUsernameUpdate : SafeModel -> SafeModel
