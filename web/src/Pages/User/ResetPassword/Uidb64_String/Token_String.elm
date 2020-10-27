@@ -15,6 +15,8 @@ import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList)
 import Html.Events exposing (onCheck, onClick, onInput)
 import Http exposing (..)
+import Http.Detailed
+import Json.Decode as Decode
 import Json.Encode as Encode
 import Session exposing (Session)
 import Shared
@@ -89,7 +91,7 @@ init shared { params } =
 
 type Msg
     = Submit
-    | Submitted (Result Http.Error PassResetConfirmResp)
+    | Submitted (Result (Http.Detailed.Error String) ( Http.Metadata, PassResetConfirmResp ))
     | UpdatePassword String
     | UpdatePasswordConfirm String
     | ToggleShowPassword Bool
@@ -144,21 +146,25 @@ update msg model =
                 )
             )
 
-        Submitted (Ok resp) ->
+        Submitted (Ok ( metadata, resp )) ->
             ( { model | resp = resp }
             , Browser.Navigation.replaceUrl model.navKey resp.redirect
             )
 
         Submitted (Err error) ->
             case error of
-                Http.BadStatus resp ->
-                    ( model, Cmd.none )
-
-                Http.BadBody _ ->
-                    ( model, Cmd.none )
+                Http.Detailed.BadStatus metadata body ->
+                    ( { model | errors = errorBodyToDict body }
+                    , Cmd.none
+                    )
 
                 _ ->
-                    ( model, Cmd.none )
+                    ( { model
+                        | errors =
+                            Dict.fromList [ ( "internal", "An internal error occured. Please contact the developers." ) ]
+                      }
+                    , Cmd.none
+                    )
 
 
 postPasswordReset : Session -> Config -> ForgotPassword.Password -> Cmd Msg
@@ -167,7 +173,7 @@ postPasswordReset session config password =
         encodedResetParams =
             resetPasswordEncoder password
     in
-    Api.post
+    Api.postDetailed
         (Endpoint.resetPassword (Config.restApiUrl config))
         (Session.cred session)
         (Http.jsonBody encodedResetParams)
@@ -182,6 +188,16 @@ resetPasswordEncoder password =
         , ( "new_password2", Encode.string (ForgotPassword.password2toString (ForgotPassword.password2 password)) )
         , ( "uidb64", Encode.string (ForgotPassword.uidb64toString (ForgotPassword.uidb64 password)) )
         ]
+
+
+errorBodyToDict : String -> Dict String String
+errorBodyToDict body =
+    case Decode.decodeString (Decode.dict Decode.string) body of
+        Ok dict ->
+            dict
+
+        Err err ->
+            Dict.fromList [ ( "internal", "An internal error occured. Please contact the developers." ) ]
 
 
 

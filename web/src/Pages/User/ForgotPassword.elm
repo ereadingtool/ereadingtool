@@ -13,6 +13,8 @@ import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList, id)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (..)
+import Http.Detailed
+import Json.Decode as Decode
 import Json.Encode as Encode
 import Ports
 import Session exposing (Session)
@@ -77,7 +79,7 @@ init shared { params } =
 
 type Msg
     = Submit
-    | Submitted (Result Http.Error ForgotPassResp)
+    | Submitted (Result (Http.Detailed.Error String) ( Http.Metadata, ForgotPassResp ))
     | UpdateEmail String
 
 
@@ -103,7 +105,7 @@ update msg model =
             , postForgotPassword model.session model.config model.userEmail
             )
 
-        Submitted (Ok resp) ->
+        Submitted (Ok ( metadata, resp )) ->
             let
                 newErrors =
                     Dict.fromList <| Dict.toList model.errors ++ Dict.toList resp.errors
@@ -112,14 +114,18 @@ update msg model =
 
         Submitted (Err error) ->
             case error of
-                Http.BadStatus _ ->
-                    ( model, Cmd.none )
-
-                Http.BadBody _ ->
-                    ( model, Cmd.none )
+                Http.Detailed.BadStatus metadata body ->
+                    ( { model | errors = errorBodyToDict body }
+                    , Cmd.none
+                    )
 
                 _ ->
-                    ( model, Cmd.none )
+                    ( { model
+                        | errors =
+                            Dict.fromList [ ( "internal", "An internal error occured. Please contact the developers." ) ]
+                      }
+                    , Cmd.none
+                    )
 
 
 postForgotPassword : Session -> Config -> UserEmail -> Cmd Msg
@@ -128,7 +134,7 @@ postForgotPassword session config userEmail =
         encodedLoginParams =
             forgotPasswordEncoder userEmail
     in
-    Api.post
+    Api.postDetailed
         (Endpoint.forgotPassword (Config.restApiUrl config))
         (Session.cred session)
         (Http.jsonBody encodedLoginParams)
@@ -141,6 +147,16 @@ forgotPasswordEncoder userEmail =
     Encode.object
         [ ( "email", Encode.string (ForgotPassword.userEmailtoString userEmail) )
         ]
+
+
+errorBodyToDict : String -> Dict String String
+errorBodyToDict body =
+    case Decode.decodeString (Decode.dict Decode.string) body of
+        Ok dict ->
+            dict
+
+        Err err ->
+            Dict.fromList [ ( "internal", "An internal error occured. Please contact the developers." ) ]
 
 
 
