@@ -119,11 +119,10 @@ init shared { params } =
 
 
 type Msg
-    = GotProfile (Result Error StudentProfile)
+    = GotProfile (Result (Http.Detailed.Error String) ( Http.Metadata, StudentProfile ))
       -- username
     | ToggleUsernameUpdate
     | UpdateUsername String
-      -- | GotUsernameValidation (Result Error UsernameValidation)
     | GotUsernameValidation (Result (Http.Detailed.Error String) ( Http.Metadata, UsernameValidation ))
     | SubmitUsernameUpdate
     | CancelUsernameUpdate
@@ -131,7 +130,7 @@ type Msg
     | SubmitDifficulty String
       -- research consent
     | ToggleResearchConsent
-    | GotConsent (Result Error StudentConsentResp)
+    | GotResearchConsent (Result (Http.Detailed.Error String) ( Http.Metadata, StudentConsentResp ))
       -- help messages
     | ToggleShowHelp
     | CloseHint StudentHelp
@@ -144,25 +143,24 @@ type Msg
 update : Msg -> SafeModel -> ( SafeModel, Cmd Msg )
 update msg (SafeModel model) =
     case msg of
-        GotProfile (Ok studentProfile) ->
+        GotProfile (Ok ( metadata, studentProfile )) ->
             ( SafeModel { model | profile = studentProfile, editing = Dict.fromList [] }
             , Cmd.none
             )
 
-        GotProfile (Err err) ->
-            case err of
-                Http.BadStatus resp ->
-                    ( SafeModel { model | errorMessage = "Could not update student profile" }
-                    , Cmd.none
-                    )
-
-                Http.BadBody _ ->
-                    ( SafeModel { model | errorMessage = "Could not update student profile" }
+        GotProfile (Err error) ->
+            case error of
+                Http.Detailed.BadStatus metadata body ->
+                    ( SafeModel { model | errors = errorBodyToDict body }
                     , Cmd.none
                     )
 
                 _ ->
-                    ( SafeModel { model | errorMessage = "Could not update student profile" }
+                    ( SafeModel
+                        { model
+                            | errors =
+                                Dict.fromList [ ( "internal", "An internal error occured. Please contact the developers." ) ]
+                        }
                     , Cmd.none
                     )
 
@@ -241,23 +239,22 @@ update msg (SafeModel model) =
                 (not model.consentedToResearch)
             )
 
-        GotConsent (Ok resp) ->
-            ( SafeModel { model | consentedToResearch = resp.consented }, Cmd.none )
+        GotResearchConsent (Ok ( metadata, response )) ->
+            ( SafeModel { model | consentedToResearch = response.consented }, Cmd.none )
 
-        GotConsent (Err err) ->
-            case err of
-                Http.BadStatus resp ->
-                    ( SafeModel { model | errorMessage = "Could not update research consent" }
-                    , Cmd.none
-                    )
-
-                Http.BadBody _ ->
-                    ( SafeModel { model | errorMessage = "Could not update research consent" }
+        GotResearchConsent (Err error) ->
+            case error of
+                Http.Detailed.BadStatus metadata body ->
+                    ( SafeModel { model | errors = errorBodyToDict body }
                     , Cmd.none
                     )
 
                 _ ->
-                    ( SafeModel { model | errorMessage = "Could not update research consent" }
+                    ( SafeModel
+                        { model
+                            | errors =
+                                Dict.fromList [ ( "internal", "An internal error occured. Please contact the developers." ) ]
+                        }
                     , Cmd.none
                     )
 
@@ -291,7 +288,7 @@ putProfile :
 putProfile session config profile =
     case StudentProfile.studentID profile of
         Just studentId ->
-            Api.put
+            Api.putDetailed
                 (Endpoint.studentProfile (Config.restApiUrl config) studentId)
                 (Session.cred session)
                 (Http.jsonBody (profileEncoder profile))
@@ -311,11 +308,11 @@ putResearchConsent :
 putResearchConsent session config studentProfile consent =
     case StudentProfile.studentID studentProfile of
         Just studentId ->
-            Api.put
+            Api.putDetailed
                 (Endpoint.consentToResearch (Config.restApiUrl config) studentId)
                 (Session.cred session)
                 (Http.jsonBody (consentEncoder consent))
-                GotConsent
+                GotResearchConsent
                 studentConsentRespDecoder
 
         Nothing ->

@@ -15,6 +15,7 @@ port module Api exposing
     , postDetailed
     , postTask
     , put
+    , putDetailed
     , toggleShowHelp
     , viewerChanges
     , websocketConnect
@@ -330,9 +331,34 @@ delete url maybeCred body toMsg decoder =
         }
 
 
-{-| postDetailed exposes Metadata so we can show users error messages
+{-| Detailed HTTP calls expose Metadata so we can show users error messages
 sent back from the server
 -}
+putDetailed :
+    Endpoint
+    -> Maybe Cred
+    -> Http.Body
+    -> (Result (Http.Detailed.Error String) ( Http.Metadata, a ) -> msg)
+    -> Decode.Decoder a
+    -> Cmd msg
+putDetailed url maybeCred body toMsg decoder =
+    Endpoint.request
+        { method = "PUT"
+        , url = url
+        , expect = Http.Detailed.expectJson toMsg decoder
+        , headers =
+            case maybeCred of
+                Just cred ->
+                    [ credHeader cred ]
+
+                Nothing ->
+                    []
+        , body = body
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
+
 postDetailed :
     Endpoint
     -> Maybe Cred

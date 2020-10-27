@@ -8,6 +8,7 @@ import Html exposing (..)
 import Html.Attributes exposing (attribute, class, classList, href, id)
 import Html.Events exposing (onClick, onInput)
 import Http
+import Http.Detailed
 import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode exposing (Value)
 import Session exposing (Session)
@@ -81,7 +82,7 @@ init shared { params } =
 type Msg
     = UpdateNewInviteEmail Email
     | SubmittedNewInvite
-    | GotNewInvite (Result Http.Error InstructorInvite)
+    | GotNewInvite (Result (Http.Detailed.Error String) ( Http.Metadata, InstructorInvite ))
     | Logout
 
 
@@ -95,7 +96,7 @@ update msg (SafeModel model) =
             ( SafeModel model
             , case model.newInviteEmail of
                 Just email ->
-                    submitNewInvite model.session
+                    postNewInvite model.session
                         model.config
                         email
 
@@ -103,11 +104,24 @@ update msg (SafeModel model) =
                     Cmd.none
             )
 
-        GotNewInvite (Ok invite) ->
+        GotNewInvite (Ok ( metdata, invite )) ->
             ( SafeModel { model | profile = InstructorProfile.addInvite model.profile invite }, Cmd.none )
 
-        GotNewInvite (Err err) ->
-            ( SafeModel { model | errors = Dict.insert "invite" "Something went wrong." model.errors }, Cmd.none )
+        GotNewInvite (Err error) ->
+            case error of
+                Http.Detailed.BadStatus metadata body ->
+                    ( SafeModel { model | errors = errorBodyToDict body }
+                    , Cmd.none
+                    )
+
+                _ ->
+                    ( SafeModel
+                        { model
+                            | errors =
+                                Dict.fromList [ ( "internal", "An internal error occured. Please contact the developers." ) ]
+                        }
+                    , Cmd.none
+                    )
 
         Logout ->
             ( SafeModel model, Api.logout () )
@@ -126,14 +140,14 @@ updateNewInviteEmail (SafeModel model) email =
     SafeModel { model | newInviteEmail = Just email, errors = validationErrors }
 
 
-submitNewInvite :
+postNewInvite :
     Session
     -> Config
     -> Email
     -> Cmd Msg
-submitNewInvite session config email =
+postNewInvite session config email =
     if InstructorInvite.isValidEmail email then
-        Api.post
+        Api.postDetailed
             (Endpoint.inviteInstructor (Config.restApiUrl config))
             (Session.cred session)
             (Http.jsonBody (inviteEncoder email))
@@ -142,6 +156,16 @@ submitNewInvite session config email =
 
     else
         Cmd.none
+
+
+errorBodyToDict : String -> Dict String String
+errorBodyToDict body =
+    case Decode.decodeString (Decode.dict Decode.string) body of
+        Ok dict ->
+            dict
+
+        Err err ->
+            Dict.fromList [ ( "internal", "An internal error occured. Please contact the developers." ) ]
 
 
 
