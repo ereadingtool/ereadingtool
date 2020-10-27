@@ -1,4 +1,8 @@
-module User exposing (..)
+module User exposing (DeleteMe)
+
+
+type DeleteMe
+    = DeleteMe
 
 
 type UserID

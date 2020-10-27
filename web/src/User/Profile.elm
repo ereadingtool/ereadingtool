@@ -1,4 +1,12 @@
-module User.Profile exposing (..)
+module User.Profile exposing
+    ( Profile(..)
+    , emptyProfile
+    , fromInstructorProfile
+    , fromStudentProfile
+    , toInstructorProfile
+    , toStudentProfile
+    , view_profile_header
+    )
 
 import Flags
 import Html exposing (Html, div)

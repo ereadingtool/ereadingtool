@@ -1,4 +1,4 @@
-module TextReader.View exposing (..)
+module TextReader.View exposing (DeleteMe)
 
 import Array exposing (Array)
 import Dict exposing (Dict)
@@ -6,7 +6,7 @@ import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList, id)
 import Html.Events exposing (onClick, onMouseLeave)
 import Html.Parser
-import Html.Parser.Util
+import Html.Parser.Util as HtmlParser
 import Text.Section.Words.Tag
 import TextReader.Answer.Model exposing (TextAnswer)
 import TextReader.Model exposing (..)
@@ -16,7 +16,10 @@ import TextReader.Section.Model exposing (Section, Words)
 import TextReader.Text.Model exposing (Text)
 import TextReader.TextWord
 import User.Profile.TextReader.Flashcards
--- import VirtualDom
+
+
+type DeleteMe
+    = DeleteMe
 
 
 tagWord : Model -> Section -> Int -> String -> Html Msg
@@ -34,16 +37,13 @@ tagWord model text_reader_section instance token =
     -- case token == " " of
     --     True ->
     --         VirtualDom.text token
-
     --     False ->
     --         case textreader_textword of
     --             Just text_word ->
     --                 if TextReader.TextWord.hasTranslations text_word then
     --                     view_defined_word model reader_word text_word token
-
     --                 else
     --                     VirtualDom.text token
-
     --             Nothing ->
     --                 VirtualDom.text token
     Html.text ""
@@ -59,7 +59,8 @@ view_defined_word model reader_word text_word token =
         , onClick (ToggleGloss reader_word)
         ]
         [ span [ classList [ ( "highlighted", TextReader.Model.glossed reader_word model.gloss ) ] ]
-            [ VirtualDom.text token
+            -- [ VirtualDom.text token
+            [ Html.text token
             ]
         , view_gloss model reader_word text_word
         ]
@@ -240,7 +241,8 @@ view_text_section model text_reader_section =
             Text.Section.Words.Tag.tagWordsAndToVDOM
                 (tagWord model text_reader_section)
                 (isPartOfCompoundWord text_reader_section)
-                (HtmlParser.parse text_section.body)
+                -- (HtmlParser.parse text_section.body)
+                []
 
         section_title =
             "Section " ++ String.fromInt (text_section.order + 1) ++ "/" ++ String.fromInt text_section.num_of_sections
@@ -254,13 +256,16 @@ view_text_section model text_reader_section =
 
 view_text_introduction : Text -> Html Msg
 view_text_introduction text =
-    div [ attribute "id" "text-intro" ] (HtmlParser.Util.toVirtualDom <| HtmlParser.parse text.introduction)
+    div [ attribute "id" "text-intro" ]
+        -- (HtmlParser.Util.toVirtualDom <| HtmlParser.parse text.introduction)
+        []
 
 
 view_text_conclusion : Text -> Html Msg
 view_text_conclusion text =
     div [ attribute "id" "text-conclusion" ]
-        (HtmlParser.Util.toVirtualDom <| HtmlParser.parse (Maybe.withDefault "" text.conclusion))
+        -- (HtmlParser.Util.toVirtualDom <| HtmlParser.parse (Maybe.withDefault "" text.conclusion))
+        []
 
 
 view_prev_btn : Html Msg
@@ -279,23 +284,24 @@ view_next_btn =
 
 view_text_complete : Model -> TextScores -> Html Msg
 view_text_complete model scores =
-  div [id "complete"] [
-    div [attribute "id" "text-score"] [
-      div [] [
-        Html.text
-          (  "You answered "
-          ++ (toString scores.section_scores)
-          ++ " out of "
-          ++ (toString scores.possible_section_scores)
-          ++ " questions correctly for this text.")
-      ]
-    ]
-  , view_text_conclusion model.text
-  , div [id "nav"] [
-      view_prev_btn
-    , div [onClick StartOver] [ Html.text "Start Over" ]
-    ]
-  ]
+    div [ id "complete" ]
+        [ div [ attribute "id" "text-score" ]
+            [ div []
+                [ Html.text
+                    ("You answered "
+                        ++ String.fromInt scores.section_scores
+                        ++ " out of "
+                        ++ String.fromInt scores.possible_section_scores
+                        ++ " questions correctly for this text."
+                    )
+                ]
+            ]
+        , view_text_conclusion model.text
+        , div [ id "nav" ]
+            [ view_prev_btn
+            , div [ onClick StartOver ] [ Html.text "Start Over" ]
+            ]
+        ]
 
 
 view_exceptions : Model -> Html Msg

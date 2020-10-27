@@ -1,4 +1,4 @@
-module TextReader.Msg exposing (..)
+module TextReader.Msg exposing (Msg(..))
 
 import Api.WebSocket as WebSocket exposing (WebSocketCmd)
 import Http

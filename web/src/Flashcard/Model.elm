@@ -1,4 +1,22 @@
-module Flashcard.Model exposing (..)
+module Flashcard.Model exposing
+    ( CmdReq(..)
+    , CmdResp(..)
+    , Exception
+    , Flashcard
+    , InitRespRec
+    , Model
+    , SessionState(..)
+    , disconnect
+    , example
+    , hasException
+    , inReview
+    , newFlashcard
+    , setException
+    , setMode
+    , setQuality
+    , setSessionState
+    , translationOrPhrase
+    )
 
 import Flashcard.Mode exposing (Mode)
 import Menu.Items

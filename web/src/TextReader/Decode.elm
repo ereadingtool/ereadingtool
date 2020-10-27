@@ -1,11 +1,15 @@
-module TextReader.Decode exposing (..)
+module TextReader.Decode exposing (DeleteMe, wsRespDecoder)
 
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)
-import TextReader.Model exposing (..)
+import TextReader.Model exposing (CmdResp(..), Exception, TextScores)
 import TextReader.Section.Decode
 import TextReader.Section.Model exposing (Section)
 import TextReader.Text.Decode
+
+
+type DeleteMe
+    = DeleteMe
 
 
 commandRespDecoder : String -> Json.Decode.Decoder CmdResp

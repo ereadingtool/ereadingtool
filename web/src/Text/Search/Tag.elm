@@ -1,4 +1,11 @@
-module Text.Search.Tag exposing (TagSearch, filterParams, inputID, new, optionsToDict, select_tag)
+module Text.Search.Tag exposing
+    ( TagSearch
+    , filterParams
+    , inputID
+    , new
+    , optionsToDict
+    , select_tag
+    )
 
 import Dict exposing (Dict)
 import Search exposing (..)

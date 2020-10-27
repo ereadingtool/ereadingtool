@@ -1,7 +1,5 @@
 module User.Student.Profile.Decode exposing
-    (  studentConsentRespDecoder
-       -- , studentProfileDecoder
-
+    ( studentConsentRespDecoder
     , usernameValidationDecoder
     )
 

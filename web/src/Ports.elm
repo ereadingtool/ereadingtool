@@ -1,4 +1,16 @@
-port module Ports exposing (..)
+port module Ports exposing
+    ( CKEditorID
+    , CKEditorText
+    , addClassToCKEditor
+    , ckEditor
+    , ckEditorSetHtml
+    , ckEditorUpdate
+    , clearInputText
+    , confirm
+    , confirmation
+    , scrollTo
+    , selectAllInputText
+    )
 
 
 port selectAllInputText : String -> Cmd msg

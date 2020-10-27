@@ -1,4 +1,4 @@
-module TextReader.Question.Decode exposing (..)
+module TextReader.Question.Decode exposing (answersDecoder, questionsDecoder)
 
 import Array exposing (Array)
 import DateTime
@@ -33,8 +33,6 @@ questionDecoder =
         |> required "text_section_id" Json.Decode.int
         |> required "created_dt" (Json.Decode.nullable (Json.Decode.map DateTime.fromPosix Iso8601.decoder))
         |> required "modified_dt" (Json.Decode.nullable (Json.Decode.map DateTime.fromPosix Iso8601.decoder))
-        -- |> required "created_dt" (Json.Decode.nullable (Json.Decode.map DateTime.fromPosix posix))
-        -- |> required "modified_dt" (Json.Decode.nullable (Json.Decode.map DateTime.fromPosix posix))
         |> required "body" Json.Decode.string
         |> required "order" Json.Decode.int
         |> required "answers" answersDecoder

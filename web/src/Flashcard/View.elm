@@ -1,7 +1,7 @@
-module Flashcard.View exposing (..)
+module Flashcard.View exposing (view_content)
 
 import Flashcard.Mode
-import Flashcard.Model exposing (..)
+import Flashcard.Model exposing (Flashcard, Model, SessionState(..))
 import Flashcard.Msg exposing (Msg(..))
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList, id)

@@ -1,8 +1,12 @@
-module TextReader.Encode exposing (..)
+module TextReader.Encode exposing (DeleteMe, sendCommand)
 
 import Json.Encode
 import TextReader.Answer.Model
-import TextReader.Model exposing (..)
+import TextReader.Model exposing (CmdReq(..))
+
+
+type DeleteMe
+    = DeleteMe
 
 
 jsonToString : Json.Encode.Value -> String

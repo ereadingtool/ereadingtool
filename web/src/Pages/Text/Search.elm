@@ -67,8 +67,6 @@ type SafeModel
         , textApiEndpoint : AdminText.TextAPIEndpoint
         , help : TextSearch.Help.TextSearchHelp
         , errorMessage : Maybe String
-
-        -- , welcome : Bool
         }
 
 
