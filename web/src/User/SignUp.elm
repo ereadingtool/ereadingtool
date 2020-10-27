@@ -213,6 +213,20 @@ view_submit submit_msg model =
     ]
 
 
+viewInternalErrorMessage : Dict String String -> List (Html msg)
+viewInternalErrorMessage errors =
+    let
+        dbg =
+            Debug.log "errs" errors
+    in
+    case Dict.get "internal" errors of
+        Just err_msg ->
+            [ validationError (Html.em [] [ Html.text err_msg ]) ]
+
+        Nothing ->
+            []
+
+
 view_content :
     String
     -> (String -> a)
@@ -226,6 +240,7 @@ view_content signupLabelText email_msg password_msgs submit_msg model =
         , div [ classList [ ( "signup_box", True ) ] ] <|
             view_email_input email_msg model
                 ++ view_password_input password_msgs model
+                ++ viewInternalErrorMessage model.errors
                 ++ view_submit submit_msg model
         ]
 

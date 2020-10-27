@@ -12,6 +12,7 @@ port module Api exposing
     , logout
     , performanceReportLink
     , post
+    , postDetailed
     , postTask
     , put
     , toggleShowHelp
@@ -28,6 +29,7 @@ import Api.WebSocket as WebSocket exposing (Address, WebSocketCmd, WebSocketMsg)
 import Browser
 import Browser.Navigation as Nav
 import Http
+import Http.Detailed
 import Id exposing (Id)
 import Json.Decode as Decode exposing (Decoder, Value, field, string)
 import Json.Decode.Pipeline exposing (required)
@@ -315,6 +317,34 @@ delete url maybeCred body toMsg decoder =
         { method = "DELETE"
         , url = url
         , expect = Http.expectJson toMsg decoder
+        , headers =
+            case maybeCred of
+                Just cred ->
+                    [ credHeader cred ]
+
+                Nothing ->
+                    []
+        , body = body
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
+
+{-| postDetailed exposes Metadata so we can show users error messages
+sent back from the server
+-}
+postDetailed :
+    Endpoint
+    -> Maybe Cred
+    -> Http.Body
+    -> (Result (Http.Detailed.Error String) ( Http.Metadata, a ) -> msg)
+    -> Decode.Decoder a
+    -> Cmd msg
+postDetailed url maybeCred body toMsg decoder =
+    Endpoint.request
+        { method = "POST"
+        , url = url
+        , expect = Http.Detailed.expectJson toMsg decoder
         , headers =
             case maybeCred of
                 Just cred ->

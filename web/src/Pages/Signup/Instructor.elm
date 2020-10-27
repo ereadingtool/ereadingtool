@@ -14,6 +14,7 @@ import Html exposing (Html, div)
 import Html.Attributes exposing (attribute, class, classList)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (..)
+import Http.Detailed
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode
@@ -104,7 +105,7 @@ type Msg
     | UpdatePassword String
     | UpdateConfirmPassword String
     | UpdateInviteCode String
-    | Submitted (Result Http.Error SignUpResp)
+    | Submitted (Result (Http.Detailed.Error String) ( Http.Metadata, SignUpResp ))
     | Submit
     | Logout MenuMsg.Msg
 
@@ -132,19 +133,23 @@ update msg model =
 
         Submitted (Ok resp) ->
             ( model
-            , Browser.Navigation.replaceUrl model.navKey (Route.toString Route.Login__Instructor)
+            , Browser.Navigation.replaceUrl model.navKey (Route.toString Route.Top)
             )
 
-        Submitted (Err err) ->
-            case err of
-                Http.BadStatus resp ->
-                    ( model, Cmd.none )
-
-                Http.BadBody _ ->
-                    ( model, Cmd.none )
+        Submitted (Err error) ->
+            case error of
+                Http.Detailed.BadStatus metadata body ->
+                    ( { model | errors = errorBodyToDict body }
+                    , Cmd.none
+                    )
 
                 _ ->
-                    ( model, Cmd.none )
+                    ( { model
+                        | errors =
+                            Dict.fromList [ ( "internal", "An internal error occured. Please contact the developers." ) ]
+                      }
+                    , Cmd.none
+                    )
 
         Logout _ ->
             ( model, Cmd.none )
@@ -186,13 +191,13 @@ isValidInviteCodeLength inviteCode =
 
 
 postSignup : Session -> Config -> SignUpParams -> Cmd Msg
-postSignup session config signupParams =
+postSignup session config signup_params =
     let
         encodedSignupParams =
-            signUpEncoder signupParams
+            signUpEncoder signup_params
     in
-    Api.post
-        (Endpoint.instructorSignup (Config.restApiUrl config))
+    Api.postDetailed
+        (Endpoint.studentSignup (Config.restApiUrl config))
         (Session.cred session)
         (Http.jsonBody encodedSignupParams)
         Submitted
@@ -216,6 +221,16 @@ signUpRespDecoder =
         |> required "redirect" (Json.Decode.map (SignUp.URI >> SignUp.RedirectURI) Json.Decode.string)
 
 
+errorBodyToDict : String -> Dict String String
+errorBodyToDict body =
+    case Json.Decode.decodeString (Json.Decode.dict Json.Decode.string) body of
+        Ok dict ->
+            dict
+
+        Err err ->
+            Dict.fromList [ ( "internal", "An internal error occured. Please contact the developers." ) ]
+
+
 
 -- VIEW
 
@@ -231,6 +246,7 @@ view model =
                     SignUp.view_email_input UpdateEmail model
                         ++ SignUp.view_password_input ( ToggleShowPassword, UpdatePassword, UpdateConfirmPassword ) model
                         ++ viewInviteCodeInput model
+                        ++ SignUp.viewInternalErrorMessage model.errors
                         ++ [ Html.div
                                 [ attribute "class" "signup_label" ]
                                 [ if
