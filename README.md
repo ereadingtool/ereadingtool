@@ -32,6 +32,19 @@ Once these are on the instance simply run:
 docker-compose up
 ```
 
+## Local development
+You'll want to use two shells here, one running a npm devlopment server out of the `web/` directory. 
+The other is to run the Django dev server at the project root. There are a couple of things to set in 
+the file `ereadingtools/settings.py` in order to make it work and provide verbose debugging output. 
+One setting is `DEBUG=True`. It makes plenty of sense that you'll want this if you're running in a local
+environment. Placing this statement at the top level of the settings file will do the trick.
+
+Another change to the settings file is regarding the host setting for redis in the `CHANNEL_LAYERS`. 
+Regardless of how you run Redis, whether that's a container on your local machine or running natively, 
+you'll want to set it to `localhost`. Unless of course you do some magic with `/etc/hosts` or are planning
+to run the whole thing in a docker network anyways. 
+
+
 ## Web
 
 ### Setup
