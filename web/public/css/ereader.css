@@ -285,10 +285,12 @@ body {
 }
 
 .success_msg {
+  font-size: 24px;
   background-color: #93c6ef;
 }
 
 .error_msg {
+  font-size: 24px;
   background-color: #ff2222;
 }
 
