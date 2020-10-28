@@ -7,7 +7,6 @@ from django.views.generic import View
 
 from user.student.models import Student
 from auth.normal_auth import jwt_valid
-from auth.normal_auth import jwt_validation
 
 class StudentPerformancePDFView(View):
 
