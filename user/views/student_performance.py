@@ -1,19 +1,28 @@
 import pdfkit
+import os
+import time
+import jwt
 from django.core.files.base import ContentFile
 from django.http import HttpResponse, HttpRequest, HttpResponseForbidden
 from django.template import loader
 from django.utils import timezone as dt
 from django.views.generic import View
+from jwt.exceptions import InvalidTokenError
 
 from user.student.models import Student
-from auth.normal_auth import jwt_valid
 
 class StudentPerformancePDFView(View):
 
-    @jwt_valid(403, {})
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if not Student.objects.filter(pk=kwargs['pk']).exists():
             return HttpResponse(status=400)
+
+        jwt_user = jwt_validation(self.request.scope)
+
+        # confirm the user_id from the URL is the same as the JWT's
+        if jwt_user == None or jwt_user.pk != kwargs['pk']:
+            #TODO: Custom HTML document here
+            return HttpResponseForbidden()
 
         student = Student.objects.get(pk=kwargs['pk'])
 
@@ -34,3 +43,29 @@ class StudentPerformancePDFView(View):
         resp['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
 
         return resp
+
+
+def jwt_validation(scope):
+    """ Take JWT from query string to check the user against the db and validate its timestamp """
+    if not scope['query_string']:
+        return None
+    else:
+        secret_key = os.getenv('DJANGO_SECRET_KEY')
+        try:
+            qs = scope['query_string'][6:] if scope['query_string'][:6] == b'token=' else scope['query_string']
+            jwt_decoded = jwt.decode(qs, secret_key, algorithms=['HS256'])
+
+            if jwt_decoded['exp'] <= time.time():
+                # then their token has expired 
+                raise InvalidTokenError
+
+            if not Student.objects.filter(user_id=jwt_decoded['user_id']):
+                # then there is no user in the QuerySet
+                raise InvalidTokenError
+            # force evaluation of the QuerySet. We already know it contains at least one element
+            student = list(Student.objects.filter(user_id=jwt_decoded['user_id']))[0]
+
+            return student
+
+        except InvalidTokenError: 
+            return None

@@ -1,9 +1,7 @@
-import json
 import os
 import time
 import jwt
 from typing import Dict
-from jwt.exceptions import InvalidTokenError
 from user.student.models import Student
 from user.instructor.models import Instructor
 from django.http import HttpResponse
