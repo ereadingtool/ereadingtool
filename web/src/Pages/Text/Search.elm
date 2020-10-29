@@ -67,8 +67,6 @@ type SafeModel
         , textApiEndpoint : AdminText.TextAPIEndpoint
         , help : TextSearch.Help.TextSearchHelp
         , errorMessage : Maybe String
-
-        -- , welcome : Bool
         }
 
 
@@ -356,7 +354,7 @@ viewSearchResults textListItems =
                             String.fromInt (Tuple.first correct) ++ " out of " ++ String.fromInt (Tuple.second correct)
 
                         Nothing ->
-                            "None"
+                            "None attempted"
             in
             div [ class "search_result" ]
                 [ div [ class "result_item" ]
