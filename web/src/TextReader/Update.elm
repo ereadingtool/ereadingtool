@@ -1,10 +1,14 @@
-module TextReader.Update exposing (..)
+module TextReader.Update exposing (DeleteMe)
 
 import Json.Decode
 import TextReader.Decode
-import TextReader.Model exposing (..)
+import TextReader.Model exposing (CmdReq(..), CmdResp(..), Model, Progress(..))
 import TextReader.Msg exposing (Msg(..))
 import User.Profile.TextReader.Flashcards
+
+
+type DeleteMe
+    = DeleteMe
 
 
 routeCmdResp : Model -> CmdResp -> ( Model, Cmd Msg )

@@ -1,5 +1,6 @@
 module Pages.Text.Edit.Id_Int exposing (..)
 
+import Answer.Field exposing (error)
 import Api
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
@@ -9,12 +10,14 @@ import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (attribute)
 import Http
+import Http.Detailed
 import InstructorAdmin.Text.Translations as Translations
 import Json.Decode as Decode
 import Ports exposing (ckEditorUpdate, clearInputText, confirm, confirmation)
 import Session exposing (Session)
 import Shared
 import Spa.Document exposing (Document)
+import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
 import Task
@@ -121,12 +124,12 @@ init shared { params } =
 
 type Msg
     = SubmittedText
-    | GotText (Result Http.Error Text)
-    | GotTextCreated (Result Http.Error Text.Decode.TextCreateResp)
-    | GotTextUpdated (Result Http.Error Text.Decode.TextUpdateResp)
+    | GotText (Result (Http.Detailed.Error String) ( Http.Metadata, Text ))
+    | GotTextCreated (Result (Http.Detailed.Error String) ( Http.Metadata, Text.Decode.TextCreateResp ))
+    | GotTextUpdated (Result (Http.Detailed.Error String) ( Http.Metadata, Text.Decode.TextUpdateResp ))
     | SubmittedTextDelete
     | ConfirmedTextDelete Bool
-    | GotTextDeleted (Result Http.Error Text.Decode.TextDeleteResp)
+    | GotTextDeleted (Result (Http.Detailed.Error String) ( Http.Metadata, Text.Decode.TextDeleteResp ))
     | InitTextFieldEditors
     | ToggleEditable TextField Bool
     | UpdateTextAttributes String String
@@ -134,8 +137,8 @@ type Msg
     | AddTagInput String String
     | DeleteTag String
     | ToggleLock
-    | TextLocked (Result Http.Error Text.Decode.TextLockResp)
-    | TextUnlocked (Result Http.Error Text.Decode.TextLockResp)
+    | TextLocked (Result (Http.Detailed.Error String) ( Http.Metadata, Text.Decode.TextLockResp ))
+    | TextUnlocked (Result (Http.Detailed.Error String) ( Http.Metadata, Text.Decode.TextLockResp ))
     | ToggleTab Tab
     | ClearMessages Time.Posix
     | TextTagsDecode (Result String (Dict String String))
@@ -165,7 +168,7 @@ update msg (SafeModel model) =
                     , postText model.session model.config text
                     )
 
-        GotText (Ok text) ->
+        GotText (Ok ( metadata, text )) ->
             let
                 textComponent =
                     Text.Component.init text
@@ -232,12 +235,32 @@ update msg (SafeModel model) =
                             , Text.Component.reinitialize_ck_editors textComponent
                             )
 
-        GotText (Err err) ->
-            ( SafeModel model
-            , Cmd.none
-            )
+        GotText (Err error) ->
+            case error of
+                Http.Detailed.BadStatus metadata body ->
+                    case Text.Decode.decodeRespErrors body of
+                        Ok errors ->
+                            ( SafeModel
+                                { model
+                                    | errorMessage =
+                                        Just <|
+                                            "Could not retrieve text: "
+                                                ++ String.join " and " (Dict.values errors)
+                                }
+                            , Cmd.none
+                            )
 
-        GotTextCreated (Ok textCreateResp) ->
+                        Err _ ->
+                            ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
+                            , Cmd.none
+                            )
+
+                _ ->
+                    ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
+                    , Cmd.none
+                    )
+
+        GotTextCreated (Ok ( metadata, textCreateResp )) ->
             let
                 text =
                     Text.Component.text model.text_component
@@ -247,29 +270,29 @@ update msg (SafeModel model) =
                     | successMessage = Just <| String.join " " [ " created '" ++ text.title ++ "'" ]
                     , mode = EditMode
                 }
-            , Browser.Navigation.load textCreateResp.redirect
+            , Browser.Navigation.load <|
+                Route.toString <|
+                    Route.Text__Edit__Id_Int { id = textCreateResp.id }
             )
 
-        GotTextCreated (Err err) ->
-            case err of
-                Http.BadStatus resp ->
-                    -- case Text.Decode.decodeRespErrors resp.body of
-                    --     Ok errors ->
-                    --         ( SafeModel { model | text_component = Text.Component.update_text_errors model.text_component errors }, Cmd.none )
-                    --     _ ->
-                    ( SafeModel model, Cmd.none )
+        GotTextCreated (Err error) ->
+            case error of
+                Http.Detailed.BadStatus metadata body ->
+                    case Text.Decode.decodeRespErrors body of
+                        Ok errors ->
+                            ( SafeModel { model | text_component = Text.Component.update_text_errors model.text_component errors }, Cmd.none )
 
-                Http.BadBody resp ->
-                    let
-                        _ =
-                            Debug.log "submit text bad payload error" resp
-                    in
-                    ( SafeModel model, Cmd.none )
+                        Err _ ->
+                            ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
+                            , Cmd.none
+                            )
 
                 _ ->
-                    ( SafeModel model, Cmd.none )
+                    ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
+                    , Cmd.none
+                    )
 
-        GotTextUpdated (Ok textUpdateResp) ->
+        GotTextUpdated (Ok ( metadata, textUpdateResp )) ->
             let
                 text =
                     Text.Component.text model.text_component
@@ -283,71 +306,53 @@ update msg (SafeModel model) =
             , Cmd.none
             )
 
-        GotTextUpdated (Err err) ->
-            case err of
-                Http.BadStatus resp ->
-                    let
-                        _ =
-                            Debug.log "update error bad status" resp
-                    in
-                    -- case Text.Decode.decodeRespErrors resp.body of
-                    --     Ok errors ->
-                    --         ( SafeModel { model | text_component = Text.Component.update_text_errors model.text_component errors }, Cmd.none )
-                    --     _ ->
-                    ( SafeModel model, Cmd.none )
+        GotTextUpdated (Err error) ->
+            case error of
+                Http.Detailed.BadStatus metadata body ->
+                    case Text.Decode.decodeRespErrors body of
+                        Ok errors ->
+                            ( SafeModel { model | text_component = Text.Component.update_text_errors model.text_component errors }, Cmd.none )
 
-                Http.BadBody resp ->
-                    let
-                        _ =
-                            Debug.log "update error bad payload" resp
-                    in
-                    ( SafeModel model, Cmd.none )
+                        Err _ ->
+                            ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
+                            , Cmd.none
+                            )
 
                 _ ->
-                    ( SafeModel model, Cmd.none )
+                    ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
+                    , Cmd.none
+                    )
 
         SubmittedTextDelete ->
             ( SafeModel model
             , confirm "Are you sure you want to delete this text?"
             )
 
-        GotTextDeleted (Ok textDelete) ->
-            let
-                _ =
-                    Debug.log "text delete" textDelete
-            in
-            ( SafeModel model, Browser.Navigation.load textDelete.redirect )
+        GotTextDeleted (Ok ( metadata, textDelete )) ->
+            ( SafeModel model
+            , Browser.Navigation.load (Route.toString Route.Text__EditorSearch)
+            )
 
-        GotTextDeleted (Err httpError) ->
-            case httpError of
-                Http.BadStatus resp ->
-                    let
-                        _ =
-                            Debug.log "delete text error bad status" resp
-                    in
-                    -- case Text.Decode.decodeRespErrors resp.body of
-                    --     Ok errors ->
-                    --         let
-                    --             errorsStr =
-                    --                 String.join " and " (Dict.values errors)
-                    --         in
-                    --         ( SafeModel { model | success_msg = Just <| "Error trying to delete the text: " ++ errorsStr }, Cmd.none )
-                    --     _ ->
-                    ( SafeModel model, Cmd.none )
+        GotTextDeleted (Err error) ->
+            case error of
+                Http.Detailed.BadStatus metadata body ->
+                    case Text.Decode.decodeRespErrors body of
+                        Ok errors ->
+                            let
+                                errorsStr =
+                                    String.join " and " (Dict.values errors)
+                            in
+                            ( SafeModel { model | errorMessage = Just <| "Error trying to delete the text: " ++ errorsStr }, Cmd.none )
 
-                Http.BadBody resp ->
-                    let
-                        _ =
-                            Debug.log "delete text error bad payload" resp
-                    in
-                    ( SafeModel model, Cmd.none )
+                        Err _ ->
+                            ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
+                            , Cmd.none
+                            )
 
                 _ ->
-                    let
-                        _ =
-                            Debug.log "delete text error bad payload" httpError
-                    in
-                    ( SafeModel model, Cmd.none )
+                    ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
+                    , Cmd.none
+                    )
 
         ConfirmedTextDelete confirm ->
             if confirm then
@@ -458,7 +463,7 @@ update msg (SafeModel model) =
                 deleteLock model.session model.config text
             )
 
-        TextLocked (Ok textLockedResp) ->
+        TextLocked (Ok ( metadata, textLockedResp )) ->
             ( SafeModel
                 { model
                     | writeLocked = textLockedResp.locked
@@ -468,34 +473,32 @@ update msg (SafeModel model) =
             , Cmd.none
             )
 
-        TextLocked (Err err) ->
-            case err of
-                Http.BadStatus resp ->
-                    let
-                        _ =
-                            Debug.log "update error bad status" resp
-                    in
-                    -- case Text.Decode.decodeRespErrors resp.body of
-                    --     Ok errors ->
-                    --         let
-                    --             errors_str =
-                    --                 String.join " and " (Dict.values errors)
-                    --         in
-                    --         ( SafeModel { model | success_msg = Just <| "Error trying to lock the text: " ++ errors_str }, Cmd.none )
-                    --     _ ->
-                    ( SafeModel model, Cmd.none )
+        TextLocked (Err error) ->
+            case error of
+                Http.Detailed.BadStatus metadata body ->
+                    case Text.Decode.decodeRespErrors body of
+                        Ok errors ->
+                            ( SafeModel
+                                { model
+                                    | errorMessage =
+                                        Just <|
+                                            "Error trying to lock the text: "
+                                                ++ String.join " and " (Dict.values errors)
+                                }
+                            , Cmd.none
+                            )
 
-                Http.BadBody resp ->
-                    let
-                        _ =
-                            Debug.log "update error bad payload" resp
-                    in
-                    ( SafeModel model, Cmd.none )
+                        Err _ ->
+                            ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
+                            , Cmd.none
+                            )
 
                 _ ->
-                    ( SafeModel model, Cmd.none )
+                    ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
+                    , Cmd.none
+                    )
 
-        TextUnlocked (Ok textUnlockedResp) ->
+        TextUnlocked (Ok ( metadata, textUnlockedResp )) ->
             ( SafeModel
                 { model
                     | writeLocked = textUnlockedResp.locked
@@ -505,32 +508,30 @@ update msg (SafeModel model) =
             , Cmd.none
             )
 
-        TextUnlocked (Err err) ->
-            case err of
-                Http.BadStatus resp ->
-                    let
-                        _ =
-                            Debug.log "update error bad status" resp
-                    in
-                    -- case Text.Decode.decodeRespErrors resp.body of
-                    --     Ok errors ->
-                    --         let
-                    --             errors_str =
-                    --                 String.join " and " (Dict.values errors)
-                    --         in
-                    --         ( SafeModel { model | success_msg = Just <| "Error trying to unlock the text: " ++ errors_str }, Cmd.none )
-                    --     _ ->
-                    ( SafeModel model, Cmd.none )
+        TextUnlocked (Err error) ->
+            case error of
+                Http.Detailed.BadStatus metadata body ->
+                    case Text.Decode.decodeRespErrors body of
+                        Ok errors ->
+                            ( SafeModel
+                                { model
+                                    | errorMessage =
+                                        Just <|
+                                            "Error trying to unlock the text: "
+                                                ++ String.join " and " (Dict.values errors)
+                                }
+                            , Cmd.none
+                            )
 
-                Http.BadBody resp ->
-                    let
-                        _ =
-                            Debug.log "update error bad payload" resp
-                    in
-                    ( SafeModel model, Cmd.none )
+                        Err _ ->
+                            ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
+                            , Cmd.none
+                            )
 
                 _ ->
-                    ( SafeModel model, Cmd.none )
+                    ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
+                    , Cmd.none
+                    )
 
         ToggleTab tab ->
             let
@@ -544,7 +545,7 @@ update msg (SafeModel model) =
             ( SafeModel { model | selectedTab = tab }, postToggleCmd )
 
         ClearMessages _ ->
-            ( SafeModel { model | successMessage = Nothing }
+            ( SafeModel { model | successMessage = Nothing, errorMessage = Nothing }
             , Cmd.none
             )
 
@@ -553,7 +554,7 @@ update msg (SafeModel model) =
                 Ok tagDict ->
                     ( SafeModel { model | tags = tagDict }, Cmd.none )
 
-                _ ->
+                Err _ ->
                     ( SafeModel model, Cmd.none )
 
         TextComponentMsg textComponentMsg ->
@@ -579,7 +580,7 @@ getText :
     -> Int
     -> Cmd Msg
 getText session config textId =
-    Api.get
+    Api.getDetailed
         (Endpoint.text (Config.restApiUrl config) textId [])
         (Session.cred session)
         GotText
@@ -592,7 +593,7 @@ postText :
     -> Text
     -> Cmd Msg
 postText session config text =
-    Api.post
+    Api.postDetailed
         (Endpoint.createText (Config.restApiUrl config))
         (Session.cred session)
         (Http.jsonBody (Text.Encode.textEncoder text))
@@ -608,7 +609,7 @@ updateText :
 updateText session config text =
     case text.id of
         Just textId ->
-            Api.put
+            Api.putDetailed
                 (Endpoint.text (Config.restApiUrl config) textId [])
                 (Session.cred session)
                 (Http.jsonBody (Text.Encode.textEncoder text))
@@ -627,7 +628,7 @@ deleteText :
 deleteText session config text =
     case text.id of
         Just textId ->
-            Api.delete
+            Api.deleteDetailed
                 (Endpoint.text (Config.restApiUrl config) textId [])
                 (Session.cred session)
                 Http.emptyBody
@@ -646,7 +647,7 @@ postLock :
 postLock session config text =
     case text.id of
         Just textId ->
-            Api.post
+            Api.postDetailed
                 (Endpoint.textLock (Config.restApiUrl config) textId)
                 (Session.cred session)
                 Http.emptyBody
@@ -665,7 +666,7 @@ deleteLock :
 deleteLock session config text =
     case text.id of
         Just textId ->
-            Api.delete
+            Api.deleteDetailed
                 (Endpoint.textLock (Config.restApiUrl config) textId)
                 (Session.cred session)
                 Http.emptyBody
@@ -795,7 +796,13 @@ subscriptions (SafeModel model) =
         -- handle clearing messages
         , case model.successMessage of
             Just _ ->
-                Time.every 3.0 ClearMessages
+                Time.every 2000 ClearMessages
+
+            _ ->
+                Sub.none
+        , case model.errorMessage of
+            Just _ ->
+                Time.every 2000 ClearMessages
 
             _ ->
                 Sub.none

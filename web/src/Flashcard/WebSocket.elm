@@ -1,10 +1,4 @@
-port module Flashcard.WebSocket exposing
-    ( -- connect
-      -- , disconnect
-      -- , sendCommand
-      -- , wsReceive
-      webSocketName
-    )
+port module Flashcard.WebSocket exposing (webSocketName)
 
 import Api exposing (websocketSend)
 import Flashcard.Encode

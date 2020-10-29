@@ -1,11 +1,15 @@
-module TextReader.Section.Decode exposing (..)
+module TextReader.Section.Decode exposing
+    ( sectionDecoder
+    , textWordInstanceDecoder
+    , textWordTranslationsDecoder
+    )
 
 import Array exposing (Array)
 import Dict exposing (Dict)
 import InstructorAdmin.Text.Translations exposing (..)
-import Text.Translations.Decode as TranslationsDecode
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)
+import Text.Translations.Decode as TranslationsDecode
 import TextReader.Question.Decode
 import TextReader.Section.Model exposing (Section, TextSection, Words)
 import TextReader.TextWord

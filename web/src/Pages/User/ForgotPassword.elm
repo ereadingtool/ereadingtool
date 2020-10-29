@@ -13,6 +13,9 @@ import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList, id)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (..)
+import Http.Detailed
+import Json.Decode as Decode exposing (Decoder)
+import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode
 import Ports
 import Session exposing (Session)
@@ -20,12 +23,6 @@ import Shared
 import Spa.Document exposing (Document)
 import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
-import User.ForgotPassword as ForgotPassword
-    exposing
-        ( ForgotPassResp
-        , UserEmail
-        , forgotPassRespDecoder
-        )
 import Utils exposing (isValidEmail)
 import Views
 
@@ -42,6 +39,12 @@ page =
         }
 
 
+type alias ForgotPasswordResponse =
+    { errors : Dict String String
+    , body : String
+    }
+
+
 
 -- INIT
 
@@ -53,8 +56,8 @@ type alias Params =
 type alias Model =
     { session : Session
     , config : Config
-    , userEmail : UserEmail
-    , resp : ForgotPassResp
+    , email : String
+    , response : ForgotPasswordResponse
     , errors : Dict String String
     }
 
@@ -63,8 +66,11 @@ init : Shared.Model -> Url Params -> ( Model, Cmd Msg )
 init shared { params } =
     ( { session = shared.session
       , config = shared.config
-      , userEmail = ForgotPassword.UserEmail ""
-      , resp = ForgotPassword.emptyForgotPassResp
+      , email = ""
+      , response =
+            { errors = Dict.empty
+            , body = ""
+            }
       , errors = Dict.fromList []
       }
     , Ports.clearInputText "email-input"
@@ -77,19 +83,22 @@ init shared { params } =
 
 type Msg
     = Submit
-    | Submitted (Result Http.Error ForgotPassResp)
+    | Submitted (Result (Http.Detailed.Error String) ( Http.Metadata, ForgotPasswordResponse ))
     | UpdateEmail String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        UpdateEmail addr ->
+        UpdateEmail email ->
             ( { model
-                | userEmail = ForgotPassword.UserEmail addr
-                , resp = ForgotPassword.emptyForgotPassResp
+                | email = email
+                , response =
+                    { errors = Dict.empty
+                    , body = ""
+                    }
                 , errors =
-                    if isValidEmail addr || (addr == "") then
+                    if isValidEmail email || String.isEmpty email then
                         Dict.remove "email" model.errors
 
                     else
@@ -100,35 +109,39 @@ update msg model =
 
         Submit ->
             ( { model | errors = Dict.fromList [] }
-            , postForgotPassword model.session model.config model.userEmail
+            , postForgotPassword model.session model.config model.email
             )
 
-        Submitted (Ok resp) ->
+        Submitted (Ok ( metadata, response )) ->
             let
-                newErrors =
-                    Dict.fromList <| Dict.toList model.errors ++ Dict.toList resp.errors
+                errors =
+                    Dict.fromList <| Dict.toList model.errors ++ Dict.toList response.errors
             in
-            ( { model | errors = newErrors, resp = resp }, Cmd.none )
+            ( { model | errors = errors, response = response }, Cmd.none )
 
         Submitted (Err error) ->
             case error of
-                Http.BadStatus _ ->
-                    ( model, Cmd.none )
-
-                Http.BadBody _ ->
-                    ( model, Cmd.none )
+                Http.Detailed.BadStatus metadata body ->
+                    ( { model | errors = errorBodyToDict body }
+                    , Cmd.none
+                    )
 
                 _ ->
-                    ( model, Cmd.none )
+                    ( { model
+                        | errors =
+                            Dict.fromList [ ( "internal", "An internal error occured. Please contact the developers." ) ]
+                      }
+                    , Cmd.none
+                    )
 
 
-postForgotPassword : Session -> Config -> UserEmail -> Cmd Msg
+postForgotPassword : Session -> Config -> String -> Cmd Msg
 postForgotPassword session config userEmail =
     let
         encodedLoginParams =
             forgotPasswordEncoder userEmail
     in
-    Api.post
+    Api.postDetailed
         (Endpoint.forgotPassword (Config.restApiUrl config))
         (Session.cred session)
         (Http.jsonBody encodedLoginParams)
@@ -136,11 +149,28 @@ postForgotPassword session config userEmail =
         forgotPassRespDecoder
 
 
-forgotPasswordEncoder : UserEmail -> Encode.Value
-forgotPasswordEncoder userEmail =
+forgotPasswordEncoder : String -> Encode.Value
+forgotPasswordEncoder email =
     Encode.object
-        [ ( "email", Encode.string (ForgotPassword.userEmailtoString userEmail) )
+        [ ( "email", Encode.string email )
         ]
+
+
+forgotPassRespDecoder : Decoder ForgotPasswordResponse
+forgotPassRespDecoder =
+    Decode.succeed ForgotPasswordResponse
+        |> required "errors" (Decode.dict Decode.string)
+        |> required "body" Decode.string
+
+
+errorBodyToDict : String -> Dict String String
+errorBodyToDict body =
+    case Decode.decodeString (Decode.dict Decode.string) body of
+        Ok dict ->
+            dict
+
+        Err err ->
+            Dict.fromList [ ( "internal", "An internal error occured. Please contact the developers." ) ]
 
 
 
@@ -172,10 +202,10 @@ viewContent model =
 viewEmailInput : Model -> List (Html Msg)
 viewEmailInput model =
     let
-        errorHTML =
+        errorMessage =
             case Dict.get "email" model.errors of
-                Just errMsg ->
-                    validationError (Html.em [] [ Html.text errMsg ])
+                Just error ->
+                    validationError (Html.em [] [ Html.text error ])
 
                 Nothing ->
                     Html.text ""
@@ -196,19 +226,16 @@ viewEmailInput model =
             ++ emailError
         )
         []
-    , errorHTML
-    , viewResponse model.resp
+    , errorMessage
+    , viewResponse model.response
     ]
 
 
 viewSubmit : Model -> List (Html Msg)
 viewSubmit model =
     let
-        hasError =
-            Dict.member "email" model.errors
-
         buttonDisabled =
-            if hasError || ForgotPassword.userEmailisEmpty model.userEmail then
+            if Dict.member "email" model.errors || String.isEmpty model.email then
                 [ class "disabled" ]
 
             else
@@ -222,14 +249,14 @@ viewSubmit model =
 viewErrors : Model -> List (Html Msg)
 viewErrors model =
     case Dict.get "all" model.errors of
-        Just allErrors ->
-            [ loginLabel [] (span [ attribute "class" "errors" ] [ Html.em [] [ Html.text <| allErrors ] ]) ]
+        Just errors ->
+            [ loginLabel [] (span [ attribute "class" "errors" ] [ Html.em [] [ Html.text <| errors ] ]) ]
 
         _ ->
             [ span [ attribute "class" "errors" ] [] ]
 
 
-viewResponse : ForgotPassResp -> Html Msg
+viewResponse : ForgotPasswordResponse -> Html Msg
 viewResponse forgotPasswordResponse =
     if not (String.isEmpty forgotPasswordResponse.body) then
         div [ class "password-reset-msg" ]

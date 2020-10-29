@@ -1,4 +1,15 @@
-module TextReader.TextWord exposing (..)
+module TextReader.TextWord exposing
+    ( TextWord
+    , TextWordParams
+    , Translation
+    , grammemesToString
+    , group
+    , hasTranslations
+    , new
+    , newFromParams
+    , phrase
+    , translations
+    )
 
 import Dict exposing (Dict)
 import InstructorAdmin.Text.Translations exposing (..)

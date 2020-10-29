@@ -1,5 +1,6 @@
-module TextReader.Text.Model exposing (..)
+module TextReader.Text.Model exposing (Text, emptyText)
 
+import Array exposing (empty)
 import DateTime exposing (DateTime)
 
 

@@ -1,4 +1,10 @@
-module User.Profile.TextReader.Flashcards exposing (..)
+module User.Profile.TextReader.Flashcards exposing
+    ( ProfileFlashcards
+    , addFlashcard
+    , flashcards
+    , initFlashcards
+    , removeFlashcard
+    )
 
 import Text.Translations.Decode exposing (Flashcards)
 import TextReader.Flashcard.Student

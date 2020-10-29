@@ -1,4 +1,4 @@
-module TextReader.Text.Decode exposing (..)
+module TextReader.Text.Decode exposing (textDecoder)
 
 import DateTime
 import Iso8601

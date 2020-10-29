@@ -1,13 +1,14 @@
-module Flashcard.Encode exposing (..)
+module Flashcard.Encode exposing (sendCommand)
 
 import Flashcard.Mode
-import Flashcard.Model exposing (..)
+import Flashcard.Model exposing (CmdReq(..))
 import Json.Encode
 
 
 jsonToString : Json.Encode.Value -> String
 jsonToString =
     Json.Encode.encode 0
+
 
 commandRequestToString : CmdReq -> String
 commandRequestToString cmdReq =

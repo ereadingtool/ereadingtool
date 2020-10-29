@@ -18,6 +18,7 @@
             "elm/url": "1.0.0",
             "elm-explorations/markdown": "1.0.0",
             "hecrj/html-parser": "2.4.0",
+            "jzxhuang/http-extras": "2.1.0",
             "panthershark/email-parser": "1.0.2",
             "rtfeldman/elm-iso8601-date-strings": "1.1.3",
             "waratuman/json-extra": "1.0.2",

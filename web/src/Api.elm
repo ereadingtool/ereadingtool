@@ -7,13 +7,17 @@ port module Api exposing
     , authResult
     , authSuccessMessage
     , delete
+    , deleteDetailed
     , get
+    , getDetailed
     , login
     , logout
     , performanceReportLink
     , post
+    , postDetailed
     , postTask
     , put
+    , putDetailed
     , toggleShowHelp
     , viewerChanges
     , websocketConnect
@@ -28,6 +32,7 @@ import Api.WebSocket as WebSocket exposing (Address, WebSocketCmd, WebSocketMsg)
 import Browser
 import Browser.Navigation as Nav
 import Http
+import Http.Detailed
 import Id exposing (Id)
 import Json.Decode as Decode exposing (Decoder, Value, field, string)
 import Json.Decode.Pipeline exposing (required)
@@ -315,6 +320,108 @@ delete url maybeCred body toMsg decoder =
         { method = "DELETE"
         , url = url
         , expect = Http.expectJson toMsg decoder
+        , headers =
+            case maybeCred of
+                Just cred ->
+                    [ credHeader cred ]
+
+                Nothing ->
+                    []
+        , body = body
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
+
+{-| Detailed HTTP calls expose Metadata so we can show users error messages
+sent back from the server
+-}
+getDetailed :
+    Endpoint
+    -> Maybe Cred
+    -> (Result (Http.Detailed.Error String) ( Http.Metadata, a ) -> msg)
+    -> Decoder a
+    -> Cmd msg
+getDetailed url maybeCred toMsg decoder =
+    Endpoint.request
+        { method = "GET"
+        , url = url
+        , expect = Http.Detailed.expectJson toMsg decoder
+        , headers =
+            case maybeCred of
+                Just cred ->
+                    [ credHeader cred ]
+
+                Nothing ->
+                    []
+        , body = Http.emptyBody
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
+
+putDetailed :
+    Endpoint
+    -> Maybe Cred
+    -> Http.Body
+    -> (Result (Http.Detailed.Error String) ( Http.Metadata, a ) -> msg)
+    -> Decode.Decoder a
+    -> Cmd msg
+putDetailed url maybeCred body toMsg decoder =
+    Endpoint.request
+        { method = "PUT"
+        , url = url
+        , expect = Http.Detailed.expectJson toMsg decoder
+        , headers =
+            case maybeCred of
+                Just cred ->
+                    [ credHeader cred ]
+
+                Nothing ->
+                    []
+        , body = body
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
+
+postDetailed :
+    Endpoint
+    -> Maybe Cred
+    -> Http.Body
+    -> (Result (Http.Detailed.Error String) ( Http.Metadata, a ) -> msg)
+    -> Decode.Decoder a
+    -> Cmd msg
+postDetailed url maybeCred body toMsg decoder =
+    Endpoint.request
+        { method = "POST"
+        , url = url
+        , expect = Http.Detailed.expectJson toMsg decoder
+        , headers =
+            case maybeCred of
+                Just cred ->
+                    [ credHeader cred ]
+
+                Nothing ->
+                    []
+        , body = body
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
+
+deleteDetailed :
+    Endpoint
+    -> Maybe Cred
+    -> Http.Body
+    -> (Result (Http.Detailed.Error String) ( Http.Metadata, a ) -> msg)
+    -> Decode.Decoder a
+    -> Cmd msg
+deleteDetailed url maybeCred body toMsg decoder =
+    Endpoint.request
+        { method = "DELETE"
+        , url = url
+        , expect = Http.Detailed.expectJson toMsg decoder
         , headers =
             case maybeCred of
                 Just cred ->

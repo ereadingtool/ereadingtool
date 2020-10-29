@@ -1,4 +1,13 @@
-module TextReader.Answer.Model exposing (..)
+module TextReader.Answer.Model exposing
+    ( Answer
+    , AnswerCorrect
+    , TextAnswer
+    , answer
+    , correct
+    , feedback_viewable
+    , initTextAnswer
+    , selected
+    )
 
 
 type alias AnswerCorrect =

@@ -1,7 +1,16 @@
-module TextReader.Question.Model exposing (..)
+module TextReader.Question.Model exposing
+    ( Question
+    , TextQuestion
+    , answered
+    , answered_correctly
+    , answers
+    , initTextQuestion
+    , question
+    )
 
 import Array exposing (Array)
 import DateTime exposing (DateTime)
+import Question.Field exposing (question)
 import TextReader.Answer.Model exposing (Answer, TextAnswer)
 
 
