@@ -40,7 +40,7 @@ YANDEX_DEFINITION_API_KEY = os.getenv('YANDEX_DEFINITION_API_KEY')
 # days
 INVITATION_EXPIRY = 30
 
-JWT_EXPIRATION_DELTA = datetime.timedelta(seconds=86400)
+JWT_EXPIRATION_DELTA = datetime.timedelta(seconds=5)
 
 LOGGING = {
     'version': 1,

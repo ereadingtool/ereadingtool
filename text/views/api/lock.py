@@ -10,6 +10,7 @@ from text.models import Text
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from auth.normal_auth import jwt_valid
 
 @method_decorator(csrf_exempt, name='dispatch')
 class TextLockAPIView(LoginRequiredMixin, APIView):
@@ -19,6 +20,7 @@ class TextLockAPIView(LoginRequiredMixin, APIView):
 
     allowed_methods = ['post', 'delete']
 
+    @jwt_valid(403, {})
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
@@ -36,6 +38,7 @@ class TextLockAPIView(LoginRequiredMixin, APIView):
         except Text.DoesNotExist:
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
 
+    @jwt_valid(403, {})
     def delete(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)

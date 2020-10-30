@@ -10,6 +10,7 @@ from django.views.generic import TemplateView
 from mixins.view import ElmLoadJsView
 from user.instructor.models import Instructor
 from user.student.models import Student
+from auth.normal_auth import jwt_valid
 
 
 class FlashcardView(LoginRequiredMixin, TemplateView):
@@ -24,6 +25,7 @@ class FlashcardView(LoginRequiredMixin, TemplateView):
     def dispatch(self, request, *args, **kwargs):
         return super(FlashcardView, self).dispatch(request, *args, **kwargs)
 
+    @jwt_valid(403, {})
     def get(self, request, *args, **kwargs):
         if not isinstance(request.user.profile, self.model):
             return HttpResponseRedirect(reverse('error-page'))

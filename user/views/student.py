@@ -257,6 +257,7 @@ class StudentSignupAPIView(APIView):
         return HttpResponse(json.dumps({'id': student.pk, 'redirect': reverse('student-login')}))
 
 
+# TODO: Marked for deletion
 class StudentLogoutAPIView(LoginRequiredMixin, APIView):
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         logout(request)
@@ -312,7 +313,8 @@ class StudentSignUpView(TemplateView):
         return context
 
 
-# TODO
+# --------------------------------- Below is marked for deletion ------------------------------
+
 class StudentLoginView(TemplateView):
     template_name = 'student/login.html'
 
@@ -324,7 +326,6 @@ class StudentLoginView(TemplateView):
         return context
 
 
-# TODO
 class StudentProfileView(StudentView, TemplateView):
     template_name = 'student/profile.html'
 
@@ -335,7 +336,7 @@ class StudentProfileView(StudentView, TemplateView):
 
         return context
 
-# TODO
+
 class StudentFlashcardView(StudentView, TemplateView):
     template_name = 'student/flashcards.html'
 

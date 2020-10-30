@@ -20,6 +20,7 @@ from text.models import TextDifficulty, Text, TextSection, text_statuses
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from auth.normal_auth import jwt_valid
 
 Student = TypeVar('Student')
 Instructor = TypeVar('Instructor')
@@ -169,6 +170,7 @@ class TextAPIView(LoginRequiredMixin, APIView):
 
         return output_params, errors
 
+    @jwt_valid(403, {})
     def delete(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
@@ -188,6 +190,7 @@ class TextAPIView(LoginRequiredMixin, APIView):
         except Text.DoesNotExist:
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
 
+    @jwt_valid(403, {})
     def put(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
@@ -217,6 +220,7 @@ class TextAPIView(LoginRequiredMixin, APIView):
         except (Text.DoesNotExist, ObjectDoesNotExist):
             return HttpResponse(json.dumps({'errors': 'something went wrong'}))
 
+    @jwt_valid(403, {})
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         text = None
         text_sections = None
@@ -348,6 +352,7 @@ class TextAPIView(LoginRequiredMixin, APIView):
 
         return text_params, text_sections_params, resp
 
+    @jwt_valid(403, {})
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         text_params, text_sections_params, resp = self.validate_params(request.body.decode('utf8'))
 

@@ -9,6 +9,7 @@ from ereadingtool.views import APIView
 from text.models import Text
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from auth.normal_auth import jwt_valid
 
 @method_decorator(csrf_exempt, name='dispatch') 
 class TextTagAPIView(LoginRequiredMixin, APIView):
@@ -18,6 +19,7 @@ class TextTagAPIView(LoginRequiredMixin, APIView):
 
     allowed_methods = ['get', 'put', 'delete']
 
+    @jwt_valid(403, {})
     def delete(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
@@ -41,6 +43,7 @@ class TextTagAPIView(LoginRequiredMixin, APIView):
         except UnicodeDecodeError:
             return HttpResponseServerError(json.dumps({'errors': 'tag not valid'}))
 
+    @jwt_valid(403, {})
     def put(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
@@ -64,6 +67,7 @@ class TextTagAPIView(LoginRequiredMixin, APIView):
         except UnicodeDecodeError:
             return HttpResponseServerError(json.dumps({'errors': 'tag not valid'}))
 
+    @jwt_valid(403, {})
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)

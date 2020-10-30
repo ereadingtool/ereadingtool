@@ -2,7 +2,7 @@ import json
 from typing import Dict
 
 from csp.decorators import csp_exempt
-
+from auth.normal_auth import jwt_valid
 from django.middleware.csrf import get_token
 from django.urls import reverse
 from django.http import Http404
@@ -79,6 +79,7 @@ class TextDefinitionView(AdminView):
     model = Text
     template_name = 'instructor_admin/text_definitions.html'
 
+    @jwt_valid(403, {})
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if not self.model.objects.filter(pk=kwargs['pk']):
             raise Http404('text does not exist')
@@ -92,6 +93,7 @@ class AdminCreateEditTextView(AdminView):
     fields = ('source', 'difficulty', 'body',)
     template_name = 'instructor_admin/create_edit_text.html'
 
+    @jwt_valid(403, {})
     def get(self, request, *args, **kwargs) -> HttpResponse:
         if 'pk' in kwargs and not self.model.objects.filter(pk=kwargs['pk']):
             raise Http404('text does not exist')

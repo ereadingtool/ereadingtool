@@ -5,6 +5,7 @@ from typing import Dict
 from user.student.models import Student
 from user.instructor.models import Instructor
 from django.http import HttpResponse
+from urllib.parse import parse_qs
 
 def jwt_valid(status: int, errors: Dict):
     def decorator(func):
@@ -12,8 +13,11 @@ def jwt_valid(status: int, errors: Dict):
             secret_key = os.getenv('DJANGO_SECRET_KEY')
             scope = args[0].request.scope
             meta = args[0].request.META
-            if scope['query_string']:
-                jwt_encoded = scope['query_string'][6:] if scope['query_string'][:6] == b'token=' else scope['query_string']
+            parsed_qs = parse_qs(scope['query_string'])
+            if b'token=' in parsed_qs: 
+                jwt_encoded = scope['query_string'][6:]
+                # TODO: This may have broken websockets. Trouble is, we must have b'token=' prefix since there are other qs
+                # jwt_encoded = scope['query_string'][6:] if scope['query_string'][:6] == b'token=' else scope['query_string']
             else:
                 jwt_encoded = meta['HTTP_AUTHORIZATION'][7:] if meta['HTTP_AUTHORIZATION'][:7] == 'Bearer ' else meta['HTTP_AUTHORIZATION']
             try:

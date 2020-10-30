@@ -130,8 +130,8 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
         if not self.scope['user'] or not self.scope['user'].is_authenticated:
             await self.accept()
             # 1002 indicates that an endpoint is terminating the connection due
-            # to a protocol error.
-            await self.close(code=1002) 
+            # to a protocol error. But it doesn't like that so we use 1000.
+            await self.close(code=1000) 
         else:
             await self.accept()
 

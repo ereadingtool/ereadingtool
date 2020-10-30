@@ -16,6 +16,7 @@ api_urlpatterns = [
          name='api-student-research-consent')
 ]
 
+# TODO: These can all be removed
 elm_load_urlpatterns = [
     path('load_elm_student.js', ElmLoadJsStudentProfileView.as_view(), name='load-elm-student'),
     path('load_elm_unauth_student_login.js', ElmLoadJsStudentLoginView.as_view(),
@@ -27,6 +28,7 @@ elm_load_urlpatterns = [
 urlpatterns = [
     path('profile/student/<int:pk>/performance_report.pdf', StudentPerformancePDFView.as_view(),
          name='student-performance-pdf-link'),
+     # TODO: I think all of these can be removed.
     path('signup/student/', StudentSignUpView.as_view(), name='student-signup'),
     path('login/student/', StudentLoginView.as_view(), name='student-login'),
     path('profile/student/', StudentProfileView.as_view(), name='student-profile'),

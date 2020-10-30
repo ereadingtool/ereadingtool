@@ -1,3 +1,4 @@
+from django.template.loader import render_to_string
 import pdfkit
 import os
 import time
@@ -21,8 +22,7 @@ class StudentPerformancePDFView(View):
 
         # confirm the user_id from the URL is the same as the JWT's
         if jwt_user == None or jwt_user.pk != kwargs['pk']:
-            #TODO: Custom HTML document here
-            return HttpResponseForbidden()
+            return HttpResponse(render_to_string('error_page.html'))
 
         student = Student.objects.get(pk=kwargs['pk'])
 
@@ -63,9 +63,9 @@ def jwt_validation(scope):
                 # then there is no user in the QuerySet
                 raise InvalidTokenError
             # force evaluation of the QuerySet. We already know it contains at least one element
-            student = list(Student.objects.filter(user_id=jwt_decoded['user_id']))[0]
+            jwt_user = list(Student.objects.filter(user_id=jwt_decoded['user_id']))[0]
 
-            return student
+            return jwt_user
 
         except InvalidTokenError: 
             return None

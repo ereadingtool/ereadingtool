@@ -18,7 +18,7 @@ from user.views.api import APIView
 from user.views.mixin import ProfileView
 
 from mixins.view import NoAuthElmLoadJsView, ElmLoadJsInstructorBaseView
-
+from auth.normal_auth import jwt_valid
 from jwt_auth.views import jwt_encode_token, jwt_get_json_with_token
 
 
@@ -77,6 +77,7 @@ class InstructorView(ProfileView):
 
 
 class InstructorAPIView(LoginRequiredMixin, APIView):
+    @jwt_valid(403, {})
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if not Instructor.objects.get(pk=kwargs['pk']):
             return HttpResponse(status=400)
@@ -101,9 +102,11 @@ class InstructorInviteAPIView(LoginRequiredMixin, APIView):
 
         return super(InstructorInviteAPIView, self).dispatch(request, *args, **kwargs)
 
+    @jwt_valid(403, {})
     def form(self, request: HttpRequest, params: Dict) -> forms.ModelForm:
         return InstructorInviteForm(params, initial={'inviter': self.request.user.profile.pk})
 
+    @jwt_valid(403, {})
     def post_success(self, request: HttpRequest, instructor_invite_form: Form) -> HttpResponse:
         invite = instructor_invite_form.save()
 
@@ -146,7 +149,7 @@ class InstructorLoginAPIView(APIView):
         # return to the dispatcher to send out an HTTP response
         return JsonResponse(jwt_payload)
 
-
+# --------------------------------- Below is marked for deletion ------------------------------
 class InstructorLogoutAPIView(LoginRequiredMixin, APIView):
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         logout(request)
