@@ -44,6 +44,9 @@ Regardless of how you run Redis, whether that's a container on your local machin
 you'll want to set it to `localhost`. Unless of course you do some magic with `/etc/hosts` or are planning
 to run the whole thing in a docker network anyways. 
 
+#### Email
+To have emails sent by SendGrid, you'll need to have `SENDGRID_SANDBOX_MODE_IN_DEBUG=False` in `settings.py`. 
+Refer to issue #239 for more details.
 
 ## Web
 
