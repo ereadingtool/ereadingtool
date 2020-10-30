@@ -29,6 +29,8 @@ import Session exposing (Session)
 import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
 import Task
+import Time exposing (Zone)
+import TimeZone
 import Url exposing (Url)
 import User.Instructor.Profile as InstructorProfile
     exposing
@@ -42,6 +44,7 @@ import User.Student.Profile as StudentProfile
         , StudentURIs(..)
         )
 import User.Student.Resource as StudentResource
+import Utils.Date
 import Viewer exposing (Viewer)
 
 
@@ -54,6 +57,7 @@ type alias Model =
     , key : Key
     , session : Session
     , config : Config
+    , timezone : Zone
     , profile : Profile
     , researchConsent : Bool
     , menuVisibility : MenuVisibility
@@ -81,7 +85,7 @@ init flags url key =
         config =
             Config.init flags.maybeConfig
     in
-    ( Model url key session config Profile.emptyProfile False Hidden ""
+    ( Model url key session config Time.utc Profile.emptyProfile False Hidden ""
     , case Session.viewer session of
         Just viewer ->
             case Viewer.role viewer of
@@ -91,12 +95,14 @@ init flags url key =
                             [ requestStudentProfile session config (Viewer.id viewer)
                             , getResearchConsent session config (Viewer.id viewer)
                             , Browser.Navigation.replaceUrl key (Route.toString Route.Profile__Student)
+                            , Task.attempt GotTimezone TimeZone.getZone
                             ]
 
                     else
                         Cmd.batch
                             [ requestStudentProfile session config (Viewer.id viewer)
                             , getResearchConsent session config (Viewer.id viewer)
+                            , Task.attempt GotTimezone TimeZone.getZone
                             ]
 
                 Instructor ->
@@ -104,10 +110,14 @@ init flags url key =
                         Cmd.batch
                             [ requestInstructorProfile session config (Viewer.id viewer)
                             , Browser.Navigation.replaceUrl key (Route.toString Route.Profile__Instructor)
+                            , Task.attempt GotTimezone TimeZone.getZone
                             ]
 
                     else
-                        requestInstructorProfile session config (Viewer.id viewer)
+                        Cmd.batch
+                            [ requestInstructorProfile session config (Viewer.id viewer)
+                            , Task.attempt GotTimezone TimeZone.getZone
+                            ]
 
         Nothing ->
             Cmd.none
@@ -130,6 +140,7 @@ publicPaths =
 type Msg
     = GotAuthResult (Result AuthError AuthSuccess)
     | GotSession Session
+    | GotTimezone (Result TimeZone.Error ( String, Zone ))
     | GotStudentProfile (Result Error StudentProfile)
     | GotResearchConsent (Result Error Bool)
     | GotInstructorProfile (Result Error InstructorProfile)
@@ -175,6 +186,16 @@ update msg model =
                     Cmd.none
             )
 
+        GotTimezone (Ok ( string, zone )) ->
+            ( { model | timezone = zone }
+            , Cmd.none
+            )
+
+        GotTimezone (Err err) ->
+            ( model
+            , Cmd.none
+            )
+
         GotStudentProfile (Ok studentProfile) ->
             ( { model | profile = Profile.fromStudentProfile studentProfile }
             , Cmd.none
@@ -201,8 +222,7 @@ update msg model =
             )
 
         GotInstructorProfile (Err err) ->
-            -- ( model
-            ( { model | profile = Profile.fromInstructorProfile fakeInstructorProfile }
+            ( model
             , Cmd.none
             )
 
@@ -220,21 +240,6 @@ update msg model =
             ( model
             , Api.logout ()
             )
-
-
-fakeInstructorProfile : InstructorProfile
-fakeInstructorProfile =
-    InstructorProfile
-        (Just 0)
-        []
-        True
-        (Just [])
-        (InstructorProfile.InstructorUsername "fakeInstructor")
-        (InstructorProfile.initProfileURIs
-            { logout_uri = "fakeLogoutURI"
-            , profile_uri = "fakeProfileURI"
-            }
-        )
 
 
 requestStudentProfile : Session -> Config -> Id -> Cmd Msg

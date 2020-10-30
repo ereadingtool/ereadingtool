@@ -70,6 +70,7 @@ type SafeModel
     = SafeModel
         { session : Session
         , config : Config
+        , timezone : Time.Zone
         , id : Int
         , mode : Mode
         , profile : InstructorProfile
@@ -91,6 +92,7 @@ init shared { params } =
         { session = shared.session
         , config = shared.config
         , id = params.id
+        , timezone = shared.timezone
 
         -- the writeLocker is a instructor username string,
         -- and we don't know who it is until we retrieve the text
@@ -741,6 +743,7 @@ view (SafeModel model) =
             , Text.View.view_text
                 textViewParams
                 messages
+                model.timezone
                 Shared.answerFeedbackCharacterLimit
             ]
         ]
@@ -779,8 +782,10 @@ save model shared =
 
 
 load : Shared.Model -> SafeModel -> ( SafeModel, Cmd Msg )
-load shared safeModel =
-    ( safeModel, Cmd.none )
+load shared (SafeModel model) =
+    ( SafeModel { model | timezone = shared.timezone }
+    , Cmd.none
+    )
 
 
 
