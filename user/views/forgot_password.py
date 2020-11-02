@@ -78,22 +78,14 @@ class PasswordResetConfirmView(TemplateView):
         if self.user is not None:
             token = kwargs['token']
 
-            if token != user_utils.INTERNAL_RESET_URL_TOKEN:
-                if self.token_generator.check_token(self.user, token):
-                    # Store the token in the session and redirect to the
-                    # password reset form at a URL without the token. That
-                    # avoids the possibility of leaking the token in the
-                    # HTTP Referer header.
-                    self.request.session[user_utils.INTERNAL_RESET_SESSION_TOKEN] = token
-
-                    # store uidb64 as well
-                    self.request.session['uidb64'] = kwargs['uidb64']
-
-                    redirect_url = self.request.path.replace(token, user_utils.INTERNAL_RESET_URL_TOKEN)
-
-                    return HttpResponseRedirect(redirect_url)
-
-        return super(PasswordResetConfirmView, self).dispatch(request, *args, **kwargs)
+            # TODO: Big issue here, we need to ditch all Referer headers via SecurityMiddleware 
+            # available in Django 3.0. Worst case we come up with another soln like nginx referer
+            # policy or some other exit like strategy (as was previously implemented)
+            # https://geekthis.net/post/hide-http-referer-headers/#exit-page-redirect
+            if self.token_generator.check_token(self.user, token):
+                return HttpResponse()
+            else:
+                return HttpResponse(errors={'errors': {'Invalid Token': 'You did not provide a valid token.'}}, status=403)
 
 
 class PasswordResetConfirmAPIView(APIView):
