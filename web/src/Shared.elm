@@ -336,6 +336,16 @@ viewHeader model toMsg =
                 [ div [ id "header" ]
                     [ viewLogo model.session
                     , viewMenuIcon toMsg
+                    , div
+                        [ case model.menuVisibility of
+                            Visible ->
+                                class "profile-menu"
+
+                            Hidden ->
+                                classList [ ( "profile-menu", True ), ( "hidden-menu", True ) ]
+                        ]
+                      <|
+                        viewPublicHeader toMsg
                     ]
                 ]
 
@@ -446,6 +456,23 @@ viewProfileHeader role toMsg =
     , div [ class "nav-item " ]
         [ a [ onClick (toMsg Logout), class "nav-link" ]
             [ text "Logout" ]
+        ]
+    ]
+
+
+viewPublicHeader : (Msg -> msg) -> List (Html msg)
+viewPublicHeader toMsg =
+    [ div [ class "nav-item " ]
+        [ a [ class "nav-link", href (Route.toString Route.Login__Student) ]
+            [ text "Log in" ]
+        ]
+    , div [ class "nav-item " ]
+        [ a [ class "nav-link", href (Route.toString Route.Signup__Student) ]
+            [ text "Sign up" ]
+        ]
+    , div [ class "nav-item " ]
+        [ a [ class "nav-link", href (Route.toString Route.Acknowledgments) ]
+            [ text "Acknowledgements" ]
         ]
     ]
 

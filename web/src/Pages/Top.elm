@@ -7,7 +7,7 @@ module Pages.Top exposing
 
 import Dict exposing (Dict)
 import Html exposing (..)
-import Html.Attributes exposing (classList)
+import Html.Attributes exposing (alt, class, classList, href, id, src)
 import Http exposing (..)
 import Ports
 import Role exposing (Role(..))
@@ -23,147 +23,83 @@ import Views
 
 page : Page Params Model Msg
 page =
-    Page.application
-        { init = init
-        , update = update
-        , subscriptions = subscriptions
-        , view = view
-        , save = save
-        , load = load
+    Page.static
+        { view = view
         }
 
 
+type alias Model =
+    Url Params
 
--- INIT
+
+type alias Msg =
+    Never
+
+
+
+-- VIEW
 
 
 type alias Params =
     ()
 
 
-type alias Model =
-    { role : Role
-    , loginParams : LoginParams
-    , errors : Dict String String
-    }
-
-
-init : Shared.Model -> Url Params -> ( Model, Cmd Msg )
-init shared { params } =
-    ( { role = Student
-      , loginParams = LoginParams "" "" "student"
-      , errors = Dict.fromList []
-      }
-    , Cmd.batch
-        [ Ports.clearInputText "email-input"
-        , Ports.clearInputText "password-input"
-        ]
-    )
-
-
-
--- UPDATE
-
-
-type Msg
-    = SubmittedLogin
-    | UpdateEmail String
-    | UpdatePassword String
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        UpdatePassword password ->
-            let
-                loginParams =
-                    model.loginParams
-            in
-            ( { model
-                | loginParams = { loginParams | password = password }
-              }
-            , Cmd.none
-            )
-
-        UpdateEmail email ->
-            let
-                loginParams =
-                    model.loginParams
-            in
-            ( { model
-                | loginParams = { loginParams | username = email }
-                , errors =
-                    if isValidEmail email || (email == "") then
-                        Dict.remove "email" model.errors
-
-                    else
-                        Dict.insert "email" "This email is invalid" model.errors
-              }
-            , Cmd.none
-            )
-
-        SubmittedLogin ->
-            ( { model | errors = Dict.fromList [] }
-            , Login.login model.loginParams
-            )
-
-
-view : Model -> Document Msg
-view model =
-    { title = "Student Login"
+view : Url Params -> Document Msg
+view { params } =
+    { title = "Steps To Advanced Reading"
     , body =
-        [ div []
-            [ viewContent model
-            , Views.view_footer
+        [ div [ id "home-wrapper" ]
+            [ viewHeroSection
+            , viewDescriptionSection
+            , viewFeaturesSection
             ]
         ]
     }
 
 
-viewContent : Model -> Html Msg
-viewContent model =
-    div [ classList [ ( "login", True ) ] ]
-        [ Login.viewLoginForm
-            { loginParams = model.loginParams
-            , onEmailUpdate = UpdateEmail
-            , onPasswordUpdate = UpdatePassword
-            , onSubmittedForm = SubmittedLogin
-            , signUpRoute = Route.Signup__Student
-            , loginRole = "Student Login"
-            , otherLoginRole = "content editor"
-            , otherLoginRoute = Route.Login__Instructor
-            , maybeHelpMessage =
-                Just
-                    """When signing in, please note that this website is not connected to your university’s user account.
-                       If this is your first time using this website, please create a new account."""
-            , errors = model.errors
-            }
+viewHeroSection : Html Msg
+viewHeroSection =
+    div [ class "hero" ]
+        []
+
+
+viewDescriptionSection : Html Msg
+viewDescriptionSection =
+    div [ class "description" ]
+        [ h2 [ class "description-heading" ] [ text "Welcome to STAR" ]
+        , p [ class "description-text" ]
+            [ text
+                """
+               Steps to Advanced Reading is a free mobile-friendly web application that 
+               helps students learning to read authentic non-fiction texts 
+               in Russian. Texts range from short announcements to longer 
+               news items and cover topics like news, biography, economics, 
+               history, international relations, culture, society and sports.
+               """
+            ]
         ]
 
 
-
--- SHARED
-
-
-save : Model -> Shared.Model -> Shared.Model
-save model shared =
-    shared
-
-
-load : Shared.Model -> Model -> ( Model, Cmd Msg )
-load shared model =
-    ( { model
-        | errors =
-            Dict.insert "all" shared.authMessage model.errors
-      }
-    , Cmd.none
-    )
-
-
-
--- SUBSCRIPTIONS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.none
+viewFeaturesSection : Html Msg
+viewFeaturesSection =
+    div [ class "features" ]
+        [ div [ class "features-text" ]
+            [ text "The STAR site"
+            , ul []
+                [ li []
+                    [ text "Lets you read in short 5-10 minute sessions" ]
+                , li []
+                    [ text "Uses a question and answer approach to check your understanding" ]
+                , li []
+                    [ text "Provides easy-access vocabulary help so you can keep on reading" ]
+                , li []
+                    [ text "Helps you track your progress" ]
+                ]
+            , div
+                []
+                [ a [ href (Route.toString Route.About) ] [ text "Learn more" ]
+                , text " or "
+                , a [ href (Route.toString Route.Signup__Student) ] [ text "Sign up now" ]
+                ]
+            ]
+        ]
