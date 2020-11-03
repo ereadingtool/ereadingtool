@@ -120,7 +120,7 @@ init flags url key =
                             ]
 
         Nothing ->
-            Cmd.none
+            Task.attempt GotTimezone TimeZone.getZone
     )
 
 
