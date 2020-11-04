@@ -305,8 +305,9 @@ class TestStudentUser(TestData, TestUser, TestCase):
 
         self.assertTrue(matches, 'tokens not sent in email')
 
-        uidb64, token = matches.group('uid'), matches.group('token')
-
+        uidb64, token = matches.group('uidb64'), matches.group('token')
+        print(f"uidb64={uidb64}")
+        print(f"token={token}")
         self.assertTrue(len(uidb64) > 1 and len(token) > 1)
 
         redirect_resp = self.anonymous_client.get(reverse('password-reset-confirm',
