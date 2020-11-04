@@ -10,11 +10,13 @@ import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
 import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
+import Email exposing (EmailAddress)
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (..)
-import Json.Decode
+import Http.Detailed
+import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode
 import Menu.Msg as MenuMsg
@@ -26,6 +28,7 @@ import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
 import Text.Model exposing (TextDifficulty)
 import User.SignUp as SignUp
+import Utils exposing (isValidEmail)
 import Views
 
 
@@ -41,18 +44,16 @@ page =
         }
 
 
-type alias SignUpResp =
-    { id : SignUp.UserID
-    , redirect : SignUp.RedirectURI
-    }
-
-
 type alias SignUpParams =
     { email : String
     , password : String
-    , confirm_password : String
+    , confirmPassword : String
     , difficulty : String
     }
+
+
+type alias SignUpResponse =
+    { id : Int }
 
 
 
@@ -68,8 +69,8 @@ type alias Model =
     , config : Config
     , navKey : Key
     , difficulties : List ( String, String )
-    , signup_params : SignUpParams
-    , show_passwords : Bool
+    , signupParams : SignUpParams
+    , showPasswords : Bool
     , errors : Dict String String
     }
 
@@ -80,10 +81,10 @@ init shared { params } =
       , config = shared.config
       , navKey = shared.key
       , difficulties = Shared.difficulties
-      , signup_params =
+      , signupParams =
             { email = ""
             , password = ""
-            , confirm_password = ""
+            , confirmPassword = ""
             , difficulty =
                 case List.head Shared.difficulties of
                     Just ( difficultyKey, difficultyName ) ->
@@ -92,8 +93,8 @@ init shared { params } =
                     _ ->
                         ""
             }
-      , show_passwords = False
-      , errors = Dict.fromList []
+      , showPasswords = False
+      , errors = Dict.empty
       }
     , Cmd.none
     )
@@ -109,89 +110,133 @@ type Msg
     | UpdatePassword String
     | UpdateConfirmPassword String
     | UpdateDifficulty String
-    | Submitted (Result Http.Error SignUpResp)
-    | Submit
-    | Logout MenuMsg.Msg
+    | SubmittedForm
+    | CompletedSignup (Result (Http.Detailed.Error String) ( Http.Metadata, SignUpResponse ))
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         ToggleShowPassword ->
-            ( SignUp.toggle_show_password model, Cmd.none )
+            ( { model | showPasswords = not model.showPasswords }
+            , Cmd.none
+            )
 
         UpdatePassword password ->
-            ( SignUp.update_password model password, Cmd.none )
+            ( model
+                |> updateSignupParams (\signupParams -> { signupParams | password = password })
+            , Cmd.none
+            )
 
         UpdateConfirmPassword confirmPassword ->
-            ( SignUp.update_confirm_password model confirmPassword, Cmd.none )
+            ( { model
+                | errors = validatePasswordsMatch model.signupParams.password confirmPassword model.errors
+              }
+                |> updateSignupParams (\signupParams -> { signupParams | confirmPassword = confirmPassword })
+            , Cmd.none
+            )
 
-        UpdateEmail addr ->
-            ( SignUp.update_email model addr, Cmd.none )
+        UpdateEmail email ->
+            ( { model
+                | errors = validateEmail email model.errors
+              }
+                |> updateSignupParams (\signupParams -> { signupParams | email = email })
+            , Cmd.none
+            )
 
         UpdateDifficulty difficulty ->
-            let
-                signupParams =
-                    model.signup_params
-            in
-            ( { model | signup_params = { signupParams | difficulty = difficulty } }, Cmd.none )
+            ( model
+                |> updateSignupParams (\signupParams -> { signupParams | difficulty = difficulty })
+            , Cmd.none
+            )
 
-        Submit ->
-            ( SignUp.submit model, postSignup model.session model.config model.signup_params )
+        SubmittedForm ->
+            ( { model | errors = Dict.empty }
+            , postSignup model.session model.config model.signupParams
+            )
 
-        Submitted (Ok resp) ->
+        CompletedSignup (Ok resp) ->
             ( model
             , Browser.Navigation.replaceUrl model.navKey (Route.toString Route.Top)
             )
 
-        Submitted (Err error) ->
-            let
-                dbg =
-                    Debug.log "errors" error
-            in
+        CompletedSignup (Err error) ->
             case error of
-                Http.BadStatus resp ->
-                    ( model, Cmd.none )
-
-                Http.BadBody _ ->
-                    ( model, Cmd.none )
+                Http.Detailed.BadStatus metadata body ->
+                    ( { model | errors = errorBodyToDict body }
+                    , Cmd.none
+                    )
 
                 _ ->
-                    ( model, Cmd.none )
+                    ( { model
+                        | errors =
+                            Dict.fromList [ ( "internal", "An internal error occured. Please contact the developers." ) ]
+                      }
+                    , Cmd.none
+                    )
 
-        Logout _ ->
-            ( model, Cmd.none )
+
+updateSignupParams : (SignUpParams -> SignUpParams) -> Model -> Model
+updateSignupParams transform model =
+    { model | signupParams = transform model.signupParams }
+
+
+validateEmail : String -> Dict String String -> Dict String String
+validateEmail email errors =
+    if isValidEmail email || (email == "") then
+        Dict.remove "email" errors
+
+    else
+        Dict.insert "email" "This e-mail is invalid" errors
+
+
+validatePasswordsMatch : String -> String -> Dict String String -> Dict String String
+validatePasswordsMatch password confirmPassword errors =
+    if confirmPassword == password then
+        Dict.remove "password" (Dict.remove "confirm_password" errors)
+
+    else
+        Dict.insert "confirm_password" "Passwords don't match." errors
 
 
 postSignup : Session -> Config -> SignUpParams -> Cmd Msg
-postSignup session config signup_params =
+postSignup session config signupParams =
     let
         encodedSignupParams =
-            signUpEncoder signup_params
+            signUpEncoder signupParams
     in
-    Api.post
+    Api.postDetailed
         (Endpoint.studentSignup (Config.restApiUrl config))
         (Session.cred session)
         (Http.jsonBody encodedSignupParams)
-        Submitted
-        signUpRespDecoder
+        CompletedSignup
+        signUpResponseDecoder
 
 
 signUpEncoder : SignUpParams -> Encode.Value
-signUpEncoder signup_params =
+signUpEncoder signupParams =
     Encode.object
-        [ ( "email", Encode.string signup_params.email )
-        , ( "password", Encode.string signup_params.password )
-        , ( "confirm_password", Encode.string signup_params.confirm_password )
-        , ( "difficulty", Encode.string signup_params.difficulty )
+        [ ( "email", Encode.string signupParams.email )
+        , ( "password", Encode.string signupParams.password )
+        , ( "confirm_password", Encode.string signupParams.confirmPassword )
+        , ( "difficulty", Encode.string signupParams.difficulty )
         ]
 
 
-signUpRespDecoder : Json.Decode.Decoder SignUpResp
-signUpRespDecoder =
-    Json.Decode.succeed SignUpResp
-        |> required "id" (Json.Decode.map SignUp.UserID Json.Decode.int)
-        |> required "redirect" (Json.Decode.map (SignUp.URI >> SignUp.RedirectURI) Json.Decode.string)
+signUpResponseDecoder : Decoder SignUpResponse
+signUpResponseDecoder =
+    Decode.succeed SignUpResponse
+        |> required "id" Decode.int
+
+
+errorBodyToDict : String -> Dict String String
+errorBodyToDict body =
+    case Decode.decodeString (Decode.dict Decode.string) body of
+        Ok dict ->
+            dict
+
+        Err err ->
+            Dict.fromList [ ( "internal", "An internal error occured. Please contact the developers." ) ]
 
 
 
@@ -218,23 +263,33 @@ viewContent model =
             ]
         , viewStudentWelcomeMsg
         , div [ classList [ ( "signup_box", True ) ] ] <|
-            SignUp.view_email_input UpdateEmail model
-                ++ SignUp.view_password_input ( ToggleShowPassword, UpdatePassword, UpdateConfirmPassword ) model
+            SignUp.viewEmailInput
+                { errors = model.errors
+                , onEmailInput = UpdateEmail
+                }
+                ++ SignUp.viewPasswordInputs
+                    { showPasswords = model.showPasswords
+                    , errors = model.errors
+                    , onShowPasswordToggle = ToggleShowPassword
+                    , onPasswordInput = UpdatePassword
+                    , onConfirmPasswordInput = UpdateConfirmPassword
+                    }
                 ++ viewDifficultyChoices model
+                ++ SignUp.viewInternalErrorMessage model.errors
                 ++ [ Html.div
                         [ attribute "class" "signup_label" ]
                         [ if
                             not (Dict.isEmpty model.errors)
-                                || String.isEmpty model.signup_params.email
-                                || String.isEmpty model.signup_params.password
-                                || String.isEmpty model.signup_params.confirm_password
+                                || String.isEmpty model.signupParams.email
+                                || String.isEmpty model.signupParams.password
+                                || String.isEmpty model.signupParams.confirmPassword
                           then
                             div [ class "button", class "disabled" ]
                                 [ div [ class "signup_submit" ] [ Html.span [] [ Html.text "Sign Up" ] ]
                                 ]
 
                           else
-                            div [ class "button", onClick Submit, class "cursor" ]
+                            div [ class "button", onClick SubmittedForm, class "cursor" ]
                                 [ div [ class "signup_submit" ] [ Html.span [] [ Html.text "Sign Up" ] ]
                                 ]
                         ]
@@ -278,7 +333,7 @@ viewStudentWelcomeMsg =
 
 viewDifficultyChoices : Model -> List (Html Msg)
 viewDifficultyChoices model =
-    [ SignUp.signupLabel (Html.text "Choose a preferred difficulty:")
+    [ Html.div [ class "signup_label " ] [ Html.text "Choose a preferred difficulty:" ]
     , Html.select
         [ onInput UpdateDifficulty
         ]
@@ -287,7 +342,7 @@ viewDifficultyChoices model =
                 (\( k, v ) ->
                     Html.option
                         (attribute "value" k
-                            :: (if v == model.signup_params.difficulty then
+                            :: (if v == model.signupParams.difficulty then
                                     [ attribute "selected" "" ]
 
                                 else

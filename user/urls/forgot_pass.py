@@ -10,6 +10,7 @@ api_urlpatterns = [
     path('api/password/reset/confirm', PasswordResetConfirmAPIView.as_view(), name='api-password-reset-confirm'),
 ]
 
+# TODO: --------- These appear to never be hit -------------
 urlpatterns = [
     path('load_elm_unauth_pass_reset_confirm.js',
          ElmLoadPassResetConfirmView.as_view(), name='load-elm-unauth-pass-reset-confirm'),

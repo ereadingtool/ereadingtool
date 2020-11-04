@@ -1,15 +1,24 @@
-module TextReader.Question.Model exposing (..)
+module TextReader.Question.Model exposing
+    ( Question
+    , TextQuestion
+    , answered
+    , answered_correctly
+    , answers
+    , initTextQuestion
+    , question
+    )
 
 import Array exposing (Array)
-import DateTime exposing (DateTime)
+import Question.Field exposing (question)
 import TextReader.Answer.Model exposing (Answer, TextAnswer)
+import Time exposing (Posix)
 
 
 type alias Question =
     { id : Int
     , text_section_id : Int
-    , created_dt : Maybe DateTime
-    , modified_dt : Maybe DateTime
+    , created_dt : Maybe Posix
+    , modified_dt : Maybe Posix
     , body : String
     , order : Int
     , answers : Array Answer

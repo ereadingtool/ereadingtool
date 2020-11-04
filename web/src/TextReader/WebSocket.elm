@@ -1,10 +1,14 @@
-port module TextReader.WebSocket exposing (..)
+port module TextReader.WebSocket exposing (DeleteMe)
 
 import Api.WebSocket as WebSocket exposing (WebSocketCmd)
 import Json.Decode
 import Json.Encode
 import TextReader.Encode
 import TextReader.Model
+
+
+type DeleteMe
+    = DeleteMe
 
 
 port receiveSocketMsg : (Json.Decode.Value -> msg) -> Sub msg

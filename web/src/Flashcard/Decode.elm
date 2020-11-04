@@ -1,7 +1,7 @@
-module Flashcard.Decode exposing (..)
+module Flashcard.Decode exposing (ws_resp_decoder)
 
 import Flashcard.Mode exposing (Mode)
-import Flashcard.Model exposing (..)
+import Flashcard.Model exposing (CmdResp(..), Exception, Flashcard, InitRespRec)
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)
 

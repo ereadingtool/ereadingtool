@@ -14,7 +14,6 @@ module Text.Decode exposing
     )
 
 import Array
-import DateTime
 import Dict exposing (Dict)
 import Iso8601
 import Json.Decode
@@ -70,10 +69,8 @@ textDecoder =
         |> required "created_by" (Json.Decode.nullable Json.Decode.string)
         |> required "last_modified_by" (Json.Decode.nullable Json.Decode.string)
         |> required "tags" (Json.Decode.nullable (Json.Decode.list Json.Decode.string))
-        -- |> required "created_dt" (Json.Decode.nullable (Json.Decode.map DateTime.fromPosix posix))
-        -- |> required "modified_dt" (Json.Decode.nullable (Json.Decode.map DateTime.fromPosix posix))
-        |> required "created_dt" (Json.Decode.nullable (Json.Decode.map DateTime.fromPosix Iso8601.decoder))
-        |> required "modified_dt" (Json.Decode.nullable (Json.Decode.map DateTime.fromPosix Iso8601.decoder))
+        |> required "created_dt" (Json.Decode.nullable Iso8601.decoder)
+        |> required "modified_dt" (Json.Decode.nullable Iso8601.decoder)
         |> required "text_sections" (Json.Decode.map Array.fromList Text.Section.Decode.textSectionsDecoder)
         |> required "write_locker" (Json.Decode.nullable Json.Decode.string)
         |> required "words" Text.Translations.Decode.wordsDecoder
@@ -89,12 +86,9 @@ textListItemDecoder =
         |> required "created_by" Json.Decode.string
         |> required "last_modified_by" (Json.Decode.nullable Json.Decode.string)
         |> required "tags" (Json.Decode.nullable (Json.Decode.list Json.Decode.string))
-        -- |> required "created_dt" (Json.Decode.map DateTime.fromPosix posix)
-        -- |> required "modified_dt" (Json.Decode.map DateTime.fromPosix posix)
-        -- |> required "last_read_dt" (Json.Decode.nullable (Json.Decode.map DateTime.fromPosix posix))
-        |> required "created_dt" (Json.Decode.map DateTime.fromPosix Iso8601.decoder)
-        |> required "modified_dt" (Json.Decode.map DateTime.fromPosix Iso8601.decoder)
-        |> required "last_read_dt" (Json.Decode.nullable (Json.Decode.map DateTime.fromPosix Iso8601.decoder))
+        |> required "created_dt" Iso8601.decoder
+        |> required "modified_dt" Iso8601.decoder
+        |> required "last_read_dt" (Json.Decode.nullable Iso8601.decoder)
         |> required "text_section_count" Json.Decode.int
         |> required "text_sections_complete" (Json.Decode.nullable Json.Decode.int)
         |> required "questions_correct" (Json.Decode.nullable Utils.intTupleDecoder)

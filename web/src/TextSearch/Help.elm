@@ -1,4 +1,19 @@
-module TextSearch.Help exposing (..)
+module TextSearch.Help exposing
+    ( TextHelp
+    , TextSearchHelp
+    , difficulty_filter_help
+    , helpMsg
+    , init
+    , isVisible
+    , next
+    , popupToID
+    , prev
+    , scrollToNextMsg
+    , scrollToPrevMsg
+    , setVisible
+    , status_filter_help
+    , topic_filter_help
+    )
 
 import Help exposing (CurrentHelpMsgIndex, HelpMsgID, HelpMsgOverlayID, HelpMsgStr, HelpMsgVisible)
 import Help.PopUp exposing (Help)

@@ -1,4 +1,4 @@
-module Flashcard.Msg exposing (..)
+module Flashcard.Msg exposing (Msg(..))
 
 import Api.WebSocket as WebSocket
 import Flashcard.Mode

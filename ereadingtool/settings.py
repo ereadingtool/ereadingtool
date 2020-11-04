@@ -105,7 +105,7 @@ LOGGING = {
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
-DEBUG = True 
+DEBUG = False 
 DEV = False
 
 ALLOWED_HOSTS = ['0.0.0.0',
@@ -157,6 +157,8 @@ AUTH_USER_MODEL = 'user.ReaderUser'
 EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
 
 SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
+# You must set DEBUG=False for sandbox_mode to be enabled
+SENDGRID_SANDBOX_MODE_IN_DEBUG = True
 
 ASGI_APPLICATION = 'ereadingtool.routing.application'
 # CHANNEL_LAYERS = {}

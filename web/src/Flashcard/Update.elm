@@ -1,12 +1,16 @@
-module Flashcard.Update exposing (..)
+module Flashcard.Update exposing (handle_ws_resp, route_cmd_resp)
 
 import Api
 import Api.WebSocket as WebSocket
 import Flashcard.Decode
 import Flashcard.Mode exposing (Mode)
-import Flashcard.Model exposing (..)
+import Flashcard.Model exposing (CmdResp(..), Model, SessionState(..))
 import Flashcard.Msg exposing (Msg(..))
 import Json.Decode
+
+
+type Not
+    = Not
 
 
 route_cmd_resp : Model -> Maybe Mode -> CmdResp -> ( Model, Cmd Msg )

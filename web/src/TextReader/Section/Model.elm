@@ -1,10 +1,22 @@
-module TextReader.Section.Model exposing (..)
+module TextReader.Section.Model exposing
+    ( Section
+    , TextSection
+    , Words
+    , getTextWord
+    , newSection
+    , questions
+    , textSection
+    )
 
 import Array exposing (Array)
 import Dict exposing (Dict)
 import InstructorAdmin.Text.Translations exposing (..)
-import TextReader.Question.Model exposing (Question, TextQuestion)
+import TextReader.Question.Model exposing (Question, TextQuestion, question)
 import TextReader.TextWord exposing (TextWord)
+
+
+type Not
+    = Not
 
 
 type Section

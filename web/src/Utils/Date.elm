@@ -1,16 +1,20 @@
 module Utils.Date exposing (monthDayYearFormat)
 
-import DateTime
 import Time
+import Time.Extra
 
 
-monthDayYearFormat : DateTime.DateTime -> String
-monthDayYearFormat date =
+monthDayYearFormat : Time.Zone -> Time.Posix -> String
+monthDayYearFormat zone posixTime =
+    let
+        parts =
+            Time.Extra.posixToParts zone posixTime
+    in
     String.join " "
-        [ toMonthString <| DateTime.getMonth date
-        , (String.fromInt <| DateTime.getDay date) ++ ","
-        , hourMinSecFormat date
-        , String.fromInt <| DateTime.getYear date
+        [ toMonthString <| parts.month
+        , (String.fromInt <| parts.day) ++ ","
+        , hourMinSecFormat parts
+        , String.fromInt <| parts.year
         ]
 
 
@@ -54,15 +58,15 @@ toMonthString month =
             "Dec"
 
 
-hourMinSecFormat : DateTime.DateTime -> String
-hourMinSecFormat date =
+hourMinSecFormat : Time.Extra.Parts -> String
+hourMinSecFormat parts =
     String.join " "
         [ String.join ":"
-            [ String.fromInt (toTwelveHourClock (DateTime.getHours date))
-            , padZero (DateTime.getMinutes date)
-            , padZero (DateTime.getSeconds date)
+            [ String.fromInt (toTwelveHourClock parts.hour)
+            , padZero parts.minute
+            , padZero parts.second
             ]
-        , amPMFormat date
+        , amPMFormat parts.hour
         ]
 
 
@@ -80,9 +84,9 @@ toTwelveHourClock hour =
     modBy 12 (hour + 11) + 1
 
 
-amPMFormat : DateTime.DateTime -> String
-amPMFormat date =
-    if DateTime.getHours date < 12 then
+amPMFormat : Int -> String
+amPMFormat hour =
+    if hour < 12 then
         "AM"
 
     else

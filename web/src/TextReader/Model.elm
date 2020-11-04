@@ -1,4 +1,21 @@
-module TextReader.Model exposing (..)
+module TextReader.Model exposing
+    ( CmdReq(..)
+    , CmdResp(..)
+    , Exception
+    , Gloss
+    , Model
+    , Progress(..)
+    , TextReaderWord
+    , TextScores
+    , gloss
+    , glossed
+    , instance
+    , new
+    , phrase
+    , selected
+    , toggleGloss
+    , ungloss
+    )
 
 -- import Profile.Flags as Flags
 
@@ -14,12 +31,11 @@ import User.Profile
 import User.Profile.TextReader.Flashcards
 
 
-
--- type Progress
---     = Init
---     | ViewIntro
---     | ViewSection Section
---     | Complete TextScores
+type Progress
+    = Init
+    | ViewIntro
+    | ViewSection Section
+    | Complete TextScores
 
 
 type alias Exception =
@@ -100,21 +116,21 @@ selected reader_word gls =
     Dict.member (identifier reader_word) gls
 
 
+type CmdReq
+    = NextReq
+    | PrevReq
+    | AnswerReq TextAnswer
+    | AddToFlashcardsReq TextReaderWord
+    | RemoveFromFlashcardsReq TextReaderWord
 
--- type CmdReq
---     = NextReq
---     | PrevReq
---     | AnswerReq TextAnswer
---     | AddToFlashcardsReq TextReaderWord
---     | RemoveFromFlashcardsReq TextReaderWord
---
--- type CmdResp
---     = StartResp Text
---     | InProgressResp Section
---     | CompleteResp TextScores
---     | AddToFlashcardsResp TextReader.TextWord.TextWord
---     | RemoveFromFlashcardsResp TextReader.TextWord.TextWord
---     | ExceptionResp Exception
+
+type CmdResp
+    = StartResp Text
+    | InProgressResp Section
+    | CompleteResp TextScores
+    | AddToFlashcardsResp TextReader.TextWord.TextWord
+    | RemoveFromFlashcardsResp TextReader.TextWord.TextWord
+    | ExceptionResp Exception
 
 
 type alias TextScores =
@@ -133,14 +149,17 @@ type alias TextScores =
 --         , flashcards : List TextReader.TextWord.TextWordParams
 --         , text_reader_ws_addr : String
 --         }
--- type alias Model =
---     { text : Text
---     , text_url : Text.Resource.TextReadingURL
---     , profile : User.Profile.Profile
---     , menu_items : Menu.Items.MenuItems
---     , flashcard : User.Profile.TextReader.Flashcards.ProfileFlashcards
---     , progress : Progress
---     , gloss : Gloss
---     , exception : Maybe Exception
---     , flags : Flags
---     }
+
+
+type alias Model =
+    { text : Text
+    , text_url : Text.Resource.TextReadingURL
+    , profile : User.Profile.Profile
+    , menu_items : Menu.Items.MenuItems
+    , flashcard : User.Profile.TextReader.Flashcards.ProfileFlashcards
+    , progress : Progress
+    , gloss : Gloss
+    , exception : Maybe Exception
+
+    -- , flags : Flags
+    }

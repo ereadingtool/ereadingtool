@@ -1,9 +1,15 @@
-module TextReader.Flashcard.Student exposing (..)
+module TextReader.Flashcard.Student exposing
+    ( StudentFlashcards
+    , addFlashcard
+    , flashcards
+    , newStudentFlashcards
+    , removeFlashcard
+    )
 
-import Dict exposing (Dict)
+import Dict exposing (Dict, remove)
 import Text.Translations.Decode as TranslationsDecode exposing (Flashcards, TextWord)
-import User.Student.Profile exposing (StudentProfile)
 import TextReader.TextWord
+import User.Student.Profile exposing (StudentProfile)
 
 
 type StudentFlashcards

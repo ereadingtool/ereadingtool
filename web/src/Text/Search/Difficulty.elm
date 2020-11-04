@@ -1,4 +1,11 @@
-module Text.Search.Difficulty exposing (DifficultySearch, filterParams, new, options, optionsToDict, selectDifficulty)
+module Text.Search.Difficulty exposing
+    ( DifficultySearch
+    , filterParams
+    , new
+    , options
+    , optionsToDict
+    , selectDifficulty
+    )
 
 import Dict exposing (Dict)
 import Search exposing (..)

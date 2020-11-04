@@ -1,4 +1,8 @@
-module TextReader exposing (..)
+module TextReader exposing (DeleteMe)
+
+
+type DeleteMe
+    = DeleteMe
 
 
 type Selected

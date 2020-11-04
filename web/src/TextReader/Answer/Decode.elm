@@ -1,8 +1,8 @@
-module TextReader.Answer.Decode exposing (..)
+module TextReader.Answer.Decode exposing (answerDecoder)
 
 import Array exposing (Array)
 import Json.Decode
-import Json.Decode.Pipeline exposing (required)
+import Json.Decode.Pipeline exposing (optional, required)
 import TextReader.Answer.Model exposing (Answer)
 
 
@@ -13,6 +13,7 @@ answerDecoder =
         |> required "question_id" Json.Decode.int
         |> required "text" Json.Decode.string
         |> required "order" Json.Decode.int
+        |> required "answered_correctly" (Json.Decode.nullable Json.Decode.bool)
         |> required "feedback" Json.Decode.string
 
 

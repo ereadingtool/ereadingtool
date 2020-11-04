@@ -17,6 +17,7 @@ import Html.Events exposing (onClick, onInput)
 import Html.Parser
 import Html.Parser.Util
 import Http exposing (..)
+import Http.Detailed
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode exposing (Value)
@@ -118,18 +119,18 @@ init shared { params } =
 
 
 type Msg
-    = GotProfile (Result Error StudentProfile)
+    = GotProfile (Result (Http.Detailed.Error String) ( Http.Metadata, StudentProfile ))
       -- username
     | ToggleUsernameUpdate
     | UpdateUsername String
-    | GotUsernameValidation (Result Error UsernameValidation)
+    | GotUsernameValidation (Result (Http.Detailed.Error String) ( Http.Metadata, UsernameValidation ))
     | SubmitUsernameUpdate
     | CancelUsernameUpdate
       -- preferred difficulty
     | SubmitDifficulty String
       -- research consent
     | ToggleResearchConsent
-    | GotConsent (Result Error StudentConsentResp)
+    | GotResearchConsent (Result (Http.Detailed.Error String) ( Http.Metadata, StudentConsentResp ))
       -- help messages
     | ToggleShowHelp
     | CloseHint StudentHelp
@@ -142,25 +143,24 @@ type Msg
 update : Msg -> SafeModel -> ( SafeModel, Cmd Msg )
 update msg (SafeModel model) =
     case msg of
-        GotProfile (Ok studentProfile) ->
+        GotProfile (Ok ( metadata, studentProfile )) ->
             ( SafeModel { model | profile = studentProfile, editing = Dict.fromList [] }
             , Cmd.none
             )
 
-        GotProfile (Err err) ->
-            case err of
-                Http.BadStatus resp ->
-                    ( SafeModel { model | errorMessage = "Could not update student profile" }
-                    , Cmd.none
-                    )
-
-                Http.BadBody _ ->
-                    ( SafeModel { model | errorMessage = "Could not update student profile" }
+        GotProfile (Err error) ->
+            case error of
+                Http.Detailed.BadStatus metadata body ->
+                    ( SafeModel { model | errors = errorBodyToDict body }
                     , Cmd.none
                     )
 
                 _ ->
-                    ( SafeModel { model | errorMessage = "Could not update student profile" }
+                    ( SafeModel
+                        { model
+                            | errors =
+                                Dict.fromList [ ( "internal", "An internal error occured. Please contact the developers." ) ]
+                        }
                     , Cmd.none
                     )
 
@@ -179,19 +179,26 @@ update msg (SafeModel model) =
             , validateUsername model.session model.config name
             )
 
-        GotUsernameValidation (Ok usernameValidation) ->
-            ( SafeModel { model | usernameValidation = usernameValidation }, Cmd.none )
+        GotUsernameValidation (Ok ( metadata, usernameValidation )) ->
+            ( SafeModel { model | usernameValidation = usernameValidation }
+            , Cmd.none
+            )
 
         GotUsernameValidation (Err error) ->
             case error of
-                Http.BadStatus resp ->
-                    ( SafeModel model, Cmd.none )
-
-                Http.BadBody _ ->
-                    ( SafeModel model, Cmd.none )
+                Http.Detailed.BadStatus metadata body ->
+                    ( SafeModel { model | errors = errorBodyToDict body }
+                    , Cmd.none
+                    )
 
                 _ ->
-                    ( SafeModel model, Cmd.none )
+                    ( SafeModel
+                        { model
+                            | errors =
+                                Dict.fromList [ ( "internal", "An internal error occured. Please contact the developers." ) ]
+                        }
+                    , Cmd.none
+                    )
 
         SubmitUsernameUpdate ->
             case model.usernameValidation.username of
@@ -232,23 +239,22 @@ update msg (SafeModel model) =
                 (not model.consentedToResearch)
             )
 
-        GotConsent (Ok resp) ->
-            ( SafeModel { model | consentedToResearch = resp.consented }, Cmd.none )
+        GotResearchConsent (Ok ( metadata, response )) ->
+            ( SafeModel { model | consentedToResearch = response.consented }, Cmd.none )
 
-        GotConsent (Err err) ->
-            case err of
-                Http.BadStatus resp ->
-                    ( SafeModel { model | errorMessage = "Could not update research consent" }
-                    , Cmd.none
-                    )
-
-                Http.BadBody _ ->
-                    ( SafeModel { model | errorMessage = "Could not update research consent" }
+        GotResearchConsent (Err error) ->
+            case error of
+                Http.Detailed.BadStatus metadata body ->
+                    ( SafeModel { model | errors = errorBodyToDict body }
                     , Cmd.none
                     )
 
                 _ ->
-                    ( SafeModel { model | errorMessage = "Could not update research consent" }
+                    ( SafeModel
+                        { model
+                            | errors =
+                                Dict.fromList [ ( "internal", "An internal error occured. Please contact the developers." ) ]
+                        }
                     , Cmd.none
                     )
 
@@ -282,7 +288,7 @@ putProfile :
 putProfile session config profile =
     case StudentProfile.studentID profile of
         Just studentId ->
-            Api.put
+            Api.putDetailed
                 (Endpoint.studentProfile (Config.restApiUrl config) studentId)
                 (Session.cred session)
                 (Http.jsonBody (profileEncoder profile))
@@ -302,11 +308,11 @@ putResearchConsent :
 putResearchConsent session config studentProfile consent =
     case StudentProfile.studentID studentProfile of
         Just studentId ->
-            Api.put
+            Api.putDetailed
                 (Endpoint.consentToResearch (Config.restApiUrl config) studentId)
                 (Session.cred session)
                 (Http.jsonBody (consentEncoder consent))
-                GotConsent
+                GotResearchConsent
                 studentConsentRespDecoder
 
         Nothing ->
@@ -319,12 +325,22 @@ validateUsername :
     -> String
     -> Cmd Msg
 validateUsername session config name =
-    Api.post
+    Api.postDetailed
         (Endpoint.validateUsername (Config.restApiUrl config))
         (Session.cred session)
         (Http.jsonBody (usernameEncoder name))
         GotUsernameValidation
         usernameValidationDecoder
+
+
+errorBodyToDict : String -> Dict String String
+errorBodyToDict body =
+    case Decode.decodeString (Decode.dict Decode.string) body of
+        Ok dict ->
+            dict
+
+        Err err ->
+            Dict.fromList [ ( "internal", "An internal error occured. Please contact the developers." ) ]
 
 
 toggleUsernameUpdate : SafeModel -> SafeModel

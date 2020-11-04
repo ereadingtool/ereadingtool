@@ -22,12 +22,13 @@ import Text.Translations.Msg as TranslationsMsg
 import Text.Translations.View
 import Text.Update
 import TextEdit exposing (Mode(..), Tab(..), TextViewParams)
+import Time
 import User.Instructor.Profile as InstructorProfile
 import Utils.Date
 
 
-view_text_date : TextViewParams -> Html msg
-view_text_date params =
+view_text_date : Time.Zone -> TextViewParams -> Html msg
+view_text_date timezone params =
     div [ attribute "class" "text_dates" ] <|
         (case params.text.modified_dt of
             Just modified_dt ->
@@ -35,7 +36,11 @@ view_text_date params =
                     Just last_modified_by ->
                         [ span []
                             [ Html.text
-                                ("Last Modified by " ++ last_modified_by ++ " on " ++ Utils.Date.monthDayYearFormat modified_dt)
+                                ("Last Modified by "
+                                    ++ last_modified_by
+                                    ++ " on "
+                                    ++ Utils.Date.monthDayYearFormat timezone modified_dt
+                                )
                             ]
                         ]
 
@@ -51,7 +56,11 @@ view_text_date params =
                             Just created_by ->
                                 [ span []
                                     [ Html.text
-                                        ("Created by " ++ created_by ++ " on " ++ Utils.Date.monthDayYearFormat created_dt)
+                                        ("Created by "
+                                            ++ created_by
+                                            ++ " on "
+                                            ++ Utils.Date.monthDayYearFormat timezone created_dt
+                                        )
                                     ]
                                 ]
 
@@ -484,8 +493,9 @@ view_text_attributes :
         , onAddTagInput : String -> String -> msg
         , onDeleteTag : String -> msg
         }
+    -> Time.Zone
     -> Html msg
-view_text_attributes params messages =
+view_text_attributes params messages timezone =
     div [ attribute "id" "text_attributes" ]
         [ view_text_title
             params
@@ -517,7 +527,7 @@ view_text_attributes params messages =
             edit_source
             (Text.Field.source params.text_fields)
         , view_text_lock params messages.onToggleLock
-        , view_text_date params
+        , view_text_date timezone params
         , view_text_conclusion
             params
             messages.onUpdateTextAttributes
@@ -632,9 +642,10 @@ view_text_tab :
         , onAddTagInput : String -> String -> msg
         , onDeleteTag : String -> msg
         }
+    -> Time.Zone
     -> Int
     -> Html msg
-view_text_tab params messages answer_feedback_limit =
+view_text_tab params messages timezone answer_feedback_limit =
     div [ attribute "id" "text" ] <|
         [ view_text_attributes params
             { onToggleEditable = messages.onToggleEditable
@@ -643,6 +654,7 @@ view_text_tab params messages answer_feedback_limit =
             , onAddTagInput = messages.onAddTagInput
             , onDeleteTag = messages.onDeleteTag
             }
+            timezone
         , Text.Section.View.view_text_section_components messages.onTextComponentMsg
             (Text.Component.text_section_components params.text_component)
             answer_feedback_limit
@@ -685,12 +697,13 @@ view_tab_contents :
         , onDeleteTag : String -> msg
         }
     -> (TranslationsMsg.Msg -> msg)
+    -> Time.Zone
     -> Int
     -> Html msg
-view_tab_contents params messages onTextTranslationMsg answer_feedback_limit =
+view_tab_contents params messages onTextTranslationMsg timezone answer_feedback_limit =
     case params.selected_tab of
         TextTab ->
-            view_text_tab params messages answer_feedback_limit
+            view_text_tab params messages timezone answer_feedback_limit
 
         TranslationsTab ->
             view_translations_tab params onTextTranslationMsg
@@ -710,9 +723,10 @@ view_text :
         , onDeleteTag : String -> msg
         , onTextTranslationMsg : TranslationsMsg.Msg -> msg
         }
+    -> Time.Zone
     -> Int
     -> Html msg
-view_text params messages answer_feedback_limit =
+view_text params messages timezone answer_feedback_limit =
     div [ attribute "id" "tabs" ]
         [ view_tab_menu params messages.onToggleTab
         , div [ attribute "id" "tabs_contents" ]
@@ -727,6 +741,7 @@ view_text params messages answer_feedback_limit =
                 , onDeleteTag = messages.onDeleteTag
                 }
                 messages.onTextTranslationMsg
+                timezone
                 answer_feedback_limit
             ]
         ]

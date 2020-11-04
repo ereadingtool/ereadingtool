@@ -1,4 +1,4 @@
-module Flashcard.Mode exposing (..)
+module Flashcard.Mode exposing (Mode, ModeChoiceDesc, modeFromString, modeId, modeName)
 
 
 type alias ModeId =
