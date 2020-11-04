@@ -44,9 +44,12 @@ Regardless of how you run Redis, whether that's a container on your local machin
 you'll want to set it to `localhost`. Unless of course you do some magic with `/etc/hosts` or are planning
 to run the whole thing in a docker network anyways. 
 
+
 #### Email
 To have emails sent by SendGrid, you'll need to have `SENDGRID_SANDBOX_MODE_IN_DEBUG=False` in `settings.py`. 
 Refer to issue #239 for more details.
+
+You'll need to set a local environment variable so that the backend is aware of the frontend. Specifically, `FRONTEND_HOST=localhost:1234`. If you're live firing the forgot email functionality from the frontend, you'll be sending the client to the api server if this env var isn't set.
 
 ## Web
 
