@@ -26,6 +26,7 @@ import Text.Search.Option
 import Text.Search.ReadingStatus exposing (TextReadStatus, TextReadStatusSearch)
 import Text.Search.Tag exposing (TagSearch)
 import TextSearch.Help
+import Time exposing (Zone)
 import User.Profile
 import User.Student.Profile as StudentProfile
 import Utils.Date
@@ -61,6 +62,7 @@ type SafeModel
         { session : Session
         , config : Config
         , navKey : Key
+        , timezone : Zone
         , results : List Text.Model.TextListItem
         , profile : User.Profile.Profile
         , textSearch : TextSearch
@@ -115,6 +117,7 @@ init shared { params } =
         { session = shared.session
         , config = shared.config
         , navKey = shared.key
+        , timezone = shared.timezone
         , results = []
         , profile = shared.profile
         , textSearch = textSearch
@@ -272,7 +275,7 @@ viewContent (SafeModel model) =
             []
         )
             ++ [ viewSearchFilters (SafeModel model)
-               , viewSearchResults model.results
+               , viewSearchResults model.timezone model.results
                , viewSearchFooter (SafeModel model)
                ]
 
@@ -319,8 +322,8 @@ viewSearchFilters (SafeModel model) =
         ]
 
 
-viewSearchResults : List Text.Model.TextListItem -> Html Msg
-viewSearchResults textListItems =
+viewSearchResults : Time.Zone -> List Text.Model.TextListItem -> Html Msg
+viewSearchResults timezone textListItems =
     let
         viewSearchResult textItem =
             let
@@ -343,7 +346,7 @@ viewSearchResults textListItems =
                 lastRead =
                     case textItem.last_read_dt of
                         Just dt ->
-                            Utils.Date.monthDayYearFormat dt
+                            Utils.Date.monthDayYearFormat timezone dt
 
                         Nothing ->
                             ""
@@ -610,8 +613,10 @@ save model shared =
 
 
 load : Shared.Model -> SafeModel -> ( SafeModel, Cmd Msg )
-load shared safeModel =
-    ( safeModel, Cmd.none )
+load shared (SafeModel model) =
+    ( SafeModel { model | timezone = shared.timezone }
+    , Cmd.none
+    )
 
 
 subscriptions : SafeModel -> Sub Msg

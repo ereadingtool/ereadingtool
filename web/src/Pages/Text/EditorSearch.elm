@@ -15,6 +15,7 @@ import Spa.Page as Page exposing (Page)
 import Spa.Url as Url exposing (Url)
 import Text.Decode
 import Text.Model exposing (TextListItem)
+import Time exposing (Zone)
 import User.Profile exposing (Profile)
 import Utils.Date
 import Views
@@ -47,6 +48,7 @@ type alias Model =
 type SafeModel
     = SafeModel
         { texts : List TextListItem
+        , timezone : Zone
         , profile : Profile
         , loading : Bool
         }
@@ -56,6 +58,7 @@ init : Shared.Model -> Url Params -> ( SafeModel, Cmd Msg )
 init shared { params } =
     ( SafeModel
         { texts = []
+        , timezone = shared.timezone
         , profile = shared.profile
         , loading = True
         }
@@ -122,17 +125,17 @@ view (SafeModel model) =
 viewTexts : SafeModel -> Html Msg
 viewTexts (SafeModel model) =
     div [ classList [ ( "text_items", True ) ] ]
-        (List.map viewText model.texts)
+        (List.map (viewText model.timezone) model.texts)
 
 
-viewText : TextListItem -> Html Msg
-viewText textListItem =
+viewText : Time.Zone -> TextListItem -> Html Msg
+viewText timezone textListItem =
     div [ classList [ ( "text_item", True ) ] ]
         [ div [ classList [ ( "item_property", True ) ], attribute "data-id" (String.fromInt textListItem.id) ] [ Html.text "" ]
         , div [ classList [ ( "item_property", True ) ] ]
             [ Html.a [ attribute "href" ("/text/edit/" ++ String.fromInt textListItem.id) ] [ Html.text textListItem.title ]
             , span [ classList [ ( "sub_description", True ) ] ]
-                [ Html.text <| "Modified:   " ++ Utils.Date.monthDayYearFormat textListItem.modified_dt
+                [ Html.text <| "Modified:   " ++ Utils.Date.monthDayYearFormat timezone textListItem.modified_dt
                 ]
             ]
         , div [ classList [ ( "item_property", True ) ] ]
@@ -157,7 +160,7 @@ viewText textListItem =
         , div [ classList [ ( "item_property", True ) ] ]
             [ Html.text textListItem.created_by
             , span [ classList [ ( "sub_description", True ) ] ]
-                [ Html.text ("Created By (" ++ Utils.Date.monthDayYearFormat textListItem.created_dt ++ ")")
+                [ Html.text ("Created By (" ++ Utils.Date.monthDayYearFormat timezone textListItem.created_dt ++ ")")
                 ]
             ]
         ]
@@ -215,8 +218,10 @@ save model shared =
 
 
 load : Shared.Model -> SafeModel -> ( SafeModel, Cmd Msg )
-load shared safeModel =
-    ( safeModel, Cmd.none )
+load shared (SafeModel model) =
+    ( SafeModel { model | timezone = shared.timezone }
+    , Cmd.none
+    )
 
 
 
