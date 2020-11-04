@@ -1,4 +1,5 @@
 import json
+import os
 from typing import Dict
 
 from django import forms
@@ -106,8 +107,15 @@ class PasswordResetAPIView(APIView):
         return PasswordResetForm(params)
 
     def post_success(self, request: HttpRequest, form: 'forms.Form'):
-        form.save(request=request)
+        if os.getenv("VIRTUAL_HOST"):
+            domain_override = os.getenv("VIRTUAL_HOST") 
+        else:
+            domain_override = 'localhost:8000'
+
+        form.save(request=request, domain_override=domain_override)
 
         return HttpResponse(json.dumps({'errors': {},
                                         'body': 'An email has been sent to reset your password, '
                                                 'if that e-mail exists in the system.'}), status=200)
+
+        
