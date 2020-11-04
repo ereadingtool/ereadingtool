@@ -298,7 +298,7 @@ class TestStudentUser(TestData, TestUser, TestCase):
 
         email_body = mail.outbox[0].body
 
-        token_re = re.compile(r'.+/user/reset-password/(?P<uidb64>.+?)/(?P<token>.+?)',
+        token_re = re.compile(r'.+/user/reset-password/(?P<uidb64>.+?)/(?P<token>.+?)$',
                               re.IGNORECASE | re.DOTALL)
 
         matches = token_re.match(email_body)
