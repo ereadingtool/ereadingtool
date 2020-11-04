@@ -109,6 +109,8 @@ class PasswordResetAPIView(APIView):
     def post_success(self, request: HttpRequest, form: 'forms.Form'):
         if os.getenv("VIRTUAL_HOST"):
             domain_override = os.getenv("VIRTUAL_HOST") 
+            if 'api' in domain_override:
+                domain_override = domain_override[4:]
         else:
             domain_override = 'localhost:8000'
 
