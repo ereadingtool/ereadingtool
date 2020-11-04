@@ -8,10 +8,10 @@ module Text.Model exposing
     )
 
 import Array exposing (Array)
-import DateTime exposing (DateTime)
 import Dict
 import Text.Section.Model exposing (emptyTextSection)
 import Text.Translations exposing (..)
+import Time exposing (Posix)
 
 
 type alias TextDifficulty =
@@ -29,8 +29,8 @@ type alias Text =
     , created_by : Maybe String
     , last_modified_by : Maybe String
     , tags : Maybe (List String)
-    , created_dt : Maybe DateTime
-    , modified_dt : Maybe DateTime
+    , created_dt : Maybe Posix
+    , modified_dt : Maybe Posix
     , sections : Array Text.Section.Model.TextSection
     , write_locker : Maybe String
     , words : Words
@@ -45,9 +45,9 @@ type alias TextListItem =
     , created_by : String
     , last_modified_by : Maybe String
     , tags : Maybe (List String)
-    , created_dt : DateTime
-    , modified_dt : DateTime
-    , last_read_dt : Maybe DateTime
+    , created_dt : Posix
+    , modified_dt : Posix
+    , last_read_dt : Maybe Posix
     , text_section_count : Int
     , text_sections_complete : Maybe Int
     , questions_correct : Maybe ( Int, Int )

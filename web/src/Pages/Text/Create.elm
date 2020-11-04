@@ -69,6 +69,7 @@ type SafeModel
     = SafeModel
         { session : Session
         , config : Config
+        , timezone : Time.Zone
         , mode : Mode
         , profile : InstructorProfile
         , successMessage : Maybe String
@@ -88,6 +89,7 @@ init shared { params } =
     ( SafeModel
         { session = shared.session
         , config = shared.config
+        , timezone = shared.timezone
         , mode = CreateMode
         , successMessage = Nothing
         , errorMessage = Nothing
@@ -618,6 +620,7 @@ view (SafeModel model) =
             , Text.View.view_text
                 textViewParams
                 messages
+                model.timezone
                 Shared.answerFeedbackCharacterLimit
             ]
         ]
@@ -656,8 +659,10 @@ save model shared =
 
 
 load : Shared.Model -> SafeModel -> ( SafeModel, Cmd Msg )
-load shared safeModel =
-    ( safeModel, Cmd.none )
+load shared (SafeModel model) =
+    ( SafeModel { model | timezone = shared.timezone }
+    , Cmd.none
+    )
 
 
 
