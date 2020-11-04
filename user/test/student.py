@@ -298,14 +298,14 @@ class TestStudentUser(TestData, TestUser, TestCase):
 
         email_body = mail.outbox[0].body
 
-        token_re = re.compile(r'.+/user/reset-password/(?P<uidb64>.+?)/(?P<token>.+?)',
+        token_re = re.compile(r'.+/user/reset-password/(?P<uid>.+?)/(?P<token>.+?)',
                               re.IGNORECASE | re.DOTALL)
 
         matches = token_re.match(email_body)
 
         self.assertTrue(matches, 'tokens not sent in email')
 
-        uidb64, token = matches.group('uidb64'), matches.group('token')
+        uidb64, token = matches.group('uid'), matches.group('token')
 
         self.assertTrue(len(uidb64) > 1 and len(token) > 1)
 
