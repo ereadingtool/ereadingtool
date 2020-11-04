@@ -306,25 +306,31 @@ class TestStudentUser(TestData, TestUser, TestCase):
         self.assertTrue(matches, 'tokens not sent in email')
 
         uidb64, token = matches.group('uidb64'), matches.group('token')
-        print(f"uidb64 = {uidb64}")
-        print(f"token = {token}")
+
         self.assertTrue(len(uidb64) > 1 and len(token) > 1)
 
-        redirect_resp = self.anonymous_client.get(reverse('password-reset-confirm',
-                                                          kwargs={'uidb64': uidb64, 'token': token}))
+        # Change variable name, no longer a redirect
+        # redirect_resp = self.anonymous_client.get(reverse('password-reset-confirm',
+        resp = self.anonymous_client.get(reverse('password-reset-confirm',
+                                                 kwargs={'uidb64': uidb64, 'token': token}))
 
-        self.assertIsInstance(redirect_resp, HttpResponseRedirect)
-
-        resp = self.anonymous_client.get(reverse('password-reset-confirm', kwargs={'uidb64': uidb64, 'token': token}),
-                                         follow=True)
-
+        # No longer redirecting 
+        # self.assertIsInstance(redirect_resp, HttpResponseRedirect)
         self.assertIsInstance(resp, HttpResponse)
 
+        # No longer need to follow the redirect
+        # resp = self.anonymous_client.get(reverse('password-reset-confirm', kwargs={'uidb64': uidb64, 'token': token}),
+        #                                 follow=True)
+
+        # self.assertIsInstance(resp, HttpResponse)
+
         self.assertTrue(resp)
 
-        resp = self.anonymous_client.get(reverse('load-elm-unauth-pass-reset-confirm'))
-
-        self.assertTrue(resp)
+        # Doing away with this view
+        # resp = self.anonymous_client.get(reverse('load-elm-unauth-pass-reset-confirm'))
+            
+        # redundant
+        # self.assertTrue(resp)
 
         valid_link_re = re.compile(r".+validlink:(?P<validlink>.+?),.+", re.IGNORECASE | re.DOTALL)
 

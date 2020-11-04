@@ -6,7 +6,7 @@ from django import forms
 from django.urls import reverse
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
-from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
+from django.http import HttpResponse, HttpRequest
 from django.views.generic import TemplateView
 
 import ereadingtool.user as user_utils
