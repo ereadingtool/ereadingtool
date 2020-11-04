@@ -11,6 +11,7 @@ services:
       - VIRTUAL_HOST=api.steps2ar.org
       - VIRTUAL_PORT=8000
       - LETSENCRYPT_HOST=api.steps2ar.org
+      - FRONTEND_HOST=steps2ar.org
     expose:
       - "8000"
       - "6379"
