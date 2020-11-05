@@ -6,6 +6,8 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpRequest, HttpResponseForbidden
 from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 from django.views.generic import TemplateView, View
 from django.http import JsonResponse
@@ -89,7 +91,7 @@ class InstructorAPIView(LoginRequiredMixin, APIView):
             'profile': instructor_dict,
         }))
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class InstructorInviteAPIView(LoginRequiredMixin, APIView):
     login_url = Instructor.login_url
 
