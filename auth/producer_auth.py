@@ -13,7 +13,7 @@ from django.http import HttpResponse
 
 async def jwt_validation(scope):
     """ Take JWT from query string to check the user against the db and validate its timestamp """
-    if not scope['query_string']:
+    if not scope and not scope['query_string']:
         return None
     else:
         secret_key = os.getenv('DJANGO_SECRET_KEY')
