@@ -149,7 +149,7 @@ update msg model =
 
         CompletedSignup (Ok resp) ->
             ( model
-            , Browser.Navigation.replaceUrl model.navKey (Route.toString Route.Top)
+            , Browser.Navigation.replaceUrl model.navKey (Route.toString Route.Login__Instructor)
             )
 
         CompletedSignup (Err error) ->
