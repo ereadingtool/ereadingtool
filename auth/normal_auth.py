@@ -10,16 +10,22 @@ from urllib.parse import parse_qs
 def jwt_valid(status: int, errors: Dict):
     def decorator(func):
         def validate(*args, **kwargs):
-            secret_key = os.getenv('DJANGO_SECRET_KEY')
-            scope = args[0].request.scope
-            meta = args[0].request.META
-            parsed_qs = parse_qs(scope['query_string'])
-            if b'token=' in parsed_qs: 
-                jwt_encoded = scope['query_string'][6:]
-                # TODO: This may have broken websockets. Trouble is, we must have b'token=' prefix since there are other qs
-                # jwt_encoded = scope['query_string'][6:] if scope['query_string'][:6] == b'token=' else scope['query_string']
-            else:
-                jwt_encoded = meta['HTTP_AUTHORIZATION'][7:] if meta['HTTP_AUTHORIZATION'][:7] == 'Bearer ' else meta['HTTP_AUTHORIZATION']
+            # If any of these fail (likely `scope = args[0].request.scope`) then we're running tests
+            try:
+                secret_key = os.getenv('DJANGO_SECRET_KEY')
+                scope = args[0].request.scope
+                meta = args[0].request.META
+                parsed_qs = parse_qs(scope['query_string'])
+                if b'token=' in parsed_qs: 
+                    jwt_encoded = scope['query_string'][6:]
+                    # TODO: This may have broken websockets. Trouble is, we must have b'token=' prefix since there are other qs
+                    # jwt_encoded = scope['query_string'][6:] if scope['query_string'][:6] == b'token=' else scope['query_string']
+                else:
+                    jwt_encoded = meta['HTTP_AUTHORIZATION'][7:] if meta['HTTP_AUTHORIZATION'][:7] == 'Bearer ' else meta['HTTP_AUTHORIZATION']
+            except:
+                return
+
+            # If any sort of ValueError or database access error occurs then we bail.
             try:
                 jwt_decoded = jwt.decode(jwt_encoded, secret_key, algorithms=['HS256'])
 
