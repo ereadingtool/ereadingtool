@@ -1,7 +1,7 @@
 import json
 import os
 from typing import Dict
-
+from django.http import JsonResponse
 from django import forms
 from django.urls import reverse
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
@@ -91,15 +91,33 @@ class PasswordResetConfirmView(TemplateView):
 
 class PasswordResetConfirmAPIView(APIView):
     def form(self, request: HttpRequest, params: Dict) -> 'forms.Form':
+        token_generator = default_token_generator
         user = user_utils.get_user(params.pop('uidb64'))
+        try:
+            if token_generator.check_token(user, params['token']):
+                return SetPasswordForm(user, params)
+        except:
+            pass
+        form = SetPasswordForm(user, params)
+        form.add_error(None, "There's been a validation issue. Try getting another password reset email.") 
 
-        return SetPasswordForm(user, params)
+        return form
+        
 
     def post_success(self, request: HttpRequest, form: 'forms.Form'):
         user = form.save()
 
         return HttpResponse(json.dumps({'errors': {}, 'body': 'Your password has been reset.',
                                         'redirect': str(user.profile.login_url)}))
+
+
+    def post_error(self, errors: dict) -> JsonResponse:
+        """ Things went wrong in the `post()` method below."""
+        if not errors:
+            errors['all'] = 'An unspecified error has occurred.'
+            return JsonResponse(errors, status=400) 
+        else:
+            return JsonResponse(errors, status=403)
 
 
 class PasswordResetAPIView(APIView):
