@@ -226,7 +226,7 @@ postSignup session config signupParams =
             signUpEncoder signupParams
     in
     Api.postDetailed
-        (Endpoint.studentSignup (Config.restApiUrl config))
+        (Endpoint.instructorSignup (Config.restApiUrl config))
         (Session.cred session)
         (Http.jsonBody encodedSignupParams)
         CompletedSignup
