@@ -124,8 +124,6 @@ init shared { params } =
         , textApiEndpoint = textApiEndpoint
         , help = textSearchHelp
         , errorMessage = Nothing
-
-        -- , welcome = Config.showHelp shared.config
         }
     , updateResults shared.session shared.config textSearch
     )

@@ -50,7 +50,7 @@ selectDifficulty ((DifficultySearch id _ err) as difficulty_search) difficulty s
                         Text.Search.Option.setSelected opt selected
 
                     else
-                        opt
+                        Text.Search.Option.setSelected opt False
                 )
                 (options difficulty_search)
             )
