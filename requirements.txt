@@ -13,7 +13,7 @@ sqlparse
 requests
 pymorphy2[fast]
 pymorphy2-dicts-ru
-channels_redis=3.0.1
+channels_redis==3.0.1
 lxml
 pdfkit
 asynctest
