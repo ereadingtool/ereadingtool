@@ -103,7 +103,6 @@ body {
 
 @media (max-width: 568px) {
   #header {
-    padding-bottom: 15px;
     display: grid;
     grid-template-columns: 2fr 1fr;
     grid-template-rows: auto auto auto;
@@ -121,6 +120,7 @@ body {
   #header #logo {
     grid-area: logo;
     justify-self: left;
+    padding-bottom: 5px;
   }
 
   .menu-icon {
@@ -135,7 +135,11 @@ body {
     opacity: 0;
     height: 0;
     padding: 0;
-    transition: opacity 0s, height 0.5s, padding 0.5s;
+    transition: opacity 0s, height 0.4s, padding 0.25s;
+  }
+
+  #header * a:hover {
+    text-decoration: none;
   }
 
   .content-menu {
@@ -153,7 +157,7 @@ body {
     background-color: #004285;
 
     opacity: 1;
-    transition: opacity 0.6s, height 0.5s;
+    transition: opacity 0.25s, height 0.4s;
   }
 
   .profile-menu {
@@ -171,11 +175,15 @@ body {
     font-size: 18px;
 
     opacity: 1;
-    transition: opacity 0.6s, height 0.5s;
+    transition: opacity 0.25s, height 0.4s;
   }
 
   #header .nav-item {
     padding: 0 0 10px 10px;
+  }
+
+  #header .top-nav-item {
+    padding: 15px 0 10px 10px;
   }
 
   #header .nav-item > .nav-link {
