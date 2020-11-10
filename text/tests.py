@@ -288,6 +288,11 @@ class TestText(TestData, TestUser, TestCase):
         self.assertEquals(science_tech_tag.texts.count(), 2)
 
     def test_put_new_section(self):
+
+        jwt = os.getenv("TEST_JWT")
+        if not jwt:
+            raise ValueError("You need to set the environment variable TEST_JWT.")
+
         test_data = self.get_test_data()
 
         resp = self.instructor.post(reverse_lazy('text-api'), json.dumps(test_data), content_type='application/json')
@@ -413,6 +418,11 @@ class TestText(TestData, TestUser, TestCase):
                                             student.to_text_summary_dict(text_two)])
 
     def test_put_text(self):
+
+        jwt = os.getenv("TEST_JWT")
+        if not jwt:
+            raise ValueError("You need to set the environment variable TEST_JWT.")
+
         test_data = self.get_test_data()
 
         resp = self.instructor.post(reverse_lazy('text-api'), json.dumps(test_data), content_type='application/json')
@@ -478,6 +488,11 @@ class TestText(TestData, TestUser, TestCase):
         self.assertEquals(resp_content['text_sections'][1]['questions'][0]['answers'][1]['text'], 'A new answer.')
 
     def test_text_lock(self):
+
+        jwt = os.getenv("TEST_JWT")
+        if not jwt:
+            raise ValueError("You need to set the environment variable TEST_JWT.")
+
         other_instructor_client = self.new_instructor_client(Client())
 
         resp = self.instructor.post(reverse_lazy('text-api'),
@@ -520,6 +535,11 @@ class TestText(TestData, TestUser, TestCase):
         self.assertEquals(resp.status_code, 500, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
     def test_post_text_correct_answers(self):
+
+        jwt = os.getenv("TEST_JWT")
+        if not jwt:
+            raise ValueError("You need to set the environment variable TEST_JWT.")       
+
         test_data = self.get_test_data()
 
         for answer in test_data['text_sections'][0]['questions'][0]['answers']:
@@ -544,6 +564,11 @@ class TestText(TestData, TestUser, TestCase):
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
     def test_post_text_max_char_limits(self):
+
+        jwt = os.getenv("TEST_JWT")
+        if not jwt:
+            raise ValueError("You need to set the environment variable TEST_JWT.")
+
         test_data = self.get_test_data()
         test_text_section_body_size = 4096
 
@@ -586,6 +611,11 @@ class TestText(TestData, TestUser, TestCase):
         self.assertEquals(len(text_section.body), test_text_section_body_size)
 
     def create_text(self, test_data: Dict = None, diff_data: Dict = None) -> Text:
+
+        jwt = os.getenv("TEST_JWT")
+        if not jwt:
+            raise ValueError("You need to set the environment variable TEST_JWT.")
+
         text_data = test_data or self.get_test_data()
 
         if diff_data:
@@ -604,6 +634,11 @@ class TestText(TestData, TestUser, TestCase):
         return text
 
     def test_post_text(self, test_data: Optional[Dict] = None) -> Text:
+
+        jwt = os.getenv("TEST_JWT")
+        if not jwt:
+            raise ValueError("You need to set the environment variable TEST_JWT.")
+
         test_data = test_data or self.get_test_data()
 
         num_of_sections = len(test_data['text_sections'])
