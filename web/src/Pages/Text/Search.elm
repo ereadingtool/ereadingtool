@@ -280,13 +280,12 @@ viewContent (SafeModel model) =
 
 viewHelpMessage : Html Msg
 viewHelpMessage =
-    div [ id "text_search_help_msg" ]
+    div [ id "text-search-welcome-message" ]
         [ div []
             [ Html.text
-                """Welcome! Use this page to find texts for your proficiency level and on topics that are of interest to you."""
-            ]
-        , div []
-            [ Html.text "Read the hints on this page, then read the "
+                """Welcome! Use this page to find texts for your proficiency level and on topics that are of interest to you. 
+                   Read the hints on this page, and next read the 
+                """
 
             -- N.B. the demo text is text 19
             , a [ href (Route.toString (Route.Text__Id_Int { id = 19 })) ] [ Html.text "Demo Text" ]
