@@ -280,19 +280,16 @@ viewContent (SafeModel model) =
 
 viewHelpMessage : Html Msg
 viewHelpMessage =
-    div [ id "text_search_help_msg" ]
+    div [ id "text-search-welcome-message" ]
         [ div []
-            [ Html.text "Welcome."
-            ]
-        , div []
             [ Html.text
-                """Use this page to find texts for your proficiency level and on topics that are of interest to you."""
-            ]
-        , div []
-            [ Html.text
-                """To walk through a demonstration of how the text and questions appear, please select Intermediate-Mid
-       from the Difficulty tags and then Other from the the Topic tags, and Unread from the Status Filters.
-       A text entitled Demo Text should appear at the top of the list.  Click on the title to go to this text."""
+                """Welcome! Use this page to find texts for your proficiency level and on topics that are of interest to you. 
+                   Read the hints on this page, and next read the 
+                """
+
+            -- N.B. the demo text is text 19
+            , a [ href (Route.toString (Route.Text__Id_Int { id = 19 })) ] [ Html.text "Demo Text" ]
+            , Html.text " to learn how to use the text reader."
             ]
         ]
 
