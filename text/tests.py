@@ -493,11 +493,14 @@ class TestText(TestData, TestUser, TestCase):
         if not jwt:
             raise ValueError("You need to set the environment variable TEST_JWT.")
 
+        bearer_token = {'Authorization': 'Bearer ' + jwt}
+
         other_instructor_client = self.new_instructor_client(Client())
 
         resp = self.instructor.post(reverse_lazy('text-api'),
                                     json.dumps(self.get_test_data()),
-                                    content_type='application/json')
+                                    content_type='application/json',
+                                    headers=bearer_token)
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
@@ -516,7 +519,7 @@ class TestText(TestData, TestUser, TestCase):
 
         resp = other_instructor_client.post(lock_api_endpoint_for_text, content_type='application/json')
 
-        self.assertEquals(resp.status_code, 500, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+        self.assertEquals(resp.status_code, 403, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
         resp = other_instructor_client.delete(lock_api_endpoint_for_text, content_type='application/json')
 
@@ -621,9 +624,12 @@ class TestText(TestData, TestUser, TestCase):
         if diff_data:
             text_data.update(diff_data)
 
+        bearer_token = {'Authorization': 'Bearer ' + jwt}
+
         resp = self.instructor.post(reverse_lazy('text-api'),
                                     json.dumps(text_data),
-                                    content_type='application/json')
+                                    content_type='application/json',
+                                    headers=bearer_token)
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
@@ -680,6 +686,11 @@ class TestText(TestData, TestUser, TestCase):
         return text
 
     def test_delete_text(self, text: Optional[Text] = None):
+
+        jwt = os.getenv("TEST_JWT")
+        if not jwt:
+            raise ValueError("You need to set the environment variable TEST_JWT.")
+
         if text is None:
             text = self.create_text()
 

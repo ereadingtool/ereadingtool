@@ -20,7 +20,7 @@ class TextLockAPIView(LoginRequiredMixin, APIView):
 
     allowed_methods = ['post', 'delete']
 
-    @jwt_valid(403, {})
+    @jwt_valid(403, '')
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)

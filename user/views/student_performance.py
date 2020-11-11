@@ -3,6 +3,7 @@ import pdfkit
 import os
 import time
 import jwt
+from urllib.parse import parse_qs
 from django.core.files.base import ContentFile
 from django.http import HttpResponse, HttpRequest, HttpResponseForbidden
 from django.template import loader
@@ -52,7 +53,7 @@ def jwt_validation(scope):
     else:
         secret_key = os.getenv('DJANGO_SECRET_KEY')
         try:
-            qs = scope['query_string'][6:] if scope['query_string'][:6] == b'token=' else scope['query_string']
+            qs = parse_qs(scope['query_string'])[b'token'][0]
             jwt_decoded = jwt.decode(qs, secret_key, algorithms=['HS256'])
 
             if jwt_decoded['exp'] <= time.time():
