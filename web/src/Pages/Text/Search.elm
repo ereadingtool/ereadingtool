@@ -18,6 +18,7 @@ import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
+import Task
 import Text.Decode
 import Text.Model
 import Text.Search exposing (TextSearch)
@@ -612,8 +613,22 @@ save model shared =
 
 load : Shared.Model -> SafeModel -> ( SafeModel, Cmd Msg )
 load shared (SafeModel model) =
-    ( SafeModel { model | timezone = shared.timezone }
-    , Cmd.none
+    ( SafeModel
+        { model
+            | timezone = shared.timezone
+            , profile = shared.profile
+        }
+    , case shared.profile of
+        User.Profile.Student student_profile ->
+            case StudentProfile.studentDifficultyPreference student_profile of
+                Just difficulty ->
+                    Task.perform (\_ -> AddDifficulty (Tuple.first difficulty) True) (Task.succeed Nothing)
+
+                Nothing ->
+                    Cmd.none
+
+        _ ->
+            Cmd.none
     )
 
 
