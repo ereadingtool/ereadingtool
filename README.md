@@ -55,7 +55,7 @@ You'll need to set a local environment variable so that the backend is aware of 
 Easily the best testing environment for this is VSCode. To enable tests, be sure to look at the launch.json file 
 and confirm there is configuration with an `args` value `test`. Then, you'll want to go to the test section of 
 VSCode and choose to `RUN` the name of your test configuration. Unreconciled issues finding database tables may 
-exist. Try nuking your storing then nuking your migrations from space.
+exist. Try storing then nuking your migrations from space.
 
 ## Web
 
