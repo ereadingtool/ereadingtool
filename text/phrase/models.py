@@ -18,6 +18,7 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
     instance = models.IntegerField(default=0)
 
     phrase = models.CharField(max_length=128, blank=False)
+    lemma = models.CharField(max_length=128, blank=False)
 
     @property
     def sentence(self) -> Union[AnyStr, None]:
