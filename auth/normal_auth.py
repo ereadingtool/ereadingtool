@@ -28,22 +28,6 @@ def jwt_valid(status: int, errors: str):
                     # then their token has expired 
                     return HttpResponse(status=status, content=errors)
 
-                # These cases handle incrementing bugs that could arise from a stolen jwt 
-                # being applied to a different user's profile.
-                if 'pk' in kwargs:
-                    # user_id is unique across the DB
-                    if Student.objects.filter(user_id=jwt_decoded['user_id']):
-                        # force evaluation of the QuerySet. We already know it contains at least one element
-                        student = list(Student.objects.filter(user_id=jwt_decoded['user_id']))[0]
-                        if student == None or student.pk != kwargs['pk']:
-                            return  HttpResponse(status=status, content=errors)
-                    elif Instructor.objects.filter(user_id=jwt_decoded['user_id']):
-                        instructor = list(Instructor.objects.filter(user_id=jwt_decoded['user_id']))[0]
-                        if instructor == None or instructor.pk != kwargs['pk']:
-                            return HttpResponse(status=status, content=errors)
-                    else:
-                        # they're neither an instructor or a student
-                        return HttpResponse(status=status, content=errors)
             except: 
                 return HttpResponse(status=status, content=errors)
 

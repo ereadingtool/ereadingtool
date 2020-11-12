@@ -519,7 +519,7 @@ class TestText(TestData, TestUser, TestCase):
 
         resp = other_instructor_client.post(lock_api_endpoint_for_text, content_type='application/json')
 
-        self.assertEquals(resp.status_code, 403, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+        self.assertEquals(resp.status_code, 500, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
         resp = other_instructor_client.delete(lock_api_endpoint_for_text, content_type='application/json')
 
