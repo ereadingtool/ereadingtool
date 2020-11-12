@@ -12,20 +12,18 @@ def jwt_valid(status: int, errors: str):
         def validate(*args, **kwargs):
             secret_key = os.getenv('DJANGO_SECRET_KEY')
 
-            if hasattr(args[0].request, 'scope'):
-                # WSGI
-                jwt_encoded = args[0].request.headers._store['authorization'][1]
-            else:
-                # ASGI
-                meta = args[0].request.META
-                jwt_encoded = meta['HTTP_AUTHORIZATION'][7:] if meta['HTTP_AUTHORIZATION'][:7] == 'Bearer ' else meta['HTTP_AUTHORIZATION']
-            
-            # If any sort of ValueError or database access error occurs then we bail.
             try:
+                if hasattr(args[0].request, 'scope'):
+                    jwt_encoded_dirty = args[0].request.headers._store['authorization'][1]
+                else:
+                    meta = args[0].request.META
+                    jwt_encoded_dirty = meta['HTTP_AUTHORIZATION']
+
+                jwt_encoded = jwt_encoded_dirty[7:] if 'Bearer ' == jwt_encoded_dirty[:7] else jwt_encoded_dirty
+
                 jwt_decoded = jwt.decode(jwt_encoded, secret_key, algorithms=['HS256'])
 
                 if jwt_decoded['exp'] <= time.time():
-                    # then their token has expired 
                     return HttpResponse(status=status, content=errors)
 
             except: 

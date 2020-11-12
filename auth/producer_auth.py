@@ -46,7 +46,7 @@ async def jwt_validation(scope):
                 # path error, same result
                 raise InvalidTokenError
         except InvalidTokenError: 
-            return None
+            return "{'errors': 'Invalid JWT'}"
 
 
 class ProducerAuthMiddleware:
@@ -74,13 +74,14 @@ class ProducerAuthMiddlewareInstance:
 
     async def __call__(self, receive, send):
         """ Look up user from query string and validate their JWT. """
-        self.scope['user'] = await jwt_validation(self.scope)
-        
         try:
+            is_valid = await jwt_validation(self.scope)
+            if isinstance(is_valid, str):
+                raise ValueError
+            else:
+                self.scope['user'] = is_valid
             # Instantiate our inner application
             inner = self.inner(self.scope)
             return await inner(receive, send)
-        except ValueError:
-            # I think the connection will be cleaned up by a WebSocket DISCONNECT from 
-            # within the Channels library
-            pass
+        except:
+            return None 
