@@ -12,13 +12,13 @@ from text.translations.mixins import TextPhraseGrammemes
 
 class TextPhrase(TextPhraseGrammemes, models.Model):
     class Meta:
-        unique_together = (('instance', 'phrase', 'text_section'),)
+        unique_together = (('instance', 'phrase', 'text_section', 'lemma'),)
 
     text_section = models.ForeignKey(TextSection, related_name='translated_words', on_delete=models.CASCADE)
     instance = models.IntegerField(default=0)
 
     phrase = models.CharField(max_length=128, blank=False)
-    lemma = models.CharField(max_length=128, blank=False)
+    lemma = models.CharField(max_length=128, blank=False, null=True)
 
     @property
     def sentence(self) -> Union[AnyStr, None]:
