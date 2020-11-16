@@ -92,8 +92,6 @@ textListItemDecoder =
         |> required "text_section_count" Json.Decode.int
         |> required "text_sections_complete" (Json.Decode.nullable Json.Decode.int)
         |> required "questions_correct" (Json.Decode.nullable Utils.intTupleDecoder)
-        |> required "uri" Json.Decode.string
-        |> required "write_locker" (Json.Decode.nullable Json.Decode.string)
 
 
 textListDecoder : Json.Decode.Decoder (List TextListItem)
