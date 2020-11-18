@@ -1,5 +1,5 @@
+import json
 from typing import AnyStr
-
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -127,8 +127,9 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             })
 
     async def connect(self):
-        if not self.scope['user'] or not self.scope['user'].is_authenticated:
+        if not self.scope['user'].id:
             await self.accept()
+            await self.send_json(json.dumps({'Error': 'Invalid JWT'}))
             # 1002 indicates that an endpoint is terminating the connection due
             # to a protocol error. But it doesn't like that so we use 1000.
             await self.close(code=1000) 

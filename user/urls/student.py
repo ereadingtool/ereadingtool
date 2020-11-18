@@ -16,7 +16,7 @@ api_urlpatterns = [
          name='api-student-research-consent')
 ]
 
-# TODO: These can all be removed
+# TODO: Tests rely on these
 elm_load_urlpatterns = [
     path('load_elm_student.js', ElmLoadJsStudentProfileView.as_view(), name='load-elm-student'),
     path('load_elm_unauth_student_login.js', ElmLoadJsStudentLoginView.as_view(),

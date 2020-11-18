@@ -1,5 +1,6 @@
 import os
 import time
+from django.contrib.auth.models import AnonymousUser
 import jwt
 from channels.db import database_sync_to_async
 from jwt.exceptions import InvalidTokenError
@@ -14,7 +15,7 @@ from django.http import HttpResponse
 async def jwt_validation(scope):
     """ Take JWT from query string to check the user against the db and validate its timestamp """
     if not scope and not scope['query_string']:
-        return None
+        return "{'errors': 'Invalid querystring'}"
     else:
         secret_key = os.getenv('DJANGO_SECRET_KEY')
         try:
@@ -46,7 +47,7 @@ async def jwt_validation(scope):
                 # path error, same result
                 raise InvalidTokenError
         except InvalidTokenError: 
-            return "{'errors': 'Invalid JWT'}"
+            return AnonymousUser
 
 
 class ProducerAuthMiddleware:
@@ -75,13 +76,9 @@ class ProducerAuthMiddlewareInstance:
     async def __call__(self, receive, send):
         """ Look up user from query string and validate their JWT. """
         try:
-            is_valid = await jwt_validation(self.scope)
-            if isinstance(is_valid, str):
-                raise ValueError
-            else:
-                self.scope['user'] = is_valid
-            # Instantiate our inner application
+            self.scope['user'] = await jwt_validation(self.scope)
+            
             inner = self.inner(self.scope)
             return await inner(receive, send)
         except:
-            return None 
+            return None # < -- This is bad, takes us to asyncio/base_events/BaseEventLoop.run_forever
