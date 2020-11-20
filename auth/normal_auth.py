@@ -3,6 +3,7 @@ import time
 import jwt
 import json 
 from django.http import HttpResponse
+from django.core.handlers.wsgi import WSGIRequest
 from channels.http import AsgiRequest
 from jwt import InvalidTokenError
 
@@ -11,15 +12,17 @@ def jwt_valid():
         def validate(*args, **kwargs):
             try:
                 secret_key = os.getenv('DJANGO_SECRET_KEY')
-                asgi_request = None
+                request = None
                 for e in args:
                     if isinstance(e, AsgiRequest):
-                        asgi_request = e
+                        request = e
+                    elif isinstance(e, WSGIRequest):
+                        request = e
 
-                if not asgi_request: 
+                if not request: 
                     raise InvalidTokenError 
 
-                jwt_encoded_dirty = asgi_request.META['HTTP_AUTHORIZATION']
+                jwt_encoded_dirty = request.META['HTTP_AUTHORIZATION']
 
                 jwt_encoded = jwt_encoded_dirty[7:] if 'Bearer ' == jwt_encoded_dirty[:7] else jwt_encoded_dirty
 

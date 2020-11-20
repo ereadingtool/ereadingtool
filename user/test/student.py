@@ -263,9 +263,9 @@ class TestStudentUser(TestData, TestUser, TestCase):
 
         resp_content = json.loads(resp.content)
 
-        self.assertEquals(resp.status_code, 400)
+        self.assertEquals(resp.status_code, 403)
 
-        self.assertEquals(list(resp_content.keys()), ['username'])
+        self.assertEquals(list(resp_content.keys()), ['error'])
 
         resp = self.student_client.put(self.student_api_endpoint,
                                        data=json.dumps({'username': 'newusername14'}), content_type='application/json')
