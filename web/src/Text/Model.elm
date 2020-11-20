@@ -43,7 +43,6 @@ type alias TextListItem =
     , author : String
     , difficulty : String
     , created_by : String
-    , last_modified_by : Maybe String
     , tags : Maybe (List String)
     , created_dt : Posix
     , modified_dt : Posix
