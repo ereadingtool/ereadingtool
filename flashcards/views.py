@@ -25,7 +25,7 @@ class FlashcardView(LoginRequiredMixin, TemplateView):
     def dispatch(self, request, *args, **kwargs):
         return super(FlashcardView, self).dispatch(request, *args, **kwargs)
 
-    @jwt_valid(403, {})
+    @jwt_valid()
     def get(self, request, *args, **kwargs):
         if not isinstance(request.user.profile, self.model):
             return HttpResponseRedirect(reverse('error-page'))

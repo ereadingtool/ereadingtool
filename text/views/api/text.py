@@ -38,7 +38,7 @@ def or_filters(filters):
     return status_filter
 
 @method_decorator(csrf_exempt, name='dispatch')
-class TextAPIView(LoginRequiredMixin, APIView):
+class TextAPIView(APIView):
     login_url = reverse_lazy('instructor-login')
     allowed_methods = ['get', 'put', 'post', 'delete']
 
@@ -170,7 +170,7 @@ class TextAPIView(LoginRequiredMixin, APIView):
 
         return output_params, errors
 
-    @jwt_valid(403, {})
+    @jwt_valid()
     def delete(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
@@ -190,7 +190,7 @@ class TextAPIView(LoginRequiredMixin, APIView):
         except Text.DoesNotExist:
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
 
-    @jwt_valid(403, {})
+    @jwt_valid()
     def put(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
@@ -220,7 +220,7 @@ class TextAPIView(LoginRequiredMixin, APIView):
         except (Text.DoesNotExist, ObjectDoesNotExist):
             return HttpResponse(json.dumps({'errors': 'something went wrong'}))
 
-    @jwt_valid(403, {})
+    @jwt_valid()
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         text = None
         text_sections = None
@@ -352,7 +352,7 @@ class TextAPIView(LoginRequiredMixin, APIView):
 
         return text_params, text_sections_params, resp
 
-    @jwt_valid(403, {})
+    @jwt_valid()
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         text_params, text_sections_params, resp = self.validate_params(request.body.decode('utf8'))
 

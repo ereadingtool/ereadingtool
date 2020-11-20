@@ -1,7 +1,8 @@
+from auth.normal_auth import jwt_valid
 import json
 
 from django import forms
-from django.http import JsonResponse, HttpRequest
+from django.http import JsonResponse, HttpRequest, HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
@@ -45,7 +46,7 @@ class APIView(View):
 
         return JsonResponse(errors, status=400)
 
-    # This is where form validation is done
+
     def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         """
         APIView.dispatch() calls this method if the HttpRequest is of type POST
@@ -81,6 +82,7 @@ class APIView(View):
             return self.post_error(errors)
 
 
+    @jwt_valid()
     def put(self, request, *args, **kwargs) -> JsonResponse:
         errors = params = {}
 
@@ -90,7 +92,8 @@ class APIView(View):
         student = Student.objects.get(pk=kwargs['pk'])
 
         if student.user != self.request.user:
-            return self.put_error(403, {})
+            # return self.put_error(403, {'Error': 'Invalid token'})
+            return HttpResponse(status=403, content={'Error': 'Invalid token'}, content_type="application/json")
 
         try:
             params = json.loads(request.body.decode('utf8'))

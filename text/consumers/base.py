@@ -129,7 +129,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         if not self.scope['user'].id:
             await self.accept()
-            await self.send_json(json.dumps({'Error': 'Invalid JWT'}))
+            await self.send_json({'Error': 'Invalid JWT'})
             # 1002 indicates that an endpoint is terminating the connection due
             # to a protocol error. But it doesn't like that so we use 1000.
             await self.close(code=1000) 

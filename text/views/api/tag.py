@@ -19,7 +19,7 @@ class TextTagAPIView(LoginRequiredMixin, APIView):
 
     allowed_methods = ['get', 'put', 'delete']
 
-    @jwt_valid(403, {})
+    @jwt_valid()
     def delete(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
@@ -43,7 +43,7 @@ class TextTagAPIView(LoginRequiredMixin, APIView):
         except UnicodeDecodeError:
             return HttpResponseServerError(json.dumps({'errors': 'tag not valid'}))
 
-    @jwt_valid(403, {})
+    @jwt_valid()
     def put(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
@@ -67,7 +67,7 @@ class TextTagAPIView(LoginRequiredMixin, APIView):
         except UnicodeDecodeError:
             return HttpResponseServerError(json.dumps({'errors': 'tag not valid'}))
 
-    @jwt_valid(403, {})
+    @jwt_valid()
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)

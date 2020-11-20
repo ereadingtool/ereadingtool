@@ -18,7 +18,7 @@ class QuestionAPIView(LoginRequiredMixin, APIView):
     model = Question
     login_url = reverse_lazy('student-login')
 
-    @jwt_valid(403, {})
+    @jwt_valid()
     def get(self, request, *args, **kwargs):
         if 'pk' in kwargs:
             try:

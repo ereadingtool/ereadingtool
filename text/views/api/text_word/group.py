@@ -22,7 +22,7 @@ class TextWordGroupAPIView(LoginRequiredMixin, APIView):
     default_error_resp = HttpResponseServerError(json.dumps({'error': 'Something went wrong.'}),
                                                  content_type='application/json')
 
-    @jwt_valid(403, {})
+    @jwt_valid()
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         text_group = None
 
@@ -115,7 +115,7 @@ class TextWordGroupAPIView(LoginRequiredMixin, APIView):
         return HttpResponse(json.dumps(resp), status=200, content_type='application/json')
 
 
-    @jwt_valid(403, {})
+    @jwt_valid()
     def delete(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         try:
             rows, deleted = TextWordGroup.objects.filter(pk=kwargs['pk']).delete()

@@ -21,7 +21,7 @@ class TextTranslationMatchAPIView(LoginRequiredMixin, APIView):
     login_url = reverse_lazy('instructor-login')
     allowed_methods = ['put']
 
-    @jwt_valid(403, {})
+    @jwt_valid()
     def put(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         try:
             translation_merge_params = json.loads(request.body.decode('utf8'))

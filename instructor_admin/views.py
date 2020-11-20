@@ -79,7 +79,7 @@ class TextDefinitionView(AdminView):
     model = Text
     template_name = 'instructor_admin/text_definitions.html'
 
-    @jwt_valid(403, {})
+    @jwt_valid()
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if not self.model.objects.filter(pk=kwargs['pk']):
             raise Http404('text does not exist')
@@ -93,7 +93,7 @@ class AdminCreateEditTextView(AdminView):
     fields = ('source', 'difficulty', 'body',)
     template_name = 'instructor_admin/create_edit_text.html'
 
-    @jwt_valid(403, {})
+    @jwt_valid()
     def get(self, request, *args, **kwargs) -> HttpResponse:
         if 'pk' in kwargs and not self.model.objects.filter(pk=kwargs['pk']):
             raise Http404('text does not exist')

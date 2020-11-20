@@ -166,10 +166,10 @@ class StudentView(ProfileView):
 
 # Method decorator required for PUT method
 @method_decorator(csrf_exempt, name='dispatch')
-class StudentAPIConsentToResearchView(LoginRequiredMixin, APIView):
+class StudentAPIConsentToResearchView(APIView):
     # returns permission denied HTTP message rather than redirect to login
 
-    @jwt_valid(403, {})
+    @jwt_valid()
     def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
         if not Student.objects.filter(pk=kwargs['pk']).count():
             return HttpResponse(status=400)
@@ -178,15 +178,15 @@ class StudentAPIConsentToResearchView(LoginRequiredMixin, APIView):
 
         return HttpResponse(json.dumps({'consented': student.is_consenting_to_research}))
 
-    @jwt_valid(403, {})
+    @jwt_valid()
     def form(self, request: HttpRequest, params: Dict, **kwargs) -> forms.ModelForm:
         return StudentConsentForm(params, **kwargs)
 
-    @jwt_valid(403, {})
+    @jwt_valid()
     def put_error(self, status, errors: Dict) -> HttpResponse:
         return HttpResponse(json.dumps(errors), status=status)
 
-    @jwt_valid(403, {})
+    @jwt_valid()
     def put_success(self, request: HttpRequest, student_form: Union[Form, forms.ModelForm]) -> HttpResponse:
         student = student_form.save()
 
@@ -197,11 +197,11 @@ class StudentAPIConsentToResearchView(LoginRequiredMixin, APIView):
 @method_decorator(csrf_exempt, name='dispatch')
 class StudentAPIView(LoginRequiredMixin, APIView):
     
-    @jwt_valid(403, {}) 
+    @jwt_valid() 
     def form(self, request: HttpRequest, params: Dict, **kwargs) -> forms.ModelForm:
         return StudentForm(params, **kwargs)
 
-    @jwt_valid(403, {})
+    @jwt_valid()
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if not Student.objects.filter(pk=kwargs['pk']).count():
             return HttpResponse(status=400)
@@ -223,15 +223,15 @@ class StudentAPIView(LoginRequiredMixin, APIView):
             'performance_report': performance_report
         }))
         
-    @jwt_valid(403, {})
+    @jwt_valid()
     def post_success(self, request: HttpRequest, form: Form) -> HttpResponse:
         raise NotImplementedError
 
-    @jwt_valid(403, {})
+    @jwt_valid()
     def put_error(self, status, errors: Dict) -> HttpResponse:
         return HttpResponse(json.dumps(errors), status=status)
 
-    @jwt_valid(403, {})
+    @jwt_valid()
     def put_success(self, request: HttpRequest, student_form: Union[Form, forms.ModelForm]) -> HttpResponse:
         student = student_form.save()
         

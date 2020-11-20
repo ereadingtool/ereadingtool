@@ -77,7 +77,7 @@ class InstructorView(ProfileView):
 
 
 class InstructorAPIView(LoginRequiredMixin, APIView):
-    @jwt_valid(403, {})
+    @jwt_valid()
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if not Instructor.objects.get(pk=kwargs['pk']):
             return HttpResponse(status=400)
@@ -102,11 +102,11 @@ class InstructorInviteAPIView(LoginRequiredMixin, APIView):
 
         return super(InstructorInviteAPIView, self).dispatch(request, *args, **kwargs)
 
-    @jwt_valid(403, {})
+    @jwt_valid()
     def form(self, request: HttpRequest, params: Dict) -> forms.ModelForm:
         return InstructorInviteForm(params, initial={'inviter': self.request.user.profile.pk})
 
-    @jwt_valid(403, {})
+    @jwt_valid()
     def post_success(self, request: HttpRequest, instructor_invite_form: Form) -> HttpResponse:
         invite = instructor_invite_form.save()
 
