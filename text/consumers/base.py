@@ -53,7 +53,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             if not user.id:
                 raise InvalidTokenError
         except InvalidTokenError:
-            await self.send_json({'Error': 'Invalid JWT'})
+            await self.send_json({'error': 'Invalid JWT'})
             await self.close(code=1000)
 
     async def remove_flashcard_phrase(self, user: ReaderUser, phrase: AnyStr, instance: int):
@@ -61,7 +61,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             if not user.id:
                 raise InvalidTokenError
         except InvalidTokenError:
-            await self.send_json({'Error': 'Invalid JWT'})
+            await self.send_json({'error': 'Invalid JWT'})
             await self.close(code=1000)
 
     @database_sync_to_async
@@ -73,7 +73,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             if not user.id:
                 raise InvalidTokenError
         except InvalidTokenError:
-            await self.send_json({'Error': 'Invalid JWT'})
+            await self.send_json({'error': 'Invalid JWT'})
             await self.close(code=1000) 
 
         answer = await get_answer_or_error(answer_id=answer_id, user=user)
@@ -103,7 +103,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             if not user.id:
                 raise InvalidTokenError
         except InvalidTokenError:
-            await self.send_json({'Error': 'Invalid JWT'})
+            await self.send_json({'error': 'Invalid JWT'})
             await self.close(code=1000)
 
         try:
@@ -125,7 +125,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             if not user.id:
                 raise InvalidTokenError
         except InvalidTokenError:
-            await self.send_json({'Error': 'Invalid JWT'})
+            await self.send_json({'error': 'Invalid JWT'})
             await self.close(code=1000)
 
         try:
@@ -150,7 +150,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         if not self.scope['user'].id:
             await self.accept()
-            await self.send_json({'Error': 'Invalid JWT'})
+            await self.send_json({'error': 'Invalid JWT'})
             # 1002 indicates that an endpoint is terminating the connection due
             # to a protocol error. But it doesn't like that so we use 1000.
             await self.close(code=1000) 

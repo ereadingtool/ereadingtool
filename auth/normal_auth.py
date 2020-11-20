@@ -29,7 +29,7 @@ def jwt_valid():
                     raise InvalidTokenError
 
             except InvalidTokenError as e: 
-                return HttpResponse(status=403, content=json.dumps({'Error': 'Invalid token'}), content_type="application/json")
+                return HttpResponse(status=403, content=json.dumps({'error': 'Invalid token'}), content_type="application/json")
 
             return func(*args, **kwargs)
         return validate
