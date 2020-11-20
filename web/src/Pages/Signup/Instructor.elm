@@ -149,7 +149,7 @@ update msg model =
 
         CompletedSignup (Ok resp) ->
             ( model
-            , Browser.Navigation.replaceUrl model.navKey (Route.toString Route.Top)
+            , Browser.Navigation.replaceUrl model.navKey (Route.toString Route.Login__Instructor)
             )
 
         CompletedSignup (Err error) ->
@@ -226,7 +226,7 @@ postSignup session config signupParams =
             signUpEncoder signupParams
     in
     Api.postDetailed
-        (Endpoint.studentSignup (Config.restApiUrl config))
+        (Endpoint.instructorSignup (Config.restApiUrl config))
         (Session.cred session)
         (Http.jsonBody encodedSignupParams)
         CompletedSignup

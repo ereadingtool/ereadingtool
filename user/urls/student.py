@@ -28,9 +28,8 @@ elm_load_urlpatterns = [
 urlpatterns = [
     path('profile/student/<int:pk>/performance_report.pdf', StudentPerformancePDFView.as_view(),
          name='student-performance-pdf-link'),
-     # TODO: I think all of these can be removed.
-    path('signup/student/', StudentSignUpView.as_view(), name='student-signup'),
-    path('login/student/', StudentLoginView.as_view(), name='student-login'),
-    path('profile/student/', StudentProfileView.as_view(), name='student-profile'),
-    path('flashcards/student/', StudentFlashcardView.as_view(), name='student-flashcards'),
+    path('signup/student', StudentSignUpView.as_view(), name='student-signup'),
+    path('login/student', StudentLoginView.as_view(), name='student-login'),
+    path('profile/student', StudentProfileView.as_view(), name='student-profile'),
+    path('flashcards/student', StudentFlashcardView.as_view(), name='student-flashcards'),
 ] + api_urlpatterns + elm_load_urlpatterns

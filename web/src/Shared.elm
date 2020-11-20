@@ -467,15 +467,15 @@ viewProfileHeader role toMsg =
 
 viewPublicHeader : (Msg -> msg) -> List (Html msg)
 viewPublicHeader toMsg =
-    [ div [ class "nav-item " ]
+    [ div [ class "nav-item top-nav-item" ]
         [ a [ class "nav-link", href (Route.toString Route.Login__Student) ]
             [ text "Log in" ]
         ]
-    , div [ class "nav-item " ]
+    , div [ class "nav-item" ]
         [ a [ class "nav-link", href (Route.toString Route.Signup__Student) ]
             [ text "Sign up" ]
         ]
-    , div [ class "nav-item " ]
+    , div [ class "nav-item" ]
         [ a [ class "nav-link", href (Route.toString Route.Acknowledgments) ]
             [ text "Acknowledgements" ]
         ]

@@ -157,8 +157,8 @@ AUTH_USER_MODEL = 'user.ReaderUser'
 EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
 
 SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
-# You must set DEBUG=False for sandbox_mode to be enabled
-SENDGRID_SANDBOX_MODE_IN_DEBUG = True
+# You must set also DEBUG=False for sandbox_mode to be enabled
+SENDGRID_SANDBOX_MODE_IN_DEBUG = False
 
 ASGI_APPLICATION = 'ereadingtool.routing.application'
 # CHANNEL_LAYERS = {}

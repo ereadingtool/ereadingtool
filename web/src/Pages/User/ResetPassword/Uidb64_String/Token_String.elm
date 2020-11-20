@@ -44,6 +44,7 @@ type alias PasswordResetParams =
     { password : String
     , confirmPassword : String
     , uidb64 : String
+    , token : String
     }
 
 
@@ -154,12 +155,13 @@ update msg model =
                 { password = model.password
                 , confirmPassword = model.confirmPassword
                 , uidb64 = model.uidb64
+                , token = model.token
                 }
             )
 
         GotResetResponse (Ok ( metadata, response )) ->
             ( { model | response = response }
-            , Browser.Navigation.replaceUrl model.navKey (Route.toString Route.Top)
+            , Browser.Navigation.replaceUrl model.navKey (Route.toString Route.Login__Student)
             )
 
         GotResetResponse (Err error) ->
@@ -193,11 +195,12 @@ postPasswordReset session config passwordResetParams =
 
 
 resetPasswordEncoder : PasswordResetParams -> Encode.Value
-resetPasswordEncoder { password, confirmPassword, uidb64 } =
+resetPasswordEncoder { password, confirmPassword, uidb64, token } =
     Encode.object
         [ ( "new_password1", Encode.string password )
         , ( "new_password2", Encode.string confirmPassword )
         , ( "uidb64", Encode.string uidb64 )
+        , ( "token", Encode.string token )
         ]
 
 

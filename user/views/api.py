@@ -60,25 +60,16 @@ class APIView(View):
         except json.JSONDecodeError as e:
             return self.post_json_error(e)
 
-        form = self.form(request, params)
+        try:
+            form = self.form(request, params)
 
-        # `is_valid()` has the ability to determine if a user enters invalid creds
-        form_is_valid = form.is_valid()
-
-        if form_is_valid and form.__class__ == AuthenticationForm:
-            # hit the DB to verify the user.
-            user = form.get_user()
-            if "instructor" in request.path and not user.is_staff:
-                # fail with a generic error
-                return self.post_error({'all': 'Please enter a correct username and password. Note that both fields may be case-sensitive.'})
-            elif "student" in request.path and user.is_staff:
-                return self.post_error({'all': 'Please enter a correct username and password. Note that both fields may be case-sensitive.'})
-                
-            return self.post_success(request, form)
-        elif form_is_valid:
-            return self.post_success(request, form)
-        else: 
-            errors = self.format_form_errors(form)
+            # `is_valid()` has the ability to determine if a user enters invalid creds
+            if form.is_valid():
+                return self.post_success(request, form)
+            else:
+                errors = self.format_form_errors(form)
+                return self.post_error(errors)
+        except:
             return self.post_error(errors)
 
 

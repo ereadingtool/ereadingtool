@@ -184,20 +184,14 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
         return text
 
     def to_summary_dict(self) -> Dict:
-        text_dict = self.to_dict()
-
-        del text_dict['text_sections']
-        del text_dict['words']
+        text_dict = self.to_dict_meta()
 
         text_dict['text_section_count'] = self.sections.count()
-        text_dict['difficulty'] = self.difficulty.name
 
         return text_dict
 
     def to_student_summary_dict(self) -> Dict:
         text_summary_dict = self.to_summary_dict()
-
-        text_summary_dict['uri'] = reverse('text', kwargs={'pk': self.pk})
 
         return text_summary_dict
 
@@ -240,6 +234,19 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
 
     def __str__(self):
         return self.title
+
+    # TODO: uri
+    def to_dict_meta(self, text_sections: Optional[List] = None) -> Dict:
+        return {
+            'id': self.pk,
+            'title': self.title,
+            'author': self.author,
+            'difficulty': self.difficulty.slug,
+            'created_by': str(self.created_by),
+            'tags': [tag.name for tag in self.tags.all()],
+            'modified_dt': self.modified_dt.isoformat(),
+            'created_dt': self.created_dt.isoformat()
+        }
 
     def delete(self, *args, **kwargs):
         if self.is_locked():

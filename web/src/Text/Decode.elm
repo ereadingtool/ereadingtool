@@ -84,7 +84,6 @@ textListItemDecoder =
         |> required "author" Json.Decode.string
         |> required "difficulty" Json.Decode.string
         |> required "created_by" Json.Decode.string
-        |> required "last_modified_by" (Json.Decode.nullable Json.Decode.string)
         |> required "tags" (Json.Decode.nullable (Json.Decode.list Json.Decode.string))
         |> required "created_dt" Iso8601.decoder
         |> required "modified_dt" Iso8601.decoder
@@ -92,8 +91,6 @@ textListItemDecoder =
         |> required "text_section_count" Json.Decode.int
         |> required "text_sections_complete" (Json.Decode.nullable Json.Decode.int)
         |> required "questions_correct" (Json.Decode.nullable Utils.intTupleDecoder)
-        |> required "uri" Json.Decode.string
-        |> required "write_locker" (Json.Decode.nullable Json.Decode.string)
 
 
 textListDecoder : Json.Decode.Decoder (List TextListItem)
