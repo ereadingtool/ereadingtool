@@ -43,7 +43,6 @@ type alias TextListItem =
     , author : String
     , difficulty : String
     , created_by : String
-    , last_modified_by : Maybe String
     , tags : Maybe (List String)
     , created_dt : Posix
     , modified_dt : Posix
@@ -51,8 +50,6 @@ type alias TextListItem =
     , text_section_count : Int
     , text_sections_complete : Maybe Int
     , questions_correct : Maybe ( Int, Int )
-    , uri : String
-    , write_locker : Maybe String
     }
 
 

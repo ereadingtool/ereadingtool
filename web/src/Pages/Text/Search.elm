@@ -357,7 +357,11 @@ viewSearchResults timezone textListItems =
             in
             div [ class "search_result" ]
                 [ div [ class "result_item" ]
-                    [ div [ class "result_item_title" ] [ Html.a [ attribute "href" textItem.uri ] [ Html.text textItem.title ] ]
+                    [ div [ class "result_item_title" ]
+                        [ Html.a
+                            [ attribute "href" (Route.toString (Route.Text__Id_Int { id = textItem.id })) ]
+                            [ Html.text textItem.title ]
+                        ]
                     , div [ class "sub_description" ] [ Html.text "Title" ]
                     ]
                 , div [ class "result_item" ]
