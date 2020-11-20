@@ -14,6 +14,7 @@ api_urlpatterns = [
     path('api/instructor/<int:pk>', InstructorAPIView.as_view(), name='api-instructor')
 ]
 
+# TODO: These can all be removed.
 elm_load_urlpatterns = [
     path('load_instructor_profile_elm.js', ElmLoadJsInstructorProfileView.as_view(),
          name='load-elm-instructor-profile'),
@@ -21,6 +22,7 @@ elm_load_urlpatterns = [
     path('load_elm_unauth_instructor.js', ElmLoadJsInstructorNoAuthView.as_view(), name='load-elm-unauth-instructor'),
 ]
 
+# TODO: I think these can all be removed as well.
 urlpatterns = [
     path('signup/instructor/', InstructorSignUpView.as_view(), name='instructor-signup'),
     path('login/instructor/', InstructorLoginView.as_view(), name='instructor-login'),

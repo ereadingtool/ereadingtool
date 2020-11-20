@@ -341,3 +341,4 @@ class TextSection(TextSectionDefinitionsMixin, Timestamped, models.Model):
 
     def __str__(self):
         return f'Text Section {self.order} of {self.text.title}'
+

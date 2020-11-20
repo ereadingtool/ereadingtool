@@ -1,6 +1,5 @@
 import json
 import jsonschema
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpRequest, HttpResponseServerError
 from django.http import HttpResponseNotAllowed
 from django.urls import reverse_lazy
@@ -12,12 +11,14 @@ from text.translations.models import TextWord
 from text.phrase.models import TextPhrase, TextPhraseTranslation
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from auth.normal_auth import jwt_valid
 
 @method_decorator(csrf_exempt, name='dispatch')
-class TextWordAPIView(LoginRequiredMixin, APIView):
+class TextWordAPIView(APIView):
     login_url = reverse_lazy('instructor-login')
     allowed_methods = ['post', 'put', 'delete']
 
+    @jwt_valid()
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         try:
             text_word_add_params = json.loads(request.body.decode('utf8'))
@@ -45,6 +46,7 @@ class TextWordAPIView(LoginRequiredMixin, APIView):
         except DatabaseError:
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
 
+    @jwt_valid()
     def put(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         try:
             text_word_update_params = json.loads(request.body.decode('utf8'))
@@ -80,10 +82,11 @@ class TextWordAPIView(LoginRequiredMixin, APIView):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class TextWordTranslationsAPIView(LoginRequiredMixin, APIView):
+class TextWordTranslationsAPIView(APIView):
     login_url = reverse_lazy('instructor-login')
     allowed_methods = ['put', 'post', 'delete']
 
+    @jwt_valid()
     def delete(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         try:
             text_phrase_translation = TextPhraseTranslation.objects.get(id=kwargs['tr_pk'])
@@ -101,6 +104,7 @@ class TextWordTranslationsAPIView(LoginRequiredMixin, APIView):
         except (ObjectDoesNotExist, DatabaseError):
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
 
+    @jwt_valid()
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
@@ -136,6 +140,7 @@ class TextWordTranslationsAPIView(LoginRequiredMixin, APIView):
         except (TextPhrase.DoesNotExist, DatabaseError):
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
 
+    @jwt_valid()
     def put(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         text_phrase_translation = None
 

@@ -2,7 +2,6 @@ from typing import Dict
 
 from csp.decorators import csp_replace
 from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import TemplateView
@@ -10,9 +9,10 @@ from django.views.generic import TemplateView
 from mixins.view import ElmLoadJsView
 from user.instructor.models import Instructor
 from user.student.models import Student
+from auth.normal_auth import jwt_valid
 
 
-class FlashcardView(LoginRequiredMixin, TemplateView):
+class FlashcardView(TemplateView):
     template_name = 'flashcards.html'
 
     @property
@@ -24,6 +24,7 @@ class FlashcardView(LoginRequiredMixin, TemplateView):
     def dispatch(self, request, *args, **kwargs):
         return super(FlashcardView, self).dispatch(request, *args, **kwargs)
 
+    @jwt_valid()
     def get(self, request, *args, **kwargs):
         if not isinstance(request.user.profile, self.model):
             return HttpResponseRedirect(reverse('error-page'))
