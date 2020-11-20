@@ -2,7 +2,6 @@ from typing import Dict
 
 from csp.decorators import csp_replace
 from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import TemplateView
@@ -13,7 +12,7 @@ from user.student.models import Student
 from auth.normal_auth import jwt_valid
 
 
-class FlashcardView(LoginRequiredMixin, TemplateView):
+class FlashcardView(TemplateView):
     template_name = 'flashcards.html'
 
     @property

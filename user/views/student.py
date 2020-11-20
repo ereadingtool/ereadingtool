@@ -15,7 +15,6 @@ from user.forms import AuthenticationForm, StudentSignUpForm, StudentForm, Stude
 from user.student.models import Student
 from user.views.api import APIView
 from user.views.mixin import ProfileView
-from django.contrib.auth.mixins import LoginRequiredMixin
 from mixins.view import ElmLoadJsStudentBaseView, NoAuthElmLoadJsView
 from django.http import JsonResponse
 
@@ -195,7 +194,7 @@ class StudentAPIConsentToResearchView(APIView):
 
 # Method decorator required for PUT method
 @method_decorator(csrf_exempt, name='dispatch')
-class StudentAPIView(LoginRequiredMixin, APIView):
+class StudentAPIView(APIView):
     
     @jwt_valid() 
     def form(self, request: HttpRequest, params: Dict, **kwargs) -> forms.ModelForm:
@@ -258,7 +257,7 @@ class StudentSignupAPIView(APIView):
 
 
 # TODO: Marked for deletion
-class StudentLogoutAPIView(LoginRequiredMixin, APIView):
+class StudentLogoutAPIView(APIView):
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         logout(request)
 

@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from channels.http import AsgiRequest
 from jwt import InvalidTokenError
 
-def jwt_valid(status: int, errors: str):
+def jwt_valid():
     def decorator(func):
         def validate(*args, **kwargs):
             try:

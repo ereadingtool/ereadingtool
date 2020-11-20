@@ -8,13 +8,12 @@ from ereadingtool.views import APIView
 
 from text.models import Text
 from question.models import Question
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 
 from auth.normal_auth import jwt_valid
 
 #TODO: Verify this endpoint is hit
-class QuestionAPIView(LoginRequiredMixin, APIView):
+class QuestionAPIView(APIView):
     model = Question
     login_url = reverse_lazy('student-login')
 

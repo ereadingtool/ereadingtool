@@ -3,7 +3,6 @@ from typing import TypeVar, Dict
 
 from django import forms
 from django.contrib.auth import login, logout
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpRequest, HttpResponseForbidden
 from django.urls import reverse
 
@@ -76,7 +75,7 @@ class InstructorView(ProfileView):
     login_url = Instructor.login_url
 
 
-class InstructorAPIView(LoginRequiredMixin, APIView):
+class InstructorAPIView(APIView):
     @jwt_valid()
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if not Instructor.objects.get(pk=kwargs['pk']):
@@ -91,7 +90,7 @@ class InstructorAPIView(LoginRequiredMixin, APIView):
         }))
 
 
-class InstructorInviteAPIView(LoginRequiredMixin, APIView):
+class InstructorInviteAPIView(APIView):
     login_url = Instructor.login_url
 
     def dispatch(self, request, *args, **kwargs):
@@ -150,7 +149,7 @@ class InstructorLoginAPIView(APIView):
         return JsonResponse(jwt_payload)
 
 # --------------------------------- Below is marked for deletion ------------------------------
-class InstructorLogoutAPIView(LoginRequiredMixin, APIView):
+class InstructorLogoutAPIView(APIView):
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         logout(request)
 

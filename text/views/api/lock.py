@@ -1,6 +1,5 @@
 import json
 
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpRequest, HttpResponseServerError
 from django.http import HttpResponseNotAllowed
 from django.urls import reverse_lazy
@@ -13,7 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from auth.normal_auth import jwt_valid
 
 @method_decorator(csrf_exempt, name='dispatch')
-class TextLockAPIView(LoginRequiredMixin, APIView):
+class TextLockAPIView(APIView):
     login_url = reverse_lazy('instructor-login')
 
     model = Text

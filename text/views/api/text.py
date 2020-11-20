@@ -2,7 +2,6 @@ import json
 import jsonschema
 from typing import TypeVar, Optional, List, Dict, AnyStr, Union, Set
 
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import IntegrityError, models
 from django.http import HttpResponse, HttpRequest, HttpResponseServerError

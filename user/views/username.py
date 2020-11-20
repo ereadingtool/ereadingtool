@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from user.models import ReaderUser
 
 @csrf_exempt
-@jwt_valid(403, "{'Error': 'Invalid JWT'}")
+@jwt_valid()
 def username(request: HttpRequest) -> HttpResponse:
     errors = params = {}
 

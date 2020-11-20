@@ -92,7 +92,6 @@ class APIView(View):
         student = Student.objects.get(pk=kwargs['pk'])
 
         if student.user != self.request.user:
-            # return self.put_error(403, {'Error': 'Invalid token'})
             return HttpResponse(status=403, content={'Error': 'Invalid token'}, content_type="application/json")
 
         try:

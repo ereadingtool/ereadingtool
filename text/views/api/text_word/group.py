@@ -1,6 +1,5 @@
 import json
 
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import models
 from django.db import transaction
 from django.http import HttpResponse, HttpRequest, HttpResponseServerError
@@ -13,7 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from auth.normal_auth import jwt_valid
 
 @method_decorator(csrf_exempt, name='dispatch')
-class TextWordGroupAPIView(LoginRequiredMixin, APIView):
+class TextWordGroupAPIView(APIView):
     model = TextWordGroup
 
     login_url = reverse_lazy('instructor-login')
