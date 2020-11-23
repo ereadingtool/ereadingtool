@@ -15,12 +15,11 @@ from user.forms import AuthenticationForm, StudentSignUpForm, StudentForm, Stude
 from user.student.models import Student
 from user.views.api import APIView
 from user.views.mixin import ProfileView
-from django.contrib.auth.mixins import LoginRequiredMixin
 from mixins.view import ElmLoadJsStudentBaseView, NoAuthElmLoadJsView
 from django.http import JsonResponse
 
 from jwt_auth.views import jwt_encode_token, jwt_get_json_with_token
-
+from auth.normal_auth import jwt_valid
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
@@ -166,9 +165,10 @@ class StudentView(ProfileView):
 
 # Method decorator required for PUT method
 @method_decorator(csrf_exempt, name='dispatch')
-class StudentAPIConsentToResearchView(LoginRequiredMixin, APIView):
+class StudentAPIConsentToResearchView(APIView):
     # returns permission denied HTTP message rather than redirect to login
 
+    @jwt_valid()
     def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
         if not Student.objects.filter(pk=kwargs['pk']).count():
             return HttpResponse(status=400)
@@ -177,12 +177,15 @@ class StudentAPIConsentToResearchView(LoginRequiredMixin, APIView):
 
         return HttpResponse(json.dumps({'consented': student.is_consenting_to_research}))
 
+    @jwt_valid()
     def form(self, request: HttpRequest, params: Dict, **kwargs) -> forms.ModelForm:
         return StudentConsentForm(params, **kwargs)
 
+    @jwt_valid()
     def put_error(self, status, errors: Dict) -> HttpResponse:
         return HttpResponse(json.dumps(errors), status=status)
 
+    @jwt_valid()
     def put_success(self, request: HttpRequest, student_form: Union[Form, forms.ModelForm]) -> HttpResponse:
         student = student_form.save()
 
@@ -191,10 +194,13 @@ class StudentAPIConsentToResearchView(LoginRequiredMixin, APIView):
 
 # Method decorator required for PUT method
 @method_decorator(csrf_exempt, name='dispatch')
-class StudentAPIView(LoginRequiredMixin, APIView):
+class StudentAPIView(APIView):
+    
+    @jwt_valid() 
     def form(self, request: HttpRequest, params: Dict, **kwargs) -> forms.ModelForm:
         return StudentForm(params, **kwargs)
 
+    @jwt_valid()
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if not Student.objects.filter(pk=kwargs['pk']).count():
             return HttpResponse(status=400)
@@ -216,12 +222,15 @@ class StudentAPIView(LoginRequiredMixin, APIView):
             'performance_report': performance_report
         }))
         
+    @jwt_valid()
     def post_success(self, request: HttpRequest, form: Form) -> HttpResponse:
         raise NotImplementedError
 
+    @jwt_valid()
     def put_error(self, status, errors: Dict) -> HttpResponse:
         return HttpResponse(json.dumps(errors), status=status)
 
+    @jwt_valid()
     def put_success(self, request: HttpRequest, student_form: Union[Form, forms.ModelForm]) -> HttpResponse:
         student = student_form.save()
         
@@ -247,7 +256,8 @@ class StudentSignupAPIView(APIView):
         return HttpResponse(json.dumps({'id': student.pk, 'redirect': reverse('student-login')}))
 
 
-class StudentLogoutAPIView(LoginRequiredMixin, APIView):
+# TODO: Marked for deletion
+class StudentLogoutAPIView(APIView):
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         logout(request)
 
@@ -302,7 +312,8 @@ class StudentSignUpView(TemplateView):
         return context
 
 
-# TODO
+# --------------------------------- Below is marked for deletion ------------------------------
+
 class StudentLoginView(TemplateView):
     template_name = 'student/login.html'
 
@@ -314,7 +325,6 @@ class StudentLoginView(TemplateView):
         return context
 
 
-# TODO
 class StudentProfileView(StudentView, TemplateView):
     template_name = 'student/profile.html'
 
@@ -325,7 +335,7 @@ class StudentProfileView(StudentView, TemplateView):
 
         return context
 
-# TODO
+
 class StudentFlashcardView(StudentView, TemplateView):
     template_name = 'student/flashcards.html'
 

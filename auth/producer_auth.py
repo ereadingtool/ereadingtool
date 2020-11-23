@@ -1,5 +1,6 @@
 import os
 import time
+from django.contrib.auth.models import AnonymousUser
 import jwt
 from channels.db import database_sync_to_async
 from jwt.exceptions import InvalidTokenError
@@ -13,8 +14,8 @@ from django.http import HttpResponse
 
 async def jwt_validation(scope):
     """ Take JWT from query string to check the user against the db and validate its timestamp """
-    if not scope['query_string']:
-        return None
+    if not scope and not scope['query_string']:
+        return "{'errors': 'Invalid querystring'}"
     else:
         secret_key = os.getenv('DJANGO_SECRET_KEY')
         try:
@@ -46,7 +47,7 @@ async def jwt_validation(scope):
                 # path error, same result
                 raise InvalidTokenError
         except InvalidTokenError: 
-            return None
+            return AnonymousUser
 
 
 class ProducerAuthMiddleware:
@@ -74,13 +75,10 @@ class ProducerAuthMiddlewareInstance:
 
     async def __call__(self, receive, send):
         """ Look up user from query string and validate their JWT. """
-        self.scope['user'] = await jwt_validation(self.scope)
-        
         try:
-            # Instantiate our inner application
+            self.scope['user'] = await jwt_validation(self.scope)
+            
             inner = self.inner(self.scope)
             return await inner(receive, send)
-        except ValueError:
-            # I think the connection will be cleaned up by a WebSocket DISCONNECT from 
-            # within the Channels library
-            pass
+        except:
+            return None # < -- This is bad, takes us to asyncio/base_events/BaseEventLoop.run_forever

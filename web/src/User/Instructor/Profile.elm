@@ -36,16 +36,11 @@ type alias Tag =
 type alias Text =
     { id : Int
     , title : String
-    , introduction : String
     , author : String
-    , source : String
     , difficulty : String
-    , conclusion : Maybe String
     , created_by : String
-    , last_modified_by : Maybe String
     , created_dt : String
     , modified_dt : String
-    , write_locker : Maybe String
     , tags : List String
     , text_section_count : Int
     , edit_uri : String
@@ -250,16 +245,11 @@ textDecoder =
     Decode.succeed Text
         |> required "id" Decode.int
         |> required "title" Decode.string
-        |> required "introduction" Decode.string
         |> required "author" Decode.string
-        |> required "source" Decode.string
         |> required "difficulty" Decode.string
-        |> required "conclusion" (Decode.nullable Decode.string)
         |> required "created_by" Decode.string
-        |> required "last_modified_by" (Decode.nullable Decode.string)
         |> required "created_dt" Decode.string
         |> required "modified_dt" Decode.string
-        |> required "write_locker" (Decode.nullable Decode.string)
         |> required "tags" (Decode.list Decode.string)
         |> required "text_section_count" Decode.int
         |> required "edit_uri" Decode.string

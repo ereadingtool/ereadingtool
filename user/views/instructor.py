@@ -3,7 +3,6 @@ from typing import TypeVar, Dict
 
 from django import forms
 from django.contrib.auth import login, logout
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpRequest, HttpResponseForbidden
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -20,7 +19,7 @@ from user.views.api import APIView
 from user.views.mixin import ProfileView
 
 from mixins.view import NoAuthElmLoadJsView, ElmLoadJsInstructorBaseView
-
+from auth.normal_auth import jwt_valid
 from jwt_auth.views import jwt_encode_token, jwt_get_json_with_token
 
 
@@ -78,7 +77,8 @@ class InstructorView(ProfileView):
     login_url = Instructor.login_url
 
 
-class InstructorAPIView(LoginRequiredMixin, APIView):
+class InstructorAPIView(APIView):
+    @jwt_valid()
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if not Instructor.objects.get(pk=kwargs['pk']):
             return HttpResponse(status=400)
@@ -92,7 +92,7 @@ class InstructorAPIView(LoginRequiredMixin, APIView):
         }))
 
 @method_decorator(csrf_exempt, name='dispatch')
-class InstructorInviteAPIView(LoginRequiredMixin, APIView):
+class InstructorInviteAPIView(APIView):
     login_url = Instructor.login_url
 
     def dispatch(self, request, *args, **kwargs):
@@ -103,9 +103,11 @@ class InstructorInviteAPIView(LoginRequiredMixin, APIView):
 
         return super(InstructorInviteAPIView, self).dispatch(request, *args, **kwargs)
 
+    @jwt_valid()
     def form(self, request: HttpRequest, params: Dict) -> forms.ModelForm:
         return InstructorInviteForm(params, initial={'inviter': self.request.user.profile.pk})
 
+    @jwt_valid()
     def post_success(self, request: HttpRequest, instructor_invite_form: Form) -> HttpResponse:
         invite = instructor_invite_form.save()
 
@@ -148,8 +150,8 @@ class InstructorLoginAPIView(APIView):
         # return to the dispatcher to send out an HTTP response
         return JsonResponse(jwt_payload)
 
-
-class InstructorLogoutAPIView(LoginRequiredMixin, APIView):
+# --------------------------------- Below is marked for deletion ------------------------------
+class InstructorLogoutAPIView(APIView):
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         logout(request)
 

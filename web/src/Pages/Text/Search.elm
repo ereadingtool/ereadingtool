@@ -18,6 +18,7 @@ import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
+import Task
 import Text.Decode
 import Text.Model
 import Text.Search exposing (TextSearch)
@@ -280,19 +281,16 @@ viewContent (SafeModel model) =
 
 viewHelpMessage : Html Msg
 viewHelpMessage =
-    div [ id "text_search_help_msg" ]
+    div [ id "text-search-welcome-message" ]
         [ div []
-            [ Html.text "Welcome."
-            ]
-        , div []
             [ Html.text
-                """Use this page to find texts for your proficiency level and on topics that are of interest to you."""
-            ]
-        , div []
-            [ Html.text
-                """To walk through a demonstration of how the text and questions appear, please select Intermediate-Mid
-       from the Difficulty tags and then Other from the the Topic tags, and Unread from the Status Filters.
-       A text entitled Demo Text should appear at the top of the list.  Click on the title to go to this text."""
+                """Welcome! Use this page to find texts for your proficiency level and on topics that are of interest to you. 
+                   Read the hints on this page, and next read the 
+                """
+
+            -- N.B. the demo text is text 19
+            , a [ href (Route.toString (Route.Text__Id_Int { id = 19 })) ] [ Html.text "Demo Text" ]
+            , Html.text " to learn how to use the text reader."
             ]
         ]
 
@@ -359,7 +357,11 @@ viewSearchResults timezone textListItems =
             in
             div [ class "search_result" ]
                 [ div [ class "result_item" ]
-                    [ div [ class "result_item_title" ] [ Html.a [ attribute "href" textItem.uri ] [ Html.text textItem.title ] ]
+                    [ div [ class "result_item_title" ]
+                        [ Html.a
+                            [ attribute "href" (Route.toString (Route.Text__Id_Int { id = textItem.id })) ]
+                            [ Html.text textItem.title ]
+                        ]
                     , div [ class "sub_description" ] [ Html.text "Title" ]
                     ]
                 , div [ class "result_item" ]
@@ -612,8 +614,22 @@ save model shared =
 
 load : Shared.Model -> SafeModel -> ( SafeModel, Cmd Msg )
 load shared (SafeModel model) =
-    ( SafeModel { model | timezone = shared.timezone }
-    , Cmd.none
+    ( SafeModel
+        { model
+            | timezone = shared.timezone
+            , profile = shared.profile
+        }
+    , case shared.profile of
+        User.Profile.Student student_profile ->
+            case StudentProfile.studentDifficultyPreference student_profile of
+                Just difficulty ->
+                    Task.perform (\_ -> AddDifficulty (Tuple.first difficulty) True) (Task.succeed Nothing)
+
+                Nothing ->
+                    Cmd.none
+
+        _ ->
+            Cmd.none
     )
 
 

@@ -2,7 +2,6 @@ import json
 
 import jsonschema
 
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpRequest, HttpResponseServerError
 from django.urls import reverse_lazy
 from ereadingtool.views import APIView
@@ -14,12 +13,14 @@ from text.phrase.models import TextPhrase, TextPhraseTranslation
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from auth.normal_auth import jwt_valid
 
 @method_decorator(csrf_exempt, name='dispatch')
-class TextTranslationMatchAPIView(LoginRequiredMixin, APIView):
+class TextTranslationMatchAPIView(APIView):
     login_url = reverse_lazy('instructor-login')
     allowed_methods = ['put']
 
+    @jwt_valid()
     def put(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         try:
             translation_merge_params = json.loads(request.body.decode('utf8'))

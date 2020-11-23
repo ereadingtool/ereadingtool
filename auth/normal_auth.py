@@ -1,34 +1,39 @@
 import os
 import time
 import jwt
-from jwt.exceptions import InvalidTokenError
-from user.student.models import Student
-from user.instructor.models import Instructor
+import json 
+from django.http import HttpResponse
+from django.core.handlers.wsgi import WSGIRequest
+from channels.http import AsgiRequest
+from jwt import InvalidTokenError
 
-def jwt_validation(scope):
-    """ Take JWT from query string to check the user against the db and validate its timestamp """
-    if not scope['query_string']:
-        return None
-    else:
-        secret_key = os.getenv('DJANGO_SECRET_KEY')
-        try:
-            qs = scope['query_string'][6:] if scope['query_string'][:6] == b'token=' else scope['query_string']
-            jwt_decoded = jwt.decode(qs, secret_key, algorithms=['HS256'])
+def jwt_valid():
+    def decorator(func):
+        def validate(*args, **kwargs):
+            try:
+                secret_key = os.getenv('DJANGO_SECRET_KEY')
+                request = None
+                for e in args:
+                    if isinstance(e, AsgiRequest):
+                        request = e
+                    elif isinstance(e, WSGIRequest):
+                        request = e
 
-            if jwt_decoded['exp'] <= time.time():
-                # then their token has expired 
-                raise InvalidTokenError
+                if not request: 
+                    raise InvalidTokenError 
 
-            if "performance_report.pdf" in scope['path']:
-                if not Student.objects.filter(user_id=jwt_decoded['user_id']):
-                    # then there is no user in the QuerySet
+                jwt_encoded_dirty = request.META['HTTP_AUTHORIZATION']
+
+                jwt_encoded = jwt_encoded_dirty[7:] if 'Bearer ' == jwt_encoded_dirty[:7] else jwt_encoded_dirty
+
+                jwt_decoded = jwt.decode(jwt_encoded, secret_key, algorithms=['HS256'])
+
+                if jwt_decoded['exp'] <= time.time():
                     raise InvalidTokenError
-                # force evaluation of the QuerySet. We already know it contains at least one element
-                student = list(Student.objects.filter(user_id=jwt_decoded['user_id']))[0]
 
-                return student
-            else:
-                # path error, same result
-                raise InvalidTokenError
-        except InvalidTokenError: 
-            return None
+            except InvalidTokenError as e: 
+                return HttpResponse(status=403, content=json.dumps({'error': 'Invalid token'}), content_type="application/json")
+
+            return func(*args, **kwargs)
+        return validate
+    return decorator

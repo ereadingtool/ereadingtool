@@ -608,7 +608,7 @@ viewTextComplete (SafeModel model) scores =
         , viewTextConclusion model.text
         , div [ id "nav" ]
             [ viewPreviousButton
-            , div [ onClick StartOver ] [ Html.text "Start Over" ]
+            , div [ onClick StartOver ] [ Html.text "Read Again" ]
             , Html.a [ attribute "href" (Route.toString Route.Text__Search) ] [ span [] [ Html.text "Read Another Text" ] ]
             ]
         ]

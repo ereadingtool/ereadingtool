@@ -2,7 +2,6 @@ import json
 import jsonschema
 from typing import TypeVar, Optional, List, Dict, AnyStr, Union, Set
 
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import IntegrityError, models
 from django.http import HttpResponse, HttpRequest, HttpResponseServerError
@@ -20,6 +19,7 @@ from text.models import TextDifficulty, Text, TextSection, text_statuses
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from auth.normal_auth import jwt_valid
 
 Student = TypeVar('Student')
 Instructor = TypeVar('Instructor')
@@ -37,7 +37,7 @@ def or_filters(filters):
     return status_filter
 
 @method_decorator(csrf_exempt, name='dispatch')
-class TextAPIView(LoginRequiredMixin, APIView):
+class TextAPIView(APIView):
     login_url = reverse_lazy('instructor-login')
     allowed_methods = ['get', 'put', 'post', 'delete']
 
@@ -169,6 +169,7 @@ class TextAPIView(LoginRequiredMixin, APIView):
 
         return output_params, errors
 
+    @jwt_valid()
     def delete(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
@@ -188,6 +189,7 @@ class TextAPIView(LoginRequiredMixin, APIView):
         except Text.DoesNotExist:
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
 
+    @jwt_valid()
     def put(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
@@ -217,6 +219,7 @@ class TextAPIView(LoginRequiredMixin, APIView):
         except (Text.DoesNotExist, ObjectDoesNotExist):
             return HttpResponse(json.dumps({'errors': 'something went wrong'}))
 
+    @jwt_valid()
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         text = None
         text_sections = None
@@ -348,6 +351,7 @@ class TextAPIView(LoginRequiredMixin, APIView):
 
         return text_params, text_sections_params, resp
 
+    @jwt_valid()
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         text_params, text_sections_params, resp = self.validate_params(request.body.decode('utf8'))
 

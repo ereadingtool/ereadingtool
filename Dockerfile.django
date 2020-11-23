@@ -13,8 +13,6 @@ RUN apt update -y \
     && git checkout upgrade/staging \
     && pip install -r requirements.txt
 
-COPY ./db.sqlite3 /app/ereadingtool/
-
 CMD ["python", "/app/ereadingtool/manage.py", "runserver", "0.0.0.0:8000"]
 
 EXPOSE 8000
