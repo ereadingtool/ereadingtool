@@ -1,5 +1,6 @@
 // @ts-expect-error
 import { Elm } from './Main.elm';
+import jwtDecode, { JwtPayload } from "jwt-decode";
 
 type User = { user: { id: number; token: string; role: string } };
 type ShowHelp = { showHelp: boolean };
@@ -12,9 +13,21 @@ let mySockets = {};
 
 // INIT
 
-const user: User = JSON.parse(localStorage.getItem(authStoreKey));
+let user: User = JSON.parse(localStorage.getItem(authStoreKey));
 let showHelp: ShowHelp = JSON.parse(localStorage.getItem('showHelp'));
 
+if (user) {
+  const decodedToken = jwtDecode<JwtPayload>(user.user.token);
+  const now = new Date().getTime() / 1000;
+
+  // nullify user and remove token if token expired
+  if (decodedToken.exp <= now) {
+    localStorage.removeItem(authStoreKey);
+    user = null;
+  }
+}
+
+// initialize show help for new users
 if (showHelp === null) {
   showHelp = { showHelp: true };
   localStorage.setItem('showHelp', JSON.stringify(showHelp));
@@ -25,11 +38,13 @@ const app = Elm.Main.init({
   flags: { restApiUrl, websocketBaseUrl, ...showHelp, ...user }
 });
 
+
 // HELP
 
 app.ports.toggleShowHelp.subscribe(showHelp => {
   localStorage.setItem('showHelp', JSON.stringify(showHelp));
 });
+
 
 // LOGIN
 
@@ -54,7 +69,7 @@ app.ports.login.subscribe(async (creds: Creds) => {
     method: 'POST',
     body: JSON.stringify(creds)
   });
-  const jsonResponse = await response.json(); // { token: "JWTToken"}
+  const jsonResponse = await response.json()
 
   if (response.ok) {
     const user: User = {
@@ -96,23 +111,22 @@ app.ports.login.subscribe(async (creds: Creds) => {
   }
 });
 
+
 // LOGOUT
 
 app.ports.logout.subscribe(async () => {
-  // const response = await fetch(restApiUrl + 'logout', {
-  //   headers: {
-  //     'Accept': 'application/json',
-  //     'Content-Type': 'application/json'
-  //   },
-  //   method: 'POST',
-  //   body: ""
-  // });
-  // const jsonResponse = await response.json(); // { message: "logged out"}
-  // console.log('logout response', jsonResponse)
-
-  localStorage.removeItem(authStoreKey);
-  app.ports.onAuthStoreChange.send(null);
+  logout();
 });
+
+const logout = () => {
+  app.ports.onAuthStoreChange.send(null);
+  localStorage.removeItem(authStoreKey);
+  window.scrollTo(0, 0);
+  app.ports.onAuthResponse.send({
+    result: 'success',
+    message: 'Logging you out. Please login again to continue using the STAR site.'
+  });
+}
 
 // Notify inactive tabs when user changes
 window.addEventListener(
@@ -140,11 +154,16 @@ const sendSocketCommand = wat => {
     let socket = new WebSocket(wat.address);
     socket.onmessage = function (event) {
       // console.log("onmessage: " + JSON.stringify(event.data, null, 4));
-      app.ports.receiveSocketMsg.send({
-        name: wat.name,
-        msg: 'data',
-        data: event.data
-      });
+      const data = JSON.parse(event.data);
+      if (data.error && data.error == "Invalid JWT") {
+        logout();
+      } else {
+        app.ports.receiveSocketMsg.send({
+          name: wat.name,
+          msg: 'data',
+          data: event.data
+        });
+      }
     };
     mySockets[wat.name] = socket;
   } else if (wat.cmd == 'send') {
