@@ -68,11 +68,11 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
                 'text': {'type': 'number'},
                 'text_section': {'type': 'number'},
                 'instance': {'type': 'number'},
-                'phrase': {'type': 'string'},
+                'phrase': {'type': 'string'}, # TODO: lemma here
                 'grammeme': cls.grammeme_add_schema()
             },
             'minItems': 1,
-            'required': ['text', 'text_section', 'instance', 'phrase']
+            'required': ['text', 'text_section', 'instance', 'phrase'] # TODO: lemma here
         }
 
         return schema
@@ -104,7 +104,7 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
             'id': self.pk,
             'text_section': self.text_section.order,
             'instance': self.instance,
-            'phrase': self.phrase,
+            'phrase': self.phrase,                      # TODO: lemma here?
             'grammemes': self.serialized_grammemes,
             'translations': [translation.to_dict() for translation in
                              self.translations.all()] or None,
@@ -192,7 +192,7 @@ class TextPhraseTranslation(models.Model):
                         'type': 'object',
                         'properties': {
                             'correct_for_context': {'type': 'boolean'},
-                            'phrase': {'type': 'string'},
+                            'phrase': {'type': 'string'},   # TODO: lemma here?
                         }
                     },
                     'minItems': 1
