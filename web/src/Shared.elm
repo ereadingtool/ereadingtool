@@ -158,14 +158,14 @@ update msg model =
             ( { model
                 | infobar = Just <| Infobar.successBottom (Api.authSuccessMessage authSuccess)
               }
-            , Task.perform (\_ -> ClearInfobar) <| Process.sleep 2500
+            , Task.perform (\_ -> ClearInfobar) <| Process.sleep 3000
             )
 
         GotAuthResult (Err authError) ->
             ( { model
                 | infobar = Just <| Infobar.errorBottom (Api.authErrorMessage authError)
               }
-            , Task.perform (\_ -> ClearInfobar) <| Process.sleep 2500
+            , Task.perform (\_ -> ClearInfobar) <| Process.sleep 3000
             )
 
         GotSession session ->
