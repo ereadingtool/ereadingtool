@@ -139,7 +139,6 @@ type Msg
     = AddDifficulty String Bool
     | SelectTag String Bool
     | SelectStatus TextReadStatus Bool
-      -- | TextSearch (Result Http.Error (List Text.Model.TextListItem))
     | TextSearch (Result (Http.Detailed.Error String) ( Http.Metadata, List Text.Model.TextListItem ))
       -- help messages
     | CloseHint TextSearch.Help.TextHelp
