@@ -115,10 +115,18 @@ app.ports.login.subscribe(async (creds: Creds) => {
 // LOGOUT
 
 app.ports.logout.subscribe(async () => {
-  app.ports.onAuthStoreChange.send(null);
-  localStorage.removeItem(authStoreKey);
+  logout();
 });
 
+const logout = () => {
+  app.ports.onAuthStoreChange.send(null);
+  localStorage.removeItem(authStoreKey);
+  window.scrollTo(0, 0);
+  app.ports.onAuthResponse.send({
+    result: 'success',
+    message: 'Logging you out. Please login again to continue using the STAR site.'
+  });
+}
 
 // Notify inactive tabs when user changes
 window.addEventListener(
@@ -148,8 +156,7 @@ const sendSocketCommand = wat => {
       // console.log("onmessage: " + JSON.stringify(event.data, null, 4));
       const data = JSON.parse(event.data);
       if (data.error && data.error == "Invalid JWT") {
-        app.ports.onAuthStoreChange.send(null);
-        localStorage.removeItem(authStoreKey);
+        logout();
       } else {
         app.ports.receiveSocketMsg.send({
           name: wat.name,

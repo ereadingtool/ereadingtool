@@ -15,15 +15,16 @@ module Shared exposing
 import Api exposing (AuthError, AuthSuccess)
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
-import Browser.Dom
 import Browser.Navigation exposing (Key)
 import Html exposing (..)
 import Html.Attributes exposing (attribute, class, classList, href, id)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (Error)
 import Id exposing (Id)
+import Infobar exposing (Infobar)
 import Json.Decode as Decode
 import Json.Encode as Encode
+import Process
 import Role exposing (Role(..))
 import Session exposing (Session)
 import Spa.Document exposing (Document)
@@ -62,6 +63,7 @@ type alias Model =
     , researchConsent : Bool
     , menuVisibility : MenuVisibility
     , authMessage : String
+    , infobar : Maybe Infobar
     }
 
 
@@ -85,7 +87,7 @@ init flags url key =
         config =
             Config.init flags.maybeConfig
     in
-    ( Model url key session config Time.utc Profile.emptyProfile False Hidden ""
+    ( Model url key session config Time.utc Profile.emptyProfile False Hidden "" Nothing
     , case Session.viewer session of
         Just viewer ->
             case Viewer.role viewer of
@@ -145,6 +147,7 @@ type Msg
     | GotResearchConsent (Result Error Bool)
     | GotInstructorProfile (Result Error InstructorProfile)
     | ToggleMenuVisibility
+    | ClearInfobar
     | Logout
 
 
@@ -152,13 +155,17 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         GotAuthResult (Ok authSuccess) ->
-            ( { model | authMessage = Api.authSuccessMessage authSuccess }
-            , Cmd.none
+            ( { model
+                | infobar = Just <| Infobar.successBottom (Api.authSuccessMessage authSuccess)
+              }
+            , Task.perform (\_ -> ClearInfobar) <| Process.sleep 2500
             )
 
         GotAuthResult (Err authError) ->
-            ( { model | authMessage = Api.authErrorMessage authError }
-            , Cmd.none
+            ( { model
+                | infobar = Just <| Infobar.errorBottom (Api.authErrorMessage authError)
+              }
+            , Task.perform (\_ -> ClearInfobar) <| Process.sleep 2500
             )
 
         GotSession session ->
@@ -236,6 +243,11 @@ update msg model =
             , Cmd.none
             )
 
+        ClearInfobar ->
+            ( { model | infobar = Nothing }
+            , Cmd.none
+            )
+
         Logout ->
             ( model
             , Api.logout ()
@@ -301,6 +313,12 @@ view { page, toMsg } model =
         [ div [ class "layout" ]
             [ viewHeader model toMsg
             , div [ class "page" ] page.body
+            , case model.infobar of
+                Just infobar ->
+                    Infobar.view infobar
+
+                Nothing ->
+                    div [] []
             ]
         ]
     }
