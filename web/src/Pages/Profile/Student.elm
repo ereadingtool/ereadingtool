@@ -151,9 +151,15 @@ update msg (SafeModel model) =
         GotProfile (Err error) ->
             case error of
                 Http.Detailed.BadStatus metadata body ->
-                    ( SafeModel { model | errors = errorBodyToDict body }
-                    , Cmd.none
-                    )
+                    if metadata.statusCode == 403 then
+                        ( SafeModel model
+                        , Api.logout ()
+                        )
+
+                    else
+                        ( SafeModel { model | errors = errorBodyToDict body }
+                        , Cmd.none
+                        )
 
                 _ ->
                     ( SafeModel
@@ -187,9 +193,15 @@ update msg (SafeModel model) =
         GotUsernameValidation (Err error) ->
             case error of
                 Http.Detailed.BadStatus metadata body ->
-                    ( SafeModel { model | errors = errorBodyToDict body }
-                    , Cmd.none
-                    )
+                    if metadata.statusCode == 403 then
+                        ( SafeModel model
+                        , Api.logout ()
+                        )
+
+                    else
+                        ( SafeModel { model | errors = errorBodyToDict body }
+                        , Cmd.none
+                        )
 
                 _ ->
                     ( SafeModel
@@ -245,9 +257,15 @@ update msg (SafeModel model) =
         GotResearchConsent (Err error) ->
             case error of
                 Http.Detailed.BadStatus metadata body ->
-                    ( SafeModel { model | errors = errorBodyToDict body }
-                    , Cmd.none
-                    )
+                    if metadata.statusCode == 403 then
+                        ( SafeModel model
+                        , Api.logout ()
+                        )
+
+                    else
+                        ( SafeModel { model | errors = errorBodyToDict body }
+                        , Cmd.none
+                        )
 
                 _ ->
                     ( SafeModel
