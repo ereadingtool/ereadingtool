@@ -223,6 +223,7 @@ class TextPhraseTranslation(models.Model):
             'text': self.phrase
         }
 
+    # TODO: lemma here?
     @classmethod
     def create(cls, text_phrase: TextPhrase, phrase: AnyStr, correct_for_context: Optional[bool] = False):
         text_translation = cls.objects.create(text_phrase=text_phrase,
