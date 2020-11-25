@@ -178,14 +178,20 @@ update msg (SafeModel model) =
         GotTextCreated (Err error) ->
             case error of
                 Http.Detailed.BadStatus metadata body ->
-                    case Text.Decode.decodeRespErrors body of
-                        Ok errors ->
-                            ( SafeModel { model | text_component = Text.Component.update_text_errors model.text_component errors }, Cmd.none )
+                    if metadata.statusCode == 403 then
+                        ( SafeModel model
+                        , Api.logout ()
+                        )
 
-                        Err _ ->
-                            ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
-                            , Cmd.none
-                            )
+                    else
+                        case Text.Decode.decodeRespErrors body of
+                            Ok errors ->
+                                ( SafeModel { model | text_component = Text.Component.update_text_errors model.text_component errors }, Cmd.none )
+
+                            Err _ ->
+                                ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
+                                , Cmd.none
+                                )
 
                 _ ->
                     ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
@@ -209,14 +215,20 @@ update msg (SafeModel model) =
         GotTextUpdated (Err error) ->
             case error of
                 Http.Detailed.BadStatus metadata body ->
-                    case Text.Decode.decodeRespErrors body of
-                        Ok errors ->
-                            ( SafeModel { model | text_component = Text.Component.update_text_errors model.text_component errors }, Cmd.none )
+                    if metadata.statusCode == 403 then
+                        ( SafeModel model
+                        , Api.logout ()
+                        )
 
-                        Err _ ->
-                            ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
-                            , Cmd.none
-                            )
+                    else
+                        case Text.Decode.decodeRespErrors body of
+                            Ok errors ->
+                                ( SafeModel { model | text_component = Text.Component.update_text_errors model.text_component errors }, Cmd.none )
+
+                            Err _ ->
+                                ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
+                                , Cmd.none
+                                )
 
                 _ ->
                     ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
@@ -236,18 +248,24 @@ update msg (SafeModel model) =
         GotTextDeleted (Err error) ->
             case error of
                 Http.Detailed.BadStatus metadata body ->
-                    case Text.Decode.decodeRespErrors body of
-                        Ok errors ->
-                            let
-                                errorsStr =
-                                    String.join " and " (Dict.values errors)
-                            in
-                            ( SafeModel { model | errorMessage = Just <| "Error trying to delete the text: " ++ errorsStr }, Cmd.none )
+                    if metadata.statusCode == 403 then
+                        ( SafeModel model
+                        , Api.logout ()
+                        )
 
-                        Err _ ->
-                            ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
-                            , Cmd.none
-                            )
+                    else
+                        case Text.Decode.decodeRespErrors body of
+                            Ok errors ->
+                                let
+                                    errorsStr =
+                                        String.join " and " (Dict.values errors)
+                                in
+                                ( SafeModel { model | errorMessage = Just <| "Error trying to delete the text: " ++ errorsStr }, Cmd.none )
+
+                            Err _ ->
+                                ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
+                                , Cmd.none
+                                )
 
                 _ ->
                     ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
@@ -376,22 +394,28 @@ update msg (SafeModel model) =
         TextLocked (Err error) ->
             case error of
                 Http.Detailed.BadStatus metadata body ->
-                    case Text.Decode.decodeRespErrors body of
-                        Ok errors ->
-                            ( SafeModel
-                                { model
-                                    | errorMessage =
-                                        Just <|
-                                            "Error trying to lock the text: "
-                                                ++ String.join " and " (Dict.values errors)
-                                }
-                            , Cmd.none
-                            )
+                    if metadata.statusCode == 403 then
+                        ( SafeModel model
+                        , Api.logout ()
+                        )
 
-                        Err _ ->
-                            ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
-                            , Cmd.none
-                            )
+                    else
+                        case Text.Decode.decodeRespErrors body of
+                            Ok errors ->
+                                ( SafeModel
+                                    { model
+                                        | errorMessage =
+                                            Just <|
+                                                "Error trying to lock the text: "
+                                                    ++ String.join " and " (Dict.values errors)
+                                    }
+                                , Cmd.none
+                                )
+
+                            Err _ ->
+                                ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
+                                , Cmd.none
+                                )
 
                 _ ->
                     ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
@@ -411,22 +435,28 @@ update msg (SafeModel model) =
         TextUnlocked (Err error) ->
             case error of
                 Http.Detailed.BadStatus metadata body ->
-                    case Text.Decode.decodeRespErrors body of
-                        Ok errors ->
-                            ( SafeModel
-                                { model
-                                    | errorMessage =
-                                        Just <|
-                                            "Error trying to unlock the text: "
-                                                ++ String.join " and " (Dict.values errors)
-                                }
-                            , Cmd.none
-                            )
+                    if metadata.statusCode == 403 then
+                        ( SafeModel model
+                        , Api.logout ()
+                        )
 
-                        Err _ ->
-                            ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
-                            , Cmd.none
-                            )
+                    else
+                        case Text.Decode.decodeRespErrors body of
+                            Ok errors ->
+                                ( SafeModel
+                                    { model
+                                        | errorMessage =
+                                            Just <|
+                                                "Error trying to unlock the text: "
+                                                    ++ String.join " and " (Dict.values errors)
+                                    }
+                                , Cmd.none
+                                )
+
+                            Err _ ->
+                                ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }
+                                , Cmd.none
+                                )
 
                 _ ->
                     ( SafeModel { model | errorMessage = Just "An internal error occured. Please contact the developers." }

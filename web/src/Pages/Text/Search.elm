@@ -10,6 +10,7 @@ import Html exposing (..)
 import Html.Attributes exposing (attribute, class, classList, href, id)
 import Html.Events exposing (onClick)
 import Http
+import Http.Detailed
 import InstructorAdmin.Admin.Text as AdminText
 import Ports exposing (clearInputText)
 import Session exposing (Session)
@@ -138,7 +139,7 @@ type Msg
     = AddDifficulty String Bool
     | SelectTag String Bool
     | SelectStatus TextReadStatus Bool
-    | TextSearch (Result Http.Error (List Text.Model.TextListItem))
+    | TextSearch (Result (Http.Detailed.Error String) ( Http.Metadata, List Text.Model.TextListItem ))
       -- help messages
     | CloseHint TextSearch.Help.TextHelp
     | PreviousHint
@@ -195,17 +196,28 @@ update msg (SafeModel model) =
                 ]
             )
 
-        TextSearch result ->
-            case result of
-                Ok texts ->
-                    ( SafeModel { model | results = texts }, Cmd.none )
+        TextSearch (Ok ( metadata, texts )) ->
+            ( SafeModel { model | results = texts }
+            , Cmd.none
+            )
 
-                Err err ->
-                    let
-                        _ =
-                            Debug.log "error retrieving results" err
-                    in
-                    ( SafeModel { model | errorMessage = Just "An error occurred.  Please contact an administrator." }, Cmd.none )
+        TextSearch (Err error) ->
+            case error of
+                Http.Detailed.BadStatus metadata body ->
+                    if metadata.statusCode == 403 then
+                        ( SafeModel model
+                        , Api.logout ()
+                        )
+
+                    else
+                        ( SafeModel { model | errorMessage = Just "An error occurred.  Please contact an administrator." }
+                        , Cmd.none
+                        )
+
+                _ ->
+                    ( SafeModel { model | errorMessage = Just "An error occurred.  Please contact an administrator." }
+                    , Cmd.none
+                    )
 
         CloseHint helpMessage ->
             ( SafeModel { model | help = TextSearch.Help.setVisible model.help helpMessage False }
@@ -238,7 +250,7 @@ updateResults session config textSearch =
             List.map Endpoint.filterToStringQueryParam filterParams
     in
     if List.length filterParams > 0 then
-        Api.get
+        Api.getDetailed
             (Endpoint.textSearch (Config.restApiUrl config) queryParameters)
             (Session.cred session)
             TextSearch

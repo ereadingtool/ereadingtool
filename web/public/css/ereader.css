@@ -393,3 +393,39 @@ body {
   user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome and Opera */
 }
+
+.infobar {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+
+  padding: 15px;
+
+  border-radius: 5px;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+
+  color: #ffffff;
+  font-size: 18px;
+}
+
+.infobar-bottom {
+  bottom: 30px;
+}
+
+.infobar-top {
+  top: 10px;
+}
+
+.infobar-success {
+  background-color: #0054a6;
+}
+
+.infobar-error {
+  background-color: #bd0f15;
+}
+
+@media (max-width: 568px) {
+  .infobar {
+    width: 75%;
+  }
+}
