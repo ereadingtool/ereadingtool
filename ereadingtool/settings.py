@@ -20,7 +20,7 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             # When the container spawns it's aliased to "redis" see docker insepct <redis_container> output
-            'hosts': [('localhost', 6379)], 
+            'hosts': [(os.getenv('REDIS_ENDPOINT'), 6379)], 
         },
     },
 }
@@ -105,7 +105,7 @@ LOGGING = {
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
-DEBUG = False 
+DEBUG = False
 DEV = False
 
 ALLOWED_HOSTS = ['0.0.0.0',
