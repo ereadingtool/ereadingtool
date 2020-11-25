@@ -52,7 +52,7 @@ class TextReadings(models.Model):
             last_read_dt = last_reading.last_read_dt.isoformat()
 
         return last_read_dt
-
+    # TODO: questions correct bug is here?
     def last_read_questions_correct(self, text: Text) -> Optional[Tuple[int, int]]:
         last_read = self.last_read(text)
 
