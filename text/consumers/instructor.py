@@ -67,6 +67,7 @@ class ParseTextSectionForDefinitions(SyncConsumer):
                         text_section=text_section,
                         phrase=word,
                         instance=i,
+                        lemma=word_instance['lemma'],
                         **word_instance['grammemes'])
 
                     if text_word_created:

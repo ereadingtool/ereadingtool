@@ -138,6 +138,8 @@ class TextSectionDefinitionsMixin(models.Model):
 
             word_data['translations'] = []
 
+            word_data['lemma'] = parsed_word.normal_form
+            
             if translations:
                 for j in range(0, 5):
                     try:
