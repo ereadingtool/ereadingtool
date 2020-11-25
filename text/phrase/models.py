@@ -104,7 +104,8 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
             'id': self.pk,
             'text_section': self.text_section.order,
             'instance': self.instance,
-            'phrase': self.phrase,                      # TODO: lemma here?
+            'phrase': self.phrase,
+            'lemma': self.lemma,
             'grammemes': self.serialized_grammemes,
             'translations': [translation.to_dict() for translation in
                              self.translations.all()] or None,
