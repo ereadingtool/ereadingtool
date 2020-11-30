@@ -17,8 +17,6 @@ module TextReader.Model exposing
     , ungloss
     )
 
--- import Profile.Flags as Flags
-
 import Dict exposing (Dict)
 import InstructorAdmin.Text.Translations exposing (Id, Instance, Phrase)
 import Menu.Items
