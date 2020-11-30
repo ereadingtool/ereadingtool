@@ -37,7 +37,6 @@ import User.Student.Profile.Help as Help exposing (StudentHelp)
 import User.Student.Resource as StudentResource
 import Utils
 import Viewer exposing (Viewer)
-import Views
 
 
 page : Page Params Model Msg
@@ -441,7 +440,6 @@ view (SafeModel model) =
     , body =
         [ div []
             [ viewContent (SafeModel model)
-            , Views.view_footer
             ]
         ]
     }

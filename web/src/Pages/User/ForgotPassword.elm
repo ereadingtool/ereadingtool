@@ -24,7 +24,6 @@ import Spa.Document exposing (Document)
 import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
 import Utils exposing (isValidEmail)
-import Views
 
 
 page : Page Params Model Msg
@@ -183,7 +182,6 @@ view model =
     , body =
         [ div []
             [ viewContent model
-            , Views.view_footer
             ]
         ]
     }

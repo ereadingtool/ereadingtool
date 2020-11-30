@@ -18,7 +18,6 @@ import Text.Model exposing (TextListItem)
 import Time exposing (Zone)
 import User.Profile exposing (Profile)
 import Utils.Date
-import Views
 
 
 page : Page Params Model Msg

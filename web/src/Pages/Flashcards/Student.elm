@@ -21,7 +21,6 @@ import Spa.Url exposing (Url)
 import User.Profile
 import Utils
 import Viewer
-import Views
 
 
 page : Page Params Model Msg
@@ -274,7 +273,6 @@ view safeModel =
     , body =
         [ div []
             [ viewContent safeModel
-            , Views.view_footer
             ]
         ]
     }

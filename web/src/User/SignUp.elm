@@ -11,7 +11,6 @@ import Html.Attributes exposing (attribute, class, classList)
 import Html.Events exposing (onClick, onInput)
 import Menu.Msg as MenuMsg
 import Utils exposing (isValidEmail)
-import Views
 
 
 viewEmailInput :

@@ -25,7 +25,6 @@ import User.Instructor.Profile as InstructorProfile
         )
 import User.Instructor.Resource as InstructorResource
 import User.Profile as Profile
-import Views
 
 
 page : Page Params Model Msg
@@ -203,7 +202,6 @@ view (SafeModel model) =
     , body =
         [ div []
             [ viewContent (SafeModel model)
-            , Views.view_footer
             ]
         ]
     }

@@ -29,7 +29,6 @@ import Spa.Url exposing (Url)
 import Text.Model exposing (TextDifficulty)
 import User.SignUp as SignUp
 import Utils exposing (isValidEmail)
-import Views
 
 
 page : Page Params Model Msg
@@ -249,7 +248,6 @@ view model =
     , body =
         [ div []
             [ viewContent model
-            , Views.view_footer
             ]
         ]
     }

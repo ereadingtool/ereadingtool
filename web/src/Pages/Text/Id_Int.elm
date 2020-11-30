@@ -34,7 +34,6 @@ import TextReader.TextWord
 import User.Profile exposing (Profile)
 import User.Profile.TextReader.Flashcards
 import Viewer
-import Views
 
 
 page : Page Params Model Msg
@@ -407,7 +406,6 @@ view (SafeModel model) =
     , body =
         [ div []
             [ viewContent (SafeModel model)
-            , Views.view_footer
             ]
         ]
     }
