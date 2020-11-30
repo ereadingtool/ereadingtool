@@ -4,8 +4,6 @@ import Api.WebSocket as WebSocket
 import Flashcard.Mode
 import Http
 import Json.Decode
-import Menu.Logout
-import Menu.Msg as MenuMsg
 
 
 type Msg
@@ -18,5 +16,4 @@ type Msg
     | SubmitAnswer
     | RateQuality Int
     | WebSocketResp (Result Json.Decode.Error WebSocket.WebSocketMsg)
-    | LogOut MenuMsg.Msg
-    | LoggedOut (Result Http.Error Menu.Logout.LogOutResp)
+    | Logout

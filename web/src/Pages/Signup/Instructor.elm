@@ -18,7 +18,6 @@ import Http.Detailed
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode
-import Menu.Msg as MenuMsg
 import Session exposing (Session)
 import Shared
 import Spa.Document exposing (Document)

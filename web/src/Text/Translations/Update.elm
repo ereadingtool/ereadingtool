@@ -8,7 +8,6 @@ import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
 import Array
 import Dict exposing (Dict)
-import Flags
 import Http
 import InstructorAdmin.Admin.Text as AdminText
 import Session exposing (Session)

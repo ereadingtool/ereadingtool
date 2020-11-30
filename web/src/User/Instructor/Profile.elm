@@ -10,19 +10,15 @@ module User.Instructor.Profile exposing
     , initProfileURIs
     , invites
     , isAdmin
-    , logout
     , profileUriToString
-    , submitNewInvite
     , texts
     , username
     , usernameToString
     )
 
-import Flags
 import Http
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (required)
-import Menu.Logout
 import User.Instructor.Invite as InstructorInvite exposing (Email, InstructorInvite)
 import User.Instructor.Invite.Decode as InstructorInviteDecode
 import User.Instructor.Invite.Encode as InstructorInviteEncode
@@ -169,54 +165,6 @@ profileUriToString instructor_profile =
 texts : InstructorProfile -> List Text
 texts (InstructorProfile _ instructorTexts _ _ _ _) =
     instructorTexts
-
-
-logout :
-    InstructorProfile
-    -> Flags.CSRFToken
-    -> (Result Http.Error Menu.Logout.LogOutResp -> msg)
-    -> Cmd msg
-logout instructor_profile csrftoken logout_msg =
-    let
-        request =
-            Debug.todo
-
-        -- HttpHelpers.post_with_headers
-        --     (InstructorResource.uriToString (InstructorResource.instructorLogoutURI (logoutUri instructor_profile)))
-        --     [ Http.header "X-CSRFToken" csrftoken ]
-        --     Http.emptyBody
-        --     Menu.Logout.logoutRespDecoder
-    in
-    -- Http.send logout_msg request
-    Debug.todo "instructor logout"
-
-
-submitNewInvite :
-    Flags.CSRFToken
-    -> InstructorResource.InstructorInviteURI
-    -> (Result Http.Error InstructorInvite -> msg)
-    -> Email
-    -> Cmd msg
-submitNewInvite csrftoken instructor_invite_uri msg email =
-    if InstructorInvite.isValidEmail email then
-        let
-            encoded_new_invite =
-                InstructorInviteEncode.newInviteEncoder email
-
-            req =
-                Debug.todo
-
-            -- HttpHelpers.post_with_headers
-            --     (InstructorResource.uriToString (InstructorResource.instructorInviteURI instructor_invite_uri))
-            --     [ Http.header "X-CSRFToken" csrftoken ]
-            --     (Http.jsonBody encoded_new_invite)
-            --     InstructorInviteDecode.newInviteRespDecoder
-        in
-        -- Http.send msg req
-        Debug.todo "instructor submit new invite"
-
-    else
-        Cmd.none
 
 
 

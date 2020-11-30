@@ -9,10 +9,6 @@ import Flashcard.Msg exposing (Msg(..))
 import Json.Decode
 
 
-type Not
-    = Not
-
-
 route_cmd_resp : Model -> Maybe Mode -> CmdResp -> ( Model, Cmd Msg )
 route_cmd_resp orig_model mode cmd_resp =
     let

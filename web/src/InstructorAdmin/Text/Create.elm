@@ -14,14 +14,10 @@ up.
 -}
 
 import Dict exposing (Dict)
-import Flags
 import Http
 import InstructorAdmin.Admin.Text
 import InstructorAdmin.Text.Translations as Translations
 import Json.Encode
-import Menu.Items
-import Menu.Logout
-import Menu.Msg as MenuMsg
 import Text.Component exposing (TextComponent)
 import Text.Decode
 import Text.Field exposing (TextAuthor, TextDifficulty, TextIntro, TextSource, TextTags, TextTitle)

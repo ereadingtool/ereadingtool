@@ -18,10 +18,7 @@ module Flashcard.Model exposing
     , translationOrPhrase
     )
 
--- import Profile.Flags as Flags
-
 import Flashcard.Mode exposing (Mode)
-import Menu.Items
 import User.Profile
 
 
@@ -47,11 +44,6 @@ type alias TranslatedPhrase =
 
 type alias Rating =
     Int
-
-
-
--- type alias Flags =
---     Flags.Flags { flashcard_ws_addr : WebSocketAddress }
 
 
 type alias InitRespRec =
@@ -157,16 +149,12 @@ translationOrPhrase flashcard =
 
 type alias Model =
     { profile : User.Profile.Profile
-
-    -- , menu_items : Menu.Items.MenuItems
     , mode : Maybe Mode
     , session_state : SessionState
     , exception : Maybe Exception
     , connect : Bool
     , answer : String
     , selected_quality : Maybe Int
-
-    -- , flags : Flags
     }
 
 
