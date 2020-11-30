@@ -8,8 +8,6 @@ module User.Profile exposing
     , view_profile_header
     )
 
--- import User.Student.Profile.Resource
-
 import Flags
 import Html exposing (Html, div)
 import Http exposing (..)
@@ -28,7 +26,6 @@ import User.Student.Profile
         ( StudentProfile(..)
         , StudentURIs(..)
         )
-import User.Student.Profile.Decode
 import User.Student.Resource
 import User.Student.View
 
@@ -47,26 +44,6 @@ fromStudentProfile student_profile =
 fromInstructorProfile : User.Instructor.Profile.InstructorProfile -> Profile
 fromInstructorProfile instructor_profile =
     Instructor instructor_profile
-
-
-initProfile :
-    { a
-        | instructor_profile : Maybe User.Instructor.Profile.InstructorProfileParams
-        , student_profile : Maybe User.Student.Profile.StudentProfileParams
-    }
-    -> Profile
-initProfile flags =
-    case flags.instructor_profile of
-        Just instructor_profile_params ->
-            Instructor (User.Instructor.Profile.initProfile instructor_profile_params)
-
-        Nothing ->
-            case flags.student_profile of
-                Just student_profile_params ->
-                    Student (User.Student.Profile.initProfile student_profile_params PerformanceReport.emptyPerformanceReport)
-
-                Nothing ->
-                    EmptyProfile
 
 
 {-| TODO: probably best to get rid of these empty default profiles
@@ -140,33 +117,3 @@ view_profile_header profile top_level_msg =
 
         EmptyProfile ->
             Nothing
-
-
-retrieveStudentProfile :
-    (Result Error User.Student.Profile.StudentProfile -> msg)
-    -> ProfileID
-    -> User.Student.Resource.StudentEndpointURI
-    -> Cmd msg
-retrieveStudentProfile msg profile_id student_endpoint_uri =
-    let
-        request =
-            Debug.todo
-
-        -- Http.get
-        --     (User.Student.Resource.uriToString (User.Student.Resource.studentEndpointURI student_endpoint_uri))
-        --     User.Student.Profile.Decode.studentProfileDecoder
-    in
-    -- Http.send msg request
-    Debug.todo "retrieve student profile"
-
-
-
--- logout : Profile -> Flags.CSRFToken -> (Result Http.Error Menu.Logout.LogOutResp -> msg) -> Cmd msg
--- logout profile csrftoken logout_msg =
---     case profile of
---         Student student_profile ->
---             User.Student.Profile.Resource.logout student_profile csrftoken logout_msg
---         Instructor instructor_profile ->
---             User.Instructor.Profile.logout instructor_profile csrftoken logout_msg
---         EmptyProfile ->
---             Cmd.none
