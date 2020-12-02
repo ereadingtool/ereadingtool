@@ -73,22 +73,33 @@ class TextReadings(models.Model):
 
     def sections_complete_for(self, text: Text) -> int:
         """
-        Ideally we'd just check to see if something has been completed. If so, the sections_complete would be
-        the same as the number of sections in the text. Unfortunately, if we try to `.get(text=text)` an exception
-        occurs because we have multiple entries with the state `complete`.
+        Check to see if the user has completed reading a text. If so the ratio of "Sections Complete" is `number_of_sections`/`number_of_sections`.
+        Otherwise we look to see if they've attempted it at all (and are beyond the intro step). If so, return the `current_section`. 
         """
         sections_complete = 0
 
-        # Sections complete bug here
-        if self.text_readings.exclude(state=TextReadingStateMachine.complete.name).filter(text=text).exists():
-            current_text_reading = self.text_readings.exclude(
-                state=TextReadingStateMachine.complete.name).get(text=text)
+        if self.text_readings \
+               .filter(state=TextReadingStateMachine.complete.name, student_id=self.id, text=text) \
+               .exists():
+
+            # Get the first completion
+            student_text_reading = self.text_readings \
+                                       .filter(state=TextReadingStateMachine.complete.name, student_id=self.id, text=text) \
+                                       .order_by('start_dt') \
+                                       .first()
+
+            sections_complete = student_text_reading.number_of_sections
+
+        elif self.text_readings \
+                 .exclude(state=TextReadingStateMachine.complete.name) \
+                 .filter(text=text) \
+                 .exists():
+
+            current_text_reading = self.text_readings \
+                                       .exclude(state=TextReadingStateMachine.complete.name) \
+                                       .get(text=text)
 
             if not current_text_reading.state_machine.is_intro:
                 sections_complete = current_text_reading.current_section.order
-        # TODO test on texts that have never been read
-        else:
-            current_text_reading = self.text_readings.get(text=text)
-            sections_complete = current_text_reading.number_of_sections
 
         return sections_complete
