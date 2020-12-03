@@ -12,6 +12,7 @@ services:
       - VIRTUAL_PORT=8000
       - LETSENCRYPT_HOST=api.steps2ar.org
       - FRONTEND_HOST=steps2ar.org
+      - REDIS_ENDPOINT=redis
     expose:
       - "8000"
       - "6379"

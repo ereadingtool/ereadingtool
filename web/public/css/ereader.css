@@ -138,6 +138,18 @@ body {
     transition: opacity 0s, height 0.4s, padding 0.25s;
   }
 
+  #header > .hidden-menu > .nav-item {
+    height: 0;
+    padding: 0;
+    transition: opacity 0s, height 0.4s, padding 0.25s;
+  }
+
+  #header > .hidden-menu > .nav-item > .nav-link {
+    height: 0;
+    padding: 0;
+    transition: opacity 0s, height 0.4s, padding 0.25s;
+  }
+
   #header * a:hover {
     text-decoration: none;
   }
