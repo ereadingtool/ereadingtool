@@ -26,7 +26,7 @@ class TextWordGroupAPIView(APIView):
         text_group = None
 
         resp = {
-            'phrase': '',
+            'phrase': '',   # TODO: lemma here?
             'section': None,
             'instance': 0,
             'grouped': False,
@@ -98,7 +98,7 @@ class TextWordGroupAPIView(APIView):
                     # words all belong to the same group already
                     text_group = first_text_word_group
 
-                    resp['phrase'] = text_group.phrase
+                    resp['phrase'] = text_group.phrase # TODO: lemma here?
                     resp['section'] = text_group.text_section.order
                     resp['instance'] = text_group.instance
                     resp['grouped'] = True
