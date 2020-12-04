@@ -74,11 +74,27 @@ class TextReadings(models.Model):
     def sections_complete_for(self, text: Text) -> int:
         sections_complete = 0
 
-        if self.text_readings.exclude(state=TextReadingStateMachine.complete.name).filter(text=text).exists():
-            current_text_reading = self.text_readings.exclude(
-                state=TextReadingStateMachine.complete.name).get(text=text)
+        # They have a text inprogress
+        if self.text_readings \
+               .filter(state=TextReadingStateMachine.in_progress.name, student_id=self.id, text=text) \
+               .exists():
+
+            current_text_reading = self.text_readings \
+                                       .filter(state=TextReadingStateMachine.in_progress.name, student_id=self.id, text=text) \
+                                       .get(text=text)
 
             if not current_text_reading.state_machine.is_intro:
                 sections_complete = current_text_reading.current_section.order
+
+        # They've completed the text but haven't started over
+        elif self.text_readings \
+                 .filter(state=TextReadingStateMachine.complete.name, student_id=self.id, text=text) \
+                 .exists():
+
+            sections_complete = self.text_readings \
+                                    .filter(state=TextReadingStateMachine.complete.name, student_id=self.id, text=text) \
+                                    .order_by('start_dt') \
+                                    .first() \
+                                    .number_of_sections
 
         return sections_complete
