@@ -26,6 +26,7 @@ class TextPhraseGrammemes(models.Model):
     aspect = models.CharField(max_length=32, null=True, blank=True)
     form = models.CharField(max_length=32, null=True, blank=True)
     mood = models.CharField(max_length=32, null=True, blank=True)
+    lemma = models.CharField(max_length=128, null=True, blank=True) 
 
     @classmethod
     def grammeme_add_schema(cls) -> Dict:
@@ -36,7 +37,8 @@ class TextPhraseGrammemes(models.Model):
                 'tense': {'type': 'string'},
                 'aspect': {'type': 'string'},
                 'form': {'type': 'string'},
-                'mood': {'type': 'string'}
+                'mood': {'type': 'string'},
+                'lemma': {'type': 'string'}
             }
         }
 
@@ -134,12 +136,11 @@ class TextSectionDefinitionsMixin(models.Model):
                 'aspect': parsed_word.tag.aspect,
                 'form': parsed_word.tag.case,
                 'mood': parsed_word.tag.mood,
+                'lemma': parsed_word.normal_form
             }
 
             word_data['translations'] = []
 
-            word_data['lemma'] = parsed_word.normal_form
-            
             if translations:
                 for j in range(0, 5):
                     try:

@@ -18,7 +18,6 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
     instance = models.IntegerField(default=0)
 
     phrase = models.CharField(max_length=128, blank=False)
-    lemma = models.CharField(max_length=128, blank=False, null=True)
 
     @property
     def sentence(self) -> Union[AnyStr, None]:
@@ -68,7 +67,7 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
                 'text': {'type': 'number'},
                 'text_section': {'type': 'number'},
                 'instance': {'type': 'number'},
-                'phrase': {'type': 'string'}, # TODO: lemma here
+                'phrase': {'type': 'string'},
                 'grammeme': cls.grammeme_add_schema()
             },
             'minItems': 1,
@@ -105,7 +104,6 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
             'text_section': self.text_section.order,
             'instance': self.instance,
             'phrase': self.phrase,
-            'lemma': self.lemma,
             'grammemes': self.serialized_grammemes,
             'translations': [translation.to_dict() for translation in
                              self.translations.all()] or None,
@@ -193,7 +191,7 @@ class TextPhraseTranslation(models.Model):
                         'type': 'object',
                         'properties': {
                             'correct_for_context': {'type': 'boolean'},
-                            'phrase': {'type': 'string'},   # TODO: lemma here?
+                            'phrase': {'type': 'string'},
                         }
                     },
                     'minItems': 1
@@ -223,7 +221,6 @@ class TextPhraseTranslation(models.Model):
             'text': self.phrase
         }
 
-    # TODO: lemma here?
     @classmethod
     def create(cls, text_phrase: TextPhrase, phrase: AnyStr, correct_for_context: Optional[bool] = False):
         text_translation = cls.objects.create(text_phrase=text_phrase,
