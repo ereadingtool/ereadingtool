@@ -1,17 +1,18 @@
 import json
 
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import models
 from django.db import transaction
 from django.http import HttpResponse, HttpRequest, HttpResponseServerError
 from django.urls import reverse_lazy
-from django.views.generic import View
-
+from ereadingtool.views import APIView
 from text.translations.group.models import TextWordGroup, TextGroupWord
 from text.translations.models import TextWord
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from auth.normal_auth import jwt_valid
 
-
-class TextWordGroupAPIView(LoginRequiredMixin, View):
+@method_decorator(csrf_exempt, name='dispatch')
+class TextWordGroupAPIView(APIView):
     model = TextWordGroup
 
     login_url = reverse_lazy('instructor-login')
@@ -20,6 +21,7 @@ class TextWordGroupAPIView(LoginRequiredMixin, View):
     default_error_resp = HttpResponseServerError(json.dumps({'error': 'Something went wrong.'}),
                                                  content_type='application/json')
 
+    @jwt_valid()
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         text_group = None
 
@@ -111,6 +113,8 @@ class TextWordGroupAPIView(LoginRequiredMixin, View):
 
         return HttpResponse(json.dumps(resp), status=200, content_type='application/json')
 
+
+    @jwt_valid()
     def delete(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         try:
             rows, deleted = TextWordGroup.objects.filter(pk=kwargs['pk']).delete()

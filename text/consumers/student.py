@@ -19,6 +19,8 @@ class StudentTextReaderConsumer(TextReaderConsumer):
 
     @database_sync_to_async
     def start_reading(self):
+        # TODO: Why isn't this working? 
+        # Warning: potentially breaks reading progress history
         self.student = self.scope['user'].student
 
         return StudentTextReading.start_or_resume(student=self.student, text=self.text)

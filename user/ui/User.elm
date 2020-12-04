@@ -1,52 +1,86 @@
 module User exposing (..)
 
 
-type UserID = UserID Int
-type URI = URI String
-type RedirectURI = RedirectURI URI
+type UserID
+    = UserID Int
 
-type SignUpURL = SignUpURL URL
-type LoginURI = LoginURI URI
 
-type URL = URL String
+type URI
+    = URI String
 
-type LoginPageURL = LoginPageURL URL
 
-type ForgotPassURL = ForgotPassURL URL
+type RedirectURI
+    = RedirectURI URI
 
-type AcknowledgePageURL = AcknowledgePageURL URL
-type AboutPageURL = AboutPageURL URL
+
+type SignUpURL
+    = SignUpURL URL
+
+
+type LoginURI
+    = LoginURI URI
+
+
+type URL
+    = URL String
+
+
+type LoginPageURL
+    = LoginPageURL URL
+
+
+type ForgotPassURL
+    = ForgotPassURL URL
+
+
+type AcknowledgePageURL
+    = AcknowledgePageURL URL
+
+
+type AboutPageURL
+    = AboutPageURL URL
 
 
 acknowledgePageURL : AcknowledgePageURL -> URL
 acknowledgePageURL (AcknowledgePageURL url) =
-  url
+    url
+
 
 aboutPageURL : AboutPageURL -> URL
 aboutPageURL (AboutPageURL url) =
-  url
+    url
+
 
 redirectURI : RedirectURI -> URI
-redirectURI (RedirectURI uri) = uri
+redirectURI (RedirectURI uri) =
+    uri
+
 
 signupURL : SignUpURL -> URL
-signupURL (SignUpURL url) = url
+signupURL (SignUpURL url) =
+    url
+
 
 forgotPassURL : ForgotPassURL -> URL
 forgotPassURL (ForgotPassURL url) =
-  url
+    url
+
 
 loginURI : LoginURI -> URI
-loginURI (LoginURI uri) = uri
+loginURI (LoginURI uri) =
+    uri
+
 
 loginPageURL : LoginPageURL -> URL
 loginPageURL (LoginPageURL url) =
-  url
+    url
+
 
 uriToString : URI -> String
 uriToString (URI uri) =
-  uri
+    uri
+
 
 urlToString : URL -> String
 urlToString (URL url) =
-  url
+    url

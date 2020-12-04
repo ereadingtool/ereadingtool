@@ -5,24 +5,28 @@ from typing import TypeVar, Dict, Union
 from django import forms
 from django.contrib.auth import login, logout
 from django.http import HttpResponse, HttpRequest, HttpResponseForbidden
+from django.template import loader
 from django.urls import reverse
 
 from django.views.generic import TemplateView, View
 
 from text.models import TextDifficulty
-from user.forms import StudentSignUpForm, StudentLoginForm, StudentForm, StudentConsentForm
+from user.forms import AuthenticationForm, StudentSignUpForm, StudentForm, StudentConsentForm
 from user.student.models import Student
 from user.views.api import APIView
 from user.views.mixin import ProfileView
-from django.contrib.auth.mixins import LoginRequiredMixin
 from mixins.view import ElmLoadJsStudentBaseView, NoAuthElmLoadJsView
+from django.http import JsonResponse
 
-from django.template import loader
-
+from jwt_auth.views import jwt_encode_token, jwt_get_json_with_token
+from auth.normal_auth import jwt_valid
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 Form = TypeVar('Form', bound=forms.Form)
 
 
+# TODO: I think that this is marked for deletion (remove loader import once done)
 class ElmLoadJsStudentProfileView(ElmLoadJsStudentBaseView):
     def get_context_data(self, **kwargs) -> Dict:
         context = super(ElmLoadJsStudentProfileView, self).get_context_data(**kwargs)
@@ -159,62 +163,44 @@ class StudentView(ProfileView):
     profile_model = Student
     login_url = Student.login_url
 
-
-class StudentAPIConsentToResearchView(LoginRequiredMixin, APIView):
+# Method decorator required for PUT method
+@method_decorator(csrf_exempt, name='dispatch')
+class StudentAPIConsentToResearchView(APIView):
     # returns permission denied HTTP message rather than redirect to login
-    raise_exception = True
 
-    def form(self, request: HttpRequest, params: dict, **kwargs) -> forms.ModelForm:
+    @jwt_valid()
+    def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
+        if not Student.objects.filter(pk=kwargs['pk']).count():
+            return HttpResponse(status=400)
+
+        student = Student.objects.get(pk=kwargs['pk']) 
+
+        return HttpResponse(json.dumps({'consented': student.is_consenting_to_research}))
+
+    @jwt_valid()
+    def form(self, request: HttpRequest, params: Dict, **kwargs) -> forms.ModelForm:
         return StudentConsentForm(params, **kwargs)
 
-    def put_error(self, errors: dict) -> HttpResponse:
-        return HttpResponse(json.dumps(errors), status=400)
+    @jwt_valid()
+    def put_error(self, status, errors: Dict) -> HttpResponse:
+        return HttpResponse(json.dumps(errors), status=status)
 
+    @jwt_valid()
     def put_success(self, request: HttpRequest, student_form: Union[Form, forms.ModelForm]) -> HttpResponse:
         student = student_form.save()
 
         return HttpResponse(json.dumps({'consented': student.is_consenting_to_research}))
 
-    def put(self, request, *args, **kwargs) -> HttpResponse:
-        errors = params = {}
 
-        if not Student.objects.filter(pk=kwargs['pk']).exists():
-            return HttpResponse(status=400)
-
-        student = Student.objects.get(pk=kwargs['pk'])
-
-        if student.user != self.request.user:
-            return HttpResponseForbidden()
-
-        try:
-            params = json.loads(request.body.decode('utf8'))
-        except json.JSONDecodeError as e:
-            return self.put_json_error(e)
-
-        if 'difficulty_preference' in params:
-            try:
-                params['difficulty_preference'] = TextDifficulty.objects.get(slug=params['difficulty_preference']).pk
-            except TextDifficulty.DoesNotExist:
-                pass
-
-        form = self.form(request, params, instance=student)
-
-        if not form.is_valid():
-            errors = self.format_form_errors(form)
-
-        if errors:
-            return self.put_error(errors)
-        else:
-            return self.put_success(request, form)
-
-
-class StudentAPIView(LoginRequiredMixin, APIView):
-    # returns permission denied HTTP message rather than redirect to login
-    raise_exception = True
-
-    def form(self, request: HttpRequest, params: dict, **kwargs) -> forms.ModelForm:
+# Method decorator required for PUT method
+@method_decorator(csrf_exempt, name='dispatch')
+class StudentAPIView(APIView):
+    
+    @jwt_valid() 
+    def form(self, request: HttpRequest, params: Dict, **kwargs) -> forms.ModelForm:
         return StudentForm(params, **kwargs)
 
+    @jwt_valid()
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if not Student.objects.filter(pk=kwargs['pk']).count():
             return HttpResponse(status=400)
@@ -226,61 +212,37 @@ class StudentAPIView(LoginRequiredMixin, APIView):
 
         student_dict = student.to_dict()
 
-        student_dict.pop('flashcards')
-
-        student_performance_report = student_dict.pop('performance_report')
+        try:
+            performance_report = student.performance.to_dict()
+        except:
+            performance_report = None
 
         return HttpResponse(json.dumps({
             'profile': student_dict,
-            'performance_report': student_performance_report,
+            'performance_report': performance_report
         }))
-
+        
+    @jwt_valid()
     def post_success(self, request: HttpRequest, form: Form) -> HttpResponse:
         raise NotImplementedError
 
-    def put_error(self, errors: dict) -> HttpResponse:
-        return HttpResponse(json.dumps(errors), status=400)
+    @jwt_valid()
+    def put_error(self, status, errors: Dict) -> HttpResponse:
+        return HttpResponse(json.dumps(errors), status=status)
 
+    @jwt_valid()
     def put_success(self, request: HttpRequest, student_form: Union[Form, forms.ModelForm]) -> HttpResponse:
         student = student_form.save()
+        
+        student_dict = student.to_dict()
 
-        return HttpResponse(json.dumps(student.to_dict()))
-
-    def put(self, request, *args, **kwargs) -> HttpResponse:
-        errors = params = {}
-
-        if not Student.objects.filter(pk=kwargs['pk']).exists():
-            return HttpResponse(status=400)
-
-        student = Student.objects.get(pk=kwargs['pk'])
-
-        if student.user != self.request.user:
-            return HttpResponseForbidden()
-
-        try:
-            params = json.loads(request.body.decode('utf8'))
-        except json.JSONDecodeError as e:
-            return self.put_json_error(e)
-
-        if 'difficulty_preference' in params:
-            try:
-                params['difficulty_preference'] = TextDifficulty.objects.get(slug=params['difficulty_preference']).pk
-            except TextDifficulty.DoesNotExist:
-                pass
-
-        form = self.form(request, params, instance=student)
-
-        if not form.is_valid():
-            errors = self.format_form_errors(form)
-
-        if errors:
-            return self.put_error(errors)
-        else:
-            return self.put_success(request, form)
+        return HttpResponse(json.dumps({
+            'profile': student_dict
+        }))
 
 
 class StudentSignupAPIView(APIView):
-    def form(self, request: HttpRequest, params: dict) -> forms.ModelForm:
+    def form(self, request: HttpRequest, params: Dict) -> forms.ModelForm:
         return StudentSignUpForm(params)
 
     def post_success(self, request: HttpRequest, student_signup_form: Form) -> HttpResponse:
@@ -294,7 +256,8 @@ class StudentSignupAPIView(APIView):
         return HttpResponse(json.dumps({'id': student.pk, 'redirect': reverse('student-login')}))
 
 
-class StudentLogoutAPIView(LoginRequiredMixin, View):
+# TODO: Marked for deletion
+class StudentLogoutAPIView(APIView):
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         logout(request)
 
@@ -302,26 +265,43 @@ class StudentLogoutAPIView(LoginRequiredMixin, View):
 
 
 class StudentLoginAPIView(APIView):
-    def form(self, request: HttpRequest, params: dict) -> Form:
-        return StudentLoginForm(request, params)
+    """
+    This class handles the student's login by returning a JWT to the client 
+    """
+    def form(self, request: HttpRequest, params: Dict) -> Form:
+        # This class appears to just be an `AuthenticationForm` since it simply passes
+        return AuthenticationForm(request, params)
 
-    def post_success(self, request: HttpRequest, student_login_form: Form) -> HttpResponse:
+    def post_success(self, request: HttpRequest, student_login_form: Form) -> JsonResponse:
+        """
+        Form validation is done in user/views/api.py so we assume the form fields are valid.
+        This function will get the user `pk` and generate a token using that value. The token's 
+        life span can be changed in settings.py by way of `JWT_EXPIRATION_DELTA`
+        Args: HttpRequest: presumably a POST. Form: a Django type holding form data, aliased up top.
+        Returns: JsonResponse containing the new JWT
+        """        
         reader_user = student_login_form.get_user()
 
-        if hasattr(reader_user, 'instructor'):
-            return self.post_error({'all': 'Something went wrong.  Please try a different username and password.'})
+        token = jwt_encode_token(
+            # cleaned_data sanitizes the form fields https://docs.djangoproject.com/en/3.1/ref/forms/api/#accessing-clean-data
+            # orig_iat means "original issued at" https://tools.ietf.org/html/rfc7519
+            reader_user, student_login_form.cleaned_data.get('orig_iat') 
+        )
 
-        login(self.request, reader_user)
+        # payload now contains string 'Bearer', the token, and the expiration time JWT_EXPIRATION_DELTA (in seconds)
+        jwt_payload = jwt_get_json_with_token(token)
 
-        student = reader_user.student
+        # manually add the field `[id]` to the jwt payload
+        jwt_payload['id'] = reader_user.student.pk
 
-        return HttpResponse(json.dumps({'id': student.pk, 'redirect': reverse('student-profile')}))
+        # return to the dispatcher to send out an HTTP response
+        return JsonResponse(jwt_payload)
 
 
 class StudentSignUpView(TemplateView):
     template_name = 'student/signup.html'
 
-    def get_context_data(self, **kwargs) -> dict:
+    def get_context_data(self, **kwargs) -> Dict:
         context = super(StudentSignUpView, self).get_context_data(**kwargs)
 
         context['title'] = 'Student Signup'
@@ -331,6 +311,8 @@ class StudentSignUpView(TemplateView):
 
         return context
 
+
+# --------------------------------- Below is marked for deletion ------------------------------
 
 class StudentLoginView(TemplateView):
     template_name = 'student/login.html'

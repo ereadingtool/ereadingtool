@@ -1,7 +1,6 @@
 import json
 from typing import Dict
 
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import ObjectDoesNotExist
 from django.views.decorators.vary import vary_on_cookie
 from django.views.generic import TemplateView
@@ -38,7 +37,7 @@ class ElmLoadJsBaseView(TemplateView):
         return context
 
 
-class ElmLoadJsStudentBaseView(LoginRequiredMixin, ElmLoadJsBaseView):
+class ElmLoadJsStudentBaseView(ElmLoadJsBaseView):
     def get_student_menu_items(self) -> MenuItems:
         return student_menu_items()
 
@@ -54,7 +53,7 @@ class ElmLoadJsStudentBaseView(LoginRequiredMixin, ElmLoadJsBaseView):
         return context
 
 
-class ElmLoadJsInstructorBaseView(LoginRequiredMixin, ElmLoadJsBaseView):
+class ElmLoadJsInstructorBaseView(ElmLoadJsBaseView):
     def get_instructor_menu_items(self) -> MenuItems:
         return instructor_menu_items()
 
@@ -70,7 +69,7 @@ class ElmLoadJsInstructorBaseView(LoginRequiredMixin, ElmLoadJsBaseView):
         return context
 
 
-class ElmLoadJsView(LoginRequiredMixin, ElmLoadJsBaseView):
+class ElmLoadJsView(ElmLoadJsBaseView):
     def get_instructor_menu_items(self) -> MenuItems:
         return instructor_menu_items()
 

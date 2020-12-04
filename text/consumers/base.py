@@ -1,7 +1,9 @@
+import json
 from typing import AnyStr
-
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer
+from jwt import InvalidTokenError
 
 from question.models import Answer
 from text.models import Text
@@ -9,6 +11,7 @@ from text_reading.exceptions import (TextReadingException, TextReadingNotAllQues
                                      TextReadingQuestionNotInSection)
 from user.models import ReaderUser
 
+from auth.producer_auth import jwt_validation 
 
 class Unauthorized(Exception):
     pass
@@ -16,7 +19,7 @@ class Unauthorized(Exception):
 
 @database_sync_to_async
 def get_text_or_error(text_id: int, user: ReaderUser):
-    if not user.is_authenticated:
+    if not user.id:
         raise Unauthorized
 
     text = Text.objects.get(pk=text_id)
@@ -26,7 +29,7 @@ def get_text_or_error(text_id: int, user: ReaderUser):
 
 @database_sync_to_async
 def get_answer_or_error(answer_id: int, user: ReaderUser):
-    if not user.is_authenticated:
+    if not user.id:
         raise Unauthorized
 
     try:
@@ -46,20 +49,32 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
         raise NotImplementedError
 
     async def add_flashcard_phrase(self, user: ReaderUser, phrase: AnyStr, instance: int):
-        if not user.is_authenticated:
-            raise Unauthorized
+        try:
+            if not user.id:
+                raise InvalidTokenError
+        except InvalidTokenError:
+            await self.send_json({'error': 'Invalid JWT'})
+            await self.close(code=1000)
 
     async def remove_flashcard_phrase(self, user: ReaderUser, phrase: AnyStr, instance: int):
-        if not user.is_authenticated:
-            raise Unauthorized
+        try:
+            if not user.id:
+                raise InvalidTokenError
+        except InvalidTokenError:
+            await self.send_json({'error': 'Invalid JWT'})
+            await self.close(code=1000)
 
     @database_sync_to_async
     def get_current_text_reading_dict(self):
         return self.text_reading.to_text_reading_dict()
 
     async def answer(self, user: ReaderUser, answer_id: int):
-        if not user.is_authenticated:
-            raise Unauthorized
+        try:
+            if not user.id:
+                raise InvalidTokenError
+        except InvalidTokenError:
+            await self.send_json({'error': 'Invalid JWT'})
+            await self.close(code=1000) 
 
         answer = await get_answer_or_error(answer_id=answer_id, user=user)
 
@@ -84,8 +99,12 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             })
 
     async def prev(self, user: ReaderUser):
-        if not user.is_authenticated:
-            raise Unauthorized
+        try:
+            if not user.id:
+                raise InvalidTokenError
+        except InvalidTokenError:
+            await self.send_json({'error': 'Invalid JWT'})
+            await self.close(code=1000)
 
         try:
             await database_sync_to_async(self.text_reading.prev)()
@@ -102,8 +121,12 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             })
 
     async def next(self, user: ReaderUser):
-        if not user.is_authenticated:
-            raise Unauthorized
+        try:
+            if not user.id:
+                raise InvalidTokenError
+        except InvalidTokenError:
+            await self.send_json({'error': 'Invalid JWT'})
+            await self.close(code=1000)
 
         try:
             await database_sync_to_async(self.text_reading.next)()
@@ -125,8 +148,12 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             })
 
     async def connect(self):
-        if self.scope['user'].is_anonymous:
-            await self.close()
+        if not self.scope['user'].id:
+            await self.accept()
+            await self.send_json({'error': 'Invalid JWT'})
+            # 1002 indicates that an endpoint is terminating the connection due
+            # to a protocol error. But it doesn't like that so we use 1000.
+            await self.close(code=1000) 
         else:
             await self.accept()
 
@@ -150,7 +177,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             })
 
     async def receive_json(self, content, **kwargs):
-        user = self.scope['user']
+        user = await jwt_validation(self.scope)
 
         available_cmds = {
             'next': 1,
