@@ -70,8 +70,7 @@ class Student(Profile, TextReadings, models.Model):
 
         text_student_summary['text_sections_complete'] = self.sections_complete_for(text)
         text_student_summary['last_read_dt'] = self.last_read_dt(text)
-        # text_student_summary['questions_correct'] = self.last_read_questions_correct(text)
-        text_student_summary['questions_correct'] = self.first_read_questions_correct(text)
+        text_student_summary['questions_correct'] = self.last_read_questions_correct(text)
 
         return text_student_summary
 

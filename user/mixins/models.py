@@ -71,24 +71,6 @@ class TextReadings(models.Model):
 
         return last_read
 
-    def first_read_questions_correct(self, text: Text) -> Optional[Tuple[int, int]]:
-        first_read = self.first_read(text)
-
-        if not first_read:
-            return None
-        else:
-            first_read_score = first_read.score
-
-            return first_read_score['section_scores'], first_read.max_score
-
-    def first_read(self, text: Text) -> TextReading:
-        first_read = None
-        
-        if self.text_readings.filter(text=text).exists():
-            first_read = self.text_readings.filter(text=text).order_by('start_dt')[0]
-
-        return first_read
-
     def sections_complete_for(self, text: Text) -> int:
         sections_complete = 0
 
