@@ -7,6 +7,7 @@ module Text.Translations.Word.Instance exposing
     , hasTextWord
     , id
     , instance
+    , lemma
     , new
     , sectionNumber
     , setTextWord
@@ -16,6 +17,7 @@ module Text.Translations.Word.Instance exposing
     , wordInstanceSectionNumberToInt
     )
 
+import Dict
 import Set exposing (Set)
 import Text.Translations exposing (Grammemes, Id, Instance, SectionNumber, Token)
 import Text.Translations.TextWord exposing (TextWord)
@@ -60,6 +62,25 @@ grammemes : WordInstance -> Maybe Grammemes
 grammemes wordInstance =
     textWord wordInstance
         |> Maybe.andThen Text.Translations.TextWord.grammemes
+
+
+lemma : WordInstance -> String
+lemma wordInstance =
+    textWord wordInstance
+        |> Maybe.andThen Text.Translations.TextWord.grammemes
+        |> (\maybeGrammemes ->
+                case maybeGrammemes of
+                    Just grs ->
+                        case Dict.get "lemma" grs of
+                            Just lmma ->
+                                lmma
+
+                            Nothing ->
+                                ""
+
+                    Nothing ->
+                        ""
+           )
 
 
 sectionNumber : WordInstance -> SectionNumber

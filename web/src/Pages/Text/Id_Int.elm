@@ -683,8 +683,29 @@ viewGloss (SafeModel model) reader_word text_word =
 
 viewWordAndGrammemes : TextReaderWord -> TextReader.TextWord.TextWord -> Html Msg
 viewWordAndGrammemes reader_word text_word =
+    let
+        lemma =
+            TextReader.TextWord.lemma text_word
+
+        displayedWord =
+            if not (String.isEmpty lemma) then
+                lemma
+
+            else
+                TextReader.Model.phrase reader_word
+
+        grammemes =
+            TextReader.TextWord.grammemesToString text_word
+    in
     div []
-        [ Html.text <| TextReader.Model.phrase reader_word ++ " (" ++ TextReader.TextWord.grammemesToString text_word ++ ")"
+        [ Html.text <|
+            displayedWord
+                ++ (if not (String.isEmpty grammemes) then
+                        " (" ++ grammemes ++ ")"
+
+                    else
+                        ""
+                   )
         ]
 
 
