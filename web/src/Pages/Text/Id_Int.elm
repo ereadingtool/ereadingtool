@@ -693,13 +693,19 @@ viewWordAndGrammemes reader_word text_word =
 
             else
                 TextReader.Model.phrase reader_word
+
+        grammemes =
+            TextReader.TextWord.grammemesToString text_word
     in
     div []
         [ Html.text <|
             displayedWord
-                ++ " ("
-                ++ TextReader.TextWord.grammemesToString text_word
-                ++ ")"
+                ++ (if not (String.isEmpty grammemes) then
+                        " (" ++ grammemes ++ ")"
+
+                    else
+                        ""
+                   )
         ]
 
 
