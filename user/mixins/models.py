@@ -68,19 +68,19 @@ class TextReadings(models.Model):
 
         # They've got an in progress text
         if self.text_readings \
-               .filter(state=TextReadingStateMachine.in_progress.name, student_id=self.id, text=text) \
+               .filter(state=TextReadingStateMachine.in_progress.name, text=text) \
                .exists():
 
             last_read = self.text_readings \
-                            .filter(state=TextReadingStateMachine.in_progress.name, student_id=self.id, text=text) \
+                            .filter(state=TextReadingStateMachine.in_progress.name, text=text) \
                             .get(text=text)
 
         elif self.text_readings \
-                 .filter(state=TextReadingStateMachine.complete.name, student_id=self.id, text=text) \
+                 .filter(state=TextReadingStateMachine.complete.name, text=text) \
                  .exists():
 
             last_read = self.text_readings \
-                            .filter(state=TextReadingStateMachine.complete.name, student_id=self.id, text=text) \
+                            .filter(state=TextReadingStateMachine.complete.name, text=text) \
                             .order_by('-start_dt') \
                             .first()
 
@@ -88,14 +88,6 @@ class TextReadings(models.Model):
 
     def sections_complete_for(self, text: Text) -> int:
         sections_complete = 0
-
-        # would have liked to use `isinstance(..)`, but I think it creates a circular dependency.
-        if self.login_url == "/login/instructor/":
-            # they're an instructor
-            id_type = "instructor_id"
-        else:
-            # they're a student
-            pass
     
         # They have a text inprogress
         if self.text_readings \
