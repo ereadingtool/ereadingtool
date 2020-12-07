@@ -178,7 +178,8 @@ mergeTextWordEndpointToString endpoint =
 expectedGrammemeKeys : Set String
 expectedGrammemeKeys =
     Set.fromList
-        [ "pos"
+        [ "lemma"
+        , "pos"
         , "tense"
         , "aspect"
         , "form"
