@@ -22,7 +22,10 @@ def get_text_or_error(text_id: int, user: ReaderUser):
     if not user.id:
         raise Unauthorized
 
-    text = Text.objects.get(pk=text_id)
+    try: 
+        text = Text.objects.get(pk=text_id)
+    except:
+        text = None
 
     return text
 
@@ -155,26 +158,35 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             # to a protocol error. But it doesn't like that so we use 1000.
             await self.close(code=1000) 
         else:
-            await self.accept()
+            try:
+                await self.accept()
 
-            text_id = self.scope['url_route']['kwargs']['text_id']
-            user = self.scope['user']
+                text_id = self.scope['url_route']['kwargs']['text_id']
+                user = self.scope['user']
 
-            self.text = await get_text_or_error(text_id=text_id, user=user)
+                self.text = await get_text_or_error(text_id=text_id, user=user)
 
-            started, self.text_reading = await self.start_reading()
+                if not self.text:
+                    raise
 
-            if started:
-                result = await database_sync_to_async(self.text.to_text_reading_dict)()
-            else:
-                result = await self.get_current_text_reading_dict()
+                started, self.text_reading = await self.start_reading()
 
-            await database_sync_to_async(self.text_reading.set_last_read_dt)()
+                if started:
+                    result = await database_sync_to_async(self.text.to_text_reading_dict)()
+                else:
+                    result = await self.get_current_text_reading_dict()
 
-            await self.send_json({
-                'command': self.text_reading.current_state.name,
-                'result': result
-            })
+                await database_sync_to_async(self.text_reading.set_last_read_dt)()
+
+                await self.send_json({
+                    'command': self.text_reading.current_state.name,
+                    'result': result
+                })
+            except:
+                await self.send_json({
+                    'command': 'error',
+                    'result': 'missing text'
+                })
 
     async def receive_json(self, content, **kwargs):
         user = await jwt_validation(self.scope)
