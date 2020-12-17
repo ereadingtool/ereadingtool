@@ -5,6 +5,7 @@ module TextReader.TextWord exposing
     , grammemesToString
     , group
     , hasTranslations
+    , lemma
     , new
     , newFromParams
     , phrase
@@ -75,9 +76,25 @@ grammemesToString : TextWord -> String
 grammemesToString text_word =
     case grammemes text_word of
         Just grs ->
-            String.join ", " <|
-                List.map (\( g, v ) -> g ++ ": " ++ v) <|
-                    Dict.toList grs
+            Dict.toList grs
+                |> List.filter (\( g, v ) -> g /= "lemma")
+                |> List.map (\( g, v ) -> g ++ ": " ++ v)
+                |> String.join ", "
+
+        Nothing ->
+            ""
+
+
+lemma : TextWord -> String
+lemma (TextWord _ _ phrs maybeGrammemes _ _) =
+    case maybeGrammemes of
+        Just grs ->
+            case Dict.get "lemma" grs of
+                Just lmma ->
+                    lmma
+
+                Nothing ->
+                    ""
 
         Nothing ->
             ""

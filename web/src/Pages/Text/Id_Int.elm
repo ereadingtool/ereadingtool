@@ -137,7 +137,6 @@ type Msg
     | ViewFeedback Section TextQuestion TextAnswer Bool
     | PrevSection
     | NextSection
-    | StartOver
     | Gloss TextReaderWord
     | UnGloss TextReaderWord
     | ToggleGloss TextReaderWord
@@ -208,12 +207,6 @@ update msg (SafeModel model) =
         ViewFeedback _ _ _ _ ->
             ( SafeModel model
             , Cmd.none
-            )
-
-        StartOver ->
-            ( SafeModel model
-            , Browser.Navigation.replaceUrl model.navKey <|
-                Route.toString (Route.Text__Id_Int { id = model.text.id })
             )
 
         NextSection ->
@@ -608,7 +601,11 @@ viewTextComplete (SafeModel model) scores =
         , viewTextConclusion model.text
         , div [ id "nav" ]
             [ viewPreviousButton
-            , div [ onClick StartOver ] [ Html.text "Read Again" ]
+            , Html.a
+                [ attribute "href" (Route.toString (Route.Text__Id_Int { id = model.id }))
+                ]
+                [ span [] [ Html.text "Read Again" ]
+                ]
             , Html.a [ attribute "href" (Route.toString Route.Text__Search) ] [ span [] [ Html.text "Read Another Text" ] ]
             ]
         ]
@@ -686,8 +683,29 @@ viewGloss (SafeModel model) reader_word text_word =
 
 viewWordAndGrammemes : TextReaderWord -> TextReader.TextWord.TextWord -> Html Msg
 viewWordAndGrammemes reader_word text_word =
+    let
+        lemma =
+            TextReader.TextWord.lemma text_word
+
+        displayedWord =
+            if not (String.isEmpty lemma) then
+                lemma
+
+            else
+                TextReader.Model.phrase reader_word
+
+        grammemes =
+            TextReader.TextWord.grammemesToString text_word
+    in
     div []
-        [ Html.text <| TextReader.Model.phrase reader_word ++ " (" ++ TextReader.TextWord.grammemesToString text_word ++ ")"
+        [ Html.text <|
+            displayedWord
+                ++ (if not (String.isEmpty grammemes) then
+                        " (" ++ grammemes ++ ")"
+
+                    else
+                        ""
+                   )
         ]
 
 

@@ -96,7 +96,7 @@ editingGrammeme : Model -> String
 editingGrammeme model =
     let
         firstGrammemeName =
-            "aspect"
+            "lemma"
     in
     Maybe.withDefault firstGrammemeName model.editing_grammeme
 

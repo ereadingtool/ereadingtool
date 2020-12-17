@@ -345,9 +345,16 @@ view_instance_word model msg wordInstance =
 
             else
                 word wordInstance
+
+        lemma =
+            Text.Translations.Word.Instance.lemma wordInstance
     in
     div [ class "word" ]
-        [ Html.text wordTxt
+        [ if not (String.isEmpty lemma) then
+            Html.text lemma
+
+          else
+            Html.text wordTxt
         , view_grammemes model msg wordInstance
         ]
 
@@ -396,13 +403,21 @@ view_add_grammemes model msg wordInstance =
     let
         grammemeKeys =
             Set.toList Text.Translations.Word.Instance.grammemeKeys
+                -- make "lemma" the first option in the dropdown
+                |> List.filter (\key -> key /= "lemma")
+                |> (::) "lemma"
 
         grammemeValue =
             Text.Translations.Model.editingGrammemeValue model wordInstance
     in
     div [ class "add" ]
         [ select [ onInput (SelectGrammemeForEditing wordInstance >> msg) ]
-            (List.map (\grammeme -> option [ value grammeme ] [ Html.text grammeme ]) grammemeKeys)
+            (List.map
+                (\grammeme ->
+                    option [ value grammeme ] [ Html.text grammeme ]
+                )
+                grammemeKeys
+            )
         , div [ onInput (InputGrammeme wordInstance >> msg) ]
             [ Html.input
                 [ class "text-translation-input"
@@ -429,7 +444,9 @@ view_grammemes model msg wordInstance =
     div [ class "grammemes" ] <|
         (case Text.Translations.Word.Instance.grammemes wordInstance of
             Just grammemes ->
-                List.map view_grammeme <| Dict.toList grammemes
+                Dict.toList grammemes
+                    |> List.filter (\( k, v ) -> k /= "lemma")
+                    |> List.map view_grammeme
 
             Nothing ->
                 []
