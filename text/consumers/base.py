@@ -73,9 +73,14 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             if not user.id:
                 raise InvalidTokenError
         except InvalidTokenError:
+            # **** if the connection is already open here, that means they've started the text 
+            # with a valid JWT..? If that's the case, they've timed out :/ 
+            # We must mark this as their first attempt and invalidate their JWT.
             await self.send_json({'error': 'Invalid JWT'})
             await self.close(code=1000) 
 
+
+        # TODO: what to do if TextReadingException happens
         answer = await get_answer_or_error(answer_id=answer_id, user=user)
 
         try:
@@ -103,6 +108,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             if not user.id:
                 raise InvalidTokenError
         except InvalidTokenError:
+            # ****
             await self.send_json({'error': 'Invalid JWT'})
             await self.close(code=1000)
 
@@ -150,6 +156,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         if not self.scope['user'].id:
             await self.accept()
+            # ****
             await self.send_json({'error': 'Invalid JWT'})
             # 1002 indicates that an endpoint is terminating the connection due
             # to a protocol error. But it doesn't like that so we use 1000.

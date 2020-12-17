@@ -23,6 +23,11 @@ class StudentTextReaderConsumer(TextReaderConsumer):
         # Warning: potentially breaks reading progress history
         self.student = self.scope['user'].student
 
+        # check to see if they've started this text once before
+        # if started before or has been completed before then normal StudentTextReading.start_or_resume
+        # else it's their first time so set that to true 
+        # FTC.objects.filter(text id) field = 1
+
         return StudentTextReading.start_or_resume(student=self.student, text=self.text)
 
     @database_sync_to_async
