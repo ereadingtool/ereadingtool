@@ -149,7 +149,8 @@ INSTALLED_APPS += [
     'tag',
     'report',
     'flashcards',
-    'invite'
+    'invite',
+    'first_time_correct'
 ]
 
 AUTH_USER_MODEL = 'user.ReaderUser'
