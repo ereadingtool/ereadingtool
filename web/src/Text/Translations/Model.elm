@@ -203,19 +203,18 @@ mergeState model wordInstance =
         Nothing
 
 
-isTextWordPartOfCompoundWord : Model -> Text.Translations.TextWord.TextWord -> Maybe ( Int, Int, Int )
-isTextWordPartOfCompoundWord model textWord =
-    let
-        sectionNumber =
-            Text.Translations.TextWord.sectionNumber textWord
 
-        instance =
-            Text.Translations.TextWord.instance textWord
-
-        phrase =
-            Text.Translations.TextWord.phrase textWord
-    in
-    isPartOfCompoundWord model sectionNumber instance phrase
+-- isTextWordPartOfCompoundWord : Model -> Text.Translations.TextWord.TextWord -> Maybe ( Int, Int, Int )
+-- isTextWordPartOfCompoundWord model textWord =
+--     let
+--         sectionNumber =
+--             Text.Translations.TextWord.sectionNumber textWord
+--         instance =
+--             Text.Translations.TextWord.instance textWord
+--         phrase =
+--             Text.Translations.TextWord.phrase textWord
+--     in
+--     isPartOfCompoundWord model sectionNumber instance phrase
 
 
 isPartOfCompoundWord : Model -> Text.Translations.SectionNumber -> Int -> String -> Maybe ( Int, Int, Int )
@@ -224,7 +223,8 @@ isPartOfCompoundWord model section_number instance word =
         Just text_word ->
             case Text.Translations.TextWord.group text_word of
                 Just group ->
-                    Just ( Text.Translations.TextWord.instance text_word, group.pos, group.length )
+                    -- Just ( Text.Translations.TextWord.instance text_word, group.pos, group.length )
+                    Just ( group.id, group.pos, group.length )
 
                 Nothing ->
                     Nothing

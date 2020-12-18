@@ -32,14 +32,20 @@ wordInstanceOnClick model parentMsg wordInstance =
         onClick (parentMsg (EditWord wordInstance))
 
 
-tagWord : Model -> (Msg -> msg) -> Int -> Int -> String -> Html msg
-tagWord model parentMsg sectionNumber instance originalToken =
+tagWord :
+    Model
+    -> (Msg -> msg)
+    -> Int
+    -> Int
+    -> { leadingPunctuation : String, token : String, trailingPunctuation : String }
+    -> Html msg
+tagWord model parentMsg sectionNumber instance wordRecord =
     let
         id =
-            String.join "-" [ "section", String.fromInt sectionNumber, "instance", String.fromInt instance, originalToken ]
+            String.join "-" [ "section", String.fromInt sectionNumber, "instance", String.fromInt instance, wordRecord.token ]
 
         token =
-            String.toLower originalToken
+            String.toLower wordRecord.token
     in
     if token == " " then
         Html.text token
@@ -61,19 +67,62 @@ tagWord model parentMsg sectionNumber instance originalToken =
         in
         Html.node "span"
             [ Html.Attributes.id id
-            , classList [ ( "defined_word", True ), ( "cursor", True ) ]
             ]
-            [ span
+            [ span [] [ Html.text wordRecord.leadingPunctuation ]
+            , span
                 [ classList
                     [ ( "edit-highlight", editingWord )
                     , ( "merge-highlight", mergingWord && not editingWord )
+                    , ( "cursor", True )
                     ]
                 , wordInstanceOnClick model parentMsg wordInstance
                 ]
-                [ Html.text originalToken
+                [ Html.text wordRecord.token
                 ]
             , view_edit model parentMsg wordInstance
+            , span [] [ Html.text wordRecord.trailingPunctuation ]
             ]
+
+
+
+-- tagWord : Model -> (Msg -> msg) -> Int -> Int -> String -> Html msg
+-- tagWord model parentMsg sectionNumber instance originalToken =
+--     let
+--         id =
+--             String.join "-" [ "section", String.fromInt sectionNumber, "instance", String.fromInt instance, originalToken ]
+--         token =
+--             String.toLower originalToken
+--     in
+--     if token == " " then
+--         Html.text token
+--     else
+--         let
+--             wordInstance =
+--                 Text.Translations.Model.newWordInstance
+--                     model
+--                     (SectionNumber sectionNumber)
+--                     instance
+--                     token
+--             editingWord =
+--                 Text.Translations.Model.editingWord model token
+--             mergingWord =
+--                 Text.Translations.Model.mergingWord model wordInstance
+--         in
+--         Html.node "span"
+--             [ Html.Attributes.id id
+--             , classList [ ( "defined_word", True ), ( "cursor", True ) ]
+--             ]
+--             [ span
+--                 [ classList
+--                     [ ( "edit-highlight", editingWord )
+--                     , ( "merge-highlight", mergingWord && not editingWord )
+--                     ]
+--                 , wordInstanceOnClick model parentMsg wordInstance
+--                 ]
+--                 [ Html.text originalToken
+--                 ]
+--             , view_edit model parentMsg wordInstance
+--             ]
 
 
 tagSection : Model -> (Msg -> msg) -> Text.Section.Model.TextSection -> Html msg

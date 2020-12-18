@@ -63,8 +63,8 @@ wordType text_word =
 
 
 group : TextWord -> Maybe TextGroupDetails
-group (TextWord _ _ _ _ _ w) =
-    TranslationsTextWord.wordKindToGroup w
+group (TextWord _ _ _ _ _ wk) =
+    TranslationsTextWord.wordKindToGroup wk
 
 
 grammemes : TextWord -> Maybe Grammemes

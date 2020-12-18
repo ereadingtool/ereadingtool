@@ -2,6 +2,7 @@ module Pages.Text.Id_Int exposing (Model, Msg, Params, page)
 
 import Api
 import Api.Config as Config exposing (Config)
+import Api.Endpoint exposing (word)
 import Api.WebSocket as WebSocket
 import Array exposing (Array)
 import Browser.Navigation exposing (Key)
@@ -621,48 +622,105 @@ viewTextConclusion text =
 -- VIEW: WORD
 
 
-tagWord : SafeModel -> Section -> Int -> String -> Html Msg
-tagWord (SafeModel model) textReaderSection instance token =
+tagWord :
+    SafeModel
+    -> Section
+    -> Int
+    -> { leadingPunctuation : String, token : String, trailingPunctuation : String }
+    -> Html Msg
+tagWord (SafeModel model) textReaderSection instance wordRecord =
     let
         id =
-            String.join "_" [ String.fromInt instance, token ]
+            String.join "_" [ String.fromInt instance, wordRecord.token ]
 
         textreaderTextword =
-            TextReader.Section.Model.getTextWord textReaderSection instance token
+            TextReader.Section.Model.getTextWord textReaderSection instance wordRecord.token
 
         readerWord =
-            TextReader.Model.new id instance token textreaderTextword
+            TextReader.Model.new id instance wordRecord.token textreaderTextword
+
+        dbg3 =
+            Debug.log "readerWord" readerWord
     in
-    if token == " " then
-        Html.text token
+    if wordRecord.token == " " then
+        Html.text " "
 
     else
         case textreaderTextword of
             Just text_word ->
                 if TextReader.TextWord.hasTranslations text_word then
-                    viewDefinedWord (SafeModel model) readerWord text_word token
+                    viewDefinedWord (SafeModel model) readerWord text_word wordRecord
 
                 else
-                    Html.text token
+                    Html.text (wordRecord.leadingPunctuation ++ wordRecord.token ++ wordRecord.trailingPunctuation)
 
             Nothing ->
-                Html.text token
+                Html.text (wordRecord.leadingPunctuation ++ wordRecord.token ++ wordRecord.trailingPunctuation)
 
 
-viewDefinedWord : SafeModel -> TextReader.Model.TextReaderWord -> TextReader.TextWord.TextWord -> String -> Html Msg
-viewDefinedWord (SafeModel model) reader_word text_word token =
+viewDefinedWord :
+    SafeModel
+    -> TextReader.Model.TextReaderWord
+    -> TextReader.TextWord.TextWord
+    -> { leadingPunctuation : String, token : String, trailingPunctuation : String }
+    -> Html Msg
+viewDefinedWord (SafeModel model) reader_word text_word wordRecord =
     Html.node "span"
-        [ classList
-            [ ( "defined-word", True )
-            , ( "cursor", True )
-            ]
-        , onClick (ToggleGloss reader_word)
+        [ onClick (ToggleGloss reader_word)
         ]
-        [ span [ classList [ ( "highlighted", TextReader.Model.glossed reader_word model.gloss ) ] ]
-            [ Html.text token
+        [ span [] [ Html.text wordRecord.leadingPunctuation ]
+        , span
+            [ classList
+                [ ( "highlighted", TextReader.Model.glossed reader_word model.gloss )
+                , ( "cursor", True )
+                ]
+            ]
+            [ Html.text wordRecord.token
             ]
         , viewGloss (SafeModel model) reader_word text_word
+        , span [] [ Html.text wordRecord.trailingPunctuation ]
         ]
+
+
+
+-- tagWord : SafeModel -> Section -> Int -> String -> Html Msg
+-- tagWord (SafeModel model) textReaderSection instance token =
+--     let
+--         id =
+--             String.join "_" [ String.fromInt instance, token ]
+--         textreaderTextword =
+--             TextReader.Section.Model.getTextWord textReaderSection instance token
+--         readerWord =
+--             TextReader.Model.new id instance token textreaderTextword
+--         dbg3 =
+--             Debug.log "readerWord" readerWord
+--     in
+--     if token == " " then
+--         Html.text token
+--     else
+--         case textreaderTextword of
+--             Just text_word ->
+--                 if TextReader.TextWord.hasTranslations text_word then
+--                     viewDefinedWord (SafeModel model) readerWord text_word token
+--                 else
+--                     Html.text token
+--             Nothing ->
+--                 Html.text token
+--
+-- viewDefinedWord : SafeModel -> TextReader.Model.TextReaderWord -> TextReader.TextWord.TextWord -> String -> Html Msg
+-- viewDefinedWord (SafeModel model) reader_word text_word token =
+--     Html.node "span"
+--         [ classList
+--             [ ( "defined-word", True )
+--             , ( "cursor", True )
+--             ]
+--         , onClick (ToggleGloss reader_word)
+--         ]
+--         [ span [ classList [ ( "highlighted", TextReader.Model.glossed reader_word model.gloss ) ] ]
+--             [ Html.text token
+--             ]
+--         , viewGloss (SafeModel model) reader_word text_word
+--         ]
 
 
 viewGloss : SafeModel -> TextReaderWord -> TextReader.TextWord.TextWord -> Html Msg
@@ -764,7 +822,8 @@ isPartOfCompoundWord section instance word =
         Just textWord ->
             case TextReader.TextWord.group textWord of
                 Just group ->
-                    Just ( group.instance, group.pos, group.length )
+                    -- Just ( group.instance, group.pos, group.length )
+                    Just ( group.id, group.pos, group.length )
 
                 Nothing ->
                     Nothing

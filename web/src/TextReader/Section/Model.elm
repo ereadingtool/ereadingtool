@@ -57,6 +57,10 @@ getTextWord : Section -> Instance -> Phrase -> Maybe TextWord
 getTextWord section instance phrase =
     case getTextWords section phrase of
         Just text_words ->
+            let
+                dbg =
+                    Debug.log "text-words-array" text_words
+            in
             Array.get instance text_words
 
         -- word not found
