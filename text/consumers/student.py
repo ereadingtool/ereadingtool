@@ -29,8 +29,9 @@ class StudentTextReaderConsumer(TextReaderConsumer):
         # if started before or has been completed before then normal StudentTextReading.start_or_resume
         # else it's their first time so set that to true 
         # FTC.objects.filter(text id) field = 1
-
-        FirstTimeCorrect.objects.filter(num_correct=1).exists()
+        if not FirstTimeCorrect.objects.filter(student=self.student, text=self.text).exists():
+            ftc = FirstTimeCorrect(student=self.student, text=self.text, num_correct=0) 
+            ftc.save()
 
         return StudentTextReading.start_or_resume(student=self.student, text=self.text)
 

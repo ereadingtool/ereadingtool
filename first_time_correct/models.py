@@ -5,8 +5,8 @@ from user.student.models import Student
 class FirstTimeCorrect(models.Model):
     # If a student id and text id exist in the model
     # then the student has attempted the text at least once
-    student_id = models.ForeignKey(Student, related_name='student', on_delete=models.CASCADE)
-    text_id = models.ForeignKey(Text, related_name='completed_text', on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, related_name='student', on_delete=models.CASCADE)
+    text = models.ForeignKey(Text, related_name='completed_text', on_delete=models.CASCADE)
     num_correct = models.IntegerField()
 
 
