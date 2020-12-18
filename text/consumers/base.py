@@ -221,3 +221,6 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
 
         except TextReadingException as e:
             await self.send_json({'error': {'code': e.code, 'error_msg': e.error_msg}})
+
+    async def disconnect(self, code):
+        return super().disconnect(code)
