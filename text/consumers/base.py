@@ -184,7 +184,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
                 })
             except:
                 await self.send_json({
-                    {"error": "Missing text"}
+                    "error": "Missing text"
                 })
 
     async def receive_json(self, content, **kwargs):
