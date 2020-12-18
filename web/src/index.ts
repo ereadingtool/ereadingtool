@@ -157,6 +157,11 @@ const sendSocketCommand = wat => {
       const data = JSON.parse(event.data);
       if (data.error && data.error == "Invalid JWT") {
         logout();
+      } else if (data.error && data.error === "Missing text") {
+        app.ports.onAuthResponse.send({
+          result: 'error',
+          message: 'This text no longer exists. Please select another text to read.'
+        });
       } else {
         app.ports.receiveSocketMsg.send({
           name: wat.name,
