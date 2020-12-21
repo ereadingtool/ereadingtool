@@ -110,10 +110,10 @@ init shared { params } =
                             Text.Search.addDifficultyToSearch defaultSearch (Tuple.first difficulty) True
 
                         _ ->
-                            defaultSearch
+                            Text.Search.addDifficultyToSearch defaultSearch "intermediate_mid" True
 
                 _ ->
-                    defaultSearch
+                    Text.Search.addDifficultyToSearch defaultSearch "intermediate_mid" True
 
         textSearchHelp =
             TextSearch.Help.init
