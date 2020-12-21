@@ -10,8 +10,6 @@ from text.phrase.models import TextPhrase
 from user.models import ReaderUser
 from user.student.models import Student
 
-from first_time_correct.models import FirstTimeCorrect
-
 
 class StudentTextReaderConsumer(TextReaderConsumer):
     def __init__(self, *args, **kwargs):
@@ -24,14 +22,6 @@ class StudentTextReaderConsumer(TextReaderConsumer):
         # TODO: Why isn't this working? 
         # Warning: potentially breaks reading progress history
         self.student = self.scope['user'].student
-
-        # check to see if they've started this text once before
-        # if started before or has been completed before then normal StudentTextReading.start_or_resume
-        # else it's their first time so set that to true 
-        # FTC.objects.filter(text id) field = 1
-        if not FirstTimeCorrect.objects.filter(student=self.student, text=self.text).exists():
-            ftc = FirstTimeCorrect(student=self.student, text=self.text, num_correct=0) 
-            ftc.save()
 
         return StudentTextReading.start_or_resume(student=self.student, text=self.text)
 
