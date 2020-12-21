@@ -208,7 +208,19 @@ update msg (SafeModel model) =
             )
 
         TextSearch (Ok ( metadata, texts )) ->
-            ( SafeModel { model | results = texts }
+            let
+                maybeErrorMessage =
+                    if List.isEmpty texts then
+                        Just "No results found. Please try another search."
+
+                    else
+                        Nothing
+            in
+            ( SafeModel
+                { model
+                    | results = texts
+                    , errorMessage = maybeErrorMessage
+                }
             , Cmd.none
             )
 
