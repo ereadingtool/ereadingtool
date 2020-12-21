@@ -241,8 +241,9 @@ viewSubmit model =
             else
                 [ onClick Submit, class "cursor" ]
     in
-    [ loginLabel (class "button" :: buttonDisabled)
-        (div [ class "login_submit" ] [ span [] [ Html.text "Forgot Password" ] ])
+    [ div (class "button" :: buttonDisabled)
+        [ div [ class "login_submit" ] [ span [] [ Html.text "Forgot Password" ] ]
+        ]
     ]
 
 
@@ -269,7 +270,7 @@ viewResponse forgotPasswordResponse =
 
 loginLabel : List (Html.Attribute Msg) -> Html Msg -> Html Msg
 loginLabel attributes html =
-    div (attribute "class" "login_label" :: attributes)
+    div (class "login_label" :: attributes)
         [ html
         ]
 
