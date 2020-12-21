@@ -13,6 +13,7 @@ import Http
 import Http.Detailed
 import InstructorAdmin.Admin.Text as AdminText
 import Ports exposing (clearInputText)
+import Role exposing (Role(..))
 import Session exposing (Session)
 import Shared
 import Spa.Document exposing (Document)
@@ -32,6 +33,7 @@ import Time exposing (Zone)
 import User.Profile
 import User.Student.Profile as StudentProfile
 import Utils.Date
+import Viewer
 import Views
 
 
@@ -70,6 +72,7 @@ type SafeModel
         , textSearch : TextSearch
         , textApiEndpoint : AdminText.TextAPIEndpoint
         , help : TextSearch.Help.TextSearchHelp
+        , showHelp : Bool
         , errorMessage : Maybe String
         }
 
@@ -114,6 +117,19 @@ init shared { params } =
 
         textSearchHelp =
             TextSearch.Help.init
+
+        showHelp =
+            case Session.viewer shared.session of
+                Just viewer ->
+                    case Viewer.role viewer of
+                        Student ->
+                            Config.showHelp shared.config
+
+                        Instructor ->
+                            False
+
+                Nothing ->
+                    False
     in
     ( SafeModel
         { session = shared.session
@@ -125,6 +141,7 @@ init shared { params } =
         , textSearch = textSearch
         , textApiEndpoint = textApiEndpoint
         , help = textSearchHelp
+        , showHelp = showHelp
         , errorMessage = Nothing
         }
     , updateResults shared.session shared.config textSearch
@@ -279,7 +296,7 @@ view (SafeModel model) =
 viewContent : SafeModel -> Html Msg
 viewContent (SafeModel model) =
     div [ id "text_search" ] <|
-        (if Config.showHelp model.config then
+        (if model.showHelp then
             [ viewHelpMessage ]
 
          else
@@ -557,7 +574,7 @@ viewTopicFilterHint (SafeModel model) =
             , arrow_placement = ArrowUp ArrowLeft
             }
     in
-    if Config.showHelp model.config then
+    if model.showHelp then
         [ Help.View.view_hint_overlay hintAttributes
         ]
 
@@ -582,7 +599,7 @@ viewDifficultyFilterHint (SafeModel model) =
             , arrow_placement = ArrowUp ArrowLeft
             }
     in
-    if Config.showHelp model.config then
+    if model.showHelp then
         [ Help.View.view_hint_overlay hintAttributes
         ]
 
@@ -607,7 +624,7 @@ viewStatusFilterHint (SafeModel model) =
             , arrow_placement = ArrowUp ArrowLeft
             }
     in
-    if Config.showHelp model.config then
+    if model.showHelp then
         [ Help.View.view_hint_overlay hintAttributes
         ]
 
