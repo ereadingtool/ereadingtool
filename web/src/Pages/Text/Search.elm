@@ -11,7 +11,6 @@ import Html.Attributes exposing (attribute, class, classList, href, id)
 import Html.Events exposing (onClick)
 import Http
 import Http.Detailed
-import InstructorAdmin.Admin.Text as AdminText
 import Ports exposing (clearInputText)
 import Role exposing (Role(..))
 import Session exposing (Session)
@@ -70,7 +69,6 @@ type SafeModel
         , results : List Text.Model.TextListItem
         , profile : User.Profile.Profile
         , textSearch : TextSearch
-        , textApiEndpoint : AdminText.TextAPIEndpoint
         , help : TextSearch.Help.TextSearchHelp
         , showHelp : Bool
         , errorMessage : Maybe String
@@ -96,11 +94,8 @@ init shared { params } =
                 "text_status_search"
                 (Text.Search.Option.newOptions Shared.statuses)
 
-        textApiEndpoint =
-            AdminText.toTextAPIEndpoint "ignored-endpoint"
-
         defaultSearch =
-            Text.Search.new textApiEndpoint tagSearch difficultySearch statusSearch
+            Text.Search.new tagSearch difficultySearch statusSearch
 
         textSearch =
             case shared.profile of
@@ -139,7 +134,6 @@ init shared { params } =
         , results = []
         , profile = shared.profile
         , textSearch = textSearch
-        , textApiEndpoint = textApiEndpoint
         , help = textSearchHelp
         , showHelp = showHelp
         , errorMessage = Nothing
