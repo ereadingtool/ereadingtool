@@ -477,7 +477,7 @@ viewProfileHeader role toMsg =
             [ text "Profile" ]
         ]
     , div [ class "nav-item " ]
-        [ a [ onClick (toMsg Logout), class "nav-link" ]
+        [ a [ onClick (toMsg Logout), class "nav-link", class "cursor" ]
             [ text "Logout" ]
         ]
     ]
