@@ -116,6 +116,7 @@ init shared { params } =
     , Cmd.batch
         [ Task.perform (\_ -> InitTextFieldEditors) (Task.succeed Nothing)
         , getText shared.session shared.config params.id
+        , Api.websocketDisconnectAll
         ]
     )
 
