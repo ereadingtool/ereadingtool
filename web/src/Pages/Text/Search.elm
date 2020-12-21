@@ -127,7 +127,10 @@ init shared { params } =
         , help = textSearchHelp
         , errorMessage = Nothing
         }
-    , updateResults shared.session shared.config textSearch
+    , Cmd.batch
+        [ updateResults shared.session shared.config textSearch
+        , Api.websocketDisconnectAll
+        ]
     )
 
 

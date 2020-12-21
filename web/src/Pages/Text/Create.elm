@@ -107,7 +107,10 @@ init shared { params } =
         , selectedTab = TextTab
         , writeLocked = False
         }
-    , Task.perform (\_ -> InitTextFieldEditors) (Task.succeed Nothing)
+    , Cmd.batch
+        [ Task.perform (\_ -> InitTextFieldEditors) (Task.succeed Nothing)
+        , Api.websocketDisconnectAll
+        ]
     )
 
 
