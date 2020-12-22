@@ -10,11 +10,11 @@ module Text.Translations.Model exposing
     , editingWordInstance
     , getNewTranslationForWord
     , getTextWords
+    , inCompoundWord
     , init
     , inputGrammeme
     , instanceCount
     , isMergingWords
-    , isPartOfCompoundWord
     , mergeState
     , mergingWord
     , mergingWordInstances
@@ -217,8 +217,8 @@ mergeState model wordInstance =
 --     isPartOfCompoundWord model sectionNumber instance phrase
 
 
-isPartOfCompoundWord : Model -> Text.Translations.SectionNumber -> Int -> String -> Maybe ( Int, Int, Int )
-isPartOfCompoundWord model section_number instance word =
+inCompoundWord : Model -> Text.Translations.SectionNumber -> Int -> String -> Maybe ( Int, Int, Int )
+inCompoundWord model section_number instance word =
     case getTextWord model section_number instance word of
         Just text_word ->
             case Text.Translations.TextWord.group text_word of

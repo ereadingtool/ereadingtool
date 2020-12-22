@@ -15,10 +15,6 @@ import TextReader.Question.Model exposing (Question, TextQuestion, question)
 import TextReader.TextWord exposing (TextWord)
 
 
-type Not
-    = Not
-
-
 type Section
     = Section TextSection (Array TextQuestion)
 
@@ -57,10 +53,6 @@ getTextWord : Section -> Instance -> Phrase -> Maybe TextWord
 getTextWord section instance phrase =
     case getTextWords section phrase of
         Just text_words ->
-            let
-                dbg =
-                    Debug.log "text-words-array" text_words
-            in
             Array.get instance text_words
 
         -- word not found

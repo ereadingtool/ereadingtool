@@ -457,9 +457,9 @@ viewTextSection (SafeModel model) textReaderSection =
         textBodyVdom =
             case Html.Parser.run textSection.body of
                 Ok nodes ->
-                    Text.Section.Words.Tag.tagWordsAndToVDOM
+                    Text.Section.Words.Tag.toTaggedHtml
                         (tagWord (SafeModel model) textReaderSection)
-                        (isPartOfCompoundWord textReaderSection)
+                        (inCompoundWord textReaderSection)
                         nodes
 
                 Err err ->
@@ -473,6 +473,55 @@ viewTextSection (SafeModel model) textReaderSection =
         , div [ id "text" ] textBodyVdom
         , viewQuestions textReaderSection
         ]
+
+
+tagWord :
+    SafeModel
+    -> Section
+    -> Int
+    -> { leadingPunctuation : String, token : String, trailingPunctuation : String }
+    -> Html Msg
+tagWord (SafeModel model) textReaderSection instance wordRecord =
+    let
+        id =
+            String.join "_" [ String.fromInt instance, wordRecord.token ]
+
+        textreaderTextword =
+            TextReader.Section.Model.getTextWord textReaderSection instance wordRecord.token
+
+        readerWord =
+            TextReader.Model.new id instance wordRecord.token textreaderTextword
+    in
+    if wordRecord.token == " " then
+        Html.text " "
+
+    else
+        case textreaderTextword of
+            Just text_word ->
+                if TextReader.TextWord.hasTranslations text_word then
+                    viewDefinedWord (SafeModel model) readerWord text_word wordRecord
+
+                else
+                    Html.text (wordRecord.leadingPunctuation ++ wordRecord.token ++ wordRecord.trailingPunctuation)
+
+            Nothing ->
+                Html.text (wordRecord.leadingPunctuation ++ wordRecord.token ++ wordRecord.trailingPunctuation)
+
+
+inCompoundWord : Section -> Int -> String -> Maybe ( Int, Int, Int )
+inCompoundWord section instance word =
+    case TextReader.Section.Model.getTextWord section instance word of
+        Just textWord ->
+            case TextReader.TextWord.group textWord of
+                Just group ->
+                    -- Just ( group.instance, group.pos, group.length )
+                    Just ( group.id, group.pos, group.length )
+
+                Nothing ->
+                    Nothing
+
+        Nothing ->
+            Nothing
 
 
 viewQuestions : Section -> Html Msg
@@ -620,42 +669,6 @@ viewTextConclusion text =
 
 
 -- VIEW: WORD
-
-
-tagWord :
-    SafeModel
-    -> Section
-    -> Int
-    -> { leadingPunctuation : String, token : String, trailingPunctuation : String }
-    -> Html Msg
-tagWord (SafeModel model) textReaderSection instance wordRecord =
-    let
-        id =
-            String.join "_" [ String.fromInt instance, wordRecord.token ]
-
-        textreaderTextword =
-            TextReader.Section.Model.getTextWord textReaderSection instance wordRecord.token
-
-        readerWord =
-            TextReader.Model.new id instance wordRecord.token textreaderTextword
-
-        dbg3 =
-            Debug.log "readerWord" readerWord
-    in
-    if wordRecord.token == " " then
-        Html.text " "
-
-    else
-        case textreaderTextword of
-            Just text_word ->
-                if TextReader.TextWord.hasTranslations text_word then
-                    viewDefinedWord (SafeModel model) readerWord text_word wordRecord
-
-                else
-                    Html.text (wordRecord.leadingPunctuation ++ wordRecord.token ++ wordRecord.trailingPunctuation)
-
-            Nothing ->
-                Html.text (wordRecord.leadingPunctuation ++ wordRecord.token ++ wordRecord.trailingPunctuation)
 
 
 viewDefinedWord :
@@ -814,22 +827,6 @@ viewFlashcardWords (SafeModel model) =
         (List.map (\( normal_form, text_word ) -> div [] [ Html.text normal_form ])
             (Dict.toList <| Maybe.withDefault Dict.empty <| User.Profile.TextReader.Flashcards.flashcards model.flashcard)
         )
-
-
-isPartOfCompoundWord : Section -> Int -> String -> Maybe ( Int, Int, Int )
-isPartOfCompoundWord section instance word =
-    case TextReader.Section.Model.getTextWord section instance word of
-        Just textWord ->
-            case TextReader.TextWord.group textWord of
-                Just group ->
-                    -- Just ( group.instance, group.pos, group.length )
-                    Just ( group.id, group.pos, group.length )
-
-                Nothing ->
-                    Nothing
-
-        Nothing ->
-            Nothing
 
 
 

@@ -132,9 +132,9 @@ tagSection model msg section =
             SectionNumber section.order
     in
     div [ id ("section-" ++ String.fromInt section.order), class "section" ]
-        (Text.Section.Words.Tag.tagWordsAndToVDOM
+        (Text.Section.Words.Tag.toTaggedHtml
             (tagWord model msg section.order)
-            (isPartOfCompoundWord model sectionNumber)
+            (inCompoundWord model sectionNumber)
             (htmlNode section.body)
         )
 

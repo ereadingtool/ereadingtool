@@ -1,4 +1,4 @@
-module Text.Section.Words.Tag exposing (ParsedWord, Word(..), parse, tagWordsAndToVDOM)
+module Text.Section.Words.Tag exposing (ParsedWord, Word(..), parse, toTaggedHtml)
 
 import Dict exposing (Dict)
 import Html exposing (Html)
@@ -8,39 +8,38 @@ import Html.Parser.Util
 import Parser exposing (..)
 import Regex
 import Text.Section.Component exposing (index)
-import Text.Translations.Model exposing (isPartOfCompoundWord)
+import Text.Translations.Model exposing (inCompoundWord)
 
 
-tagWordsAndToVDOM :
-    -- (Int -> String -> Html msg)
+toTaggedHtml :
     (Int -> { leadingPunctuation : String, token : String, trailingPunctuation : String } -> Html msg)
     -> (Int -> String -> Maybe ( Int, Int, Int ))
     -> List Html.Parser.Node
     -> List (Html msg)
-tagWordsAndToVDOM tag_word is_part_of_compound_word nodes =
+toTaggedHtml tagWord inCompoundWord nodes =
     Tuple.first <|
-        tagWordsToVDOMWithFreqs tag_word is_part_of_compound_word Dict.empty nodes
+        nodesToTaggedHtml tagWord inCompoundWord Dict.empty nodes
 
 
-tagWordsToVDOMWithFreqs :
+nodesToTaggedHtml :
     (Int -> { leadingPunctuation : String, token : String, trailingPunctuation : String } -> Html msg)
     -> (Int -> String -> Maybe ( Int, Int, Int ))
     -> Dict String Int
     -> List Html.Parser.Node
     -> ( List (Html msg), Dict String Int )
-tagWordsToVDOMWithFreqs tag_word is_part_of_compound_word occurrences nodes =
-    List.foldl (tagWordAndToVDOM tag_word is_part_of_compound_word) ( [], occurrences ) nodes
+nodesToTaggedHtml tagWord inCompoundWord occurrences nodes =
+    List.foldl (nodeToTaggedHtml tagWord inCompoundWord) ( [], occurrences ) nodes
         |> (\( ns, occs ) -> ( List.intersperse (Html.text " ") ns, occs ))
 
 
-tagWordAndToVDOM :
+nodeToTaggedHtml :
     (Int -> { leadingPunctuation : String, token : String, trailingPunctuation : String } -> Html msg)
     -> (Int -> String -> Maybe ( Int, Int, Int ))
     -> Html.Parser.Node
     -> ( List (Html msg), Dict String Int )
     -> ( List (Html msg), Dict String Int )
-tagWordAndToVDOM tag_word inCompoundWord node ( html, occurrences ) =
-    case node of
+nodeToTaggedHtml tagWord inCompoundWord parsedNode ( html, occurrences ) =
+    case parsedNode of
         Html.Parser.Text str ->
             let
                 wordRecords =
@@ -72,7 +71,7 @@ tagWordAndToVDOM tag_word inCompoundWord node ( html, occurrences ) =
                         (\( wordRecord, instance ) ->
                             case wordRecord.word of
                                 ValidWord word ->
-                                    tag_word instance
+                                    tagWord instance
                                         { leadingPunctuation = wordRecord.leadingPunctuation
                                         , token = word
                                         , trailingPunctuation = wordRecord.trailingPunctuation
@@ -82,7 +81,7 @@ tagWordAndToVDOM tag_word inCompoundWord node ( html, occurrences ) =
                                     Html.text word
 
                                 CompoundWord compoundWord groupInstance ->
-                                    tag_word instance
+                                    tagWord instance
                                         { leadingPunctuation = wordRecord.leadingPunctuation
                                         , token = compoundWord
                                         , trailingPunctuation = wordRecord.trailingPunctuation
@@ -97,25 +96,26 @@ tagWordAndToVDOM tag_word inCompoundWord node ( html, occurrences ) =
             in
             ( html ++ nodesWithWhitespace, updatedOccurences )
 
-        Html.Parser.Element name attrs nodes ->
+        Html.Parser.Element name attributes nodes ->
             let
-                ( new_msgs, new_occurrences ) =
-                    tagWordsToVDOMWithFreqs tag_word inCompoundWord occurrences nodes
+                ( childNodes, updatedOccurences ) =
+                    nodesToTaggedHtml tagWord inCompoundWord occurrences nodes
 
-                new_node =
+                node =
                     Html.node
                         name
-                        (List.map (\( nm, value ) -> Html.Attributes.attribute nm value) attrs)
-                        new_msgs
+                        (List.map
+                            (\( attrName, val ) ->
+                                Html.Attributes.attribute attrName val
+                            )
+                            attributes
+                        )
+                        childNodes
             in
-            ( html ++ [ new_node ], new_occurrences )
+            ( html ++ [ node ], updatedOccurences )
 
-        (Html.Parser.Comment str) as comment ->
-            ( html ++ [ Html.text "" ], occurrences )
-
-
-
--- OLD
+        Html.Parser.Comment _ ->
+            ( html, occurrences )
 
 
 indexWord : ParsedWord -> ( List ( ParsedWord, Int ), Dict String Int ) -> ( List ( ParsedWord, Int ), Dict String Int )
