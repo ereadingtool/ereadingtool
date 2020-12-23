@@ -8,6 +8,8 @@ from text.models import TextDifficulty, Text, TextSection
 
 from django.utils import timezone
 
+from django.db.models import Q
+
 
 Student = TypeVar('Student')
 
@@ -22,6 +24,8 @@ class StudentPerformance(models.Model):
 
     start_dt = models.DateTimeField()
     end_dt = models.DateTimeField()
+
+    state = models.CharField(max_length=64)
 
     text_difficulty_slug = models.SlugField(blank=False)
 
@@ -44,6 +48,7 @@ class StudentPerformanceReport(object):
     def __init__(self, student: Student, *args, **kwargs):
         self.student = student
         self.queryset = StudentPerformance.objects.filter(student=self.student)
+
 
     @property
     def today_dt(self):
@@ -85,13 +90,21 @@ class StudentPerformanceReport(object):
             end_dt__lt=self.first_of_current_month
         )
 
+    @property
+    def in_progress(self):
+        return self.queryset.filter(
+            state="in_progress"
+        )
+
     def to_dict(self) -> Dict:
+
+# ---------------       LEVEL ALL
         total_num_of_texts = Text.objects.count()
 
         categories = {
             'cumulative': {'metrics': {}, 'title': 'Cumulative'},
             'current_month': {'metrics': {}, 'title': 'Current Month'},
-            'past_month': {'metrics': {}, 'title': 'Past Month'}
+            'past_month': {'metrics': {}, 'title': 'Past Month'},
         }
 
         difficulty_dict = {'title': '', 'categories': categories}
@@ -102,24 +115,29 @@ class StudentPerformanceReport(object):
             'percent_correct': (models.Sum('answered_correctly', output_field=models.FloatField()) /
                                 models.Sum('attempted_questions', output_field=models.FloatField())) * 100,
 
-            'texts_complete': models.Count(distinct=True, expression='text')
-        }
+            'texts_complete': models.Count(distinct=True, expression='text'),
 
+            'texts_in_progress': models.Count(expressions='state') 
+        }
+        
         performance['all']['categories']['cumulative']['metrics'] = self.cumulative.aggregate(**aggregates)
         performance['all']['categories']['past_month']['metrics'] = self.past_month.aggregate(**aggregates)
         performance['all']['categories']['current_month']['metrics'] = self.current_month.aggregate(**aggregates)
 
+        # "Cannot resolve keyword 'state' into field. Choices are: answered_correctly, attempted_questions, end_dt, id, start_dt, student, student_id, text, text_difficulty_slug, text_id, text_reading, text_reading_id, text_section, text_section_id"
+        
         for category in ('cumulative', 'past_month', 'current_month',):
             try:
                 performance['all']['categories'][category]['metrics']['percent_correct'] = round(
                     performance['all']['categories'][category]['metrics']['percent_correct'], 2)
-            except TypeError:
+            except TypeError as te:
                 pass
 
             performance['all']['categories'][category]['metrics']['total_texts'] = total_num_of_texts
 
         performance['all']['title'] = 'All Levels'
-
+#---------------
+#---------------   EVERY OTHER LEVEL
         for difficulty in TextDifficulty.objects.annotate(total_texts=models.Count('texts')).order_by('id').all():
             performance[difficulty.slug] = {
                 'title': '',
