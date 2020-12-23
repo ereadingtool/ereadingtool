@@ -110,7 +110,10 @@ init shared { params } =
         , errorMessage = ""
         , errors = Dict.empty
         }
-    , Help.scrollToFirstMsg help
+    , Cmd.batch
+        [ Help.scrollToFirstMsg help
+        , Api.websocketDisconnectAll
+        ]
     )
 
 

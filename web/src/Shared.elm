@@ -250,7 +250,10 @@ update msg model =
 
         Logout ->
             ( model
-            , Api.logout ()
+            , Cmd.batch
+                [ Api.logout ()
+                , Api.websocketDisconnectAll
+                ]
             )
 
 
