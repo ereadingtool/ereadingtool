@@ -24,6 +24,7 @@ import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url as Url exposing (Url)
 import Text.Section.Words.Tag
+import Text.Translations exposing (TextGroupDetails)
 import TextReader.Answer.Model exposing (TextAnswer)
 import TextReader.Model exposing (..)
 import TextReader.Question.Model exposing (TextQuestion)
@@ -508,17 +509,11 @@ tagWord (SafeModel model) textReaderSection instance wordRecord =
                 Html.text (wordRecord.leadingPunctuation ++ wordRecord.token ++ wordRecord.trailingPunctuation)
 
 
-inCompoundWord : Section -> Int -> String -> Maybe ( Int, Int, Int )
+inCompoundWord : Section -> Int -> String -> Maybe TextGroupDetails
 inCompoundWord section instance word =
     case TextReader.Section.Model.getTextWord section instance word of
         Just textWord ->
-            case TextReader.TextWord.group textWord of
-                Just group ->
-                    -- Just ( group.instance, group.pos, group.length )
-                    Just ( group.id, group.pos, group.length )
-
-                Nothing ->
-                    Nothing
+            TextReader.TextWord.group textWord
 
         Nothing ->
             Nothing

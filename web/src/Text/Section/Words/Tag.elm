@@ -8,12 +8,13 @@ import Html.Parser.Util
 import Parser exposing (..)
 import Regex
 import Text.Section.Component exposing (index)
+import Text.Translations exposing (TextGroupDetails)
 import Text.Translations.Model exposing (inCompoundWord)
 
 
 toTaggedHtml :
     (Int -> { leadingPunctuation : String, token : String, trailingPunctuation : String } -> Html msg)
-    -> (Int -> String -> Maybe ( Int, Int, Int ))
+    -> (Int -> String -> Maybe TextGroupDetails)
     -> List Html.Parser.Node
     -> List (Html msg)
 toTaggedHtml tagWord inCompoundWord nodes =
@@ -23,7 +24,7 @@ toTaggedHtml tagWord inCompoundWord nodes =
 
 nodesToTaggedHtml :
     (Int -> { leadingPunctuation : String, token : String, trailingPunctuation : String } -> Html msg)
-    -> (Int -> String -> Maybe ( Int, Int, Int ))
+    -> (Int -> String -> Maybe TextGroupDetails)
     -> Dict String Int
     -> List Html.Parser.Node
     -> ( List (Html msg), Dict String Int )
@@ -34,7 +35,7 @@ nodesToTaggedHtml tagWord inCompoundWord occurrences nodes =
 
 nodeToTaggedHtml :
     (Int -> { leadingPunctuation : String, token : String, trailingPunctuation : String } -> Html msg)
-    -> (Int -> String -> Maybe ( Int, Int, Int ))
+    -> (Int -> String -> Maybe TextGroupDetails)
     -> Html.Parser.Node
     -> ( List (Html msg), Dict String Int )
     -> ( List (Html msg), Dict String Int )
@@ -167,7 +168,7 @@ indexWord wordRecord ( wordRecords, occurrences ) =
 
 
 compoundWords :
-    (Int -> String -> Maybe ( Int, Int, Int ))
+    (Int -> String -> Maybe TextGroupDetails)
     -> ( ParsedWord, Int )
     -> List ( ParsedWord, Int )
     -> List ( ParsedWord, Int )
@@ -177,12 +178,12 @@ compoundWords inCompoundWord ( leftWordRecord, leftIndex ) accWordRecords =
             case leftWordRecord.word of
                 ValidWord leftWord ->
                     case inCompoundWord leftIndex leftWord of
-                        Just ( leftGroupInstance, _, _ ) ->
+                        Just leftGroup ->
                             case rightWordRecord.word of
                                 ValidWord rightWord ->
                                     case inCompoundWord rightIndex rightWord of
-                                        Just ( rightGroupInstance, _, _ ) ->
-                                            if leftGroupInstance == rightGroupInstance then
+                                        Just rightGroup ->
+                                            if leftGroup.id == rightGroup.id then
                                                 [ ( { leadingPunctuation = leftWordRecord.leadingPunctuation
                                                     , word =
                                                         CompoundWord
@@ -192,7 +193,7 @@ compoundWords inCompoundWord ( leftWordRecord, leftIndex ) accWordRecords =
                                                                 ++ rightWordRecord.leadingPunctuation
                                                                 ++ rightWord
                                                             )
-                                                            rightGroupInstance
+                                                            rightGroup.id
                                                     , trailingPunctuation = rightWordRecord.trailingPunctuation
                                                     }
                                                   , leftIndex
@@ -207,7 +208,7 @@ compoundWords inCompoundWord ( leftWordRecord, leftIndex ) accWordRecords =
                                             [ ( leftWordRecord, leftIndex ) ] ++ accWordRecords
 
                                 CompoundWord rightWord groupInstance ->
-                                    if leftGroupInstance == groupInstance then
+                                    if leftGroup.id == groupInstance then
                                         [ ( { leadingPunctuation = leftWordRecord.leadingPunctuation
                                             , word =
                                                 CompoundWord

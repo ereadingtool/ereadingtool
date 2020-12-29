@@ -39,7 +39,7 @@ import Dict exposing (Dict)
 import OrderedDict exposing (OrderedDict)
 import Session exposing (Session)
 import Text.Model
-import Text.Translations
+import Text.Translations exposing (TextGroupDetails)
 import Text.Translations.TextWord
 import Text.Translations.Word.Instance
 
@@ -203,31 +203,11 @@ mergeState model wordInstance =
         Nothing
 
 
-
--- isTextWordPartOfCompoundWord : Model -> Text.Translations.TextWord.TextWord -> Maybe ( Int, Int, Int )
--- isTextWordPartOfCompoundWord model textWord =
---     let
---         sectionNumber =
---             Text.Translations.TextWord.sectionNumber textWord
---         instance =
---             Text.Translations.TextWord.instance textWord
---         phrase =
---             Text.Translations.TextWord.phrase textWord
---     in
---     isPartOfCompoundWord model sectionNumber instance phrase
-
-
-inCompoundWord : Model -> Text.Translations.SectionNumber -> Int -> String -> Maybe ( Int, Int, Int )
+inCompoundWord : Model -> Text.Translations.SectionNumber -> Int -> String -> Maybe TextGroupDetails
 inCompoundWord model section_number instance word =
     case getTextWord model section_number instance word of
         Just text_word ->
-            case Text.Translations.TextWord.group text_word of
-                Just group ->
-                    -- Just ( Text.Translations.TextWord.instance text_word, group.pos, group.length )
-                    Just ( group.id, group.pos, group.length )
-
-                Nothing ->
-                    Nothing
+            Text.Translations.TextWord.group text_word
 
         Nothing ->
             Nothing
