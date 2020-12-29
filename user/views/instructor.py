@@ -146,7 +146,7 @@ class InstructorLoginAPIView(APIView):
 
         # manually add the field `[id]` to the jwt payload
         jwt_payload['id'] = reader_user.instructor.pk
-
+            
         # return to the dispatcher to send out an HTTP response
         return JsonResponse(jwt_payload)
 

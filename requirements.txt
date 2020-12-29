@@ -22,4 +22,4 @@ pytz
 webstack-django-jwt-auth
 django-cors-headers
 # this is new
-PyJWT
+PyJWT==1.7.1
