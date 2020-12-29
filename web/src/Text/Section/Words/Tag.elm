@@ -42,6 +42,9 @@ nodeToTaggedHtml tagWord inCompoundWord parsedNode ( html, occurrences ) =
     case parsedNode of
         Html.Parser.Text str ->
             let
+                {- Parse each word in the text, breaking it apart into leading punctuation, the word,
+                   and trailing punctuation.
+                -}
                 wordRecords =
                     List.map
                         (\word ->
@@ -57,15 +60,32 @@ nodeToTaggedHtml tagWord inCompoundWord parsedNode ( html, occurrences ) =
                         )
                         (String.words str)
 
+                {- Index single words. The indices are used to reference the correct translation
+                   for each word. Occurences are used to determine indices by tracking previous
+                   occurences of a word.
+                -}
                 ( indexedWordRecords, occurences ) =
                     List.foldl indexWord ( [], occurrences ) wordRecords
 
+                {- Determine and apply compound words. Single words know which group they belong
+                   to and we use that information to group them together by working through them
+                   from the right.
+                -}
                 wordRecordsCompoundsApplied =
                     List.foldr (compoundWords inCompoundWord) [] indexedWordRecords
 
+                {- Reindex the words. The compound words need to be indexed and the occurences
+                   for single words need to be updated, because some of them have been merged into
+                   a compound word. The instance for single words should not change because we use
+                   that to look up translations, but the the occurence should change to tag the words
+                   in their correct position.
+                -}
                 ( reindexedWordRecords, updatedOccurences ) =
-                    List.foldl indexWord ( [], occurrences ) (List.map Tuple.first wordRecordsCompoundsApplied)
+                    List.foldl reindexWord ( [], occurrences ) wordRecordsCompoundsApplied
 
+                {- Generate an Html node for each word, including the word and a tag if it is
+                   a valid word or a compound word.
+                -}
                 nodes =
                     List.map
                         (\( wordRecord, instance ) ->
@@ -89,6 +109,9 @@ nodeToTaggedHtml tagWord inCompoundWord parsedNode ( html, occurrences ) =
                         )
                         reindexedWordRecords
 
+                {- Intersperse whitespace into the nodes to reconstruct the original whitespace in
+                   the text.
+                -}
                 nodesWithWhitespace =
                     List.intersperse (Html.text " ") nodes
 
@@ -123,44 +146,24 @@ indexWord wordRecord ( wordRecords, occurrences ) =
     case wordRecord.word of
         ValidWord token ->
             let
-                normalized_token =
+                normalizedToken =
                     String.toLower token
 
-                num_of_prev_occurrences =
-                    Maybe.withDefault -1 (Dict.get normalized_token occurrences)
+                previousOccurrences =
+                    Maybe.withDefault -1 (Dict.get normalizedToken occurrences)
 
                 instance =
-                    num_of_prev_occurrences + 1
-
-                new_occurrences =
-                    Dict.insert normalized_token instance occurrences
-
-                new_tokens =
-                    wordRecords ++ [ ( wordRecord, instance ) ]
+                    previousOccurrences + 1
             in
-            ( new_tokens, new_occurrences )
+            ( wordRecords ++ [ ( wordRecord, instance ) ], Dict.insert normalizedToken instance occurrences )
 
-        InvalidWord _ ->
+        InvalidWord token ->
+            -- no need to track invalid words, we won't tag them
             ( wordRecords ++ [ ( wordRecord, 0 ) ], occurrences )
 
-        CompoundWord token _ ->
-            let
-                normalized_token =
-                    String.toLower token
-
-                num_of_prev_occurrences =
-                    Maybe.withDefault -1 (Dict.get normalized_token occurrences)
-
-                instance =
-                    num_of_prev_occurrences + 1
-
-                new_occurrences =
-                    Dict.insert normalized_token instance occurrences
-
-                new_tokens =
-                    wordRecords ++ [ ( wordRecord, instance ) ]
-            in
-            ( new_tokens, new_occurrences )
+        CompoundWord _ _ ->
+            -- we should not have any compound words yet
+            ( wordRecords, occurrences )
 
 
 compoundWords :
@@ -236,6 +239,41 @@ compoundWords inCompoundWord ( leftWordRecord, leftIndex ) accWordRecords =
 
         [] ->
             [ ( leftWordRecord, leftIndex ) ]
+
+
+reindexWord : ( ParsedWord, Int ) -> ( List ( ParsedWord, Int ), Dict String Int ) -> ( List ( ParsedWord, Int ), Dict String Int )
+reindexWord ( wordRecord, inst ) ( wordRecords, occurrences ) =
+    case wordRecord.word of
+        ValidWord token ->
+            let
+                normalizedToken =
+                    String.toLower token
+
+                previousOccurences =
+                    Maybe.withDefault -1 (Dict.get normalizedToken occurrences)
+
+                occurence =
+                    previousOccurences + 1
+            in
+            -- preserve the instance, but update the occurence
+            ( wordRecords ++ [ ( wordRecord, inst ) ], Dict.insert normalizedToken occurence occurrences )
+
+        InvalidWord token ->
+            -- no need to track invalid words, we won't tag them
+            ( wordRecords ++ [ ( wordRecord, 0 ) ], occurrences )
+
+        CompoundWord token _ ->
+            let
+                normalizedToken =
+                    String.toLower token
+
+                previousOccurences =
+                    Maybe.withDefault -1 (Dict.get normalizedToken occurrences)
+
+                instance =
+                    previousOccurences + 1
+            in
+            ( wordRecords ++ [ ( wordRecord, instance ) ], Dict.insert normalizedToken instance occurrences )
 
 
 
