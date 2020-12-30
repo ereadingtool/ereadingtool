@@ -71,7 +71,7 @@ init shared { params } =
         , newInviteEmail = Nothing
         , errors = Dict.empty
         }
-    , Cmd.none
+    , Api.websocketDisconnectAll
     )
 
 

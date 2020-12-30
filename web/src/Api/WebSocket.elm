@@ -165,6 +165,7 @@ type WebSocketCmd
     = Connect { name : String, address : String, protocol : String }
     | Send { name : String, content : JE.Value }
     | Close { name : String }
+    | CloseAll
 
 
 {-| WebSocketMsgs are responses from javascript to elm after websocket operations.
@@ -200,6 +201,10 @@ encodeCmd wsc =
                 [ ( "cmd", JE.string "close" )
                 , ( "name", JE.string msg.name )
                 ]
+
+        CloseAll ->
+            JE.object
+                [ ( "cmd", JE.string "closeAll" ) ]
 
 
 {-| decode incoming messages from the websocket javascript.

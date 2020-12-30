@@ -32,6 +32,28 @@ Once these are on the instance simply run:
 docker-compose up
 ```
 
+### Commands
+Django gives users another way to run the program with "commands". They commands are not meant to be
+long running processes. In our case we create TextPhrases by running either `--run-cron` or 
+`--text-section`. Note that `--run-cron` is intended to be ran by a cron job. To run a command you'll
+need to specify its name. In our case we handle the commands based on the next argument. Following 
+that are any other necessary arguments (text section id or parsing threshold).
+
+Here's an example of a command being run from a CLI in the project's working directory:
+```
+python3 create_text_phrases --text_section 1234
+```
+
+#### --text_section
+This command takes one argument, the text section, and reaches out to yandex to parse the words in the
+specified text section's body.
+
+#### --run-cron
+This command also takes one argument, the parsing threshold, which specifies the allotted number of 
+parsed words. It's an important value because at some point you'll break free of Yandex's free tier 
+and the parsing will begin to cost money. Note the hyphen in the command name, unlike `--text_section`
+which utilizes an underscore.
+
 ## Local development
 You'll want to use two shells here, one running a npm devlopment server out of the `web/` directory. 
 The other is to run the Django dev server at the project root. There are a couple of things to set in 

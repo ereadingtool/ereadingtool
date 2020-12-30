@@ -22,6 +22,7 @@ port module Api exposing
     , viewerChanges
     , websocketConnect
     , websocketDisconnect
+    , websocketDisconnectAll
     , websocketReceive
     , websocketSend
     )
@@ -542,3 +543,9 @@ websocketDisconnect : String -> Cmd msg
 websocketDisconnect name =
     WebSocket.send sendSocketCommand <|
         WebSocket.Close { name = name }
+
+
+websocketDisconnectAll : Cmd msg
+websocketDisconnectAll =
+    WebSocket.send sendSocketCommand <|
+        WebSocket.CloseAll
