@@ -67,6 +67,7 @@ tagWord model parentMsg sectionNumber instance wordRecord =
         in
         Html.node "span"
             [ Html.Attributes.id id
+            , class "word-block"
             ]
             [ span [] [ Html.text wordRecord.leadingPunctuation ]
             , span

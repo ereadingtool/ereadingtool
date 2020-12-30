@@ -676,6 +676,7 @@ viewDefinedWord :
 viewDefinedWord (SafeModel model) reader_word text_word wordRecord =
     Html.node "span"
         [ onClick (ToggleGloss reader_word)
+        , class "word-block"
         ]
         [ span [] [ Html.text wordRecord.leadingPunctuation ]
         , span
