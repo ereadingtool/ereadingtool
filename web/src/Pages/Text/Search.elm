@@ -11,8 +11,8 @@ import Html.Attributes exposing (attribute, class, classList, href, id)
 import Html.Events exposing (onClick)
 import Http
 import Http.Detailed
-import InstructorAdmin.Admin.Text as AdminText
 import Ports exposing (clearInputText)
+import Role exposing (Role(..))
 import Session exposing (Session)
 import Shared
 import Spa.Document exposing (Document)
@@ -32,6 +32,7 @@ import Time exposing (Zone)
 import User.Profile
 import User.Student.Profile as StudentProfile
 import Utils.Date
+import Viewer
 import Views
 
 
@@ -68,8 +69,8 @@ type SafeModel
         , results : List Text.Model.TextListItem
         , profile : User.Profile.Profile
         , textSearch : TextSearch
-        , textApiEndpoint : AdminText.TextAPIEndpoint
         , help : TextSearch.Help.TextSearchHelp
+        , showHelp : Bool
         , errorMessage : Maybe String
         }
 
@@ -93,11 +94,8 @@ init shared { params } =
                 "text_status_search"
                 (Text.Search.Option.newOptions Shared.statuses)
 
-        textApiEndpoint =
-            AdminText.toTextAPIEndpoint "ignored-endpoint"
-
         defaultSearch =
-            Text.Search.new textApiEndpoint tagSearch difficultySearch statusSearch
+            Text.Search.new tagSearch difficultySearch statusSearch
 
         textSearch =
             case shared.profile of
@@ -107,13 +105,26 @@ init shared { params } =
                             Text.Search.addDifficultyToSearch defaultSearch (Tuple.first difficulty) True
 
                         _ ->
-                            defaultSearch
+                            Text.Search.addDifficultyToSearch defaultSearch "intermediate_mid" True
 
                 _ ->
-                    defaultSearch
+                    Text.Search.addDifficultyToSearch defaultSearch "intermediate_mid" True
 
         textSearchHelp =
             TextSearch.Help.init
+
+        showHelp =
+            case Session.viewer shared.session of
+                Just viewer ->
+                    case Viewer.role viewer of
+                        Student ->
+                            Config.showHelp shared.config
+
+                        Instructor ->
+                            False
+
+                Nothing ->
+                    False
     in
     ( SafeModel
         { session = shared.session
@@ -123,8 +134,8 @@ init shared { params } =
         , results = []
         , profile = shared.profile
         , textSearch = textSearch
-        , textApiEndpoint = textApiEndpoint
         , help = textSearchHelp
+        , showHelp = showHelp
         , errorMessage = Nothing
         }
     , Cmd.batch
@@ -200,7 +211,19 @@ update msg (SafeModel model) =
             )
 
         TextSearch (Ok ( metadata, texts )) ->
-            ( SafeModel { model | results = texts }
+            let
+                maybeErrorMessage =
+                    if List.isEmpty texts then
+                        Just "No results found. Please try another search."
+
+                    else
+                        Nothing
+            in
+            ( SafeModel
+                { model
+                    | results = texts
+                    , errorMessage = maybeErrorMessage
+                }
             , Cmd.none
             )
 
@@ -282,7 +305,7 @@ view (SafeModel model) =
 viewContent : SafeModel -> Html Msg
 viewContent (SafeModel model) =
     div [ id "text_search" ] <|
-        (if Config.showHelp model.config then
+        (if model.showHelp then
             [ viewHelpMessage ]
 
          else
@@ -560,7 +583,7 @@ viewTopicFilterHint (SafeModel model) =
             , arrow_placement = ArrowUp ArrowLeft
             }
     in
-    if Config.showHelp model.config then
+    if model.showHelp then
         [ Help.View.view_hint_overlay hintAttributes
         ]
 
@@ -585,7 +608,7 @@ viewDifficultyFilterHint (SafeModel model) =
             , arrow_placement = ArrowUp ArrowLeft
             }
     in
-    if Config.showHelp model.config then
+    if model.showHelp then
         [ Help.View.view_hint_overlay hintAttributes
         ]
 
@@ -610,7 +633,7 @@ viewStatusFilterHint (SafeModel model) =
             , arrow_placement = ArrowUp ArrowLeft
             }
     in
-    if Config.showHelp model.config then
+    if model.showHelp then
         [ Help.View.view_hint_overlay hintAttributes
         ]
 

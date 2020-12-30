@@ -11,7 +11,6 @@ module Text.Search exposing
     )
 
 import Dict exposing (Dict)
-import InstructorAdmin.Admin.Text as AdminText
 import Text.Search.Difficulty exposing (DifficultySearch)
 import Text.Search.Option exposing (SearchOption)
 import Text.Search.ReadingStatus exposing (TextReadStatusSearch)
@@ -19,12 +18,12 @@ import Text.Search.Tag exposing (TagSearch)
 
 
 type TextSearch
-    = TextSearch AdminText.TextAPIEndpoint TagSearch DifficultySearch TextReadStatusSearch
+    = TextSearch TagSearch DifficultySearch TextReadStatusSearch
 
 
-new : AdminText.TextAPIEndpoint -> TagSearch -> DifficultySearch -> TextReadStatusSearch -> TextSearch
-new endpoint tag_search difficulty_search status_search =
-    TextSearch endpoint tag_search difficulty_search status_search
+new : TagSearch -> DifficultySearch -> TextReadStatusSearch -> TextSearch
+new tag_search difficulty_search status_search =
+    TextSearch tag_search difficulty_search status_search
 
 
 tagOptionsToDict : TextSearch -> Dict String SearchOption
@@ -38,23 +37,23 @@ difficultyOptionsToDict text_search =
 
 
 tagSearch : TextSearch -> TagSearch
-tagSearch (TextSearch _ tag_search _ _) =
+tagSearch (TextSearch tag_search _ _) =
     tag_search
 
 
 statusSearch : TextSearch -> TextReadStatusSearch
-statusSearch (TextSearch _ _ _ status_search) =
+statusSearch (TextSearch _ _ status_search) =
     status_search
 
 
 setStatusSearch : TextSearch -> TextReadStatusSearch -> TextSearch
-setStatusSearch (TextSearch endpoint tag_search difficulty_search _) status_search =
-    TextSearch endpoint tag_search difficulty_search status_search
+setStatusSearch (TextSearch tag_search difficulty_search _) status_search =
+    TextSearch tag_search difficulty_search status_search
 
 
 setDifficultySearch : TextSearch -> DifficultySearch -> TextSearch
-setDifficultySearch (TextSearch endpoint tag_search _ status_search) difficulty_search =
-    TextSearch endpoint tag_search difficulty_search status_search
+setDifficultySearch (TextSearch tag_search _ status_search) difficulty_search =
+    TextSearch tag_search difficulty_search status_search
 
 
 addDifficultyToSearch : TextSearch -> String -> Bool -> TextSearch
@@ -67,12 +66,12 @@ addDifficultyToSearch text_search difficulty selected =
 
 
 setTagSearch : TextSearch -> TagSearch -> TextSearch
-setTagSearch (TextSearch id _ difficulty_search status_search) tag_search =
-    TextSearch id tag_search difficulty_search status_search
+setTagSearch (TextSearch _ difficulty_search status_search) tag_search =
+    TextSearch tag_search difficulty_search status_search
 
 
 difficultySearch : TextSearch -> DifficultySearch
-difficultySearch (TextSearch _ _ difficulty_search _) =
+difficultySearch (TextSearch _ difficulty_search _) =
     difficulty_search
 
 
