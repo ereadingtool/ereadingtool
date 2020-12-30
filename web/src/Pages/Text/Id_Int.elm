@@ -459,9 +459,10 @@ viewTextSection (SafeModel model) textReaderSection =
             case Html.Parser.run textSection.body of
                 Ok nodes ->
                     Text.Section.Words.Tag.toTaggedHtml
-                        (tagWord (SafeModel model) textReaderSection)
-                        (inCompoundWord textReaderSection)
-                        nodes
+                        { tagWord = tagWord (SafeModel model) textReaderSection
+                        , inCompoundWord = inCompoundWord textReaderSection
+                        , nodes = nodes
+                        }
 
                 Err err ->
                     [ Html.text "Error processing text. Please contact us for help." ]
@@ -688,47 +689,6 @@ viewDefinedWord (SafeModel model) reader_word text_word wordRecord =
         , viewGloss (SafeModel model) reader_word text_word
         , span [] [ Html.text wordRecord.trailingPunctuation ]
         ]
-
-
-
--- tagWord : SafeModel -> Section -> Int -> String -> Html Msg
--- tagWord (SafeModel model) textReaderSection instance token =
---     let
---         id =
---             String.join "_" [ String.fromInt instance, token ]
---         textreaderTextword =
---             TextReader.Section.Model.getTextWord textReaderSection instance token
---         readerWord =
---             TextReader.Model.new id instance token textreaderTextword
---         dbg3 =
---             Debug.log "readerWord" readerWord
---     in
---     if token == " " then
---         Html.text token
---     else
---         case textreaderTextword of
---             Just text_word ->
---                 if TextReader.TextWord.hasTranslations text_word then
---                     viewDefinedWord (SafeModel model) readerWord text_word token
---                 else
---                     Html.text token
---             Nothing ->
---                 Html.text token
---
--- viewDefinedWord : SafeModel -> TextReader.Model.TextReaderWord -> TextReader.TextWord.TextWord -> String -> Html Msg
--- viewDefinedWord (SafeModel model) reader_word text_word token =
---     Html.node "span"
---         [ classList
---             [ ( "defined-word", True )
---             , ( "cursor", True )
---             ]
---         , onClick (ToggleGloss reader_word)
---         ]
---         [ span [ classList [ ( "highlighted", TextReader.Model.glossed reader_word model.gloss ) ] ]
---             [ Html.text token
---             ]
---         , viewGloss (SafeModel model) reader_word text_word
---         ]
 
 
 viewGloss : SafeModel -> TextReaderWord -> TextReader.TextWord.TextWord -> Html Msg

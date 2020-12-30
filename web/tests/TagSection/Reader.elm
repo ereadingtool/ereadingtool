@@ -557,9 +557,13 @@ tagSection : Section -> Html msg
 tagSection section =
     textSection section
         |> (\sect -> parseHtml sect.body)
-        |> toTaggedHtml
-            (tagWord section)
-            (inCompoundWord section)
+        |> (\nodes ->
+                toTaggedHtml
+                    { tagWord = tagWord section
+                    , inCompoundWord = inCompoundWord section
+                    , nodes = nodes
+                    }
+           )
         |> Html.div []
 
 

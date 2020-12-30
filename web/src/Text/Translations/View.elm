@@ -84,47 +84,6 @@ tagWord model parentMsg sectionNumber instance wordRecord =
             ]
 
 
-
--- tagWord : Model -> (Msg -> msg) -> Int -> Int -> String -> Html msg
--- tagWord model parentMsg sectionNumber instance originalToken =
---     let
---         id =
---             String.join "-" [ "section", String.fromInt sectionNumber, "instance", String.fromInt instance, originalToken ]
---         token =
---             String.toLower originalToken
---     in
---     if token == " " then
---         Html.text token
---     else
---         let
---             wordInstance =
---                 Text.Translations.Model.newWordInstance
---                     model
---                     (SectionNumber sectionNumber)
---                     instance
---                     token
---             editingWord =
---                 Text.Translations.Model.editingWord model token
---             mergingWord =
---                 Text.Translations.Model.mergingWord model wordInstance
---         in
---         Html.node "span"
---             [ Html.Attributes.id id
---             , classList [ ( "defined_word", True ), ( "cursor", True ) ]
---             ]
---             [ span
---                 [ classList
---                     [ ( "edit-highlight", editingWord )
---                     , ( "merge-highlight", mergingWord && not editingWord )
---                     ]
---                 , wordInstanceOnClick model parentMsg wordInstance
---                 ]
---                 [ Html.text originalToken
---                 ]
---             , view_edit model parentMsg wordInstance
---             ]
-
-
 tagSection : Model -> (Msg -> msg) -> Text.Section.Model.TextSection -> Html msg
 tagSection model msg section =
     let
@@ -133,9 +92,10 @@ tagSection model msg section =
     in
     div [ id ("section-" ++ String.fromInt section.order), class "section" ]
         (Text.Section.Words.Tag.toTaggedHtml
-            (tagWord model msg section.order)
-            (inCompoundWord model sectionNumber)
-            (htmlNode section.body)
+            { tagWord = tagWord model msg section.order
+            , inCompoundWord = inCompoundWord model sectionNumber
+            , nodes = htmlNode section.body
+            }
         )
 
 
