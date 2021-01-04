@@ -2,7 +2,7 @@ module Word.Tests exposing (all)
 
 import Expect
 import Fuzz exposing (Fuzzer, string)
-import Parser exposing (run)
+import Parser exposing (Problem(..), run)
 import Test exposing (..)
 import Text.Section.Words.Tag exposing (Word(..), WordRecord, parse)
 
@@ -50,10 +50,14 @@ all =
                 \_ ->
                     run parse "Голливуда»"
                         |> Expect.equal (Ok <| WordRecord "" (ValidWord "Голливуда") "»")
-            , test "Retains - in the middle of a parse " <|
+            , test "Retains - in the middle of a word" <|
                 \_ ->
                     run parse "из-за"
                         |> Expect.equal (Ok <| WordRecord "" (ValidWord "из-за") "")
+            , test "Retains / in the middle of a word" <|
+                \_ ->
+                    run parse "нг/л"
+                        |> Expect.equal (Ok <| WordRecord "" (ValidWord "нг/л") "")
             , test "Removes leading (" <|
                 \_ ->
                     run parse "(та"
@@ -153,14 +157,18 @@ all =
             [ test "Ignores (Times" <|
                 \_ ->
                     run parse "(Times"
-                        |> Expect.equal (Ok <| WordRecord "(" (InvalidWord "Times") "")
+                        |> Expect.equal (Err [ { col = 2, problem = Problem "Could not parse a valid word.", row = 1 } ])
             , test "Ignores —" <|
                 \_ ->
                     run parse "—"
-                        |> Expect.equal (Ok <| WordRecord "" (InvalidWord "—") "")
+                        |> Expect.equal (Err [ { col = 1, problem = Problem "Could not parse a valid word.", row = 1 } ])
             , test "Ignores …" <|
                 \_ ->
                     run parse "…"
-                        |> Expect.equal (Ok <| WordRecord "" (InvalidWord "") "…")
+                        |> Expect.equal (Err [ { col = 1, problem = Problem "Could not parse a valid word.", row = 1 } ])
+            , test "Ignores valid word with bad punctuation" <|
+                \_ ->
+                    run parse "«Дни.Ру»."
+                        |> Expect.equal (Err [ { col = 6, problem = ExpectingEnd, row = 1 } ])
             ]
         ]

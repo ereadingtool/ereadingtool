@@ -79,7 +79,7 @@ nodeToTaggedHtml tagWord inCompoundWord parsedNode ( html, occurrences ) =
 
                                 Err err ->
                                     { leadingPunctuation = ""
-                                    , word = InvalidWord ""
+                                    , word = InvalidWord word
                                     , trailingPunctuation = ""
                                     }
                         )
@@ -124,7 +124,11 @@ nodeToTaggedHtml tagWord inCompoundWord parsedNode ( html, occurrences ) =
                                         }
 
                                 InvalidWord word ->
-                                    Html.text word
+                                    Html.text
+                                        (wordRecord.leadingPunctuation
+                                            ++ word
+                                            ++ wordRecord.trailingPunctuation
+                                        )
 
                                 CompoundWord word groupInstance ->
                                     tagWord instance
@@ -360,10 +364,7 @@ checkWord validWord =
         succeed (ValidWord validWord)
 
     else
-        succeed InvalidWord
-            |= (getChompedString <|
-                    chompWhile (\c -> not (isTrailingPunctuation c))
-               )
+        problem "Could not parse a valid word."
 
 
 isLeadingPunctuation : Char -> Bool
@@ -383,7 +384,7 @@ isTrailingPunctuation char =
 
 isValidChar : Char -> Bool
 isValidChar char =
-    List.any (\c -> c == char) (cyrillicChars ++ [ '-' ])
+    List.any (\c -> c == char) (cyrillicChars ++ [ '-', '/' ])
 
 
 cyrillicChars : List Char

@@ -480,6 +480,48 @@ invalidWords =
                         [ Query.hasNot [ tag "span", tag "b" ]
                         , Query.has [ text "time" ]
                         ]
+        , test "one invalid word with leading punctuation" <|
+            \_ ->
+                let
+                    section =
+                        makeSection
+                            "(time"
+                            []
+                in
+                tagSection section
+                    |> Query.fromHtml
+                    |> Expect.all
+                        [ Query.hasNot [ tag "span", tag "b" ]
+                        , Query.has [ text "(time" ]
+                        ]
+        , test "one invalid word with trailing punctuation" <|
+            \_ ->
+                let
+                    section =
+                        makeSection
+                            "time)"
+                            []
+                in
+                tagSection section
+                    |> Query.fromHtml
+                    |> Expect.all
+                        [ Query.hasNot [ tag "span", tag "b" ]
+                        , Query.has [ text "time)" ]
+                        ]
+        , test "one invalid word with enclosing punctuation" <|
+            \_ ->
+                let
+                    section =
+                        makeSection
+                            "(time)"
+                            []
+                in
+                tagSection section
+                    |> Query.fromHtml
+                    |> Expect.all
+                        [ Query.hasNot [ tag "span", tag "b" ]
+                        , Query.has [ text "(time)" ]
+                        ]
         , test "one invalid word and one glossed word" <|
             \_ ->
                 let
