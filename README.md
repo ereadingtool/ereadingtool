@@ -73,6 +73,8 @@ Refer to issue #239 for more details.
 
 You'll need to set a local environment variable so that the backend is aware of the frontend. Specifically, `FRONTEND_HOST=localhost:1234`. If you're live firing the forgot email functionality from the frontend, you'll be sending the client to the api server if this env var isn't set.
 
+To have the ability to send invites one's instructor account must have admin privileges.
+
 #### Tests
 Easily the best testing environment for this is VSCode. To enable tests, be sure to look at the launch.json file 
 and confirm there is configuration with an `args` value `test`. Then, you'll want to go to the test section of 
