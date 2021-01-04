@@ -1,14 +1,12 @@
 import copy
 
-from typing import Dict, TypeVar
+from typing import AbstractSet, Dict, TypeVar
 
 from django.db import models
 
 from text.models import TextDifficulty, Text, TextSection
 
 from django.utils import timezone
-
-from django.db.models import Q
 
 
 Student = TypeVar('Student')
@@ -90,15 +88,8 @@ class StudentPerformanceReport(object):
             end_dt__lt=self.first_of_current_month
         )
 
-    @property
-    def in_progress(self):
-        return self.queryset.filter(
-            state="in_progress"
-        )
-
     def to_dict(self) -> Dict:
 
-# ---------------       LEVEL ALL
         total_num_of_texts = Text.objects.count()
 
         categories = {
@@ -111,14 +102,17 @@ class StudentPerformanceReport(object):
 
         performance = {'all': difficulty_dict}
 
-        aggregates = {
-            'percent_correct': (models.Sum('answered_correctly', output_field=models.FloatField()) /
-                                models.Sum('attempted_questions', output_field=models.FloatField())) * 100,
+        try:
+            aggregates = {
+                'percent_correct': (models.Sum('answered_correctly', output_field=models.FloatField()) /
+                                    models.Sum('attempted_questions', output_field=models.FloatField())) * 100,
 
-            'texts_complete': models.Count(distinct=True, expression='text'),
+                'texts_complete': models.Count(distinct=True, expression='text'),
 
-            'texts_in_progress': models.Count(expressions='state') 
-        }
+                'texts_in_progress': models.Count(expression='state') 
+            }
+        except BaseException as be:
+            pass
         
         performance['all']['categories']['cumulative']['metrics'] = self.cumulative.aggregate(**aggregates)
         performance['all']['categories']['past_month']['metrics'] = self.past_month.aggregate(**aggregates)

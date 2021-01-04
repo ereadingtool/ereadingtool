@@ -22,3 +22,9 @@ class FirstTimeCorrect(models.Model):
     #     FOREIGN KEY("student_id") REFERENCES "user_student"("user_id") DEFERRABLE INITIALLY DEFERRED
     #     FOREIGN KEY("text_id") REFERENCES "text_text"("text_id") DEFERRABLE INITIALLY DEFERRED
     # )
+
+
+class FirstTimeCorrectReport(object):
+    def __init__(self, student: Student, *args, **kwargs):
+        self.student = student
+        self.queryset = FirstTimeCorrect.objects.filter(student=self.student)
