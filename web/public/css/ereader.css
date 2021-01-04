@@ -392,6 +392,10 @@ body {
   background: yellow;
 }
 
+.word-block {
+  display: inline-block;
+}
+
 .edit-highlight {
   background: yellow;
 }

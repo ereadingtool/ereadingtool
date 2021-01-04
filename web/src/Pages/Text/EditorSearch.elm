@@ -62,7 +62,10 @@ init shared { params } =
         , profile = shared.profile
         , loading = True
         }
-    , getTexts shared.session shared.config
+    , Cmd.batch
+        [ getTexts shared.session shared.config
+        , Api.websocketDisconnectAll
+        ]
     )
 
 

@@ -15,10 +15,6 @@ import TextReader.Question.Model exposing (Question, TextQuestion, question)
 import TextReader.TextWord exposing (TextWord)
 
 
-type Not
-    = Not
-
-
 type Section
     = Section TextSection (Array TextQuestion)
 

@@ -1,6 +1,7 @@
 // @ts-expect-error
 import { Elm } from './Main.elm';
 import jwtDecode, { JwtPayload } from "jwt-decode";
+import { Console } from 'console';
 
 type User = { user: { id: number; token: string; role: string } };
 type ShowHelp = { showHelp: boolean };
@@ -9,7 +10,7 @@ type Creds = { email: string; password: string; role: string };
 const restApiUrl: string = process.env.RESTAPIURL;
 const websocketBaseUrl: string = process.env.WEBSOCKETBASEURL;
 const authStoreKey: string = 'user';
-let mySockets = {};
+let sockets = {};
 
 // INIT
 
@@ -143,20 +144,22 @@ window.addEventListener(
 // WEBSOCKETS
 
 const sendSocketCommand = wat => {
-  // console.log('ssc: ' + JSON.stringify(wat, null, 4));
   if (wat.cmd == 'connect') {
-    // implicit disconnect on new socket connection, explicit would be better
-    if (mySockets[wat.name]) {
-      mySockets[wat.name].close();
+    // implicit disconnect on new socket connection with the same name
+    if (sockets[wat.name]) {
+      sockets[wat.name].close();
     }
 
-    // console.log("connecting!");
     let socket = new WebSocket(wat.address);
     socket.onmessage = function (event) {
-      // console.log("onmessage: " + JSON.stringify(event.data, null, 4));
       const data = JSON.parse(event.data);
       if (data.error && data.error == "Invalid JWT") {
         logout();
+      } else if (data.error && data.error === "Missing text") {
+        app.ports.onAuthResponse.send({
+          result: 'error',
+          message: 'This text no longer exists. Please select another text to read.'
+        });
       } else {
         app.ports.receiveSocketMsg.send({
           name: wat.name,
@@ -165,19 +168,21 @@ const sendSocketCommand = wat => {
         });
       }
     };
-    mySockets[wat.name] = socket;
+    sockets[wat.name] = socket;
   } else if (wat.cmd == 'send') {
-    // console.log('sending to socket: ' + wat.name);
-    mySockets[wat.name].send(JSON.stringify(wat.content));
+    sockets[wat.name].send(JSON.stringify(wat.content));
   } else if (wat.cmd == 'close') {
-    // console.log('closing socket: ' + wat.name);
-    mySockets[wat.name].close();
-    delete mySockets[wat.name];
+    sockets[wat.name].close();
+    delete sockets[wat.name];
+  } else if (wat.cmd == 'closeAll') {
+    Object.keys(sockets).forEach(name => {
+      sockets[name].close();
+      delete sockets[name];
+    });
   }
 };
 
 app.ports.sendSocketCommand.subscribe(config => {
-  console.log(config);
   sendSocketCommand(config);
 });
 
