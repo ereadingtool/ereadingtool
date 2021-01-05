@@ -44,6 +44,9 @@ Here's an example of a command being run from a CLI in the project's working dir
 python3 create_text_phrases --text_section 1234
 ```
 
+There's a cron job on the development server that runs `docker exec` to run the django command every night 
+at midnight.
+
 #### --text_section
 This command takes one argument, the text section, and reaches out to yandex to parse the words in the
 specified text section's body.
