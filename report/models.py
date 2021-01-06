@@ -102,23 +102,16 @@ class StudentPerformanceReport(object):
 
         performance = {'all': difficulty_dict}
 
-        try:
-            aggregates = {
-                'percent_correct': (models.Sum('answered_correctly', output_field=models.FloatField()) /
-                                    models.Sum('attempted_questions', output_field=models.FloatField())) * 100,
-
-                'texts_complete': models.Count(distinct=True, expression='text'),
-
-                'texts_in_progress': models.Count(expression='state') 
-            }
-        except BaseException as be:
-            pass
+        aggregates = {
+            'percent_correct': (models.Sum('answered_correctly', output_field=models.FloatField()) /
+                                models.Sum('attempted_questions', output_field=models.FloatField())) * 100,
+            'texts_complete': models.Count(distinct=True, expression='text')
+        }
         
         performance['all']['categories']['cumulative']['metrics'] = self.cumulative.aggregate(**aggregates)
         performance['all']['categories']['past_month']['metrics'] = self.past_month.aggregate(**aggregates)
         performance['all']['categories']['current_month']['metrics'] = self.current_month.aggregate(**aggregates)
 
-        # "Cannot resolve keyword 'state' into field. Choices are: answered_correctly, attempted_questions, end_dt, id, start_dt, student, student_id, text, text_difficulty_slug, text_id, text_reading, text_reading_id, text_section, text_section_id"
         
         for category in ('cumulative', 'past_month', 'current_month',):
             try:
@@ -130,30 +123,37 @@ class StudentPerformanceReport(object):
             performance['all']['categories'][category]['metrics']['total_texts'] = total_num_of_texts
 
         performance['all']['title'] = 'All Levels'
-#---------------
-#---------------   EVERY OTHER LEVEL
+        
         for difficulty in TextDifficulty.objects.annotate(total_texts=models.Count('texts')).order_by('id').all():
             performance[difficulty.slug] = {
                 'title': '',
                 'categories': {
                     'cumulative': {
                         'metrics': {
-                            'percent_correct': None, 'texts_complete': None},
+                            'percent_correct': None, 
+                            'texts_complete': None,
+                        },
                         'title': 'Cumulative'
                     },
                     'current_month': {
                         'metrics': {
-                            'percent_correct': None, 'texts_complete': None},
+                            'percent_correct': None,
+                            'texts_complete': None,
+                        },
                         'title': 'Current Month'
                     },
                     'past_month': {
                         'metrics': {
-                            'percent_correct': None, 'texts_complete': None},
-                        'title': 'Past Month'}
+                            'percent_correct': None,
+                            'texts_complete': None
+                        },
+                        'title': 'Past Month'
+                    }
                 }
             }
 
             performance[difficulty.slug]['title'] = difficulty.name
+
 
             performance[difficulty.slug]['categories']['cumulative']['metrics'] = self.cumulative.filter(
                 text_difficulty_slug=difficulty.slug).aggregate(**aggregates)
