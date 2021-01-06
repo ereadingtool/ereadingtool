@@ -42,6 +42,23 @@ class StudentPerformance(models.Model):
         return str(self.student) + ' ' + 'scored ' + str(self.percentage_correct * 100) + '%'
 
 
+class StudentReadingsInProgress(models.Model):
+    id = models.BigIntegerField(primary_key=True)
+    student = models.ForeignKey('user.Student', on_delete=models.DO_NOTHING)
+
+    text = models.ForeignKey(Text, on_delete=models.DO_NOTHING)
+    text_reading = models.ForeignKey('text_reading.StudentTextReading', on_delete=models.DO_NOTHING)
+
+    start_dt = models.DateTimeField()
+
+    text_difficulty_slug = models.SlugField(blank=False)
+
+    class Meta:
+        managed = False
+        db_table = 'report_texts_in_progress'
+
+
+
 class StudentPerformanceReport(object):
     def __init__(self, student: Student, *args, **kwargs):
         self.student = student
@@ -189,3 +206,4 @@ class StudentPerformanceReport(object):
                 pass
 
         return performance
+
