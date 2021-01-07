@@ -32,14 +32,20 @@ wordInstanceOnClick model parentMsg wordInstance =
         onClick (parentMsg (EditWord wordInstance))
 
 
-tagWord : Model -> (Msg -> msg) -> Int -> Int -> String -> Html msg
-tagWord model parentMsg sectionNumber instance originalToken =
+tagWord :
+    Model
+    -> (Msg -> msg)
+    -> Int
+    -> Int
+    -> { leadingPunctuation : String, token : String, trailingPunctuation : String }
+    -> Html msg
+tagWord model parentMsg sectionNumber instance wordRecord =
     let
         id =
-            String.join "-" [ "section", String.fromInt sectionNumber, "instance", String.fromInt instance, originalToken ]
+            String.join "-" [ "section", String.fromInt sectionNumber, "instance", String.fromInt instance, wordRecord.token ]
 
         token =
-            String.toLower originalToken
+            String.toLower wordRecord.token
     in
     if token == " " then
         Html.text token
@@ -61,18 +67,21 @@ tagWord model parentMsg sectionNumber instance originalToken =
         in
         Html.node "span"
             [ Html.Attributes.id id
-            , classList [ ( "defined_word", True ), ( "cursor", True ) ]
+            , class "word-block"
             ]
-            [ span
+            [ span [] [ Html.text wordRecord.leadingPunctuation ]
+            , span
                 [ classList
                     [ ( "edit-highlight", editingWord )
                     , ( "merge-highlight", mergingWord && not editingWord )
+                    , ( "cursor", True )
                     ]
                 , wordInstanceOnClick model parentMsg wordInstance
                 ]
-                [ Html.text originalToken
+                [ Html.text wordRecord.token
                 ]
             , view_edit model parentMsg wordInstance
+            , span [] [ Html.text wordRecord.trailingPunctuation ]
             ]
 
 
@@ -83,10 +92,11 @@ tagSection model msg section =
             SectionNumber section.order
     in
     div [ id ("section-" ++ String.fromInt section.order), class "section" ]
-        (Text.Section.Words.Tag.tagWordsAndToVDOM
-            (tagWord model msg section.order)
-            (isPartOfCompoundWord model sectionNumber)
-            (htmlNode section.body)
+        (Text.Section.Words.Tag.toTaggedHtml
+            { tagWord = tagWord model msg section.order
+            , inCompoundWord = inCompoundWord model sectionNumber
+            , nodes = htmlNode section.body
+            }
         )
 
 

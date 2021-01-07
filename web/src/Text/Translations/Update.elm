@@ -10,7 +10,6 @@ import Array
 import Dict exposing (Dict)
 import Flags
 import Http
-import InstructorAdmin.Admin.Text as AdminText
 import Session exposing (Session)
 import Task exposing (Task)
 import Text.Translations exposing (..)
