@@ -1,16 +1,9 @@
-import copy
-
-from typing import AbstractSet, Dict, TypeVar
-
+from typing import Dict, TypeVar
 from django.db import models
-
-from text.models import TextDifficulty, Text, TextSection
-
+from text.models import TextDifficulty, Text
 from django.utils import timezone
 
-
 Student = TypeVar('Student')
-
 
 class StudentFirstTimeCorrect(models.Model):
     text = models.ForeignKey(Text, on_delete=models.DO_NOTHING)
@@ -24,14 +17,10 @@ class StudentFirstTimeCorrect(models.Model):
         db_table = 'report_first_time_correct'
 
 class StudentReadingsInProgress(models.Model):
-    # id = models.BigIntegerField(primary_key=True) # TODO doesn't actually have a primary key
     student = models.ForeignKey('user.Student', on_delete=models.DO_NOTHING)
-
     text = models.ForeignKey(Text, on_delete=models.DO_NOTHING)
     text_reading = models.ForeignKey('text_reading.StudentTextReading', on_delete=models.DO_NOTHING)
-
     start_dt = models.DateTimeField()
-
     text_difficulty_slug = models.SlugField(blank=False)
 
     class Meta:
@@ -40,15 +29,11 @@ class StudentReadingsInProgress(models.Model):
 
 
 class StudentReadingsComplete(models.Model):
-    # id = models.BigIntegerField(primary_key=True)
     student = models.ForeignKey('user.Student', on_delete=models.DO_NOTHING)
-
     text = models.ForeignKey(Text, on_delete=models.DO_NOTHING)
     text_reading = models.ForeignKey('text_reading.StudentTextReading', on_delete=models.DO_NOTHING)
-
     start_dt = models.DateTimeField()
     end_dt = models.DateTimeField()
-
     text_difficulty_slug = models.SlugField(blank=False)
 
     class Meta:
@@ -143,32 +128,35 @@ class StudentPerformanceReport(object):
         # try and unwrap this
         completion_aggregate = models.Count(distinct=True, expression='text')
 
-        # need another aggregate 
-            # try except float exception when dividing num_correct/num_questions 
-        ftc_aggregate = (models.Sum('num_correct', output_field=models.FloatField()) /
-                         models.Sum('num_questions', output_field=models.FloatField())) * 100
-
         performance['all']['title'] = 'All Levels'
 
         for category in ('cumulative', 'past_month', 'current_month',):
             performance['all']['categories'][category]['metrics']['total_texts'] = total_num_of_texts
 
         # metrics for texts read to completion        
-        performance['all']['categories']['cumulative']['metrics']['complete'] = self.cumulative_complete.aggregate(completion_aggregate)
-        performance['all']['categories']['past_month']['metrics']['complete'] = self.past_month_complete.aggregate(completion_aggregate)
-        performance['all']['categories']['current_month']['metrics']['complete'] = self.current_month_complete.aggregate(completion_aggregate)
+        performance['all']['categories']['cumulative']['metrics']['complete'] = self.cumulative_complete.aggregate(completion_aggregate)['text__count']
+        performance['all']['categories']['past_month']['metrics']['complete'] = self.past_month_complete.aggregate(completion_aggregate)['text__count']
+        performance['all']['categories']['current_month']['metrics']['complete'] = self.current_month_complete.aggregate(completion_aggregate)['text__count']
 
         # metrics for text readings still in progress
-        performance['all']['categories']['cumulative']['metrics']['in_progress'] = self.cumulative_in_progress.aggregate(completion_aggregate)
-        performance['all']['categories']['past_month']['metrics']['in_progress'] = self.past_month_in_progress.aggregate(completion_aggregate)
-        performance['all']['categories']['current_month']['metrics']['in_progress'] = self.current_month_in_progress.aggregate(completion_aggregate)
+        performance['all']['categories']['cumulative']['metrics']['in_progress'] = self.cumulative_in_progress.aggregate(completion_aggregate)['text__count']
+        performance['all']['categories']['past_month']['metrics']['in_progress'] = self.past_month_in_progress.aggregate(completion_aggregate)['text__count']
+        performance['all']['categories']['current_month']['metrics']['in_progress'] = self.current_month_in_progress.aggregate(completion_aggregate)['text__count']
 
         try:
-            performance['all']['categories']['cumulative']['metrics']['first_time_correct'] = self.cumulative_first_time_correct.aggregate(latest=ftc_aggregate)
-        except BaseException as BE:
-            print(BE)
+            num_correct_aggregate = models.Sum('num_correct', output_field=models.FloatField())
+            num_questions_aggregate = models.Sum('num_questions', output_field=models.FloatField())
 
-        # default as 0 percent in the template code for the pdf, not sure about the frontend 
+            num_correct = self.cumulative_first_time_correct.aggregate(num_correct_aggregate)['num_correct__sum']
+            num_questions = self.cumulative_first_time_correct.aggregate(num_questions_aggregate)['num_questions__sum']
+            v = (num_correct / num_questions) * 100
+            v = round(v, 2)
+            performance['all']['categories']['cumulative']['metrics']['first_time_correct'] = v
+        except:
+            # Could be type error
+            performance['all']['categories']['cumulative']['metrics']['first_time_correct'] = 0.00
+            pass
+
         for difficulty in TextDifficulty.objects.annotate(total_texts=models.Count('texts')).order_by('id').all():
             performance[difficulty.slug] = {
                 'title': '',
@@ -176,21 +164,22 @@ class StudentPerformanceReport(object):
                     'cumulative': {
                         'metrics': {
                             'complete': None,
-                            'in_progress': None
+                            'in_progress': None,
+                            'first_time_correct': None
                         },
                         'title': 'Cumulative'
                     },
                     'current_month': {
                         'metrics': {
                             'complete': None,
-                            'in_progress': None
+                            'in_progress': None,
                         },
                         'title': 'Current Month'
                     },
                     'past_month': {
                         'metrics': {
                             'complete': None,
-                            'in_progress': None
+                            'in_progress': None,
                         },
                         'title': 'Past Month'
                     }
@@ -203,21 +192,38 @@ class StudentPerformanceReport(object):
                         performance[difficulty.slug]['categories'][category]['metrics']['total_texts'] = difficulty.total_texts
 
             performance[difficulty.slug]['categories']['cumulative']['metrics']['complete'] = self.cumulative_complete.filter(
-                text_difficulty_slug=difficulty.slug).aggregate(**aggregates)['text_readings']
+                text_difficulty_slug=difficulty.slug).aggregate(completion_aggregate)['text__count']
+
+            try:
+                num_correct_aggregate = models.Sum('num_correct', output_field=models.FloatField())
+                num_questions_aggregate = models.Sum('num_questions', output_field=models.FloatField())
+
+                num_correct = self.cumulative_first_time_correct.filter(text_difficulty_slug=difficulty.slug) \
+                                                                .aggregate(num_correct_aggregate)['num_correct__sum']
+
+                num_questions = self.cumulative_first_time_correct.filter(text_difficulty_slug=difficulty.slug) \
+                                                                  .aggregate(num_questions_aggregate)['num_questions__sum']
+                v = (num_correct / num_questions) * 100
+                v = round(v, 2)
+                performance[difficulty.slug]['categories']['cumulative']['metrics']['first_time_correct'] = v
+            except:
+                # If aggregate returns NoneType we fail, write in zero
+                performance[difficulty.slug]['categories']['cumulative']['metrics']['first_time_correct'] = 0.00
+                pass
 
             performance[difficulty.slug]['categories']['past_month']['metrics']['complete'] = self.past_month_complete.filter(
-                text_difficulty_slug=difficulty.slug).aggregate(**aggregates)['text_readings']
+                text_difficulty_slug=difficulty.slug).aggregate(completion_aggregate)['text__count']
 
             performance[difficulty.slug]['categories']['current_month']['metrics']['complete'] = self.current_month_complete.filter(
-                text_difficulty_slug=difficulty.slug).aggregate(**aggregates)['text_readings']
+                text_difficulty_slug=difficulty.slug).aggregate(completion_aggregate)['text__count']
 
             performance[difficulty.slug]['categories']['cumulative']['metrics']['in_progress'] = self.cumulative_in_progress.filter(
-                text_difficulty_slug=difficulty.slug).aggregate(**aggregates)['text_readings']
+                text_difficulty_slug=difficulty.slug).aggregate(completion_aggregate)['text__count']
 
             performance[difficulty.slug]['categories']['past_month']['metrics']['in_progress'] = self.past_month_in_progress.filter(
-                text_difficulty_slug=difficulty.slug).aggregate(**aggregates)['text_readings']
+                text_difficulty_slug=difficulty.slug).aggregate(completion_aggregate)['text__count']
 
             performance[difficulty.slug]['categories']['current_month']['metrics']['in_progress'] = self.current_month_in_progress.filter(
-                text_difficulty_slug=difficulty.slug).aggregate(**aggregates)['text_readings']
+                text_difficulty_slug=difficulty.slug).aggregate(completion_aggregate)['text__count']
 
         return performance
