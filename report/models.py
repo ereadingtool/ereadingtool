@@ -12,40 +12,19 @@ from django.utils import timezone
 Student = TypeVar('Student')
 
 
-# --------------------To be removed--------------------------------
-# We'll be replacing this with text_complete
-class StudentPerformance(models.Model):
-    id = models.BigIntegerField(primary_key=True)
-    student = models.ForeignKey('user.Student', on_delete=models.DO_NOTHING)
-
+class StudentFirstTimeCorrect(models.Model):
     text = models.ForeignKey(Text, on_delete=models.DO_NOTHING)
-    text_reading = models.ForeignKey('text_reading.StudentTextReading', on_delete=models.DO_NOTHING)
-    text_section = models.ForeignKey(TextSection, on_delete=models.DO_NOTHING)
-
-    start_dt = models.DateTimeField()
-    end_dt = models.DateTimeField()
-
-    state = models.CharField(max_length=64)
-
+    student = models.ForeignKey('user.Student', on_delete=models.DO_NOTHING)
+    num_correct = models.IntegerField()
+    num_questions = models.IntegerField()
     text_difficulty_slug = models.SlugField(blank=False)
-
-    answered_correctly = models.IntegerField()
-    attempted_questions = models.IntegerField()
-
-    @property
-    def percentage_correct(self):
-        return self.answered_correctly / self.attempted_questions
 
     class Meta:
         managed = False
-        db_table = 'report_student_performance'
-
-    def __str__(self):
-        return str(self.student) + ' ' + 'scored ' + str(self.percentage_correct * 100) + '%'
-# ----------------------------------------------------
+        db_table = 'report_first_time_correct'
 
 class StudentReadingsInProgress(models.Model):
-    id = models.BigIntegerField(primary_key=True)
+    # id = models.BigIntegerField(primary_key=True) # TODO doesn't actually have a primary key
     student = models.ForeignKey('user.Student', on_delete=models.DO_NOTHING)
 
     text = models.ForeignKey(Text, on_delete=models.DO_NOTHING)
@@ -61,7 +40,7 @@ class StudentReadingsInProgress(models.Model):
 
 
 class StudentReadingsComplete(models.Model):
-    id = models.BigIntegerField(primary_key=True)
+    # id = models.BigIntegerField(primary_key=True)
     student = models.ForeignKey('user.Student', on_delete=models.DO_NOTHING)
 
     text = models.ForeignKey(Text, on_delete=models.DO_NOTHING)
@@ -81,6 +60,7 @@ class StudentPerformanceReport(object):
     def __init__(self, student: Student, *args, **kwargs):
         self.student = student
         # different database views, different querysets
+        self.queryset_first_time_correct = StudentFirstTimeCorrect.objects.filter(student=self.student)
         self.queryset_in_progress = StudentReadingsInProgress.objects.filter(student=self.student)
         self.queryset_complete = StudentReadingsComplete.objects.filter(student=self.student)
 
@@ -105,6 +85,10 @@ class StudentPerformanceReport(object):
             return self.first_of_current_month.replace(year=self.today_dt.year-1, month=12)
         else:
             return self.first_of_current_month.replace(month=self.today_dt.month-1)
+
+    @property
+    def cumulative_first_time_correct(self):
+        return self.queryset_first_time_correct
 
     @property
     def cumulative_complete(self):
@@ -156,9 +140,13 @@ class StudentPerformanceReport(object):
 
         performance = {'all': difficulty_dict}
 
-        aggregates = {
-            'text_readings': models.Count(distinct=True, expression='text')
-        }
+        # try and unwrap this
+        completion_aggregate = models.Count(distinct=True, expression='text')
+
+        # need another aggregate 
+            # try except float exception when dividing num_correct/num_questions 
+        ftc_aggregate = (models.Sum('num_correct', output_field=models.FloatField()) /
+                         models.Sum('num_questions', output_field=models.FloatField())) * 100
 
         performance['all']['title'] = 'All Levels'
 
@@ -166,16 +154,21 @@ class StudentPerformanceReport(object):
             performance['all']['categories'][category]['metrics']['total_texts'] = total_num_of_texts
 
         # metrics for texts read to completion        
-        performance['all']['categories']['cumulative']['metrics']['complete'] = self.cumulative_complete.aggregate(**aggregates)['text_readings']
-        performance['all']['categories']['past_month']['metrics']['complete'] = self.past_month_complete.aggregate(**aggregates)['text_readings']
-        performance['all']['categories']['current_month']['metrics']['complete'] = self.current_month_complete.aggregate(**aggregates)['text_readings']
+        performance['all']['categories']['cumulative']['metrics']['complete'] = self.cumulative_complete.aggregate(completion_aggregate)
+        performance['all']['categories']['past_month']['metrics']['complete'] = self.past_month_complete.aggregate(completion_aggregate)
+        performance['all']['categories']['current_month']['metrics']['complete'] = self.current_month_complete.aggregate(completion_aggregate)
 
         # metrics for text readings still in progress
-        performance['all']['categories']['cumulative']['metrics']['in_progress'] = self.cumulative_in_progress.aggregate(**aggregates)['text_readings']
-        performance['all']['categories']['past_month']['metrics']['in_progress'] = self.past_month_in_progress.aggregate(**aggregates)['text_readings']
-        performance['all']['categories']['current_month']['metrics']['in_progress'] = self.current_month_in_progress.aggregate(**aggregates)['text_readings']
+        performance['all']['categories']['cumulative']['metrics']['in_progress'] = self.cumulative_in_progress.aggregate(completion_aggregate)
+        performance['all']['categories']['past_month']['metrics']['in_progress'] = self.past_month_in_progress.aggregate(completion_aggregate)
+        performance['all']['categories']['current_month']['metrics']['in_progress'] = self.current_month_in_progress.aggregate(completion_aggregate)
 
-        
+        try:
+            performance['all']['categories']['cumulative']['metrics']['first_time_correct'] = self.cumulative_first_time_correct.aggregate(latest=ftc_aggregate)
+        except BaseException as BE:
+            print(BE)
+
+        # default as 0 percent in the template code for the pdf, not sure about the frontend 
         for difficulty in TextDifficulty.objects.annotate(total_texts=models.Count('texts')).order_by('id').all():
             performance[difficulty.slug] = {
                 'title': '',
