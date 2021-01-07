@@ -149,12 +149,16 @@ class StudentPerformanceReport(object):
 
             num_correct = self.cumulative_first_time_correct.aggregate(num_correct_aggregate)['num_correct__sum']
             num_questions = self.cumulative_first_time_correct.aggregate(num_questions_aggregate)['num_questions__sum']
+
+            performance['all']['categories']['cumulative']['metrics']['first_time_correct'] = int(num_correct)
+
             v = (num_correct / num_questions) * 100
             v = round(v, 2)
-            performance['all']['categories']['cumulative']['metrics']['first_time_correct'] = v
+            performance['all']['categories']['cumulative']['metrics']['percent_correct'] = v
         except:
             # Could be type error
-            performance['all']['categories']['cumulative']['metrics']['first_time_correct'] = 0.00
+            performance[difficulty.slug]['categories']['cumulative']['metrics']['first_time_correct'] = 0
+            performance['all']['categories']['cumulative']['metrics']['percent_correct'] = 0.00
             pass
 
         for difficulty in TextDifficulty.objects.annotate(total_texts=models.Count('texts')).order_by('id').all():
@@ -203,12 +207,16 @@ class StudentPerformanceReport(object):
 
                 num_questions = self.cumulative_first_time_correct.filter(text_difficulty_slug=difficulty.slug) \
                                                                   .aggregate(num_questions_aggregate)['num_questions__sum']
+
+                performance[difficulty.slug]['categories']['cumulative']['metrics']['first_time_correct'] = int(num_correct)
+
                 v = (num_correct / num_questions) * 100
                 v = round(v, 2)
-                performance[difficulty.slug]['categories']['cumulative']['metrics']['first_time_correct'] = v
+                performance[difficulty.slug]['categories']['cumulative']['metrics']['percent_correct'] = v
             except:
                 # If aggregate returns NoneType we fail, write in zero
-                performance[difficulty.slug]['categories']['cumulative']['metrics']['first_time_correct'] = 0.00
+                performance[difficulty.slug]['categories']['cumulative']['metrics']['first_time_correct'] = 0
+                performance[difficulty.slug]['categories']['cumulative']['metrics']['percent_correct'] = 0.00
                 pass
 
             performance[difficulty.slug]['categories']['past_month']['metrics']['complete'] = self.past_month_complete.filter(
