@@ -7,7 +7,7 @@ module User.Instructor.Invite exposing
     , codeToString
     , email
     , emailToString
-    , expirationToString
+    , expirationToPosix
     , inviteCode
     , inviteExpiration
     , isEmptyEmail
@@ -15,13 +15,14 @@ module User.Instructor.Invite exposing
     , new
     )
 
+import Time exposing (Posix)
 import Utils
 
 
 type alias InviteParams =
     { email : String
     , invite_code : String
-    , expiration : String
+    , expiration : Posix
     }
 
 
@@ -34,7 +35,7 @@ type InviteCode
 
 
 type InviteExpiration
-    = InviteExpiration String
+    = InviteExpiration Posix
 
 
 type InstructorInvite
@@ -61,8 +62,8 @@ email (InstructorInvite eml _ _) =
     eml
 
 
-expirationToString : InviteExpiration -> String
-expirationToString (InviteExpiration exp) =
+expirationToPosix : InviteExpiration -> Posix
+expirationToPosix (InviteExpiration exp) =
     exp
 
 
