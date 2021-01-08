@@ -21,6 +21,9 @@
 
 .invite {
   margin-top: 15px;
+  border: solid 0.5px lightgrey;
+  padding: 5px 25px 0 15px;
+  overflow-x: auto;
 }
 
 .invite > .label {
