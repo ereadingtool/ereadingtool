@@ -44,6 +44,9 @@ Here's an example of a command being run from a CLI in the project's working dir
 python3 create_text_phrases --text_section 1234
 ```
 
+There's a cron job on the development server that runs `docker exec` to run the django command every night 
+at midnight.
+
 #### --text_section
 This command takes one argument, the text section, and reaches out to yandex to parse the words in the
 specified text section's body.
@@ -72,6 +75,8 @@ To have emails sent by SendGrid, you'll need to have `SENDGRID_SANDBOX_MODE_IN_D
 Refer to issue #239 for more details.
 
 You'll need to set a local environment variable so that the backend is aware of the frontend. Specifically, `FRONTEND_HOST=localhost:1234`. If you're live firing the forgot email functionality from the frontend, you'll be sending the client to the api server if this env var isn't set.
+
+To have the ability to send invites one's instructor account must have admin privileges.
 
 #### Tests
 Easily the best testing environment for this is VSCode. To enable tests, be sure to look at the launch.json file 
