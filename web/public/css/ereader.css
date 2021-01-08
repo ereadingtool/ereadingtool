@@ -445,3 +445,30 @@ body {
     width: 75%;
   }
 }
+
+.login_options a {
+  color: #00478f;
+  text-decoration: none
+}
+
+.login_options a:hover {
+  text-decoration: underline;
+}
+
+#acknowledgements-and-about a {
+  color: #00478f;
+  text-decoration: none
+}
+
+#acknowledgements-and-about a:hover {
+  text-decoration: underline;
+}
+
+#acknowledgements a {
+  color: #00478f;
+  text-decoration: none
+}
+
+#acknowledgements a:hover {
+  text-decoration: underline;
+}
