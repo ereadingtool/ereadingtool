@@ -36,6 +36,7 @@
 
 #create_invite {
   margin-top: 15px;
+  margin-bottom: 15px;
 }
 
 #create_invite > #submit {
@@ -79,4 +80,13 @@
     margin-top: 15px;
     grid-template-columns: 50% 50%;
   }
+}
+
+.text_label a {
+  color: #00478f;
+  text-decoration: none
+}
+
+.text_label a:hover {
+  text-decoration: underline; 
 }
