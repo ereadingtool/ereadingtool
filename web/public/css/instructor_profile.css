@@ -77,3 +77,12 @@
     grid-template-columns: 50% 50%;
   }
 }
+
+.text_label a {
+  color: #00478f;
+  text-decoration: none
+}
+
+.text_label a:hover {
+  text-decoration: underline; 
+}
