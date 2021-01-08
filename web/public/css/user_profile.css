@@ -125,6 +125,15 @@ table th {
   margin-bottom: 15px;
 }
 
+#research_consent a {
+  color: #00478f;
+  text-decoration: none;
+}
+
+#research_consent a:hover {
+  text-decoration: underline;
+}
+
 #research_consent > .value > .check-box {
   display: inline-block;
   cursor: pointer;
@@ -180,6 +189,10 @@ table th {
 .performance_download_link a {
   color: #00478f;
   text-decoration: none
+}
+
+.performance_download_link a:hover {
+  text-decoration: underline;
 }
 
 .text_readings_values {
