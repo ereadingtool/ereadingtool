@@ -2,7 +2,7 @@ module User.Login exposing (LoginParams, login, viewLoginForm)
 
 import Api
 import Dict exposing (Dict)
-import Html exposing (Html, div, span)
+import Html exposing (Html, div, span, text)
 import Html.Attributes exposing (attribute, class, classList, id)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Http exposing (..)
@@ -244,12 +244,12 @@ viewLinks =
     [ div [ id "acknowledgements-and-about" ]
         [ div []
             [ Html.a [ attribute "href" (Route.toString Route.About) ]
-                [ Html.text "About This Website"
+                [ text "About This Website"
                 ]
             ]
         , div []
             [ Html.a [ attribute "href" (Route.toString Route.Acknowledgments) ]
-                [ Html.text "Acknowledgements"
+                [ text "Acknowledgements"
                 ]
             ]
         ]
