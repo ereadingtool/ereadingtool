@@ -85,11 +85,23 @@ table th {
 .feedback {
   display: grid;
   grid-row: 5;
-
   font-size: larger;
-
   grid-template-columns: auto;
   grid-template-rows: 25px 35px;
+  margin:20px;
+}
+
+.feedback a {
+  color: #00478f;
+  text-decoration: none
+}
+
+.feedback a:hover {
+  text-decoration: underline; 
+}
+
+.feedback span {
+  padding: 5px;
 }
 
 #flashcards {
@@ -163,6 +175,11 @@ table th {
 
 .performance_download_link {
   margin-top: 10px;
+}
+
+.performance_download_link a {
+  color: #00478f;
+  text-decoration: none
 }
 
 .text_readings_values {
