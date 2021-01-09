@@ -5,8 +5,6 @@
     <th>Time Period</th>
     <th>Texts Started</th>
     <th>Texts Completed</th>
-    <!-- <th>First Time Correct</th> -->
-    <!-- <th>Percent Correct</th> -->
 
     {% for difficulty_key, difficulty in performance_report.items %}
         <tr>
@@ -18,8 +16,6 @@
                 <td>{{ report.title }}</td>
                 <td>{{ report.metrics.in_progress }} out of {{ report.metrics.total_texts }}</td>
                 <td>{{ report.metrics.complete }} out of {{ report.metrics.total_texts }}</td>
-                <!-- <td>{{ report.metrics.first_time_correct }}</td> -->
-                <!-- <td>{{ report.metrics.percent_correct }}</td> -->
             </tr>
         {% endfor %}
     {% endfor %}
