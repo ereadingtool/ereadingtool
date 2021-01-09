@@ -337,7 +337,7 @@ viewInstructorInviteCreate (SafeModel model) =
             [ Html.input
                 ([ attribute "size" "25"
                  , onInput (InstructorInvite.Email >> UpdateNewInviteEmail)
-                 , attribute "placeholder" "Invite an instructor"
+                 , attribute "placeholder" "Invite a content editor"
                  ]
                     ++ errorAttributes
                 )
