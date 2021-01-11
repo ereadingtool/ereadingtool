@@ -14,7 +14,7 @@ from django.http import JsonResponse
 from user.forms import AuthenticationForm, InstructorSignUpForm, InstructorInviteForm
 
 from user.instructor.models import Instructor
-
+from invite.models import Invite
 from user.views.api import APIView
 from user.views.mixin import ProfileView
 
@@ -115,7 +115,24 @@ class InstructorInviteAPIView(APIView):
 
     @jwt_valid()
     def post_error(self, errors: Dict, request: HttpRequest, instructor_invite_form: Form) -> HttpResponse:
-        pass
+        try:
+            # remove the existing entry
+            if Invite.objects.filter(email=instructor_invite_form.data['email']).exists():
+                Invite.objects.filter(email=instructor_invite_form.data['email']).delete()
+
+            # manually add the cleaned data
+            instructor_invite_form.cleaned_data['email'] = instructor_invite_form.data['email']
+
+            # call InstructorInviteForm.save()
+            invite = instructor_invite_form.save()
+
+            return HttpResponse(json.dumps(invite.to_dict()), status=200)
+        except:
+            if not errors:
+                errors['all'] = 'An unspecified error has occurred.'
+                return JsonResponse(errors, status=400)
+            else:
+                return JsonResponse(errors, status=403)
 
 class InstructorSignupAPIView(APIView):
     def form(self, request: HttpRequest, params: Dict) -> forms.ModelForm:
