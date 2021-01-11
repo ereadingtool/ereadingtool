@@ -113,6 +113,9 @@ class InstructorInviteAPIView(APIView):
 
         return HttpResponse(json.dumps(invite.to_dict()), status=200)
 
+    @jwt_valid()
+    def post_error(self, errors: Dict, request: HttpRequest, instructor_invite_form: Form) -> HttpResponse:
+        pass
 
 class InstructorSignupAPIView(APIView):
     def form(self, request: HttpRequest, params: Dict) -> forms.ModelForm:
