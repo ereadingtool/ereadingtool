@@ -117,7 +117,17 @@ addInvite : InstructorProfile -> InstructorInvite -> InstructorProfile
 addInvite (InstructorProfile id ts admin invitations uname logout_uri) invite =
     let
         new_invites =
-            Maybe.map (\i -> i ++ [ invite ]) invitations
+            Maybe.map 
+                (\i -> 
+                    invite ::
+                        List.filter (\inv -> 
+                            ((Time.posixToMillis (InstructorInvite.expirationToPosix (InstructorInvite.inviteExpiration inv)) < 
+                              Time.posixToMillis (InstructorInvite.expirationToPosix (InstructorInvite.inviteExpiration invite))) &&
+                                              (InstructorInvite.email inv == InstructorInvite.email invite)) || 
+                                             (InstructorInvite.email inv /= InstructorInvite.email invite))
+                        i
+                ) 
+                invitations
     in
     InstructorProfile id ts admin new_invites uname logout_uri
 
