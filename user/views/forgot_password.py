@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Dict
+from typing import Dict, TypeVar
 from django.http import JsonResponse
 from django import forms
 from django.urls import reverse
@@ -14,6 +14,7 @@ from ereadingtool.user import INTERNAL_RESET_SESSION_TOKEN
 from mixins.view import NoAuthElmLoadJsView
 from user.views.api import APIView
 
+Form = TypeVar('Form', bound=forms.Form)
 
 class ElmLoadPassResetConfirmView(NoAuthElmLoadJsView):
     token_generator = default_token_generator
@@ -111,13 +112,13 @@ class PasswordResetConfirmAPIView(APIView):
                                         'redirect': str(user.profile.login_url)}))
 
 
-    def post_error(self, errors: dict) -> JsonResponse:
+    def post_error(self, errors: dict, request: HttpRequest, form: Form) -> JsonResponse:
         """ Things went wrong in the `post()` method below."""
         if not errors:
             errors['all'] = 'An unspecified error has occurred.'
             return JsonResponse(errors, status=400) 
         else:
-            return JsonResponse(errors, status=403)
+           return JsonResponse(errors, status=403)
 
 
 class PasswordResetAPIView(APIView):
