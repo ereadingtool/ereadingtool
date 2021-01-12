@@ -31,7 +31,7 @@ import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
 import Text.Model as Text
 import User.Profile as Profile
-import User.Student.Performance.Report as PerformanceReport exposing (PerformanceMetrics, PerformanceReport)
+import User.Student.Performance.Report as PerformanceReport exposing (PerformanceReport)
 import User.Student.Profile as StudentProfile exposing (StudentProfile, performanceReport)
 import User.Student.Profile.Help as Help exposing (StudentHelp)
 import User.Student.Resource as StudentResource
