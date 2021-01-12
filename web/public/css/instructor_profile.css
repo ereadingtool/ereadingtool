@@ -27,8 +27,9 @@
 }
 
 #invite_msg {
-  background-color: lightgray;
+  background-color: #eeeeee;
   border-radius: 2px;
+  padding: 5px;
 }
 
 .invite > .label {
