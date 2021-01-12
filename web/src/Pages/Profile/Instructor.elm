@@ -288,6 +288,8 @@ viewInstructorInvites (SafeModel model) =
             [ span [ class "profile_item_title" ] [ Html.text "Invitations" ]
             , span [ class "profile_item_value" ]
                 [ div [ class "list" ] <|
+                    [ viewInstructorInviteMsg (SafeModel model) ]
+                    ++
                     List.map (viewInstructorInvite model.timezone) invites
                         ++ [ viewInstructorInviteCreate (SafeModel model) ]
                 ]
@@ -314,6 +316,22 @@ viewInstructorInvite timezone invite =
                     )
             ]
         ]
+
+
+
+viewInstructorInviteMsg : SafeModel -> Html Msg
+viewInstructorInviteMsg (SafeModel model) =
+    div [id "invite_msg"] [ Html.text
+                        """
+                        After creating an invitation, send the new content creator the invite code and ask
+                        them to sign up at
+                        """
+                        , Html.a [ href "https://stepstoadvancedreading.org/signup/instructor"] [ text "https://stepstoadvancedreading.org/signup/instructor"]
+                        , Html.text
+                        """  before the expiration
+                        time. The content creator will not be emailed automatically.
+                        """
+                    ]
 
 
 viewInstructorInviteCreate : SafeModel -> Html Msg

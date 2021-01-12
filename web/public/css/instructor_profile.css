@@ -26,6 +26,11 @@
   overflow-x: auto;
 }
 
+#invite_msg {
+  background-color: lightgray;
+  border-radius: 2px;
+}
+
 .invite > .label {
   margin-top: 5px;
 }
