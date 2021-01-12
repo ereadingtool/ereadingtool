@@ -4,9 +4,13 @@ module User.Student.Performance.Report exposing
     , emptyPerformanceReport
     , metrics
     , performanceReportDecoder
+    , view
     )
 
 import Dict exposing (Dict)
+import Html exposing (..)
+import Html.Attributes exposing (rowspan)
+import Infobar exposing (view)
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (custom, required)
 
@@ -21,7 +25,7 @@ type alias PerformanceReport =
 
 
 type alias PerformanceMetrics =
-    { percentCorrect : Float
+    { textsStarted : Int
     , textsComplete : Int
     , totalTexts : Int
     }
@@ -44,7 +48,7 @@ metrics timePeriod metricsDict =
             dict
 
         Nothing ->
-            { percentCorrect = 0
+            { textsStarted = 0
             , textsComplete = 0
             , totalTexts = 0
             }
@@ -68,7 +72,92 @@ metricsDecoder : Decoder PerformanceMetrics
 metricsDecoder =
     Decode.field "metrics"
         (Decode.succeed PerformanceMetrics
-            |> required "percent_correct" (Decode.oneOf [ Decode.float, Decode.null 0 ])
-            |> required "texts_complete" Decode.int
+            -- |> required "percent_correct" (Decode.oneOf [ Decode.float, Decode.null 0 ])
+            |> required "in_progress" Decode.int
+            |> required "complete" Decode.int
             |> required "total_texts" Decode.int
         )
+
+
+
+-- VIEW
+
+
+view : PerformanceReport -> Html msg
+view performanceReport =
+    div []
+        [ table [] <|
+            [ tr []
+                [ th [] [ text "Level" ]
+                , th [] [ text "Time Period" ]
+                , th [] [ text "Texts Started" ]
+                , th [] [ text "Texts Completed" ]
+                ]
+            ]
+                ++ viewPerformanceLevelRow "All" performanceReport.all
+                ++ viewPerformanceLevelRow "Intermediate-Mid" performanceReport.intermediateMid
+                ++ viewPerformanceLevelRow "Intermediate-High" performanceReport.intermediateHigh
+                ++ viewPerformanceLevelRow "Advanced-Low" performanceReport.advancedLow
+                ++ viewPerformanceLevelRow "Advanced-Mid" performanceReport.advancedMid
+        ]
+
+
+viewPerformanceLevelRow : String -> Dict String PerformanceMetrics -> List (Html msg)
+viewPerformanceLevelRow level metricsDict =
+    let
+        cumulative =
+            metrics "cumulative" metricsDict
+
+        currentMonth =
+            metrics "current_month" metricsDict
+
+        pastMonth =
+            metrics "past_month" metricsDict
+    in
+    [ tr []
+        [ td [ rowspan 4 ] [ text level ]
+        ]
+    , tr []
+        [ td [] [ text "Cumulative" ]
+        , td [] [ viewTextsStartedCell cumulative ]
+        , td [] [ viewTextsReadCell cumulative ]
+        ]
+    , tr []
+        [ td [] [ text "Current Month" ]
+        , td [] [ viewTextsStartedCell currentMonth ]
+        , td [] [ viewTextsReadCell currentMonth ]
+        ]
+    , tr []
+        [ td [] [ text "Past Month" ]
+        , td [] [ viewTextsStartedCell pastMonth ]
+        , td [] [ viewTextsReadCell pastMonth ]
+        ]
+    ]
+
+
+viewTextsStartedCell : PerformanceMetrics -> Html msg
+viewTextsStartedCell performanceMetrics =
+    text <|
+        String.join " " <|
+            [ String.fromInt performanceMetrics.textsStarted
+            , "out of"
+            , String.fromInt performanceMetrics.totalTexts
+            ]
+
+
+viewTextsReadCell : PerformanceMetrics -> Html msg
+viewTextsReadCell performanceMetrics =
+    text <|
+        String.join " " <|
+            [ String.fromInt performanceMetrics.textsComplete
+            , "out of"
+            , String.fromInt performanceMetrics.totalTexts
+            ]
+
+
+
+-- viewPercentCorrectCell : PerformanceMetrics -> Html Msg
+-- viewPercentCorrectCell metrics =
+--     text <|
+--         String.fromFloat metrics.percentCorrect
+--             ++ "%"

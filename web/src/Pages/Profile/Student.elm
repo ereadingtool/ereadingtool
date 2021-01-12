@@ -614,7 +614,7 @@ viewStudentPerformance (SafeModel model) =
             ++ [ span [ class "profile_item_title" ] [ Html.text "My Performance: " ]
                , span [ class "profile_item_value" ]
                     [ div [ class "performance_report" ]
-                        [ viewPerformanceReportTable (StudentProfile.performanceReport model.profile)
+                        [ PerformanceReport.view (StudentProfile.performanceReport model.profile)
                         ]
                     ]
                , div [ class "performance_download_link" ]
@@ -634,75 +634,6 @@ viewStudentPerformance (SafeModel model) =
                         ]
                     ]
                ]
-
-
-viewPerformanceReportTable : PerformanceReport -> Html Msg
-viewPerformanceReportTable performanceReport =
-    div []
-        [ table [] <|
-            [ tr []
-                [ th [] [ text "Level" ]
-                , th [] [ text "Time Period" ]
-                , th [] [ text "Number of Texts Read" ]
-                , th [] [ text "Percent Correct" ]
-                ]
-            ]
-                ++ viewPerformanceLevelRow "All" performanceReport.all
-                ++ viewPerformanceLevelRow "Intermediate-Mid" performanceReport.intermediateMid
-                ++ viewPerformanceLevelRow "Intermediate-High" performanceReport.intermediateHigh
-                ++ viewPerformanceLevelRow "Advanced-Low" performanceReport.advancedLow
-                ++ viewPerformanceLevelRow "Advanced-Mid" performanceReport.advancedMid
-        ]
-
-
-viewPerformanceLevelRow : String -> Dict String PerformanceMetrics -> List (Html Msg)
-viewPerformanceLevelRow level metricsDict =
-    let
-        cumulative =
-            PerformanceReport.metrics "cumulative" metricsDict
-
-        currentMonth =
-            PerformanceReport.metrics "current_month" metricsDict
-
-        pastMonth =
-            PerformanceReport.metrics "past_month" metricsDict
-    in
-    [ tr []
-        [ td [ rowspan 4 ] [ text level ]
-        ]
-    , tr []
-        [ td [] [ text "Cumulative" ]
-        , td [] [ viewTextsReadCell cumulative ]
-        , td [] [ viewPercentCorrectCell cumulative ]
-        ]
-    , tr []
-        [ td [] [ text "Current Month" ]
-        , td [] [ viewTextsReadCell currentMonth ]
-        , td [] [ viewPercentCorrectCell currentMonth ]
-        ]
-    , tr []
-        [ td [] [ text "Past Month" ]
-        , td [] [ viewTextsReadCell pastMonth ]
-        , td [] [ viewPercentCorrectCell pastMonth ]
-        ]
-    ]
-
-
-viewTextsReadCell : PerformanceMetrics -> Html Msg
-viewTextsReadCell metrics =
-    text <|
-        String.join " " <|
-            [ String.fromInt metrics.textsComplete
-            , "out of"
-            , String.fromInt metrics.totalTexts
-            ]
-
-
-viewPercentCorrectCell : PerformanceMetrics -> Html Msg
-viewPercentCorrectCell metrics =
-    text <|
-        String.fromFloat metrics.percentCorrect
-            ++ "%"
 
 
 viewFlashcards : SafeModel -> Html Msg
