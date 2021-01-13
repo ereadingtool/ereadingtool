@@ -143,8 +143,6 @@ type Msg
     | NextHint
       -- performance report
     | SelectReportTab PerformanceReport.Tab
-      -- site-wide messages
-    | Logout
 
 
 update : Msg -> SafeModel -> ( SafeModel, Cmd Msg )
@@ -302,11 +300,6 @@ update msg (SafeModel model) =
         SelectReportTab reportTab ->
             ( SafeModel { model | performanceReportTab = reportTab }
             , Cmd.none
-            )
-
-        Logout ->
-            ( SafeModel model
-            , Api.logout ()
             )
 
 
