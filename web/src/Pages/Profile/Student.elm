@@ -31,7 +31,7 @@ import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
 import Text.Model as Text
 import User.Profile as Profile
-import User.Student.Performance.Report as PerformanceReport exposing (PerformanceMetrics, PerformanceReport)
+import User.Student.Performance.Report as PerformanceReport exposing (PerformanceReport, Tab(..))
 import User.Student.Profile as StudentProfile exposing (StudentProfile, performanceReport)
 import User.Student.Profile.Help as Help exposing (StudentHelp)
 import User.Student.Resource as StudentResource
@@ -84,9 +84,10 @@ type SafeModel
         , consentedToResearch : Bool
         , flashcards : Maybe (List String)
         , editing : Dict String Bool
-        , errorMessage : String
-        , help : Help.StudentProfileHelp
         , usernameValidation : UsernameValidation
+        , performanceReportTab : PerformanceReport.Tab
+        , help : Help.StudentProfileHelp
+        , errorMessage : String
         , errors : Dict String String
         }
 
@@ -106,6 +107,7 @@ init shared { params } =
         , flashcards = Nothing
         , editing = Dict.empty
         , usernameValidation = { username = Nothing, valid = Nothing, msg = Nothing }
+        , performanceReportTab = Completion
         , help = help
         , errorMessage = ""
         , errors = Dict.empty
@@ -139,8 +141,8 @@ type Msg
     | CloseHint StudentHelp
     | PreviousHint
     | NextHint
-      -- site-wide messages
-    | Logout
+      -- performance report
+    | SelectReportTab PerformanceReport.Tab
 
 
 update : Msg -> SafeModel -> ( SafeModel, Cmd Msg )
@@ -295,9 +297,9 @@ update msg (SafeModel model) =
         NextHint ->
             ( SafeModel { model | help = Help.next model.help }, Help.scrollToNextMsg model.help )
 
-        Logout ->
-            ( SafeModel model
-            , Api.logout ()
+        SelectReportTab reportTab ->
+            ( SafeModel { model | performanceReportTab = reportTab }
+            , Cmd.none
             )
 
 
@@ -614,7 +616,11 @@ viewStudentPerformance (SafeModel model) =
             ++ [ span [ class "profile_item_title" ] [ Html.text "My Performance: " ]
                , span [ class "profile_item_value" ]
                     [ div [ class "performance_report" ]
-                        [ viewPerformanceReportTable (StudentProfile.performanceReport model.profile)
+                        [ PerformanceReport.view
+                            { performanceReport = StudentProfile.performanceReport model.profile
+                            , selectedTab = model.performanceReportTab
+                            , onSelectReport = SelectReportTab
+                            }
                         ]
                     ]
                , div [ class "performance_download_link" ]
@@ -634,75 +640,6 @@ viewStudentPerformance (SafeModel model) =
                         ]
                     ]
                ]
-
-
-viewPerformanceReportTable : PerformanceReport -> Html Msg
-viewPerformanceReportTable performanceReport =
-    div []
-        [ table [] <|
-            [ tr []
-                [ th [] [ text "Level" ]
-                , th [] [ text "Time Period" ]
-                , th [] [ text "Number of Texts Read" ]
-                , th [] [ text "Percent Correct" ]
-                ]
-            ]
-                ++ viewPerformanceLevelRow "All" performanceReport.all
-                ++ viewPerformanceLevelRow "Intermediate-Mid" performanceReport.intermediateMid
-                ++ viewPerformanceLevelRow "Intermediate-High" performanceReport.intermediateHigh
-                ++ viewPerformanceLevelRow "Advanced-Low" performanceReport.advancedLow
-                ++ viewPerformanceLevelRow "Advanced-Mid" performanceReport.advancedMid
-        ]
-
-
-viewPerformanceLevelRow : String -> Dict String PerformanceMetrics -> List (Html Msg)
-viewPerformanceLevelRow level metricsDict =
-    let
-        cumulative =
-            PerformanceReport.metrics "cumulative" metricsDict
-
-        currentMonth =
-            PerformanceReport.metrics "current_month" metricsDict
-
-        pastMonth =
-            PerformanceReport.metrics "past_month" metricsDict
-    in
-    [ tr []
-        [ td [ rowspan 4 ] [ text level ]
-        ]
-    , tr []
-        [ td [] [ text "Cumulative" ]
-        , td [] [ viewTextsReadCell cumulative ]
-        , td [] [ viewPercentCorrectCell cumulative ]
-        ]
-    , tr []
-        [ td [] [ text "Current Month" ]
-        , td [] [ viewTextsReadCell currentMonth ]
-        , td [] [ viewPercentCorrectCell currentMonth ]
-        ]
-    , tr []
-        [ td [] [ text "Past Month" ]
-        , td [] [ viewTextsReadCell pastMonth ]
-        , td [] [ viewPercentCorrectCell pastMonth ]
-        ]
-    ]
-
-
-viewTextsReadCell : PerformanceMetrics -> Html Msg
-viewTextsReadCell metrics =
-    text <|
-        String.join " " <|
-            [ String.fromInt metrics.textsComplete
-            , "out of"
-            , String.fromInt metrics.totalTexts
-            ]
-
-
-viewPercentCorrectCell : PerformanceMetrics -> Html Msg
-viewPercentCorrectCell metrics =
-    text <|
-        String.fromFloat metrics.percentCorrect
-            ++ "%"
 
 
 viewFlashcards : SafeModel -> Html Msg

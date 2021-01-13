@@ -1,8 +1,10 @@
+<style>td {text-align: center;} </style>
+<h1>Text Completion</h1>
 <table border="1">
     <th>Level</th>
     <th>Time Period</th>
-    <th>Number of Texts Read</th>
-    <th>Percent Correct</th>
+    <th>Texts Started</th>
+    <th>Texts Completed</th>
 
     {% for difficulty_key, difficulty in performance_report.items %}
         <tr>
@@ -12,10 +14,45 @@
         {% for category_key, report in difficulty.categories.items %}
             <tr>
                 <td>{{ report.title }}</td>
-                <td>{{ report.metrics.texts_complete }} out of {{ report.metrics.total_texts }}</td>
-                <td>{{ report.metrics.percent_correct|default_if_none:0 }}%</td>
+                <td>{{ report.metrics.in_progress }} out of {{ report.metrics.total_texts }}</td>
+                <td>{{ report.metrics.complete }} out of {{ report.metrics.total_texts }}</td>
             </tr>
         {% endfor %}
-
     {% endfor %}
 </table>
+<br>
+<br>
+<h1>First Time Comprehension</h1>
+<table border="1">
+    <th>Level</th>
+    <th>First Time Correct Answers</th>
+    <th>Percentage of Answers Correct</th>
+
+    <tr>
+        <td>{{ performance_report.all.title }}</td>
+        <td>{{ performance_report.all.categories.cumulative.metrics.first_time_correct }}</td>
+        <td>{{ performance_report.all.categories.cumulative.metrics.percent_correct }}%</td>
+    </tr>
+    <tr>
+        <td>{{ performance_report.intermediate_mid.title }}</td>
+        <td>{{ performance_report.intermediate_mid.categories.cumulative.metrics.first_time_correct }}</td>
+        <td>{{ performance_report.intermediate_mid.categories.cumulative.metrics.percent_correct }}%</td>
+    </tr>
+    <tr>
+        <td>{{ performance_report.intermediate_high.title }}</td>
+        <td>{{ performance_report.intermediate_high.categories.cumulative.metrics.first_time_correct }}</td>
+        <td>{{ performance_report.intermediate_high.categories.cumulative.metrics.percent_correct }}%</td>
+    </tr>
+    <tr>
+        <td>{{ performance_report.advanced_low.title }}</td>
+        <td>{{ performance_report.advanced_low.categories.cumulative.metrics.first_time_correct }}</td>
+        <td>{{ performance_report.advanced_low.categories.cumulative.metrics.percent_correct }}%</td>
+    </tr>
+    <tr>
+        <td>{{ performance_report.advanced_mid.title }}</td>
+        <td>{{ performance_report.advanced_mid.categories.cumulative.metrics.first_time_correct }}</td>
+        <td>{{ performance_report.advanced_mid.categories.cumulative.metrics.percent_correct }}%</td>
+    </tr>
+</table>
+
+{{ report.first_time_correct }}

@@ -11,6 +11,8 @@ from text_reading.exceptions import (TextReadingException, TextReadingNotAllQues
                                      TextReadingQuestionNotInSection)
 from user.models import ReaderUser
 
+from first_time_correct.models import FirstTimeCorrect
+
 from auth.producer_auth import jwt_validation 
 
 class Unauthorized(Exception):
@@ -76,9 +78,14 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             if not user.id:
                 raise InvalidTokenError
         except InvalidTokenError:
+            # **** if the connection is already open here, that means they've started the text 
+            # with a valid JWT..? If that's the case, they've timed out :/ 
+            # We must mark this as their first attempt and invalidate their JWT.
             await self.send_json({'error': 'Invalid JWT'})
             await self.close(code=1000) 
 
+
+        # TODO: what to do if TextReadingException happens
         answer = await get_answer_or_error(answer_id=answer_id, user=user)
 
         try:
@@ -106,6 +113,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
             if not user.id:
                 raise InvalidTokenError
         except InvalidTokenError:
+            # ****
             await self.send_json({'error': 'Invalid JWT'})
             await self.close(code=1000)
 
@@ -153,6 +161,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         if not self.scope['user'].id:
             await self.accept()
+            # ****
             await self.send_json({'error': 'Invalid JWT'})
             # 1002 indicates that an endpoint is terminating the connection due
             # to a protocol error. But it doesn't like that so we use 1000.
@@ -167,7 +176,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
                 self.text = await get_text_or_error(text_id=text_id, user=user)
 
                 if not self.text:
-                    raise
+                    raise()
 
                 started, self.text_reading = await self.start_reading()
 
@@ -225,3 +234,16 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
 
         except TextReadingException as e:
             await self.send_json({'error': {'code': e.code, 'error_msg': e.error_msg}})
+
+
+    async def disconnect(self, code):
+        # check to see if they've started this text once before
+        if not FirstTimeCorrect.objects.filter(student=self.student, text=self.text).exists():
+            # create an entry in the first_time_correct table logging the student, their text, and their score
+            try:
+                ftc = FirstTimeCorrect(student=self.student, text=self.text, num_correct=self.text_reading.score["section_scores"]) 
+                ftc.save()
+            except BaseException as be:
+                pass
+
+        return super().disconnect(code)
