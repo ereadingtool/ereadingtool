@@ -31,7 +31,7 @@ import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
 import Text.Model as Text
 import User.Profile as Profile
-import User.Student.Performance.Report as PerformanceReport exposing (PerformanceReport)
+import User.Student.Performance.Report as PerformanceReport exposing (PerformanceReport, Tab(..))
 import User.Student.Profile as StudentProfile exposing (StudentProfile, performanceReport)
 import User.Student.Profile.Help as Help exposing (StudentHelp)
 import User.Student.Resource as StudentResource
@@ -84,9 +84,10 @@ type SafeModel
         , consentedToResearch : Bool
         , flashcards : Maybe (List String)
         , editing : Dict String Bool
-        , errorMessage : String
-        , help : Help.StudentProfileHelp
         , usernameValidation : UsernameValidation
+        , performanceReportTab : PerformanceReport.Tab
+        , help : Help.StudentProfileHelp
+        , errorMessage : String
         , errors : Dict String String
         }
 
@@ -106,6 +107,7 @@ init shared { params } =
         , flashcards = Nothing
         , editing = Dict.empty
         , usernameValidation = { username = Nothing, valid = Nothing, msg = Nothing }
+        , performanceReportTab = Completion
         , help = help
         , errorMessage = ""
         , errors = Dict.empty
@@ -139,6 +141,8 @@ type Msg
     | CloseHint StudentHelp
     | PreviousHint
     | NextHint
+      -- performance report
+    | SelectReportTab PerformanceReport.Tab
       -- site-wide messages
     | Logout
 
@@ -294,6 +298,11 @@ update msg (SafeModel model) =
 
         NextHint ->
             ( SafeModel { model | help = Help.next model.help }, Help.scrollToNextMsg model.help )
+
+        SelectReportTab reportTab ->
+            ( SafeModel { model | performanceReportTab = reportTab }
+            , Cmd.none
+            )
 
         Logout ->
             ( SafeModel model
@@ -614,7 +623,11 @@ viewStudentPerformance (SafeModel model) =
             ++ [ span [ class "profile_item_title" ] [ Html.text "My Performance: " ]
                , span [ class "profile_item_value" ]
                     [ div [ class "performance_report" ]
-                        [ PerformanceReport.view (StudentProfile.performanceReport model.profile)
+                        [ PerformanceReport.view
+                            { performanceReport = StudentProfile.performanceReport model.profile
+                            , selectedTab = model.performanceReportTab
+                            , onSelectReport = SelectReportTab
+                            }
                         ]
                     ]
                , div [ class "performance_download_link" ]

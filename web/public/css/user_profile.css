@@ -157,6 +157,31 @@ table th {
   background: darkgrey;
 }
 
+.performance-report-tabs {
+  display: inline-block;
+  margin-bottom: 10px;
+
+  border: 1px #999999 solid;
+  border-radius: 2%;
+
+  font-size: 14px;
+
+  cursor: pointer;
+}
+
+.performance-report-tab {
+  display: inline-block;
+  padding: 7px;
+}
+
+.selected-performance-report-tab {
+  display: inline-block;
+  padding: 7px;
+
+  color: #ffffff;
+  background-color: #0054a6;
+}
+
 .performance_report {
   margin-top: 10px;
 }

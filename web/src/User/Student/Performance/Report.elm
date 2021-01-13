@@ -1,5 +1,6 @@
 module User.Student.Performance.Report exposing
     ( PerformanceReport
+    , Tab(..)
     , emptyPerformanceReport
     , performanceReportDecoder
     , view
@@ -7,16 +8,23 @@ module User.Student.Performance.Report exposing
 
 import Dict exposing (Dict)
 import Html exposing (..)
-import Html.Attributes exposing (rowspan)
+import Html.Attributes exposing (class, rowspan)
+import Html.Events exposing (onClick)
 import Infobar exposing (view)
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (custom, required)
+import Task exposing (perform)
 
 
 type alias PerformanceReport =
     { completion : CompletionReport
     , comprehension : ComprehensionReport
     }
+
+
+type Tab
+    = Completion
+    | Comprehension
 
 
 type alias CompletionReport =
@@ -76,7 +84,7 @@ emptyPerformanceReport =
 emptyComprehensionMetrics : ComprehensionMetrics
 emptyComprehensionMetrics =
     { firstTimeCorrectAnswers = 0
-    , firstTimePercentCorrect = 0
+    , firstTimePercentCorrect = 0.0
     }
 
 
@@ -151,27 +159,68 @@ completionMetrics timePeriod metricsDict =
 -- VIEW
 
 
-view : PerformanceReport -> Html msg
-view performanceReport =
+view :
+    { performanceReport : PerformanceReport
+    , selectedTab : Tab
+    , onSelectReport : Tab -> msg
+    }
+    -> Html msg
+view { performanceReport, selectedTab, onSelectReport } =
     div []
-        [ table [] <|
-            [ tr []
-                [ th [] [ text "Level" ]
-                , th [] [ text "Time Period" ]
-                , th [] [ text "Texts Started" ]
-                , th [] [ text "Texts Completed" ]
+        [ div [ class "performance-report-tabs" ]
+            [ span
+                [ case selectedTab of
+                    Completion ->
+                        class "selected-performance-report-tab"
+
+                    Comprehension ->
+                        class "performance-report-tab"
+                , onClick (onSelectReport Completion)
                 ]
+                [ text "Completion" ]
+            , span
+                [ case selectedTab of
+                    Completion ->
+                        class "performance-report-tab"
+
+                    Comprehension ->
+                        class "selected-performance-report-tab"
+                , onClick (onSelectReport Comprehension)
+                ]
+                [ text "First Time Comprehension" ]
             ]
-                ++ viewPerformanceLevelRow "All" performanceReport.completion.all
-                ++ viewPerformanceLevelRow "Intermediate-Mid" performanceReport.completion.intermediateMid
-                ++ viewPerformanceLevelRow "Intermediate-High" performanceReport.completion.intermediateHigh
-                ++ viewPerformanceLevelRow "Advanced-Low" performanceReport.completion.advancedLow
-                ++ viewPerformanceLevelRow "Advanced-Mid" performanceReport.completion.advancedMid
+        , case selectedTab of
+            Completion ->
+                viewCompletionReportTable performanceReport.completion
+
+            Comprehension ->
+                viewComprehensionReportTable performanceReport.comprehension
         ]
 
 
-viewPerformanceLevelRow : String -> Dict String CompletionMetrics -> List (Html msg)
-viewPerformanceLevelRow level metricsDict =
+
+-- VIEW: COMPLETION
+
+
+viewCompletionReportTable : CompletionReport -> Html msg
+viewCompletionReportTable completion =
+    table [] <|
+        [ tr []
+            [ th [] [ text "Level" ]
+            , th [] [ text "Time Period" ]
+            , th [] [ text "Texts Started" ]
+            , th [] [ text "Texts Completed" ]
+            ]
+        ]
+            ++ viewCompletionRow "All" completion.all
+            ++ viewCompletionRow "Intermediate-Mid" completion.intermediateMid
+            ++ viewCompletionRow "Intermediate-High" completion.intermediateHigh
+            ++ viewCompletionRow "Advanced-Low" completion.advancedLow
+            ++ viewCompletionRow "Advanced-Mid" completion.advancedMid
+
+
+viewCompletionRow : String -> Dict String CompletionMetrics -> List (Html msg)
+viewCompletionRow level metricsDict =
     let
         cumulative =
             completionMetrics "cumulative" metricsDict
@@ -224,8 +273,34 @@ viewTextsReadCell metrics =
 
 
 
--- viewPercentCorrectCell : PerformanceMetrics -> Html Msg
--- viewPercentCorrectCell metrics =
---     text <|
---         String.fromFloat metrics.percentCorrect
---             ++ "%"
+-- VIEW: COMPREHENSION
+
+
+viewComprehensionReportTable : ComprehensionReport -> Html msg
+viewComprehensionReportTable comprehension =
+    table [] <|
+        [ tr []
+            [ th [] [ text "Level" ]
+            , th [] [ text "Answers Correct" ]
+            , th [] [ text "Percent Correct" ]
+            ]
+        ]
+            ++ viewComprehensionRow "All" comprehension.all
+            ++ viewComprehensionRow "Intermediate-Mid" comprehension.intermediateMid
+            ++ viewComprehensionRow "Intermediate-High" comprehension.intermediateHigh
+            ++ viewComprehensionRow "Advanced-Low" comprehension.advancedLow
+            ++ viewComprehensionRow "Advanced-Mid" comprehension.advancedMid
+
+
+viewComprehensionRow : String -> ComprehensionMetrics -> List (Html msg)
+viewComprehensionRow level metrics =
+    [ tr []
+        [ td [] [ text level ]
+        , td [] [ text (String.fromInt metrics.firstTimeCorrectAnswers) ]
+        , td []
+            [ text <|
+                String.fromFloat metrics.firstTimePercentCorrect
+                    ++ "%"
+            ]
+        ]
+    ]
