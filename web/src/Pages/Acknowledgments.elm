@@ -34,10 +34,10 @@ view : Url Params -> Document Msg
 view { params } =
     { title = "Acknowledgments"
     , body =
-        [ div [ id "body" ]
+        [ div [ id "acknowledgements-body" ]
             [ div [ id "acknowledgements" ]
                 [ div [ id "title" ] [ text "Acknowledgements" ]
-                , p []
+                , p [ id "acknowledgements-intro" ]
                     [ text
                         """                        
                         This site is being developed at Portland State University by the Russian Flagship Center under the Collaborative

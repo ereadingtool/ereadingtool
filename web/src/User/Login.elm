@@ -96,15 +96,16 @@ viewEmailInput { onEmailUpdate, errors } =
             else
                 []
     in
-    [ div [ class "login_label" ] [ span [] [ Html.text "E-mail Address:" ] ]
-    , Html.input
-        ([ id "email-input"
+    [ div [ class "email-input-container"]
+        [ Html.input
+        ([ class "email-input"
          , attribute "size" "25"
+         , attribute "placeholder" "Email Address"
          , onInput onEmailUpdate
          ]
             ++ emailErrorClass
         )
-        []
+        [] ]
     , case Dict.get "email" errors of
         Just errorMsg ->
             div [] [ Html.em [] [ Html.text errorMsg ] ]
@@ -137,12 +138,11 @@ viewPasswordInput { onPasswordUpdate, onSubmittedForm, errors } =
                 Nothing ->
                     Html.text ""
     in
-    [ div [ class "login_label" ]
-        [ span [] [ Html.text "Password:" ] ]
-    , Html.input
+    [ Html.input
         ([ id "password-input"
          , attribute "size" "35"
          , attribute "type" "password"
+         , attribute "placeholder" "Password"
          , onInput onPasswordUpdate
          , Utils.onEnterUp onSubmittedForm
          ]

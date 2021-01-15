@@ -47,7 +47,7 @@
 
 .signup_title {
     grid-column: content;
-    font-size: x-large;
+    font-size: 32px;
 }
 
 .input_error {
@@ -111,7 +111,7 @@ select {
 
     .signup_title {
         font-family: "Open Sans";
-        font-size: 21px;
+        font-size: 32px;
     }
 
     .headline {

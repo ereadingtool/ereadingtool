@@ -38,7 +38,7 @@ input {
 
 .login_label,
 .signup_label {
-  display: inline-block;
+  display: grid;
   padding-top: 20px;
   -webkit-padding-before: 2.5%;
 }
@@ -66,8 +66,9 @@ input {
 }
 
 .signup_title {
-  grid-column: content;
-  font-size: x-large;
+  font-size: 32px;
+  display: grid;
+  align-items: center;
 }
 
 .input_error {
@@ -91,9 +92,9 @@ select {
 }
 
 .welcome_msg {
-  grid-column: content;
   display: grid;
   margin-bottom: 10px;
+  margin-top: 15px;
   font-size: larger;
 }
 
@@ -143,8 +144,8 @@ select {
   }
 
   .signup_title {
-    font-family: 'Open Sans';
-    font-size: 21px;
+    font-family: 'Helvetica Neue';
+    font-size: 32px;
   }
 
   .headline {

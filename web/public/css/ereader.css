@@ -472,3 +472,12 @@ body {
 #acknowledgements a:hover {
   text-decoration: underline;
 }
+
+.email-input-container {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.email-input {
+  line-height: 40px;
+}
