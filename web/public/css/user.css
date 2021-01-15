@@ -69,8 +69,6 @@ input {
   font-size: 32px;
   display: grid;
   align-items: center;
-  /* grid-column: content;
-  font-size: x-large; */
 }
 
 .input_error {

@@ -31,9 +31,17 @@
 }
 
 #about {
-    padding-top: 5%;
-    grid-column: body-col;
     display: grid;
+    grid-auto-rows: minmax(65px, auto);
+    margin-bottom: 0;
+    grid-template-columns: 7% 13% [content] auto 13% 7%;
+}
+
+#about-box {
+    grid-column: content;
+    display: grid;
+    grid-template-columns: auto;
+    grid-auto-rows: minmax(50px, auto);
 }
 
 #about > #title {
