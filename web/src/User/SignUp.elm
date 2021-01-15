@@ -7,7 +7,7 @@ module User.SignUp exposing
 
 import Dict exposing (Dict)
 import Html exposing (Html, div)
-import Html.Attributes exposing (attribute, class, classList)
+import Html.Attributes exposing (attribute, class, classList, id)
 import Html.Events exposing (onClick, onInput)
 import Menu.Msg as MenuMsg
 import Utils exposing (isValidEmail)
@@ -36,8 +36,9 @@ viewEmailInput { errors, onEmailInput } =
             else
                 []
     in
-    [ viewSignupLabel (Html.text "Email Address")
-    , Html.input ([ attribute "size" "25", onInput onEmailInput ] ++ errorClass) []
+    [ div [ class "input-container" ] [
+        Html.input ([ class "email-input", onInput onEmailInput, attribute "size" "25", attribute "placeholder" "Email Address" ] ++ errorClass) []
+        ]
     ]
         ++ errorMessage
 
@@ -86,17 +87,20 @@ viewPasswordInputs options =
                         [ attribute "type" "password" ]
                    )
     in
-    [ viewSignupLabel
-        (Html.span []
-            [ Html.text "Password "
-            , Html.span [ onClick options.onShowPasswordToggle, attribute "class" "cursor" ]
-                [ Html.text "(show)" ]
-            ]
+    [ div [ class "input-container" ] [
+        Html.input (onInput options.onPasswordInput :: attributes ++ [ attribute "placeholder" "Password", class "email-input" ]) []
+        , (if options.showPasswords then
+            Html.span [ onClick options.onShowPasswordToggle, id "show-password-button" ]
+                [ Html.img [ id "visibility-image", attribute "src" "/public/img/visibility_off-24px.svg" ] [] ]
+            else
+            Html.span [ onClick options.onShowPasswordToggle, id "show-password-button" ]
+                [ Html.img [ id "visibility-image", attribute "src" "/public/img/visibility-24px.svg" ] [] ]
         )
-    , Html.input (onInput options.onPasswordInput :: attributes) []
+        ]
     , passwordErrorMessage
-    , viewSignupLabel (Html.text "Confirm Password")
-    , Html.input (onInput options.onConfirmPasswordInput :: attributes) []
+    , div [ class "input-container" ][ 
+        Html.input (onInput options.onConfirmPasswordInput :: attributes ++ [ attribute "placeholder" "Confirm Password" , class "password-input" ]) []
+    ]
     , confirmErrorMessage
     ]
 

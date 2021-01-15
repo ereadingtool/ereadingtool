@@ -96,7 +96,7 @@ viewEmailInput { onEmailUpdate, errors } =
             else
                 []
     in
-    [ div [ class "email-input-container"]
+    [ div [ class "input-container"]
         [ Html.input
         ([ class "email-input"
          , attribute "size" "25"
@@ -138,17 +138,19 @@ viewPasswordInput { onPasswordUpdate, onSubmittedForm, errors } =
                 Nothing ->
                     Html.text ""
     in
-    [ Html.input
-        ([ id "password-input"
-         , attribute "size" "35"
-         , attribute "type" "password"
-         , attribute "placeholder" "Password"
-         , onInput onPasswordUpdate
-         , Utils.onEnterUp onSubmittedForm
-         ]
-            ++ passwordErrorClass
-        )
-        []
+    [ div [ class "input-container" ] [
+        Html.input
+            ([ class "password-input"
+            , attribute "size" "35"
+            , attribute "type" "password"
+            , attribute "placeholder" "Password"
+            , onInput onPasswordUpdate
+            , Utils.onEnterUp onSubmittedForm
+            ]
+                ++ passwordErrorClass
+            )
+            []
+        ]
     , passwordErrorMessage
     ]
 
