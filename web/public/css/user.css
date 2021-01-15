@@ -96,6 +96,7 @@ select {
 .welcome_msg {
   display: grid;
   margin-bottom: 10px;
+  margin-top: 15px;
   font-size: larger;
 }
 
