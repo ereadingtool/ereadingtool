@@ -32,6 +32,15 @@
   padding: 5px;
 }
 
+#invite_msg a {
+  color: #00478f;
+  text-decoration: none 
+}
+
+#invite_msg a:hover {
+  text-decoration: underline;
+}
+
 .invite > .label {
   margin-top: 5px;
 }
