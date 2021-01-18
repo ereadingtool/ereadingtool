@@ -209,7 +209,10 @@ view_difficulty_choices model =
     , Html.select
         [ onInput UpdateDifficulty
         ]
-        [ Html.optgroup []
+        [ Html.optgroup [] <|
+            -- (Html.option [ attribute "disabled" "", attribute "selected" ""] [ Html.text "asdf" ])
+            (Html.option [ ] [ Html.text "asdf" ])
+            ::
             (List.map
                 (\( k, v ) ->
                     Html.option

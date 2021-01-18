@@ -566,16 +566,6 @@ body {
   cursor: pointer;
 }
 
-.input_error {
-  border: 1px solid #ff0000;
-  background-color: #ffeeee;
-  line-height: 40px;
-}
-
-.input_valid {
-  line-height: 40px;
-}
-
 .error {
   background-color: #ffeeee;
   font-size: 15px;

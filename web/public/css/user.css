@@ -72,16 +72,6 @@ input {
   align-items: center;
 }
 
-.input_error {
-  border: 1px solid #ff0000;
-  background-color: #ffeeee;
-  line-height: 40px;
-}
-
-.input_valid {
-  line-height: 40px;
-}
-
 select {
   border: 0;
   border-radius: 0;

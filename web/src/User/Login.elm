@@ -94,7 +94,7 @@ viewEmailInput { onEmailUpdate, errors } =
                 [ attribute "class" "input_error" ]
 
             else
-                []
+                [ attribute "class" "input_valid" ]
     in
     [ div [ class "input-container"]
         [ Html.input
