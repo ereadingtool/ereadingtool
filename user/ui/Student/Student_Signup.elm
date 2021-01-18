@@ -20,6 +20,8 @@ module Student.Student_Signup exposing
     , view_student_welcome_msg
     )
 
+import Browser
+import Browser.Navigation
 import Dict exposing (Dict)
 import Flags
 import Html exposing (Html, div, span)
@@ -31,8 +33,6 @@ import Json.Decode
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode
 import Menu.Msg as MenuMsg
-import Browser
-import Browser.Navigation
 import SignUp
 import Text.Model exposing (TextDifficulty)
 import User.Flags.UnAuthed exposing (UnAuthedUserFlags)
@@ -209,22 +209,23 @@ view_difficulty_choices model =
     , Html.select
         [ onInput UpdateDifficulty
         ]
-        [ Html.optgroup []
-            (List.map
-                (\( k, v ) ->
-                    Html.option
-                        (attribute "value" k
-                            :: (if v == model.signup_params.difficulty then
-                                    [ attribute "selected" "" ]
+        [ Html.optgroup [] <|
+            -- (Html.option [ attribute "disabled" "", attribute "selected" ""] [ Html.text "asdf" ])
+            Html.option [] [ Html.text "asdf" ]
+                :: List.map
+                    (\( k, v ) ->
+                        Html.option
+                            (attribute "value" k
+                                :: (if v == model.signup_params.difficulty then
+                                        [ attribute "selected" "" ]
 
-                                else
-                                    []
-                               )
-                        )
-                        [ Html.text v ]
-                )
-                model.flags.difficulties
-            )
+                                    else
+                                        []
+                                   )
+                            )
+                            [ Html.text v ]
+                    )
+                    model.flags.difficulties
         ]
     ]
 

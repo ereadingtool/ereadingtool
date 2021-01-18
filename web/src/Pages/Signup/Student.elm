@@ -260,38 +260,38 @@ viewContent model =
     div [ classList [ ( "signup", True ) ] ]
         [ div [ classList [ ( "signup_box", True ) ] ] <|
             [ div [ class "signup_title" ] [ Html.text "Student Signup" ] ]
-            ++ [ viewStudentWelcomeMsg ]
-            ++ SignUp.viewEmailInput
-                { errors = model.errors
-                , onEmailInput = UpdateEmail
-                }
-            ++ SignUp.viewPasswordInputs
-                { showPasswords = model.showPasswords
-                , errors = model.errors
-                , onShowPasswordToggle = ToggleShowPassword
-                , onPasswordInput = UpdatePassword
-                , onConfirmPasswordInput = UpdateConfirmPassword
-                }
-            ++ viewDifficultyChoices model
-            ++ SignUp.viewInternalErrorMessage model.errors
-            ++ [ Html.div
-                    [ attribute "class" "signup_label" ]
-                    [ if
-                        not (Dict.isEmpty model.errors)
-                            || String.isEmpty model.signupParams.email
-                            || String.isEmpty model.signupParams.password
-                            || String.isEmpty model.signupParams.confirmPassword
-                        then
-                        div [ class "button", class "disabled" ]
-                            [ div [ class "signup_submit" ] [ Html.span [] [ Html.text "Sign Up" ] ]
-                            ]
+                ++ [ viewStudentWelcomeMsg ]
+                ++ SignUp.viewEmailInput
+                    { errors = model.errors
+                    , onEmailInput = UpdateEmail
+                    }
+                ++ SignUp.viewPasswordInputs
+                    { showPasswords = model.showPasswords
+                    , errors = model.errors
+                    , onShowPasswordToggle = ToggleShowPassword
+                    , onPasswordInput = UpdatePassword
+                    , onConfirmPasswordInput = UpdateConfirmPassword
+                    }
+                ++ viewDifficultyChoices model
+                ++ SignUp.viewInternalErrorMessage model.errors
+                ++ [ Html.div
+                        [ attribute "class" "signup_label" ]
+                        [ if
+                            not (Dict.isEmpty model.errors)
+                                || String.isEmpty model.signupParams.email
+                                || String.isEmpty model.signupParams.password
+                                || String.isEmpty model.signupParams.confirmPassword
+                          then
+                            div [ class "button", class "disabled" ]
+                                [ div [ class "signup_submit" ] [ Html.span [] [ Html.text "Sign Up" ] ]
+                                ]
 
-                        else
-                        div [ class "button", onClick SubmittedForm, class "cursor" ]
-                            [ div [ class "signup_submit" ] [ Html.span [] [ Html.text "Sign Up" ] ]
-                            ]
-                    ]
-                ]
+                          else
+                            div [ class "button", onClick SubmittedForm, class "cursor" ]
+                                [ div [ class "signup_submit" ] [ Html.span [] [ Html.text "Sign Up" ] ]
+                                ]
+                        ]
+                   ]
         ]
 
 
@@ -331,26 +331,25 @@ viewStudentWelcomeMsg =
 
 viewDifficultyChoices : Model -> List (Html Msg)
 viewDifficultyChoices model =
-    [ Html.div [ class "signup_label " ] [ Html.text "Choose a preferred difficulty:" ]
-    , Html.select
+    [ Html.select
         [ onInput UpdateDifficulty
         ]
-        [ Html.optgroup []
-            (List.map
-                (\( k, v ) ->
-                    Html.option
-                        (attribute "value" k
-                            :: (if v == model.signupParams.difficulty then
-                                    [ attribute "selected" "" ]
+        [ Html.optgroup [] <|
+            Html.option [ attribute "disabled" "", attribute "selected" "" ] [ Html.text "Choose a preferred difficulty:" ]
+                :: List.map
+                    (\( k, v ) ->
+                        Html.option
+                            (attribute "value" k
+                                :: (if v == model.signupParams.difficulty then
+                                        [ attribute "selected" "" ]
 
-                                else
-                                    []
-                               )
-                        )
-                        [ Html.text v ]
-                )
-                model.difficulties
-            )
+                                    else
+                                        []
+                                   )
+                            )
+                            [ Html.text v ]
+                    )
+                    model.difficulties
         ]
     ]
 
