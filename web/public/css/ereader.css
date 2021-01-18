@@ -341,6 +341,21 @@ body {
   cursor: pointer;
 }
 
+.cursor-container {
+  margin-left: 5px;
+}
+
+#show-password-button {
+  grid-row-start:inherit;
+  cursor: pointer;
+}
+
+#visibility-image {
+  position: absolute;
+  padding-top: 12px;
+  padding-left: 5px;
+}
+
 .hidden {
   visibility: hidden;
 }
@@ -473,11 +488,29 @@ body {
   text-decoration: underline;
 }
 
-.email-input-container {
-  margin-top: 20px;
-  margin-bottom: 20px;
+/* ********************** Form inputs ***************************** */
+
+.input-container {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .email-input {
   line-height: 40px;
 }
+
+.password-input {
+  line-height: 40px;
+}
+
+.input_error {
+  border: 1px solid #ff0000;
+  background-color: #ffeeee;
+  line-height: 40px;
+}
+
+.input_valid {
+  line-height: 40px;
+}
+
+/* **************************************************************** */

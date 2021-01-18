@@ -53,6 +53,7 @@ input {
   display: inline-block;
   padding-top: 5px;
   -webkit-padding-before: 0.5%;
+  line-height: 40px;
 }
 
 .signup_submit,
@@ -69,11 +70,6 @@ input {
   font-size: 32px;
   display: grid;
   align-items: center;
-}
-
-.input_error {
-  border: 1px solid #ff0000;
-  background-color: #ffeeee;
 }
 
 select {

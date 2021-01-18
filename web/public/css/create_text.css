@@ -566,11 +566,6 @@ body {
   cursor: pointer;
 }
 
-.input_error {
-  border: 1px solid #ff0000;
-  background-color: #ffeeee;
-}
-
 .error {
   background-color: #ffeeee;
   font-size: 15px;

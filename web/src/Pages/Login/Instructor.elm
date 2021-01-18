@@ -129,9 +129,9 @@ viewContent model =
             , onPasswordUpdate = UpdatePassword
             , onSubmittedForm = SubmittedLogin
             , signUpRoute = Route.Signup__Instructor
-            , loginRole = "Content Editor Login" 
+            , loginRole = "Content Editor Login"
             , otherLoginRole = "student"
-            , otherLoginRoute = Route.Top
+            , otherLoginRoute = Route.Login__Student
             , maybeHelpMessage = Nothing
             , errors = model.errors
             }

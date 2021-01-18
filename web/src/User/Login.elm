@@ -45,7 +45,7 @@ viewLoginForm :
     , onPasswordUpdate : String -> msg
     , onSubmittedForm : msg
     , signUpRoute : Route
-    , loginRole: String
+    , loginRole : String
     , otherLoginRole : String
     , otherLoginRoute : Route
     , maybeHelpMessage : Maybe String
@@ -57,7 +57,7 @@ viewLoginForm loginOptions =
         viewLoginFormTitle loginOptions.loginRole
             ++ viewEmailInput
                 { onEmailUpdate = loginOptions.onEmailUpdate
-                , errors = loginOptions.errors 
+                , errors = loginOptions.errors
                 }
             ++ viewPasswordInput
                 { onPasswordUpdate = loginOptions.onPasswordUpdate
@@ -79,8 +79,9 @@ viewLoginForm loginOptions =
 
 
 viewLoginFormTitle : String -> List (Html msg)
-viewLoginFormTitle loginRole = 
-    [ div [ class "login_role" ] [ Html.text loginRole ] ] 
+viewLoginFormTitle loginRole =
+    [ div [ class "login_role" ] [ Html.text loginRole ] ]
+
 
 viewEmailInput :
     { onEmailUpdate : String -> msg
@@ -94,18 +95,19 @@ viewEmailInput { onEmailUpdate, errors } =
                 [ attribute "class" "input_error" ]
 
             else
-                []
+                [ attribute "class" "input_valid" ]
     in
-    [ div [ class "email-input-container"]
+    [ div [ class "input-container" ]
         [ Html.input
-        ([ class "email-input"
-         , attribute "size" "25"
-         , attribute "placeholder" "Email Address"
-         , onInput onEmailUpdate
-         ]
-            ++ emailErrorClass
-        )
-        [] ]
+            ([ class "email-input"
+             , attribute "size" "25"
+             , attribute "placeholder" "Email Address"
+             , onInput onEmailUpdate
+             ]
+                ++ emailErrorClass
+            )
+            []
+        ]
     , case Dict.get "email" errors of
         Just errorMsg ->
             div [] [ Html.em [] [ Html.text errorMsg ] ]
@@ -138,17 +140,19 @@ viewPasswordInput { onPasswordUpdate, onSubmittedForm, errors } =
                 Nothing ->
                     Html.text ""
     in
-    [ Html.input
-        ([ id "password-input"
-         , attribute "size" "35"
-         , attribute "type" "password"
-         , attribute "placeholder" "Password"
-         , onInput onPasswordUpdate
-         , Utils.onEnterUp onSubmittedForm
-         ]
-            ++ passwordErrorClass
-        )
-        []
+    [ div [ class "input-container" ]
+        [ Html.input
+            ([ class "password-input"
+             , attribute "size" "35"
+             , attribute "type" "password"
+             , attribute "placeholder" "Password"
+             , onInput onPasswordUpdate
+             , Utils.onEnterUp onSubmittedForm
+             ]
+                ++ passwordErrorClass
+            )
+            []
+        ]
     , passwordErrorMessage
     ]
 
