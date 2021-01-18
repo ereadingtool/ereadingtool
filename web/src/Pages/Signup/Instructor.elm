@@ -269,8 +269,8 @@ view model =
     , body =
         [ div []
             [ div [ classList [ ( "signup", True ) ] ]
-                [ div [ class "signup_title" ] [ Html.text "Instructor Signup" ]
-                , div [ classList [ ( "signup_box", True ) ] ] <|
+                [ div [ classList [ ( "signup_box", True ) ] ] <|
+                 [ div [ class "signup_title" ] [ Html.text "Instructor Signup" ] ] ++
                     SignUp.viewEmailInput
                         { errors = model.errors
                         , onEmailInput = UpdateEmail

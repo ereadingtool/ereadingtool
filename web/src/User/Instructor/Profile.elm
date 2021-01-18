@@ -117,7 +117,12 @@ addInvite : InstructorProfile -> InstructorInvite -> InstructorProfile
 addInvite (InstructorProfile id ts admin invitations uname logout_uri) invite =
     let
         new_invites =
-            Maybe.map (\i -> i ++ [ invite ]) invitations
+            Maybe.map
+                (\invs ->
+                    invite
+                        :: List.filter (\inv -> InstructorInvite.email inv /= InstructorInvite.email invite) invs
+                )
+                invitations
     in
     InstructorProfile id ts admin new_invites uname logout_uri
 

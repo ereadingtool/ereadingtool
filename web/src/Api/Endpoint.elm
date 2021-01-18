@@ -28,7 +28,6 @@ module Api.Endpoint exposing
 import Http
 import Task exposing (Task)
 import Url.Builder exposing (QueryParameter)
-import User.Student.Performance.Report exposing (performanceReportDecoder)
 
 
 type Endpoint

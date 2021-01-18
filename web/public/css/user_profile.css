@@ -85,11 +85,23 @@ table th {
 .feedback {
   display: grid;
   grid-row: 5;
-
   font-size: larger;
-
   grid-template-columns: auto;
   grid-template-rows: 25px 35px;
+  margin:20px;
+}
+
+.feedback a {
+  color: #00478f;
+  text-decoration: none
+}
+
+.feedback a:hover {
+  text-decoration: underline; 
+}
+
+.feedback span {
+  padding: 5px;
 }
 
 #flashcards {
@@ -111,6 +123,15 @@ table th {
   grid-template-rows: auto 35px 60px;
   grid-row-gap: 10px;
   margin-bottom: 15px;
+}
+
+#research_consent a {
+  color: #00478f;
+  text-decoration: none;
+}
+
+#research_consent a:hover {
+  text-decoration: underline;
 }
 
 #research_consent > .value > .check-box {
@@ -157,12 +178,46 @@ table th {
   background: darkgrey;
 }
 
+.performance-report-tabs {
+  display: inline-block;
+  margin-bottom: 10px;
+
+  border: 1px #999999 solid;
+  border-radius: 2%;
+
+  font-size: 14px;
+
+  cursor: pointer;
+}
+
+.performance-report-tab {
+  display: inline-block;
+  padding: 7px;
+}
+
+.selected-performance-report-tab {
+  display: inline-block;
+  padding: 7px;
+
+  color: #ffffff;
+  background-color: #0054a6;
+}
+
 .performance_report {
   margin-top: 10px;
 }
 
 .performance_download_link {
   margin-top: 10px;
+}
+
+.performance_download_link a {
+  color: #00478f;
+  text-decoration: none
+}
+
+.performance_download_link a:hover {
+  text-decoration: underline;
 }
 
 .text_readings_values {
@@ -274,11 +329,6 @@ table th {
 
 #search_text_menu_item_hint {
   top: 50px;
-}
-
-.input_error {
-  border: 1px solid #ff0000;
-  background-color: #ffeeee;
 }
 
 @media only screen and (min-device-width: 320px) and (max-device-width: 768px) {

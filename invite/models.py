@@ -40,5 +40,5 @@ class Invite(models.Model):
         return {
             'email': self.email,
             'invite_code': self.key,
-            'expiration': self.created.isoformat()
+            'expiration': self.expiration_dt.isoformat()
         }

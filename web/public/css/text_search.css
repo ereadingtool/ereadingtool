@@ -220,6 +220,15 @@
   text-align: center;
 }
 
+.result_item_title a {
+  color: #00478f;
+  text-decoration: none;
+}
+
+.result_item_title a:hover {
+  text-decoration: underline; 
+}
+
 .result_item {
   display: grid;
 
