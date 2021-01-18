@@ -99,7 +99,8 @@ viewEmailInput { onEmailUpdate, errors } =
     in
     [ div [ class "input-container" ]
         [ Html.input
-            ([ class "email-input"
+            ([ id "email-input"
+             , class "email-input"
              , attribute "size" "25"
              , attribute "placeholder" "Email Address"
              , onInput onEmailUpdate
@@ -142,7 +143,8 @@ viewPasswordInput { onPasswordUpdate, onSubmittedForm, errors } =
     in
     [ div [ class "input-container" ]
         [ Html.input
-            ([ class "password-input"
+            ([ id "password-input"
+             , class "password-input"
              , attribute "size" "35"
              , attribute "type" "password"
              , attribute "placeholder" "Password"
