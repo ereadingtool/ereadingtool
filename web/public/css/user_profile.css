@@ -334,6 +334,11 @@ table th {
 .input_error {
   border: 1px solid #ff0000;
   background-color: #ffeeee;
+  line-height: 40px;
+}
+
+.input_valid {
+  line-height: 40px;
 }
 
 @media only screen and (min-device-width: 320px) and (max-device-width: 768px) {

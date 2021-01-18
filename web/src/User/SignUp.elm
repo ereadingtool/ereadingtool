@@ -34,10 +34,12 @@ viewEmailInput { errors, onEmailInput } =
                 [ attribute "class" "input_error" ]
 
             else
-                []
+                [ attribute "class" "input_valid" ]
     in
     [ div [ class "input-container" ] [
-        Html.input ([ class "email-input", onInput onEmailInput, attribute "size" "25", attribute "placeholder" "Email Address" ] ++ errorClass) []
+        div [ class "email-input" ] [
+            Html.input ([ class "email-input", onInput onEmailInput, attribute "size" "25", attribute "placeholder" "Email Address" ] ++ errorClass) []
+            ]
         ]
     ]
         ++ errorMessage
@@ -78,7 +80,7 @@ viewPasswordInputs options =
                         [ attribute "class" "input_error" ]
 
                     else
-                        []
+                        [ attribute "class" "input_valid"]
                    )
                 ++ (if options.showPasswords then
                         [ attribute "type" "text" ]
