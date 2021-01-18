@@ -369,7 +369,7 @@ checkWord validWord =
 
 isLeadingPunctuation : Char -> Bool
 isLeadingPunctuation char =
-    (char == '«' || char == '"' || char == '„')
+    (char == '«' || char == '"' || char == '„' || char == '“')
         || (char == '(' || char == '[' || char == '{' || char == '<')
 
 
@@ -377,7 +377,7 @@ isTrailingPunctuation : Char -> Bool
 isTrailingPunctuation char =
     (char == ',' || char == '.' || char == '!' || char == '?')
         || (char == ':' || char == ';')
-        || (char == '»' || char == '"' || char == '“')
+        || (char == '»' || char == '"' || char == '“' || char == '”')
         || (char == ')' || char == ']' || char == '}' || char == '>')
         || (char == '…')
 
