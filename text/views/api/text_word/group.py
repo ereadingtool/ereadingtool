@@ -117,7 +117,7 @@ class TextWordGroupAPIView(APIView):
     @jwt_valid()
     def delete(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         try:
-            rows, deleted = TextWordGroup.objects.filter(pk=kwargs['pk']).delete()
+            rows, deleted = TextWordGroup.objects.filter(pk=kwargs['textphrase_ptr_id']).delete()
 
             return HttpResponse(json.dumps({'deleted': rows > 0}), content_type='application/json')
         except (TextWordGroup.DoesNotExist, KeyError):
