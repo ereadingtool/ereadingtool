@@ -789,6 +789,7 @@ body {
 
 .merge-highlight {
   background: lightblue;
+  cursor: pointer;
 }
 
 /* Handle CSS cascades from upgrade*/
