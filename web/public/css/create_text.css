@@ -808,6 +808,7 @@ body {
 
 .edit-translations-icon {
   padding-left: 10px;
+  cursor: pointer;
 }
 
 .edit-text-section {
