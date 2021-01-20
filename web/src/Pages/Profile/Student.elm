@@ -115,6 +115,10 @@ init shared { params } =
     , Cmd.batch
         [ Help.scrollToFirstMsg help
         , Api.websocketDisconnectAll
+        , getStudentProfile
+            shared.session
+            shared.config
+            (Profile.toStudentProfile shared.profile)
         ]
     )
 
@@ -301,6 +305,23 @@ update msg (SafeModel model) =
             ( SafeModel { model | performanceReportTab = reportTab }
             , Cmd.none
             )
+
+
+getStudentProfile : Session -> Config -> StudentProfile -> Cmd Msg
+getStudentProfile session config profile =
+    case StudentProfile.studentID profile of
+        Just studentId ->
+            Api.getDetailed
+                (Endpoint.studentProfile
+                    (Config.restApiUrl config)
+                    studentId
+                )
+                (Session.cred session)
+                GotProfile
+                StudentProfile.decoder
+
+        Nothing ->
+            Cmd.none
 
 
 putProfile :
