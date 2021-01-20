@@ -93,6 +93,8 @@ class ParseTextSectionForDefinitions(SyncConsumer):
 
         log_msgs = log(f'Finished parsing translations for text section pk={message["text_section_pk"]}', log_msgs)
 
+        text_section.translation_service_processed = 1
+
         text_section.save()
 
         return text_section, log_msgs

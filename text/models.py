@@ -260,6 +260,7 @@ class TextSection(TextSectionDefinitionsMixin, Timestamped, models.Model):
 
     order = models.IntegerField()
     body = models.TextField()
+    translation_service_processed = models.IntegerField(default=0)
 
     @classmethod
     def to_json_schema(cls) -> Dict:
