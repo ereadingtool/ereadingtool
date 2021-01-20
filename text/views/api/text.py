@@ -1,4 +1,5 @@
 import json
+from report.models import StudentReadingsComplete
 import jsonschema
 from typing import TypeVar, Optional, List, Dict, AnyStr, Union, Set
 
@@ -280,6 +281,11 @@ class TextAPIView(APIView):
 
     def get_texts_queryset(self, user: Union[Student, Instructor], statuses: Set, filter_by: Dict):
         all_statuses = dict(text_statuses)
+
+        try:
+            q = StudentReadingsComplete.objects.filter(student_id=136).aggregate(models.Count(distinct=True, expression='text'))
+        except BaseException as be:
+            pass
 
         text_queryset = user.text_search_queryset.filter(**filter_by)
         text_queryset_for_user = user.text_search_queryset_for_user.filter(**filter_by)
