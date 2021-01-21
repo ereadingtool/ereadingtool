@@ -6,6 +6,7 @@ from django.utils import timezone
 Student = TypeVar('Student')
 
 class StudentFirstTimeCorrect(models.Model):
+    id = models.BigIntegerField(primary_key=True)
     text = models.ForeignKey(Text, on_delete=models.DO_NOTHING)
     student = models.ForeignKey('user.Student', on_delete=models.DO_NOTHING)
     num_correct = models.IntegerField()
@@ -17,9 +18,9 @@ class StudentFirstTimeCorrect(models.Model):
         db_table = 'report_first_time_correct'
 
 class StudentReadingsInProgress(models.Model):
+    id = models.BigIntegerField(primary_key=True)
     student = models.ForeignKey('user.Student', on_delete=models.DO_NOTHING)
     text = models.ForeignKey(Text, on_delete=models.DO_NOTHING)
-    text_reading = models.ForeignKey('text_reading.StudentTextReading', on_delete=models.DO_NOTHING)
     start_dt = models.DateTimeField()
     text_difficulty_slug = models.SlugField(blank=False)
 
@@ -29,9 +30,9 @@ class StudentReadingsInProgress(models.Model):
 
 
 class StudentReadingsComplete(models.Model):
+    id = models.BigIntegerField(primary_key=True)
     student = models.ForeignKey('user.Student', on_delete=models.DO_NOTHING)
     text = models.ForeignKey(Text, on_delete=models.DO_NOTHING)
-    text_reading = models.ForeignKey('text_reading.StudentTextReading', on_delete=models.DO_NOTHING)
     start_dt = models.DateTimeField()
     end_dt = models.DateTimeField()
     text_difficulty_slug = models.SlugField(blank=False)

@@ -1,5 +1,5 @@
 import json
-from report.models import StudentReadingsComplete
+from report.models import StudentReadingsComplete, StudentReadingsInProgress
 import jsonschema
 from typing import TypeVar, Optional, List, Dict, AnyStr, Union, Set
 
@@ -282,46 +282,68 @@ class TextAPIView(APIView):
     def get_texts_queryset(self, user: Union[Student, Instructor], statuses: Set, filter_by: Dict):
         all_statuses = dict(text_statuses)
 
-        try:
-            q = StudentReadingsComplete.objects.filter(student_id=136).aggregate(models.Count(distinct=True, expression='text'))
-        except BaseException as be:
-            pass
-
-        text_queryset = user.text_search_queryset.filter(**filter_by)
-        text_queryset_for_user = user.text_search_queryset_for_user.filter(**filter_by)
-
-        unread_text_queryset_for_user = user.unread_text_queryset
-
         status_filters = []
+        if not statuses:
+            return Text.objects.filter(**filter_by)
 
-        # filter doesn't apply
-        if statuses == set(all_statuses):
-            return text_queryset
+        # https://stackoverflow.com/questions/16475384/rename-a-dictionary-key
+        view_filter_by = {'text_difficulty_slug' if k == 'difficulty__slug__in' else k:v for k,v in filter_by.items()}
+
+        # there is always a single difficulty
+        view_filter_by['text_difficulty_slug'] = view_filter_by['text_difficulty_slug'][0]
+
+        view_filter_by['student_id'] = user.id
 
         if statuses == {'unread'}:
-            return unread_text_queryset_for_user.filter(**filter_by)
+            # (all texts) - (complete U in_progress)
 
-        if 'read' in statuses:
-            status_filters.append(models.Q(num_of_complete__gte=1) & models.Q(num_of_in_progress=0))
+            all_texts = set(Text.objects.filter(**filter_by).all())
 
-        if 'in_progress' in statuses:
-            status_filters.append(models.Q(num_of_in_progress__gte=1) & models.Q(num_of_complete=0))
+            l1 = []
 
-        status_filter = or_filters(status_filters)
+            # src is a StudentReadingsComplete object
+            for src in StudentReadingsComplete.objects.filter(**view_filter_by).all():
+                if src.text not in l1:
+                    l1.append(src.text)
 
-        if status_filter:
-            text_queryset_for_user = text_queryset_for_user.filter(status_filter)
+            l2 = []
+            for srip in StudentReadingsInProgress.objects.filter(**view_filter_by).all():
+                if srip.text not in l2:
+                    l2.append(srip.text)
 
-        if 'unread' in statuses:
-            # (set of unread texts by user) | (set of texts read by user that are in_progress or read)
-            return unread_text_queryset_for_user.filter(**filter_by).union(
-                text_queryset_for_user
-            )
+            l3 = set(l1 + l2)
 
-        if statuses:
-            return text_queryset_for_user
+            # set difference
+            soln = all_texts - l3
+
+            return soln
+
+        elif 'read' in statuses:
+            # texts in report_texts_complete 
+            soln = []
+
+            # src is a StudentReadingsComplete object
+            for src in StudentReadingsComplete.objects.filter(**view_filter_by).all():
+                if src.text not in soln:
+                    soln.append(src.text)
+
+            return soln
+
+        elif 'in_progress' in statuses:
+            # texts in report_texts_in_progress
+            soln = []
+
+            # srip is a StudentReadingsInProgress object
+            for srip in StudentReadingsInProgress.objects.filter(**view_filter_by).all():
+                if srip.text not in soln:
+                    soln.append(srip.text)
+
+            return soln
+
         else:
-            return text_queryset
+            # shouldn't reach this. Return all texts for some difficulty anyways.
+            return Text.objects.filter(**filter_by)
+
 
     def validate_params(self, text_params: AnyStr, text: Optional['Text'] = None) -> (Dict, Dict, HttpResponse):
         errors = resp = text_sections_params = None
