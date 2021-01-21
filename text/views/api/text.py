@@ -280,9 +280,6 @@ class TextAPIView(APIView):
             return HttpResponse(json.dumps(texts))
 
     def get_texts_queryset(self, user: Union[Student, Instructor], statuses: Set, filter_by: Dict):
-        all_statuses = dict(text_statuses)
-
-        status_filters = []
         if not statuses:
             return Text.objects.filter(**filter_by)
 
@@ -299,46 +296,20 @@ class TextAPIView(APIView):
 
             all_texts = set(Text.objects.filter(**filter_by).all())
 
-            l1 = []
-
-            # src is a StudentReadingsComplete object
-            for src in StudentReadingsComplete.objects.filter(**view_filter_by).all():
-                if src.text not in l1:
-                    l1.append(src.text)
-
-            l2 = []
-            for srip in StudentReadingsInProgress.objects.filter(**view_filter_by).all():
-                if srip.text not in l2:
-                    l2.append(srip.text)
-
-            l3 = set(l1 + l2)
+            l1 = StudentReadingsComplete.get_texts(view_filter_by)
+            l2 = StudentReadingsInProgress.get_texts(view_filter_by)
 
             # set difference
-            soln = all_texts - l3
+            soln = all_texts - set(l1 + l2)
 
             return soln
 
         elif 'read' in statuses:
-            # texts in report_texts_complete 
-            soln = []
+            return StudentReadingsComplete.get_texts(view_filter_by)
 
-            # src is a StudentReadingsComplete object
-            for src in StudentReadingsComplete.objects.filter(**view_filter_by).all():
-                if src.text not in soln:
-                    soln.append(src.text)
-
-            return soln
-
+        # Note that texts can be completed but still shown as in_progress
         elif 'in_progress' in statuses:
-            # texts in report_texts_in_progress
-            soln = []
-
-            # srip is a StudentReadingsInProgress object
-            for srip in StudentReadingsInProgress.objects.filter(**view_filter_by).all():
-                if srip.text not in soln:
-                    soln.append(srip.text)
-
-            return soln
+            return StudentReadingsInProgress.get_texts(view_filter_by)
 
         else:
             # shouldn't reach this. Return all texts for some difficulty anyways.

@@ -28,6 +28,15 @@ class StudentReadingsInProgress(models.Model):
         managed = False
         db_table = 'report_texts_in_progress'
 
+    def get_texts(filter_by: Dict):
+        soln = []
+        # srip is a StudentReadingsInProgress object
+        for srip in StudentReadingsInProgress.objects.filter(**filter_by).all():
+            if srip.text not in soln:
+                soln.append(srip.text)
+
+        return soln
+
 
 class StudentReadingsComplete(models.Model):
     id = models.BigIntegerField(primary_key=True)
@@ -40,6 +49,17 @@ class StudentReadingsComplete(models.Model):
     class Meta:
         managed = False
         db_table = 'report_texts_complete'
+
+    def get_texts(filter_by: Dict):
+        # texts in report_texts_complete
+        soln = []
+
+        # src is a StudentReadingsComplete object
+        for src in StudentReadingsComplete.objects.filter(**filter_by).all():
+            if src.text not in soln:
+                soln.append(src.text)
+
+        return soln
 
 
 class StudentPerformanceReport(object):
