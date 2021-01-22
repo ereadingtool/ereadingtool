@@ -2,7 +2,7 @@ name: django-tests
 on: 
   push:
     branches:
-      - 'feature/gh-actions'
+      - 'feature/ci-cd-with-actions'
     paths-ignore:
       - 'README'
       - '.gitignore'
