@@ -597,12 +597,9 @@ class TestText(TestData, TestUser, TestCase):
         if diff_data:
             text_data.update(diff_data)
 
-        # bearer_token = {'Authorization': 'Bearer ' + jwt}
-
         resp = self.instructor.post(reverse_lazy('text-api'),
                                     json.dumps(text_data),
                                     content_type='application/json')
-                                    # headers=bearer_token)
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
