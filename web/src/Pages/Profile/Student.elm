@@ -10,15 +10,13 @@ import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
 import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
-import Help.View exposing (ArrowPlacement(..), ArrowPosition(..), view_hint_overlay)
+import Help.View exposing (ArrowPlacement(..), ArrowPosition(..))
 import Html exposing (..)
-import Html.Attributes exposing (attribute, class, classList, href, id, rowspan)
+import Html.Attributes exposing (attribute, class, classList, id)
 import Html.Events exposing (onClick, onInput)
-import Html.Parser
-import Html.Parser.Util
 import Http exposing (..)
 import Http.Detailed
-import Json.Decode as Decode exposing (Decoder)
+import Json.Decode as Decode
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode exposing (Value)
 import Markdown
@@ -31,12 +29,10 @@ import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
 import Text.Model as Text
 import User.Profile as Profile
-import User.Student.Performance.Report as PerformanceReport exposing (PerformanceReport, Tab(..))
-import User.Student.Profile as StudentProfile exposing (StudentProfile, performanceReport)
+import User.Student.Performance.Report as PerformanceReport exposing (Tab(..))
+import User.Student.Profile as StudentProfile exposing (StudentProfile)
 import User.Student.Profile.Help as Help exposing (StudentHelp)
 import User.Student.Resource as StudentResource
-import Utils
-import Viewer exposing (Viewer)
 import Views
 
 
@@ -115,6 +111,10 @@ init shared { params } =
     , Cmd.batch
         [ Help.scrollToFirstMsg help
         , Api.websocketDisconnectAll
+        , getStudentProfile
+            shared.session
+            shared.config
+            (Profile.toStudentProfile shared.profile)
         ]
     )
 
@@ -301,6 +301,23 @@ update msg (SafeModel model) =
             ( SafeModel { model | performanceReportTab = reportTab }
             , Cmd.none
             )
+
+
+getStudentProfile : Session -> Config -> StudentProfile -> Cmd Msg
+getStudentProfile session config profile =
+    case StudentProfile.studentID profile of
+        Just studentId ->
+            Api.getDetailed
+                (Endpoint.studentProfile
+                    (Config.restApiUrl config)
+                    studentId
+                )
+                (Session.cred session)
+                GotProfile
+                StudentProfile.decoder
+
+        Nothing ->
+            Cmd.none
 
 
 putProfile :
@@ -607,10 +624,6 @@ viewUserEmail (SafeModel model) =
 
 viewStudentPerformance : SafeModel -> Html Msg
 viewStudentPerformance (SafeModel model) =
-    let
-        performanceReport =
-            StudentProfile.performanceReport model.profile
-    in
     div [ class "performance" ] <|
         viewPerformanceHint (SafeModel model)
             ++ [ span [ class "profile_item_title" ] [ Html.text "My Performance: " ]
@@ -724,12 +737,10 @@ viewResearchConsent (SafeModel model) =
 viewShowHelp : SafeModel -> Html Msg
 viewShowHelp (SafeModel model) =
     div [] <|
-        [ div [ id "show-help" ]
+        div [ id "show-help" ]
             [ span [ class "profile_item_title" ] [ Html.text "Show Hints" ]
             , span []
-                [ Html.text """
-          Turn the site tutorials on or off.
-          """
+                [ Html.text "Turn the site tutorials on or off."
                 ]
             , span [ class "value" ] <|
                 [ div
@@ -743,8 +754,7 @@ viewShowHelp (SafeModel model) =
                 , div [ class "check-box-text" ] [ Html.text "Show hints" ]
                 ]
             ]
-        ]
-            ++ viewShowHelpHint (SafeModel model)
+            :: viewShowHelpHint (SafeModel model)
 
 
 
