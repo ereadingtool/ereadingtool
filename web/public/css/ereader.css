@@ -495,12 +495,24 @@ body {
   margin-bottom: 10px;
 }
 
-.email-input {
+#email-input {
+  border: solid #0054a6;
+  border-radius: 1em;
   line-height: 40px;
 }
 
+#email-input:placeholder-shown {
+  padding-left: 7px;
+}
+
 .password-input {
+  border:#0054a6 solid;
+  border-radius: 1em;
   line-height: 40px;
+}
+
+.password-input:placeholder-shown {
+  padding-left: 7px;
 }
 
 .input_error {
