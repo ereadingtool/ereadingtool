@@ -39,6 +39,8 @@ type Msg
     | DeletedTextWord (Result Http.Error TextWord)
     | UpdatedTextWord (Result Http.Error TextWord)
     | UpdatedTextWords (Result Http.Error (List TextWord))
+    | UnmergeWord TextWord
+    | UnmergedWord (Result Http.Error Bool)
       -- translations
     | UpdateTextTranslations (Result Http.Error (Array (Dict Text.Translations.Word (Array TextWord))))
     | UpdateTextTranslation (Result Http.Error ( TextWord, Translation ))
