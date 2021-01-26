@@ -49,10 +49,6 @@ class TestTextWordGroup(TestUser, TestCase):
 
     def test_remove_grouping(self):
 
-        jwt = os.getenv("TEST_JWT")
-        if not jwt:
-            raise ValueError("You need to set the environment variable TEST_JWT.")
-
         text_words = self.test_create_grouped_words()
 
         text_group = text_words[0].group_word.group
