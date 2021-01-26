@@ -90,10 +90,6 @@ class TestUser(TestCase):
               username: Optional[AnyStr] = None,
               password: Optional[AnyStr] = None) -> Client:
 
-        jwt = os.getenv("TEST_JWT")
-        if not jwt:
-            raise ValueError("You need to set the environment variable TEST_JWT.")
-
         # get JWT token
         login_resp = client.post(endpoint, json.dumps({
             'username': username or user.username,
