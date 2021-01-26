@@ -518,3 +518,8 @@ body {
 .merge {
   cursor: pointer;
 }
+
+/* Hint box link color */
+span.cursor {
+  color: #00478f;
+}
