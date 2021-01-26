@@ -144,7 +144,6 @@ viewPasswordInput { onPasswordUpdate, onSubmittedForm, errors } =
     [ div [ class "input-container" ]
         [ Html.input
             ([ id "password-input"
-             , class "password-input"
              , attribute "size" "35"
              , attribute "type" "password"
              , attribute "placeholder" "Password"

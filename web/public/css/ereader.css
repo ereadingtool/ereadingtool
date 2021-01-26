@@ -496,23 +496,25 @@ body {
 }
 
 #email-input {
-  border: solid #0054a6;
-  border-radius: 1em;
+  border: solid lightgray;
+  border-radius: 2px;
   line-height: 40px;
 }
 
-#email-input:placeholder-shown {
-  padding-left: 7px;
-}
-
-.password-input {
-  border:#0054a6 solid;
-  border-radius: 1em;
+.email-input {
+  border: solid lightgray;
+  border-radius: 2px;
   line-height: 40px;
 }
 
-.password-input:placeholder-shown {
-  padding-left: 7px;
+:placeholder-shown {
+  text-indent: 5px;
+}
+
+#password-input {
+  border: solid lightgray;
+  border-radius: 2px;
+  line-height: 40px;
 }
 
 .input_error {

@@ -217,19 +217,21 @@ viewEmailInput model =
             else
                 []
     in
-    [ loginLabel [] (span [] [ Html.text "E-mail address:" ])
-    , Html.input
-        ([ id "email-input"
-         , attribute "size" "25"
-         , onInput UpdateEmail
-         ]
-            ++ emailError
-        )
-        []
-    , errorMessage
-    , viewResponse model.response
+    [ div [ class "login_role" ] [ Html.text "Reset Password" ]
+    , div [ class "input-container" ] [
+            Html.input
+            ([ id "email-input"
+            , attribute "placeholder" "Email Address"
+            , attribute "size" "25"
+            , onInput UpdateEmail
+            ]
+                ++ emailError
+            )
+            []
+        , errorMessage
+        , viewResponse model.response
+        ]
     ]
-
 
 viewSubmit : Model -> List (Html Msg)
 viewSubmit model =
