@@ -229,6 +229,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
             'created_dt': self.created_dt.isoformat(),
             'text_sections': [text_section.to_dict() for text_section in
                               (text_sections if text_sections else self.sections.all())],
+            'translation_service_processed': all([text_section.translation_service_processed == 1 for text_section in text_sections]),
             'words': self.words,
             'write_locker': str(self.write_locker) if self.write_locker else None
         }
