@@ -137,9 +137,9 @@ class TextWordGroupAPIView(APIView):
                 TextWordGroup.objects.filter(pk=kwargs['textphrase_ptr_id']).delete()
                 response['grouped'] = False
                 response['error'] = None
-            except BaseException as be:
+            except (TextWordGroup.DoesNotExist, KeyError) as e:
                 response['grouped'] = True
-                response['error'] = be 
+                response['error'] = e 
 
             return HttpResponse(json.dumps(response), content_type='application/json')
         except BaseException:
