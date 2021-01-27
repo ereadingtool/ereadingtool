@@ -495,11 +495,31 @@ body {
   margin-bottom: 10px;
 }
 
+#email-input {
+  border: 1px solid lightgray;
+  border-radius: 2px;
+  line-height: 40px;
+}
+
 .email-input {
+  border: 1px solid lightgray;
+  border-radius: 2px;
+  line-height: 40px;
+}
+
+:placeholder-shown {
+  text-indent: 5px;
+}
+
+#password-input {
+  border: 1px solid lightgray;
+  border-radius: 2px;
   line-height: 40px;
 }
 
 .password-input {
+  border: 1px solid lightgray;
+  border-radius: 2px;
   line-height: 40px;
 }
 
@@ -526,4 +546,9 @@ body {
 
 .hint_overlay span.cursor:hover {
   text-decoration: underline;
+}
+
+.signup_box select {
+  border: 1px solid lightgray;
+  border-radius: 2px;
 }
