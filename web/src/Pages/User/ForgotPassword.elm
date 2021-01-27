@@ -217,7 +217,7 @@ viewEmailInput model =
             else
                 []
     in
-    [ div [ class "login_role" ] [ Html.text "Reset Password" ]
+    [ div [ class "login_role" ] [ Html.text "Forgot Password" ]
     , div [ class "input-container" ] [
             Html.input
             ([ id "email-input"
