@@ -195,7 +195,8 @@ view_make_compound_text_word model parentMsg wordInstance =
         (case Text.Translations.Word.Instance.textWord wordInstance of
             Just _ ->
                 [ div
-                    [ attribute "title" "Merge into compound word."
+                    [ class "merge"
+                    , attribute "title" "Merge into compound word."
                     , classList [ ( "merge-highlight", Text.Translations.Model.mergingWord model wordInstance ) ]
                     , view_make_compound_text_word_on_click model parentMsg wordInstance
                     ]
@@ -218,7 +219,8 @@ view_delete_text_word parentMsg wordInstance =
         (case textWord wordInstance of
             Just word ->
                 [ div
-                    [ attribute "title" "Delete this word instance from glossing."
+                    [ class "merge"
+                    , attribute "title" "Delete this word instance from glossing."
                     , onClick (parentMsg (DeleteTextWord word))
                     ]
                     [ Html.text "Delete"
