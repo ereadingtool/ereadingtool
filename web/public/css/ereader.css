@@ -496,13 +496,13 @@ body {
 }
 
 #email-input {
-  border: solid lightgray;
+  border: 1px solid lightgray;
   border-radius: 2px;
   line-height: 40px;
 }
 
 .email-input {
-  border: solid lightgray;
+  border: 1px solid lightgray;
   border-radius: 2px;
   line-height: 40px;
 }
@@ -512,7 +512,7 @@ body {
 }
 
 #password-input {
-  border: solid lightgray;
+  border: 1px solid lightgray;
   border-radius: 2px;
   line-height: 40px;
 }
@@ -540,4 +540,9 @@ body {
 
 .hint_overlay span.cursor:hover {
   text-decoration: underline;
+}
+
+.signup_box select {
+  border: 1px solid lightgray;
+  border-radius: 2px;
 }
