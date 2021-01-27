@@ -682,6 +682,7 @@ view_translations_tab params onTextTranslationMsg =
     Text.Translations.View.view_translations
         onTextTranslationMsg
         params.text_translations_model
+        params.translationServiceProcessed
 
 
 view_tab_contents :

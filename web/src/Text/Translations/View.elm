@@ -464,11 +464,18 @@ view_grammemes model msg wordInstance =
             ++ [ view_add_grammemes model msg wordInstance ]
 
 
-view_translations : (Msg -> msg) -> Maybe Model -> Html msg
-view_translations msg translationModel =
+view_translations : (Msg -> msg) -> Maybe Model -> Bool -> Html msg
+view_translations msg translationModel translationServiceProcessed =
     case translationModel of
         Just model ->
-            div [ id "translations_tab" ] (List.map (tagSection model msg) (Array.toList model.text.sections))
+            div [ id "translations_tab" ] <|
+                (if translationServiceProcessed then
+                    div [ class "translation-service-message" ] [ text "✔️ Translation service has processed this text" ]
+
+                 else
+                    div [ class "translation-service-message" ] [ text "⏳ Text queued for translation service processing" ]
+                )
+                    :: List.map (tagSection model msg) (Array.toList model.text.sections)
 
         Nothing ->
             div [ id "translations_tab" ]
