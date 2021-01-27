@@ -520,12 +520,10 @@ body {
 }
 
 /* Hint box link color */
-#help_hints > .nav > span.cursor,
-.difficulty_filter_hint > .nav > span.cursor {
+.hint_overlay span.cursor {
   color: #00478f;
 }
 
-#help_hints > .nav > span.cursor:hover,
-.difficulty_filter_hint > .nav > span.cursor:hover {
+.hint_overlay span.cursor:hover {
   text-decoration: underline;
 }
