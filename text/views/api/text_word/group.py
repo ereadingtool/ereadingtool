@@ -124,8 +124,6 @@ class TextWordGroupAPIView(APIView):
             words.append(int(group_id)) # need to get the grouped word too
             response = TextPhrase.objects.get(pk=group_id).to_translations_dict()
             response['text_words'] = [TextPhrase.objects.get(pk=word).to_translations_dict() for word in words]
-            response['error'] = None
-            response['grouped'] = False
             response['section'] = response['text_section']
             del(response['text_section'])
             del(response['id'])
@@ -135,7 +133,13 @@ class TextWordGroupAPIView(APIView):
             del(response['word_type'])
             del(response['translations'])
 
-            TextWordGroup.objects.filter(pk=kwargs['textphrase_ptr_id']).delete()
+            try:
+                TextWordGroup.objects.filter(pk=kwargs['textphrase_ptr_id']).delete()
+                response['grouped'] = False
+                response['error'] = None
+            except BaseException as be:
+                response['grouped'] = True
+                response['error'] = be 
 
             return HttpResponse(json.dumps(response), content_type='application/json')
         except BaseException:
