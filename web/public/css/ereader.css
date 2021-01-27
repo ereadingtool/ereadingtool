@@ -517,6 +517,12 @@ body {
   line-height: 40px;
 }
 
+.password-input {
+  border: 1px solid lightgray;
+  border-radius: 2px;
+  line-height: 40px;
+}
+
 .input_error {
   border: 1px solid #ff0000;
   background-color: #ffeeee;
