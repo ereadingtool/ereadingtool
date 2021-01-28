@@ -210,7 +210,6 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
         del text_dict['write_locker']
 
         text_dict['text_sections'] = list(map(lambda section: section.to_text_reading_dict(), self.sections.all()))
-
         return text_dict
 
     def to_dict(self, text_sections: Optional[List] = None) -> Dict:
@@ -229,7 +228,8 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
             'created_dt': self.created_dt.isoformat(),
             'text_sections': [text_section.to_dict() for text_section in
                               (text_sections if text_sections else self.sections.all())],
-            'translation_service_processed': all([text_section.translation_service_processed == 1 for text_section in text_sections]),
+            'translation_service_processed': all([text_section.translation_service_processed == 1 for text_section in
+                              (text_sections if text_sections else self.sections.all())]),
             'words': self.words,
             'write_locker': str(self.write_locker) if self.write_locker else None
         }
