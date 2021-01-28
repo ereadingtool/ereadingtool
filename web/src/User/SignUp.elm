@@ -37,13 +37,11 @@ viewEmailInput { errors, onEmailInput } =
                 [ attribute "class" "input_valid" ]
     in
     [ div [ class "input-container" ] [
-        div [ class "email-input" ] [
-            Html.input ([ class "email-input", onInput onEmailInput, attribute "size" "25", attribute "placeholder" "Email Address" ] ++ errorClass) []
-            ]
+            Html.input ([ id "email-input", onInput onEmailInput, attribute "size" "25", attribute "placeholder" "Email Address" ] ++ errorClass) []
         ]
     ]
-        ++ errorMessage
-
+    ++ errorMessage
+ 
 
 viewPasswordInputs :
     { showPasswords : Bool
@@ -90,7 +88,7 @@ viewPasswordInputs options =
                    )
     in
     [ div [ class "input-container" ] [
-        Html.input (onInput options.onPasswordInput :: attributes ++ [ attribute "placeholder" "Password", class "email-input" ]) []
+        Html.input (onInput options.onPasswordInput :: attributes ++ [ id "password-input", attribute "placeholder" "Password"]) []
         , (if options.showPasswords then
             Html.span [ onClick options.onShowPasswordToggle, id "show-password-button" ]
                 [ Html.img [ id "visibility-image", attribute "src" "/public/img/visibility_off-24px.svg" ] [] ]
@@ -101,7 +99,7 @@ viewPasswordInputs options =
         ]
     , passwordErrorMessage
     , div [ class "input-container" ][ 
-        Html.input (onInput options.onConfirmPasswordInput :: attributes ++ [ attribute "placeholder" "Confirm Password" , class "password-input" ]) []
+        Html.input (onInput options.onConfirmPasswordInput :: attributes ++ [ id "password-input", attribute "placeholder" "Confirm Password" ]) []
     ]
     , confirmErrorMessage
     ]
