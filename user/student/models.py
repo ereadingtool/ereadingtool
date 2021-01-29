@@ -4,7 +4,7 @@ from django.db import models
 from django.urls import reverse_lazy, reverse
 
 from report.models import StudentPerformanceReport
-from text.models import TextDifficulty, Text
+from text.models import TextDifficulty, Text, TextSection
 from text.phrase.models import TextPhrase
 from user.mixins.models import Profile, TextReadings
 from user.models import ReaderUser
@@ -77,16 +77,26 @@ class Student(Profile, TextReadings, models.Model):
     def __str__(self) -> AnyStr:
         return self.user.username or self.user.email
 
-    def has_flashcard_for_phrase(self, text_phrase: TextPhrase) -> bool:
-        return self.flashcards.filter(phrase=text_phrase).exists()
+    def has_flashcard_for_phrase(self, text_phrase: TextPhrase, text_section: TextSection, instance: int) -> bool:
+        return self.report_student_flashcards.filter(student=self,
+                                                     phrase=text_phrase,
+                                                     text_section=text_section,
+                                                     instance=instance
+                                                     ).exists()
 
-    def add_to_flashcards(self, text_phrase: TextPhrase):
-        flashcard, created = self.flashcards.get_or_create(student=self, phrase=text_phrase)
-
+    def add_to_flashcards(self, text_phrase: TextPhrase, text_section: TextSection, instance: int):
+        flashcard, created = self.report_student_flashcards.get_or_create(student=self,
+                                                                          phrase=text_phrase,
+                                                                          text_section=text_section,
+                                                                          instance=instance)
         return flashcard
 
-    def remove_from_flashcards(self, text_phrase: TextPhrase):
-        self.flashcards.filter(phrase=text_phrase).delete()
+    def remove_from_flashcards(self, text_phrase: TextPhrase, text_section: TextSection, instance: int):
+        self.report_student_flashcards.filter(student=self,
+                                              phrase=text_phrase,
+                                              text_section=text_section,
+                                              instance=instance) \
+                                      .delete()
 
     @property
     def is_consenting_to_research(self):
