@@ -1,6 +1,7 @@
+from text.phrase.models import TextPhrase
 from typing import Dict, TypeVar
 from django.db import models
-from text.models import TextDifficulty, Text
+from text.models import TextDifficulty, Text, TextSection
 from django.utils import timezone
 
 Student = TypeVar('Student')
@@ -39,6 +40,15 @@ class StudentReadingsComplete(models.Model):
     class Meta:
         managed = False
         db_table = 'report_texts_complete'
+
+
+class Flashcards(models.Model):
+    class Meta:
+        unique_together = (('student', 'instance', 'phrase', 'text_section'))
+    student = models.ForeignKey('user.Student', null=True, on_delete=models.CASCADE, related_name="report_student_flashcards")
+    phrase = models.ForeignKey(TextPhrase, null=True, on_delete=models.CASCADE)
+    text_section = models.ForeignKey(TextSection, null=True, on_delete=models.CASCADE)
+    instance = models.IntegerField(null=True)
 
 
 class StudentPerformanceReport(object):
