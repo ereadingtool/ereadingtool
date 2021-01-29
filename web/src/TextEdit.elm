@@ -24,6 +24,7 @@ type alias TextViewParams =
     , mode : Mode
     , text_difficulties : List Text.Model.TextDifficulty
     , text_translations_model : Maybe TranslationsModel.Model
+    , translationServiceProcessed : Bool
     }
 
 
