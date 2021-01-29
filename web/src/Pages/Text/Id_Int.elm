@@ -703,7 +703,7 @@ viewGloss (SafeModel model) reader_word text_word =
             [ viewWordAndGrammemes reader_word text_word
             , viewTranslations (TextReader.TextWord.translations text_word)
 
-            -- , viewFlashcardOptions (SafeModel model) reader_word
+            , viewFlashcardOptions (SafeModel model) reader_word
             ]
         ]
 
