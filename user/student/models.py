@@ -1,9 +1,10 @@
+from flashcards.student.models import StudentFlashcard
 from typing import Dict, List, Tuple, AnyStr
 
 from django.db import models
 from django.urls import reverse_lazy, reverse
 
-from report.models import StudentPerformanceReport
+from report.models import StudentFlashcardsReport, StudentPerformanceReport
 from text.models import TextDifficulty, Text, TextSection
 from text.phrase.models import TextPhrase
 from user.mixins.models import Profile, TextReadings
@@ -36,6 +37,10 @@ class Student(Profile, TextReadings, models.Model):
     @property
     def performance(self) -> 'StudentPerformanceReport':
         return StudentPerformanceReport(student=self)
+
+    @property
+    def flashcards(self) -> 'StudentFlashcardsReport':
+        return StudentFlashcardsReport(student=self)
 
     @property
     def serialized_flashcards(self) -> List[Tuple]:

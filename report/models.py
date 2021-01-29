@@ -167,7 +167,7 @@ class StudentPerformanceReport(object):
             performance['all']['categories']['cumulative']['metrics']['percent_correct'] = v
         except:
             # Could be type error
-            performance[difficulty.slug]['categories']['cumulative']['metrics']['first_time_correct'] = 0
+            performance['all']['categories']['cumulative']['metrics']['first_time_correct'] = 0
             performance['all']['categories']['cumulative']['metrics']['percent_correct'] = 0.00
             pass
 
@@ -245,3 +245,26 @@ class StudentPerformanceReport(object):
                 text_difficulty_slug=difficulty.slug).aggregate(completion_aggregate)['text__count']
 
         return performance
+
+
+class StudentFlashcardsReport(object):
+    def __init__(self, student: Student, *args, **kwargs):
+        self.student = student
+        self.flashcards = Flashcards.objects.filter(student=student)
+
+    def to_dict(self) -> Dict:
+        # get all flashcards for a particular user
+        flashcards = {}
+
+        everything = self.student.report_student_flashcards.objects.all()
+
+        return flashcards
+        # "user": {
+        #   "text": {
+        #     "title": "some text name",
+        #     "flashcards": {
+        #       "word1": "asdf asdf asdf word1 asdf asdf asdf",
+        #       "word2": "asdf asdf asdf word2 asdf asdf asdf"
+        #     }
+        #   } 
+        # }
