@@ -34,6 +34,7 @@ type alias Text =
     , sections : Array Text.Section.Model.TextSection
     , write_locker : Maybe String
     , words : Words
+    , translationServiceProcessed : Bool
     }
 
 
@@ -70,6 +71,7 @@ new_text =
     , sections = Array.fromList [ Text.Section.Model.emptyTextSection 0 ]
     , write_locker = Nothing
     , words = Dict.empty
+    , translationServiceProcessed = False
     }
 
 
