@@ -39,7 +39,7 @@ class Student(Profile, TextReadings, models.Model):
         return StudentPerformanceReport(student=self)
 
     @property
-    def flashcards(self) -> 'StudentFlashcardsReport':
+    def flashcards_report(self) -> 'StudentFlashcardsReport':
         return StudentFlashcardsReport(student=self)
 
     @property
