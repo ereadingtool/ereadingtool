@@ -321,12 +321,12 @@ class StudentFlashcardsCSV(object):
         fc_list = []
 
         for fc in flashcards:
-            a_side = fc.phrase.phrase
+            a_side = fc.phrase.phrase + " - " + fc.phrase.sentence
             b_side = ''
             for translation in fc.phrase.translations.all():
                 if translation.correct_for_context:
                    b_side = translation.phrase
 
-            fc_list.append({'frontside': a_side, 'backside': b_side})
+            fc_list.append([a_side, b_side])
 
         return fc_list
