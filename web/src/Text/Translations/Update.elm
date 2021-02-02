@@ -148,8 +148,14 @@ update parentMsg msg model =
             in
             ( model, unmergeWord model.session model.config parentMsg wordId )
 
-        UnmergedWord (Ok bool) ->
-            ( model, Cmd.none )
+        UnmergedWord (Ok unmergeResp) ->
+            ( Text.Translations.Model.completeUnmerge
+                model
+                unmergeResp.section
+                unmergeResp.phrase
+                unmergeResp.text_words
+            , Cmd.none
+            )
 
         UnmergedWord (Err err) ->
             ( model, Cmd.none )
@@ -510,4 +516,4 @@ unmergeWord session config toMsg wordId =
         (Session.cred session)
         Http.emptyBody
         (UnmergedWord >> toMsg)
-        Decode.bool
+        Text.Translations.Decode.textWordMergeDecoder
