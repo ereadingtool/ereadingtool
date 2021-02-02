@@ -1,8 +1,10 @@
+from django.db.models.expressions import Value
 from text.phrase.models import TextPhrase
 from typing import Dict, TypeVar
 from django.db import models
 from text.models import TextDifficulty, Text, TextSection
 from django.utils import timezone
+import yaml
 
 Student = TypeVar('Student')
 
@@ -253,18 +255,58 @@ class StudentFlashcardsReport(object):
         self.flashcards = Flashcards.objects.filter(student=student)
 
     def to_dict(self) -> Dict:
-        # get all flashcards for a particular user
-        flashcards = {}
+        texts = {}
+        flashcards = self.student.flashcards_report.flashcards.all()
+        for fc in flashcards:
+            try:
+                text_title = fc.text_section.text.title
+                if not text_title:
+                    raise ValueError
+            except ValueError:
+                text_title = "Text Title Not Available"
 
-        everything = self.student.report_student_flashcards.objects.all()
+            try:
+                text_author = fc.text_section.text.author
+                if not text_author:
+                    raise ValueError
+            except ValueError:
+                text_author = "Text Author Not Available"
 
-        return flashcards
-        # "user": {
-        #   "text": {
-        #     "title": "some text name",
-        #     "flashcards": {
-        #       "word1": "asdf asdf asdf word1 asdf asdf asdf",
-        #       "word2": "asdf asdf asdf word2 asdf asdf asdf"
-        #     }
-        #   } 
-        # }
+            try:
+                text_source = fc.text_section.text.source
+                if not text_source:
+                    raise ValueError
+            except ValueError:
+                text_source = "Text Source Not Available"
+
+            # try and get the host from the docker-compose file
+            with open("docker-compose.yml", 'r') as f:
+                try:
+                    dc = yaml.safe_load(f)
+                    virtual_host = dc['services']['node_frontend']['environment'][0]
+                    host = virtual_host.split('=')[1]
+                    text_link = "https://" + host + "/text/" + str(fc.text_section.text_id)
+                except (yaml.YAMLError, KeyError, ValueError):
+                    text_link = "Text Link Not Available"
+
+            # get the surrounding text
+            a_side = fc.phrase.sentence
+            b_side = ''
+            for translation in fc.phrase.translations.all():
+                if translation.correct_for_context:
+                    b_side = translation.phrase
+
+            meta = {
+                'author': text_author,
+                'source': text_source,
+                'link': text_link
+            }
+            if text_title not in texts:
+                texts[text_title] = meta
+
+            try:
+                texts[text_title]['flashcards'].append([fc.phrase.phrase, a_side, b_side])
+            except KeyError:
+                texts[text_title]['flashcards'] = [[fc.phrase.phrase, a_side, b_side]]
+
+        return texts

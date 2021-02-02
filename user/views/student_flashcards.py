@@ -30,9 +30,11 @@ class StudentFlashcardsPDFView(View):
 
         pdf_filename = f'my_ereader_flashcards_{today.day}_{today.month}_{today.year}.pdf'
 
+        x = student.flashcards_report.to_dict()
+
         flashcards_report_html = loader.render_to_string('student_flashcards_report.html',
-                                                         {'performance_report': student.flashcards.to_dict()})
-        
+                                                         {'texts': student.flashcards_report.to_dict()})
+
         pdf_data = pdfkit.from_string(flashcards_report_html, False)
 
         pdf = ContentFile(pdf_data)
