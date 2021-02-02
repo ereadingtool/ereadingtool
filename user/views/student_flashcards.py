@@ -6,7 +6,7 @@ import os
 import time
 import jwt
 import csv as csv_module
-from io import StringIO
+import io
 from jwt.exceptions import InvalidTokenError
 from urllib.parse import parse_qs
 from user.student.models import Student
@@ -64,19 +64,18 @@ class StudentFlashcardsCSVView(View):
         csv_filename = f'my_ereader_flashcards_{today.day}_{today.month}_{today.year}.csv'
 
         flashcard_list = student.flashcards_csv.to_list()
-        csv_data = StringIO
+        csv_data = io.StringIO()
+        writer = csv_module.writer(csv_data)
 
-        fieldnames = ['frontside', 'backside']
-        writer = csv_module.DictWriter(csv_data, fieldnames=fieldnames)
         for fc in flashcard_list:
             writer.writerow(fc)
 
-        csv = ContentFile(csv_data)
+        csv = ContentFile(csv_data.getvalue())
 
         resp = HttpResponse(csv, 'text/csv')
 
         resp['Content-Length'] = csv.size
-        resp['Content-Disposition'] = f'attachment; filenmae="{csv_filename}"'
+        resp['Content-Disposition'] = f'attachment; filename="{csv_filename}"'
 
         return resp
 
