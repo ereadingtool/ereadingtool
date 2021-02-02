@@ -5,6 +5,8 @@ import pdfkit
 import os
 import time
 import jwt
+import csv as csv_module
+from io import StringIO
 from jwt.exceptions import InvalidTokenError
 from urllib.parse import parse_qs
 from user.student.models import Student
@@ -30,8 +32,6 @@ class StudentFlashcardsPDFView(View):
 
         pdf_filename = f'my_ereader_flashcards_{today.day}_{today.month}_{today.year}.pdf'
 
-        x = student.flashcards_report.to_dict()
-
         flashcards_report_html = loader.render_to_string('student_flashcards_report.html',
                                                          {'texts': student.flashcards_report.to_dict()})
 
@@ -39,12 +39,47 @@ class StudentFlashcardsPDFView(View):
 
         pdf = ContentFile(pdf_data)
 
-        resp = HttpResponse(pdf, 'application/pdf')
+        resp = HttpResponse(pdf, 'text/pdf')
 
         resp['Content-Length'] = pdf.size
         resp['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
 
         return resp
+
+
+class StudentFlashcardsCSVView(View):
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        if not Student.objects.filter(pk=kwargs['pk']).exists():
+            return HttpResponse(status=400)
+
+        jwt_user = jwt_validation(self.request.scope)
+
+        if jwt_user == None or jwt_user.pk != kwargs['pk']:
+            return HttpResponse(render_to_string('error_page.html'))
+
+        student = Student.objects.get(pk=kwargs['pk'])
+
+        today = dt.now()
+
+        csv_filename = f'my_ereader_flashcards_{today.day}_{today.month}_{today.year}.csv'
+
+        flashcard_list = student.flashcards_csv.to_list()
+        csv_data = StringIO
+
+        fieldnames = ['frontside', 'backside']
+        writer = csv_module.DictWriter(csv_data, fieldnames=fieldnames)
+        for fc in flashcard_list:
+            writer.writerow(fc)
+
+        csv = ContentFile(csv_data)
+
+        resp = HttpResponse(csv, 'text/csv')
+
+        resp['Content-Length'] = csv.size
+        resp['Content-Disposition'] = f'attachment; filenmae="{csv_filename}"'
+
+        return resp
+
 
 def jwt_validation(scope):
     """ Take JWT from query string to check the user against the db and validate its timestamp """

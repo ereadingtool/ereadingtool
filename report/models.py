@@ -310,3 +310,23 @@ class StudentFlashcardsReport(object):
                 texts[text_title]['flashcards'] = [[fc.phrase.phrase, a_side, b_side]]
 
         return texts
+
+class StudentFlashcardsCSV(object):
+    def __init__(self, student: Student, *args, **kwargs):
+        self.student = student
+        self.flashcards = Flashcards.objects.filter(student=student) 
+
+    def to_list(self):
+        flashcards = self.student.flashcards_report.flashcards.all()
+        fc_list = []
+
+        for fc in flashcards:
+            a_side = fc.phrase.phrase
+            b_side = ''
+            for translation in fc.phrase.translations.all():
+                if translation.correct_for_context:
+                   b_side = translation.phrase
+
+            fc_list.append({'frontside': a_side, 'backside': b_side})
+
+        return fc_list
