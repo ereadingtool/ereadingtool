@@ -249,6 +249,7 @@ viewUnmergeTextWord parentMsg wordInstance =
                         [ div
                             [ attribute "title" "Unmerge this compound word."
                             , onClick (parentMsg (UnmergeWord word))
+                            , class "cursor"
                             ]
                             [ Html.text "Unmerge"
                             ]
@@ -427,6 +428,7 @@ view_match_translations parentMsg wordInstance =
     div [ class "text-word-option" ]
         [ div
             [ attribute "title" "Use these translations across all instances of this word"
+            , class "cursor"
             , onClick (parentMsg (MatchTranslations wordInstance))
             ]
             [ Html.text "Save for all"
