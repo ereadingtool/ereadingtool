@@ -46,6 +46,19 @@ table th {
   grid-column-gap: 10px;
 }
 
+#profile-welcome-banner {
+  display: grid;
+
+  grid-column: content;
+
+  justify-content: center;
+
+  padding: 10px;
+  border: 1px solid #0054a6;
+  border-radius: 5px;
+  font-size: 20px;
+}
+
 .text_readings {
   display: grid;
 
@@ -88,16 +101,16 @@ table th {
   font-size: larger;
   grid-template-columns: auto;
   grid-template-rows: 25px 35px;
-  margin:20px;
+  margin: 20px;
 }
 
 .feedback a {
   color: #00478f;
-  text-decoration: none
+  text-decoration: none;
 }
 
 .feedback a:hover {
-  text-decoration: underline; 
+  text-decoration: underline;
 }
 
 .feedback span {
@@ -213,7 +226,7 @@ table th {
 
 .performance_download_link a {
   color: #00478f;
-  text-decoration: none
+  text-decoration: none;
 }
 
 .performance_download_link a:hover {
