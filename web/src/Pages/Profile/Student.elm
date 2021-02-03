@@ -660,14 +660,22 @@ viewFlashcards (SafeModel model) =
     div [ id "flashcards", class "profile_item" ]
         [ span [ class "profile_item_title" ] [ Html.text "Flashcard Words" ]
         , span [ class "profile_item_value" ]
-            [ div []
-                (case model.flashcards of
-                    Just words ->
-                        List.map (\word -> div [] [ span [] [ Html.text word ] ]) words
+            [ div [ class "flashcards-download-link" ]
+                [ Html.a
+                    [ attribute "href" <|
+                        case StudentProfile.studentID model.profile of
+                            Just id ->
+                                Api.flashcardsPdfLink
+                                    (Config.restApiUrl model.config)
+                                    (Session.cred model.session)
+                                    id
 
-                    Nothing ->
-                        []
-                )
+                            Nothing ->
+                                ""
+                    ]
+                    [ Html.text "Download your flashcard words as a PDF"
+                    ]
+                ]
             ]
         ]
 

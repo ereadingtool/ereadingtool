@@ -5,6 +5,7 @@ module Api.Endpoint exposing
     , createTranslation
     , createWord
     , filterToStringQueryParam
+    , flashcardsPdfLink
     , forgotPassword
     , instructorProfile
     , instructorSignup
@@ -259,7 +260,19 @@ performanceReportLink baseUrl id token =
         [ Url.Builder.string "token" token ]
 
 
+flashcardsPdfLink : String -> Int -> String -> String
+flashcardsPdfLink baseUrl id token =
+    Url.Builder.crossOrigin baseUrl
+        [ "profile"
+        , "student"
+        , String.fromInt id
+        , "flashcards.pdf"
+        ]
+        [ Url.Builder.string "token" token ]
 
+
+
+-- host:8000/flashcards.pdf?token=JWT
 -- QUERY PARAMS
 
 
