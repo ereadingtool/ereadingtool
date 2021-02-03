@@ -471,7 +471,12 @@ view (SafeModel model) =
 
 viewContent : SafeModel -> Html Msg
 viewContent (SafeModel model) =
-    div [ classList [ ( "profile", True ) ] ]
+    div [ classList [ ( "profile", True ) ] ] <|
+        (if Config.showHelp model.config then
+            [viewHelpMessage]
+           else
+            []
+          ) ++
         [ div [ class "profile-title" ]
             [ Html.text "Student Profile" ]
         , div [ classList [ ( "profile_items", True ) ] ]
@@ -491,6 +496,15 @@ viewContent (SafeModel model) =
             ]
         ]
 
+
+viewHelpMessage : Html Msg
+viewHelpMessage =
+    div [ id "text-search-welcome-message" ]
+        [ div []
+            [ Html.text
+                """Voluptas culpa autem reprehenderit qui modi. Tenetur et dolor maxime tempore. Vitae sed laborum similique a."""
+            ]
+        ]
 
 viewPreferredDifficulty : SafeModel -> Html Msg
 viewPreferredDifficulty (SafeModel model) =
