@@ -28,7 +28,6 @@ module InstructorAdmin.Text.Translations exposing
 
 import Api.Config exposing (Config)
 import Dict exposing (Dict)
-import Flags
 import Session exposing (Session)
 import Set exposing (Set)
 

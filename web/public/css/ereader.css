@@ -337,6 +337,15 @@ body {
   margin-right: 2px;
 }
 
+.text_tag_selected {
+  color: white;
+
+  background-color: #0054a6;
+  border: solid 1px #333333;
+
+  filter: brightness(95%);
+}
+
 .cursor {
   cursor: pointer;
 }
@@ -495,11 +504,31 @@ body {
   margin-bottom: 10px;
 }
 
+#email-input {
+  border: 1px solid lightgray;
+  border-radius: 2px;
+  line-height: 40px;
+}
+
 .email-input {
+  border: 1px solid lightgray;
+  border-radius: 2px;
+  line-height: 40px;
+}
+
+:placeholder-shown {
+  text-indent: 5px;
+}
+
+#password-input {
+  border: 1px solid lightgray;
+  border-radius: 2px;
   line-height: 40px;
 }
 
 .password-input {
+  border: 1px solid lightgray;
+  border-radius: 2px;
   line-height: 40px;
 }
 
@@ -555,4 +584,11 @@ body {
 
 .editor-guide li {
   padding-bottom: 4px;
+}
+
+/* **************************************************************** */
+
+.signup_box select {
+  border: 1px solid lightgray;
+  border-radius: 2px;
 }

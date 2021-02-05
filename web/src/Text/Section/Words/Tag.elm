@@ -379,7 +379,7 @@ isTrailingPunctuation char =
         || (char == ':' || char == ';')
         || (char == '»' || char == '"' || char == '“' || char == '”')
         || (char == ')' || char == ']' || char == '}' || char == '>')
-        || (char == '…')
+        || (char == '…' || char == '—')
 
 
 isValidChar : Char -> Bool

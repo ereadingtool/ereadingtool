@@ -329,12 +329,11 @@ viewInviteCodeInput model =
             else
                 []
     in
-    [ Html.div [ attribute "class" "signup_label" ]
-        [ Html.span [] [ Html.text "Invite Code " ]
-        ]
-    , Html.input
-        ([ attribute "size" "25", onInput UpdateInviteCode ] ++ errorClass)
+    [ Html.div [ class "input-container" ]
+        [ Html.input
+        ([ class "password-input", attribute "placeholder" "Invite Code", attribute "size" "25", onInput UpdateInviteCode ] ++ errorClass)
         []
+        ]
     ]
         ++ errorMessage
 

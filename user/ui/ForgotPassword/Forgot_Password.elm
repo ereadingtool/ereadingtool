@@ -203,6 +203,7 @@ view_email_input model =
     [ login_label [] (span [] [ Html.text "E-mail address:" ])
     , Html.input
         ([ attribute "size" "25"
+         , attribute "color" "red"
          , onInput UpdateEmail
          ]
             ++ email_error

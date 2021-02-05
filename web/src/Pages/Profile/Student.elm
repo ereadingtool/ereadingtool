@@ -471,23 +471,45 @@ view (SafeModel model) =
 
 viewContent : SafeModel -> Html Msg
 viewContent (SafeModel model) =
-    div [ classList [ ( "profile", True ) ] ]
-        [ div [ class "profile-title" ]
-            [ Html.text "Student Profile" ]
-        , div [ classList [ ( "profile_items", True ) ] ]
-            [ viewPreferredDifficulty (SafeModel model)
-            , viewUsername (SafeModel model)
-            , viewUserEmail (SafeModel model)
-            , viewStudentPerformance (SafeModel model)
-            , viewFeedbackLinks
-            , viewFlashcards (SafeModel model)
-            , viewResearchConsent (SafeModel model)
-            , viewShowHelp (SafeModel model)
-            , if not (String.isEmpty model.errorMessage) then
-                span [ attribute "class" "error" ] [ Html.text "error: ", Html.text model.errorMessage ]
+    div [ classList [ ( "profile", True ) ] ] <|
+        (if Config.showHelp model.config then
+            [ viewWelcomeBanner ]
 
-              else
-                Html.text ""
+         else
+            []
+        )
+            ++ [ div [ class "profile-title" ]
+                    [ Html.text "Student Profile" ]
+               , div [ classList [ ( "profile_items", True ) ] ]
+                    [ viewPreferredDifficulty (SafeModel model)
+                    , viewUsername (SafeModel model)
+                    , viewUserEmail (SafeModel model)
+                    , viewStudentPerformance (SafeModel model)
+                    , viewFeedbackLinks
+                    , viewFlashcards (SafeModel model)
+                    , viewResearchConsent (SafeModel model)
+                    , viewShowHelp (SafeModel model)
+                    , if not (String.isEmpty model.errorMessage) then
+                        span [ attribute "class" "error" ] [ Html.text "error: ", Html.text model.errorMessage ]
+
+                      else
+                        Html.text ""
+                    ]
+               ]
+
+
+viewWelcomeBanner : Html Msg
+viewWelcomeBanner =
+    div [ id "profile-welcome-banner" ]
+        [ div []
+            [ Html.text "Welcome to the STAR! If you would like to start reading right away, select "
+            , Html.b [] [ Html.text "Texts" ]
+            , Html.text " from the menu above this message."
+            ]
+        , div []
+            [ Html.text "This site shows you hints to get you started. You can read through the hints or turn them off in the "
+            , Html.b [] [ Html.text "Show Hints" ]
+            , Html.text " section below."
             ]
         ]
 
