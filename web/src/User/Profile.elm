@@ -8,10 +8,8 @@ module User.Profile exposing
     , view_profile_header
     )
 
-import Flags
 import Html exposing (Html, div)
 import Http exposing (..)
-import Menu.Logout
 import Menu.Msg exposing (Msg)
 import Profile exposing (..)
 import User.Instructor.Profile
@@ -26,8 +24,6 @@ import User.Student.Profile
         ( StudentProfile(..)
         , StudentURIs(..)
         )
-import User.Student.Profile.Decode
-import User.Student.Profile.Resource
 import User.Student.Resource
 import User.Student.View
 
@@ -157,16 +153,3 @@ retrieveStudentProfile msg profile_id student_endpoint_uri =
     in
     -- Http.send msg request
     Debug.todo "retrieve student profile"
-
-
-logout : Profile -> Flags.CSRFToken -> (Result Http.Error Menu.Logout.LogOutResp -> msg) -> Cmd msg
-logout profile csrftoken logout_msg =
-    case profile of
-        Student student_profile ->
-            User.Student.Profile.Resource.logout student_profile csrftoken logout_msg
-
-        Instructor instructor_profile ->
-            User.Instructor.Profile.logout instructor_profile csrftoken logout_msg
-
-        EmptyProfile ->
-            Cmd.none
