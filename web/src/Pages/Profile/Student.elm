@@ -93,12 +93,15 @@ init shared { params } =
     let
         help =
             Help.init
+
+        studentProfile =
+            Profile.toStudentProfile shared.profile
     in
     ( SafeModel
         { session = shared.session
         , config = shared.config
         , navKey = shared.key
-        , profile = Profile.toStudentProfile shared.profile
+        , profile = studentProfile
         , consentedToResearch = shared.researchConsent
         , flashcards = Nothing
         , editing = Dict.empty
@@ -111,10 +114,21 @@ init shared { params } =
     , Cmd.batch
         [ Help.scrollToFirstMsg help
         , Api.websocketDisconnectAll
-        , getStudentProfile
-            shared.session
-            shared.config
-            (Profile.toStudentProfile shared.profile)
+        , case StudentProfile.studentID studentProfile of
+            Just id ->
+                -- in the current implementation, a default profile with an ID of 0 is used.
+                -- check that to avoid requesting the profile on page refresh
+                if id /= 0 then
+                    getStudentProfile
+                        shared.session
+                        shared.config
+                        (Profile.toStudentProfile shared.profile)
+
+                else
+                    Cmd.none
+
+            Nothing ->
+                Cmd.none
         ]
     )
 
