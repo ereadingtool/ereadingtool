@@ -13,7 +13,6 @@ module User.Student.Profile.Help exposing
     , scrollToFirstMsg
     , scrollToNextMsg
     , scrollToPrevMsg
-    , searchTextsHelp
     , setVisible
     , showHintsHelp
     , usernameHelp
@@ -29,7 +28,6 @@ type StudentHelp
     | MyPerformanceHelp HelpMsgStr
     | PreferredDifficultyHelp HelpMsgStr
     | UsernameMenuItemHelp HelpMsgStr
-    | SearchTextsMenuItemHelp HelpMsgStr
 
 
 type StudentProfileHelp
@@ -64,12 +62,6 @@ preferredDifficultyHelp =
         """Please choose a difficulty level. If you have taken proficiency tests, it would be advisable to start out
      reading texts at your current proficiency level.  If you’ve not taken a Flagship Proficiency test yet,
      then you can use these brief descriptions to pick the level that is closest to your current abilities."""
-
-
-searchTextsHelp : StudentHelp
-searchTextsHelp =
-    SearchTextsMenuItemHelp
-        """To select a text to read, go to the Search Texts option that is in the menu bar on each page of the website."""
 
 
 help_msgs : List StudentHelp
@@ -150,9 +142,6 @@ helpMsg help_msg =
         UsernameMenuItemHelp unameItemHelp ->
             unameItemHelp
 
-        SearchTextsMenuItemHelp textsItemHelp ->
-            textsItemHelp
-
 
 popupToID : StudentHelp -> HelpMsgID
 popupToID studentHelp =
@@ -171,9 +160,6 @@ popupToID studentHelp =
 
         UsernameMenuItemHelp _ ->
             "username_menu_item_hint"
-
-        SearchTextsMenuItemHelp _ ->
-            "search_text_menu_item_hint"
 
 
 popupToOverlayID : StudentHelp -> HelpMsgOverlayID

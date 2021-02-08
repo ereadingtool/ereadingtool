@@ -885,31 +885,6 @@ viewDifficultyHint (SafeModel model) =
         []
 
 
-viewSearchTextsHint : SafeModel -> List (Html Msg)
-viewSearchTextsHint (SafeModel model) =
-    let
-        searchTextsHelp =
-            Help.searchTextsHelp
-
-        hintAttributes =
-            { id = Help.popupToOverlayID searchTextsHelp
-            , visible = Help.isVisible model.help searchTextsHelp
-            , text = Help.helpMsg searchTextsHelp
-            , cancel_event = onClick (CloseHint searchTextsHelp)
-            , next_event = onClick NextHint
-            , prev_event = onClick PreviousHint
-            , addl_attributes = [ id (Help.helpID model.help searchTextsHelp) ]
-            , arrow_placement = ArrowUp ArrowLeft
-            }
-    in
-    if Config.showHelp model.config then
-        [ Help.View.view_hint_overlay hintAttributes
-        ]
-
-    else
-        []
-
-
 viewPreferredDifficultyHint : Maybe Text.TextDifficulty -> Html Msg
 viewPreferredDifficultyHint text_difficulty =
     let
