@@ -20,7 +20,6 @@ module User.Student.Profile exposing
 
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (hardcoded, required)
-import Task exposing (perform)
 import Text.Model as Text
 import User.Student.Performance.Report as PerformanceReport exposing (PerformanceReport)
 import User.Student.Resource as StudentResource
