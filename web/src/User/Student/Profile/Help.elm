@@ -19,7 +19,6 @@ module User.Student.Profile.Help exposing
     , usernameHelp
     )
 
-import Api.Config exposing (showHelp)
 import Help exposing (HelpMsgID, HelpMsgOverlayID, HelpMsgStr, HelpMsgVisible)
 import Help.PopUp exposing (Help)
 
@@ -79,7 +78,6 @@ help_msgs =
     , usernameHelp
     , myPerformanceHelp
     , preferredDifficultyHelp
-    , searchTextsHelp
     ]
 
 
