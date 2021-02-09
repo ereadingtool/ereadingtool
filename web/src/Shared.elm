@@ -497,8 +497,8 @@ viewPublicHeader toMsg =
             [ text "Sign up" ]
         ]
     , div [ class "nav-item" ]
-        [ a [ class "nav-link", href (Route.toString Route.Acknowledgments) ]
-            [ text "Acknowledgements" ]
+        [ a [ class "nav-link", href (Route.toString Route.About) ]
+            [ text "About" ]
         ]
     ]
 

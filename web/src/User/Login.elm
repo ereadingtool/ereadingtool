@@ -248,13 +248,13 @@ viewLinks : List (Html msg)
 viewLinks =
     [ div [ id "acknowledgements-and-about" ]
         [ div []
-            [ Html.a [ attribute "href" (Route.toString Route.About) ]
-                [ text "About This Website"
+            [ Html.a [ attribute "href" (Route.toString Route.Guide__GettingStarted) ]
+                [ text "Student Guide"
                 ]
             ]
         , div []
-            [ Html.a [ attribute "href" (Route.toString Route.Acknowledgments) ]
-                [ text "Acknowledgements"
+            [ Html.a [ attribute "href" (Route.toString Route.About) ]
+                [ text "About This Website"
                 ]
             ]
         ]

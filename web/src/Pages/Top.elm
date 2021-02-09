@@ -5,20 +5,12 @@ module Pages.Top exposing
     , page
     )
 
-import Dict exposing (Dict)
 import Html exposing (..)
-import Html.Attributes exposing (alt, class, classList, href, id, src)
-import Http exposing (..)
-import Ports
-import Role exposing (Role(..))
-import Shared
+import Html.Attributes exposing (class, href, id)
 import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
-import User.Login as Login exposing (LoginParams)
-import Utils exposing (isValidEmail)
-import Views
 
 
 page : Page Params Model Msg
@@ -97,7 +89,7 @@ viewFeaturesSection =
                 ]
             , div
                 []
-                [ a [ href (Route.toString Route.About) ] [ text "Learn more" ]
+                [ a [ href (Route.toString Route.Guide__GettingStarted) ] [ text "Learn more" ]
                 , text " or "
                 , a [ href (Route.toString Route.Signup__Student) ] [ text "Sign up now" ]
                 ]

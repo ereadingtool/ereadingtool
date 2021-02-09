@@ -4,7 +4,6 @@ import Api
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
 import Browser.Navigation
-import Debug
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (attribute)
