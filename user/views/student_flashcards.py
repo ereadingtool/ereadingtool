@@ -64,17 +64,19 @@ class StudentFlashcardsCSVView(View):
         csv_filename = f'my_ereader_flashcards_{today.day}_{today.month}_{today.year}.csv'
 
         flashcard_list = student.flashcards_csv.to_list()
-        csv_data = io.StringIO()
-        writer = csv_module.writer(csv_data)
+        csv_data = io.StringIO(newline='')
+        writer = csv_module.writer(csv_data, dialect=csv_module.unix_dialect)
 
         for fc in flashcard_list:
             writer.writerow(fc)
+        csv_data = csv_data.getvalue()
+        csv_data = csv_data.replace('"','') # getvalue() adds quotes around each row unnecessarily
+        csv_data_size = len(bytes(csv_data, 'utf-8'))
+        csv = ContentFile(csv_data)
 
-        csv = ContentFile(csv_data.getvalue())
+        resp = HttpResponse(csv, content_type='text/csv')
 
-        resp = HttpResponse(csv, 'text/csv')
-
-        resp['Content-Length'] = csv.size
+        resp['Content-Length'] = csv_data_size
         resp['Content-Disposition'] = f'attachment; filename="{csv_filename}"'
 
         return resp

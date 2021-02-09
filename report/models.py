@@ -327,6 +327,6 @@ class StudentFlashcardsCSV(object):
                 if translation.correct_for_context:
                    b_side = translation.phrase
 
-            fc_list.append([a_side, b_side])
+            fc_list.append([a_side + ' | ' + b_side])
 
         return fc_list
