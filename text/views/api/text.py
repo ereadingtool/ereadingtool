@@ -1,4 +1,5 @@
 import json
+from django.db.models.query import QuerySet
 import jsonschema
 from typing import TypeVar, Optional, List, Dict, AnyStr, Union, Set
 
@@ -106,9 +107,13 @@ class TextAPIView(APIView):
             # question_type -> type
             question_param['type'] = question_param.pop('question_type')
 
-            if question_instances:
-                question_instance = question_instances[i]
-                answer_instances = question_instance.answers.all()
+            try:
+                if question_instances:
+                    question_instance = question_instances[i]
+                    answer_instances = question_instance.answers.all()
+            except:
+                # silently fail on questions not in the query
+                pass
 
             question_form = QuestionForm(instance=question_instance, data=question_param)
 
@@ -153,11 +158,36 @@ class TextAPIView(APIView):
         if 'questions' not in text_section_param:
             raise ValidationError(message="'questions' field is required.")
 
+        # `text_params` comes off the HttpRequest and is more up to date than the database. It still needs to be verified,
+        # but a bug existed in `validate_question_param(..)` where we went out of bounds checking the `QueryString` for an
+        # item that had yet to be added. So we check to see if the list on the request is shorter than the `QueryString`
+        # returned from the database. The questions are verified once added to the database. Chicken before egg problem,
+        # can't run `is_valid(..)` since `QuestionForm` contains the `Question` and this wasn't worth making an `_init_(..)`
+        # for `Question`s on its own.
+        if text_section_instance:
+            existing_questions = text_section_instance.questions.all()
+            l = len(existing_questions)
+            r = len(text_section_param['questions'])
+            for i in range(l,r):
+                try:
+                    new_question = text_section_param['questions'][i]
+                    # validate the questions, note that we don't confirm `order` is correct or check that 
+                    # `main_idea` is one of two valid options. However this will be checked once actually added
+                    if 'answers' not in new_question or \
+                       'body' not in new_question or \
+                       'order' not in new_question or \
+                       'question_type' not in new_question:
+                        raise ValidationError
+                except:
+                    raise ValidationError(message="error parsing the new question")
+        else:
+            existing_questions = None
+
         text_section['questions'], errors = TextAPIView.validate_question_param(
             text_section_key,
             text_section_param['questions'],
             errors,
-            question_instances=text_section_instance.questions.all() if text_section_instance else None)
+            question_instances=existing_questions)
 
         if not text_section['text_section_form'].is_valid():
             errors = TextAPIView.form_validation_errors(errors=errors, parent_key=text_section_key,
