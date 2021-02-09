@@ -21,6 +21,7 @@ module Api.Endpoint exposing
     , textLock
     , textSearch
     , translation
+    , unmergeWord
     , validateUsername
     , word
     )
@@ -199,6 +200,11 @@ word baseUrl id =
 mergeWords : String -> Endpoint
 mergeWords baseUrl =
     url baseUrl [ "api", "text", "word", "compound" ] []
+
+
+unmergeWord : String -> Int -> Endpoint
+unmergeWord baseUrl id =
+    url baseUrl [ "api", "text", "word", "compound", String.fromInt id ] []
 
 
 

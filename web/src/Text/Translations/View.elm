@@ -6,7 +6,6 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.Parser
-import Html.Parser.Util
 import OrderedDict
 import Set
 import Text.Section.Model
@@ -16,6 +15,7 @@ import Text.Translations.Model exposing (..)
 import Text.Translations.Msg exposing (..)
 import Text.Translations.TextWord exposing (TextWord)
 import Text.Translations.Word.Instance exposing (WordInstance)
+import Text.Translations.Word.Kind exposing (WordKind(..))
 
 
 wordInstanceOnClick : Model -> (Msg -> msg) -> WordInstance -> Html.Attribute msg
@@ -145,7 +145,9 @@ view_btns model parentMsg wordInstance =
     in
     div [ class "text_word_options" ] <|
         [ view_make_compound_text_word model parentMsg wordInstance
-        , view_delete_text_word parentMsg wordInstance
+
+        -- , view_delete_text_word parentMsg wordInstance
+        , viewUnmergeTextWord parentMsg wordInstance
         ]
             ++ (if instanceCount > 1 then
                     [ view_match_translations parentMsg wordInstance ]
@@ -224,6 +226,34 @@ view_delete_text_word parentMsg wordInstance =
                     [ Html.text "Delete"
                     ]
                 ]
+
+            Nothing ->
+                []
+        )
+
+
+viewUnmergeTextWord : (Msg -> msg) -> WordInstance -> Html msg
+viewUnmergeTextWord parentMsg wordInstance =
+    let
+        textWord =
+            Text.Translations.Word.Instance.textWord
+    in
+    div [ class "text-word-option" ]
+        (case textWord wordInstance of
+            Just word ->
+                case Text.Translations.TextWord.wordKind word of
+                    SingleWord _ ->
+                        []
+
+                    CompoundWord ->
+                        [ div
+                            [ attribute "title" "Unmerge this compound word."
+                            , onClick (parentMsg (UnmergeWord word))
+                            , class "cursor"
+                            ]
+                            [ Html.text "Unmerge"
+                            ]
+                        ]
 
             Nothing ->
                 []
@@ -398,6 +428,7 @@ view_match_translations parentMsg wordInstance =
     div [ class "text-word-option" ]
         [ div
             [ attribute "title" "Use these translations across all instances of this word"
+            , class "cursor"
             , onClick (parentMsg (MatchTranslations wordInstance))
             ]
             [ Html.text "Save for all"
@@ -466,11 +497,18 @@ view_grammemes model msg wordInstance =
             ++ [ view_add_grammemes model msg wordInstance ]
 
 
-view_translations : (Msg -> msg) -> Maybe Model -> Html msg
-view_translations msg translationModel =
+view_translations : (Msg -> msg) -> Maybe Model -> Bool -> Html msg
+view_translations msg translationModel translationServiceProcessed =
     case translationModel of
         Just model ->
-            div [ id "translations_tab" ] (List.map (tagSection model msg) (Array.toList model.text.sections))
+            div [ id "translations_tab" ] <|
+                (if translationServiceProcessed then
+                    div [ class "translation-service-message" ] [ text "✔️ Translation service has processed this text" ]
+
+                 else
+                    div [ class "translation-service-message" ] [ text "⏳ Text queued for translation service processing" ]
+                )
+                    :: List.map (tagSection model msg) (Array.toList model.text.sections)
 
         Nothing ->
             div [ id "translations_tab" ]

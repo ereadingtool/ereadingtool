@@ -631,6 +631,7 @@ view (SafeModel model) =
             , write_locked = model.writeLocked
             , mode = model.mode
             , text_difficulties = model.textDifficulties
+            , translationServiceProcessed = False
             }
 
         messages =

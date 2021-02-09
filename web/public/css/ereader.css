@@ -337,6 +337,15 @@ body {
   margin-right: 2px;
 }
 
+.text_tag_selected {
+  color: white;
+
+  background-color: #0054a6;
+  border: solid 1px #333333;
+
+  filter: brightness(95%);
+}
+
 .cursor {
   cursor: pointer;
 }

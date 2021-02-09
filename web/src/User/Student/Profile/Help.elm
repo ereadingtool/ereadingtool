@@ -13,13 +13,11 @@ module User.Student.Profile.Help exposing
     , scrollToFirstMsg
     , scrollToNextMsg
     , scrollToPrevMsg
-    , searchTextsHelp
     , setVisible
     , showHintsHelp
     , usernameHelp
     )
 
-import Api.Config exposing (showHelp)
 import Help exposing (HelpMsgID, HelpMsgOverlayID, HelpMsgStr, HelpMsgVisible)
 import Help.PopUp exposing (Help)
 
@@ -30,7 +28,6 @@ type StudentHelp
     | MyPerformanceHelp HelpMsgStr
     | PreferredDifficultyHelp HelpMsgStr
     | UsernameMenuItemHelp HelpMsgStr
-    | SearchTextsMenuItemHelp HelpMsgStr
 
 
 type StudentProfileHelp
@@ -67,19 +64,12 @@ preferredDifficultyHelp =
      then you can use these brief descriptions to pick the level that is closest to your current abilities."""
 
 
-searchTextsHelp : StudentHelp
-searchTextsHelp =
-    SearchTextsMenuItemHelp
-        """To select a text to read, go to the Search Texts option that is in the menu bar on each page of the website."""
-
-
 help_msgs : List StudentHelp
 help_msgs =
     [ showHintsHelp
     , usernameHelp
     , myPerformanceHelp
     , preferredDifficultyHelp
-    , searchTextsHelp
     ]
 
 
@@ -152,9 +142,6 @@ helpMsg help_msg =
         UsernameMenuItemHelp unameItemHelp ->
             unameItemHelp
 
-        SearchTextsMenuItemHelp textsItemHelp ->
-            textsItemHelp
-
 
 popupToID : StudentHelp -> HelpMsgID
 popupToID studentHelp =
@@ -173,9 +160,6 @@ popupToID studentHelp =
 
         UsernameMenuItemHelp _ ->
             "username_menu_item_hint"
-
-        SearchTextsMenuItemHelp _ ->
-            "search_text_menu_item_hint"
 
 
 popupToOverlayID : StudentHelp -> HelpMsgOverlayID

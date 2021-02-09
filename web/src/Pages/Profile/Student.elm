@@ -93,12 +93,15 @@ init shared { params } =
     let
         help =
             Help.init
+
+        studentProfile =
+            Profile.toStudentProfile shared.profile
     in
     ( SafeModel
         { session = shared.session
         , config = shared.config
         , navKey = shared.key
-        , profile = Profile.toStudentProfile shared.profile
+        , profile = studentProfile
         , consentedToResearch = shared.researchConsent
         , flashcards = Nothing
         , editing = Dict.empty
@@ -111,10 +114,21 @@ init shared { params } =
     , Cmd.batch
         [ Help.scrollToFirstMsg help
         , Api.websocketDisconnectAll
-        , getStudentProfile
-            shared.session
-            shared.config
-            (Profile.toStudentProfile shared.profile)
+        , case StudentProfile.studentID studentProfile of
+            Just id ->
+                -- in the current implementation, a default profile with an ID of 0 is used.
+                -- check that to avoid requesting the profile on page refresh
+                if id /= 0 then
+                    getStudentProfile
+                        shared.session
+                        shared.config
+                        (Profile.toStudentProfile shared.profile)
+
+                else
+                    Cmd.none
+
+            Nothing ->
+                Cmd.none
         ]
     )
 
@@ -471,23 +485,45 @@ view (SafeModel model) =
 
 viewContent : SafeModel -> Html Msg
 viewContent (SafeModel model) =
-    div [ classList [ ( "profile", True ) ] ]
-        [ div [ class "profile-title" ]
-            [ Html.text "Student Profile" ]
-        , div [ classList [ ( "profile_items", True ) ] ]
-            [ viewPreferredDifficulty (SafeModel model)
-            , viewUsername (SafeModel model)
-            , viewUserEmail (SafeModel model)
-            , viewStudentPerformance (SafeModel model)
-            , viewFeedbackLinks
-            , viewFlashcards (SafeModel model)
-            , viewResearchConsent (SafeModel model)
-            , viewShowHelp (SafeModel model)
-            , if not (String.isEmpty model.errorMessage) then
-                span [ attribute "class" "error" ] [ Html.text "error: ", Html.text model.errorMessage ]
+    div [ classList [ ( "profile", True ) ] ] <|
+        (if Config.showHelp model.config then
+            [ viewWelcomeBanner ]
 
-              else
-                Html.text ""
+         else
+            []
+        )
+            ++ [ div [ class "profile-title" ]
+                    [ Html.text "Student Profile" ]
+               , div [ classList [ ( "profile_items", True ) ] ]
+                    [ viewPreferredDifficulty (SafeModel model)
+                    , viewUsername (SafeModel model)
+                    , viewUserEmail (SafeModel model)
+                    , viewStudentPerformance (SafeModel model)
+                    , viewFeedbackLinks
+                    , viewFlashcards (SafeModel model)
+                    , viewResearchConsent (SafeModel model)
+                    , viewShowHelp (SafeModel model)
+                    , if not (String.isEmpty model.errorMessage) then
+                        span [ attribute "class" "error" ] [ Html.text "error: ", Html.text model.errorMessage ]
+
+                      else
+                        Html.text ""
+                    ]
+               ]
+
+
+viewWelcomeBanner : Html Msg
+viewWelcomeBanner =
+    div [ id "profile-welcome-banner" ]
+        [ div []
+            [ Html.text "Welcome to the STAR! If you would like to start reading right away, select "
+            , Html.b [] [ Html.text "Texts" ]
+            , Html.text " from the menu above this message."
+            ]
+        , div []
+            [ Html.text "This site shows you hints to get you started. You can read through the hints or turn them off in the "
+            , Html.b [] [ Html.text "Show Hints" ]
+            , Html.text " section below."
             ]
         ]
 
@@ -853,31 +889,6 @@ viewDifficultyHint (SafeModel model) =
             , prev_event = onClick PreviousHint
             , addl_attributes = [ id (Help.helpID model.help difficultyHelp) ]
             , arrow_placement = ArrowDown ArrowLeft
-            }
-    in
-    if Config.showHelp model.config then
-        [ Help.View.view_hint_overlay hintAttributes
-        ]
-
-    else
-        []
-
-
-viewSearchTextsHint : SafeModel -> List (Html Msg)
-viewSearchTextsHint (SafeModel model) =
-    let
-        searchTextsHelp =
-            Help.searchTextsHelp
-
-        hintAttributes =
-            { id = Help.popupToOverlayID searchTextsHelp
-            , visible = Help.isVisible model.help searchTextsHelp
-            , text = Help.helpMsg searchTextsHelp
-            , cancel_event = onClick (CloseHint searchTextsHelp)
-            , next_event = onClick NextHint
-            , prev_event = onClick PreviousHint
-            , addl_attributes = [ id (Help.helpID model.help searchTextsHelp) ]
-            , arrow_placement = ArrowUp ArrowLeft
             }
     in
     if Config.showHelp model.config then

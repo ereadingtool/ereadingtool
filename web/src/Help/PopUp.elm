@@ -243,7 +243,7 @@ setVisible help help_msg visible =
             setAllInvisible (msgs help)
 
         new_msgs =
-            OrderedDict.insert help_msg_id ( help_msg, visible ) help_msgs
+            OrderedDict.update help_msg_id (\_ -> Just ( help_msg, visible )) help_msgs
     in
     setMsgs help new_msgs
 
