@@ -107,7 +107,10 @@ init shared { params } =
         , selectedTab = TextTab
         , writeLocked = False
         }
-    , Task.perform (\_ -> InitTextFieldEditors) (Task.succeed Nothing)
+    , Cmd.batch
+        [ Task.perform (\_ -> InitTextFieldEditors) (Task.succeed Nothing)
+        , Api.websocketDisconnectAll
+        ]
     )
 
 
@@ -628,6 +631,7 @@ view (SafeModel model) =
             , write_locked = model.writeLocked
             , mode = model.mode
             , text_difficulties = model.textDifficulties
+            , translationServiceProcessed = False
             }
 
         messages =

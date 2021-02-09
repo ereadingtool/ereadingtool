@@ -20,11 +20,12 @@ module User.Instructor.Profile exposing
 
 import Flags
 import Http
+import Iso8601
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (required)
 import Menu.Logout
+import Time exposing (Posix)
 import User.Instructor.Invite as InstructorInvite exposing (Email, InstructorInvite)
-import User.Instructor.Invite.Decode as InstructorInviteDecode
 import User.Instructor.Invite.Encode as InstructorInviteEncode
 import User.Instructor.Resource as InstructorResource
 
@@ -66,7 +67,7 @@ type alias InstructorProfileParams =
 type alias InviteParams =
     { email : String
     , invite_code : String
-    , expiration : String
+    , expiration : Posix
     }
 
 
@@ -116,7 +117,12 @@ addInvite : InstructorProfile -> InstructorInvite -> InstructorProfile
 addInvite (InstructorProfile id ts admin invitations uname logout_uri) invite =
     let
         new_invites =
-            Maybe.map (\i -> i ++ [ invite ]) invitations
+            Maybe.map
+                (\invs ->
+                    invite
+                        :: List.filter (\inv -> InstructorInvite.email inv /= InstructorInvite.email invite) invs
+                )
+                invitations
     in
     InstructorProfile id ts admin new_invites uname logout_uri
 
@@ -260,7 +266,7 @@ inviteDecoder =
     Decode.succeed InviteParams
         |> required "email" Decode.string
         |> required "invite_code" Decode.string
-        |> required "expiration" Decode.string
+        |> required "expiration" Iso8601.decoder
 
 
 uriParamsDecoder : Decoder InstructorURIParams

@@ -566,11 +566,6 @@ body {
   cursor: pointer;
 }
 
-.input_error {
-  border: 1px solid #ff0000;
-  background-color: #ffeeee;
-}
-
 .error {
   background-color: #ffeeee;
   font-size: 15px;
@@ -794,6 +789,7 @@ body {
 
 .merge-highlight {
   background: lightblue;
+  cursor: pointer;
 }
 
 /* Handle CSS cascades from upgrade*/
@@ -812,6 +808,7 @@ body {
 
 .edit-translations-icon {
   padding-left: 10px;
+  cursor: pointer;
 }
 
 .edit-text-section {
@@ -822,4 +819,14 @@ body {
 
 #text_attributes {
   padding-bottom: 35px;
+}
+
+.translation-service-message {
+  display: inline-block;
+  padding: 5px 8px;
+
+  background-color: #0054a6;
+  color: #ffffff;
+
+  border-radius: 2px;
 }

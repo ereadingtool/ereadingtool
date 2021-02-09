@@ -1,201 +1,392 @@
-module Text.Section.Words.Tag exposing
-    ( countOccurrences
-    , intersperseWithWhitespace
-    , maybeParseWordWithPunctuation
-    , parseCompoundWords
-    , tagWordsAndToVDOM
-    )
+module Text.Section.Words.Tag exposing (Word(..), WordRecord, parse, toTaggedHtml)
 
 import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Attributes
 import Html.Parser
 import Html.Parser.Util
+import Parser exposing (..)
 import Regex
+import Text.Section.Component exposing (index)
+import Text.Translations exposing (TextGroupDetails)
+import Text.Translations.Model exposing (inCompoundWord)
 
 
-punctuation_re : Regex.Regex
-punctuation_re =
-    -- Regex.regex "[?!.,»«—\\-();]"
-    Maybe.withDefault Regex.never <|
-        Regex.fromString "[?!.,»«—\\-();]"
+type Word
+    = ValidWord String
+    | InvalidWord String
+    | CompoundWord String Int
 
 
-hasPunctuation : String -> Bool
-hasPunctuation =
-    Regex.contains punctuation_re
+type alias WordRecord =
+    { leadingPunctuation : String
+    , word : Word
+    , trailingPunctuation : String
+    }
 
 
-maybeParseWordWithPunctuation : String -> List String
-maybeParseWordWithPunctuation str =
-    let
-        matches =
-            -- Regex.find (Regex.AtMost 1) punctuation_re str
-            Regex.findAtMost 1 punctuation_re str
 
-        end_of_str_index =
-            String.length str
-    in
-    case matches of
-        match :: [] ->
-            let
-                end_of_match_index =
-                    match.index + 1
-
-                punctuation_char =
-                    String.slice match.index end_of_match_index str
-
-                word =
-                    String.slice 0 match.index str
-
-                rest_of_str =
-                    String.slice end_of_match_index end_of_str_index str
-            in
-            [ word, String.join "" [ punctuation_char, rest_of_str ] ]
-
-        _ ->
-            [ str ]
+-- TAG
 
 
-intersperseWordsWith : String -> ( String, Int ) -> List ( String, Int ) -> List ( String, Int )
-intersperseWordsWith str (( token, token_occurrence ) as token_instance) tokens =
-    if hasPunctuation token then
-        tokens ++ [ token_instance ]
-
-    else
-        tokens ++ [ ( str, 0 ), token_instance ]
-
-
-intersperseWithWhitespace : List ( String, Int ) -> List ( String, Int )
-intersperseWithWhitespace word_tokens =
-    List.foldl (intersperseWordsWith " ") [] word_tokens
-
-
-countOccurrence : String -> ( List ( String, Int ), Dict String Int ) -> ( List ( String, Int ), Dict String Int )
-countOccurrence token ( tokens, occurrences ) =
-    let
-        normalized_token =
-            String.toLower token
-
-        num_of_prev_occurrences =
-            Maybe.withDefault -1 (Dict.get normalized_token occurrences)
-
-        instance =
-            num_of_prev_occurrences + 1
-
-        new_occurrences =
-            Dict.insert normalized_token instance occurrences
-
-        new_tokens =
-            tokens ++ [ ( token, instance ) ]
-    in
-    ( new_tokens, new_occurrences )
+toTaggedHtml :
+    { tagWord : Int -> { leadingPunctuation : String, token : String, trailingPunctuation : String } -> Html msg
+    , inCompoundWord : Int -> String -> Maybe TextGroupDetails
+    , nodes : List Html.Parser.Node
+    }
+    -> List (Html msg)
+toTaggedHtml { tagWord, inCompoundWord, nodes } =
+    Tuple.first <|
+        nodesToTaggedHtml
+            { tagWord = tagWord
+            , inCompoundWord = inCompoundWord
+            , occurrences = Dict.empty
+            , nodes = nodes
+            }
 
 
-countOccurrences : List String -> Dict String Int -> ( List ( String, Int ), Dict String Int )
-countOccurrences words occurrences =
-    List.foldl countOccurrence ( [], occurrences ) words
+nodesToTaggedHtml :
+    { tagWord : Int -> { leadingPunctuation : String, token : String, trailingPunctuation : String } -> Html msg
+    , inCompoundWord : Int -> String -> Maybe TextGroupDetails
+    , occurrences : Dict String Int
+    , nodes : List Html.Parser.Node
+    }
+    -> ( List (Html msg), Dict String Int )
+nodesToTaggedHtml { tagWord, inCompoundWord, occurrences, nodes } =
+    List.foldl (nodeToTaggedHtml tagWord inCompoundWord) ( [], occurrences ) nodes
+        |> (\( nds, occrs ) -> ( List.intersperse (Html.text " ") nds, occrs ))
 
 
-parseCompoundWord :
-    (Int -> String -> Maybe ( Int, Int, Int ))
-    -> ( String, Int )
-    -> ( List ( String, Int ), ( Int, List String ) )
-    -> ( List ( String, Int ), ( Int, List String ) )
-parseCompoundWord is_part_of_compound_word ( token, instance ) ( token_occurrences, ( compound_index, compound_token ) ) =
-    case is_part_of_compound_word instance token of
-        Just ( group_instance, pos, compound_word_length ) ->
-            if pos == compound_index then
-                if pos + 1 == compound_word_length then
-                    let
-                        compound_word =
-                            String.join " " (compound_token ++ [ token ])
-
-                        compound_word_instance =
-                            ( compound_word, group_instance )
-                    in
-                    -- we're at the end of a compound word
-                    ( token_occurrences ++ [ compound_word_instance ], ( 0, [] ) )
-
-                else
-                    -- token is part of a compound word and is in the right position
-                    ( token_occurrences, ( pos + 1, compound_token ++ [ token ] ) )
-
-            else
-                -- token is part of a compound word but not in the right position
-                ( token_occurrences ++ [ ( token, instance ) ], ( 0, [] ) )
-
-        Nothing ->
-            -- regular word
-            ( token_occurrences ++ [ ( token, instance ) ], ( 0, [] ) )
-
-
-parseCompoundWords : (Int -> String -> Maybe ( Int, Int, Int )) -> List ( String, Int ) -> List ( String, Int )
-parseCompoundWords is_part_of_compound_word token_occurrences =
-    let
-        ( token_occurrences_with_compound_words, _ ) =
-            List.foldl (parseCompoundWord is_part_of_compound_word) ( [], ( 0, [] ) ) token_occurrences
-    in
-    token_occurrences_with_compound_words
-
-
-tagWordAndToVDOM :
-    (Int -> String -> Html msg)
-    -> (Int -> String -> Maybe ( Int, Int, Int ))
+nodeToTaggedHtml :
+    (Int -> { leadingPunctuation : String, token : String, trailingPunctuation : String } -> Html msg)
+    -> (Int -> String -> Maybe TextGroupDetails)
     -> Html.Parser.Node
     -> ( List (Html msg), Dict String Int )
     -> ( List (Html msg), Dict String Int )
-tagWordAndToVDOM tag_word is_part_of_compound_word node ( html, occurrences ) =
-    case node of
+nodeToTaggedHtml tagWord inCompoundWord parsedNode ( html, occurrences ) =
+    case parsedNode of
         Html.Parser.Text str ->
             let
-                word_tokens =
-                    List.concat <|
-                        List.map maybeParseWordWithPunctuation (String.words str)
+                {- Parse each word in the text, breaking it apart into leading punctuation, the word,
+                   and trailing punctuation.
+                -}
+                wordRecords =
+                    List.map
+                        (\word ->
+                            case run parse word of
+                                Ok wordRecord ->
+                                    wordRecord
 
-                ( counted_occurrences, token_occurrences ) =
-                    countOccurrences word_tokens occurrences
+                                Err err ->
+                                    { leadingPunctuation = ""
+                                    , word = InvalidWord word
+                                    , trailingPunctuation = ""
+                                    }
+                        )
+                        (String.words str)
 
-                counted_words =
-                    intersperseWithWhitespace (parseCompoundWords is_part_of_compound_word counted_occurrences)
+                {- Index single words. The indices are used to reference the correct translation
+                   for each word. Occurrences are used internally to determine indices by tracking previous
+                   occurrences of a word, but we throw them away because we create the final occurences when
+                   we reindex.
+                -}
+                ( indexedWordRecords, _ ) =
+                    List.foldl indexWord ( [], occurrences ) wordRecords
 
-                new_nodes =
-                    List.map (\( token, instance ) -> tag_word instance token) counted_words
+                {- Determine and apply compound words. Single words know which group they belong
+                   to and we use that information to group them together by working through them
+                   from the right.
+                -}
+                wordRecordsCompoundsApplied =
+                    List.foldr (compoundWords inCompoundWord) [] indexedWordRecords
+
+                {- Reindex the words. The compound words need to be indexed and the occurrences
+                   for single words need to be updated, because some of them have been merged into
+                   a compound word. The instance for single words should not change because we use
+                   that to look up translations, but the the occurence should change to tag the words
+                   in their correct position.
+                -}
+                ( reindexedWordRecords, updatedOccurrences ) =
+                    List.foldl reindexWord ( [], occurrences ) wordRecordsCompoundsApplied
+
+                {- Generate an Html node for each word, including the word and a tag if it is
+                   a valid word or a compound word.
+                -}
+                nodes =
+                    List.map
+                        (\( wordRecord, instance ) ->
+                            case wordRecord.word of
+                                ValidWord word ->
+                                    tagWord instance
+                                        { leadingPunctuation = wordRecord.leadingPunctuation
+                                        , token = word
+                                        , trailingPunctuation = wordRecord.trailingPunctuation
+                                        }
+
+                                InvalidWord word ->
+                                    Html.text
+                                        (wordRecord.leadingPunctuation
+                                            ++ word
+                                            ++ wordRecord.trailingPunctuation
+                                        )
+
+                                CompoundWord word groupInstance ->
+                                    tagWord instance
+                                        { leadingPunctuation = wordRecord.leadingPunctuation
+                                        , token = word
+                                        , trailingPunctuation = wordRecord.trailingPunctuation
+                                        }
+                        )
+                        reindexedWordRecords
+
+                {- Intersperse whitespace into the nodes to reconstruct the original whitespace in
+                   the text.
+                -}
+                nodesWithWhitespace =
+                    List.intersperse (Html.text " ") nodes
+
+                --
             in
-            ( html ++ new_nodes, token_occurrences )
+            ( html ++ nodesWithWhitespace, updatedOccurrences )
 
-        Html.Parser.Element name attrs nodes ->
+        Html.Parser.Element name attributes nodes ->
             let
-                ( new_msgs, new_occurrences ) =
-                    tagWordsToVDOMWithFreqs tag_word is_part_of_compound_word occurrences nodes
+                ( childNodes, updatedOccurrences ) =
+                    nodesToTaggedHtml
+                        { tagWord = tagWord
+                        , inCompoundWord = inCompoundWord
+                        , occurrences = occurrences
+                        , nodes = nodes
+                        }
 
-                new_node =
+                node =
                     Html.node
                         name
-                        (List.map (\( nm, value ) -> Html.Attributes.attribute nm value) attrs)
-                        new_msgs
+                        (List.map
+                            (\( attrName, val ) ->
+                                Html.Attributes.attribute attrName val
+                            )
+                            attributes
+                        )
+                        childNodes
             in
-            ( html ++ [ new_node ], new_occurrences )
+            ( html ++ [ node ], updatedOccurrences )
 
-        (Html.Parser.Comment str) as comment ->
-            ( html ++ [ Html.text "" ], occurrences )
-
-
-tagWordsToVDOMWithFreqs :
-    (Int -> String -> Html msg)
-    -> (Int -> String -> Maybe ( Int, Int, Int ))
-    -> Dict String Int
-    -> List Html.Parser.Node
-    -> ( List (Html msg), Dict String Int )
-tagWordsToVDOMWithFreqs tag_word is_part_of_compound_word occurrences nodes =
-    List.foldl (tagWordAndToVDOM tag_word is_part_of_compound_word) ( [], occurrences ) nodes
+        Html.Parser.Comment _ ->
+            ( html, occurrences )
 
 
-tagWordsAndToVDOM :
-    (Int -> String -> Html msg)
-    -> (Int -> String -> Maybe ( Int, Int, Int ))
-    -> List Html.Parser.Node
-    -> List (Html msg)
-tagWordsAndToVDOM tag_word is_part_of_compound_word nodes =
-    Tuple.first <|
-        tagWordsToVDOMWithFreqs tag_word is_part_of_compound_word Dict.empty nodes
+indexWord :
+    WordRecord
+    -> ( List ( WordRecord, Int ), Dict String Int )
+    -> ( List ( WordRecord, Int ), Dict String Int )
+indexWord wordRecord ( wordRecords, occurrences ) =
+    case wordRecord.word of
+        ValidWord token ->
+            let
+                normalizedToken =
+                    String.toLower token
+
+                previousOccurrences =
+                    Maybe.withDefault -1 (Dict.get normalizedToken occurrences)
+
+                instance =
+                    previousOccurrences + 1
+            in
+            ( wordRecords ++ [ ( wordRecord, instance ) ], Dict.insert normalizedToken instance occurrences )
+
+        InvalidWord token ->
+            -- no need to track invalid words, we won't tag them
+            ( wordRecords ++ [ ( wordRecord, 0 ) ], occurrences )
+
+        CompoundWord _ _ ->
+            -- we should not have any compound words during the first round of indexing
+            ( wordRecords, occurrences )
+
+
+{-| Words are compounded by crawling from right to left over a list of word
+records. Valid and and already existing compound words might become part of
+a new compound word.
+
+We check the group ID of each valid or compound word and create new compound
+words when they match.
+
+-}
+compoundWords :
+    (Int -> String -> Maybe TextGroupDetails)
+    -> ( WordRecord, Int )
+    -> List ( WordRecord, Int )
+    -> List ( WordRecord, Int )
+compoundWords inCompoundWord ( leftWordRecord, leftIndex ) accWordRecords =
+    case accWordRecords of
+        ( rightWordRecord, rightIndex ) :: records ->
+            case leftWordRecord.word of
+                ValidWord leftWord ->
+                    case inCompoundWord leftIndex leftWord of
+                        Just leftGroup ->
+                            case rightWordRecord.word of
+                                ValidWord rightWord ->
+                                    case inCompoundWord rightIndex rightWord of
+                                        Just rightGroup ->
+                                            if leftGroup.id == rightGroup.id then
+                                                compoundWord
+                                                    { leftWordRecord = leftWordRecord
+                                                    , leftWord = leftWord
+                                                    , rightWordRecord = rightWordRecord
+                                                    , rightWord = rightWord
+                                                    , groupId = rightGroup.id
+                                                    }
+                                                    :: records
+
+                                            else
+                                                ( leftWordRecord, leftIndex ) :: accWordRecords
+
+                                        Nothing ->
+                                            ( leftWordRecord, leftIndex ) :: accWordRecords
+
+                                CompoundWord rightWord groupInstance ->
+                                    if leftGroup.id == groupInstance then
+                                        compoundWord
+                                            { leftWordRecord = leftWordRecord
+                                            , leftWord = leftWord
+                                            , rightWordRecord = rightWordRecord
+                                            , rightWord = rightWord
+                                            , groupId = groupInstance
+                                            }
+                                            :: records
+
+                                    else
+                                        ( leftWordRecord, leftIndex ) :: accWordRecords
+
+                                InvalidWord _ ->
+                                    ( leftWordRecord, leftIndex ) :: accWordRecords
+
+                        Nothing ->
+                            ( leftWordRecord, leftIndex ) :: accWordRecords
+
+                _ ->
+                    ( leftWordRecord, leftIndex ) :: accWordRecords
+
+        [] ->
+            [ ( leftWordRecord, leftIndex ) ]
+
+
+{-| A compound word is made of a left word and a right word. We preserve the
+punctuation between the words because phrases might be merged over punctuation.
+The instance of the compound word is assigned as 0 at while compounding because
+we cannot know the index until all of the compounds have been assembled.
+-}
+compoundWord :
+    { leftWordRecord : WordRecord
+    , leftWord : String
+    , rightWordRecord : WordRecord
+    , rightWord : String
+    , groupId : Int
+    }
+    -> ( WordRecord, Int )
+compoundWord { leftWordRecord, leftWord, rightWordRecord, rightWord, groupId } =
+    ( { leadingPunctuation = leftWordRecord.leadingPunctuation
+      , word =
+            CompoundWord
+                (leftWord
+                    ++ leftWordRecord.trailingPunctuation
+                    ++ " "
+                    ++ rightWordRecord.leadingPunctuation
+                    ++ rightWord
+                )
+                groupId
+      , trailingPunctuation = rightWordRecord.trailingPunctuation
+      }
+    , 0
+    )
+
+
+reindexWord :
+    ( WordRecord, Int )
+    -> ( List ( WordRecord, Int ), Dict String Int )
+    -> ( List ( WordRecord, Int ), Dict String Int )
+reindexWord ( wordRecord, inst ) ( wordRecords, occurrences ) =
+    case wordRecord.word of
+        ValidWord token ->
+            let
+                normalizedToken =
+                    String.toLower token
+
+                previousOccurrences =
+                    Maybe.withDefault -1 (Dict.get normalizedToken occurrences)
+
+                occurence =
+                    previousOccurrences + 1
+            in
+            -- preserve the instance, but update the occurence
+            ( wordRecords ++ [ ( wordRecord, inst ) ], Dict.insert normalizedToken occurence occurrences )
+
+        InvalidWord token ->
+            -- no need to track invalid words, we won't tag them
+            ( wordRecords ++ [ ( wordRecord, 0 ) ], occurrences )
+
+        CompoundWord token _ ->
+            let
+                normalizedToken =
+                    String.toLower token
+
+                previousOccurrences =
+                    Maybe.withDefault -1 (Dict.get normalizedToken occurrences)
+
+                instance =
+                    previousOccurrences + 1
+            in
+            ( wordRecords ++ [ ( wordRecord, instance ) ], Dict.insert normalizedToken instance occurrences )
+
+
+
+-- PARSE
+
+
+parse : Parser WordRecord
+parse =
+    succeed WordRecord
+        |= (getChompedString <| chompWhile isLeadingPunctuation)
+        |= parseWord
+        |= (getChompedString <| chompWhile isTrailingPunctuation)
+        |. end
+
+
+parseWord : Parser Word
+parseWord =
+    (getChompedString <| chompWhile isValidChar)
+        |> andThen checkWord
+
+
+checkWord : String -> Parser Word
+checkWord validWord =
+    if not (String.isEmpty validWord) then
+        succeed (ValidWord validWord)
+
+    else
+        problem "Could not parse a valid word."
+
+
+isLeadingPunctuation : Char -> Bool
+isLeadingPunctuation char =
+    (char == '«' || char == '"' || char == '„' || char == '“')
+        || (char == '(' || char == '[' || char == '{' || char == '<')
+
+
+isTrailingPunctuation : Char -> Bool
+isTrailingPunctuation char =
+    (char == ',' || char == '.' || char == '!' || char == '?')
+        || (char == ':' || char == ';')
+        || (char == '»' || char == '"' || char == '“' || char == '”')
+        || (char == ')' || char == ']' || char == '}' || char == '>')
+        || (char == '…' || char == '—')
+
+
+isValidChar : Char -> Bool
+isValidChar char =
+    List.any (\c -> c == char) (cyrillicChars ++ [ '-', '/' ])
+
+
+cyrillicChars : List Char
+cyrillicChars =
+    String.toList "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя"

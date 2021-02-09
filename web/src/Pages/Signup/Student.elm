@@ -258,15 +258,13 @@ view model =
 viewContent : Model -> Html Msg
 viewContent model =
     div [ classList [ ( "signup", True ) ] ]
-        [ div [ class "signup_title" ]
-            [ Html.text "Student Signup"
-            ]
-        , viewStudentWelcomeMsg
-        , div [ classList [ ( "signup_box", True ) ] ] <|
-            SignUp.viewEmailInput
-                { errors = model.errors
-                , onEmailInput = UpdateEmail
-                }
+        [ div [ classList [ ( "signup_box", True ) ] ] <|
+            [ div [ class "signup_title" ] [ Html.text "Student Signup" ] ]
+                ++ [ viewStudentWelcomeMsg ]
+                ++ SignUp.viewEmailInput
+                    { errors = model.errors
+                    , onEmailInput = UpdateEmail
+                    }
                 ++ SignUp.viewPasswordInputs
                     { showPasswords = model.showPasswords
                     , errors = model.errors
@@ -333,26 +331,25 @@ viewStudentWelcomeMsg =
 
 viewDifficultyChoices : Model -> List (Html Msg)
 viewDifficultyChoices model =
-    [ Html.div [ class "signup_label " ] [ Html.text "Choose a preferred difficulty:" ]
-    , Html.select
+    [ Html.select
         [ onInput UpdateDifficulty
         ]
-        [ Html.optgroup []
-            (List.map
-                (\( k, v ) ->
-                    Html.option
-                        (attribute "value" k
-                            :: (if v == model.signupParams.difficulty then
-                                    [ attribute "selected" "" ]
+        [ Html.optgroup [] <|
+            Html.option [ attribute "disabled" "", attribute "selected" "" ] [ Html.text "Choose a preferred difficulty:" ]
+                :: List.map
+                    (\( k, v ) ->
+                        Html.option
+                            (attribute "value" k
+                                :: (if v == model.signupParams.difficulty then
+                                        [ attribute "selected" "" ]
 
-                                else
-                                    []
-                               )
-                        )
-                        [ Html.text v ]
-                )
-                model.difficulties
-            )
+                                    else
+                                        []
+                                   )
+                            )
+                            [ Html.text v ]
+                    )
+                    model.difficulties
         ]
     ]
 

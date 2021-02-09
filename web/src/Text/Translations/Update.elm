@@ -8,9 +8,8 @@ import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
 import Array
 import Dict exposing (Dict)
-import Flags
 import Http
-import InstructorAdmin.Admin.Text as AdminText
+import Json.Decode as Decode
 import Session exposing (Session)
 import Task exposing (Task)
 import Text.Translations exposing (..)
@@ -140,6 +139,25 @@ update parentMsg msg model =
             ( model, Cmd.none )
 
         DeletedTextWord _ ->
+            ( model, Cmd.none )
+
+        UnmergeWord textWord ->
+            let
+                wordId =
+                    Text.Translations.TextWord.idToInt textWord
+            in
+            ( model, unmergeWord model.session model.config parentMsg wordId )
+
+        UnmergedWord (Ok unmergeResp) ->
+            ( Text.Translations.Model.completeUnmerge
+                model
+                unmergeResp.section
+                unmergeResp.phrase
+                unmergeResp.text_words
+            , Cmd.none
+            )
+
+        UnmergedWord (Err err) ->
             ( model, Cmd.none )
 
         -- handle user-friendly msgs
@@ -484,3 +502,18 @@ retrieveTextWords session config toMsg textId =
 
         Nothing ->
             Cmd.none
+
+
+unmergeWord :
+    Session
+    -> Config
+    -> (Msg -> msg)
+    -> Int
+    -> Cmd msg
+unmergeWord session config toMsg wordId =
+    Api.delete
+        (Endpoint.unmergeWord (Config.restApiUrl config) wordId)
+        (Session.cred session)
+        Http.emptyBody
+        (UnmergedWord >> toMsg)
+        Text.Translations.Decode.textWordMergeDecoder

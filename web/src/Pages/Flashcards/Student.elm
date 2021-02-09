@@ -73,14 +73,17 @@ init shared { params } =
         }
     , case Session.viewer shared.session of
         Just viewer ->
-            Api.websocketConnect
-                { name = "flashcard"
-                , address =
-                    WebSocket.flashcards
-                        (Config.websocketBaseUrl shared.config)
-                        (Viewer.role viewer)
-                }
-                (Session.cred shared.session)
+            Cmd.batch
+                [ Api.websocketConnect
+                    { name = "flashcard"
+                    , address =
+                        WebSocket.flashcards
+                            (Config.websocketBaseUrl shared.config)
+                            (Viewer.role viewer)
+                    }
+                    (Session.cred shared.session)
+                , Api.websocketDisconnect "textreader"
+                ]
 
         Nothing ->
             Cmd.none

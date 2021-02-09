@@ -9,6 +9,7 @@ import Html.Attributes exposing (attribute, class, classList, href, id)
 import Html.Events exposing (onClick, onInput)
 import Http
 import Http.Detailed
+import Iso8601
 import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode exposing (Value)
 import Session exposing (Session)
@@ -17,6 +18,7 @@ import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url as Url exposing (Url)
+import Time exposing (Zone)
 import User.Instructor.Invite as InstructorInvite exposing (Email, InstructorInvite)
 import User.Instructor.Profile as InstructorProfile
     exposing
@@ -25,6 +27,7 @@ import User.Instructor.Profile as InstructorProfile
         )
 import User.Instructor.Resource as InstructorResource
 import User.Profile as Profile
+import Utils.Date
 import Views
 
 
@@ -56,6 +59,7 @@ type SafeModel
     = SafeModel
         { session : Session
         , config : Config
+        , timezone : Zone
         , profile : InstructorProfile
         , newInviteEmail : Maybe InstructorInvite.Email
         , errors : Dict String String
@@ -67,11 +71,12 @@ init shared { params } =
     ( SafeModel
         { session = shared.session
         , config = shared.config
+        , timezone = shared.timezone
         , profile = Profile.toInstructorProfile shared.profile
         , newInviteEmail = Nothing
         , errors = Dict.empty
         }
-    , Cmd.none
+    , Api.websocketDisconnectAll
     )
 
 
@@ -190,7 +195,8 @@ newInviteResponseDecoder =
     Decode.map3 InstructorInvite.InstructorInvite
         (Decode.field "email" (Decode.map InstructorInvite.Email Decode.string))
         (Decode.field "invite_code" (Decode.map InstructorInvite.InviteCode Decode.string))
-        (Decode.field "expiration" (Decode.map InstructorInvite.InviteExpiration Decode.string))
+        -- (Decode.field "expiration" (Decode.map InstructorInvite.InviteExpiration Decode.string))
+        (Decode.field "expiration" (Decode.map InstructorInvite.InviteExpiration Iso8601.decoder))
 
 
 
@@ -282,7 +288,9 @@ viewInstructorInvites (SafeModel model) =
             [ span [ class "profile_item_title" ] [ Html.text "Invitations" ]
             , span [ class "profile_item_value" ]
                 [ div [ class "list" ] <|
-                    List.map viewInstructorInvite invites
+                    [ viewInstructorInviteMsg (SafeModel model) ]
+                    ++
+                    List.map (viewInstructorInvite model.timezone) invites
                         ++ [ viewInstructorInviteCreate (SafeModel model) ]
                 ]
             ]
@@ -292,16 +300,38 @@ viewInstructorInvites (SafeModel model) =
         []
 
 
-viewInstructorInvite : InstructorInvite -> Html Msg
-viewInstructorInvite invite =
+viewInstructorInvite : Zone -> InstructorInvite -> Html Msg
+viewInstructorInvite timezone invite =
     div [ class "invite" ]
         [ div [ class "label" ] [ Html.text "Email: " ]
         , div [ class "value" ] [ Html.text (InstructorInvite.emailToString (InstructorInvite.email invite)) ]
         , div [ class "label" ] [ Html.text "Invite Code: " ]
         , div [ class "value" ] [ Html.text (InstructorInvite.codeToString (InstructorInvite.inviteCode invite)) ]
         , div [ class "label" ] [ Html.text "Expiration: " ]
-        , div [ class "value" ] [ Html.text (InstructorInvite.expirationToString (InstructorInvite.inviteExpiration invite)) ]
+        , div [ class "value" ]
+            [ Html.text <|
+                Utils.Date.monthDayYearFormat timezone
+                    (InstructorInvite.expirationToPosix
+                        (InstructorInvite.inviteExpiration invite)
+                    )
+            ]
         ]
+
+
+
+viewInstructorInviteMsg : SafeModel -> Html Msg
+viewInstructorInviteMsg (SafeModel model) =
+    div [id "invite_msg"] [ Html.text
+                        """
+                        After creating an invitation, send the new content creator the invite code and ask
+                        them to sign up at
+                        """
+                        , Html.a [ href "https://stepstoadvancedreading.org/signup/instructor"] [ text "https://stepstoadvancedreading.org/signup/instructor"]
+                        , Html.text
+                        """  before the expiration
+                        time. The content creator will not be emailed automatically.
+                        """
+                    ]
 
 
 viewInstructorInviteCreate : SafeModel -> Html Msg
@@ -325,7 +355,7 @@ viewInstructorInviteCreate (SafeModel model) =
             [ Html.input
                 ([ attribute "size" "25"
                  , onInput (InstructorInvite.Email >> UpdateNewInviteEmail)
-                 , attribute "placeholder" "Invite an instructor"
+                 , attribute "placeholder" "Invite a content editor"
                  ]
                     ++ errorAttributes
                 )

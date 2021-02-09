@@ -337,8 +337,32 @@ body {
   margin-right: 2px;
 }
 
+.text_tag_selected {
+  color: white;
+
+  background-color: #0054a6;
+  border: solid 1px #333333;
+
+  filter: brightness(95%);
+}
+
 .cursor {
   cursor: pointer;
+}
+
+.cursor-container {
+  margin-left: 5px;
+}
+
+#show-password-button {
+  grid-row-start: inherit;
+  cursor: pointer;
+}
+
+#visibility-image {
+  position: absolute;
+  padding-top: 12px;
+  padding-left: 5px;
 }
 
 .hidden {
@@ -392,6 +416,10 @@ body {
   background: yellow;
 }
 
+.word-block {
+  display: inline-block;
+}
+
 .edit-highlight {
   background: yellow;
 }
@@ -440,4 +468,96 @@ body {
   .infobar {
     width: 75%;
   }
+}
+
+.login_options a {
+  color: #00478f;
+  text-decoration: none;
+}
+
+.login_options a:hover {
+  text-decoration: underline;
+}
+
+#acknowledgements-and-about a {
+  color: #00478f;
+  text-decoration: none;
+}
+
+#acknowledgements-and-about a:hover {
+  text-decoration: underline;
+}
+
+#acknowledgements a {
+  color: #00478f;
+  text-decoration: none;
+}
+
+#acknowledgements a:hover {
+  text-decoration: underline;
+}
+
+/* ********************** Form inputs ***************************** */
+
+.input-container {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#email-input {
+  border: 1px solid lightgray;
+  border-radius: 2px;
+  line-height: 40px;
+}
+
+.email-input {
+  border: 1px solid lightgray;
+  border-radius: 2px;
+  line-height: 40px;
+}
+
+:placeholder-shown {
+  text-indent: 5px;
+}
+
+#password-input {
+  border: 1px solid lightgray;
+  border-radius: 2px;
+  line-height: 40px;
+}
+
+.password-input {
+  border: 1px solid lightgray;
+  border-radius: 2px;
+  line-height: 40px;
+}
+
+.input_error {
+  border: 1px solid #ff0000;
+  background-color: #ffeeee;
+  line-height: 40px;
+}
+
+.input_valid {
+  line-height: 40px;
+}
+
+/* **************************************************************** */
+
+.merge {
+  cursor: pointer;
+}
+
+/* Hint box link color */
+.hint_overlay span.cursor {
+  color: #00478f;
+}
+
+.hint_overlay span.cursor:hover {
+  text-decoration: underline;
+}
+
+.signup_box select {
+  border: 1px solid lightgray;
+  border-radius: 2px;
 }

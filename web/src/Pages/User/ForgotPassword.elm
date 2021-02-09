@@ -217,19 +217,21 @@ viewEmailInput model =
             else
                 []
     in
-    [ loginLabel [] (span [] [ Html.text "E-mail address:" ])
-    , Html.input
-        ([ id "email-input"
-         , attribute "size" "25"
-         , onInput UpdateEmail
-         ]
-            ++ emailError
-        )
-        []
-    , errorMessage
-    , viewResponse model.response
+    [ div [ class "login_role" ] [ Html.text "Forgot Password" ]
+    , div [ class "input-container" ] [
+            Html.input
+            ([ id "email-input"
+            , attribute "placeholder" "Email Address"
+            , attribute "size" "25"
+            , onInput UpdateEmail
+            ]
+                ++ emailError
+            )
+            []
+        , errorMessage
+        , viewResponse model.response
+        ]
     ]
-
 
 viewSubmit : Model -> List (Html Msg)
 viewSubmit model =
@@ -241,8 +243,9 @@ viewSubmit model =
             else
                 [ onClick Submit, class "cursor" ]
     in
-    [ loginLabel (class "button" :: buttonDisabled)
-        (div [ class "login_submit" ] [ span [] [ Html.text "Forgot Password" ] ])
+    [ div (class "button" :: buttonDisabled)
+        [ div [ class "login_submit" ] [ span [] [ Html.text "Forgot Password" ] ]
+        ]
     ]
 
 
@@ -269,7 +272,7 @@ viewResponse forgotPasswordResponse =
 
 loginLabel : List (Html.Attribute Msg) -> Html Msg -> Html Msg
 loginLabel attributes html =
-    div (attribute "class" "login_label" :: attributes)
+    div (class "login_label" :: attributes)
         [ html
         ]
 

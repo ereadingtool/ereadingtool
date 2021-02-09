@@ -2,7 +2,7 @@ module User.Login exposing (LoginParams, login, viewLoginForm)
 
 import Api
 import Dict exposing (Dict)
-import Html exposing (Html, div, span)
+import Html exposing (Html, div, span, text)
 import Html.Attributes exposing (attribute, class, classList, id)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Http exposing (..)
@@ -45,7 +45,7 @@ viewLoginForm :
     , onPasswordUpdate : String -> msg
     , onSubmittedForm : msg
     , signUpRoute : Route
-    , loginRole: String
+    , loginRole : String
     , otherLoginRole : String
     , otherLoginRoute : Route
     , maybeHelpMessage : Maybe String
@@ -57,7 +57,7 @@ viewLoginForm loginOptions =
         viewLoginFormTitle loginOptions.loginRole
             ++ viewEmailInput
                 { onEmailUpdate = loginOptions.onEmailUpdate
-                , errors = loginOptions.errors 
+                , errors = loginOptions.errors
                 }
             ++ viewPasswordInput
                 { onPasswordUpdate = loginOptions.onPasswordUpdate
@@ -79,8 +79,9 @@ viewLoginForm loginOptions =
 
 
 viewLoginFormTitle : String -> List (Html msg)
-viewLoginFormTitle loginRole = 
-    [ div [ class "login_role" ] [ Html.text loginRole ] ] 
+viewLoginFormTitle loginRole =
+    [ div [ class "login_role" ] [ Html.text loginRole ] ]
+
 
 viewEmailInput :
     { onEmailUpdate : String -> msg
@@ -94,17 +95,20 @@ viewEmailInput { onEmailUpdate, errors } =
                 [ attribute "class" "input_error" ]
 
             else
-                []
+                [ attribute "class" "input_valid" ]
     in
-    [ div [ class "login_label" ] [ span [] [ Html.text "E-mail Address:" ] ]
-    , Html.input
-        ([ id "email-input"
-         , attribute "size" "25"
-         , onInput onEmailUpdate
-         ]
-            ++ emailErrorClass
-        )
-        []
+    [ div [ class "input-container" ]
+        [ Html.input
+            ([ id "email-input"
+             , class "email-input"
+             , attribute "size" "25"
+             , attribute "placeholder" "Email Address"
+             , onInput onEmailUpdate
+             ]
+                ++ emailErrorClass
+            )
+            []
+        ]
     , case Dict.get "email" errors of
         Just errorMsg ->
             div [] [ Html.em [] [ Html.text errorMsg ] ]
@@ -137,18 +141,19 @@ viewPasswordInput { onPasswordUpdate, onSubmittedForm, errors } =
                 Nothing ->
                     Html.text ""
     in
-    [ div [ class "login_label" ]
-        [ span [] [ Html.text "Password:" ] ]
-    , Html.input
-        ([ id "password-input"
-         , attribute "size" "35"
-         , attribute "type" "password"
-         , onInput onPasswordUpdate
-         , Utils.onEnterUp onSubmittedForm
-         ]
-            ++ passwordErrorClass
-        )
-        []
+    [ div [ class "input-container" ]
+        [ Html.input
+            ([ id "password-input"
+             , attribute "size" "35"
+             , attribute "type" "password"
+             , attribute "placeholder" "Password"
+             , onInput onPasswordUpdate
+             , Utils.onEnterUp onSubmittedForm
+             ]
+                ++ passwordErrorClass
+            )
+            []
+        ]
     , passwordErrorMessage
     ]
 
@@ -244,12 +249,12 @@ viewLinks =
     [ div [ id "acknowledgements-and-about" ]
         [ div []
             [ Html.a [ attribute "href" (Route.toString Route.About) ]
-                [ Html.text "About This Website"
+                [ text "About This Website"
                 ]
             ]
         , div []
             [ Html.a [ attribute "href" (Route.toString Route.Acknowledgments) ]
-                [ Html.text "Acknowledgements"
+                [ text "Acknowledgements"
                 ]
             ]
         ]

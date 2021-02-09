@@ -269,8 +269,8 @@ view model =
     , body =
         [ div []
             [ div [ classList [ ( "signup", True ) ] ]
-                [ div [ class "signup_title" ] [ Html.text "Instructor Signup" ]
-                , div [ classList [ ( "signup_box", True ) ] ] <|
+                [ div [ classList [ ( "signup_box", True ) ] ] <|
+                 [ div [ class "signup_title" ] [ Html.text "Instructor Signup" ] ] ++
                     SignUp.viewEmailInput
                         { errors = model.errors
                         , onEmailInput = UpdateEmail
@@ -329,12 +329,11 @@ viewInviteCodeInput model =
             else
                 []
     in
-    [ Html.div [ attribute "class" "signup_label" ]
-        [ Html.span [] [ Html.text "Invite Code " ]
-        ]
-    , Html.input
-        ([ attribute "size" "25", onInput UpdateInviteCode ] ++ errorClass)
+    [ Html.div [ class "input-container" ]
+        [ Html.input
+        ([ class "password-input", attribute "placeholder" "Invite Code", attribute "size" "25", onInput UpdateInviteCode ] ++ errorClass)
         []
+        ]
     ]
         ++ errorMessage
 

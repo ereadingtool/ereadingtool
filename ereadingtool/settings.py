@@ -38,7 +38,7 @@ YANDEX_TRANSLATION_API_KEY = os.getenv('YANDEX_TRANSLATION_API_KEY')
 YANDEX_DEFINITION_API_KEY = os.getenv('YANDEX_DEFINITION_API_KEY')
 
 # days
-INVITATION_EXPIRY = 30
+INVITATION_EXPIRY = 7
 
 JWT_EXPIRATION_DELTA = datetime.timedelta(seconds=86400)
 
@@ -149,7 +149,8 @@ INSTALLED_APPS += [
     'tag',
     'report',
     'flashcards',
-    'invite'
+    'invite',
+    'first_time_correct'
 ]
 
 AUTH_USER_MODEL = 'user.ReaderUser'

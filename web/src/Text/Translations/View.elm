@@ -6,7 +6,6 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.Parser
-import Html.Parser.Util
 import OrderedDict
 import Set
 import Text.Section.Model
@@ -16,6 +15,7 @@ import Text.Translations.Model exposing (..)
 import Text.Translations.Msg exposing (..)
 import Text.Translations.TextWord exposing (TextWord)
 import Text.Translations.Word.Instance exposing (WordInstance)
+import Text.Translations.Word.Kind exposing (WordKind(..))
 
 
 wordInstanceOnClick : Model -> (Msg -> msg) -> WordInstance -> Html.Attribute msg
@@ -32,14 +32,20 @@ wordInstanceOnClick model parentMsg wordInstance =
         onClick (parentMsg (EditWord wordInstance))
 
 
-tagWord : Model -> (Msg -> msg) -> Int -> Int -> String -> Html msg
-tagWord model parentMsg sectionNumber instance originalToken =
+tagWord :
+    Model
+    -> (Msg -> msg)
+    -> Int
+    -> Int
+    -> { leadingPunctuation : String, token : String, trailingPunctuation : String }
+    -> Html msg
+tagWord model parentMsg sectionNumber instance wordRecord =
     let
         id =
-            String.join "-" [ "section", String.fromInt sectionNumber, "instance", String.fromInt instance, originalToken ]
+            String.join "-" [ "section", String.fromInt sectionNumber, "instance", String.fromInt instance, wordRecord.token ]
 
         token =
-            String.toLower originalToken
+            String.toLower wordRecord.token
     in
     if token == " " then
         Html.text token
@@ -61,18 +67,21 @@ tagWord model parentMsg sectionNumber instance originalToken =
         in
         Html.node "span"
             [ Html.Attributes.id id
-            , classList [ ( "defined_word", True ), ( "cursor", True ) ]
+            , class "word-block"
             ]
-            [ span
+            [ span [] [ Html.text wordRecord.leadingPunctuation ]
+            , span
                 [ classList
                     [ ( "edit-highlight", editingWord )
                     , ( "merge-highlight", mergingWord && not editingWord )
+                    , ( "cursor", True )
                     ]
                 , wordInstanceOnClick model parentMsg wordInstance
                 ]
-                [ Html.text originalToken
+                [ Html.text wordRecord.token
                 ]
             , view_edit model parentMsg wordInstance
+            , span [] [ Html.text wordRecord.trailingPunctuation ]
             ]
 
 
@@ -83,10 +92,11 @@ tagSection model msg section =
             SectionNumber section.order
     in
     div [ id ("section-" ++ String.fromInt section.order), class "section" ]
-        (Text.Section.Words.Tag.tagWordsAndToVDOM
-            (tagWord model msg section.order)
-            (isPartOfCompoundWord model sectionNumber)
-            (htmlNode section.body)
+        (Text.Section.Words.Tag.toTaggedHtml
+            { tagWord = tagWord model msg section.order
+            , inCompoundWord = inCompoundWord model sectionNumber
+            , nodes = htmlNode section.body
+            }
         )
 
 
@@ -135,7 +145,9 @@ view_btns model parentMsg wordInstance =
     in
     div [ class "text_word_options" ] <|
         [ view_make_compound_text_word model parentMsg wordInstance
-        , view_delete_text_word parentMsg wordInstance
+
+        -- , view_delete_text_word parentMsg wordInstance
+        , viewUnmergeTextWord parentMsg wordInstance
         ]
             ++ (if instanceCount > 1 then
                     [ view_match_translations parentMsg wordInstance ]
@@ -183,7 +195,8 @@ view_make_compound_text_word model parentMsg wordInstance =
         (case Text.Translations.Word.Instance.textWord wordInstance of
             Just _ ->
                 [ div
-                    [ attribute "title" "Merge into compound word."
+                    [ class "merge"
+                    , attribute "title" "Merge into compound word."
                     , classList [ ( "merge-highlight", Text.Translations.Model.mergingWord model wordInstance ) ]
                     , view_make_compound_text_word_on_click model parentMsg wordInstance
                     ]
@@ -206,12 +219,41 @@ view_delete_text_word parentMsg wordInstance =
         (case textWord wordInstance of
             Just word ->
                 [ div
-                    [ attribute "title" "Delete this word instance from glossing."
+                    [ class "merge"
+                    , attribute "title" "Delete this word instance from glossing."
                     , onClick (parentMsg (DeleteTextWord word))
                     ]
                     [ Html.text "Delete"
                     ]
                 ]
+
+            Nothing ->
+                []
+        )
+
+
+viewUnmergeTextWord : (Msg -> msg) -> WordInstance -> Html msg
+viewUnmergeTextWord parentMsg wordInstance =
+    let
+        textWord =
+            Text.Translations.Word.Instance.textWord
+    in
+    div [ class "text-word-option" ]
+        (case textWord wordInstance of
+            Just word ->
+                case Text.Translations.TextWord.wordKind word of
+                    SingleWord _ ->
+                        []
+
+                    CompoundWord ->
+                        [ div
+                            [ attribute "title" "Unmerge this compound word."
+                            , onClick (parentMsg (UnmergeWord word))
+                            , class "cursor"
+                            ]
+                            [ Html.text "Unmerge"
+                            ]
+                        ]
 
             Nothing ->
                 []
@@ -386,6 +428,7 @@ view_match_translations parentMsg wordInstance =
     div [ class "text-word-option" ]
         [ div
             [ attribute "title" "Use these translations across all instances of this word"
+            , class "cursor"
             , onClick (parentMsg (MatchTranslations wordInstance))
             ]
             [ Html.text "Save for all"
@@ -454,11 +497,18 @@ view_grammemes model msg wordInstance =
             ++ [ view_add_grammemes model msg wordInstance ]
 
 
-view_translations : (Msg -> msg) -> Maybe Model -> Html msg
-view_translations msg translationModel =
+view_translations : (Msg -> msg) -> Maybe Model -> Bool -> Html msg
+view_translations msg translationModel translationServiceProcessed =
     case translationModel of
         Just model ->
-            div [ id "translations_tab" ] (List.map (tagSection model msg) (Array.toList model.text.sections))
+            div [ id "translations_tab" ] <|
+                (if translationServiceProcessed then
+                    div [ class "translation-service-message" ] [ text "✔️ Translation service has processed this text" ]
+
+                 else
+                    div [ class "translation-service-message" ] [ text "⏳ Text queued for translation service processing" ]
+                )
+                    :: List.map (tagSection model msg) (Array.toList model.text.sections)
 
         Nothing ->
             div [ id "translations_tab" ]

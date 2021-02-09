@@ -38,7 +38,7 @@ input {
 
 .login_label,
 .signup_label {
-  display: inline-block;
+  display: grid;
   padding-top: 20px;
   -webkit-padding-before: 2.5%;
 }
@@ -53,6 +53,7 @@ input {
   display: inline-block;
   padding-top: 5px;
   -webkit-padding-before: 0.5%;
+  line-height: 40px;
 }
 
 .signup_submit,
@@ -66,13 +67,9 @@ input {
 }
 
 .signup_title {
-  grid-column: content;
-  font-size: x-large;
-}
-
-.input_error {
-  border: 1px solid #ff0000;
-  background-color: #ffeeee;
+  font-size: 32px;
+  display: grid;
+  align-items: center;
 }
 
 select {
@@ -91,9 +88,9 @@ select {
 }
 
 .welcome_msg {
-  grid-column: content;
   display: grid;
   margin-bottom: 10px;
+  margin-top: 15px;
   font-size: larger;
 }
 
@@ -116,6 +113,8 @@ select {
   grid-template-columns: 150px 15px;
 
   grid-column-gap: 2px;
+
+  font-size: 16px;
 }
 
 @media only screen and (max-width: 768px) {
@@ -141,8 +140,8 @@ select {
   }
 
   .signup_title {
-    font-family: 'Open Sans';
-    font-size: 21px;
+    font-family: 'Helvetica Neue';
+    font-size: 32px;
   }
 
   .headline {

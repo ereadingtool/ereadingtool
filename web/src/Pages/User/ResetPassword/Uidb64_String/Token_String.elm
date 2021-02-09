@@ -12,7 +12,7 @@ import Api.Endpoint as Endpoint
 import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
 import Html exposing (Html, div, span)
-import Html.Attributes exposing (attribute, class, classList)
+import Html.Attributes exposing (attribute, class, classList, id)
 import Html.Events exposing (onCheck, onClick, onInput)
 import Http exposing (..)
 import Http.Detailed
@@ -281,17 +281,21 @@ viewPasswordInput model =
             else
                 [ attribute "type" "password" ]
     in
-    [ loginLabel [] (span [] [ Html.text "Set a new password" ])
-    , Html.input
-        ([ attribute "size" "25"
-         , onInput UpdatePassword
-         ]
-            ++ passwordError
-            ++ showPassword
-        )
-        []
-    , errorMessage
-    , viewResponse model.response
+    [ div [ class "login_role" ] [ Html.text "Reset Password" ]
+    , div [ class "input-container" ] [
+        Html.input
+            ([ id "email-input"
+            , attribute "size" "25"
+            , attribute "placeholder" "New password"
+            , onInput UpdatePassword
+            ]
+                ++ passwordError
+                ++ showPassword
+            )
+            []
+        , errorMessage
+        , viewResponse model.response
+        ]
     ]
 
 
@@ -320,19 +324,21 @@ viewPasswordConfirmInput model =
             else
                 [ attribute "type" "password" ]
     in
-    [ loginLabel [] (span [] [ Html.text "Confirm Password" ])
-    , Html.input
-        ([ attribute "size" "25"
-         , onInput UpdateConfirmPassword
-         ]
-            ++ passwordError
-            ++ showPassword
-        )
-        []
-    , errorMessage
-    , viewResponse model.response
+    [ div [ class "input-container" ] [ 
+        Html.input
+            ([ id "email-input"
+            , attribute "size" "25"
+            , attribute "placeholder" "Confirm password"
+            , onInput UpdateConfirmPassword
+            ]
+                ++ passwordError
+                ++ showPassword
+            )
+            []
+        , errorMessage
+        , viewResponse model.response
+        ]
     ]
-
 
 viewResponse : PasswordResetResponse -> Html Msg
 viewResponse resetPasswordResponse =

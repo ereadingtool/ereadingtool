@@ -68,7 +68,7 @@ class APIView(View):
                 return self.post_success(request, form)
             else:
                 errors = self.format_form_errors(form)
-                return self.post_error(errors)
+                return self.post_error(errors, request, form)
         except:
             return self.post_error(errors)
 

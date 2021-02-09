@@ -10,15 +10,13 @@ import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
 import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
-import Help.View exposing (ArrowPlacement(..), ArrowPosition(..), view_hint_overlay)
+import Help.View exposing (ArrowPlacement(..), ArrowPosition(..))
 import Html exposing (..)
-import Html.Attributes exposing (attribute, class, classList, href, id, rowspan)
+import Html.Attributes exposing (attribute, class, classList, id)
 import Html.Events exposing (onClick, onInput)
-import Html.Parser
-import Html.Parser.Util
 import Http exposing (..)
 import Http.Detailed
-import Json.Decode as Decode exposing (Decoder)
+import Json.Decode as Decode
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode exposing (Value)
 import Markdown
@@ -31,12 +29,10 @@ import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
 import Text.Model as Text
 import User.Profile as Profile
-import User.Student.Performance.Report as PerformanceReport exposing (PerformanceMetrics, PerformanceReport)
-import User.Student.Profile as StudentProfile exposing (StudentProfile, performanceReport)
+import User.Student.Performance.Report as PerformanceReport exposing (Tab(..))
+import User.Student.Profile as StudentProfile exposing (StudentProfile)
 import User.Student.Profile.Help as Help exposing (StudentHelp)
 import User.Student.Resource as StudentResource
-import Utils
-import Viewer exposing (Viewer)
 import Views
 
 
@@ -84,9 +80,10 @@ type SafeModel
         , consentedToResearch : Bool
         , flashcards : Maybe (List String)
         , editing : Dict String Bool
-        , errorMessage : String
-        , help : Help.StudentProfileHelp
         , usernameValidation : UsernameValidation
+        , performanceReportTab : PerformanceReport.Tab
+        , help : Help.StudentProfileHelp
+        , errorMessage : String
         , errors : Dict String String
         }
 
@@ -96,21 +93,43 @@ init shared { params } =
     let
         help =
             Help.init
+
+        studentProfile =
+            Profile.toStudentProfile shared.profile
     in
     ( SafeModel
         { session = shared.session
         , config = shared.config
         , navKey = shared.key
-        , profile = Profile.toStudentProfile shared.profile
+        , profile = studentProfile
         , consentedToResearch = shared.researchConsent
         , flashcards = Nothing
         , editing = Dict.empty
         , usernameValidation = { username = Nothing, valid = Nothing, msg = Nothing }
+        , performanceReportTab = Completion
         , help = help
         , errorMessage = ""
         , errors = Dict.empty
         }
-    , Help.scrollToFirstMsg help
+    , Cmd.batch
+        [ Help.scrollToFirstMsg help
+        , Api.websocketDisconnectAll
+        , case StudentProfile.studentID studentProfile of
+            Just id ->
+                -- in the current implementation, a default profile with an ID of 0 is used.
+                -- check that to avoid requesting the profile on page refresh
+                if id /= 0 then
+                    getStudentProfile
+                        shared.session
+                        shared.config
+                        (Profile.toStudentProfile shared.profile)
+
+                else
+                    Cmd.none
+
+            Nothing ->
+                Cmd.none
+        ]
     )
 
 
@@ -136,8 +155,8 @@ type Msg
     | CloseHint StudentHelp
     | PreviousHint
     | NextHint
-      -- site-wide messages
-    | Logout
+      -- performance report
+    | SelectReportTab PerformanceReport.Tab
 
 
 update : Msg -> SafeModel -> ( SafeModel, Cmd Msg )
@@ -292,10 +311,27 @@ update msg (SafeModel model) =
         NextHint ->
             ( SafeModel { model | help = Help.next model.help }, Help.scrollToNextMsg model.help )
 
-        Logout ->
-            ( SafeModel model
-            , Api.logout ()
+        SelectReportTab reportTab ->
+            ( SafeModel { model | performanceReportTab = reportTab }
+            , Cmd.none
             )
+
+
+getStudentProfile : Session -> Config -> StudentProfile -> Cmd Msg
+getStudentProfile session config profile =
+    case StudentProfile.studentID profile of
+        Just studentId ->
+            Api.getDetailed
+                (Endpoint.studentProfile
+                    (Config.restApiUrl config)
+                    studentId
+                )
+                (Session.cred session)
+                GotProfile
+                StudentProfile.decoder
+
+        Nothing ->
+            Cmd.none
 
 
 putProfile :
@@ -449,23 +485,45 @@ view (SafeModel model) =
 
 viewContent : SafeModel -> Html Msg
 viewContent (SafeModel model) =
-    div [ classList [ ( "profile", True ) ] ]
-        [ div [ class "profile-title" ]
-            [ Html.text "Student Profile" ]
-        , div [ classList [ ( "profile_items", True ) ] ]
-            [ viewPreferredDifficulty (SafeModel model)
-            , viewUsername (SafeModel model)
-            , viewUserEmail (SafeModel model)
-            , viewStudentPerformance (SafeModel model)
-            , viewFeedbackLinks
-            , viewFlashcards (SafeModel model)
-            , viewResearchConsent (SafeModel model)
-            , viewShowHelp (SafeModel model)
-            , if not (String.isEmpty model.errorMessage) then
-                span [ attribute "class" "error" ] [ Html.text "error: ", Html.text model.errorMessage ]
+    div [ classList [ ( "profile", True ) ] ] <|
+        (if Config.showHelp model.config then
+            [ viewWelcomeBanner ]
 
-              else
-                Html.text ""
+         else
+            []
+        )
+            ++ [ div [ class "profile-title" ]
+                    [ Html.text "Student Profile" ]
+               , div [ classList [ ( "profile_items", True ) ] ]
+                    [ viewPreferredDifficulty (SafeModel model)
+                    , viewUsername (SafeModel model)
+                    , viewUserEmail (SafeModel model)
+                    , viewStudentPerformance (SafeModel model)
+                    , viewFeedbackLinks
+                    , viewFlashcards (SafeModel model)
+                    , viewResearchConsent (SafeModel model)
+                    , viewShowHelp (SafeModel model)
+                    , if not (String.isEmpty model.errorMessage) then
+                        span [ attribute "class" "error" ] [ Html.text "error: ", Html.text model.errorMessage ]
+
+                      else
+                        Html.text ""
+                    ]
+               ]
+
+
+viewWelcomeBanner : Html Msg
+viewWelcomeBanner =
+    div [ id "profile-welcome-banner" ]
+        [ div []
+            [ Html.text "Welcome to the STAR! If you would like to start reading right away, select "
+            , Html.b [] [ Html.text "Texts" ]
+            , Html.text " from the menu above this message."
+            ]
+        , div []
+            [ Html.text "This site shows you hints to get you started. You can read through the hints or turn them off in the "
+            , Html.b [] [ Html.text "Show Hints" ]
+            , Html.text " section below."
             ]
         ]
 
@@ -602,16 +660,16 @@ viewUserEmail (SafeModel model) =
 
 viewStudentPerformance : SafeModel -> Html Msg
 viewStudentPerformance (SafeModel model) =
-    let
-        performanceReport =
-            StudentProfile.performanceReport model.profile
-    in
     div [ class "performance" ] <|
         viewPerformanceHint (SafeModel model)
             ++ [ span [ class "profile_item_title" ] [ Html.text "My Performance: " ]
                , span [ class "profile_item_value" ]
                     [ div [ class "performance_report" ]
-                        [ viewPerformanceReportTable (StudentProfile.performanceReport model.profile)
+                        [ PerformanceReport.view
+                            { performanceReport = StudentProfile.performanceReport model.profile
+                            , selectedTab = model.performanceReportTab
+                            , onSelectReport = SelectReportTab
+                            }
                         ]
                     ]
                , div [ class "performance_download_link" ]
@@ -631,75 +689,6 @@ viewStudentPerformance (SafeModel model) =
                         ]
                     ]
                ]
-
-
-viewPerformanceReportTable : PerformanceReport -> Html Msg
-viewPerformanceReportTable performanceReport =
-    div []
-        [ table [] <|
-            [ tr []
-                [ th [] [ text "Level" ]
-                , th [] [ text "Time Period" ]
-                , th [] [ text "Number of Texts Read" ]
-                , th [] [ text "Percent Correct" ]
-                ]
-            ]
-                ++ viewPerformanceLevelRow "All" performanceReport.all
-                ++ viewPerformanceLevelRow "Intermediate-Mid" performanceReport.intermediateMid
-                ++ viewPerformanceLevelRow "Intermediate-High" performanceReport.intermediateHigh
-                ++ viewPerformanceLevelRow "Advanced-Low" performanceReport.advancedLow
-                ++ viewPerformanceLevelRow "Advanced-Mid" performanceReport.advancedMid
-        ]
-
-
-viewPerformanceLevelRow : String -> Dict String PerformanceMetrics -> List (Html Msg)
-viewPerformanceLevelRow level metricsDict =
-    let
-        cumulative =
-            PerformanceReport.metrics "cumulative" metricsDict
-
-        currentMonth =
-            PerformanceReport.metrics "current_month" metricsDict
-
-        pastMonth =
-            PerformanceReport.metrics "past_month" metricsDict
-    in
-    [ tr []
-        [ td [ rowspan 4 ] [ text level ]
-        ]
-    , tr []
-        [ td [] [ text "Cumulative" ]
-        , td [] [ viewTextsReadCell cumulative ]
-        , td [] [ viewPercentCorrectCell cumulative ]
-        ]
-    , tr []
-        [ td [] [ text "Current Month" ]
-        , td [] [ viewTextsReadCell currentMonth ]
-        , td [] [ viewPercentCorrectCell currentMonth ]
-        ]
-    , tr []
-        [ td [] [ text "Past Month" ]
-        , td [] [ viewTextsReadCell pastMonth ]
-        , td [] [ viewPercentCorrectCell pastMonth ]
-        ]
-    ]
-
-
-viewTextsReadCell : PerformanceMetrics -> Html Msg
-viewTextsReadCell metrics =
-    text <|
-        String.join " " <|
-            [ String.fromInt metrics.textsComplete
-            , "out of"
-            , String.fromInt metrics.totalTexts
-            ]
-
-
-viewPercentCorrectCell : PerformanceMetrics -> Html Msg
-viewPercentCorrectCell metrics =
-    text <|
-        String.fromFloat metrics.percentCorrect
-            ++ "%"
 
 
 viewFlashcards : SafeModel -> Html Msg
@@ -784,12 +773,10 @@ viewResearchConsent (SafeModel model) =
 viewShowHelp : SafeModel -> Html Msg
 viewShowHelp (SafeModel model) =
     div [] <|
-        [ div [ id "show-help" ]
+        div [ id "show-help" ]
             [ span [ class "profile_item_title" ] [ Html.text "Show Hints" ]
             , span []
-                [ Html.text """
-          Turn the site tutorials on or off.
-          """
+                [ Html.text "Turn the site tutorials on or off."
                 ]
             , span [ class "value" ] <|
                 [ div
@@ -803,8 +790,7 @@ viewShowHelp (SafeModel model) =
                 , div [ class "check-box-text" ] [ Html.text "Show hints" ]
                 ]
             ]
-        ]
-            ++ viewShowHelpHint (SafeModel model)
+            :: viewShowHelpHint (SafeModel model)
 
 
 
@@ -903,31 +889,6 @@ viewDifficultyHint (SafeModel model) =
             , prev_event = onClick PreviousHint
             , addl_attributes = [ id (Help.helpID model.help difficultyHelp) ]
             , arrow_placement = ArrowDown ArrowLeft
-            }
-    in
-    if Config.showHelp model.config then
-        [ Help.View.view_hint_overlay hintAttributes
-        ]
-
-    else
-        []
-
-
-viewSearchTextsHint : SafeModel -> List (Html Msg)
-viewSearchTextsHint (SafeModel model) =
-    let
-        searchTextsHelp =
-            Help.searchTextsHelp
-
-        hintAttributes =
-            { id = Help.popupToOverlayID searchTextsHelp
-            , visible = Help.isVisible model.help searchTextsHelp
-            , text = Help.helpMsg searchTextsHelp
-            , cancel_event = onClick (CloseHint searchTextsHelp)
-            , next_event = onClick NextHint
-            , prev_event = onClick PreviousHint
-            , addl_attributes = [ id (Help.helpID model.help searchTextsHelp) ]
-            , arrow_placement = ArrowUp ArrowLeft
             }
     in
     if Config.showHelp model.config then

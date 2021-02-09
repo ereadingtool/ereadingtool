@@ -2,6 +2,7 @@ module Pages.Text.Id_Int exposing (Model, Msg, Params, page)
 
 import Api
 import Api.Config as Config exposing (Config)
+import Api.Endpoint exposing (word)
 import Api.WebSocket as WebSocket
 import Array exposing (Array)
 import Browser.Navigation exposing (Key)
@@ -23,6 +24,7 @@ import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url as Url exposing (Url)
 import Text.Section.Words.Tag
+import Text.Translations exposing (TextGroupDetails)
 import TextReader.Answer.Model exposing (TextAnswer)
 import TextReader.Model exposing (..)
 import TextReader.Question.Model exposing (TextQuestion)
@@ -456,10 +458,11 @@ viewTextSection (SafeModel model) textReaderSection =
         textBodyVdom =
             case Html.Parser.run textSection.body of
                 Ok nodes ->
-                    Text.Section.Words.Tag.tagWordsAndToVDOM
-                        (tagWord (SafeModel model) textReaderSection)
-                        (isPartOfCompoundWord textReaderSection)
-                        nodes
+                    Text.Section.Words.Tag.toTaggedHtml
+                        { tagWord = tagWord (SafeModel model) textReaderSection
+                        , inCompoundWord = inCompoundWord textReaderSection
+                        , nodes = nodes
+                        }
 
                 Err err ->
                     [ Html.text "Error processing text. Please contact us for help." ]
@@ -472,6 +475,49 @@ viewTextSection (SafeModel model) textReaderSection =
         , div [ id "text" ] textBodyVdom
         , viewQuestions textReaderSection
         ]
+
+
+tagWord :
+    SafeModel
+    -> Section
+    -> Int
+    -> { leadingPunctuation : String, token : String, trailingPunctuation : String }
+    -> Html Msg
+tagWord (SafeModel model) textReaderSection instance wordRecord =
+    let
+        id =
+            String.join "_" [ String.fromInt instance, wordRecord.token ]
+
+        textreaderTextword =
+            TextReader.Section.Model.getTextWord textReaderSection instance wordRecord.token
+
+        readerWord =
+            TextReader.Model.new id instance wordRecord.token textreaderTextword
+    in
+    if wordRecord.token == " " then
+        Html.text " "
+
+    else
+        case textreaderTextword of
+            Just text_word ->
+                if TextReader.TextWord.hasTranslations text_word then
+                    viewDefinedWord (SafeModel model) readerWord text_word wordRecord
+
+                else
+                    Html.text (wordRecord.leadingPunctuation ++ wordRecord.token ++ wordRecord.trailingPunctuation)
+
+            Nothing ->
+                Html.text (wordRecord.leadingPunctuation ++ wordRecord.token ++ wordRecord.trailingPunctuation)
+
+
+inCompoundWord : Section -> Int -> String -> Maybe TextGroupDetails
+inCompoundWord section instance word =
+    case TextReader.Section.Model.getTextWord section instance word of
+        Just textWord ->
+            TextReader.TextWord.group textWord
+
+        Nothing ->
+            Nothing
 
 
 viewQuestions : Section -> Html Msg
@@ -621,47 +667,28 @@ viewTextConclusion text =
 -- VIEW: WORD
 
 
-tagWord : SafeModel -> Section -> Int -> String -> Html Msg
-tagWord (SafeModel model) textReaderSection instance token =
-    let
-        id =
-            String.join "_" [ String.fromInt instance, token ]
-
-        textreaderTextword =
-            TextReader.Section.Model.getTextWord textReaderSection instance token
-
-        readerWord =
-            TextReader.Model.new id instance token textreaderTextword
-    in
-    if token == " " then
-        Html.text token
-
-    else
-        case textreaderTextword of
-            Just text_word ->
-                if TextReader.TextWord.hasTranslations text_word then
-                    viewDefinedWord (SafeModel model) readerWord text_word token
-
-                else
-                    Html.text token
-
-            Nothing ->
-                Html.text token
-
-
-viewDefinedWord : SafeModel -> TextReader.Model.TextReaderWord -> TextReader.TextWord.TextWord -> String -> Html Msg
-viewDefinedWord (SafeModel model) reader_word text_word token =
+viewDefinedWord :
+    SafeModel
+    -> TextReader.Model.TextReaderWord
+    -> TextReader.TextWord.TextWord
+    -> { leadingPunctuation : String, token : String, trailingPunctuation : String }
+    -> Html Msg
+viewDefinedWord (SafeModel model) reader_word text_word wordRecord =
     Html.node "span"
-        [ classList
-            [ ( "defined-word", True )
-            , ( "cursor", True )
-            ]
-        , onClick (ToggleGloss reader_word)
+        [ onClick (ToggleGloss reader_word)
+        , class "word-block"
         ]
-        [ span [ classList [ ( "highlighted", TextReader.Model.glossed reader_word model.gloss ) ] ]
-            [ Html.text token
+        [ span [] [ Html.text wordRecord.leadingPunctuation ]
+        , span
+            [ classList
+                [ ( "highlighted", TextReader.Model.glossed reader_word model.gloss )
+                , ( "cursor", True )
+                ]
+            ]
+            [ Html.text wordRecord.token
             ]
         , viewGloss (SafeModel model) reader_word text_word
+        , span [] [ Html.text wordRecord.trailingPunctuation ]
         ]
 
 
@@ -756,21 +783,6 @@ viewFlashcardWords (SafeModel model) =
         (List.map (\( normal_form, text_word ) -> div [] [ Html.text normal_form ])
             (Dict.toList <| Maybe.withDefault Dict.empty <| User.Profile.TextReader.Flashcards.flashcards model.flashcard)
         )
-
-
-isPartOfCompoundWord : Section -> Int -> String -> Maybe ( Int, Int, Int )
-isPartOfCompoundWord section instance word =
-    case TextReader.Section.Model.getTextWord section instance word of
-        Just textWord ->
-            case TextReader.TextWord.group textWord of
-                Just group ->
-                    Just ( group.instance, group.pos, group.length )
-
-                Nothing ->
-                    Nothing
-
-        Nothing ->
-            Nothing
 
 
 
