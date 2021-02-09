@@ -192,6 +192,36 @@ body {
   justify-items: center;
 }
 
+.guide-image {
+  width: 60%;
+}
+
+.guide-image-container {
+  display: flex;
+  justify-content: center;
+}
+
+.guide-tab {
+  display: inline-block;
+  padding: 7px;
+
+  border: 1px solid #999999;
+  border-left: none;
+}
+
+.guide-tab > .guide-link {
+  color: #000000;
+  text-decoration: none;
+}
+
+.guide-tabs {
+  display: inline-block;
+  height: 20px;
+
+  grid-template-columns: auto auto auto 1fr;
+}
+
+
 #header {
   padding: 15px 20px;
   margin-bottom: 15px;
@@ -307,6 +337,10 @@ body {
 
   font-size: 23px;
   font-weight: 300;
+}
+
+.leftmost-guide-tab {
+  border-left: 1px solid #999999;
 }
 
 .login_options a {
@@ -467,6 +501,19 @@ body {
   column-gap: 20px;
   justify-content: end;
   align-items: center;
+}
+
+.selected-guide-tab {
+  color: #ffffff;
+  background-color: #0054a6;
+
+  border: 1px solid #999999;
+  border-left: none;
+}
+
+.selected-guide-tab > .guide-link {
+  color: #ffffff;
+  text-decoration: none;
 }
 
 .signup_box select {
@@ -680,6 +727,7 @@ body {
     transition: opacity 0.25s, height 0.4s;
   }
 }
+<<<<<<< HEAD
 
 @media only screen and (max-width: 768px) {
   .not-found > img {
@@ -706,3 +754,5 @@ body {
     column-gap: 15px;
   }
 }
+=======
+>>>>>>> 3ad38ea1... Style changes
