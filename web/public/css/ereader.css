@@ -561,3 +561,42 @@ body {
   border: 1px solid lightgray;
   border-radius: 2px;
 }
+
+/* **************************************************************** */
+
+.guide-tabs {
+  display: grid;
+  height: 20px;
+
+  grid-template-columns: auto auto auto 1fr;
+}
+
+.guide-tab {
+  display: inline-block;
+  padding: 7px;
+
+  border: 1px solid #999999;
+  border-left: none;
+}
+
+.selected-guide-tab {
+  color: #ffffff;
+  background-color: #0054a6;
+
+  border: 1px solid #999999;
+  border-left: none;
+}
+
+.leftmost-guide-tab {
+  border-left: 1px solid #999999;
+}
+
+.guide-tab > .guide-link {
+  color: #000000;
+  text-decoration: none;
+}
+
+.selected-guide-tab > .guide-link {
+  color: #ffffff;
+  text-decoration: none;
+}
