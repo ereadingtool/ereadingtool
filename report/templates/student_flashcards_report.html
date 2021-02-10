@@ -1,0 +1,16 @@
+<meta charset="utf-8">
+<h1>Flashcards</h1>
+
+<p>If uploading to another flashcard application, set the delimiter to the pipe character 
+    <strong>|</strong> as that denotes the A side and B side of a flashcard.</p>
+<hr>
+{% for title, text in texts.items %}
+    <h3>{{ title }} by {{ text.author }}</h3>
+    <p><strong>text link:</strong> {{ text.link }}<br><br>
+        <strong>source:</strong> {{ text.source }}
+    </p>
+    {% for fc in text.flashcards %}
+        <p>{{ fc.0 }} - {{ fc.1 }} <strong> | </strong>{{ fc.2 }}</p>
+    {% endfor %}
+<hr>
+{% endfor %}
