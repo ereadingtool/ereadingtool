@@ -702,7 +702,6 @@ viewGloss (SafeModel model) reader_word text_word =
             ]
             [ viewWordAndGrammemes reader_word text_word
             , viewTranslations (TextReader.TextWord.translations text_word)
-
             , viewFlashcardOptions (SafeModel model) reader_word
             ]
         ]
@@ -759,6 +758,14 @@ viewFlashcardOptions (SafeModel model) reader_word =
         phrase =
             TextReader.Model.phrase reader_word
 
+        translations =
+            Maybe.map
+                TextReader.TextWord.translations
+                (TextReader.Model.textWord reader_word)
+
+        dbg =
+            Debug.log "translations" translations
+
         flashcards =
             Maybe.withDefault Dict.empty (User.Profile.TextReader.Flashcards.flashcards model.flashcard)
 
@@ -768,13 +775,17 @@ viewFlashcardOptions (SafeModel model) reader_word =
         remove =
             div [ class "cursor", onClick (RemoveFromFlashcards reader_word) ] [ Html.text "Remove from Flashcards" ]
     in
-    div [ class "gloss-flashcard-options" ]
-        (if Dict.member phrase flashcards then
-            [ remove ]
+    case translations of
+        Just ts ->
+            div [ class "gloss-flashcard-options" ] <|
+                if Dict.member phrase flashcards then
+                    [ remove ]
 
-         else
-            [ add ]
-        )
+                else
+                    [ add ]
+
+        Nothing ->
+            Html.text ""
 
 
 viewFlashcardWords : SafeModel -> Html Msg

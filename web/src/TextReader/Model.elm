@@ -13,6 +13,7 @@ module TextReader.Model exposing
     , new
     , phrase
     , selected
+    , textWord
     , toggleGloss
     , ungloss
     )
@@ -22,6 +23,7 @@ module TextReader.Model exposing
 import Dict exposing (Dict)
 import InstructorAdmin.Text.Translations exposing (Id, Instance, Phrase)
 import Menu.Items
+import Text.Component exposing (text)
 import Text.Resource
 import TextReader.Answer.Model exposing (Answer, AnswerCorrect, TextAnswer)
 import TextReader.Section.Model exposing (Section)
@@ -141,16 +143,6 @@ type alias TextScores =
     }
 
 
-
--- type alias Flags =
---     Flags.Flags
---         { text_id : Int
---         , text_url : String
---         , flashcards : List TextReader.TextWord.TextWordParams
---         , text_reader_ws_addr : String
---         }
-
-
 type alias Model =
     { text : Text
     , text_url : Text.Resource.TextReadingURL
@@ -160,6 +152,4 @@ type alias Model =
     , progress : Progress
     , gloss : Gloss
     , exception : Maybe Exception
-
-    -- , flags : Flags
     }
