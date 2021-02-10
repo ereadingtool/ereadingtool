@@ -13,7 +13,7 @@ RUN apt update -y \
     && chmod +x elm \
     && mv elm /usr/local/bin \
     && cd ereadingtool \
-    && git checkout devel \
+    && git checkout feature/django-admin \
     && cd web \
     && npm install -g parcel-bundler \
     && npm install \

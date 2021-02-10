@@ -19,6 +19,23 @@ services:
     restart: always
     volumes:
       - ./db.sqlite3:/app/ereadingtool/db.sqlite3
+  
+  admin_panel:
+    build:
+      context: .
+      dockerfile: Dockerfile.admin_panel
+    container_name: admin_panel
+    env_file:
+      - secrets.env
+    environment:
+      - VIRTUAL_HOST=admin.steps2ar.org
+      - VIRTUAL_PORT=8001
+      - LETSENCRYPT_HOST=admin.steps2ar.org
+    expose:
+      - "8001"
+    restart: always
+    volumes:
+      - ./db.sqlite3:/app/ereadingtool/db.sqlite3
 
   node_frontend:
     build:
