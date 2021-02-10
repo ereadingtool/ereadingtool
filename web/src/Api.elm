@@ -8,6 +8,7 @@ port module Api exposing
     , authSuccessMessage
     , delete
     , deleteDetailed
+    , flashcardsCsvLink
     , flashcardsPdfLink
     , get
     , getDetailed
@@ -504,6 +505,17 @@ performanceReportLink baseUrl maybeCred id =
 flashcardsPdfLink : String -> Maybe Cred -> Int -> String
 flashcardsPdfLink baseUrl maybeCred id =
     Endpoint.flashcardsPdfLink baseUrl id <|
+        case maybeCred of
+            Just (Cred cred) ->
+                cred
+
+            Nothing ->
+                ""
+
+
+flashcardsCsvLink : String -> Maybe Cred -> Int -> String
+flashcardsCsvLink baseUrl maybeCred id =
+    Endpoint.flashcardsCsvLink baseUrl id <|
         case maybeCred of
             Just (Cred cred) ->
                 cred

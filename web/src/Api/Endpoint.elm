@@ -5,6 +5,7 @@ module Api.Endpoint exposing
     , createTranslation
     , createWord
     , filterToStringQueryParam
+    , flashcardsCsvLink
     , flashcardsPdfLink
     , forgotPassword
     , instructorProfile
@@ -273,6 +274,17 @@ flashcardsPdfLink baseUrl id token =
         , "student"
         , String.fromInt id
         , "flashcards.pdf"
+        ]
+        [ Url.Builder.string "token" token ]
+
+
+flashcardsCsvLink : String -> Int -> String -> String
+flashcardsCsvLink baseUrl id token =
+    Url.Builder.crossOrigin baseUrl
+        [ "profile"
+        , "student"
+        , String.fromInt id
+        , "flashcards.csv"
         ]
         [ Url.Builder.string "token" token ]
 
