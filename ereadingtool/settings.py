@@ -114,7 +114,11 @@ ALLOWED_HOSTS = ['0.0.0.0',
                  'stepstoadvancedreading.org',
                  'steps2advancedreading.org',
                  'steps2ar.org',
-                 'api.steps2ar.org']
+                 'api.steps2ar.org',
+                 'admin.steps2ar.org',
+                 'api.steps2advancedreading.org',
+                 'admin.steps2advancedreading.org',
+]
 
 CSP_DEFAULT_SRC = ("'self'",)
 CSP_SCRIPT_SRC = ("'self'",)
@@ -125,7 +129,6 @@ CSP_STYLE_SRC = ("'self'",)
 CSP_INCLUDE_NONCE_IN = ['script-src']
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -150,8 +153,10 @@ INSTALLED_APPS += [
     'report',
     'flashcards',
     'invite',
-    'first_time_correct'
+    'first_time_correct',
+    'django.contrib.admin',
 ]
+
 
 AUTH_USER_MODEL = 'user.ReaderUser'
 

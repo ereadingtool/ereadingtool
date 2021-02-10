@@ -1,0 +1,23 @@
+{% extends "user_base.html" %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static "css/ereader.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/user_profile.css" %}"/>
+
+    <link rel="stylesheet" href="{% static "css/hint.css" %}"/>
+
+    <link rel="stylesheet" href="{% static "css/hint-down-left.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/hint-down-right.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/hint-up-left.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/hint-up-right.css" %}"/>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static "user/js/student_profile.js" %}"></script>
+{% endblock %}
+
+
+{% block body %}
+    <script src="{% url "load-elm-student" %}"></script>
+{% endblock %}

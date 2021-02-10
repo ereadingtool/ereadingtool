@@ -1,0 +1,33 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% block title %}
+        <title>Steps To Advanced Reading</title>
+    {% endblock %}
+    {% block styles %}
+        <link rel="stylesheet" href="{% static "css/ereader.css" %}"/>
+    {% endblock %}
+    {% block scripts %}
+    {% endblock %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async
+            src="https://www.googletagmanager.com/gtag/js?id=UA-136348667-1" nonce="{{request.csp_nonce}}"></script>
+    <script src="{% static 'js/ga.js' %}"></script>
+</head>
+<body>
+
+<div id="content">
+{% block content %}
+{% endblock %}
+</div>
+
+{% block body %}
+{% endblock %}
+
+</body>
+</html>
