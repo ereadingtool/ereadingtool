@@ -101,7 +101,7 @@ table th {
   font-size: larger;
   grid-template-columns: auto;
   grid-template-rows: 25px 35px;
-  margin: 20px;
+  margin: 20px 20px 20px 0;
 }
 
 .feedback a {
