@@ -107,7 +107,12 @@ ALLOWED_HOSTS = ['0.0.0.0',
                  '142.93.20.73',
                  'stepstoadvancedreading.org',
                  'steps2advancedreading.org',
-                 'steps2ar.org']
+                 'steps2ar.org',
+                 'api.steps2ar.org',
+                 'admin.steps2ar.org',
+                 'api.steps2advancedreading.org',
+                 'admin.steps2advancedreading.org',
+]
 
 CSP_DEFAULT_SRC = ("'self'",)
 CSP_SCRIPT_SRC = ("'self'",)
@@ -118,7 +123,6 @@ CSP_STYLE_SRC = ("'self'",)
 CSP_INCLUDE_NONCE_IN = ['script-src']
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -141,7 +145,8 @@ INSTALLED_APPS += [
     'tag',
     'report',
     'flashcards',
-    'invite'
+    'invite',
+    'django.contrib.admin',
 ]
 
 AUTH_USER_MODEL = 'user.ReaderUser'
@@ -155,6 +160,7 @@ ASGI_APPLICATION = 'ereadingtool.routing.application'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -197,13 +203,14 @@ WSGI_APPLICATION = 'ereadingtool.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/Users/n0_3nnui/Projects/ereadingtool/ereadingtool/db.sqlite3',
+        'NAME': os.path.join(BASE_DIR, '../db.sqlite3'),
+        'TEST_NAME': os.path.join(BASE_DIR, '../db.sqlite3'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
