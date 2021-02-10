@@ -46,6 +46,19 @@ table th {
   grid-column-gap: 10px;
 }
 
+#profile-welcome-banner {
+  display: grid;
+
+  grid-column: content;
+
+  justify-content: center;
+
+  padding: 10px;
+  border: 1px solid #0054a6;
+  border-radius: 5px;
+  font-size: 20px;
+}
+
 .text_readings {
   display: grid;
 
