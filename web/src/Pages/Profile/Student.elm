@@ -701,6 +701,22 @@ viewFlashcards (SafeModel model) =
                     [ attribute "href" <|
                         case StudentProfile.studentID model.profile of
                             Just id ->
+                                Api.flashcardsCsvLink
+                                    (Config.restApiUrl model.config)
+                                    (Session.cred model.session)
+                                    id
+
+                            Nothing ->
+                                ""
+                    ]
+                    [ Html.text "Download your flashcard words as a CSV file"
+                    ]
+                ]
+            , div [ class "flashcards-download-link" ]
+                [ Html.a
+                    [ attribute "href" <|
+                        case StudentProfile.studentID model.profile of
+                            Just id ->
                                 Api.flashcardsPdfLink
                                     (Config.restApiUrl model.config)
                                     (Session.cred model.session)
