@@ -561,3 +561,42 @@ body {
   border: 1px solid lightgray;
   border-radius: 2px;
 }
+
+/* **************************************************************** */
+
+.not-found {
+  display: grid;
+
+  grid-template-rows: auto auto auto auto;
+  row-gap: 20px;
+  place-items: center center;
+
+  padding: 20px;
+
+  text-align: center;
+}
+
+.not-found-giant-heading {
+  font-size: 6rem;
+
+  margin: 0;
+}
+
+.not-found > img {
+  width: 30rem;
+  max-width: 80%;
+  border-radius: 50%;
+}
+
+.not-found > a {
+  font-size: 2rem;
+
+  color: #00478f;
+  text-decoration: none;
+
+  margin: 0;
+}
+
+.not-found > a:hover {
+  text-decoration: underline;
+}
