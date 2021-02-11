@@ -114,7 +114,8 @@ ALLOWED_HOSTS = ['0.0.0.0',
                  'stepstoadvancedreading.org',
                  'steps2advancedreading.org',
                  'steps2ar.org',
-                 'api.steps2ar.org']
+                 'api.steps2ar.org',
+                 'delamare.xyz']
 
 CSP_DEFAULT_SRC = ("'self'",)
 CSP_SCRIPT_SRC = ("'self'",)
