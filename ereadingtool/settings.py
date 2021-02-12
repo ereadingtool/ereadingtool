@@ -122,7 +122,6 @@ ALLOWED_HOSTS = ['0.0.0.0',
 ]
 =======
                  'api.steps2ar.org'
-                 , '*'
                  ]
 >>>>>>> 9477b32b... Partially complete flashcards
 
