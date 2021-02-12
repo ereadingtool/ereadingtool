@@ -19,23 +19,6 @@ services:
     restart: always
     volumes:
       - ./db.sqlite3:/app/ereadingtool/db.sqlite3
-  
-  admin_panel:
-    build:
-      context: .
-      dockerfile: Dockerfile.admin_panel
-    container_name: admin_panel
-    env_file:
-      - secrets.env
-    # environment:
-      # - VIRTUAL_HOST=admin.steps2ar.org
-      # - VIRTUAL_PORT=8001
-      # - LETSENCRYPT_HOST=admin.steps2ar.org
-    expose:
-      - "8001"
-    restart: always
-    volumes:
-      - ./db.sqlite3:/app/ereadingtool/db.sqlite3
 
   node_frontend:
     build:
@@ -50,6 +33,23 @@ services:
     depends_on:
       - django_backend
     restart: always
+
+  admin_panel:
+    build:
+      context: .
+      dockerfile: Dockerfile.admin_panel
+    container_name: admin_panel
+    env_file:
+      - secrets.env
+    environment:
+      - VIRTUAL_HOST=admin.steps2ar.org
+      - VIRTUAL_PORT=8001
+      - LETSENCRYPT_HOST=admin.steps2ar.org
+    expose:
+      - "8001"
+    restart: always
+    volumes:
+      - ./db.sqlite3:/app/ereadingtool/db.sqlite3
 
   nginx-proxy:
     image: nginx:alpine
@@ -94,6 +94,7 @@ services:
       - certs:/etc/nginx/certs:rw
       - vhost:/etc/nginx/vhost.d
       - html:/usr/share/nginx/html
+      - acme:/etc/acme.sh
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       - NGINX_PROXY_CONTAINER=nginx-proxy
@@ -101,6 +102,7 @@ services:
       - DEFAULT_EMAIL=ereader@pdx.edu
       # Turn on for testing
       - ACME_CA_URI=https://acme-staging-v02.api.letsencrypt.org/directory
+      - DEBUG=true
     restart: always
     depends_on:
       - nginx-proxy
@@ -120,3 +122,4 @@ volumes:
   html:
   dhparam:
   certs:
+  acme:
