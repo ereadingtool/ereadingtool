@@ -196,6 +196,14 @@ Blogs and links to help install on Ubuntu 18.04
 !(Docker Compose)[https://linuxize.com/post/how-to-install-and-use-docker-compose-on-ubuntu-18-04/]
 !(Docker)[https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04]
 
+Blogs and links to help install on Ubuntu 20.04
+!(Docker Compose)[https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-ubuntu-20-04]
+!(Docker)[https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04]
+You'll need the following if the `apt-add-repository` command fails:
+```
+sudo apt-get install -y software-properties-common
+```
+
 #### Database Views
 
 This app takes advantage of the database layer perhaps more than others would. We aggregate information from many tables
@@ -203,5 +211,4 @@ into a View. These are then accessed by unmanaged models. You can learn more abo
 note that we don't have migration files for these views. How to do this is explained at the end of the blog post. However
 when first creating the app that particular migration caused a bunch of trouble. Simply create the view using a database tool
 like db Browser for SQLite in the Execution tab. The model should be able to access the view data at that point.
-
 !(using database views in Django ORM)[https://resources.rescale.com/using-database-views-in-django-orm/]
