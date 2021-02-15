@@ -8,6 +8,7 @@ port module Api exposing
     , authSuccessMessage
     , delete
     , deleteDetailed
+    , flashcardsPdfLink
     , get
     , getDetailed
     , login
@@ -492,6 +493,17 @@ handleJsonResponse decoder response =
 performanceReportLink : String -> Maybe Cred -> Int -> String
 performanceReportLink baseUrl maybeCred id =
     Endpoint.performanceReportLink baseUrl id <|
+        case maybeCred of
+            Just (Cred cred) ->
+                cred
+
+            Nothing ->
+                ""
+
+
+flashcardsPdfLink : String -> Maybe Cred -> Int -> String
+flashcardsPdfLink baseUrl maybeCred id =
+    Endpoint.flashcardsPdfLink baseUrl id <|
         case maybeCred of
             Just (Cred cred) ->
                 cred

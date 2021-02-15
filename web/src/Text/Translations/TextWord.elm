@@ -16,6 +16,7 @@ module Text.Translations.TextWord exposing
     , translations
     , translationsEndpoint
     , updateTranslation
+    , wordKind
     , wordKindToGroup
     , wordType
     , wordTypeToString

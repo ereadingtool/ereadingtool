@@ -2,11 +2,12 @@ import json
 
 from django.db import models
 from django.db import transaction
-from django.http import HttpResponse, HttpRequest, HttpResponseServerError
+from django.http import HttpResponse, HttpRequest, HttpResponseServerError, response
 from django.urls import reverse_lazy
 from ereadingtool.views import APIView
 from text.translations.group.models import TextWordGroup, TextGroupWord
 from text.translations.models import TextWord
+from text.phrase.models import TextPhrase
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from auth.normal_auth import jwt_valid
@@ -117,8 +118,29 @@ class TextWordGroupAPIView(APIView):
     @jwt_valid()
     def delete(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         try:
-            rows, deleted = TextWordGroup.objects.filter(pk=kwargs['pk']).delete()
+            group_id = request.path.split('/')[-1]
+            words = TextGroupWord.objects.filter(group_id=group_id)
+            words = [word.word_id for word in words]
+            words.append(int(group_id)) # need to get the grouped word too
+            response = TextPhrase.objects.get(pk=group_id).to_translations_dict()
+            response['text_words'] = [TextPhrase.objects.get(pk=word).to_translations_dict() for word in words]
+            response['section'] = response['text_section']
+            del(response['text_section'])
+            del(response['id'])
+            del(response['grammemes'])
+            del(response['group'])
+            del(response['endpoints'])
+            del(response['word_type'])
+            del(response['translations'])
 
-            return HttpResponse(json.dumps({'deleted': rows > 0}), content_type='application/json')
-        except (TextWordGroup.DoesNotExist, KeyError):
+            try:
+                TextWordGroup.objects.filter(pk=kwargs['textphrase_ptr_id']).delete()
+                response['grouped'] = False
+                response['error'] = None
+            except (TextWordGroup.DoesNotExist, KeyError) as e:
+                response['grouped'] = True
+                response['error'] = e 
+
+            return HttpResponse(json.dumps(response), content_type='application/json')
+        except BaseException:
             return self.default_error_resp

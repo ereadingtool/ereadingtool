@@ -136,6 +136,10 @@ all =
                 \_ ->
                     run parse "Голливуда»."
                         |> Expect.equal (Ok <| WordRecord "" (ValidWord "Голливуда") "».")
+            , test "Removes trailing »,—" <|
+                \_ ->
+                    run parse "отходов»,—"
+                        |> Expect.equal (Ok <| WordRecord "" (ValidWord "отходов") "»,—")
             ]
         , describe
             "Removes complex enclosing punctuation"
