@@ -311,7 +311,11 @@ class TextAPIView(APIView):
     def get_texts_queryset(self, user: Union[Student, Instructor], statuses: Set, filter_by: Dict):
         all_statuses = dict(text_statuses)
         subterfuge = {'tags__name__in': ['Hidden']}
-        text_queryset = user.text_search_queryset.filter(**filter_by).exclude(**subterfuge)
+        if 'instructor' in user.login_url:
+            text_queryset = user.text_search_queryset.filter(**filter_by)
+        else:
+            text_queryset = user.text_search_queryset.filter(**filter_by).exclude(**subterfuge)
+
         text_queryset_for_user = user.text_search_queryset_for_user.filter(**filter_by)
 
         unread_text_queryset_for_user = user.unread_text_queryset
