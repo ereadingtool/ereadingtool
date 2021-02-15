@@ -204,7 +204,7 @@ view_delete_selected msg text_component =
             , attribute "width" "20px"
             ]
             []
-        , Html.text "Delete Selected Question"
+        , Html.text "Delete Selected Questions"
         ]
 
 
