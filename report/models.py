@@ -1,3 +1,4 @@
+import os
 from django.db.models.expressions import Value
 from text.phrase.models import TextPhrase
 from typing import Dict, TypeVar
@@ -279,15 +280,11 @@ class StudentFlashcardsReport(object):
             except ValueError:
                 text_source = "Text Source Not Available"
 
-            # try and get the host from the docker-compose file
-            with open("docker-compose.yml", 'r') as f:
-                try:
-                    dc = yaml.safe_load(f)
-                    virtual_host = dc['services']['node_frontend']['environment'][0]
-                    host = virtual_host.split('=')[1]
-                    text_link = "https://" + host + "/text/" + str(fc.text_section.text_id)
-                except (yaml.YAMLError, KeyError, ValueError):
-                    text_link = "Text Link Not Available"
+            try:
+                host = os.getenv('FRONTEND_HOST')
+                text_link = "https://" + host + "/text/" + str(fc.text_section.text_id)
+            except:
+                text_link = "Text Link Not Available"
 
             # get the surrounding text
             a_side = fc.phrase.sentence
