@@ -47,8 +47,8 @@ view_body params =
         , attribute "class" "text_property"
         ]
     <|
-        [ div [ attribute "class" "editable" ] [ Html.text params.text_section.body ] ]
-            ++ (if params.field.error then
+        div [ attribute "class" "editable" ] [ Html.text params.text_section.body ]
+            :: (if params.field.error then
                     [ div [ class "error" ] [ Html.text params.field.error_string ] ]
 
                 else
@@ -98,22 +98,21 @@ view_text_section_component msg text_difficulties answer_feedback_limit text_sec
                 , view_editable (params body_field) view_body edit_body
                 ]
             ]
+        , Question.View.view_questions msg
+            text_section_component
+            (Text.Section.Component.question_fields text_section_component)
+            answer_feedback_limit
+        , Question.View.view_question_buttons msg text_section_component
+        , div [ class "cursor", onClick (msg <| DeleteTextSection text_section_component) ]
+            [ Html.img
+                [ attribute "src" "/public/img/delete.svg"
+                , attribute "height" "18px"
+                , attribute "width" "18px"
+                ]
+                []
+            , Html.text " Delete Text Section"
+            ]
         ]
-            ++ [ Question.View.view_questions msg
-                    text_section_component
-                    (Text.Section.Component.question_fields text_section_component)
-                    answer_feedback_limit
-               , Question.View.view_question_buttons msg text_section_component
-               , div [ class "cursor", onClick (msg <| DeleteTextSection text_section_component) ]
-                    [ Html.img
-                        [ attribute "src" "/public/img/delete.svg"
-                        , attribute "height" "18px"
-                        , attribute "width" "18px"
-                        ]
-                        []
-                    , Html.text " Delete Text Section"
-                    ]
-               ]
     ]
 
 
