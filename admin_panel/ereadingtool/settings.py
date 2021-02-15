@@ -123,7 +123,6 @@ CSP_STYLE_SRC = ("'self'",)
 CSP_INCLUDE_NONCE_IN = ['script-src']
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -146,7 +145,8 @@ INSTALLED_APPS += [
     'tag',
     'report',
     'flashcards',
-    'invite'
+    'invite',
+    'django.contrib.admin',
 ]
 
 AUTH_USER_MODEL = 'user.ReaderUser'
