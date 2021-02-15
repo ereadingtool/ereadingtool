@@ -115,8 +115,7 @@ init shared { params } =
         , translationServiceProcessed = False
         }
     , Cmd.batch
-        [ Task.perform (\_ -> InitTextFieldEditors) (Task.succeed Nothing)
-        , getText shared.session shared.config params.id
+        [ getText shared.session shared.config params.id
         , Api.websocketDisconnectAll
         ]
     )
@@ -134,7 +133,6 @@ type Msg
     | SubmittedTextDelete
     | ConfirmedTextDelete Bool
     | GotTextDeleted (Result (Http.Detailed.Error String) ( Http.Metadata, Text.Decode.TextDeleteResp ))
-    | InitTextFieldEditors
     | ToggleEditable TextField Bool
     | UpdateTextAttributes String String
     | UpdateTextCkEditors ( String, String )
@@ -398,11 +396,6 @@ update msg (SafeModel model) =
 
             else
                 ( SafeModel model, Cmd.none )
-
-        InitTextFieldEditors ->
-            ( SafeModel model
-            , Text.Component.initialize_text_field_ck_editors model.text_component
-            )
 
         ToggleEditable textField editable ->
             let
