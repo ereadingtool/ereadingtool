@@ -129,7 +129,6 @@ CSP_STYLE_SRC = ("'self'",)
 CSP_INCLUDE_NONCE_IN = ['script-src']
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -154,7 +153,8 @@ INSTALLED_APPS += [
     'report',
     'flashcards',
     'invite',
-    'first_time_correct'
+    'first_time_correct',
+    'django.contrib.admin',
 ]
 
 
