@@ -42,7 +42,7 @@ urlpatterns = [
 
 #    path('admin/', include('instructor_admin.urls')),
 
-    path('django-admin/', admin.site.urls),
+    path('', admin.site.urls),
 
 #    path('', RedirectView.as_view(url=reverse_lazy('student-login'))),
 #    path('error', TemplateView.as_view(template_name='error_page.html'), name='error-page'),
