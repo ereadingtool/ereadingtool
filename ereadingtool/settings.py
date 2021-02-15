@@ -115,8 +115,9 @@ ALLOWED_HOSTS = ['0.0.0.0',
                  'steps2advancedreading.org',
                  'steps2ar.org',
                  'api.steps2ar.org',
-                 'admin.steps2advancedreading.org'
-                 'api.steps2advancedreading.org'
+                 'admin.steps2ar.org',
+                 'api.steps2advancedreading.org',
+                 'admin.steps2advancedreading.org',
 ]
 
 CSP_DEFAULT_SRC = ("'self'",)
@@ -155,6 +156,7 @@ INSTALLED_APPS += [
     'invite',
     'first_time_correct'
 ]
+
 
 AUTH_USER_MODEL = 'user.ReaderUser'
 
