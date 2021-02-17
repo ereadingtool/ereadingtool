@@ -31,9 +31,9 @@ elm_load_urlpatterns = [
 urlpatterns = [
     path('profile/student/<int:pk>/performance_report.pdf', StudentPerformancePDFView.as_view(),
          name='student-performance-pdf-link'),
-    path('profile/student/<int:pk>/flashcards.pdf', StudentFlashcardsPDFView.as_view(),
+    path('profile/student/<int:pk>/words.pdf', StudentFlashcardsPDFView.as_view(),
          name='student-flashcards-pdf-link'),
-    path('profile/student/<int:pk>/flashcards.csv', StudentFlashcardsCSVView.as_view(),
+    path('profile/student/<int:pk>/words.csv', StudentFlashcardsCSVView.as_view(),
          name='student-flashcards-csv-link'),
     path('signup/student', StudentSignUpView.as_view(), name='student-signup'),
     path('login/student', StudentLoginView.as_view(), name='student-login'),
