@@ -30,7 +30,7 @@ class StudentFlashcardsPDFView(View):
 
         today = dt.now()
 
-        pdf_filename = f'my_ereader_flashcards_{today.day}_{today.month}_{today.year}.pdf'
+        pdf_filename = f'words_{today.day}_{today.month}_{today.year}.pdf'
 
         flashcards_report_html = loader.render_to_string('student_flashcards_report.html',
                                                          {'texts': student.flashcards_report.to_dict()})
@@ -61,7 +61,7 @@ class StudentFlashcardsCSVView(View):
 
         today = dt.now()
 
-        csv_filename = f'my_ereader_flashcards_{today.day}_{today.month}_{today.year}.csv'
+        csv_filename = f'words_{today.day}_{today.month}_{today.year}.csv'
 
         flashcard_list = student.flashcards_csv.to_list()
         csv_data = io.StringIO(newline='')
