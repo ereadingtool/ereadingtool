@@ -12,7 +12,7 @@ import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
 import Help.View exposing (ArrowPlacement(..), ArrowPosition(..))
 import Html exposing (..)
-import Html.Attributes exposing (attribute, class, classList, id, href)
+import Html.Attributes exposing (attribute, class, classList, href, id)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (..)
 import Http.Detailed
@@ -498,11 +498,11 @@ viewContent (SafeModel model) =
                     [ viewPreferredDifficulty (SafeModel model)
                     , viewUsername (SafeModel model)
                     , viewUserEmail (SafeModel model)
-                    , viewStudentPerformance (SafeModel model)
-                    , viewFeedbackLinks
-                    , viewFlashcards (SafeModel model)
-                    , viewResearchConsent (SafeModel model)
                     , viewShowHelp (SafeModel model)
+                    , viewStudentPerformance (SafeModel model)
+                    , viewResearchConsent (SafeModel model)
+                    , viewFlashcards (SafeModel model)
+                    , viewFeedbackLinks
                     , if not (String.isEmpty model.errorMessage) then
                         span [ attribute "class" "error" ] [ Html.text "error: ", Html.text model.errorMessage ]
 
@@ -523,7 +523,7 @@ viewWelcomeBanner =
             , Html.b [] [ Html.text "Show Hints" ]
             , Html.text " section below. "
             , Html.text "For more details please see the "
-            , Html.a [href (Route.toString (Route.About))] [ Html.text "About page."]
+            , Html.a [ href (Route.toString Route.About) ] [ Html.text "About page." ]
             ]
         ]
 
@@ -641,7 +641,12 @@ viewUsernameSubmit username =
                 []
 
         Nothing ->
-            [ span [ class "cursor", onClick CancelUsernameUpdate ] [ Html.text "Cancel" ]
+            [ span
+                [ class "cursor"
+                , class "username-update-cancel"
+                , onClick CancelUsernameUpdate
+                ]
+                [ Html.text "Cancel" ]
             ]
 
 
