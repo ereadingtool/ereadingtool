@@ -28,6 +28,7 @@ module Text.Translations.Model exposing
     , setGlobalEditLock
     , setTextWord
     , setTextWords
+    , uneditAllWords
     , uneditWord
     , updateTextTranslation
     , updateTranslationsForWord
