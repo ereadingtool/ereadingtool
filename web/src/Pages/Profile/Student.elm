@@ -12,7 +12,7 @@ import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
 import Help.View exposing (ArrowPlacement(..), ArrowPosition(..))
 import Html exposing (..)
-import Html.Attributes exposing (attribute, class, classList, id)
+import Html.Attributes exposing (attribute, class, classList, id, href)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (..)
 import Http.Detailed
@@ -518,12 +518,12 @@ viewWelcomeBanner =
         [ div []
             [ Html.text "Welcome to the STAR! If you would like to start reading right away, select "
             , Html.b [] [ Html.text "Texts" ]
-            , Html.text " from the menu above this message."
-            ]
-        , div []
-            [ Html.text "This site shows you hints to get you started. You can read through the hints or turn them off in the "
+            , Html.text " from the menu above this message. "
+            , Html.text "This site shows you hints to get you started. You can read through the hints or turn them off in the "
             , Html.b [] [ Html.text "Show Hints" ]
-            , Html.text " section below."
+            , Html.text " section below. "
+            , Html.text "For more details please see the "
+            , Html.a [href (Route.toString (Route.About))] [ Html.text "About page."]
             ]
         ]
 

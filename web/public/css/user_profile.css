@@ -59,6 +59,15 @@ table th {
   font-size: 20px;
 }
 
+#profile-welcome-banner a {
+  color: #00478f;
+  text-decoration: none;
+}
+
+#profile-welcome-banner a:hover {
+  text-decoration: underline;
+}
+
 .text_readings {
   display: grid;
 

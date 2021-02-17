@@ -115,7 +115,6 @@ ALLOWED_HOSTS = ['0.0.0.0',
                  'steps2advancedreading.org',
                  'steps2ar.org',
                  'api.steps2ar.org'
-                 , '*'
                  ]
 
 CSP_DEFAULT_SRC = ("'self'",)

@@ -529,6 +529,7 @@ tags =
     , "Public Policy"
     , "Other"
     , "Kazakhstan"
+    , "Hidden"
     ]
 
 
