@@ -126,7 +126,7 @@ table th {
   padding: 5px;
 }
 
-#flashcards {
+#words {
   display: grid;
   grid-template-columns: auto;
   grid-template-rows: 20px 50px;
@@ -228,18 +228,18 @@ table th {
 }
 
 .performance_download_link,
-.flashcards-download-link {
+.words-download-link {
   margin-top: 10px;
 }
 
 .performance_download_link a,
-.flashcards-download-link a {
+.words-download-link a {
   color: #00478f;
   text-decoration: none;
 }
 
 .performance_download_link a:hover,
-.flashcards-download-link a:hover {
+.words-download-link a:hover {
   text-decoration: underline;
 }
 

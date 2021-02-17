@@ -501,7 +501,7 @@ viewContent (SafeModel model) =
                     , viewShowHelp (SafeModel model)
                     , viewStudentPerformance (SafeModel model)
                     , viewResearchConsent (SafeModel model)
-                    , viewFlashcards (SafeModel model)
+                    , viewMyWords (SafeModel model)
                     , viewFeedbackLinks
                     , if not (String.isEmpty model.errorMessage) then
                         span [ attribute "class" "error" ] [ Html.text "error: ", Html.text model.errorMessage ]
@@ -696,17 +696,17 @@ viewStudentPerformance (SafeModel model) =
                ]
 
 
-viewFlashcards : SafeModel -> Html Msg
-viewFlashcards (SafeModel model) =
-    div [ id "flashcards", class "profile_item" ]
-        [ span [ class "profile_item_title" ] [ Html.text "Flashcard Words" ]
+viewMyWords : SafeModel -> Html Msg
+viewMyWords (SafeModel model) =
+    div [ id "words", class "profile_item" ]
+        [ span [ class "profile_item_title" ] [ Html.text "My Words" ]
         , span [ class "profile_item_value" ]
-            [ div [ class "flashcards-download-link" ]
+            [ div [ class "words-download-link" ]
                 [ Html.a
                     [ attribute "href" <|
                         case StudentProfile.studentID model.profile of
                             Just id ->
-                                Api.flashcardsCsvLink
+                                Api.wordsCsvLink
                                     (Config.restApiUrl model.config)
                                     (Session.cred model.session)
                                     id
@@ -714,15 +714,15 @@ viewFlashcards (SafeModel model) =
                             Nothing ->
                                 ""
                     ]
-                    [ Html.text "Download your flashcard words as a CSV file"
+                    [ Html.text "Download your words as a CSV file"
                     ]
                 ]
-            , div [ class "flashcards-download-link" ]
+            , div [ class "words-download-link" ]
                 [ Html.a
                     [ attribute "href" <|
                         case StudentProfile.studentID model.profile of
                             Just id ->
-                                Api.flashcardsPdfLink
+                                Api.wordsPdfLink
                                     (Config.restApiUrl model.config)
                                     (Session.cred model.session)
                                     id
@@ -730,7 +730,7 @@ viewFlashcards (SafeModel model) =
                             Nothing ->
                                 ""
                     ]
-                    [ Html.text "Download your flashcard words as a PDF"
+                    [ Html.text "Download your words as a PDF"
                     ]
                 ]
             ]
