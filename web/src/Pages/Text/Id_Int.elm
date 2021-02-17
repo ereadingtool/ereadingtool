@@ -772,14 +772,24 @@ viewFlashcardOptions (SafeModel model) reader_word =
         remove =
             div [ class "cursor", onClick (RemoveFromFlashcards reader_word) ] [ Html.text "Remove from My Words" ]
     in
-    case translations of
-        Just ts ->
-            div [ class "gloss-flashcard-options" ] <|
-                if Dict.member phrase flashcards then
-                    [ remove ]
+    case Session.viewer model.session of
+        Just viewer ->
+            case Viewer.role viewer of
+                Student ->
+                    case translations of
+                        Just ts ->
+                            div [ class "gloss-flashcard-options" ] <|
+                                if Dict.member phrase flashcards then
+                                    [ remove ]
 
-                else
-                    [ add ]
+                                else
+                                    [ add ]
+
+                        Nothing ->
+                            Html.text ""
+
+                Instructor ->
+                    Html.text ""
 
         Nothing ->
             Html.text ""
