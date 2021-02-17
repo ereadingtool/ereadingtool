@@ -37,6 +37,14 @@ class TextTranslationMatchAPIView(APIView):
             text_phrases = []
 
             for text_phrase in translation_merge_params['words']:
+
+                # There is a notion "word_type" that comes from the frontend but causes an error on the back.
+                # Since it's not actually a part of a TextPhrase it throws an exception. If one were to implement
+                # "Save for All" they'd need to send "multiple" or something from the frontend. They they would
+                # need to do something similar with the grouped words table- in particular change the textptr to
+                # the new TextPhrase and have the translation point to that new TextPhrase too -- I think.
+                del(text_phrase['word_type'])
+
                 text_phrase = TextPhrase.objects.get(**text_phrase)
 
                 with transaction.atomic():
