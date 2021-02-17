@@ -763,26 +763,33 @@ viewFlashcardOptions (SafeModel model) reader_word =
                 TextReader.TextWord.translations
                 (TextReader.Model.textWord reader_word)
 
-        dbg =
-            Debug.log "translations" translations
-
         flashcards =
             Maybe.withDefault Dict.empty (User.Profile.TextReader.Flashcards.flashcards model.flashcard)
 
         add =
-            div [ class "cursor", onClick (AddToFlashcards reader_word) ] [ Html.text "Add to Flashcards" ]
+            div [ class "cursor", onClick (AddToFlashcards reader_word) ] [ Html.text "Add to My Words" ]
 
         remove =
-            div [ class "cursor", onClick (RemoveFromFlashcards reader_word) ] [ Html.text "Remove from Flashcards" ]
+            div [ class "cursor", onClick (RemoveFromFlashcards reader_word) ] [ Html.text "Remove from My Words" ]
     in
-    case translations of
-        Just ts ->
-            div [ class "gloss-flashcard-options" ] <|
-                if Dict.member phrase flashcards then
-                    [ remove ]
+    case Session.viewer model.session of
+        Just viewer ->
+            case Viewer.role viewer of
+                Student ->
+                    case translations of
+                        Just ts ->
+                            div [ class "gloss-flashcard-options" ] <|
+                                if Dict.member phrase flashcards then
+                                    [ remove ]
 
-                else
-                    [ add ]
+                                else
+                                    [ add ]
+
+                        Nothing ->
+                            Html.text ""
+
+                Instructor ->
+                    Html.text ""
 
         Nothing ->
             Html.text ""

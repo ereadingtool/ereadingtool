@@ -12,7 +12,7 @@ import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
 import Help.View exposing (ArrowPlacement(..), ArrowPosition(..))
 import Html exposing (..)
-import Html.Attributes exposing (attribute, class, classList, id)
+import Html.Attributes exposing (attribute, class, classList, href, id)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (..)
 import Http.Detailed
@@ -498,11 +498,11 @@ viewContent (SafeModel model) =
                     [ viewPreferredDifficulty (SafeModel model)
                     , viewUsername (SafeModel model)
                     , viewUserEmail (SafeModel model)
-                    , viewStudentPerformance (SafeModel model)
-                    , viewFeedbackLinks
-                    , viewFlashcards (SafeModel model)
-                    , viewResearchConsent (SafeModel model)
                     , viewShowHelp (SafeModel model)
+                    , viewStudentPerformance (SafeModel model)
+                    , viewResearchConsent (SafeModel model)
+                    , viewMyWords (SafeModel model)
+                    , viewFeedbackLinks
                     , if not (String.isEmpty model.errorMessage) then
                         span [ attribute "class" "error" ] [ Html.text "error: ", Html.text model.errorMessage ]
 
@@ -518,12 +518,12 @@ viewWelcomeBanner =
         [ div []
             [ Html.text "Welcome to the STAR! If you would like to start reading right away, select "
             , Html.b [] [ Html.text "Texts" ]
-            , Html.text " from the menu above this message."
-            ]
-        , div []
-            [ Html.text "This site shows you hints to get you started. You can read through the hints or turn them off in the "
+            , Html.text " from the menu above this message. "
+            , Html.text "This site shows you hints to get you started. You can read through the hints or turn them off in the "
             , Html.b [] [ Html.text "Show Hints" ]
-            , Html.text " section below."
+            , Html.text " section below. "
+            , Html.text "For more details please see the "
+            , Html.a [ href (Route.toString Route.About) ] [ Html.text "About page." ]
             ]
         ]
 
@@ -641,7 +641,12 @@ viewUsernameSubmit username =
                 []
 
         Nothing ->
-            [ span [ class "cursor", onClick CancelUsernameUpdate ] [ Html.text "Cancel" ]
+            [ span
+                [ class "cursor"
+                , class "username-update-cancel"
+                , onClick CancelUsernameUpdate
+                ]
+                [ Html.text "Cancel" ]
             ]
 
 
@@ -691,17 +696,17 @@ viewStudentPerformance (SafeModel model) =
                ]
 
 
-viewFlashcards : SafeModel -> Html Msg
-viewFlashcards (SafeModel model) =
-    div [ id "flashcards", class "profile_item" ]
-        [ span [ class "profile_item_title" ] [ Html.text "Flashcard Words" ]
+viewMyWords : SafeModel -> Html Msg
+viewMyWords (SafeModel model) =
+    div [ id "words", class "profile_item" ]
+        [ span [ class "profile_item_title" ] [ Html.text "My Words" ]
         , span [ class "profile_item_value" ]
-            [ div [ class "flashcards-download-link" ]
+            [ div [ class "words-download-link" ]
                 [ Html.a
                     [ attribute "href" <|
                         case StudentProfile.studentID model.profile of
                             Just id ->
-                                Api.flashcardsCsvLink
+                                Api.wordsCsvLink
                                     (Config.restApiUrl model.config)
                                     (Session.cred model.session)
                                     id
@@ -709,15 +714,15 @@ viewFlashcards (SafeModel model) =
                             Nothing ->
                                 ""
                     ]
-                    [ Html.text "Download your flashcard words as a CSV file"
+                    [ Html.text "Download your words as a CSV file"
                     ]
                 ]
-            , div [ class "flashcards-download-link" ]
+            , div [ class "words-download-link" ]
                 [ Html.a
                     [ attribute "href" <|
                         case StudentProfile.studentID model.profile of
                             Just id ->
-                                Api.flashcardsPdfLink
+                                Api.wordsPdfLink
                                     (Config.restApiUrl model.config)
                                     (Session.cred model.session)
                                     id
@@ -725,7 +730,7 @@ viewFlashcards (SafeModel model) =
                             Nothing ->
                                 ""
                     ]
-                    [ Html.text "Download your flashcard words as a PDF"
+                    [ Html.text "Download your words as a PDF"
                     ]
                 ]
             ]
