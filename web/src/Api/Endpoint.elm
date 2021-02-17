@@ -5,8 +5,6 @@ module Api.Endpoint exposing
     , createTranslation
     , createWord
     , filterToStringQueryParam
-    , flashcardsCsvLink
-    , flashcardsPdfLink
     , forgotPassword
     , instructorProfile
     , instructorSignup
@@ -26,6 +24,8 @@ module Api.Endpoint exposing
     , unmergeWord
     , validateUsername
     , word
+    , wordsCsvLink
+    , wordsPdfLink
     )
 
 import Http
@@ -267,24 +267,24 @@ performanceReportLink baseUrl id token =
         [ Url.Builder.string "token" token ]
 
 
-flashcardsPdfLink : String -> Int -> String -> String
-flashcardsPdfLink baseUrl id token =
+wordsPdfLink : String -> Int -> String -> String
+wordsPdfLink baseUrl id token =
     Url.Builder.crossOrigin baseUrl
         [ "profile"
         , "student"
         , String.fromInt id
-        , "flashcards.pdf"
+        , "words.pdf"
         ]
         [ Url.Builder.string "token" token ]
 
 
-flashcardsCsvLink : String -> Int -> String -> String
-flashcardsCsvLink baseUrl id token =
+wordsCsvLink : String -> Int -> String -> String
+wordsCsvLink baseUrl id token =
     Url.Builder.crossOrigin baseUrl
         [ "profile"
         , "student"
         , String.fromInt id
-        , "flashcards.csv"
+        , "words.csv"
         ]
         [ Url.Builder.string "token" token ]
 

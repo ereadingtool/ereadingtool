@@ -8,8 +8,6 @@ port module Api exposing
     , authSuccessMessage
     , delete
     , deleteDetailed
-    , flashcardsCsvLink
-    , flashcardsPdfLink
     , get
     , getDetailed
     , login
@@ -27,6 +25,8 @@ port module Api exposing
     , websocketDisconnectAll
     , websocketReceive
     , websocketSend
+    , wordsCsvLink
+    , wordsPdfLink
     )
 
 import Api.Config as Config exposing (Config)
@@ -502,9 +502,9 @@ performanceReportLink baseUrl maybeCred id =
                 ""
 
 
-flashcardsPdfLink : String -> Maybe Cred -> Int -> String
-flashcardsPdfLink baseUrl maybeCred id =
-    Endpoint.flashcardsPdfLink baseUrl id <|
+wordsPdfLink : String -> Maybe Cred -> Int -> String
+wordsPdfLink baseUrl maybeCred id =
+    Endpoint.wordsPdfLink baseUrl id <|
         case maybeCred of
             Just (Cred cred) ->
                 cred
@@ -513,9 +513,9 @@ flashcardsPdfLink baseUrl maybeCred id =
                 ""
 
 
-flashcardsCsvLink : String -> Maybe Cred -> Int -> String
-flashcardsCsvLink baseUrl maybeCred id =
-    Endpoint.flashcardsCsvLink baseUrl id <|
+wordsCsvLink : String -> Maybe Cred -> Int -> String
+wordsCsvLink baseUrl maybeCred id =
+    Endpoint.wordsCsvLink baseUrl id <|
         case maybeCred of
             Just (Cred cred) ->
                 cred
