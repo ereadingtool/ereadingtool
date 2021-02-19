@@ -17,24 +17,25 @@ describe('Login page', () => {
 // =========== Student Portal ===========
 
 describe('Login page is student portal', () => {
-    it("Visit STAR login page and confirm it's the student portal", () => {
-        cy.get('.login_role')
-          .contains('Student Login')
-        
-        cy.get('.login_options')
-          .children()
-          .should('have.length', 3)
-          
-        cy.get('.login_options')
-          .find('div')
-          .contains('Sign Up')
-          .parentsUntil('.login_options')
-          .next('div')
-          .contains('Reset Password')
-          .parentsUntil('.login_options')
-          .next('div')
-          .contains('Login as a content editor')
-    })
+  it("Visit STAR login page and confirm it's the student portal", () => {
+    cy.visit('https://steps2ar.org/login/student')
+    cy.get('.login_role')
+      .contains('Student Login')
+    
+    cy.get('.login_options')
+      .children()
+      .should('have.length', 3)
+      
+    cy.get('.login_options')
+      .find('div')
+      .contains('Sign Up')
+      .parentsUntil('.login_options')
+      .next('div')
+      .contains('Reset Password')
+      .parentsUntil('.login_options')
+      .next('div')
+      .contains('Login as a content editor')
+  })
 })
 
 describe('Student login to signup', () => {
@@ -217,5 +218,16 @@ describe('Confirms each link is visited in the navbar', () => {
       .next()
       .next()
       .click()
+  })
+})
+
+
+describe('Logs the testing student in', () => {
+  beforeEach(() => {
+    cy.student_login()
+  })
+  it('First navigate to the student login portal, then use command', () => {
+    cy.get('.profile-title')
+      .should('have.text', 'Student Profile')
   })
 })

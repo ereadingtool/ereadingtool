@@ -11,7 +11,17 @@
 //
 // -- This is a parent command --
 // Cypress.Commands.add("login", (email, password) => { ... })
-//
+Cypress.Commands.add('student_login', (email, pw) => {
+  cy.visit('https://steps2ar.org/login/student')
+  cy.get('#email-input')
+    .type('cypress@star.org')
+
+  cy.get('#password-input')
+    .type('cypressstar')
+
+  cy.get('.login_submit')
+    .click()
+})
 //
 // -- This is a child command --
 // Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
