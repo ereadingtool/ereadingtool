@@ -702,8 +702,7 @@ viewGloss (SafeModel model) reader_word text_word =
             ]
             [ viewWordAndGrammemes reader_word text_word
             , viewTranslations (TextReader.TextWord.translations text_word)
-
-            -- , viewFlashcardOptions (SafeModel model) reader_word
+            , viewFlashcardOptions (SafeModel model) reader_word
             ]
         ]
 
@@ -759,22 +758,41 @@ viewFlashcardOptions (SafeModel model) reader_word =
         phrase =
             TextReader.Model.phrase reader_word
 
+        translations =
+            Maybe.map
+                TextReader.TextWord.translations
+                (TextReader.Model.textWord reader_word)
+
         flashcards =
             Maybe.withDefault Dict.empty (User.Profile.TextReader.Flashcards.flashcards model.flashcard)
 
         add =
-            div [ class "cursor", onClick (AddToFlashcards reader_word) ] [ Html.text "Add to Flashcards" ]
+            div [ class "cursor", onClick (AddToFlashcards reader_word) ] [ Html.text "Add to My Words" ]
 
         remove =
-            div [ class "cursor", onClick (RemoveFromFlashcards reader_word) ] [ Html.text "Remove from Flashcards" ]
+            div [ class "cursor", onClick (RemoveFromFlashcards reader_word) ] [ Html.text "Remove from My Words" ]
     in
-    div [ class "gloss-flashcard-options" ]
-        (if Dict.member phrase flashcards then
-            [ remove ]
+    case Session.viewer model.session of
+        Just viewer ->
+            case Viewer.role viewer of
+                Student ->
+                    case translations of
+                        Just ts ->
+                            div [ class "gloss-flashcard-options" ] <|
+                                if Dict.member phrase flashcards then
+                                    [ remove ]
 
-         else
-            [ add ]
-        )
+                                else
+                                    [ add ]
+
+                        Nothing ->
+                            Html.text ""
+
+                Instructor ->
+                    Html.text ""
+
+        Nothing ->
+            Html.text ""
 
 
 viewFlashcardWords : SafeModel -> Html Msg
