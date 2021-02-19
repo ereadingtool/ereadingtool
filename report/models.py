@@ -9,6 +9,10 @@ import yaml
 
 Student = TypeVar('Student')
 
+# The models have an attribute Meta that is also a `class`. This is where we indicate 
+# that the model is not to be managed by the Django ORM. More specifically, we'll by 
+# tying it to a database view with the same fields as specified in the `class`.
+
 class StudentFirstTimeCorrect(models.Model):
     text = models.ForeignKey(Text, on_delete=models.DO_NOTHING)
     student = models.ForeignKey('user.Student', on_delete=models.DO_NOTHING)
@@ -46,6 +50,10 @@ class StudentReadingsComplete(models.Model):
 
 
 class Flashcards(models.Model):
+    """
+    This a table consisting of a student's text phrases that have been saved to be studied later. All of the necessary 
+    fields are shown in the `unique_together` statement. 
+    """
     class Meta:
         unique_together = (('student', 'instance', 'phrase', 'text_section'))
     student = models.ForeignKey('user.Student', null=True, on_delete=models.CASCADE, related_name="report_student_flashcards")
@@ -55,6 +63,10 @@ class Flashcards(models.Model):
 
 
 class StudentPerformanceReport(object):
+    """
+    This object's purpose is to return JSON that is formatted into an HTML table by `report/templates/student_performance_report`.
+    It uses a multitude of filters on querysets attached to the three SQLite Views to obtain all of the needed information. 
+    """
     def __init__(self, student: Student, *args, **kwargs):
         self.student = student
         # different database views, different querysets
@@ -251,6 +263,11 @@ class StudentPerformanceReport(object):
 
 
 class StudentFlashcardsReport(object):
+    """
+    Responsible for creating entries in the report_flashcards table. There is some light error checking 
+    around flashcard meta data. We also have softcoded the text link in the PDF, but it depends on a 
+    `docker-compose.yml` file. If this does not exist the `to_dict()` method will fail.
+    """
     def __init__(self, student: Student, *args, **kwargs):
         self.student = student
         self.flashcards = Flashcards.objects.filter(student=student)
