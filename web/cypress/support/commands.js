@@ -14,10 +14,12 @@
 Cypress.Commands.add('student_login', (email, pw) => {
   cy.visit('https://steps2ar.org/login/student')
   cy.get('#email-input')
-    .type('cypress@star.org')
+    .type(email)
+    // .type('cypress@star.org')
 
   cy.get('#password-input')
-    .type('cypressstar')
+    .type(pw)
+    // .type('cypressstar')
 
   cy.get('.login_submit')
     .click()

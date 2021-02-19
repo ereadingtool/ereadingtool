@@ -222,9 +222,9 @@ describe('Confirms each link is visited in the navbar', () => {
 })
 
 
-describe('Logs the testing student in', () => {
+describe('Logs in the student', () => {
   beforeEach(() => {
-    cy.student_login()
+    cy.student_login('cypress@star.org', 'cypressstar')
   })
   it('First navigate to the student login portal, then use command', () => {
     cy.get('.profile-title')
