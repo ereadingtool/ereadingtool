@@ -23,8 +23,4 @@ webstack-django-jwt-auth
 django-cors-headers
 # this is new
 PyJWT
-<<<<<<< HEAD
 whitenoise
-=======
-PyYAML
->>>>>>> 4ab79550... Flashcards pdf
