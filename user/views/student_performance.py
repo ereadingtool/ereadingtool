@@ -32,7 +32,10 @@ class StudentPerformancePDFView(View):
         pdf_filename = f'my_ereader_performance_{today.day}_{today.month}_{today.year}.pdf'
 
         performance_report_html = loader.render_to_string('student_performance_report.html',
-                                                          {'performance_report': student.performance.to_dict()})
+                                                          {'performance_report': student.performance.to_dict(),
+                                                           'timestamp': f'{today.day}/{today.month}/{today.year}',
+                                                           'student': student.user.email
+                                                          })
 
         pdf_data = pdfkit.from_string(performance_report_html, False)
 

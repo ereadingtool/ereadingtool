@@ -33,7 +33,10 @@ class StudentFlashcardsPDFView(View):
         pdf_filename = f'words_{today.day}_{today.month}_{today.year}.pdf'
 
         flashcards_report_html = loader.render_to_string('student_flashcards_report.html',
-                                                         {'texts': student.flashcards_report.to_dict()})
+                                                         {'texts': student.flashcards_report.to_dict(),
+                                                          'timestamp': f'{today.day}/{today.month}/{today.year}',
+                                                          'student': student.user.email
+                                                         })
 
         pdf_data = pdfkit.from_string(flashcards_report_html, False)
 
