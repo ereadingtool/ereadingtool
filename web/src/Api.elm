@@ -25,6 +25,8 @@ port module Api exposing
     , websocketDisconnectAll
     , websocketReceive
     , websocketSend
+    , wordsCsvLink
+    , wordsPdfLink
     )
 
 import Api.Config as Config exposing (Config)
@@ -492,6 +494,28 @@ handleJsonResponse decoder response =
 performanceReportLink : String -> Maybe Cred -> Int -> String
 performanceReportLink baseUrl maybeCred id =
     Endpoint.performanceReportLink baseUrl id <|
+        case maybeCred of
+            Just (Cred cred) ->
+                cred
+
+            Nothing ->
+                ""
+
+
+wordsPdfLink : String -> Maybe Cred -> Int -> String
+wordsPdfLink baseUrl maybeCred id =
+    Endpoint.wordsPdfLink baseUrl id <|
+        case maybeCred of
+            Just (Cred cred) ->
+                cred
+
+            Nothing ->
+                ""
+
+
+wordsCsvLink : String -> Maybe Cred -> Int -> String
+wordsCsvLink baseUrl maybeCred id =
+    Endpoint.wordsCsvLink baseUrl id <|
         case maybeCred of
             Just (Cred cred) ->
                 cred

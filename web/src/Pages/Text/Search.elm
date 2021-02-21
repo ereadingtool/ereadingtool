@@ -504,7 +504,11 @@ viewTags tagSearch =
                 ]
     in
     div [ id "text_tags" ]
-        [ div [ class "text_tags" ] (List.map viewTag (Dict.values tags))
+        [ div [ class "text_tags" ] <|
+            (Dict.values tags
+                |> List.filter (\tag -> Text.Search.Option.label tag /= "Hidden")
+                |> List.map viewTag
+            )
         ]
 
 

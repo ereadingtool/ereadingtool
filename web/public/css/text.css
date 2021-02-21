@@ -221,6 +221,14 @@
   grid-column: 1 / 3;
 }
 
+.gloss-flashcard-options div.cursor {
+  color: #00478f;
+}
+
+.gloss-flashcard-options div.cursor:hover {
+  text-decoration: underline;
+}
+
 .gloss-overlay {
   display: grid;
   position: absolute;
