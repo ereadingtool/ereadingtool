@@ -23,4 +23,8 @@ webstack-django-jwt-auth
 django-cors-headers
 # this is new
 PyJWT
+<<<<<<< HEAD
 whitenoise
+=======
+PyYAML
+>>>>>>> 1132e1e23230655cb62bd3b966c48188eb26b1e7

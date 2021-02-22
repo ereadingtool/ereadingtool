@@ -304,6 +304,10 @@ body {
   margin-bottom: 15px;
 }
 
+.editable {
+  background-color: #ffffff;
+}
+
 .editable:hover {
   background-color: #d1e1ed;
 }

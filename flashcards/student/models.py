@@ -3,12 +3,11 @@ from typing import Dict
 from django.db import models
 
 from flashcards.base import Flashcard
-from user.student.models import Student
 from text.phrase.models import TextPhrase
 
 
 class StudentFlashcard(Flashcard):
-    student = models.ForeignKey(Student, null=False, related_name='flashcards', on_delete=models.CASCADE)
+    student = models.ForeignKey('user.Student', null=False, related_name='flashcards', on_delete=models.CASCADE)
 
     phrase = models.ForeignKey(TextPhrase, related_name='student_flashcards', on_delete=models.CASCADE)
 
