@@ -1,6 +1,6 @@
 describe('Visit STAR', () => {
     it('Visits the STAR app', () => {
-        cy.visit('https://steps2ar.org')
+        cy.visit('https://localhost:1234')
     })
 })
 
@@ -18,7 +18,7 @@ describe('Login page', () => {
 
 describe('Login page is student portal', () => {
   it("Visit STAR login page and confirm it's the student portal", () => {
-    cy.visit('https://steps2ar.org/login/student')
+    cy.visit('https://localhost:1234/login/student')
     cy.get('.login_role')
       .contains('Student Login')
     
@@ -51,7 +51,7 @@ describe('Student login to signup', () => {
 
 describe('Student login to reset password', () => {
   it('Visits login portal then moves to reset password page', () => {
-    cy.visit('https://steps2ar.org/login/student')
+    cy.visit('https://localhost:1234/login/student')
     cy.get('.login_options')
       .find('a')
       .contains('Reset Password')
@@ -63,7 +63,7 @@ describe('Student login to reset password', () => {
 
 describe('Student login switch to content editor', () => {
   it('Visits the content editor login page from the student portal', () => {
-    cy.visit('https://steps2ar.org/login/student')
+    cy.visit('https://localhost:1234/login/student')
     cy.get('.login_options')
       .find('a')
       .contains('Login as a content editor')
@@ -75,7 +75,7 @@ describe('Student login switch to content editor', () => {
 
 describe('Student login switch to about', () => {
   it('Visits the student login page then moves to the about page', () => {
-    cy.visit('https://steps2ar.org/login/student')
+    cy.visit('https://localhost:1234/login/student')
     cy.get('#acknowledgements-and-about')
       .find('div')
       .contains('About This Website')
@@ -85,7 +85,7 @@ describe('Student login switch to about', () => {
 
 describe('Student login switch to acknowledgements', () => {
   it('Visits the student login page then moves to the acknowledgements page', () => {
-    cy.visit('https://steps2ar.org/login/student')
+    cy.visit('https://localhost:1234/login/student')
     cy.get('#acknowledgements-and-about')
       .find('div')
       .contains('Acknowledgements')
@@ -97,7 +97,7 @@ describe('Student login switch to acknowledgements', () => {
 
 describe('Login page is instructor portal', () => {
   it("Visit STAR login page and confirm it's the student portal", () => {
-    cy.visit('https://steps2ar.org/login/instructor')
+    cy.visit('https://localhost:1234/login/instructor')
     cy.get('.login_role')
       .contains('Content Editor Login')
 
@@ -119,7 +119,7 @@ describe('Login page is instructor portal', () => {
 
 describe('Content Editor login to signup', () => {
   it('Visits login portal then moves to signup page', () => {
-    cy.visit('https://steps2ar.org/login/instructor')
+    cy.visit('https://localhost:1234/login/instructor')
     cy.get('.login_options')
       .find('a')
       .contains('Sign Up')
@@ -131,7 +131,7 @@ describe('Content Editor login to signup', () => {
 
 describe('Student login to reset password', () => {
   it('Visits login portal then moves to reset password page', () => {
-    cy.visit('https://steps2ar.org/login/instructor')
+    cy.visit('https://localhost:1234/login/instructor')
     cy.get('.login_options')
       .find('a')
       .contains('Reset Password')
@@ -143,7 +143,7 @@ describe('Student login to reset password', () => {
 
 describe('Student login switch to content editor', () => {
   it('Visits the student login page from the content editor portal', () => {
-    cy.visit('https://steps2ar.org/login/instructor')
+    cy.visit('https://localhost:1234/login/instructor')
     cy.get('.login_options')
       .find('a')
       .contains('Login as a student')
@@ -155,7 +155,7 @@ describe('Student login switch to content editor', () => {
 
 describe('Content Editor login switch to about', () => {
   it('Visits the student login page then moves to the about page', () => {
-    cy.visit('https://steps2ar.org/login/instructor')
+    cy.visit('https://localhost:1234/login/instructor')
     cy.get('#acknowledgements-and-about')
       .find('div')
       .contains('About This Website')
@@ -165,7 +165,7 @@ describe('Content Editor login switch to about', () => {
 
 describe('Content Editor login switch to acknowledgements', () => {
   it('Visits the content editor login page then moves to the acknowledgements page', () => {
-    cy.visit('https://steps2ar.org/login/instructor')
+    cy.visit('https://localhost:1234/login/instructor')
     cy.get('#acknowledgements-and-about')
       .find('div')
       .contains('Acknowledgements')
@@ -177,7 +177,7 @@ describe('Content Editor login switch to acknowledgements', () => {
 // =========== Navbar ===========
 describe('Confirms texts in to each navbar link', () => {
   it('Navigate to the homepage, visit each navbar link and confirm they work', () => {
-    cy.visit('https://steps2ar.org/')
+    cy.visit('https://localhost:1234/')
     cy.get("#logo")
       .click()
 
@@ -200,7 +200,7 @@ describe('Confirms each link is visited in the navbar', () => {
       .first('a')
       .click()
 
-    cy.visit('https://steps2ar.org/')
+    cy.visit('https://localhost:1234/')
     cy.get('.profile-menu')
       .children('.nav-item')
       .find('a')
@@ -209,7 +209,7 @@ describe('Confirms each link is visited in the navbar', () => {
       .next()
       .click()
 
-    cy.visit('https://steps2ar.org/')
+    cy.visit('https://localhost:1234/')
     cy.get('.profile-menu')
       .children('.nav-item')
       .find('a')
@@ -224,7 +224,7 @@ describe('Confirms each link is visited in the navbar', () => {
 
 describe('Logs in the student', () => {
   beforeEach(() => {
-    cy.student_login('cypress@star.org', 'cypressstar')
+    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
   })
   it('First navigate to the student login portal, then use command', () => {
     cy.get('.profile-title')
