@@ -1,0 +1,18 @@
+FROM python:3
+
+WORKDIR '/app'
+
+RUN apt update -y \
+    && apt upgrade -y \
+    && mkdir logs \
+    && touch logs/access.log \
+    && touch logs/error.log \
+    && git clone https://github.com/ereadingtool/ereadingtool.git \
+    && cd ereadingtool \
+    && git checkout devel \
+    && pip install -r requirements.txt \
+    && cd admin_panel
+
+CMD ["python", "/app/ereadingtool/admin_panel/manage.py", "runserver", "0.0.0.0:8001"]
+
+EXPOSE 8001
