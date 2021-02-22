@@ -30,11 +30,11 @@ class StudentFlashcardsPDFView(View):
 
         today = dt.now()
 
-        pdf_filename = f'words_{today.day}_{today.month}_{today.year}.pdf'
+        pdf_filename = f'words_{today.month}_{today.day}_{today.year}.pdf'
 
         flashcards_report_html = loader.render_to_string('student_flashcards_report.html',
                                                          {'texts': student.flashcards_report.to_dict(),
-                                                          'timestamp': f'{today.day}/{today.month}/{today.year}',
+                                                          'timestamp': f'{today.month}/{today.day}/{today.year}',
                                                           'student': student.user.email
                                                          })
 
