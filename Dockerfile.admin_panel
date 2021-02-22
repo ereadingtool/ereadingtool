@@ -9,7 +9,7 @@ RUN apt update -y \
     && touch logs/error.log \
     && git clone https://github.com/ereadingtool/ereadingtool.git \
     && cd ereadingtool \
-    && git checkout feature/django-admin \
+    && git checkout devel \
     && pip install -r requirements.txt \
     && cd admin_panel
 

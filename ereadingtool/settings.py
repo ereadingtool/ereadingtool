@@ -114,16 +114,11 @@ ALLOWED_HOSTS = ['0.0.0.0',
                  'stepstoadvancedreading.org',
                  'steps2advancedreading.org',
                  'steps2ar.org',
-<<<<<<< HEAD
                  'api.steps2ar.org',
                  'admin.steps2ar.org',
                  'api.steps2advancedreading.org',
                  'admin.steps2advancedreading.org',
 ]
-=======
-                 'api.steps2ar.org'
-                 ]
->>>>>>> 1132e1e23230655cb62bd3b966c48188eb26b1e7
 
 CSP_DEFAULT_SRC = ("'self'",)
 CSP_SCRIPT_SRC = ("'self'",)

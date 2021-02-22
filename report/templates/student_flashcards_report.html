@@ -1,7 +1,23 @@
 <meta charset="utf-8">
-<h1>Flashcards</h1>
+<style>
+    #timestamp {
+        /* text-align: right; */
+        float: right;
+        top: 0px;
+    }
+    #student {
+        float: left;
+        /* text-align: left; */
+        top: 0px;
+    }
+</style>
+<p id='student'>{{ student }}</p>
+<p id='timestamp'>{{ timestamp }}</p>
+<br>
+<br>
+<h2>My Words</h2>
 
-<p>If uploading to another flashcard application, set the delimiter to the pipe character 
+<p>If uploading to a flashcard application, set the delimiter to the pipe character 
     <strong>|</strong> as that denotes the A side and B side of a flashcard.</p>
 <hr>
 {% for title, text in texts.items %}
