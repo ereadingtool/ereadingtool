@@ -24,7 +24,21 @@ Cypress.Commands.add('student_login', (email, pw) => {
   cy.get('.login_submit')
     .click()
 })
-//
+
+Cypress.Commands.add('turn_off_hints', () => {
+  let help = JSON.parse(localStorage.showHelp)
+  if (help.showHelp) {
+    localStorage.setItem('showHelp', false)
+  }
+})
+
+Cypress.Commands.add('turn_on_hints', () => {
+  let help = JSON.parse(localStorage.showHelp)
+  if (!help.showHelp) {
+    localStorage.setItem('showHelp', true)
+  }
+})
+
 // -- This is a child command --
 // Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
 //
