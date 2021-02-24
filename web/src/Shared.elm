@@ -450,6 +450,14 @@ viewContentHeader role =
                     ]
                     [ text "Create" ]
                 ]
+            , div
+                [ class "nav-item" ]
+                [ a
+                    [ class "nav-link"
+                    , href (Route.toString Route.CreatorGuide)
+                    ]
+                    [ text "Guide" ]
+                ]
             ]
 
 

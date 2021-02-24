@@ -1,4 +1,4 @@
-module Pages.EditorGuide exposing (Model, Msg, Params, page)
+module Pages.CreatorGuide exposing (Model, Msg, Params, page)
 
 import Html exposing (..)
 import Html.Attributes exposing (class)
