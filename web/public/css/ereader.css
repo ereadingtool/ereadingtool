@@ -354,7 +354,8 @@ body {
   margin-left: 5px;
 }
 
-#show-password-button {
+#show-password-button,
+#show-diffculty-info-button {
   grid-row-start: inherit;
   cursor: pointer;
 }
@@ -363,6 +364,12 @@ body {
   position: absolute;
   padding-top: 12px;
   padding-left: 5px;
+}
+
+#info-image {
+  position: absolute;
+  padding-top: 9px;
+  padding-left: 10px;
 }
 
 .hidden {
@@ -558,6 +565,7 @@ body {
 }
 
 .signup_box select {
+  height: 40px;
   border: 1px solid lightgray;
   border-radius: 2px;
 }

@@ -9,9 +9,7 @@ import Dict exposing (Dict)
 import Html exposing (Html, div)
 import Html.Attributes exposing (attribute, class, classList, id)
 import Html.Events exposing (onClick, onInput)
-import Menu.Msg as MenuMsg
 import Utils exposing (isValidEmail)
-import Views
 
 
 viewEmailInput :
@@ -36,12 +34,12 @@ viewEmailInput { errors, onEmailInput } =
             else
                 [ attribute "class" "input_valid" ]
     in
-    [ div [ class "input-container" ] [
-            Html.input ([ id "email-input", onInput onEmailInput, attribute "size" "25", attribute "placeholder" "Email Address" ] ++ errorClass) []
+    [ div [ class "input-container" ]
+        [ Html.input ([ id "email-input", onInput onEmailInput, attribute "size" "25", attribute "placeholder" "Email Address" ] ++ errorClass) []
         ]
     ]
-    ++ errorMessage
- 
+        ++ errorMessage
+
 
 viewPasswordInputs :
     { showPasswords : Bool
@@ -78,7 +76,7 @@ viewPasswordInputs options =
                         [ attribute "class" "input_error" ]
 
                     else
-                        [ attribute "class" "input_valid"]
+                        [ attribute "class" "input_valid" ]
                    )
                 ++ (if options.showPasswords then
                         [ attribute "type" "text" ]
@@ -87,20 +85,20 @@ viewPasswordInputs options =
                         [ attribute "type" "password" ]
                    )
     in
-    [ div [ class "input-container" ] [
-        Html.input (onInput options.onPasswordInput :: attributes ++ [ id "password-input", attribute "placeholder" "Password"]) []
-        , (if options.showPasswords then
+    [ div [ class "input-container" ]
+        [ Html.input (onInput options.onPasswordInput :: attributes ++ [ id "password-input", attribute "placeholder" "Password" ]) []
+        , if options.showPasswords then
             Html.span [ onClick options.onShowPasswordToggle, id "show-password-button" ]
                 [ Html.img [ id "visibility-image", attribute "src" "/public/img/visibility_off-24px.svg" ] [] ]
-            else
+
+          else
             Html.span [ onClick options.onShowPasswordToggle, id "show-password-button" ]
                 [ Html.img [ id "visibility-image", attribute "src" "/public/img/visibility-24px.svg" ] [] ]
-        )
         ]
     , passwordErrorMessage
-    , div [ class "input-container" ][ 
-        Html.input (onInput options.onConfirmPasswordInput :: attributes ++ [ id "password-input", attribute "placeholder" "Confirm Password" ]) []
-    ]
+    , div [ class "input-container" ]
+        [ Html.input (onInput options.onConfirmPasswordInput :: attributes ++ [ id "password-input", attribute "placeholder" "Confirm Password" ]) []
+        ]
     , confirmErrorMessage
     ]
 
