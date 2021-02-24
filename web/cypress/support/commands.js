@@ -10,7 +10,6 @@
 //
 //
 // -- This is a parent command --
-// Cypress.Commands.add("login", (email, password) => { ... })
 Cypress.Commands.add('student_login', (email, pw) => {
   cy.visit('http://localhost:1234/login/student')
   cy.get('#email-input')
@@ -25,17 +24,43 @@ Cypress.Commands.add('student_login', (email, pw) => {
     .click()
 })
 
+Cypress.Commands.add('student_access_texts', (email, pw) => {
+  cy.visit('http://localhost:1234/login/student')
+  cy.get('#email-input')
+    .type(email)
+    // .type('USER')
+
+  cy.get('#password-input')
+    .type(pw)
+    // .type('PWD')
+
+  cy.get('.login_submit')
+    .click()
+    .then(() => {
+      cy.turn_off_hints()
+        .then(() => {
+          cy.get('.content-menu')
+            .contains('Texts')
+            .click()
+        })
+    })
+})
+
 Cypress.Commands.add('turn_off_hints', () => {
   let help = JSON.parse(localStorage.showHelp)
   if (help.showHelp) {
-    localStorage.setItem('showHelp', false)
+    cy.get('#show-help')
+      .find('.check-box')
+      .click()
   }
 })
 
 Cypress.Commands.add('turn_on_hints', () => {
   let help = JSON.parse(localStorage.showHelp)
   if (!help.showHelp) {
-    localStorage.setItem('showHelp', true)
+    cy.get('#show-help')
+      .find('.check-box')
+      .click()
   }
 })
 
