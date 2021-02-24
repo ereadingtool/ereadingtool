@@ -25,7 +25,6 @@ import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
-import Views
 
 
 page : Page Params Model Msg
@@ -238,7 +237,6 @@ view model =
     , body =
         [ div []
             [ viewContent model
-            , Views.view_footer
             ]
         ]
     }
@@ -282,13 +280,13 @@ viewPasswordInput model =
                 [ attribute "type" "password" ]
     in
     [ div [ class "login_role" ] [ Html.text "Reset Password" ]
-    , div [ class "input-container" ] [
-        Html.input
+    , div [ class "input-container" ]
+        [ Html.input
             ([ id "email-input"
-            , attribute "size" "25"
-            , attribute "placeholder" "New password"
-            , onInput UpdatePassword
-            ]
+             , attribute "size" "25"
+             , attribute "placeholder" "New password"
+             , onInput UpdatePassword
+             ]
                 ++ passwordError
                 ++ showPassword
             )
@@ -324,13 +322,13 @@ viewPasswordConfirmInput model =
             else
                 [ attribute "type" "password" ]
     in
-    [ div [ class "input-container" ] [ 
-        Html.input
+    [ div [ class "input-container" ]
+        [ Html.input
             ([ id "email-input"
-            , attribute "size" "25"
-            , attribute "placeholder" "Confirm password"
-            , onInput UpdateConfirmPassword
-            ]
+             , attribute "size" "25"
+             , attribute "placeholder" "Confirm password"
+             , onInput UpdateConfirmPassword
+             ]
                 ++ passwordError
                 ++ showPassword
             )
@@ -339,6 +337,7 @@ viewPasswordConfirmInput model =
         , viewResponse model.response
         ]
     ]
+
 
 viewResponse : PasswordResetResponse -> Html Msg
 viewResponse resetPasswordResponse =

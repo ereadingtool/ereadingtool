@@ -22,7 +22,6 @@ module TextReader.Model exposing
 
 import Dict exposing (Dict)
 import InstructorAdmin.Text.Translations exposing (Id, Instance, Phrase)
-import Menu.Items
 import Text.Component exposing (text)
 import Text.Resource
 import TextReader.Answer.Model exposing (Answer, AnswerCorrect, TextAnswer)
@@ -147,7 +146,6 @@ type alias Model =
     { text : Text
     , text_url : Text.Resource.TextReadingURL
     , profile : User.Profile.Profile
-    , menu_items : Menu.Items.MenuItems
     , flashcard : User.Profile.TextReader.Flashcards.ProfileFlashcards
     , progress : Progress
     , gloss : Gloss

@@ -26,7 +26,6 @@ import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
 import User.SignUp as SignUp
 import Utils exposing (isValidEmail)
-import Views
 
 
 page : Page Params Model Msg
@@ -303,7 +302,6 @@ view model =
                                 ]
                            ]
                 ]
-            , Views.view_footer
             ]
         ]
     }
