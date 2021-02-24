@@ -31,16 +31,16 @@ port module Api exposing
 
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint exposing (Endpoint)
-import Api.WebSocket as WebSocket exposing (Address, WebSocketCmd, WebSocketMsg)
+import Api.WebSocket as WebSocket exposing (Address, WebSocketMsg)
 import Browser
 import Browser.Navigation as Nav
 import Http
 import Http.Detailed
 import Id exposing (Id)
-import Json.Decode as Decode exposing (Decoder, Value, field, string)
+import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Decode.Pipeline exposing (required)
 import Role exposing (Role)
-import Task exposing (Task, perform)
+import Task exposing (Task)
 import Url exposing (Url)
 
 

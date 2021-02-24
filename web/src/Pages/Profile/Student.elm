@@ -33,7 +33,6 @@ import User.Student.Performance.Report as PerformanceReport exposing (Tab(..))
 import User.Student.Profile as StudentProfile exposing (StudentProfile)
 import User.Student.Profile.Help as Help exposing (StudentHelp)
 import User.Student.Resource as StudentResource
-import Views
 
 
 page : Page Params Model Msg
@@ -477,7 +476,6 @@ view (SafeModel model) =
     , body =
         [ div []
             [ viewContent (SafeModel model)
-            , Views.view_footer
             ]
         ]
     }

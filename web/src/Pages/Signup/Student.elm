@@ -5,12 +5,11 @@ module Pages.Signup.Student exposing
     , page
     )
 
-import Api exposing (postDetailed)
+import Api
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
 import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
-import Email exposing (EmailAddress)
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList, id)
 import Html.Events exposing (onClick, onInput)
@@ -28,7 +27,6 @@ import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
 import User.SignUp as SignUp
 import Utils exposing (isValidEmail)
-import Views
 
 
 page : Page Params Model Msg
@@ -256,7 +254,6 @@ view model =
     , body =
         [ div []
             [ viewContent model
-            , Views.view_footer
             ]
         ]
     }

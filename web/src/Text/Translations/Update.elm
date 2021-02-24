@@ -9,7 +9,6 @@ import Api.Endpoint as Endpoint
 import Array
 import Dict exposing (Dict)
 import Http
-import Json.Decode as Decode
 import Session exposing (Session)
 import Task exposing (Task)
 import Text.Translations exposing (..)

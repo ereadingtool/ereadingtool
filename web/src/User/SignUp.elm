@@ -7,9 +7,8 @@ module User.SignUp exposing
 
 import Dict exposing (Dict)
 import Html exposing (Html, div)
-import Html.Attributes exposing (attribute, class, classList, id)
+import Html.Attributes exposing (attribute, class, id)
 import Html.Events exposing (onClick, onInput)
-import Utils exposing (isValidEmail)
 
 
 viewEmailInput :

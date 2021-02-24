@@ -18,8 +18,5 @@ questionEncoder question =
 
 questionsEncoder : Array Question -> Encode.Value
 questionsEncoder questions =
-    -- Encode.list <|
-    -- Array.toList <|
-    -- Array.map (\question -> questionEncoder question) questions
     Encode.list questionEncoder <|
         Array.toList questions

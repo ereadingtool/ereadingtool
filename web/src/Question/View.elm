@@ -7,7 +7,7 @@ import Answer.View
 import Array exposing (Array)
 import Html exposing (..)
 import Html.Attributes exposing (attribute, classList)
-import Html.Events exposing (onBlur, onCheck, onClick, onInput, onMouseLeave, onMouseOut, onMouseOver)
+import Html.Events exposing (onBlur, onCheck, onClick, onInput)
 import Question.Field exposing (QuestionField)
 import Question.Model
 import Text.Section.Component exposing (TextSectionComponent)

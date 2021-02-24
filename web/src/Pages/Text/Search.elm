@@ -33,7 +33,6 @@ import User.Profile
 import User.Student.Profile as StudentProfile
 import Utils.Date
 import Viewer
-import Views
 
 
 page : Page Params Model Msg
@@ -296,7 +295,6 @@ view (SafeModel model) =
     , body =
         [ div []
             [ viewContent (SafeModel model)
-            , Views.view_footer
             ]
         ]
     }

@@ -4,18 +4,17 @@ import Api
 import Api.Config as Config exposing (Config)
 import Api.Endpoint exposing (word)
 import Api.WebSocket as WebSocket
-import Array exposing (Array)
+import Array
 import Browser.Navigation exposing (Key)
-import Dict exposing (Dict)
+import Dict
 import Html exposing (..)
-import Html.Attributes exposing (attribute, class, classList, href, id)
+import Html.Attributes exposing (attribute, class, classList, id)
 import Html.Events exposing (onClick, onMouseLeave)
 import Html.Parser
 import Html.Parser.Util
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode exposing (Value)
-import Ports
 import Role exposing (Role(..))
 import Session exposing (Session)
 import Shared
@@ -29,14 +28,13 @@ import TextReader.Answer.Model exposing (TextAnswer)
 import TextReader.Model exposing (..)
 import TextReader.Question.Model exposing (TextQuestion)
 import TextReader.Section.Decode
-import TextReader.Section.Model exposing (Section, TextSection, Words)
+import TextReader.Section.Model exposing (Section)
 import TextReader.Text.Decode
 import TextReader.Text.Model exposing (Text)
 import TextReader.TextWord
-import User.Profile exposing (Profile)
+import User.Profile
 import User.Profile.TextReader.Flashcards
 import Viewer
-import Views
 
 
 page : Page Params Model Msg
@@ -402,7 +400,6 @@ view (SafeModel model) =
     , body =
         [ div []
             [ viewContent (SafeModel model)
-            , Views.view_footer
             ]
         ]
     }
