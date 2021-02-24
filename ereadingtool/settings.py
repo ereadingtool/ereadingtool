@@ -120,7 +120,6 @@ ALLOWED_HOSTS = ['0.0.0.0',
                  'admin.steps2advancedreading.org',
 ]
 
-
 CSP_DEFAULT_SRC = ("'self'",)
 CSP_SCRIPT_SRC = ("'self'",)
 CSP_CONNECT_SRC = ("'self'",)

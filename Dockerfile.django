@@ -10,7 +10,7 @@ RUN apt update -y \
     && touch logs/error.log \
     && git clone https://github.com/ereadingtool/ereadingtool.git \
     && cd ereadingtool \
-    && git checkout devel \
+    && git checkout feature/django-admin \
     && pip install -r requirements.txt
 
 CMD ["python", "/app/ereadingtool/manage.py", "runserver", "0.0.0.0:8000"]
