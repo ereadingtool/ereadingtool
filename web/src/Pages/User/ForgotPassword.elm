@@ -5,7 +5,7 @@ module Pages.User.ForgotPassword exposing
     , page
     )
 
-import Api exposing (post)
+import Api
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
 import Dict exposing (Dict)

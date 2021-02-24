@@ -20,7 +20,7 @@ import Iso8601
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (required)
 import Time exposing (Posix)
-import User.Instructor.Invite as InstructorInvite exposing (Email, InstructorInvite)
+import User.Instructor.Invite as InstructorInvite exposing (InstructorInvite)
 import User.Instructor.Resource as InstructorResource
 
 

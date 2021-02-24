@@ -18,13 +18,10 @@ module TextReader.Model exposing
     , ungloss
     )
 
--- import Profile.Flags as Flags
-
 import Dict exposing (Dict)
 import InstructorAdmin.Text.Translations exposing (Id, Instance, Phrase)
-import Text.Component exposing (text)
 import Text.Resource
-import TextReader.Answer.Model exposing (Answer, AnswerCorrect, TextAnswer)
+import TextReader.Answer.Model exposing (TextAnswer)
 import TextReader.Section.Model exposing (Section)
 import TextReader.Text.Model exposing (Text)
 import TextReader.TextWord

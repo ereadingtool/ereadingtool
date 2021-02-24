@@ -6,7 +6,7 @@ module Pages.User.ResetPassword.Uidb64_String.Token_String exposing
     )
 
 import Answer.Field exposing (attributes)
-import Api exposing (post)
+import Api
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
 import Browser.Navigation exposing (Key)
