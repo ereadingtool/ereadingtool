@@ -17,7 +17,6 @@ import Array
 import Dict exposing (Dict)
 import Iso8601
 import Json.Decode
-import Json.Decode.Extra exposing (posix)
 import Json.Decode.Pipeline exposing (required)
 import Text.Model exposing (Text, TextDifficulty, TextListItem)
 import Text.Section.Decode

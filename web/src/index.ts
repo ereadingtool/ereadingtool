@@ -1,7 +1,6 @@
 // @ts-expect-error
 import { Elm } from './Main.elm';
 import jwtDecode, { JwtPayload } from "jwt-decode";
-import { Console } from 'console';
 
 type User = { user: { id: number; token: string; role: string } };
 type ShowHelp = { showHelp: boolean };

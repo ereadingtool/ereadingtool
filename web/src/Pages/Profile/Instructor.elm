@@ -25,7 +25,6 @@ import User.Instructor.Profile as InstructorProfile
         ( InstructorProfile(..)
         , InstructorUsername(..)
         )
-import User.Instructor.Resource as InstructorResource
 import User.Profile as Profile
 import Utils.Date
 import Views
@@ -289,8 +288,7 @@ viewInstructorInvites (SafeModel model) =
             , span [ class "profile_item_value" ]
                 [ div [ class "list" ] <|
                     [ viewInstructorInviteMsg (SafeModel model) ]
-                    ++
-                    List.map (viewInstructorInvite model.timezone) invites
+                        ++ List.map (viewInstructorInvite model.timezone) invites
                         ++ [ viewInstructorInviteCreate (SafeModel model) ]
                 ]
             ]
@@ -318,20 +316,20 @@ viewInstructorInvite timezone invite =
         ]
 
 
-
 viewInstructorInviteMsg : SafeModel -> Html Msg
 viewInstructorInviteMsg (SafeModel model) =
-    div [id "invite_msg"] [ Html.text
-                        """
+    div [ id "invite_msg" ]
+        [ Html.text
+            """
                         After creating an invitation, send the new content creator the invite code and ask
                         them to sign up at
                         """
-                        , Html.a [ href "https://stepstoadvancedreading.org/signup/instructor"] [ text "https://stepstoadvancedreading.org/signup/instructor"]
-                        , Html.text
-                        """  before the expiration
+        , Html.a [ href "https://stepstoadvancedreading.org/signup/instructor" ] [ text "https://stepstoadvancedreading.org/signup/instructor" ]
+        , Html.text
+            """  before the expiration
                         time. The content creator will not be emailed automatically.
                         """
-                    ]
+        ]
 
 
 viewInstructorInviteCreate : SafeModel -> Html Msg

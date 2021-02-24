@@ -18,7 +18,7 @@ import User.Instructor.Profile
         , InstructorUsername(..)
         )
 import User.Instructor.View
-import User.Student.Performance.Report as PerformanceReport exposing (PerformanceReport)
+import User.Student.Performance.Report as PerformanceReport
 import User.Student.Profile
     exposing
         ( StudentProfile(..)

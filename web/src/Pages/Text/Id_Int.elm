@@ -15,7 +15,6 @@ import Html.Parser.Util
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode exposing (Value)
-import Ports
 import Role exposing (Role(..))
 import Session exposing (Session)
 import Shared

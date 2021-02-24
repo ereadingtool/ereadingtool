@@ -5,12 +5,11 @@ module Pages.Signup.Student exposing
     , page
     )
 
-import Api exposing (post)
+import Api
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
 import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
-import Email exposing (EmailAddress)
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (attribute, class, classList)
 import Html.Events exposing (onClick, onInput)
@@ -19,14 +18,12 @@ import Http.Detailed
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode
-import Menu.Msg as MenuMsg
 import Session exposing (Session)
 import Shared
 import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
-import Text.Model exposing (TextDifficulty)
 import User.SignUp as SignUp
 import Utils exposing (isValidEmail)
 import Views

@@ -15,7 +15,7 @@ module TextSearch.Help exposing
     , topic_filter_help
     )
 
-import Help exposing (CurrentHelpMsgIndex, HelpMsgID, HelpMsgOverlayID, HelpMsgStr, HelpMsgVisible)
+import Help exposing (HelpMsgID, HelpMsgOverlayID, HelpMsgStr, HelpMsgVisible)
 import Help.PopUp exposing (Help)
 
 
