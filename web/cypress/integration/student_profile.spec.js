@@ -232,8 +232,8 @@ describe('Closes the hints modal', () => {
         cy.get('#help_hints')
           .find('.exit')
           .click()
-        cy.get('#help_hints')
-          .should('not.exist')
+        cy.get('.invisible')
+          .should('exist')
       })
   })
 })
@@ -291,7 +291,7 @@ describe('Downloads performance report', () => {
   it('Clicks the link to download the report', () => {
     cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
       .then(() => {
-        cy.wait(500)
+        cy.wait(1000)
           .then(() => {
             let user = JSON.parse(localStorage.user)
             let file = '/profile/student/' + user.user.id + '/performance_report.pdf?token=' + user.user.token
