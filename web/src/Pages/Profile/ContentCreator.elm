@@ -1,4 +1,4 @@
-module Pages.Profile.Instructor exposing (Model, Msg, Params, page)
+module Pages.Profile.ContentCreator exposing (Model, Msg, Params, page)
 
 import Api
 import Api.Config as Config exposing (Config)
@@ -203,7 +203,7 @@ newInviteResponseDecoder =
 
 view : SafeModel -> Document Msg
 view (SafeModel model) =
-    { title = "Instructor Profile"
+    { title = "Content Creator Profile"
     , body =
         [ div []
             [ viewContent (SafeModel model)
@@ -319,14 +319,15 @@ viewInstructorInviteMsg (SafeModel model) =
     div [ id "invite_msg" ]
         [ Html.text
             """
-                        After creating an invitation, send the new content creator the invite code and ask
-                        them to sign up at
-                        """
-        , Html.a [ href "https://stepstoadvancedreading.org/signup/instructor" ] [ text "https://stepstoadvancedreading.org/signup/instructor" ]
+            After creating an invitation, send the new content creator the invite code and ask
+            them to sign up at
+            """
+        , Html.a [ href "https://stepstoadvancedreading.org/signup/content-creator" ]
+            [ text "https://stepstoadvancedreading.org/signup/content-creator" ]
         , Html.text
-            """  before the expiration
-                        time. The content creator will not be emailed automatically.
-                        """
+            """ before the expiration
+            time. The content creator will not be emailed automatically.
+            """
         ]
 
 

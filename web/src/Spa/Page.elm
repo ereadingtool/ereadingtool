@@ -183,7 +183,7 @@ protectedStudentApplication page =
 
                         Instructor ->
                             ( Nothing
-                            , Nav.pushUrl url.key (Route.toString Route.Login__Instructor)
+                            , Nav.pushUrl url.key (Route.toString Route.Login__ContentCreator)
                             )
 
                 Nothing ->
