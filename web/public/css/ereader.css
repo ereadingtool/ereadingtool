@@ -566,30 +566,30 @@ body {
 
 /* **************************************************************** */
 
-.editor-guide {
+.creator-guide {
   width: 800px;
   padding: 10px 20px;
   margin: 0 auto;
 }
 
-.editor-guide h1 {
+.creator-guide h1 {
   font-size: 36px;
 }
 
-.editor-guide h2 {
+.creator-guide h2 {
   font-size: 28px;
 }
 
-.editor-guide h3 {
+.creator-guide h3 {
   font-size: 24px;
 }
 
-.editor-guide p,
-.editor-guide li {
+.creator-guide p,
+.creator-guide li {
   font-size: 18px;
 }
 
-.editor-guide li {
+.creator-guide li {
   padding-bottom: 4px;
 }
 

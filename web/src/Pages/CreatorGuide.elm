@@ -34,16 +34,12 @@ type alias Model =
 
 
 type SafeModel
-    = SafeModel
-        { protectedInfo : String
-        }
+    = SafeModel ()
 
 
 init : Shared.Model -> Url Params -> ( SafeModel, Cmd Msg )
 init shared { params } =
-    ( SafeModel
-        { protectedInfo = "For authenticated eyes only"
-        }
+    ( SafeModel ()
     , Cmd.none
     )
 
@@ -53,13 +49,13 @@ init shared { params } =
 
 
 type Msg
-    = ReplaceMe
+    = Nop
 
 
 update : Msg -> SafeModel -> ( SafeModel, Cmd Msg )
 update msg (SafeModel model) =
     case msg of
-        ReplaceMe ->
+        Nop ->
             ( SafeModel model, Cmd.none )
 
 
@@ -84,7 +80,7 @@ subscriptions (SafeModel model) =
 
 view : SafeModel -> Document Msg
 view (SafeModel model) =
-    { title = "ProtectedApplicationTemplate"
+    { title = "Content Creator Guide"
     , body =
         [ viewGuide ]
     }
@@ -92,7 +88,7 @@ view (SafeModel model) =
 
 viewGuide : Html Msg
 viewGuide =
-    div [ class "editor-guide" ]
+    div [ class "creator-guide" ]
         [ viewIntroduction
         , viewCreateText
         , viewEditText
