@@ -4,7 +4,6 @@ import Answer.Decode
 import Array exposing (Array)
 import Iso8601
 import Json.Decode
-import Json.Decode.Extra exposing (posix)
 import Json.Decode.Pipeline exposing (required)
 import Question.Model exposing (Question)
 

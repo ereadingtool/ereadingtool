@@ -12,7 +12,7 @@ import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
 import Help.View exposing (ArrowPlacement(..), ArrowPosition(..))
 import Html exposing (..)
-import Html.Attributes exposing (attribute, class, classList, id)
+import Html.Attributes exposing (attribute, class, classList, href, id)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (..)
 import Http.Detailed
@@ -33,7 +33,6 @@ import User.Student.Performance.Report as PerformanceReport exposing (Tab(..))
 import User.Student.Profile as StudentProfile exposing (StudentProfile)
 import User.Student.Profile.Help as Help exposing (StudentHelp)
 import User.Student.Resource as StudentResource
-import Views
 
 
 page : Page Params Model Msg
@@ -93,12 +92,15 @@ init shared { params } =
     let
         help =
             Help.init
+
+        studentProfile =
+            Profile.toStudentProfile shared.profile
     in
     ( SafeModel
         { session = shared.session
         , config = shared.config
         , navKey = shared.key
-        , profile = Profile.toStudentProfile shared.profile
+        , profile = studentProfile
         , consentedToResearch = shared.researchConsent
         , flashcards = Nothing
         , editing = Dict.empty
@@ -111,10 +113,21 @@ init shared { params } =
     , Cmd.batch
         [ Help.scrollToFirstMsg help
         , Api.websocketDisconnectAll
-        , getStudentProfile
-            shared.session
-            shared.config
-            (Profile.toStudentProfile shared.profile)
+        , case StudentProfile.studentID studentProfile of
+            Just id ->
+                -- in the current implementation, a default profile with an ID of 0 is used.
+                -- check that to avoid requesting the profile on page refresh
+                if id /= 0 then
+                    getStudentProfile
+                        shared.session
+                        shared.config
+                        (Profile.toStudentProfile shared.profile)
+
+                else
+                    Cmd.none
+
+            Nothing ->
+                Cmd.none
         ]
     )
 
@@ -463,7 +476,6 @@ view (SafeModel model) =
     , body =
         [ div []
             [ viewContent (SafeModel model)
-            , Views.view_footer
             ]
         ]
     }
@@ -484,11 +496,11 @@ viewContent (SafeModel model) =
                     [ viewPreferredDifficulty (SafeModel model)
                     , viewUsername (SafeModel model)
                     , viewUserEmail (SafeModel model)
-                    , viewStudentPerformance (SafeModel model)
-                    , viewFeedbackLinks
-                    , viewFlashcards (SafeModel model)
-                    , viewResearchConsent (SafeModel model)
                     , viewShowHelp (SafeModel model)
+                    , viewStudentPerformance (SafeModel model)
+                    , viewResearchConsent (SafeModel model)
+                    , viewMyWords (SafeModel model)
+                    , viewFeedbackLinks
                     , if not (String.isEmpty model.errorMessage) then
                         span [ attribute "class" "error" ] [ Html.text "error: ", Html.text model.errorMessage ]
 
@@ -504,12 +516,12 @@ viewWelcomeBanner =
         [ div []
             [ Html.text "Welcome to the STAR! If you would like to start reading right away, select "
             , Html.b [] [ Html.text "Texts" ]
-            , Html.text " from the menu above this message."
-            ]
-        , div []
-            [ Html.text "This site shows you hints to get you started. You can read through the hints or turn them off in the "
+            , Html.text " from the menu above this message. "
+            , Html.text "This site shows you hints to get you started. You can read through the hints or turn them off in the "
             , Html.b [] [ Html.text "Show Hints" ]
-            , Html.text " section below."
+            , Html.text " section below. "
+            , Html.text "For more details please see the "
+            , Html.a [ href (Route.toString Route.About) ] [ Html.text "About page." ]
             ]
         ]
 
@@ -627,7 +639,12 @@ viewUsernameSubmit username =
                 []
 
         Nothing ->
-            [ span [ class "cursor", onClick CancelUsernameUpdate ] [ Html.text "Cancel" ]
+            [ span
+                [ class "cursor"
+                , class "username-update-cancel"
+                , onClick CancelUsernameUpdate
+                ]
+                [ Html.text "Cancel" ]
             ]
 
 
@@ -677,19 +694,43 @@ viewStudentPerformance (SafeModel model) =
                ]
 
 
-viewFlashcards : SafeModel -> Html Msg
-viewFlashcards (SafeModel model) =
-    div [ id "flashcards", class "profile_item" ]
-        [ span [ class "profile_item_title" ] [ Html.text "Flashcard Words" ]
+viewMyWords : SafeModel -> Html Msg
+viewMyWords (SafeModel model) =
+    div [ id "words", class "profile_item" ]
+        [ span [ class "profile_item_title" ] [ Html.text "My Words" ]
         , span [ class "profile_item_value" ]
-            [ div []
-                (case model.flashcards of
-                    Just words ->
-                        List.map (\word -> div [] [ span [] [ Html.text word ] ]) words
+            [ div [ class "words-download-link" ]
+                [ Html.a
+                    [ attribute "href" <|
+                        case StudentProfile.studentID model.profile of
+                            Just id ->
+                                Api.wordsCsvLink
+                                    (Config.restApiUrl model.config)
+                                    (Session.cred model.session)
+                                    id
 
-                    Nothing ->
-                        []
-                )
+                            Nothing ->
+                                ""
+                    ]
+                    [ Html.text "Download your words as a CSV file"
+                    ]
+                ]
+            , div [ class "words-download-link" ]
+                [ Html.a
+                    [ attribute "href" <|
+                        case StudentProfile.studentID model.profile of
+                            Just id ->
+                                Api.wordsPdfLink
+                                    (Config.restApiUrl model.config)
+                                    (Session.cred model.session)
+                                    id
+
+                            Nothing ->
+                                ""
+                    ]
+                    [ Html.text "Download your words as a PDF"
+                    ]
+                ]
             ]
         ]
 
@@ -875,31 +916,6 @@ viewDifficultyHint (SafeModel model) =
             , prev_event = onClick PreviousHint
             , addl_attributes = [ id (Help.helpID model.help difficultyHelp) ]
             , arrow_placement = ArrowDown ArrowLeft
-            }
-    in
-    if Config.showHelp model.config then
-        [ Help.View.view_hint_overlay hintAttributes
-        ]
-
-    else
-        []
-
-
-viewSearchTextsHint : SafeModel -> List (Html Msg)
-viewSearchTextsHint (SafeModel model) =
-    let
-        searchTextsHelp =
-            Help.searchTextsHelp
-
-        hintAttributes =
-            { id = Help.popupToOverlayID searchTextsHelp
-            , visible = Help.isVisible model.help searchTextsHelp
-            , text = Help.helpMsg searchTextsHelp
-            , cancel_event = onClick (CloseHint searchTextsHelp)
-            , next_event = onClick NextHint
-            , prev_event = onClick PreviousHint
-            , addl_attributes = [ id (Help.helpID model.help searchTextsHelp) ]
-            , arrow_placement = ArrowUp ArrowLeft
             }
     in
     if Config.showHelp model.config then

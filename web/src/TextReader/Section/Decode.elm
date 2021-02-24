@@ -11,7 +11,7 @@ import Json.Decode
 import Json.Decode.Pipeline exposing (required)
 import Text.Translations.Decode as TranslationsDecode
 import TextReader.Question.Decode
-import TextReader.Section.Model exposing (Section, TextSection, Words)
+import TextReader.Section.Model exposing (Section, TextSection)
 import TextReader.TextWord
 
 

@@ -9,7 +9,6 @@ import Api.Endpoint as Endpoint
 import Array
 import Dict exposing (Dict)
 import Http
-import Json.Decode as Decode
 import Session exposing (Session)
 import Task exposing (Task)
 import Text.Translations exposing (..)
@@ -26,7 +25,9 @@ update : (Msg -> msg) -> Msg -> Model -> ( Model, Cmd msg )
 update parentMsg msg model =
     case msg of
         MatchTranslations wordInstance ->
-            ( model, matchTranslations parentMsg model wordInstance )
+            ( Text.Translations.Model.uneditAllWords model
+            , matchTranslations parentMsg model wordInstance
+            )
 
         UpdatedTextWords (Ok textWords) ->
             ( Text.Translations.Model.setTextWords model textWords, Cmd.none )

@@ -18,12 +18,11 @@ import Api.Endpoint as Endpoint
 import Browser.Navigation exposing (Key)
 import Html exposing (..)
 import Html.Attributes exposing (attribute, class, classList, href, id)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick)
 import Http exposing (Error)
 import Id exposing (Id)
 import Infobar exposing (Infobar)
 import Json.Decode as Decode
-import Json.Encode as Encode
 import Process
 import Role exposing (Role(..))
 import Session exposing (Session)
@@ -44,8 +43,6 @@ import User.Student.Profile as StudentProfile
         ( StudentProfile(..)
         , StudentURIs(..)
         )
-import User.Student.Resource as StudentResource
-import Utils.Date
 import Viewer exposing (Viewer)
 
 
@@ -426,14 +423,6 @@ viewContentHeader role =
                     ]
                     [ text "Texts" ]
                 ]
-            , div
-                [ class "nav-item" ]
-                [ a
-                    [ class "nav-link"
-                    , href (Route.toString Route.Flashcards__Student)
-                    ]
-                    [ text "Flashcards" ]
-                ]
             ]
 
         Instructor ->
@@ -537,6 +526,7 @@ tags =
     , "Public Policy"
     , "Other"
     , "Kazakhstan"
+    , "Hidden"
     ]
 
 

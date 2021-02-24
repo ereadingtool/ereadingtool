@@ -5,20 +5,14 @@ module Pages.Top exposing
     , page
     )
 
-import Dict exposing (Dict)
 import Html exposing (..)
-import Html.Attributes exposing (alt, class, classList, href, id, src)
+import Html.Attributes exposing (class, href, id)
 import Http exposing (..)
-import Ports
 import Role exposing (Role(..))
-import Shared
 import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
-import User.Login as Login exposing (LoginParams)
-import Utils exposing (isValidEmail)
-import Views
 
 
 page : Page Params Model Msg

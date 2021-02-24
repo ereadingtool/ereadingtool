@@ -4,7 +4,6 @@ import Api
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
 import Browser.Navigation
-import Debug
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (attribute)
@@ -33,7 +32,7 @@ import Text.Update
 import Text.View
 import TextEdit exposing (Mode(..), Tab(..))
 import Time
-import User.Instructor.Profile as InstructorProfile exposing (InstructorProfile)
+import User.Instructor.Profile exposing (InstructorProfile)
 import User.Profile as Profile
 
 
