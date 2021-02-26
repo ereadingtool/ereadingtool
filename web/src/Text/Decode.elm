@@ -17,7 +17,6 @@ import Array
 import Dict exposing (Dict)
 import Iso8601
 import Json.Decode
-import Json.Decode.Extra exposing (posix)
 import Json.Decode.Pipeline exposing (required)
 import Text.Model exposing (Text, TextDifficulty, TextListItem)
 import Text.Section.Decode
@@ -74,6 +73,7 @@ textDecoder =
         |> required "text_sections" (Json.Decode.map Array.fromList Text.Section.Decode.textSectionsDecoder)
         |> required "write_locker" (Json.Decode.nullable Json.Decode.string)
         |> required "words" Text.Translations.Decode.wordsDecoder
+        |> required "translation_service_processed" Json.Decode.bool
 
 
 textListItemDecoder : Json.Decode.Decoder TextListItem

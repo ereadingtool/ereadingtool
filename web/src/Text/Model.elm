@@ -9,7 +9,7 @@ module Text.Model exposing
 
 import Array exposing (Array)
 import Dict
-import Text.Section.Model exposing (emptyTextSection)
+import Text.Section.Model
 import Text.Translations exposing (..)
 import Time exposing (Posix)
 
@@ -34,6 +34,7 @@ type alias Text =
     , sections : Array Text.Section.Model.TextSection
     , write_locker : Maybe String
     , words : Words
+    , translationServiceProcessed : Bool
     }
 
 
@@ -70,6 +71,7 @@ new_text =
     , sections = Array.fromList [ Text.Section.Model.emptyTextSection 0 ]
     , write_locker = Nothing
     , words = Dict.empty
+    , translationServiceProcessed = False
     }
 
 

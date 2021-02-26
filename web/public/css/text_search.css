@@ -55,6 +55,15 @@
   font-size: 20px;
 }
 
+#text-search-welcome-message a {
+  color: #00478f;
+  text-decoration: none;
+}
+
+#text-search-welcome-message a:hover {
+  text-decoration: underline;
+}
+
 .search_filter {
   display: inline-block;
   padding: 15px 15px 15px 15px;
@@ -226,7 +235,7 @@
 }
 
 .result_item_title a:hover {
-  text-decoration: underline; 
+  text-decoration: underline;
 }
 
 .result_item {

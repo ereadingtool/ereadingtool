@@ -5,7 +5,6 @@ import Api
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
 import Browser.Navigation
-import Debug
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (attribute)
@@ -83,6 +82,7 @@ type SafeModel
         , tags : Dict String String
         , writeLocked : Bool
         , selectedTab : Tab
+        , translationServiceProcessed : Bool
         }
 
 
@@ -112,10 +112,10 @@ init shared { params } =
                 List.map (\tag -> ( tag, tag )) Shared.tags
         , selectedTab = TextTab
         , writeLocked = False
+        , translationServiceProcessed = False
         }
     , Cmd.batch
-        [ Task.perform (\_ -> InitTextFieldEditors) (Task.succeed Nothing)
-        , getText shared.session shared.config params.id
+        [ getText shared.session shared.config params.id
         , Api.websocketDisconnectAll
         ]
     )
@@ -133,7 +133,6 @@ type Msg
     | SubmittedTextDelete
     | ConfirmedTextDelete Bool
     | GotTextDeleted (Result (Http.Detailed.Error String) ( Http.Metadata, Text.Decode.TextDeleteResp ))
-    | InitTextFieldEditors
     | ToggleEditable TextField Bool
     | UpdateTextAttributes String String
     | UpdateTextCkEditors ( String, String )
@@ -185,6 +184,7 @@ update msg (SafeModel model) =
                                 , mode = ReadOnlyMode writeLocker
                                 , errorMessage = Just <| "READONLY: text is currently being edited by " ++ writeLocker
                                 , writeLocked = True
+                                , translationServiceProcessed = text.translationServiceProcessed
                             }
                         , Text.Component.reinitialize_ck_editors textComponent
                         )
@@ -196,6 +196,7 @@ update msg (SafeModel model) =
                                 , mode = EditMode
                                 , successMessage = Just <| "editing '" ++ text.title ++ "' text"
                                 , writeLocked = True
+                                , translationServiceProcessed = text.translationServiceProcessed
                             }
                         , Cmd.batch
                             [ Text.Component.reinitialize_ck_editors textComponent
@@ -217,6 +218,7 @@ update msg (SafeModel model) =
                                     , textTranslationsModel =
                                         Just (TranslationsModel.init model.translationsInit id text)
                                     , successMessage = Just <| "editing '" ++ text.title ++ "' text"
+                                    , translationServiceProcessed = text.translationServiceProcessed
                                 }
                             , Cmd.batch
                                 [ Text.Component.reinitialize_ck_editors textComponent
@@ -234,6 +236,7 @@ update msg (SafeModel model) =
                                     | text_component = textComponent
                                     , mode = EditMode
                                     , errorMessage = Just <| "Something went wrong: no valid text id"
+                                    , translationServiceProcessed = text.translationServiceProcessed
                                 }
                             , Text.Component.reinitialize_ck_editors textComponent
                             )
@@ -393,11 +396,6 @@ update msg (SafeModel model) =
 
             else
                 ( SafeModel model, Cmd.none )
-
-        InitTextFieldEditors ->
-            ( SafeModel model
-            , Text.Component.initialize_text_field_ck_editors model.text_component
-            )
 
         ToggleEditable textField editable ->
             let
@@ -750,6 +748,7 @@ view (SafeModel model) =
             , write_locked = model.writeLocked
             , mode = model.mode
             , text_difficulties = model.textDifficulties
+            , translationServiceProcessed = model.translationServiceProcessed
             }
 
         messages =

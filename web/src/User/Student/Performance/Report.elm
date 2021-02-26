@@ -10,10 +10,8 @@ import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (class, rowspan)
 import Html.Events exposing (onClick)
-import Infobar exposing (view)
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (custom, required)
-import Task exposing (perform)
 
 
 type alias PerformanceReport =

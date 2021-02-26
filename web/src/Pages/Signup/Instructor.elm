@@ -5,7 +5,7 @@ module Pages.Signup.Instructor exposing
     , page
     )
 
-import Api exposing (post)
+import Api
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
 import Browser.Navigation exposing (Key)
@@ -18,7 +18,6 @@ import Http.Detailed
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode
-import Menu.Msg as MenuMsg
 import Session exposing (Session)
 import Shared
 import Spa.Document exposing (Document)
@@ -27,7 +26,6 @@ import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
 import User.SignUp as SignUp
 import Utils exposing (isValidEmail)
-import Views
 
 
 page : Page Params Model Msg
@@ -270,11 +268,11 @@ view model =
         [ div []
             [ div [ classList [ ( "signup", True ) ] ]
                 [ div [ classList [ ( "signup_box", True ) ] ] <|
-                 [ div [ class "signup_title" ] [ Html.text "Instructor Signup" ] ] ++
-                    SignUp.viewEmailInput
-                        { errors = model.errors
-                        , onEmailInput = UpdateEmail
-                        }
+                    [ div [ class "signup_title" ] [ Html.text "Instructor Signup" ] ]
+                        ++ SignUp.viewEmailInput
+                            { errors = model.errors
+                            , onEmailInput = UpdateEmail
+                            }
                         ++ SignUp.viewPasswordInputs
                             { showPasswords = model.showPasswords
                             , errors = model.errors
@@ -304,7 +302,6 @@ view model =
                                 ]
                            ]
                 ]
-            , Views.view_footer
             ]
         ]
     }
@@ -331,8 +328,8 @@ viewInviteCodeInput model =
     in
     [ Html.div [ class "input-container" ]
         [ Html.input
-        ([ class "password-input", attribute "placeholder" "Invite Code", attribute "size" "25", onInput UpdateInviteCode ] ++ errorClass)
-        []
+            ([ class "password-input", attribute "placeholder" "Invite Code", attribute "size" "25", onInput UpdateInviteCode ] ++ errorClass)
+            []
         ]
     ]
         ++ errorMessage

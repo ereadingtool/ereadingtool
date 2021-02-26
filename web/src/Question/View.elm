@@ -7,7 +7,7 @@ import Answer.View
 import Array exposing (Array)
 import Html exposing (..)
 import Html.Attributes exposing (attribute, classList)
-import Html.Events exposing (onBlur, onCheck, onClick, onInput, onMouseLeave, onMouseOut, onMouseOver)
+import Html.Events exposing (onBlur, onCheck, onClick, onInput)
 import Question.Field exposing (QuestionField)
 import Question.Model
 import Text.Section.Component exposing (TextSectionComponent)
@@ -55,15 +55,14 @@ view_question params question_field =
         , toggle_editable onClick params question_field
         ]
     <|
-        [ Html.text
+        Html.text
             (if String.isEmpty params.question.body then
                 "Click to write the question text."
 
              else
                 params.question.body
             )
-        ]
-            ++ (if question_field_attrs.error then
+            :: (if question_field_attrs.error then
                     [ div []
                         [ Html.text question_field_attrs.error_string
                         ]
@@ -161,13 +160,13 @@ view_editable_question msg text_section_component answer_feedback_limit field =
             [ Html.input [ attribute "type" "checkbox", onCheck <| SelectQuestion text_section_component field >> msg ] []
             ]
         , div [ classList [ ( "question", True ) ] ] <|
-            [ if Question.Field.editable field then
+            (if Question.Field.editable field then
                 edit_question question_params field
 
-              else
+             else
                 view_question question_params field
-            ]
-                ++ (Array.toList <|
+            )
+                :: (Array.toList <|
                         Array.map (Answer.View.view_editable_answer answer_params num_of_answers) (Question.Field.answers field)
                    )
         , view_question_menu question_params field
@@ -204,7 +203,7 @@ view_delete_selected msg text_component =
             , attribute "width" "20px"
             ]
             []
-        , Html.text "Delete Selected Question"
+        , Html.text "Delete Selected Questions"
         ]
 
 

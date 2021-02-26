@@ -33,7 +33,6 @@ import User.Profile
 import User.Student.Profile as StudentProfile
 import Utils.Date
 import Viewer
-import Views
 
 
 page : Page Params Model Msg
@@ -296,7 +295,6 @@ view (SafeModel model) =
     , body =
         [ div []
             [ viewContent (SafeModel model)
-            , Views.view_footer
             ]
         ]
     }
@@ -504,7 +502,11 @@ viewTags tagSearch =
                 ]
     in
     div [ id "text_tags" ]
-        [ div [ class "text_tags" ] (List.map viewTag (Dict.values tags))
+        [ div [ class "text_tags" ] <|
+            (Dict.values tags
+                |> List.filter (\tag -> Text.Search.Option.label tag /= "Hidden")
+                |> List.map viewTag
+            )
         ]
 
 

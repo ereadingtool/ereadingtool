@@ -35,7 +35,7 @@ module Question.Field exposing
     , update_question_field
     )
 
-import Answer.Field exposing (AnswerField, generate_answer_field)
+import Answer.Field exposing (AnswerField)
 import Array exposing (Array)
 import Field
 import Question.Model exposing (Question)

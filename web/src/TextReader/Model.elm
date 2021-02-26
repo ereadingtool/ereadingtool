@@ -13,17 +13,15 @@ module TextReader.Model exposing
     , new
     , phrase
     , selected
+    , textWord
     , toggleGloss
     , ungloss
     )
 
--- import Profile.Flags as Flags
-
 import Dict exposing (Dict)
 import InstructorAdmin.Text.Translations exposing (Id, Instance, Phrase)
-import Menu.Items
 import Text.Resource
-import TextReader.Answer.Model exposing (Answer, AnswerCorrect, TextAnswer)
+import TextReader.Answer.Model exposing (TextAnswer)
 import TextReader.Section.Model exposing (Section)
 import TextReader.Text.Model exposing (Text)
 import TextReader.TextWord
@@ -141,25 +139,12 @@ type alias TextScores =
     }
 
 
-
--- type alias Flags =
---     Flags.Flags
---         { text_id : Int
---         , text_url : String
---         , flashcards : List TextReader.TextWord.TextWordParams
---         , text_reader_ws_addr : String
---         }
-
-
 type alias Model =
     { text : Text
     , text_url : Text.Resource.TextReadingURL
     , profile : User.Profile.Profile
-    , menu_items : Menu.Items.MenuItems
     , flashcard : User.Profile.TextReader.Flashcards.ProfileFlashcards
     , progress : Progress
     , gloss : Gloss
     , exception : Maybe Exception
-
-    -- , flags : Flags
     }

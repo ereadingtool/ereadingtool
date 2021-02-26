@@ -4,7 +4,7 @@ import Api
 import Dict exposing (Dict)
 import Html exposing (Html, div, span, text)
 import Html.Attributes exposing (attribute, class, classList, id)
-import Html.Events exposing (onClick, onInput, onSubmit)
+import Html.Events exposing (onClick, onInput)
 import Http exposing (..)
 import Json.Encode as Encode
 import Spa.Generated.Route as Route exposing (Route)

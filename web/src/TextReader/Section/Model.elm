@@ -11,7 +11,7 @@ module TextReader.Section.Model exposing
 import Array exposing (Array)
 import Dict exposing (Dict)
 import InstructorAdmin.Text.Translations exposing (..)
-import TextReader.Question.Model exposing (Question, TextQuestion, question)
+import TextReader.Question.Model exposing (TextQuestion, question)
 import TextReader.TextWord exposing (TextWord)
 
 

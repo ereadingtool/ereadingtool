@@ -304,6 +304,10 @@ body {
   margin-bottom: 15px;
 }
 
+.editable {
+  background-color: #ffffff;
+}
+
 .editable:hover {
   background-color: #d1e1ed;
 }
@@ -819,4 +823,14 @@ body {
 
 #text_attributes {
   padding-bottom: 35px;
+}
+
+.translation-service-message {
+  display: inline-block;
+  padding: 5px 8px;
+
+  background-color: #0054a6;
+  color: #ffffff;
+
+  border-radius: 2px;
 }

@@ -1,7 +1,6 @@
 // @ts-expect-error
 import { Elm } from './Main.elm';
 import jwtDecode, { JwtPayload } from "jwt-decode";
-import { Console } from 'console';
 
 type User = { user: { id: number; token: string; role: string } };
 type ShowHelp = { showHelp: boolean };
@@ -230,13 +229,11 @@ app.ports.ckEditor.subscribe(id => {
   // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
   window.requestAnimationFrame(() => {
     if (window.CKEDITOR) {
-      // implicit detach
       if (window.CKEDITOR.instances[id]) {
         window.CKEDITOR.instances[id].destroy();
       }
 
       window.CKEDITOR.inline(id).on('change', function (evt) {
-        console.log(evt.editor.getData());
         app.ports.ckEditorUpdate.send([id, evt.editor.getData()]);
       });
     }
@@ -260,11 +257,14 @@ app.ports.ckEditor.subscribe(id => {
 app.ports.ckEditorSetHtml.subscribe(([id, html]) => {
   // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
   window.requestAnimationFrame(function (timestamp) {
-    if (window.CKEDITOR) {
+    if (window.CKEDITOR && window.CKEDITOR.instances[id]) {
       window.CKEDITOR.instances[id].setData(html);
     }
   });
 });
+
+
+// ALERT BEFORE TEXT DELETE
 
 app.ports.confirm.subscribe(msg => {
   // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view

@@ -4,10 +4,7 @@ import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Attributes
 import Html.Parser
-import Html.Parser.Util
 import Parser exposing (..)
-import Regex
-import Text.Section.Component exposing (index)
 import Text.Translations exposing (TextGroupDetails)
 import Text.Translations.Model exposing (inCompoundWord)
 
@@ -379,7 +376,7 @@ isTrailingPunctuation char =
         || (char == ':' || char == ';')
         || (char == '»' || char == '"' || char == '“' || char == '”')
         || (char == ')' || char == ']' || char == '}' || char == '>')
-        || (char == '…')
+        || (char == '…' || char == '—')
 
 
 isValidChar : Char -> Bool
