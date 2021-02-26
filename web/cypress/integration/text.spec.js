@@ -1,12 +1,12 @@
 describe('Logs student in, navigates to texts', () => {
   it('Clicks the texts link in the navbar', () => {
-    cy.student_access_texts(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_access_texts()
   })
 })
 
 describe('Logs student in, checks hints, checks for banner', () => {
   it('Confirms hints are available then checks the banner on the text page', () => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
       .then(() => {
         cy.turn_on_hints()
           .then(() => {
@@ -24,7 +24,7 @@ describe('Logs student in, checks hints, checks for banner', () => {
 
 describe('Checks text page hint modals exist via next', () => {
   it('Navigates the first cycle of hints via the next link', () => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
       .then(() => {
         cy.turn_on_hints()
           .then(() => {
@@ -50,7 +50,7 @@ describe('Checks text page hint modals exist via next', () => {
 
 describe('Checks text page hint modals exist via prev', () => {
   it('Navigates the first cycle of hints via the prev link', () => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
       .then(() => {
         cy.turn_on_hints()
           .then(() => {
@@ -76,7 +76,7 @@ describe('Checks text page hint modals exist via prev', () => {
 
 describe('Checks that text difficulties exist', () => {
   it('Tries each tag', () => {
-    cy.student_access_texts(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_access_texts()
       .then(() => {
         cy.turn_off_hints()
           .then(() => {
@@ -281,7 +281,7 @@ describe('Checks that text difficulties exist', () => {
 // TODO: Fails, need exclusive Read Status
 // describe('Tries each read status', () => {
 //   it("Checks existance of three read statuses, confirms they're mutually exclusive", () => {
-//     cy.student_access_texts(Cypress.env('USER'), Cypress.env('PWD'))
+//     cy.student_access_texts()
 //       .then(() => {
 //         cy.get('.search_filter')
 //           .contains('Unread')
@@ -332,7 +332,7 @@ describe('Checks that text difficulties exist', () => {
 
 describe('Tries each difficulty', () => {
   it('Selects each difficulty and expects mutual exclusivity', () => {
-    cy.student_access_texts(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_access_texts()
       .then(() => {
         cy.get('.search_filter')
           .contains('Intermediate-Mid')

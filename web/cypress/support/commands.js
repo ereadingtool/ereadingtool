@@ -11,28 +11,26 @@
 //
 // -- This is a parent command --
 Cypress.Commands.add('student_login', (email, pw) => {
-  cy.visit('http://localhost:1234/login/student')
-  cy.get('#email-input')
-    .type(email)
-    // .type('USER')
-
-  cy.get('#password-input')
-    .type(pw)
-    // .type('PWD')
-
-  cy.get('.login_submit')
-    .click()
+  cy.request({
+    method: 'POST',
+    url: 'http://localhost:8000/api/student/login',
+    body: {
+      username: Cypress.env('USER'),
+      password: Cypress.env('PWD'),
+      role: 'student' 
+    }
+  })
 })
 
-Cypress.Commands.add('student_access_texts', (email, pw) => {
+// Turn these into cy.request(..) for more performant code
+Cypress.Commands.add('student_access_texts', () => {
+  // restructure this
   cy.visit('http://localhost:1234/login/student')
   cy.get('#email-input')
-    .type(email)
-    // .type('USER')
+    .type(Cypress.env('USER')) 
 
   cy.get('#password-input')
-    .type(pw)
-    // .type('PWD')
+    .type(Cypress.env('PWD'))
 
   cy.get('.login_submit')
     .click()
@@ -44,6 +42,29 @@ Cypress.Commands.add('student_access_texts', (email, pw) => {
             .click()
         })
     })
+})
+
+
+Cypress.Commands.add('admin_login', (csrf) => {
+  const username = Cypress.env('ADMIN_USER')
+  const password = Cypress.env('ADMIN_PWD')
+
+  cy.request({
+      method: 'POST',
+      url: 'http://localhost:8001/login/?next=/',
+      failOnStatusCode: false,
+      form: true,
+      body: {
+        username: username,
+        password: password,
+        csrfmiddlewaretoken: csrf,
+        next: '/'
+      }
+    })
+})
+
+Cypress.Commands.add('content_editor_login', () => {
+  // TODO
 })
 
 Cypress.Commands.add('turn_off_hints', () => {

@@ -3,13 +3,13 @@ const { assert } = require("console")
 // test the stuff
 describe('Access student portal', () => {
   it('Logs in to the student portal', () => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
   })
 })
 
 describe('Access profile from navbar', () => {
   it('Clicks the logo in navbar', () => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
       .then(() => {
         cy.get('#logo')
           .click()
@@ -20,7 +20,7 @@ describe('Access profile from navbar', () => {
 
 describe('Access profile from navbar', () => {
   it('Clicks the Profile link in the navbar', () => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
       .then(() => {
         cy.get('#header')
           .contains('Profile')
@@ -33,7 +33,7 @@ describe('Access profile from navbar', () => {
 
 describe('Access texts from navbar', () => {
   it('Clicks the Texts link in navbar', () => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
       .then(() => {
         cy.get('#header')
           .children('.content-menu')
@@ -49,7 +49,7 @@ describe('Access texts from navbar', () => {
 
 describe('Checks if username update is possible', () => {
   it('Clicks the update button, changes text, cancels change', () => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
       .then(() => {
         cy.get('.update_username')
           .click()
@@ -68,7 +68,7 @@ describe('Checks if username update is possible', () => {
 
 describe('Checks if username update length restriction', () => {
   it('Clicks the update button, changes to short text', () => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
       .then(() => {
         cy.get('.update_username')
           .click()
@@ -85,7 +85,7 @@ describe('Checks if username update length restriction', () => {
 
 describe('Checks username for special characters', () => {
   it('Clicks the update button, changes to text with valid special characters', () => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
       .then(() => {
         cy.get('.update_username')
           .click()
@@ -132,7 +132,7 @@ describe('Checks username for special characters', () => {
 
 describe('Confirms role in local storage', () => {
   it("Checks local storage to validate token's existance", () => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
       .wait(500)
       .then(() => {
         let ls = JSON.parse(localStorage.user)
@@ -148,7 +148,7 @@ describe('Confirms role in local storage', () => {
 // =========== Hints ===========
 describe('Checks the show hints modal is up', () => {
   it("Makes Show Hints button active, checks for the modal", () => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
       .then(() => {
         cy.turn_on_hints()
           .then(() => {
@@ -160,7 +160,7 @@ describe('Checks the show hints modal is up', () => {
 
 describe('Turns the Show Hints tutorial off', () => {
   it('Confirms the hints are on, then turns them off', () => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
       .then(() => {
         cy.turn_on_hints()
         cy.turn_off_hints()
@@ -172,7 +172,7 @@ describe('Turns the Show Hints tutorial off', () => {
 
 describe('Check for the hints banner', () => {
   it('Confirms the hints are on, then checks for the banner', () => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
       .then(() => {
         cy.turn_on_hints()
         cy.get('#profile-welcome-banner')
@@ -182,7 +182,7 @@ describe('Check for the hints banner', () => {
 
 describe('Checks profile page hint modals exist via next', () => {
   it('Navigates the first cycle of hints via the next link', () => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
       .then(() => {
         cy.turn_on_hints()
         cy.get('#help_hints')
@@ -204,7 +204,7 @@ describe('Checks profile page hint modals exist via next', () => {
 
 describe('Checks profile page hint modals exist via next', () => {
   it('Navigates the first cycle of hints via the next link', () => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
       .then(() => {
         cy.turn_on_hints()
         cy.get('#help_hints')
@@ -226,7 +226,7 @@ describe('Checks profile page hint modals exist via next', () => {
 
 describe('Closes the hints modal', () => {
   it('Closes the first hints modal', () => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
       .then(() => {
         cy.turn_on_hints()
         cy.get('#help_hints')
@@ -241,7 +241,7 @@ describe('Closes the hints modal', () => {
 // =========== Research Consent ===========
 describe('Clicks the consent to research button', () => {
   it('Toggles the consent to research button either on or off', () => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
       .then(() => {
         cy.get('#research_consent')
           .find('.check-box')
@@ -253,7 +253,7 @@ describe('Clicks the consent to research button', () => {
 // =========== Performance Report ===========
 describe('Validate performance report table', () => {
   it('Checks to confirm each column exists in the performance report table', () => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
       .then(() => {
         cy.get('.performance_report')
           .contains('Level')
@@ -269,7 +269,7 @@ describe('Validate performance report table', () => {
 
 describe('Click First Time Comprehension tab', () => {
   it('Finds the tab above the performance report, clicks and verifies table headers', () => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
       .then(() => {
         cy.get('.performance-report-tabs')
           .contains('First Time Comprehension')
@@ -289,7 +289,7 @@ describe('Click First Time Comprehension tab', () => {
 
 describe('Downloads performance report', () => {
   it('Clicks the link to download the report', () => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
       .then(() => {
         cy.wait(1000)
           .then(() => {
@@ -306,7 +306,7 @@ describe('Downloads performance report', () => {
 
 describe("Checks my words CSV to confirm file link exists", () => {
   it("Builds the link from localStorage, then reads link", () => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
       .then(() => {
         cy.wait(500)
           .then(() => {
@@ -323,7 +323,7 @@ describe("Checks my words CSV to confirm file link exists", () => {
 
 describe("Checks my words PDF to confirm file link exists", () => {
   it("Builds the link from localStorage, then reads link", () => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
       .then(() => {
         cy.wait(500)
           .then(() => {
@@ -341,7 +341,7 @@ describe("Checks my words PDF to confirm file link exists", () => {
 // =========== Links ===========
 describe('Checks research link exists', () => {
   it('Finds the Research Consent section and checks the link', () => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
       .then(() => {
         cy.get('#research_consent')
           .find('a')

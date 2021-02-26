@@ -53,7 +53,7 @@ jobs:
           pip3 install setuptools
           pip3 install -r requirements.txt
           python3 manage.py migrate
-          python3 manage.py shell -c "import os; from user.models import ReaderUser; ReaderUser.objects.create_superuser(os.getenv('TEST_ADMIN_USERNAME'), os.getenv('TEST_ADMIN_EMAIL'), os.getenv('TEST_ADMIN_PASS'))"
+          python3 manage.py shell -c "import os; from user.models import ReaderUser; ReaderUser.objects.create_superuser(os.getenv('CYPRESS_ADMIN_USER'), os.getenv('CYPRESS_ADMIN_EMAIL'), os.getenv('CYPRESS_ADMIN_PWD'))"
           python3 manage.py runserver
         run: |
           cd admin_panel

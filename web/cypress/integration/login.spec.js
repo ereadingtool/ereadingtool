@@ -224,7 +224,7 @@ describe('Confirms each link is visited in the navbar', () => {
 
 describe('Logs in the student', () => {
   beforeEach(() => {
-    cy.student_login(Cypress.env('USER'), Cypress.env('PWD'))
+    cy.student_login()
   })
   it('First navigate to the student login portal, then use command', () => {
     cy.get('.profile-title')

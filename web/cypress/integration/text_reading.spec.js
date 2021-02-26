@@ -1,6 +1,6 @@
 describe('Read Demo Text correctly', () => {
   it('Finds the demo text and answer questions correctly', () => {
-    cy.student_access_texts(Cypress.env('USER'), Cypress.env('PWD')) 
+    cy.student_access_texts() 
       .then(() => {
         // Expecting default to Intermediate-Mid
         cy.get('#text_search_results')
@@ -56,7 +56,7 @@ describe('Read Demo Text correctly', () => {
 
 describe('Read Demo Text incorrectly', () => {
   it('Finds the demo text and answer a question incorrectly', () => {
-    cy.student_access_texts(Cypress.env('USER'), Cypress.env('PWD')) 
+    cy.student_access_texts() 
       .then(() => {
         // Expecting default to Intermediate-Mid
         cy.get('#text_search_results')
