@@ -38,6 +38,10 @@ class StudentReadingsInProgress(models.Model):
 
     def get_texts(filter_by: Dict):
         soln = []
+        try:
+            del(filter_by['tags__name__in'])
+        except:
+            pass
         # srip is a StudentReadingsInProgress object
         for srip in StudentReadingsInProgress.objects.filter(**filter_by).all():
             if srip.text not in soln:
@@ -61,7 +65,10 @@ class StudentReadingsComplete(models.Model):
     def get_texts(filter_by: Dict):
         # texts in report_texts_complete
         soln = []
-
+        try:
+            del(filter_by['tags__name__in'])
+        except:
+            pass
         # src is a StudentReadingsComplete object
         for src in StudentReadingsComplete.objects.filter(**filter_by).all():
             if src.text not in soln:

@@ -316,8 +316,6 @@ class TextAPIView(APIView):
         else:
             text_queryset = user.text_search_queryset.filter(**filter_by).exclude(**subterfuge)
 
-        text_queryset_for_user = user.text_search_queryset_for_user.filter(**filter_by)
-
         # https://stackoverflow.com/questions/16475384/rename-a-dictionary-key
         view_filter_by = {'text_difficulty_slug' if k == 'difficulty__slug__in' else k:v for k,v in filter_by.items()}
 
@@ -328,26 +326,30 @@ class TextAPIView(APIView):
 
         if statuses == {'unread'}:
             # (all texts) - (complete U in_progress)
-
-            all_texts = set(Text.objects.filter(**filter_by).all())
+            all_texts_in_diff = set(Text.objects.filter(**filter_by).all())
 
             l1 = StudentReadingsComplete.get_texts(view_filter_by)
             l2 = StudentReadingsInProgress.get_texts(view_filter_by)
 
             # set difference
-            soln = all_texts - set(l1 + l2)
+            soln_without_tags = all_texts_in_diff - set(l1 + l2)
 
-            return soln
+            return soln_without_tags.intersection(text_queryset)
 
         elif 'read' in statuses:
-            return StudentReadingsComplete.get_texts(view_filter_by)
+            # trim down the filter by here so that it works for just difficulty, then do the intersection of the sets later
+            without_tags = StudentReadingsComplete.get_texts(view_filter_by)
+            all_texts_in_diff = set(Text.objects.filter(**filter_by).all())
+
+            return all_texts_in_diff.intersection(without_tags)
 
         # Note that texts can be completed but still shown as in_progress
         elif 'in_progress' in statuses:
-            return StudentReadingsInProgress.get_texts(view_filter_by)
+            without_tags = StudentReadingsInProgress.get_texts(view_filter_by)
+            all_texts_in_diff = set(Text.objects.filter(**filter_by).all())
 
+            return all_texts_in_diff.intersection(without_tags)
         else:
-            # shouldn't reach this. Return all texts for some difficulty anyways.
             return Text.objects.filter(**filter_by)
 
 
