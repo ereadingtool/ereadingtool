@@ -1,4 +1,4 @@
-module Pages.Text.EditorSearch exposing (Model, Msg, Params, page)
+module Pages.Text.CreatorSearch exposing (Model, Msg, Params, page)
 
 import Api
 import Api.Config as Config exposing (Config)
@@ -112,7 +112,7 @@ getTexts session config =
 
 view : SafeModel -> Document Msg
 view (SafeModel model) =
-    { title = "Editor Search"
+    { title = "Content Creator Search"
     , body =
         [ div []
             [ viewTexts (SafeModel model)

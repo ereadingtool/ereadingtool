@@ -128,8 +128,8 @@ viewContent model =
             , onSubmittedForm = SubmittedLogin
             , signUpRoute = Route.Signup__Student
             , loginRole = "Student Login"
-            , otherLoginRole = "content editor"
-            , otherLoginRoute = Route.Login__Instructor
+            , otherLoginRole = "content creator"
+            , otherLoginRoute = Route.Login__ContentCreator
             , maybeHelpMessage =
                 Just
                     """When signing in, please note that this website is not connected to your university’s user account.

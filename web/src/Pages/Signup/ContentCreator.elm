@@ -1,4 +1,4 @@
-module Pages.Signup.Instructor exposing
+module Pages.Signup.ContentCreator exposing
     ( Model
     , Msg
     , Params
@@ -147,7 +147,7 @@ update msg model =
 
         CompletedSignup (Ok resp) ->
             ( model
-            , Browser.Navigation.replaceUrl model.navKey (Route.toString Route.Login__Instructor)
+            , Browser.Navigation.replaceUrl model.navKey (Route.toString Route.Login__ContentCreator)
             )
 
         CompletedSignup (Err error) ->
@@ -263,12 +263,12 @@ errorBodyToDict body =
 
 view : Model -> Document Msg
 view model =
-    { title = "Instructor Signup"
+    { title = "Content Creator Signup"
     , body =
         [ div []
             [ div [ classList [ ( "signup", True ) ] ]
                 [ div [ classList [ ( "signup_box", True ) ] ] <|
-                    [ div [ class "signup_title" ] [ Html.text "Instructor Signup" ] ]
+                    [ div [ class "signup_title" ] [ Html.text "Content Creator Signup" ] ]
                         ++ SignUp.viewEmailInput
                             { errors = model.errors
                             , onEmailInput = UpdateEmail
