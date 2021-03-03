@@ -5,7 +5,6 @@ from typing import Dict, TypeVar
 from django.db import models
 from text.models import TextDifficulty, Text, TextSection
 from django.utils import timezone
-import yaml
 
 Student = TypeVar('Student')
 
