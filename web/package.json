@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Frontend for the ereadingtool",
   "scripts": {
-    "start": "npm install && npm run build:dev && npm run dev",
+    "start": "npm install && npm run build && npm run",
     "test": "elm-test",
     "test:watch": "elm-test --watch",
     "build": "run-s build:elm-spa build:elm",

@@ -262,17 +262,9 @@ handleWebsocketResponse (SafeModel model) message =
                     routeCommandResponse (SafeModel model) commandResponse
 
                 Err err ->
-                    let
-                        _ =
-                            Debug.log "websocket decode error" err
-                    in
                     ( SafeModel model, Cmd.none )
 
         WebSocket.Error err ->
-            let
-                _ =
-                    Debug.log "server error response" err
-            in
             ( SafeModel model, Cmd.none )
 
 
