@@ -360,17 +360,20 @@ viewSearchResults timezone textListItems =
         viewSearchResult textItem =
             let
                 difficultyCategory = 
-                    case textItem.difficulty of
-                        "intermediate_mid" -> 
-                            "Intermediate-Mid"
-                        "intermediate_high" -> 
-                            "Intermediate-High"
-                        "advanced_low" ->
-                            "Advanced-Low"
-                        "advanced_mid" ->
-                            "Advanced-Mid"
-                        _ -> 
+                    case 
+                        List.head <|
+                            List.filter
+                                (\difficulty ->
+                                    Tuple.first difficulty == textItem.difficulty
+                                )
+                                Shared.difficulties
+                    of
+                        Just difficulty ->
+                            Tuple.second difficulty
+
+                        Nothing ->
                             ""
+
                 commaDelimitedTags =
                     case textItem.tags of
                         Just tags ->
