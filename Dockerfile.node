@@ -26,6 +26,10 @@ RUN apt update -y \
 
 COPY steps2ar.org /etc/nginx/sites-available/
 
+# Overwrite the default nginx.conf to gzip more files. If nginx needs to be reloaded:
+# nginx -s reload
+COPY nginx.conf /etc/nginx/
+
 RUN ln -s /etc/nginx/sites-available/steps2ar.org /etc/nginx/sites-enabled/ \
     && rm /etc/nginx/sites-enabled/default
 
