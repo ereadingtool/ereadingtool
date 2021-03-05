@@ -40,10 +40,10 @@ class Migration(migrations.Migration):
             name='write_locker',
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='editing', to='user.Instructor'),
         ),
-        migrations.AlterUniqueTogether(
-            name='textphrase',
-            unique_together={('instance', 'phrase', 'text_section')},
-        ),
+#        migrations.AlterUniqueTogether(
+#            name='textphrase',
+#            unique_together={('instance', 'phrase', 'text_section')},
+#        ),
         migrations.AddField(
             model_name='textgroupword',
             name='group',

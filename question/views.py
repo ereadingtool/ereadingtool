@@ -4,17 +4,20 @@ from django.db.models import ObjectDoesNotExist
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.views.generic import View
+from ereadingtool.views import APIView
 
 from text.models import Text
 from question.models import Question
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 
+from auth.normal_auth import jwt_valid
 
-class QuestionAPIView(LoginRequiredMixin, View):
+#TODO: Verify this endpoint is hit
+class QuestionAPIView(APIView):
     model = Question
     login_url = reverse_lazy('student-login')
 
+    @jwt_valid()
     def get(self, request, *args, **kwargs):
         if 'pk' in kwargs:
             try:

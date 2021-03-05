@@ -1,22 +1,24 @@
 import json
 
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpRequest, HttpResponseServerError
 from django.http import HttpResponseNotAllowed
 from django.urls import reverse_lazy
-from django.views.generic import View
-
+from ereadingtool.views import APIView
 from text.models import Text
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from auth.normal_auth import jwt_valid
 
-
-class TextTagAPIView(LoginRequiredMixin, View):
+@method_decorator(csrf_exempt, name='dispatch') 
+class TextTagAPIView(APIView):
     login_url = reverse_lazy('instructor-login')
 
     model = Text
 
     allowed_methods = ['get', 'put', 'delete']
 
+    @jwt_valid()
     def delete(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
@@ -40,6 +42,7 @@ class TextTagAPIView(LoginRequiredMixin, View):
         except UnicodeDecodeError:
             return HttpResponseServerError(json.dumps({'errors': 'tag not valid'}))
 
+    @jwt_valid()
     def put(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
@@ -63,6 +66,7 @@ class TextTagAPIView(LoginRequiredMixin, View):
         except UnicodeDecodeError:
             return HttpResponseServerError(json.dumps({'errors': 'tag not valid'}))
 
+    @jwt_valid()
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)

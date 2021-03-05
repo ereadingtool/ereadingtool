@@ -1,3 +1,4 @@
+import os
 import json
 
 from typing import List
@@ -47,6 +48,7 @@ class TestTextWordGroup(TestUser, TestCase):
         self.text = Text.objects.get(pk=resp_content['id'])
 
     def test_remove_grouping(self):
+
         text_words = self.test_create_grouped_words()
 
         text_group = text_words[0].group_word.group

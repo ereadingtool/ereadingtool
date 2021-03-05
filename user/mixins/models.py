@@ -66,19 +66,49 @@ class TextReadings(models.Model):
     def last_read(self, text: Text) -> TextReading:
         last_read = None
 
-        if self.text_readings.filter(text=text).exists():
-            last_read = self.text_readings.filter(text=text).order_by('-start_dt')[0]
+        # They've got an in progress text
+        if self.text_readings \
+               .filter(state=TextReadingStateMachine.in_progress.name, text=text) \
+               .exists():
+
+            last_read = self.text_readings \
+                            .filter(state=TextReadingStateMachine.in_progress.name, text=text) \
+                            .get(text=text)
+
+        elif self.text_readings \
+                 .filter(state=TextReadingStateMachine.complete.name, text=text) \
+                 .exists():
+
+            last_read = self.text_readings \
+                            .filter(state=TextReadingStateMachine.complete.name, text=text) \
+                            .order_by('-start_dt') \
+                            .first()
 
         return last_read
 
     def sections_complete_for(self, text: Text) -> int:
         sections_complete = 0
+    
+        # They have a text inprogress
+        if self.text_readings \
+               .filter(state=TextReadingStateMachine.in_progress.name, text=text) \
+               .exists():
 
-        if self.text_readings.exclude(state=TextReadingStateMachine.complete.name).filter(text=text).exists():
-            current_text_reading = self.text_readings.exclude(
-                state=TextReadingStateMachine.complete.name).get(text=text)
+            current_text_reading = self.text_readings \
+                                       .filter(state=TextReadingStateMachine.in_progress.name, text=text) \
+                                       .get(text=text)
 
-            if not current_text_reading.state_machine.is_intro:
-                sections_complete = current_text_reading.current_section.order
+            sections_complete = current_text_reading.current_section.order
+
+        # They've completed the text but haven't started over
+        elif self.text_readings \
+                 .filter(state=TextReadingStateMachine.complete.name, text=text) \
+                 .exists():
+
+            sections_complete = self.text_readings \
+                                    .filter(state=TextReadingStateMachine.complete.name, text=text) \
+                                    .order_by('start_dt') \
+                                    .first() \
+                                    .number_of_sections
 
         return sections_complete

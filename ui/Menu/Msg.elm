@@ -1,8 +1,9 @@
-module Menu.Msg exposing (..)
+module Menu.Msg exposing (Msg(..))
 
-import Student.Profile exposing (StudentProfile)
 import Instructor.Profile exposing (InstructorProfile)
+import Student.Profile exposing (StudentProfile)
 
-type Msg =
-    InstructorLogout InstructorProfile
-  | StudentLogout StudentProfile
+
+type Msg
+    = InstructorLogout InstructorProfile
+    | StudentLogout StudentProfile

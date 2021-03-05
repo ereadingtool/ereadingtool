@@ -288,6 +288,7 @@ class TestText(TestData, TestUser, TestCase):
         self.assertEquals(science_tech_tag.texts.count(), 2)
 
     def test_put_new_section(self):
+
         test_data = self.get_test_data()
 
         resp = self.instructor.post(reverse_lazy('text-api'), json.dumps(test_data), content_type='application/json')
@@ -339,7 +340,7 @@ class TestText(TestData, TestUser, TestCase):
 
             addl_search = '&'.join([f'{k}={v}' for (k, v) in addl_filters])
 
-            resp = self.student.get(f'/api/text/?{status_search}&{addl_search}')
+            resp = self.student.get(f'/api/text?{status_search}&{addl_search}')
 
             self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
@@ -403,7 +404,7 @@ class TestText(TestData, TestUser, TestCase):
         # tag search should be ORed
         tag_search = '&'.join([f'tag={tag}' for tag in test_tags])
 
-        resp = self.student.get(f'/api/text/?{tag_search}')
+        resp = self.student.get(f'/api/text?{tag_search}')
 
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
@@ -413,6 +414,7 @@ class TestText(TestData, TestUser, TestCase):
                                             student.to_text_summary_dict(text_two)])
 
     def test_put_text(self):
+
         test_data = self.get_test_data()
 
         resp = self.instructor.post(reverse_lazy('text-api'), json.dumps(test_data), content_type='application/json')
@@ -478,6 +480,7 @@ class TestText(TestData, TestUser, TestCase):
         self.assertEquals(resp_content['text_sections'][1]['questions'][0]['answers'][1]['text'], 'A new answer.')
 
     def test_text_lock(self):
+
         other_instructor_client = self.new_instructor_client(Client())
 
         resp = self.instructor.post(reverse_lazy('text-api'),
@@ -520,6 +523,7 @@ class TestText(TestData, TestUser, TestCase):
         self.assertEquals(resp.status_code, 500, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
     def test_post_text_correct_answers(self):
+
         test_data = self.get_test_data()
 
         for answer in test_data['text_sections'][0]['questions'][0]['answers']:
@@ -544,6 +548,7 @@ class TestText(TestData, TestUser, TestCase):
         self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
 
     def test_post_text_max_char_limits(self):
+
         test_data = self.get_test_data()
         test_text_section_body_size = 4096
 
@@ -586,6 +591,7 @@ class TestText(TestData, TestUser, TestCase):
         self.assertEquals(len(text_section.body), test_text_section_body_size)
 
     def create_text(self, test_data: Dict = None, diff_data: Dict = None) -> Text:
+
         text_data = test_data or self.get_test_data()
 
         if diff_data:
@@ -604,6 +610,7 @@ class TestText(TestData, TestUser, TestCase):
         return text
 
     def test_post_text(self, test_data: Optional[Dict] = None) -> Text:
+
         test_data = test_data or self.get_test_data()
 
         num_of_sections = len(test_data['text_sections'])
@@ -645,6 +652,7 @@ class TestText(TestData, TestUser, TestCase):
         return text
 
     def test_delete_text(self, text: Optional[Text] = None):
+
         if text is None:
             text = self.create_text()
 
@@ -660,6 +668,7 @@ class TestText(TestData, TestUser, TestCase):
         self.assertTrue('deleted' in resp_content)
 
     def test_delete_text_with_one_student_flashcard(self):
+
         test_data = self.get_test_data()
 
         test_data['text_sections'][0]['body'] = 'заявление неделю Число'
@@ -688,6 +697,7 @@ class TestText(TestData, TestUser, TestCase):
         self.assertFalse(StudentFlashcardSession.objects.filter(pk=student_flashcard_session.pk).exists())
 
     def test_delete_text_with_multiple_student_flashcards(self):
+
         test_data_one = self.get_test_data()
         test_data_two = self.get_test_data()
 

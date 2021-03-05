@@ -1,15 +1,15 @@
 import json
+from report.models import StudentReadingsComplete, StudentReadingsInProgress
 import jsonschema
 from typing import TypeVar, Optional, List, Dict, AnyStr, Union, Set
 
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import IntegrityError, models
 from django.http import HttpResponse, HttpRequest, HttpResponseServerError
 from django.http import HttpResponseNotAllowed
 from django.urls import reverse
 from django.urls import reverse_lazy
-from django.views.generic import View
+from ereadingtool.views import APIView
 
 from mixins.model import WriteLocked
 from question.forms import QuestionForm, AnswerForm
@@ -18,6 +18,9 @@ from question.models import Question
 from text.forms import TextForm, TextSectionForm, ModelForm
 from text.models import TextDifficulty, Text, TextSection, text_statuses
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from auth.normal_auth import jwt_valid
 
 Student = TypeVar('Student')
 Instructor = TypeVar('Instructor')
@@ -34,8 +37,8 @@ def or_filters(filters):
 
     return status_filter
 
-
-class TextAPIView(LoginRequiredMixin, View):
+@method_decorator(csrf_exempt, name='dispatch')
+class TextAPIView(APIView):
     login_url = reverse_lazy('instructor-login')
     allowed_methods = ['get', 'put', 'post', 'delete']
 
@@ -104,9 +107,13 @@ class TextAPIView(LoginRequiredMixin, View):
             # question_type -> type
             question_param['type'] = question_param.pop('question_type')
 
-            if question_instances:
-                question_instance = question_instances[i]
-                answer_instances = question_instance.answers.all()
+            try:
+                if question_instances:
+                    question_instance = question_instances[i]
+                    answer_instances = question_instance.answers.all()
+            except:
+                # silently fail on questions not in the query
+                pass
 
             question_form = QuestionForm(instance=question_instance, data=question_param)
 
@@ -151,11 +158,36 @@ class TextAPIView(LoginRequiredMixin, View):
         if 'questions' not in text_section_param:
             raise ValidationError(message="'questions' field is required.")
 
+        # `text_params` comes off the HttpRequest and is more up to date than the database. It still needs to be verified,
+        # but a bug existed in `validate_question_param(..)` where we went out of bounds checking the `QueryString` for an
+        # item that had yet to be added. So we check to see if the list on the request is shorter than the `QueryString`
+        # returned from the database. The questions are verified once added to the database. Chicken before egg problem,
+        # can't run `is_valid(..)` since `QuestionForm` contains the `Question` and this wasn't worth making an `_init_(..)`
+        # for `Question`s on its own.
+        if text_section_instance:
+            existing_questions = text_section_instance.questions.all()
+            l = len(existing_questions)
+            r = len(text_section_param['questions'])
+            for i in range(l,r):
+                try:
+                    new_question = text_section_param['questions'][i]
+                    # validate the questions, note that we don't confirm `order` is correct or check that 
+                    # `main_idea` is one of two valid options. However this will be checked once actually added
+                    if 'answers' not in new_question or \
+                       'body' not in new_question or \
+                       'order' not in new_question or \
+                       'question_type' not in new_question:
+                        raise ValidationError
+                except:
+                    raise ValidationError(message="error parsing the new question")
+        else:
+            existing_questions = None
+
         text_section['questions'], errors = TextAPIView.validate_question_param(
             text_section_key,
             text_section_param['questions'],
             errors,
-            question_instances=text_section_instance.questions.all() if text_section_instance else None)
+            question_instances=existing_questions)
 
         if not text_section['text_section_form'].is_valid():
             errors = TextAPIView.form_validation_errors(errors=errors, parent_key=text_section_key,
@@ -167,6 +199,7 @@ class TextAPIView(LoginRequiredMixin, View):
 
         return output_params, errors
 
+    @jwt_valid()
     def delete(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
@@ -186,6 +219,7 @@ class TextAPIView(LoginRequiredMixin, View):
         except Text.DoesNotExist:
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
 
+    @jwt_valid()
     def put(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
@@ -215,6 +249,7 @@ class TextAPIView(LoginRequiredMixin, View):
         except (Text.DoesNotExist, ObjectDoesNotExist):
             return HttpResponse(json.dumps({'errors': 'something went wrong'}))
 
+    @jwt_valid()
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         text = None
         text_sections = None
@@ -275,42 +310,48 @@ class TextAPIView(LoginRequiredMixin, View):
 
     def get_texts_queryset(self, user: Union[Student, Instructor], statuses: Set, filter_by: Dict):
         all_statuses = dict(text_statuses)
+        subterfuge = {'tags__name__in': ['Hidden']}
+        if 'instructor' in user.login_url:
+            text_queryset = user.text_search_queryset.filter(**filter_by)
+        else:
+            text_queryset = user.text_search_queryset.filter(**filter_by).exclude(**subterfuge)
 
-        text_queryset = user.text_search_queryset.filter(**filter_by)
-        text_queryset_for_user = user.text_search_queryset_for_user.filter(**filter_by)
+        # https://stackoverflow.com/questions/16475384/rename-a-dictionary-key
+        view_filter_by = {'text_difficulty_slug' if k == 'difficulty__slug__in' else k:v for k,v in filter_by.items()}
 
-        unread_text_queryset_for_user = user.unread_text_queryset
+        # there is always a single difficulty
+        view_filter_by['text_difficulty_slug'] = view_filter_by['text_difficulty_slug'][0]
 
-        status_filters = []
-
-        # filter doesn't apply
-        if statuses == set(all_statuses):
-            return text_queryset
+        view_filter_by['student_id'] = user.id
 
         if statuses == {'unread'}:
-            return unread_text_queryset_for_user.filter(**filter_by)
+            # (all texts) - (complete U in_progress)
+            all_texts_in_diff = set(Text.objects.filter(**filter_by).all())
 
-        if 'read' in statuses:
-            status_filters.append(models.Q(num_of_complete__gte=1) & models.Q(num_of_in_progress=0))
+            l1 = StudentReadingsComplete.get_texts(view_filter_by)
+            l2 = StudentReadingsInProgress.get_texts(view_filter_by)
 
-        if 'in_progress' in statuses:
-            status_filters.append(models.Q(num_of_in_progress__gte=1) & models.Q(num_of_complete=0))
+            # set difference
+            soln_without_tags = all_texts_in_diff - set(l1 + l2)
 
-        status_filter = or_filters(status_filters)
+            return soln_without_tags.intersection(text_queryset)
 
-        if status_filter:
-            text_queryset_for_user = text_queryset_for_user.filter(status_filter)
+        elif 'read' in statuses:
+            # trim down the filter by here so that it works for just difficulty, then do the intersection of the sets later
+            without_tags = StudentReadingsComplete.get_texts(view_filter_by)
+            all_texts_in_diff = set(Text.objects.filter(**filter_by).all())
 
-        if 'unread' in statuses:
-            # (set of unread texts by user) | (set of texts read by user that are in_progress or read)
-            return unread_text_queryset_for_user.filter(**filter_by).union(
-                text_queryset_for_user
-            )
+            return all_texts_in_diff.intersection(without_tags)
 
-        if statuses:
-            return text_queryset_for_user
+        # Note that texts can be completed but still shown as in_progress
+        elif 'in_progress' in statuses:
+            without_tags = StudentReadingsInProgress.get_texts(view_filter_by)
+            all_texts_in_diff = set(Text.objects.filter(**filter_by).all())
+
+            return all_texts_in_diff.intersection(without_tags)
         else:
-            return text_queryset
+            return Text.objects.filter(**filter_by)
+
 
     def validate_params(self, text_params: AnyStr, text: Optional['Text'] = None) -> (Dict, Dict, HttpResponse):
         errors = resp = text_sections_params = None
@@ -346,6 +387,7 @@ class TextAPIView(LoginRequiredMixin, View):
 
         return text_params, text_sections_params, resp
 
+    @jwt_valid()
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         text_params, text_sections_params, resp = self.validate_params(request.body.decode('utf8'))
 
