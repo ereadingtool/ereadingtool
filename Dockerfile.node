@@ -17,7 +17,7 @@ RUN apt update -y \
     && cd web \
     && npm install -g parcel-bundler@1.12.4 \
     && npm install \
-    && npm run build:staging \
+    && npm run build \
     && apt-get install -y nginx \
     && mkdir -p /var/www/steps2ar.org/html \
     && chown -R $USER:$USER /var/www/steps2ar.org/html \
