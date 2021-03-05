@@ -4,8 +4,43 @@ body {
   margin-right: 0;
   margin-left: 0;
 
-  font-family: 'Helvetica Neue';
+  /* font-family: 'Helvetica Neue'; */
+  font-family: 'Open Sans';
   font-size: 14px;
+}
+
+@font-face {
+  font-family: "EB Garamond";
+  src: url("../fonts/eb-garamond-regular.woff2") format(woff2);
+}
+
+@font-face {
+  font-family: "EB Garamond";
+  src: url("../fonts/eb-garamond-bold.woff2") format(woff2);
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "EB Garamond";
+  src: url("../fonts/eb-garamond-italic.woff2") format(woff2);
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Open Sans";
+  src: url("../fonts/opensans-regular.woff2") format(woff2);
+}
+
+@font-face {
+  font-family: "Open Sans";
+  src: url("../fonts/opensans-bold.woff2") format(woff2);
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "Open Sans";
+  src: url("../fonts/opensans-italic.woff2") format(woff2);
+  font-style: italic;
 }
 
 .button {
@@ -48,7 +83,7 @@ body {
 #header * a {
   color: white;
   text-decoration: none;
-  font-family: 'Helvetica Neue';
+  font-family: 'EB Garamond';
 }
 
 #header * a:hover {
@@ -319,8 +354,7 @@ body {
 
   padding: 3px;
 
-  font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue,
-    'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Open Sans';
   font-size: 18px;
   font-weight: 200;
 
@@ -397,8 +431,7 @@ body {
 
   background: #ffffff;
 
-  font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue,
-    'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Open Sans';
   font-size: 17px;
 
   border: solid 0.5px black;
