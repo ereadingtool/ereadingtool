@@ -1,0 +1,325 @@
+#flashcard {
+    padding-top: 50px;
+}
+
+#contents {
+    display: grid;
+
+    padding: 10px;
+    grid-template-columns: 23% [card-col] auto 23%;
+    grid-template-rows: [card-row] minmax(375px, auto) 80px [card-controls] auto;
+}
+
+#loading {
+    display: grid;
+    grid-column: card-col;
+    
+    justify-content: center;
+}
+
+#card {
+    display: grid;
+    grid-column: card-col;
+
+    grid-template-columns: 15px [card-content-col] auto 15px;
+
+    outline: 1px solid grey;
+    background: #f8f8f8;
+
+    align-content: center;
+    justify-content: center;
+
+    box-shadow: 5px 5px 5px #dfdfdf;
+}
+
+#answer_input {
+    grid-column: card-content-col;
+    display: grid;
+
+    grid-auto-columns: auto;
+    grid-template-rows: 35px;
+    grid-template-columns: 150px auto 15px;
+
+    grid-column-gap: 15px;
+    grid-row-gap: 15px;
+
+    align-content: center;
+    justify-content: center;
+}
+
+#card_rating {
+    grid-column: card-content-col;
+
+    align-content: center;
+    justify-content: center;
+
+    text-align: center;
+}
+
+#answer_input #submit {
+    display: grid;
+    grid-template-columns: 15px [submit-btn-col] auto 15px;
+    align-content: center;
+    justify-content: center;
+
+    outline: solid 0.5px black;
+    background: white;
+}
+
+#answer_input #submit #button {
+    grid-column: submit-btn-col;
+    text-align: center;
+}
+
+#answer_input #submit .filled {
+    background: #e4fff9;
+}
+
+#answer-quality {
+    grid-column: card-content-col;
+    display: grid;
+}
+
+#answer-quality > #choices {
+    padding-top: 20px;
+    font-family: monospace;
+
+    display: grid;
+    grid-auto-flow: column;
+
+    grid-column-gap: 15px;
+    text-align: center;
+}
+
+#choices > .choice {
+    outline: 0.5px solid black;
+    padding: 5px;
+}
+
+#choices > .select {
+    background: #e7f8f6;
+}
+
+#phrase {
+    grid-column: 2;
+}
+
+#example {
+    grid-column: 2;
+}
+
+.flip {
+    transform-style: preserve-3d;
+    transition: all 0.25s linear;
+
+    transform: rotateY(180deg);
+}
+
+.flip > #phrase, .flip > #example, .flip > #answer-quality {
+    transform:rotateY(180deg);
+
+    unicode-bidi: bidi-override;
+}
+
+.unflip {
+    transform-style: preserve-3d;
+    transition: all 1.0s linear;
+
+    transform: rotateY(180deg);
+}
+
+.unflip > #phrase, .unflip > #example {
+    transform:rotateY(180deg);
+
+    unicode-bidi: bidi-override;
+}
+
+#card #phrase {
+    font-size: x-large;
+
+    text-decoration-line: underline;
+    padding-bottom: 5px;
+}
+
+#example #sentence {
+    padding: 15px;
+
+    font-size: larger;
+    font-style: italic;
+}
+
+#mode-choices {
+    display: grid;
+    grid-column: card-col;
+
+    align-content: center;
+    justify-content: center;
+
+    grid-auto-flow: column;
+
+    grid-column-gap: 2%;
+
+    grid-auto-columns: 250px;
+    grid-auto-rows: 100px;
+}
+
+#notes {
+    display: grid;
+    grid-column: card-col;
+
+    font-style: italic;
+
+    align-content: center;
+    justify-content: center;
+}
+
+.mode-choice {
+    display: grid;
+
+    font-weight: 300;
+
+    outline: solid black 0.5px;
+
+    grid-template-columns: auto;
+    grid-row-gap: 5%;
+
+    text-align: center;
+
+    min-height: 250px;
+
+    grid-template-rows: [name] auto [desc] 100px [select] auto;
+}
+
+.mode-choice .name, .mode-choice .desc {
+    padding: 15px;
+}
+
+.mode-choice .name {
+    font-weight: 500;
+}
+
+.selected {
+    outline: solid black 1px;
+}
+
+#nav #start {
+    outline: solid 0.5px black;
+}
+
+#nav {
+    display: grid;
+    grid-area: card-controls / card-col;
+
+    text-align: center;
+
+    grid-template-columns: [nav-start-col] auto [nav-middle-col] auto [nav-end-col] auto;
+    grid-template-rows: [exception-row] auto [mode-row] auto [nav-row] auto [nav-footer-row] auto;
+
+    grid-row-gap: 15px;
+    padding-top: 15px;
+}
+
+#state {
+    grid-row: nav-footer-row;
+    grid-column: nav-start-col / nav-end-col;
+}
+
+#next img, #prev img {
+    width: 35px;
+    height: 35px;
+}
+
+#nav #next, #nav #prev, #nav #start {
+    padding: 15px;
+}
+
+#nav #start {
+    grid-column: nav-middle-col;
+}
+
+#nav #next {
+    grid-column: nav-end-col;
+    grid-row: nav-row;
+}
+
+#nav #prev {
+    grid-column: nav-start-col;
+    grid-row: nav-row;
+}
+
+#mode {
+    grid-row: mode-row;
+    grid-column: nav-start-col / nav-end-col;
+
+    font-weight: 500;
+}
+
+#finished {
+    display: grid;
+
+    grid-column: card-col;
+
+    align-content: center;
+    justify-content: center;
+}
+
+#nav #exception {
+    display: grid;
+
+    text-align: center;
+
+    color: red;
+
+    grid-row: exception-row;
+    grid-column: nav-start-col / nav-end-col;
+}
+
+#nav .mode {
+    position: relative;
+    bottom: 0;
+}
+
+@media only screen and (max-width:720px) {
+    #flashcard {
+        padding-top: 50px;
+    }
+
+    #answer-quality > #choices {
+        padding: 20px;
+        grid-auto-flow: row;
+        grid-row-gap: 10px;
+        grid-column-gap: 0;
+    }
+
+    #content {
+        padding: 0;
+        grid-template-columns: 30px [card-col] auto 30px;
+        grid-auto-columns: auto;
+    }
+
+    #mode-choices {
+        grid-auto-flow: row;
+        grid-auto-rows: auto;
+        grid-auto-columns: auto;
+        grid-row-gap: 15px;
+    }
+
+    #card {
+        grid-auto-rows: auto;
+    }
+
+    #mode {
+        padding-top: 15px;
+        grid-column: nav-middle-col / nav-end-col;
+    }
+
+    #nav {
+        grid-template-columns: [nav-start-col] 50px [nav-middle-col] auto [nav-end-col] 50px;
+        grid-row-gap: 0;
+        padding-top: 0;
+    }
+
+    #card #answer_input {
+        padding-bottom: 15px;
+    }
+}
