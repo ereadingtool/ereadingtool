@@ -319,8 +319,8 @@ class TextAPIView(APIView):
         # https://stackoverflow.com/questions/16475384/rename-a-dictionary-key
         view_filter_by = {'text_difficulty_slug' if k == 'difficulty__slug__in' else k:v for k,v in filter_by.items()}
 
-        # there is always a single difficulty
-        view_filter_by['text_difficulty_slug'] = view_filter_by['text_difficulty_slug'][0]
+        if view_filter_by:
+            view_filter_by['text_difficulty_slug'] = view_filter_by['text_difficulty_slug'][0]
 
         view_filter_by['student_id'] = user.id
 
