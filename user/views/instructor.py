@@ -3,20 +3,24 @@ from typing import TypeVar, Dict
 
 from django import forms
 from django.contrib.auth import login, logout
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpRequest, HttpResponseForbidden
 from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 from django.views.generic import TemplateView, View
+from django.http import JsonResponse
 
-from user.forms import InstructorSignUpForm, InstructorLoginForm, InstructorInviteForm
+from user.forms import AuthenticationForm, InstructorSignUpForm, InstructorInviteForm
 
 from user.instructor.models import Instructor
-
+from invite.models import Invite
 from user.views.api import APIView
 from user.views.mixin import ProfileView
 
 from mixins.view import NoAuthElmLoadJsView, ElmLoadJsInstructorBaseView
+from auth.normal_auth import jwt_valid
+from jwt_auth.views import jwt_encode_token, jwt_get_json_with_token
 
 
 Form = TypeVar('Form', bound=forms.Form)
@@ -73,7 +77,22 @@ class InstructorView(ProfileView):
     login_url = Instructor.login_url
 
 
-class InstructorInviteAPIView(LoginRequiredMixin, APIView):
+class InstructorAPIView(APIView):
+    @jwt_valid()
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        if not Instructor.objects.get(pk=kwargs['pk']):
+            return HttpResponse(status=400)
+
+        instructor = Instructor.objects.get(pk=kwargs['pk'])
+
+        instructor_dict = instructor.to_dict()
+
+        return HttpResponse(json.dumps({
+            'profile': instructor_dict,
+        }))
+
+@method_decorator(csrf_exempt, name='dispatch')
+class InstructorInviteAPIView(APIView):
     login_url = Instructor.login_url
 
     def dispatch(self, request, *args, **kwargs):
@@ -84,14 +103,36 @@ class InstructorInviteAPIView(LoginRequiredMixin, APIView):
 
         return super(InstructorInviteAPIView, self).dispatch(request, *args, **kwargs)
 
+    @jwt_valid()
     def form(self, request: HttpRequest, params: Dict) -> forms.ModelForm:
         return InstructorInviteForm(params, initial={'inviter': self.request.user.profile.pk})
 
+    @jwt_valid()
     def post_success(self, request: HttpRequest, instructor_invite_form: Form) -> HttpResponse:
         invite = instructor_invite_form.save()
 
         return HttpResponse(json.dumps(invite.to_dict()), status=200)
 
+    @jwt_valid()
+    def post_error(self, errors: Dict, request: HttpRequest, instructor_invite_form: Form) -> HttpResponse:
+        try:
+            # remove the existing entry
+            if Invite.objects.filter(email=instructor_invite_form.data['email']).exists():
+                Invite.objects.filter(email=instructor_invite_form.data['email']).delete()
+
+            # manually add the cleaned data
+            instructor_invite_form.cleaned_data['email'] = instructor_invite_form.data['email']
+
+            # call InstructorInviteForm.save()
+            invite = instructor_invite_form.save()
+
+            return HttpResponse(json.dumps(invite.to_dict()), status=200)
+        except:
+            if not errors:
+                errors['all'] = 'An unspecified error has occurred.'
+                return JsonResponse(errors, status=400)
+            else:
+                return JsonResponse(errors, status=403)
 
 class InstructorSignupAPIView(APIView):
     def form(self, request: HttpRequest, params: Dict) -> forms.ModelForm:
@@ -104,23 +145,33 @@ class InstructorSignupAPIView(APIView):
 
 
 class InstructorLoginAPIView(APIView):
-    def form(self, request: HttpRequest, params: Dict) -> Form:
-        return InstructorLoginForm(request, params)
+    http_method_names = ['post']
 
-    def post_success(self, request: HttpRequest, instructor_login_form: Form) -> HttpResponse:
+    def form(self, request: HttpRequest, params: Dict) -> Form:
+        return AuthenticationForm(request, params)
+
+    def post_success(self, request: HttpRequest, instructor_login_form: Form) -> JsonResponse:
+
+        # Assume successful form validation
         reader_user = instructor_login_form.get_user()
 
-        if hasattr(reader_user, 'student'):
-            return self.post_error({'all': 'Something went wrong.  Please try a different username and password.'})
+        token = jwt_encode_token(
+            # cleaned_data sanitizes the form fields https://docs.djangoproject.com/en/3.1/ref/forms/api/#accessing-clean-data
+            # orig_iat means "original issued at" https://tools.ietf.org/html/rfc7519
+            reader_user, instructor_login_form.cleaned_data.get('orig_iat')
+        )
 
-        login(self.request, reader_user)
+        # payload now contains string 'Bearer', the token, and the expiration time JWT_EXPIRATION_DELTA (in seconds)
+        jwt_payload = jwt_get_json_with_token(token)
 
-        instructor = reader_user.instructor
+        # manually add the field `[id]` to the jwt payload
+        jwt_payload['id'] = reader_user.instructor.pk
+            
+        # return to the dispatcher to send out an HTTP response
+        return JsonResponse(jwt_payload)
 
-        return HttpResponse(json.dumps({'id': instructor.pk, 'redirect': reverse('instructor-profile')}))
-
-
-class InstructorLogoutAPIView(LoginRequiredMixin, View):
+# --------------------------------- Below is marked for deletion ------------------------------
+class InstructorLogoutAPIView(APIView):
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         logout(request)
 

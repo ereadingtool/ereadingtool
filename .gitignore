@@ -151,8 +151,12 @@ venv.bak/
 # mkdocs documentation
 /site
 
-# elm
-elm-stuff
+# parcel
+dist/
+
+# elm and elm-spa
+elm-stuff/
+Generated/
 
 # mypy
 .mypy_cache/
@@ -161,7 +165,6 @@ elm-stuff
 /db.sqlite3
 /static/
 /bower_components/
-/node_modules/
 /.pulp-cache/
 /output/
 /generated-docs/
@@ -171,3 +174,13 @@ elm-stuff
 
 # vscode
 .vscode/
+
+#node
+node_modules/
+
+# Docker
+secrets.env
+ereadingtool.com
+
+#macos
+.DS_Store

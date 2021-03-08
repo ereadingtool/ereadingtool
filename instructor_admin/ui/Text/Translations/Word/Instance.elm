@@ -1,85 +1,107 @@
-module Text.Translations.Word.Instance exposing (..)
-
-import Text.Translations exposing (..)
+module Text.Translations.Word.Instance exposing
+    ( WordInstance
+    , canMergeWords
+    , grammemeKeys
+    , grammemeValue
+    , grammemes
+    , hasTextWord
+    , id
+    , instance
+    , new
+    , sectionNumber
+    , setTextWord
+    , textWord
+    , token
+    , word
+    , wordInstanceSectionNumberToInt
+    )
 
 import Set exposing (Set)
-
+import Text.Translations exposing (Grammemes, Id, Instance, SectionNumber, Token)
 import Text.Translations.TextWord exposing (TextWord)
 
 
-type WordInstance = WordInstance SectionNumber Instance Token (Maybe TextWord)
+type WordInstance
+    = WordInstance SectionNumber Instance Token (Maybe TextWord)
 
 
 setTextWord : WordInstance -> TextWord -> WordInstance
-setTextWord (WordInstance id instance token _) new_text_word =
-  WordInstance id instance token (Just new_text_word)
+setTextWord (WordInstance sectNum inst tok _) newTextWord =
+    WordInstance sectNum inst tok (Just newTextWord)
+
 
 canMergeWords : List WordInstance -> Bool
-canMergeWords word_instances =
-  List.all hasTextWord word_instances
+canMergeWords wordInstances =
+    List.all hasTextWord wordInstances
+
 
 hasTextWord : WordInstance -> Bool
-hasTextWord (WordInstance section_number instance token text_word) =
-  case text_word of
-    Just tw ->
-      True
+hasTextWord (WordInstance _ _ _ maybeTextWord) =
+    case maybeTextWord of
+        Just _ ->
+            True
 
-    Nothing ->
-      False
+        Nothing ->
+            False
+
 
 grammemeValue : WordInstance -> String -> Maybe String
-grammemeValue word_instance grammeme_name =
-  case (textWord word_instance) of
-    Just text_word ->
-      Text.Translations.TextWord.grammemeValue text_word grammeme_name
+grammemeValue wordInstance grammemeName =
+    textWord wordInstance
+        |> Maybe.andThen (\tw -> Text.Translations.TextWord.grammemeValue tw grammemeName)
 
-    Nothing ->
-      Nothing
 
 grammemeKeys : Set String
 grammemeKeys =
-  Text.Translations.expectedGrammemeKeys
+    Text.Translations.expectedGrammemeKeys
+
 
 grammemes : WordInstance -> Maybe Grammemes
-grammemes word_instance =
-  case (textWord word_instance) of
-    Just text_word ->
-      Text.Translations.TextWord.grammemes text_word
+grammemes wordInstance =
+    textWord wordInstance
+        |> Maybe.andThen Text.Translations.TextWord.grammemes
 
-    Nothing ->
-      Nothing
 
 sectionNumber : WordInstance -> SectionNumber
-sectionNumber (WordInstance section_number _ _ _) =
-  section_number
+sectionNumber (WordInstance sectNum _ _ _) =
+    sectNum
+
 
 wordInstanceSectionNumberToInt : WordInstance -> Int
-wordInstanceSectionNumberToInt word_instance =
-  sectionNumberToInt (sectionNumber word_instance)
+wordInstanceSectionNumberToInt wordInstance =
+    Text.Translations.sectionNumberToInt (sectionNumber wordInstance)
+
 
 id : WordInstance -> Id
-id (WordInstance section_number instance token _) =
-  String.join "_" [toString section_number, toString instance, String.join "_" (String.words (String.toLower token))]
+id (WordInstance sectNum inst tok _) =
+    String.join "_" [ String.fromInt (Text.Translations.sectionNumberToInt sectNum), String.fromInt inst, String.join "_" (String.words (String.toLower tok)) ]
+
 
 token : WordInstance -> Token
-token (WordInstance _ _ token _) =
-  token
+token (WordInstance _ _ tok _) =
+    tok
+
 
 textWord : WordInstance -> Maybe TextWord
-textWord (WordInstance _ _ _ text_word) =
-  text_word
+textWord (WordInstance _ _ _ maybeTextWord) =
+    maybeTextWord
+
 
 instance : WordInstance -> Instance
-instance (WordInstance _ instance _ _) =
-  instance
+instance (WordInstance _ inst _ _) =
+    inst
+
 
 word : WordInstance -> Token
-word (WordInstance _ _ word _) =
-  word
+word (WordInstance _ _ tok _) =
+    tok
+
 
 normalizeToken : String -> String
-normalizeToken = String.toLower
+normalizeToken =
+    String.toLower
+
 
 new : SectionNumber -> Instance -> Token -> Maybe TextWord -> WordInstance
-new section_number instance token text_word =
-  WordInstance section_number instance token text_word
+new sectNum inst tok maybeTextWord =
+    WordInstance sectNum inst tok maybeTextWord

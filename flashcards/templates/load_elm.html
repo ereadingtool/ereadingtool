@@ -1,3 +1,6 @@
 {% extends "load_elm_base.html" %}
+{% load static %}
+<script src="{% static "flashcards/js/websockets.js" %}"></script>
 {% block port_functions %}
+    app.ports.sendSocketCommand.subscribe(sendSocketCommand);
 {% endblock %}

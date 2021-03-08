@@ -1,375 +1,511 @@
-module Text.Translations.Model exposing (..)
+module Text.Translations.Model exposing
+    ( Model
+    , addTextTranslation
+    , addToMergeWords
+    , clearMerge
+    , completeMerge
+    , editWord
+    , editingGrammemeValue
+    , editingWord
+    , editingWordInstance
+    , getNewTranslationForWord
+    , getTextWords
+    , init
+    , inputGrammeme
+    , instanceCount
+    , isMergingWords
+    , mergeState
+    , mergingWord
+    , mergingWordInstances
+    , mergingWords
+    , newWordInstance
+    , refreshTextWordForWordInstance
+    , removeFromMergeWords
+    , removeTextTranslation
+    , selectGrammemeForEditing
+    , setGlobalEditLock
+    , setTextWord
+    , setTextWords
+    , uneditWord
+    , updateTextTranslation
+    , updateTranslationsForWord
+    )
 
 import Array exposing (Array)
 import Dict exposing (Dict)
-
 import OrderedDict exposing (OrderedDict)
-
 import Text.Model
-
-import Text.Translations exposing (..)
-
-import Text.Translations.TextWord exposing (TextWord)
-import Text.Translations.Word.Instance exposing (WordInstance)
+import Text.Translations
+import Text.Translations.TextWord
+import Text.Translations.Word.Instance
 
 
-type alias Grammemes = Dict String (Maybe String)
+type alias Grammemes =
+    Dict String (Maybe String)
 
 
-type alias Model = {
-   -- from the server, a dictionary of TextWords indexed by section number
-   words: Array (Dict Text.Translations.Word (Array TextWord))
- , merging_words: OrderedDict String WordInstance
- , editing_grammeme: Maybe String
- , editing_grammemes: Dict String String
- , editing_words: Dict Text.Translations.Word Int
- , editing_word_instances: Dict Text.Translations.Word Bool
- , edit_lock: Bool
- , text: Text.Model.Text
- , text_id: Int
- , new_translations: Dict String String
- , add_as_text_word_endpoint: Text.Translations.AddTextWordEndpoint
- , merge_textword_endpoint: Text.Translations.MergeTextWordEndpoint
- , text_translation_match_endpoint: Text.Translations.TextTranslationMatchEndpoint
- , flags: Flags }
+type alias Model =
+    { -- from the server, a dictionary of TextWords indexed by section number
+      words : Array (Dict Text.Translations.Word (Array Text.Translations.TextWord.TextWord))
+    , merging_words : OrderedDict String Text.Translations.Word.Instance.WordInstance
+    , editing_grammeme : Maybe String
+    , editing_grammemes : Dict String String
+    , editing_words : Dict Text.Translations.Word Int
+    , editing_word_instances : Dict Text.Translations.Word Bool
+    , edit_lock : Bool
+    , text : Text.Model.Text
+    , text_id : Int
+    , new_translations : Dict String String
+    , add_as_text_word_endpoint : Text.Translations.AddTextWordEndpoint
+    , merge_textword_endpoint : Text.Translations.MergeTextWordEndpoint
+    , text_translation_match_endpoint : Text.Translations.TextTranslationMatchEndpoint
+    , flags : Text.Translations.Flags
+    }
 
 
-init : Flags -> Int -> Text.Model.Text -> Model
-init flags text_id text = {
-   words=Array.empty
- , merging_words=OrderedDict.empty
- , editing_words=Dict.empty
- , editing_grammeme=Nothing
- , editing_grammemes=Dict.empty
- , editing_word_instances=Dict.empty
- , edit_lock=False
- , text=text
- , text_id=text_id
- , new_translations=Dict.empty
- , flags=flags
- , add_as_text_word_endpoint=AddTextWordEndpoint (URL flags.add_as_text_word_endpoint_url)
- , merge_textword_endpoint=MergeTextWordEndpoint (URL flags.merge_textword_endpoint_url)
- , text_translation_match_endpoint=
-     Text.Translations.TextTranslationMatchEndpoint (URL flags.text_translation_match_endpoint)
- }
+init : Text.Translations.Flags -> Int -> Text.Model.Text -> Model
+init flags text_id text =
+    { words = Array.empty
+    , merging_words = OrderedDict.empty
+    , editing_words = Dict.empty
+    , editing_grammeme = Nothing
+    , editing_grammemes = Dict.empty
+    , editing_word_instances = Dict.empty
+    , edit_lock = False
+    , text = text
+    , text_id = text_id
+    , new_translations = Dict.empty
+    , flags = flags
+    , add_as_text_word_endpoint = Text.Translations.AddTextWordEndpoint (Text.Translations.URL flags.add_as_text_word_endpoint_url)
+    , merge_textword_endpoint = Text.Translations.MergeTextWordEndpoint (Text.Translations.URL flags.merge_textword_endpoint_url)
+    , text_translation_match_endpoint =
+        Text.Translations.TextTranslationMatchEndpoint (Text.Translations.URL flags.text_translation_match_endpoint)
+    }
+
 
 clearEditingFields : Model -> Model
 clearEditingFields model =
-  { model | editing_grammemes = Dict.empty }
+    { model | editing_grammemes = Dict.empty }
+
 
 selectGrammemeForEditing : Model -> String -> Model
 selectGrammemeForEditing model grammeme_name =
-  { model | editing_grammeme = Just grammeme_name }
+    { model | editing_grammeme = Just grammeme_name }
+
 
 editingGrammeme : Model -> String
 editingGrammeme model =
-  let
-    first_grammeme_name = "aspect"
-  in
-    Maybe.withDefault first_grammeme_name model.editing_grammeme
+    let
+        firstGrammemeName =
+            "aspect"
+    in
+    Maybe.withDefault firstGrammemeName model.editing_grammeme
 
-editingGrammemeValue : Model -> WordInstance -> String
-editingGrammemeValue model word_instance =
-  let
-    grammeme_name = editingGrammeme model
 
-    word_instance_grammemes =
-      Maybe.withDefault "" (Text.Translations.Word.Instance.grammemeValue word_instance grammeme_name)
-  in
-    Maybe.withDefault word_instance_grammemes (Dict.get grammeme_name model.editing_grammemes)
+editingGrammemeValue : Model -> Text.Translations.Word.Instance.WordInstance -> String
+editingGrammemeValue model wordInstance =
+    let
+        grammemeName =
+            editingGrammeme model
+
+        wordInstanceGrammemes =
+            Maybe.withDefault "" (Text.Translations.Word.Instance.grammemeValue wordInstance grammemeName)
+    in
+    Maybe.withDefault wordInstanceGrammemes (Dict.get grammemeName model.editing_grammemes)
+
 
 inputGrammeme : Model -> String -> Model
-inputGrammeme model new_grammeme_value =
-  let
-    editing_grammeme_name = editingGrammeme model
-    old_grammeme_value = editingGrammemeValue model
-  in
+inputGrammeme model newGrammemeValue =
+    let
+        editingGrammemeName =
+            editingGrammeme model
+    in
     { model
-      | editing_grammemes =
-          Dict.insert editing_grammeme_name new_grammeme_value model.editing_grammemes
+        | editing_grammemes =
+            Dict.insert editingGrammemeName newGrammemeValue model.editing_grammemes
     }
 
-textWordToWordInstance : TextWord -> WordInstance
-textWordToWordInstance text_word =
-  let
-    section_number = Text.Translations.TextWord.sectionNumber text_word
-    phrase = String.toLower (Text.Translations.TextWord.phrase text_word)
-    instance = Text.Translations.TextWord.instance text_word
-  in
-    Text.Translations.Word.Instance.new section_number instance phrase (Just text_word)
 
-refreshTextWordForWordInstance : Model -> WordInstance -> WordInstance
-refreshTextWordForWordInstance model word_instance =
-   let
-    section_number = Text.Translations.Word.Instance.sectionNumber word_instance
-    instance = Text.Translations.Word.Instance.instance word_instance
-    phrase = Text.Translations.Word.Instance.token word_instance
-  in
-    case getTextWord model section_number instance phrase of
-      Just text_word ->
-        Text.Translations.Word.Instance.setTextWord word_instance text_word
+textWordToWordInstance : Text.Translations.TextWord.TextWord -> Text.Translations.Word.Instance.WordInstance
+textWordToWordInstance textWord =
+    let
+        section_number =
+            Text.Translations.TextWord.sectionNumber textWord
 
-      Nothing ->
-        word_instance
+        phrase =
+            String.toLower (Text.Translations.TextWord.phrase textWord)
 
-newWordInstance : Model -> SectionNumber -> Instance -> Token -> WordInstance
-newWordInstance model section_number instance token =
-  Text.Translations.Word.Instance.new section_number instance token (getTextWord model section_number instance token)
+        instance =
+            Text.Translations.TextWord.instance textWord
+    in
+    Text.Translations.Word.Instance.new section_number instance phrase (Just textWord)
 
-mergingWordInstances : Model -> List WordInstance
-mergingWordInstances model =
-  OrderedDict.values (mergingWords model)
 
-mergeSiblings : Model -> WordInstance -> List WordInstance
-mergeSiblings model word_instance =
-  OrderedDict.values <| (OrderedDict.remove (Text.Translations.Word.Instance.id word_instance) (mergingWords model))
+refreshTextWordForWordInstance :
+    Model
+    -> Text.Translations.Word.Instance.WordInstance
+    -> Text.Translations.Word.Instance.WordInstance
+refreshTextWordForWordInstance model wordInstance =
+    let
+        sectionNumber =
+            Text.Translations.Word.Instance.sectionNumber wordInstance
 
-mergeState : Model -> WordInstance -> Maybe MergeState
-mergeState model word_instance =
-  let
-    other_merging_words = mergeSiblings model word_instance
-  in
-    case mergingWord model word_instance of
-      True ->
-        case List.length other_merging_words >= 1 of
-          True ->
-            Just Mergeable
+        instance =
+            Text.Translations.Word.Instance.instance wordInstance
 
-          False ->
-            Just Cancelable
-
-      False ->
-        Nothing
-
-isTextWordPartOfCompoundWord : Model -> TextWord -> Maybe (Int, Int, Int)
-isTextWordPartOfCompoundWord model text_word =
-  let
-    section_number = Text.Translations.TextWord.sectionNumber text_word
-    instance = Text.Translations.TextWord.instance text_word
-    phrase = Text.Translations.TextWord.phrase text_word
-  in
-    isPartOfCompoundWord model section_number instance phrase
-
-isPartOfCompoundWord : Model -> SectionNumber -> Int -> String -> Maybe (Int, Int, Int)
-isPartOfCompoundWord model section_number instance word =
-  case getTextWord model section_number instance word of
-    Just text_word ->
-      case (Text.Translations.TextWord.group text_word) of
-        Just group ->
-          Just (Text.Translations.TextWord.instance text_word, group.pos, group.length)
+        phrase =
+            Text.Translations.Word.Instance.token wordInstance
+    in
+    case getTextWord model sectionNumber instance phrase of
+        Just textWord ->
+            Text.Translations.Word.Instance.setTextWord wordInstance textWord
 
         Nothing ->
-          Nothing
-
-    Nothing ->
-      Nothing
+            wordInstance
 
 
-completeMerge : Model -> SectionNumber -> Phrase -> Instance -> List TextWord -> Model
-completeMerge model section_number phrase instance text_words =
-  let
-    new_model =
-         setTextWords model text_words
-      |> clearMerge
-      |> uneditAllWords
+newWordInstance :
+    Model
+    -> Text.Translations.SectionNumber
+    -> Text.Translations.Instance
+    -> Text.Translations.Token
+    -> Text.Translations.Word.Instance.WordInstance
+newWordInstance model sectionNumber instance token =
+    Text.Translations.Word.Instance.new sectionNumber instance token (getTextWord model sectionNumber instance token)
 
-    merged_word_instance = newWordInstance new_model section_number instance phrase
-  in
-    editWord new_model merged_word_instance
+
+mergingWordInstances : Model -> List Text.Translations.Word.Instance.WordInstance
+mergingWordInstances model =
+    OrderedDict.values (mergingWords model)
+
+
+mergeSiblings :
+    Model
+    -> Text.Translations.Word.Instance.WordInstance
+    -> List Text.Translations.Word.Instance.WordInstance
+mergeSiblings model wordInstance =
+    OrderedDict.values <| OrderedDict.remove (Text.Translations.Word.Instance.id wordInstance) (mergingWords model)
+
+
+mergeState : Model -> Text.Translations.Word.Instance.WordInstance -> Maybe Text.Translations.MergeState
+mergeState model wordInstance =
+    let
+        otherMergingWords =
+            mergeSiblings model wordInstance
+    in
+    if mergingWord model wordInstance then
+        if List.length otherMergingWords >= 1 then
+            Just Text.Translations.Mergeable
+
+        else
+            Just Text.Translations.Cancelable
+
+    else
+        Nothing
+
+
+isTextWordPartOfCompoundWord : Model -> Text.Translations.TextWord.TextWord -> Maybe ( Int, Int, Int )
+isTextWordPartOfCompoundWord model textWord =
+    let
+        sectionNumber =
+            Text.Translations.TextWord.sectionNumber textWord
+
+        instance =
+            Text.Translations.TextWord.instance textWord
+
+        phrase =
+            Text.Translations.TextWord.phrase textWord
+    in
+    isPartOfCompoundWord model sectionNumber instance phrase
+
+
+isPartOfCompoundWord : Model -> Text.Translations.SectionNumber -> Int -> String -> Maybe ( Int, Int, Int )
+isPartOfCompoundWord model section_number instance word =
+    case getTextWord model section_number instance word of
+        Just text_word ->
+            case Text.Translations.TextWord.group text_word of
+                Just group ->
+                    Just ( Text.Translations.TextWord.instance text_word, group.pos, group.length )
+
+                Nothing ->
+                    Nothing
+
+        Nothing ->
+            Nothing
+
+
+completeMerge :
+    Model
+    -> Text.Translations.SectionNumber
+    -> Text.Translations.Phrase
+    -> Text.Translations.Instance
+    -> List Text.Translations.TextWord.TextWord
+    -> Model
+completeMerge model sectionNumber phrase instance textWords =
+    let
+        newModel =
+            setTextWords model textWords
+                |> clearMerge
+                |> uneditAllWords
+
+        mergedWordInstance =
+            newWordInstance newModel sectionNumber instance phrase
+    in
+    editWord newModel mergedWordInstance
+
 
 clearMerge : Model -> Model
 clearMerge model =
-  { model | merging_words = OrderedDict.empty }
+    { model | merging_words = OrderedDict.empty }
+
 
 isMergingWords : Model -> Bool
 isMergingWords model =
-  not (OrderedDict.isEmpty model.merging_words)
+    not (OrderedDict.isEmpty model.merging_words)
 
-mergingWords : Model -> OrderedDict String WordInstance
+
+mergingWords : Model -> OrderedDict String Text.Translations.Word.Instance.WordInstance
 mergingWords model =
-  model.merging_words
+    model.merging_words
 
-mergingWord : Model -> WordInstance -> Bool
-mergingWord model word_instance =
-  OrderedDict.member (Text.Translations.Word.Instance.id word_instance) model.merging_words
 
-addToMergeWords : Model -> WordInstance -> Model
-addToMergeWords model word_instance =
-  { model |
-    merging_words =
-      OrderedDict.insert (Text.Translations.Word.Instance.id word_instance) word_instance model.merging_words }
+mergingWord : Model -> Text.Translations.Word.Instance.WordInstance -> Bool
+mergingWord model wordInstance =
+    OrderedDict.member (Text.Translations.Word.Instance.id wordInstance) model.merging_words
 
-removeFromMergeWords : Model -> WordInstance -> Model
-removeFromMergeWords model word_instance =
-  { model |
-    merging_words =
-      OrderedDict.remove (Text.Translations.Word.Instance.id word_instance) model.merging_words }
 
-instanceCount : Model -> SectionNumber -> Text.Translations.Word -> Int
-instanceCount model section_number word =
-  case getTextWords model section_number (String.toLower word) of
-    Just text_words ->
-      Array.length text_words
+addToMergeWords : Model -> Text.Translations.Word.Instance.WordInstance -> Model
+addToMergeWords model wordInstance =
+    { model
+        | merging_words =
+            OrderedDict.insert (Text.Translations.Word.Instance.id wordInstance) wordInstance model.merging_words
+    }
 
-    Nothing ->
-      0
 
-getTextWords : Model -> SectionNumber -> Phrase -> Maybe (Array TextWord)
-getTextWords model section_number phrase =
-  case getSectionWords model section_number of
-    Just words ->
-      Dict.get (String.toLower phrase) words
+removeFromMergeWords : Model -> Text.Translations.Word.Instance.WordInstance -> Model
+removeFromMergeWords model wordInstance =
+    { model
+        | merging_words =
+            OrderedDict.remove (Text.Translations.Word.Instance.id wordInstance) model.merging_words
+    }
 
-    Nothing ->
-      Nothing
+
+instanceCount : Model -> Text.Translations.SectionNumber -> Text.Translations.Word -> Int
+instanceCount model sectionNumber word =
+    case getTextWords model sectionNumber (String.toLower word) of
+        Just textWords ->
+            Array.length textWords
+
+        Nothing ->
+            0
+
+
+getTextWords :
+    Model
+    -> Text.Translations.SectionNumber
+    -> Text.Translations.Phrase
+    -> Maybe (Array Text.Translations.TextWord.TextWord)
+getTextWords model sectionNumber phrase =
+    getSectionWords model sectionNumber
+        |> Maybe.andThen (Dict.get (String.toLower phrase))
+
 
 editingWord : Model -> String -> Bool
 editingWord model word =
-  Dict.member (String.toLower word) model.editing_words
+    Dict.member (String.toLower word) model.editing_words
 
-wordInstanceKey : WordInstance -> String
-wordInstanceKey word_instance =
-  Text.Translations.Word.Instance.id word_instance
+
+wordInstanceKey : Text.Translations.Word.Instance.WordInstance -> String
+wordInstanceKey wordInstance =
+    Text.Translations.Word.Instance.id wordInstance
+
 
 setGlobalEditLock : Model -> Bool -> Model
 setGlobalEditLock model value =
-  { model | edit_lock = value }
+    { model | edit_lock = value }
 
-editWord : Model -> WordInstance -> Model
-editWord model word_instance =
-  let
-    normalized_word = String.toLower (Text.Translations.Word.Instance.word word_instance)
 
-    new_edited_words =
-      (case Dict.get normalized_word model.editing_words of
-        Just ref_count ->
-          Dict.insert normalized_word (ref_count+1) model.editing_words
+editWord : Model -> Text.Translations.Word.Instance.WordInstance -> Model
+editWord model wordInstance =
+    let
+        normalizedWord =
+            String.toLower (Text.Translations.Word.Instance.word wordInstance)
 
-        Nothing ->
-          Dict.insert normalized_word 0 model.editing_words)
+        newEditedWords =
+            case Dict.get normalizedWord model.editing_words of
+                Just refCount ->
+                    Dict.insert normalizedWord (refCount + 1) model.editing_words
 
-    new_editing_word_instances = Dict.insert (wordInstanceKey word_instance) True model.editing_word_instances
-  in
-    { model | editing_words = new_edited_words, editing_word_instances = new_editing_word_instances }
+                Nothing ->
+                    Dict.insert normalizedWord 0 model.editing_words
+
+        newEditingWordInstances =
+            Dict.insert (wordInstanceKey wordInstance) True model.editing_word_instances
+    in
+    { model | editing_words = newEditedWords, editing_word_instances = newEditingWordInstances }
+
 
 uneditAllWords : Model -> Model
 uneditAllWords model =
-  { model |
-     editing_words = Dict.empty
-   , editing_word_instances = Dict.empty }
+    { model
+        | editing_words = Dict.empty
+        , editing_word_instances = Dict.empty
+    }
 
-uneditWord : Model -> WordInstance -> Model
-uneditWord model word_instance =
-  let
-    word = Text.Translations.Word.Instance.word word_instance
-    normalized_word = String.toLower word
 
-    new_edited_words =
-      (case Dict.get normalized_word model.editing_words of
-        Just ref_count ->
-          if (ref_count - 1) == -1 then
-            Dict.remove normalized_word model.editing_words
-          else
-            Dict.insert normalized_word (ref_count-1) model.editing_words
+uneditWord : Model -> Text.Translations.Word.Instance.WordInstance -> Model
+uneditWord model wordInstance =
+    let
+        word =
+            Text.Translations.Word.Instance.word wordInstance
+
+        normalizedWord =
+            String.toLower word
+
+        newEditedWords =
+            case Dict.get normalizedWord model.editing_words of
+                Just refCount ->
+                    if (refCount - 1) == -1 then
+                        Dict.remove normalizedWord model.editing_words
+
+                    else
+                        Dict.insert normalizedWord (refCount - 1) model.editing_words
+
+                Nothing ->
+                    model.editing_words
+
+        newEditingWordInstances =
+            Dict.remove (wordInstanceKey wordInstance) model.editing_word_instances
+
+        cancelled_merge_model =
+            clearMerge model
+    in
+    { cancelled_merge_model
+        | editing_words = newEditedWords
+        , editing_word_instances = newEditingWordInstances
+        , editing_grammemes = Dict.empty
+    }
+
+
+editingWordInstance : Model -> Text.Translations.Word.Instance.WordInstance -> Bool
+editingWordInstance model wordInstance =
+    Dict.member (Text.Translations.Word.Instance.id wordInstance) model.editing_word_instances
+
+
+getTextWord :
+    Model
+    -> Text.Translations.SectionNumber
+    -> Int
+    -> Text.Translations.Phrase
+    -> Maybe Text.Translations.TextWord.TextWord
+getTextWord model sectionNumber instance phrase =
+    getTextWords model sectionNumber (String.toLower phrase)
+        |> Maybe.andThen (Array.get instance)
+
+
+setTextWords : Model -> List Text.Translations.TextWord.TextWord -> Model
+setTextWords model textWords =
+    let
+        -- ensure we're initializing the arrays in the right order
+        sortedTextWords =
+            List.sortBy (\textWord -> Text.Translations.TextWord.instance textWord) textWords
+
+        newModel =
+            clearEditingFields model
+    in
+    List.foldl (\textWord accModel -> setTextWord accModel textWord) newModel sortedTextWords
+
+
+getSectionWords :
+    Model
+    -> Text.Translations.SectionNumber
+    -> Maybe (Dict Text.Translations.Word (Array Text.Translations.TextWord.TextWord))
+getSectionWords model sectionNumber =
+    Array.get (Text.Translations.sectionNumberToInt sectionNumber) model.words
+
+
+setSectionWords :
+    Model
+    -> Text.Translations.SectionNumber
+    -> Dict Text.Translations.Word (Array Text.Translations.TextWord.TextWord)
+    -> Model
+setSectionWords model sectionNumber words =
+    { model | words = Array.set (Text.Translations.sectionNumberToInt sectionNumber) words model.words }
+
+
+setTextWordsForPhrase :
+    Model
+    -> Text.Translations.SectionNumber
+    -> Text.Translations.Phrase
+    -> Array Text.Translations.TextWord.TextWord
+    -> Model
+setTextWordsForPhrase model sectionNumber phrase textWords =
+    case getSectionWords model sectionNumber of
+        Just sectionWords ->
+            setSectionWords model sectionNumber (Dict.insert (String.toLower phrase) textWords sectionWords)
 
         Nothing ->
-          model.editing_words)
+            model
 
-    new_editing_word_instances = Dict.remove (wordInstanceKey word_instance) model.editing_word_instances
-    cancelled_merge_model = clearMerge model
-  in
-   { cancelled_merge_model |
-     editing_words = new_edited_words
-   , editing_word_instances = new_editing_word_instances
-   , editing_grammemes = Dict.empty }
 
-editingWordInstance : Model -> WordInstance -> Bool
-editingWordInstance model word_instance =
-  Dict.member (Text.Translations.Word.Instance.id word_instance) model.editing_word_instances
+setTextWord : Model -> Text.Translations.TextWord.TextWord -> Model
+setTextWord model textWord =
+    let
+        sectionNumber =
+            Text.Translations.TextWord.sectionNumber textWord
 
-getTextWord : Model -> SectionNumber -> Int -> Phrase -> Maybe TextWord
-getTextWord model section_number instance phrase =
-  case getTextWords model section_number (String.toLower phrase) of
-    Just text_words ->
-      Array.get instance text_words
+        phrase =
+            Text.Translations.TextWord.phrase textWord
 
-    -- word not found
-    Nothing ->
-      Nothing
+        instance =
+            Text.Translations.TextWord.instance textWord
 
-setTextWords : Model -> List TextWord -> Model
-setTextWords model text_words =
-  let
-    -- ensure we're initializing the arrays in the right order
-    sorted_text_words =
-      List.sortBy (\text_word -> Text.Translations.TextWord.instance text_word) text_words
+        newTextWords =
+            case getTextWords model sectionNumber phrase of
+                Just textWords ->
+                    Array.set instance textWord textWords
 
-    new_model = clearEditingFields model
-  in
-    List.foldl (\text_word model -> setTextWord model text_word) new_model sorted_text_words
+                -- word not found
+                Nothing ->
+                    Array.fromList [ textWord ]
+    in
+    setTextWordsForPhrase model sectionNumber phrase newTextWords
 
-getSectionWords : Model -> SectionNumber -> Maybe (Dict Text.Translations.Word (Array TextWord))
-getSectionWords model section_number =
-  Array.get (sectionNumberToInt section_number) model.words
 
-setSectionWords : Model -> SectionNumber -> Dict Text.Translations.Word (Array TextWord) -> Model
-setSectionWords model section_number words =
-  { model | words = Array.set (sectionNumberToInt section_number) words model.words }
+updateTextTranslation : Model -> Text.Translations.TextWord.TextWord -> Text.Translations.Translation -> Model
+updateTextTranslation model textWord translation =
+    let
+        newTextWord =
+            Text.Translations.TextWord.updateTranslation
+                (Text.Translations.TextWord.setNoTRCorrectForContext textWord)
+                translation
+    in
+    setTextWord model newTextWord
 
-setTextWordsForPhrase : Model -> SectionNumber -> Phrase -> Array TextWord -> Model
-setTextWordsForPhrase model section_number phrase text_words =
-  case getSectionWords model section_number of
-    Just section_words ->
-      setSectionWords model section_number (Dict.insert (String.toLower phrase) text_words section_words)
 
-    Nothing ->
-      model
+getNewTranslationForWord : Model -> Text.Translations.TextWord.TextWord -> Maybe String
+getNewTranslationForWord model textWord =
+    Dict.get (Text.Translations.TextWord.phrase textWord) model.new_translations
 
-setTextWord : Model -> TextWord -> Model
-setTextWord model text_word =
-  let
-    section_number = Text.Translations.TextWord.sectionNumber text_word
-    phrase = Text.Translations.TextWord.phrase text_word
-    instance = Text.Translations.TextWord.instance text_word
 
-    new_text_words =
-      (case getTextWords model section_number phrase of
-        Just text_words ->
-          Array.set instance text_word text_words
+updateTranslationsForWord : Model -> Text.Translations.TextWord.TextWord -> String -> Model
+updateTranslationsForWord model textWord translationText =
+    let
+        phrase =
+            Text.Translations.TextWord.phrase textWord
+    in
+    { model | new_translations = Dict.insert phrase translationText model.new_translations }
 
-        -- word not found
-        Nothing ->
-          Array.fromList [text_word])
-   in
-     setTextWordsForPhrase model section_number phrase new_text_words
 
-updateTextTranslation : Model -> Text.Translations.TextWord.TextWord -> Translation -> Model
-updateTextTranslation model text_word translation =
-  let
-    new_text_word =
-      Text.Translations.TextWord.updateTranslation
-        (Text.Translations.TextWord.setNoTRCorrectForContext text_word) translation
-  in
-    setTextWord model new_text_word
+addTextTranslation : Model -> Text.Translations.TextWord.TextWord -> Text.Translations.Translation -> Model
+addTextTranslation model newTextWord _ =
+    setTextWord model newTextWord
 
-getNewTranslationForWord : Model -> TextWord -> Maybe String
-getNewTranslationForWord model text_word =
-  Dict.get (Text.Translations.TextWord.phrase text_word) model.new_translations
 
-updateTranslationsForWord : Model -> TextWord -> String -> Model
-updateTranslationsForWord model text_word translation_text =
-  let
-    phrase = Text.Translations.TextWord.phrase text_word
-  in
-    { model | new_translations = Dict.insert phrase translation_text model.new_translations }
-
-addTextTranslation : Model -> TextWord -> Translation -> Model
-addTextTranslation model new_text_word translation =
-  setTextWord model new_text_word
-
-removeTextTranslation : Model -> TextWord -> Translation -> Model
-removeTextTranslation model text_word translation =
-  let
-    new_text_word = Text.Translations.TextWord.removeTranslation text_word translation
-  in
-    setTextWord model new_text_word
+removeTextTranslation : Model -> Text.Translations.TextWord.TextWord -> Text.Translations.Translation -> Model
+removeTextTranslation model textWord translation =
+    let
+        newTextWord =
+            Text.Translations.TextWord.removeTranslation textWord translation
+    in
+    setTextWord model newTextWord

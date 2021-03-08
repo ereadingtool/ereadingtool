@@ -139,6 +139,9 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
                 text_section.update_definitions_if_new(
                     old_body=section_params['text_section_form'].cleaned_data['body'])
 
+            # Need to freshen up the answers. Delete them all and re-add them.
+            text_section.questions.all().delete()
+
             for i, question in enumerate(section_params['questions']):
                 question_obj = question['form'].save(commit=False)
 
@@ -184,20 +187,15 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
         return text
 
     def to_summary_dict(self) -> Dict:
-        text_dict = self.to_dict()
-
-        del text_dict['text_sections']
-        del text_dict['words']
+        text_dict = self.to_dict_meta()
 
         text_dict['text_section_count'] = self.sections.count()
-        text_dict['difficulty'] = self.difficulty.name
+        text_dict['translation_service_processed'] = all([ts.translation_service_processed == 1 for ts in self.sections.all()])
 
         return text_dict
 
     def to_student_summary_dict(self) -> Dict:
         text_summary_dict = self.to_summary_dict()
-
-        text_summary_dict['uri'] = reverse('text', kwargs={'pk': self.pk})
 
         return text_summary_dict
 
@@ -215,7 +213,6 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
         del text_dict['write_locker']
 
         text_dict['text_sections'] = list(map(lambda section: section.to_text_reading_dict(), self.sections.all()))
-
         return text_dict
 
     def to_dict(self, text_sections: Optional[List] = None) -> Dict:
@@ -234,12 +231,27 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
             'created_dt': self.created_dt.isoformat(),
             'text_sections': [text_section.to_dict() for text_section in
                               (text_sections if text_sections else self.sections.all())],
+            'translation_service_processed': all([text_section.translation_service_processed == 1 for text_section in
+                              (text_sections if text_sections else self.sections.all())]),
             'words': self.words,
             'write_locker': str(self.write_locker) if self.write_locker else None
         }
 
     def __str__(self):
         return self.title
+
+    # TODO: uri
+    def to_dict_meta(self, text_sections: Optional[List] = None) -> Dict:
+        return {
+            'id': self.pk,
+            'title': self.title,
+            'author': self.author,
+            'difficulty': self.difficulty.slug,
+            'created_by': str(self.created_by),
+            'tags': [tag.name for tag in self.tags.all()],
+            'modified_dt': self.modified_dt.isoformat(),
+            'created_dt': self.created_dt.isoformat()
+        }
 
     def delete(self, *args, **kwargs):
         if self.is_locked():
@@ -253,6 +265,7 @@ class TextSection(TextSectionDefinitionsMixin, Timestamped, models.Model):
 
     order = models.IntegerField()
     body = models.TextField()
+    translation_service_processed = models.IntegerField(default=0)
 
     @classmethod
     def to_json_schema(cls) -> Dict:
@@ -334,3 +347,4 @@ class TextSection(TextSectionDefinitionsMixin, Timestamped, models.Model):
 
     def __str__(self):
         return f'Text Section {self.order} of {self.text.title}'
+
