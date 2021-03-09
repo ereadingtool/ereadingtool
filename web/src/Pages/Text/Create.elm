@@ -244,7 +244,7 @@ update msg (SafeModel model) =
 
         GotTextDeleted (Ok ( metadata, textDelete )) ->
             ( SafeModel model
-            , Browser.Navigation.load (Route.toString Route.Text__EditorSearch)
+            , Browser.Navigation.load (Route.toString Route.Text__CreatorSearch)
             )
 
         GotTextDeleted (Err error) ->

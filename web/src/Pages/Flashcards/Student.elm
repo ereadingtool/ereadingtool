@@ -214,10 +214,6 @@ decodeWebSocketResp safeModel str =
 
 webSocketError : SafeModel -> String -> String -> ( SafeModel, Cmd Msg )
 webSocketError model errorType error =
-    let
-        _ =
-            Debug.log errorType error
-    in
     ( model, Cmd.none )
 
 
