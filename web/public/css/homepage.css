@@ -46,7 +46,7 @@
 #home-wrapper > .description > .description-heading {
   display: grid;
   grid-area: header;
-
+  font-family: 'EB Garamond';
   margin: 0;
 }
 

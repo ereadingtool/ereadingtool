@@ -132,6 +132,7 @@
 }
 
 #title {
+  font-family: 'EB Garamond';
   font-size: 32px;
 }
 
@@ -245,8 +246,7 @@
 
   background: #ffffff;
 
-  font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue,
-    'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Open Sans';
   font-size: 14px;
 
   padding: 5px;
