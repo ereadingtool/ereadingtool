@@ -1,4 +1,4 @@
-module Pages.Login.Instructor exposing
+module Pages.Login.ContentCreator exposing
     ( Model
     , Msg
     , Params
@@ -18,7 +18,6 @@ import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
 import User.Login as Login exposing (LoginParams)
 import Utils exposing (isValidEmail)
-import Views
 
 
 page : Page Params Model Msg
@@ -110,11 +109,10 @@ update msg model =
 
 view : Model -> Document Msg
 view model =
-    { title = "Instructor Login"
+    { title = "Content Creator Login"
     , body =
         [ div []
             [ viewContent model
-            , Views.view_footer
             ]
         ]
     }
@@ -128,8 +126,8 @@ viewContent model =
             , onEmailUpdate = UpdateEmail
             , onPasswordUpdate = UpdatePassword
             , onSubmittedForm = SubmittedLogin
-            , signUpRoute = Route.Signup__Instructor
-            , loginRole = "Content Editor Login"
+            , signUpRoute = Route.Signup__ContentCreator
+            , loginRole = "Content Creator Login"
             , otherLoginRole = "student"
             , otherLoginRoute = Route.Login__Student
             , maybeHelpMessage = Nothing

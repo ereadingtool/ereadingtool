@@ -82,7 +82,7 @@ selectStatus ((TextReadStatusSearch id _ err) as status_search) status selected 
                         Text.Search.Option.setSelected opt selected
 
                     else
-                        opt
+                        Text.Search.Option.setSelected opt False
                 )
                 (options status_search)
             )

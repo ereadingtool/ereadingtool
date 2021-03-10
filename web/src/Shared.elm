@@ -18,12 +18,11 @@ import Api.Endpoint as Endpoint
 import Browser.Navigation exposing (Key)
 import Html exposing (..)
 import Html.Attributes exposing (attribute, class, classList, href, id)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick)
 import Http exposing (Error)
 import Id exposing (Id)
 import Infobar exposing (Infobar)
 import Json.Decode as Decode
-import Json.Encode as Encode
 import Process
 import Role exposing (Role(..))
 import Session exposing (Session)
@@ -44,8 +43,6 @@ import User.Student.Profile as StudentProfile
         ( StudentProfile(..)
         , StudentURIs(..)
         )
-import User.Student.Resource as StudentResource
-import Utils.Date
 import Viewer exposing (Viewer)
 
 
@@ -111,7 +108,7 @@ init flags url key =
                     if List.any (\path -> url.path == path) publicPaths then
                         Cmd.batch
                             [ requestInstructorProfile session config (Viewer.id viewer)
-                            , Browser.Navigation.replaceUrl key (Route.toString Route.Profile__Instructor)
+                            , Browser.Navigation.replaceUrl key (Route.toString Route.Profile__ContentCreator)
                             , Task.attempt GotTimezone TimeZone.getZone
                             ]
 
@@ -186,7 +183,7 @@ update msg model =
                         Instructor ->
                             Cmd.batch
                                 [ requestInstructorProfile session model.config (Viewer.id viewer)
-                                , Browser.Navigation.replaceUrl model.key (Route.toString Route.Profile__Instructor)
+                                , Browser.Navigation.replaceUrl model.key (Route.toString Route.Profile__ContentCreator)
                                 ]
 
                 Nothing ->
@@ -400,7 +397,7 @@ viewLogo session =
                             Route.toString Route.Profile__Student
 
                         Instructor ->
-                            Route.toString Route.Profile__Instructor
+                            Route.toString Route.Profile__ContentCreator
 
                 Nothing ->
                     Route.toString Route.Top
@@ -441,7 +438,7 @@ viewContentHeader role =
                 [ class "nav-item" ]
                 [ a
                     [ class "nav-link"
-                    , href (Route.toString Route.Text__EditorSearch)
+                    , href (Route.toString Route.Text__CreatorSearch)
                     ]
                     [ text "Edit" ]
                 ]
@@ -467,7 +464,7 @@ viewProfileHeader role toMsg =
                         Route.toString Route.Profile__Student
 
                     Instructor ->
-                        Route.toString Route.Profile__Instructor
+                        Route.toString Route.Profile__ContentCreator
             ]
             [ text "Profile" ]
         ]

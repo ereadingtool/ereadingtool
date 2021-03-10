@@ -1,6 +1,5 @@
 module TextReader.Text.Model exposing (Text, emptyText)
 
-import Array exposing (empty)
 import Time exposing (Posix)
 
 

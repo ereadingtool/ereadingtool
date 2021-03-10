@@ -1,4 +1,4 @@
-module Pages.Profile.Instructor exposing (Model, Msg, Params, page)
+module Pages.Profile.ContentCreator exposing (Model, Msg, Params, page)
 
 import Api
 import Api.Config as Config exposing (Config)
@@ -25,10 +25,8 @@ import User.Instructor.Profile as InstructorProfile
         ( InstructorProfile(..)
         , InstructorUsername(..)
         )
-import User.Instructor.Resource as InstructorResource
 import User.Profile as Profile
 import Utils.Date
-import Views
 
 
 page : Page Params Model Msg
@@ -205,11 +203,10 @@ newInviteResponseDecoder =
 
 view : SafeModel -> Document Msg
 view (SafeModel model) =
-    { title = "Instructor Profile"
+    { title = "Content Creator Profile"
     , body =
         [ div []
             [ viewContent (SafeModel model)
-            , Views.view_footer
             ]
         ]
     }
@@ -289,8 +286,7 @@ viewInstructorInvites (SafeModel model) =
             , span [ class "profile_item_value" ]
                 [ div [ class "list" ] <|
                     [ viewInstructorInviteMsg (SafeModel model) ]
-                    ++
-                    List.map (viewInstructorInvite model.timezone) invites
+                        ++ List.map (viewInstructorInvite model.timezone) invites
                         ++ [ viewInstructorInviteCreate (SafeModel model) ]
                 ]
             ]
@@ -318,20 +314,21 @@ viewInstructorInvite timezone invite =
         ]
 
 
-
 viewInstructorInviteMsg : SafeModel -> Html Msg
 viewInstructorInviteMsg (SafeModel model) =
-    div [id "invite_msg"] [ Html.text
-                        """
-                        After creating an invitation, send the new content creator the invite code and ask
-                        them to sign up at
-                        """
-                        , Html.a [ href "https://stepstoadvancedreading.org/signup/instructor"] [ text "https://stepstoadvancedreading.org/signup/instructor"]
-                        , Html.text
-                        """  before the expiration
-                        time. The content creator will not be emailed automatically.
-                        """
-                    ]
+    div [ id "invite_msg" ]
+        [ Html.text
+            """
+            After creating an invitation, send the new content creator the invite code and ask
+            them to sign up at
+            """
+        , Html.a [ href "https://stepstoadvancedreading.org/signup/content-creator" ]
+            [ text "https://stepstoadvancedreading.org/signup/content-creator" ]
+        , Html.text
+            """ before the expiration
+            time. The content creator will not be emailed automatically.
+            """
+        ]
 
 
 viewInstructorInviteCreate : SafeModel -> Html Msg

@@ -1,16 +1,14 @@
-module Pages.Text.EditorSearch exposing (Model, Msg, Params, page)
+module Pages.Text.CreatorSearch exposing (Model, Msg, Params, page)
 
 import Api
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
 import Html exposing (..)
-import Html.Attributes exposing (attribute, class, classList, href)
-import Html.Events exposing (onClick)
+import Html.Attributes exposing (attribute, class, classList)
 import Http exposing (..)
 import Session exposing (Session)
 import Shared
 import Spa.Document exposing (Document)
-import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url as Url exposing (Url)
 import Text.Decode
@@ -18,7 +16,6 @@ import Text.Model exposing (TextListItem)
 import Time exposing (Zone)
 import User.Profile exposing (Profile)
 import Utils.Date
-import Views
 
 
 page : Page Params Model Msg
@@ -115,7 +112,7 @@ getTexts session config =
 
 view : SafeModel -> Document Msg
 view (SafeModel model) =
-    { title = "Editor Search"
+    { title = "Content Creator Search"
     , body =
         [ div []
             [ viewTexts (SafeModel model)

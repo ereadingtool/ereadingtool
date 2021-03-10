@@ -1,5 +1,5 @@
 import json
-from django.db.models.query import QuerySet
+from report.models import StudentReadingsComplete, StudentReadingsInProgress
 import jsonschema
 from typing import TypeVar, Optional, List, Dict, AnyStr, Union, Set
 
@@ -316,40 +316,42 @@ class TextAPIView(APIView):
         else:
             text_queryset = user.text_search_queryset.filter(**filter_by).exclude(**subterfuge)
 
-        text_queryset_for_user = user.text_search_queryset_for_user.filter(**filter_by)
+        # https://stackoverflow.com/questions/16475384/rename-a-dictionary-key
+        view_filter_by = {'text_difficulty_slug' if k == 'difficulty__slug__in' else k:v for k,v in filter_by.items()}
 
-        unread_text_queryset_for_user = user.unread_text_queryset
+        if view_filter_by:
+            view_filter_by['text_difficulty_slug'] = view_filter_by['text_difficulty_slug'][0]
 
-        status_filters = []
-
-        # filter doesn't apply
-        if statuses == set(all_statuses):
-            return text_queryset
+        view_filter_by['student_id'] = user.id
 
         if statuses == {'unread'}:
-            return unread_text_queryset_for_user.filter(**filter_by)
+            # (all texts) - (complete U in_progress)
+            all_texts_in_diff = set(Text.objects.filter(**filter_by).all())
 
-        if 'read' in statuses:
-            status_filters.append(models.Q(num_of_complete__gte=1) & models.Q(num_of_in_progress=0))
+            l1 = StudentReadingsComplete.get_texts(view_filter_by)
+            l2 = StudentReadingsInProgress.get_texts(view_filter_by)
 
-        if 'in_progress' in statuses:
-            status_filters.append(models.Q(num_of_in_progress__gte=1) & models.Q(num_of_complete=0))
+            # set difference
+            soln_without_tags = all_texts_in_diff - set(l1 + l2)
 
-        status_filter = or_filters(status_filters)
+            return soln_without_tags.intersection(text_queryset)
 
-        if status_filter:
-            text_queryset_for_user = text_queryset_for_user.filter(status_filter)
+        elif 'read' in statuses:
+            # trim down the filter by here so that it works for just difficulty, then do the intersection of the sets later
+            without_tags = StudentReadingsComplete.get_texts(view_filter_by)
+            all_texts_in_diff = set(Text.objects.filter(**filter_by).all())
 
-        if 'unread' in statuses:
-            # (set of unread texts by user) | (set of texts read by user that are in_progress or read)
-            return unread_text_queryset_for_user.filter(**filter_by).union(
-                text_queryset_for_user
-            )
+            return all_texts_in_diff.intersection(without_tags)
 
-        if statuses:
-            return text_queryset_for_user
+        # Note that texts can be completed but still shown as in_progress
+        elif 'in_progress' in statuses:
+            without_tags = StudentReadingsInProgress.get_texts(view_filter_by)
+            all_texts_in_diff = set(Text.objects.filter(**filter_by).all())
+
+            return all_texts_in_diff.intersection(without_tags)
         else:
-            return text_queryset
+            return Text.objects.filter(**filter_by)
+
 
     def validate_params(self, text_params: AnyStr, text: Optional['Text'] = None) -> (Dict, Dict, HttpResponse):
         errors = resp = text_sections_params = None

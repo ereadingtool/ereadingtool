@@ -89,9 +89,11 @@ select {
 
 .welcome_msg {
   display: grid;
+  width: 60%;
+
   margin-bottom: 10px;
   margin-top: 15px;
-  font-size: larger;
+  font-size: 18px;
 }
 
 .welcome_msg > .headline {
@@ -103,6 +105,11 @@ select {
 
   grid-column: 1;
   grid-row: 2;
+}
+
+.difficulty-info {
+  width: 60%;
+  font-size: 18px;
 }
 
 #acknowledgements-and-about {
@@ -123,7 +130,7 @@ select {
   .signup_submit,
   select,
   input {
-    width: 100%;
+    width: 95%;
   }
 
   .button {
@@ -144,7 +151,12 @@ select {
     font-size: 32px;
   }
 
-  .headline {
+  .welcome_msg,
+  .difficulty-info {
+    width: 100%;
+  }
+
+  .welcome-headline {
     padding-top: 25px;
   }
 
@@ -182,6 +194,21 @@ select {
 
     align-items: center;
     justify-items: center;
+  }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 1025px) {
+  .help_msgs,
+  .button,
+  .signup_submit,
+  select,
+  input {
+    width: 95%;
+  }
+
+  .welcome_msg,
+  .difficulty-info {
+    width: 100%;
   }
 }
 

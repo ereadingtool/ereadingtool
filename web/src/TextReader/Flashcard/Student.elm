@@ -6,8 +6,8 @@ module TextReader.Flashcard.Student exposing
     , removeFlashcard
     )
 
-import Dict exposing (Dict, remove)
-import Text.Translations.Decode as TranslationsDecode exposing (Flashcards, TextWord)
+import Dict
+import Text.Translations.Decode as TranslationsDecode exposing (Flashcards)
 import TextReader.TextWord
 import User.Student.Profile exposing (StudentProfile)
 

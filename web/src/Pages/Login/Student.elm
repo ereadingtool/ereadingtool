@@ -18,7 +18,6 @@ import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
 import User.Login as Login exposing (LoginParams)
 import Utils exposing (isValidEmail)
-import Views
 
 
 page : Page Params Model Msg
@@ -114,7 +113,6 @@ view model =
     , body =
         [ div []
             [ viewContent model
-            , Views.view_footer
             ]
         ]
     }
@@ -130,8 +128,8 @@ viewContent model =
             , onSubmittedForm = SubmittedLogin
             , signUpRoute = Route.Signup__Student
             , loginRole = "Student Login"
-            , otherLoginRole = "content editor"
-            , otherLoginRoute = Route.Login__Instructor
+            , otherLoginRole = "content creator"
+            , otherLoginRoute = Route.Login__ContentCreator
             , maybeHelpMessage =
                 Just
                     """When signing in, please note that this website is not connected to your university’s user account.

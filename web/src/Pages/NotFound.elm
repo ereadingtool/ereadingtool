@@ -94,7 +94,7 @@ view model =
                             a [ href (Route.toString Route.Profile__Student) ] [ text "Return to your profile page" ]
 
                         Instructor ->
-                            a [ href (Route.toString Route.Profile__Instructor) ] [ text "Return to your profile page" ]
+                            a [ href (Route.toString Route.Profile__ContentCreator) ] [ text "Return to your profile page" ]
 
                 Nothing ->
                     a [ href (Route.toString Route.Top) ] [ text "Return to homepage" ]

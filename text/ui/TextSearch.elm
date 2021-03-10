@@ -345,6 +345,16 @@ view_search_results textListItems =
     let
         view_search_result textItem =
             let
+                difficultyCategory = 
+                    case textItem.difficulty of
+                        "intermediate_mid" -> 
+                            "Intermediate-Mid"
+                        "intermediate_high" -> 
+                            "Intermediate-High"
+                        "advanced_low" ->
+                            "Advanced-Low"
+                        "advanced_mid" ->
+                            "Advanced-Mid"
                 commaDelimitedTags =
                     case textItem.tags of
                         Just tags ->
@@ -383,7 +393,7 @@ view_search_results textListItems =
                     , div [ class "sub_description" ] [ Html.text "Title" ]
                     ]
                 , div [ class "result_item" ]
-                    [ div [ class "result_item_title" ] [ Html.text textItem.difficulty ]
+                    [ div [ class "result_item_title" ] [ Html.text difficultyCategory ]
                     , div [ class "sub_description" ] [ Html.text "Difficulty" ]
                     ]
                 , div [ class "result_item" ]

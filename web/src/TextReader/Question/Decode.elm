@@ -3,10 +3,9 @@ module TextReader.Question.Decode exposing (answersDecoder, questionsDecoder)
 import Array exposing (Array)
 import Iso8601
 import Json.Decode
-import Json.Decode.Extra exposing (posix)
 import Json.Decode.Pipeline exposing (required)
 import TextReader.Answer.Model exposing (Answer)
-import TextReader.Question.Model exposing (Question, TextQuestion)
+import TextReader.Question.Model exposing (Question)
 
 
 answerDecoder : Json.Decode.Decoder Answer

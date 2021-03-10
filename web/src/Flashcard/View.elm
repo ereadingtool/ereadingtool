@@ -3,7 +3,7 @@ module Flashcard.View exposing (view_content)
 import Flashcard.Mode
 import Flashcard.Model exposing (Flashcard, Model, SessionState(..))
 import Flashcard.Msg exposing (Msg(..))
-import Html exposing (Html, div, span)
+import Html exposing (Html, div)
 import Html.Attributes exposing (attribute, class, classList, id)
 import Html.Events exposing (onClick, onDoubleClick, onInput)
 import Utils

@@ -12,7 +12,7 @@ module TextReader.TextWord exposing
     , translations
     )
 
-import Dict exposing (Dict)
+import Dict
 import InstructorAdmin.Text.Translations exposing (..)
 import Text.Translations.TextWord as TranslationsTextWord
 import Text.Translations.Word.Kind as TranslationsWordKind
