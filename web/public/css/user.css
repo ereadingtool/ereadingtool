@@ -1,3 +1,40 @@
+#acknowledgements-and-about {
+  padding-top: 2%;
+
+  display: grid;
+
+  grid-template-columns: 150px 15px;
+
+  grid-column-gap: 2px;
+
+  font-size: 16px;
+}
+.cursor {
+  cursor: pointer;
+}
+
+.difficulty-info {
+  width: 60%;
+  font-size: 18px;
+}
+
+.difficulty-select {
+  width: auto;
+  background-color: white;
+  border: 1px solid black;
+}
+
+.errors {
+  display: grid;
+}
+
+.help_msgs {
+  margin-top: 5px;
+  font-style: italic;
+  font-size: larger;
+}
+
+
 .help_msgs,
 .button,
 .signup_submit,
@@ -49,21 +86,9 @@ input {
   align-items: center;
 }
 
-.validation-error {
-  display: inline-block;
-  padding-top: 5px;
-  -webkit-padding-before: 0.5%;
-  line-height: 40px;
-}
-
-.signup_submit,
-.login_submit {
-  display: grid;
-  justify-content: center;
-}
-
-.cursor {
-  cursor: pointer;
+.select {
+  border: 0;
+  border-radius: 0;
 }
 
 .signup_title {
@@ -72,19 +97,23 @@ input {
   align-items: center;
 }
 
-select {
-  border: 0;
-  border-radius: 0;
+/* CSS fixes to deal with incorrect styles */
+.signup_submit {
+  width: 100%;
+  padding: 15px 0;
 }
 
-.errors {
+.signup_submit,
+.login_submit {
   display: grid;
+  justify-content: center;
 }
 
-.help_msgs {
-  margin-top: 5px;
-  font-style: italic;
-  font-size: larger;
+validation-error {
+  display: inline-block;
+  padding-top: 5px;
+  -webkit-padding-before: 0.5%;
+  line-height: 40px;
 }
 
 .welcome_msg {
@@ -107,24 +136,8 @@ select {
   grid-row: 2;
 }
 
-.difficulty-info {
-  width: 60%;
-  font-size: 18px;
-}
 
-#acknowledgements-and-about {
-  padding-top: 2%;
-
-  display: grid;
-
-  grid-template-columns: 150px 15px;
-
-  grid-column-gap: 2px;
-
-  font-size: 16px;
-}
-
-@media only screen and (max-width: 768px) {
+@media only screen and (min-width: 768px) and (max-width: 1025px) {
   .help_msgs,
   .button,
   .signup_submit,
@@ -133,17 +146,64 @@ select {
     width: 95%;
   }
 
+  .welcome_msg,
+  .difficulty-info {
+    width: 100%;
+  }
+}
+
+@media only screen and (max-width: 768px) {
   .button {
     height: 40px;
+  }
+
+  .help_msgs,
+  .button,
+  .signup_submit,
+  select,
+  input {
+    width: 95%;
+  }
+
+  #lower-menu {
+    margin-top: 0;
+    padding: 0;
+  }
+
+  .login,
+  .signup,
+  .login_box,
+  .signup_box {
+    display: flex;
+    flex-direction: column;
+
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+
+  .filter {
+    display: none;
+  }
+
+  .menu {
+    display: flex;
+    flex-wrap: wrap;
+
+    align-items: center;
+    justify-items: center;
   }
 
   select {
     height: 50px;
   }
 
-  #lower-menu {
-    margin-top: 0;
-    padding: 0;
+  .signup {
+    margin-top: 15px;
+  }
+
+  .signup_box > input,
+  .login_box > input {
+    height: 45px;
   }
 
   .signup_title {
@@ -163,63 +223,4 @@ select {
   .welcome_msg > .headline {
     padding-bottom: 0;
   }
-
-  .signup {
-    margin-top: 15px;
-  }
-
-  .login,
-  .signup,
-  .login_box,
-  .signup_box {
-    display: flex;
-    flex-direction: column;
-
-    margin-left: 20px;
-    margin-right: 20px;
-  }
-
-  .signup_box > input,
-  .login_box > input {
-    height: 45px;
-  }
-
-  .filter {
-    display: none;
-  }
-
-  .menu {
-    display: flex;
-    flex-wrap: wrap;
-
-    align-items: center;
-    justify-items: center;
-  }
-}
-
-@media only screen and (min-width: 768px) and (max-width: 1025px) {
-  .help_msgs,
-  .button,
-  .signup_submit,
-  select,
-  input {
-    width: 95%;
-  }
-
-  .welcome_msg,
-  .difficulty-info {
-    width: 100%;
-  }
-}
-
-.difficulty-select {
-  width: auto;
-  background-color: white;
-  border: 1px solid black;
-}
-
-/* CSS fixes to deal with incorrect styles */
-.signup_submit {
-  width: 100%;
-  padding: 15px 0;
 }

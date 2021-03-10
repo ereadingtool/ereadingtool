@@ -1,3 +1,13 @@
+.exit {
+    grid-column: 3;
+    grid-row: 1;
+}
+
+.exit > .img {
+    width: 13px;
+    height: 13px;
+}
+
 .hint_overlay {
     position: absolute;
     pointer-events: none;
@@ -18,14 +28,4 @@
     margin-top: 10px;
 
     font-size: 13px;
-}
-
-.exit {
-    grid-column: 3;
-    grid-row: 1;
-}
-
-.exit > .img {
-    width: 13px;
-    height: 13px;
 }

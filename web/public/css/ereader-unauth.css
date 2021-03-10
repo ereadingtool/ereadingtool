@@ -1,16 +1,20 @@
-#acknowledgements-body {
+#about {
     display: grid;
-
     grid-auto-rows: minmax(65px, auto);
-  
     margin-bottom: 0;
     grid-template-columns: 7% 13% [content] auto 13% 7%;
-    /* display: grid;
+}
 
-    grid-template-columns: 15% [body-col] auto 15%;
-    font-size: 19px;
-    */
-} 
+#about-box {
+    grid-column: content;
+    display: grid;
+    grid-template-columns: auto;
+    grid-auto-rows: minmax(50px, auto);
+}
+
+#about > #title {
+    padding-bottom: 3%;
+}
 
 #acknowledgements {
     grid-column: content;
@@ -30,22 +34,18 @@
     padding-top: 15px;
 }
 
-#about {
+#acknowledgements-body {
     display: grid;
+
     grid-auto-rows: minmax(65px, auto);
+  
     margin-bottom: 0;
     grid-template-columns: 7% 13% [content] auto 13% 7%;
-}
+    /* display: grid;
 
-#about-box {
-    grid-column: content;
-    display: grid;
-    grid-template-columns: auto;
-    grid-auto-rows: minmax(50px, auto);
-}
-
-#about > #title {
-    padding-bottom: 3%;
+    grid-template-columns: 15% [body-col] auto 15%;
+    font-size: 19px;
+    */
 }
 
 .screenshot {
