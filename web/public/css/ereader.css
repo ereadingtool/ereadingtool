@@ -28,7 +28,7 @@ body {
 
 .button {
   display: grid;
-  justify-content: center;
+  /* justify-content: center; */
   align-content: center;
 
   cursor: pointer;
@@ -69,17 +69,6 @@ body {
   border: 1px solid lightgray;
   border-radius: 2px;
   line-height: 40px;
-}
-
-.email-input {
-  border: 1px solid lightgray;
-  border-radius: 2px;
-  line-height: 40px;
-}
-
-.error_msg {
-  font-size: 24px;
-  background-color: #ff2222;
 }
 
 .filter {
@@ -394,13 +383,18 @@ body {
   white-space: nowrap;
 }
 
-.success_msg {
-  font-size: 24px;
-  background-color: #93c6ef;
-}
-
 .tag {
   font-size: 15px;
+}
+
+.text-editor-error-msg {
+  font-size: 24px;
+  background-color: #ff2222;
+}
+
+.text-editor-success-msg {
+  font-size: 24px;
+  background-color: #93c6ef;
 }
 
 .text_item {

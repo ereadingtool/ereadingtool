@@ -64,9 +64,11 @@ body {
   background-color: #d1e1ed;
 }
 
+/* 
+This doesn't seem to be used anywhere
 .filter {
   grid-column: 2 / 2;
-}
+} */
 
 .filter_items {
   display: grid;
