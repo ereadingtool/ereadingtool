@@ -1,0 +1,14 @@
+#error {
+    display: grid;
+
+    grid-template-columns: 200px auto 200px;
+    grid-template-rows: 300px auto 200px;
+
+    align-content: center;
+    justify-content: center;
+}
+
+#error_msg {
+    grid-column: 2;
+    grid-row: 2;
+}

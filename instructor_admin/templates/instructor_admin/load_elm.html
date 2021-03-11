@@ -1,0 +1,76 @@
+{% extends "load_elm_base.html" %}
+{% block port_functions %}
+
+    {{ block.super }}
+
+    function selectAllText(elem_id) {
+        var input = document.getElementById(elem_id);
+
+        if (input) {
+            input.focus();
+            input.setSelectionRange(0, -1);
+        }
+    }
+
+    function clearInputText(elem_id) {
+        var input = document.getElementById(elem_id);
+
+        if (input) {
+            input.value = '';
+        }
+    }
+
+    app.ports.selectAllInputText.subscribe(function (elem_id) {
+        // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
+        window.requestAnimationFrame(function (timestamp) {
+            selectAllText(elem_id);
+        });
+    });
+
+    app.ports.ckEditor.subscribe(function (elem_id) {
+        // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
+        window.requestAnimationFrame(function (timestamp) {
+            if (CKEDITOR) {
+                // implicit detach
+                if (CKEDITOR.instances[elem_id]) {
+                    CKEDITOR.instances[elem_id].destroy();
+                }
+
+                CKEDITOR.inline(elem_id).on("change", function (evt) {
+                    app.ports.ckEditorUpdate.send([elem_id, evt.editor.getData()]);
+                });
+            }
+        });
+    });
+
+    app.ports.addClassToCKEditor.subscribe(function ([ckeditor_instance, class_name]) {
+        // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
+        window.requestAnimationFrame(function (timestamp) {
+           if (CKEDITOR) {
+               var elem = document.getElementById(ckeditor_instance).nextSibling;
+
+               if (elem) {
+                    elem.classList.add(class_name);
+               }
+           }
+        });
+    });
+
+    app.ports.ckEditorSetHtml.subscribe(function ([elem_id, html]) {
+        // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
+        window.requestAnimationFrame(function (timestamp) {
+            if (CKEDITOR) {
+                CKEDITOR.instances[elem_id].setData(html);
+            }
+        });
+    });
+
+    app.ports.confirm.subscribe(function (msg) {
+        // wrap call in requestAnimationFrame to ensure that Elm has time to finish refreshing the view
+        window.requestAnimationFrame(function (timestamp) {
+            var confirm = window.confirm(msg);
+            app.ports.confirmation.send(confirm);
+        });
+    });
+
+{% endblock %}

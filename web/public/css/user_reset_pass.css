@@ -1,0 +1,32 @@
+.disabled {
+  cursor: not-allowed;
+  color: #f2f2f2;
+  background-color: #7599bd;
+}
+
+.disabled:hover {
+  background-color: #7599bd;
+}
+
+.login_label {
+  display: grid;
+}
+
+.password-reset-msg {
+  display: grid;
+
+  grid-column: 1;
+  grid-row: auto;
+}
+
+.password-reset-show {
+  display: grid;
+  padding-top: 5px;
+  justify-content: left;
+
+  grid-template-columns: 20px 100px;
+}
+
+.show-password-label {
+  padding: 3px 0 0 5px;
+}

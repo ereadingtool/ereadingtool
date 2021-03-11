@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    <title>Steps To Advanced Reading - Instructor Admin</title>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static "admin/js/admin.js" %}"></script>
+{% endblock %}
+
+{% block body %}
+    <script src="{% url "admin-text-search-load-elm" %}"></script>
+{% endblock %}

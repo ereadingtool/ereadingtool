@@ -1,0 +1,10 @@
+{% extends "user_base.html" %}
+{% load static %}
+
+{% block scripts %}
+    <script src="{% static "user/js/student_forgot_password.js" %}"></script>
+{% endblock %}
+
+{% block body %}
+    <script src="{% url "load-elm-unauth" %}"></script>
+{% endblock %}

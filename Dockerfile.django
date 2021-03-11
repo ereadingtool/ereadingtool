@@ -1,0 +1,18 @@
+FROM python:3
+  
+WORKDIR '/app'
+
+RUN apt update -y \
+    && apt upgrade -y \
+    && apt install wkhtmltopdf -y \
+    && mkdir logs \
+    && touch logs/access.log \
+    && touch logs/error.log \
+    && git clone https://github.com/ereadingtool/ereadingtool.git \
+    && cd ereadingtool \
+    && git checkout feature/django-admin \
+    && pip install -r requirements.txt
+
+CMD ["python", "/app/ereadingtool/manage.py", "runserver", "0.0.0.0:8000"]
+
+EXPOSE 8000

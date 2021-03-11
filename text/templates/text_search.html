@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    <title>Steps To Advanced Reading - Find a text</title>
+{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static "css/ereader.css" %}"/>
+    <link rel="stylesheet" href="{% static "text/css/text_search.css" %}"/>
+
+    <link rel="stylesheet" href="{% static "css/hint.css" %}"/>
+
+    <link rel="stylesheet" href="{% static "css/hint-down-left.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/hint-down-right.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/hint-up-left.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/hint-up-right.css" %}"/>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static "text/js/text_search.js" %}"></script>
+{% endblock %}
+
+{% block body %}
+    <script src="{% url "text-search-load-elm" %}"></script>
+{% endblock %}
+
