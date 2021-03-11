@@ -184,3 +184,6 @@ ereadingtool.com
 
 #macos
 .DS_Store
+
+# Cypress visual regression tests
+web/cypress-visual*
