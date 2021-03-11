@@ -11,15 +11,26 @@
 //
 // -- This is a parent command --
 Cypress.Commands.add('student_login', (email, pw) => {
-  cy.request({
-    method: 'POST',
-    url: 'http://localhost:8000/api/student/login',
-    body: {
-      username: Cypress.env('USER'),
-      password: Cypress.env('PWD'),
-      role: 'student' 
-    }
-  })
+  cy.visit('http://localhost:1234/login/student')
+  cy.get('#email-input')
+    .type(Cypress.env('USER')) 
+
+  cy.get('#password-input')
+    .type(Cypress.env('PWD'))
+
+  cy.get('.login_submit')
+    .click()
+
+  // Can't seem to get these working
+  // cy.request({
+  //   method: 'POST',
+  //   url: 'http://localhost:8000/api/student/login',
+  //   body: {
+  //     username: Cypress.env('USER'),
+  //     password: Cypress.env('PWD'),
+  //     role: 'student' 
+  //   }
+  // })
 })
 
 // Turn these into cy.request(..) for more performant code
