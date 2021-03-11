@@ -186,4 +186,5 @@ ereadingtool.com
 .DS_Store
 
 # Cypress visual regression tests
-web/cypress-visual*
+web/cypress-visual-screenshots/
+web/cypress-visual-report/
