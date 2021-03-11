@@ -85,6 +85,10 @@ Cypress.Commands.add('turn_on_hints', () => {
   }
 })
 
+// image diff tool
+const compareSnapshotCommand = require('cypress-image-diff-js/dist/command')
+compareSnapshotCommand()
+
 // -- This is a child command --
 // Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
 //

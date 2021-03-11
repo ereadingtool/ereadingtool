@@ -1,21 +1,19 @@
 describe('Visit STAR', () => {
-    it('Visits the STAR app', () => {
-        cy.visit('http://localhost:1234')
-    })
+  it('Visits the STAR app', () => {
+      cy.visit('http://localhost:1234')
+  })
 })
 
 describe('Login page', () => {
-    it('Visits the STAR login page via homepage', () => {
-        cy.get('.nav-item')
-          .contains('Log in')
-          .click()
-
-        cy.url().should('include', '/login/student')
-    })
+  it('Visits the STAR login page via homepage', () => {
+    cy.visit('http://localhost:1234')
+    cy.get('.nav-item')
+      .contains('Log in')
+      .click()
+  })
 })
 
 // =========== Student Portal ===========
-
 describe('Login page is student portal', () => {
   it("Visit STAR login page and confirm it's the student portal", () => {
     cy.visit('http://localhost:1234/login/student')
@@ -220,7 +218,6 @@ describe('Confirms each link is visited in the navbar', () => {
       .click()
   })
 })
-
 
 describe('Logs in the student', () => {
   beforeEach(() => {
