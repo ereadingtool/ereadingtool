@@ -187,4 +187,5 @@ ereadingtool.com
 
 # Cypress visual regression tests
 web/cypress-visual-screenshots/
-web/cypress-visual-report/
+# web/cypress-visual-report/
+web/cypress-visual-report/*
