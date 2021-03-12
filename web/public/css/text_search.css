@@ -1,16 +1,14 @@
 .difficulty_option {
-  display: grid;
-  cursor: pointer;
-
+  align-content: center;
   border: solid 1px #777777;
-
+  cursor: pointer;
+  display: grid;
   font-family: 'Open Sans';
   font-size: 18px;
   font-weight: 200;
-
-  align-content: center;
   justify-content: center;
-
+  margin-top: 2px;
+  padding: 5px;
   transition: all 0.1s ease-out;
 }
 
