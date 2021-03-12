@@ -151,7 +151,7 @@ view_editable_answer params num_of_answers answer_field =
             ++ (case num_of_answers of
                     3 ->
                         [ span
-                            [ attribute "class" "answer_add"
+                            [ attribute "class" "invisible"
                             , onClick (params.msg (AddAnswer params.text_section_component answer_field))
                             ]
                             [ Html.img
@@ -167,7 +167,7 @@ view_editable_answer params num_of_answers answer_field =
 
                     4 ->
                         [ span
-                            [ attribute "class" "answer_delete"
+                            [ attribute "class" "invisible"
                             , onClick (params.msg (DeleteAnswer params.text_section_component answer_field))
                             ]
                             [ Html.img

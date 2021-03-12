@@ -202,6 +202,10 @@ body {
   line-height: 40px;
 }
 
+.invisible {
+  visibility: hidden;
+}
+
 .item_property {
   display: grid;
 

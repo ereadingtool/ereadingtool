@@ -13,10 +13,6 @@
     pointer-events: none;
 }
 
-.invisible {
-    visibility: hidden;
-}
-
 .msg {
     grid-column: 2;
     grid-row: 2;
