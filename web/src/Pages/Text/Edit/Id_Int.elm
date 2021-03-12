@@ -789,8 +789,8 @@ view (SafeModel model) =
 viewMessages : SafeModel -> Html Msg
 viewMessages (SafeModel model) =
     div [ attribute "class" "msgs" ]
-        [ div [ attribute "class" "error_msg" ] [ viewMessage model.errorMessage ]
-        , div [ attribute "class" "success_msg" ] [ viewMessage model.successMessage ]
+        [ div [ attribute "class" "text-editor-error-msg" ] [ viewMessage model.errorMessage ]
+        , div [ attribute "class" "text-editor-success-msg" ] [ viewMessage model.successMessage ]
         ]
 
 
