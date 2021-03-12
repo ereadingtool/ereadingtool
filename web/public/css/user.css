@@ -9,10 +9,6 @@
 
   font-size: 16px;
 }
-/* 
-.cursor {
-  cursor: pointer;
-} */
 
 .difficulty-info {
   width: 60%;
@@ -82,6 +78,7 @@ input {
 }
 
 .login_role {
+  font-family: 'EB Garamond';
   font-size: 32px;
   display: grid;
   align-items: center;
@@ -93,6 +90,7 @@ input {
 }
 
 .signup_title {
+  font-family: 'EB Garamond';
   font-size: 32px;
   display: grid;
   align-items: center;
@@ -145,6 +143,24 @@ validation-error {
   select,
   input {
     width: 95%;
+  }
+
+  .button {
+    height: 40px;
+  }
+
+  select {
+    height: 50px;
+  }
+
+  #lower-menu {
+    margin-top: 0;
+    padding: 0;
+  }
+
+  .signup_title {
+    font-family: 'EB Garamond';
+    font-size: 32px;
   }
 
   .welcome_msg,
@@ -208,7 +224,7 @@ validation-error {
   }
 
   .signup_title {
-    font-family: 'Helvetica Neue';
+    font-family: 'EB Garamond';
     font-size: 32px;
   }
 
