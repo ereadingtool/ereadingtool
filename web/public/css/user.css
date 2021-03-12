@@ -44,6 +44,7 @@ input {
 }
 
 .login_role {
+  font-family: 'EB Garamond';
   font-size: 32px;
   display: grid;
   align-items: center;
@@ -67,6 +68,7 @@ input {
 }
 
 .signup_title {
+  font-family: 'EB Garamond';
   font-size: 32px;
   display: grid;
   align-items: center;
@@ -147,7 +149,7 @@ select {
   }
 
   .signup_title {
-    font-family: 'Helvetica Neue';
+    font-family: 'EB Garamond';
     font-size: 32px;
   }
 

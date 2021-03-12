@@ -14,8 +14,7 @@ body {
 
   background: #f9f9f9;
 
-  font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue,
-    'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Open Sans';
   font-size: 18px;
 
   align-items: right;
@@ -79,8 +78,7 @@ body {
 }
 
 .body {
-  font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue,
-    'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Open Sans';
   font-size: 17px;
 }
 
@@ -153,8 +151,7 @@ body {
 }
 
 #text_attributes > div > div:nth-child(1) {
-  font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue,
-    'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Open Sans';
   font-size: 17px;
   color: #000e2d;
 }
@@ -166,8 +163,7 @@ body {
 #text_lock {
   display: grid;
 
-  font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue,
-    'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Open Sans';
   font-size: 17px;
 
   grid-column: 1;
@@ -220,8 +216,7 @@ body {
 
   row-gap: 0;
 
-  font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue,
-    'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Open Sans';
   font-size: 18px;
   font-weight: 200;
 
@@ -256,8 +251,7 @@ body {
 }
 
 #text_tags > div {
-  font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue,
-    'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Open Sans';
   font-size: 18px;
   color: #000e2d;
 }
@@ -334,8 +328,7 @@ body {
 }
 
 .text_property > div:nth-child(1) {
-  font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue,
-    'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Open Sans';
   font-size: 17px;
   color: #000e2d;
 }
@@ -455,8 +448,7 @@ body {
 
   background: #ffffff;
 
-  font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue,
-    'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Open Sans';
   font-size: 14px;
 
   border: solid 0.5px lightgrey;
@@ -530,8 +522,7 @@ body {
   grid-column: 2;
   padding: 10px 10px 10px 5px;
 
-  font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue,
-    'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Open Sans';
   font-size: 18px;
 }
 
@@ -722,8 +713,7 @@ body {
 
   background: #ffffff;
 
-  font-family: proxima-nova, proxima-nova-1, proxima-nova-2, HelveticaNeue,
-    'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Open Sans';
   font-size: 14px;
 
   padding: 5px;
