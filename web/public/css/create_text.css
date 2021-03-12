@@ -47,13 +47,6 @@
   font-size: 14px;
 }
 
-body {
-  background: #ffffff;
-  margin-top: 0;
-  margin-right: 0;
-  margin-left: 0;
-}
-
 .body {
   font-family: 'Open Sans';
   font-size: 17px;
@@ -641,8 +634,9 @@ body {
 }
 
 .text_sections {
-  grid-column: 2;
+  background: #f9f9f9;
   display: grid;
+  grid-column: 2;
 }
 
 #text_tags > div {
@@ -761,7 +755,6 @@ body {
 .underline {
   border-bottom: 0.5px solid grey;
 }
-
 
 .word > .grammemes {
   display: grid;

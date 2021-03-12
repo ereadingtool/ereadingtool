@@ -173,7 +173,7 @@ body {
   grid-template-areas: 'logo content-nav . profile-nav';
   column-gap: 30px;
 
-  font-size: 22px;
+  font-size: 28px;
   color: white;
   background-color: #0054a6;
 }
@@ -488,6 +488,17 @@ body {
 
   background: #f9f9f9;
   border: solid 0.5px lightgrey;
+}
+
+.text_items {
+  display: grid;
+  margin-top: 2%;
+  grid-row-gap: 35px;
+  row-gap: 35px;
+  font-family: 'Open Sans';
+
+  grid-template-columns: 4% auto 4%;
+  grid-auto-rows: 110px;
 }
 
 .text_tag {

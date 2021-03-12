@@ -148,11 +148,11 @@ validation-error {
   .button {
     height: 40px;
   }
-
+/* 
   select {
     height: 50px;
   }
-
+ */
   #lower-menu {
     margin-top: 0;
     padding: 0;
@@ -209,10 +209,10 @@ validation-error {
     align-items: center;
     justify-items: center;
   }
-
+/* 
   select {
     height: 50px;
-  }
+  } */
 
   .signup {
     margin-top: 15px;

@@ -41,11 +41,6 @@
   
     margin-bottom: 0;
     grid-template-columns: 7% 13% [content] auto 13% 7%;
-    /* display: grid;
-
-    grid-template-columns: 15% [body-col] auto 15%;
-    font-size: 19px;
-    */
 }
 
 .screenshot {
