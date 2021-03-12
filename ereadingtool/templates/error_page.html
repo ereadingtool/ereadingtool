@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static "css/ereader.css" %}"/>
+{% endblock %}
+
+{% block body %}
+<div id="error">
+    <div id="error_msg">Sorry you cannot view this page.</div>
+</div>
+{% endblock %}
