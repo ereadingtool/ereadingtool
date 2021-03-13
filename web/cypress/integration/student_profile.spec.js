@@ -1,13 +1,8 @@
-const { assert } = require("console")
-
-// test the stuff
-describe('Access student portal', () => {
+describe('Use navbar items', () => {
   it('Logs in to the student portal', () => {
     cy.student_login()
   })
-})
 
-describe('Access profile from navbar', () => {
   it('Clicks the logo in navbar', () => {
     cy.student_login()
       .then(() => {
@@ -16,22 +11,17 @@ describe('Access profile from navbar', () => {
       })
     cy.url().should('include', '/profile/student')
   })
-})
 
-describe('Access profile from navbar', () => {
   it('Clicks the Profile link in the navbar', () => {
     cy.student_login()
       .then(() => {
         cy.get('#header')
           .contains('Profile')
           .click()
-
-        cy.url().should('include', '/profile/student')
       })
+    cy.url().should('include', '/profile/student')
   })
-})
 
-describe('Access texts from navbar', () => {
   it('Clicks the Texts link in navbar', () => {
     cy.student_login()
       .then(() => {
@@ -45,9 +35,7 @@ describe('Access texts from navbar', () => {
   })
 })
 
-// =========== Username ===========
-
-describe('Checks if username update is possible', () => {
+describe('Checks if username update functionality', () => {
   it('Clicks the update button, changes text, cancels change', () => {
     cy.student_login()
       .then(() => {
@@ -64,10 +52,8 @@ describe('Checks if username update is possible', () => {
           })
       })
   })
-})
 
-describe('Checks if username update length restriction', () => {
-  it('Clicks the update button, changes to short text', () => {
+  it('Checks username update length restriction', () => {
     cy.student_login()
       .then(() => {
         cy.get('.update_username')
@@ -81,10 +67,8 @@ describe('Checks if username update length restriction', () => {
           // no tests for all possible special characters that could be in the username
       })
   })
-})
 
-describe('Checks username for special characters', () => {
-  it('Clicks the update button, changes to text with valid special characters', () => {
+  it('Checks username for special characters', () => {
     cy.student_login()
       .then(() => {
         cy.get('.update_username')
@@ -128,7 +112,6 @@ describe('Checks username for special characters', () => {
       })
   })
 })
-// =========== Local Storage ===========
 
 describe('Confirms role in local storage', () => {
   it("Checks local storage to validate token's existance", () => {
@@ -145,9 +128,8 @@ describe('Confirms role in local storage', () => {
   })
 })
 
-// =========== Hints ===========
-describe('Checks the show hints modal is up', () => {
-  it("Makes Show Hints button active, checks for the modal", () => {
+describe('Checks the student profile elements', () => {
+  it("Checks the show hints modal is up", () => {
     cy.student_login()
       .then(() => {
         cy.turn_on_hints()
@@ -156,10 +138,8 @@ describe('Checks the show hints modal is up', () => {
           })
       })
   })
-})
 
-describe('Turns the Show Hints tutorial off', () => {
-  it('Confirms the hints are on, then turns them off', () => {
+  it('Turns the Show Hints tutorial off', () => {
     cy.student_login()
       .then(() => {
         cy.turn_on_hints()
@@ -168,20 +148,16 @@ describe('Turns the Show Hints tutorial off', () => {
           .should('not.exist')
       })
   })
-})
 
-describe('Check for the hints banner', () => {
-  it('Confirms the hints are on, then checks for the banner', () => {
+  it('Check for the hints banner', () => {
     cy.student_login()
       .then(() => {
         cy.turn_on_hints()
         cy.get('#profile-welcome-banner')
       })
   })
-})
 
-describe('Checks profile page hint modals exist via next', () => {
-  it('Navigates the first cycle of hints via the next link', () => {
+  it('Checks profile page hint modals exist via next', () => {
     cy.student_login()
       .then(() => {
         cy.turn_on_hints()
@@ -200,10 +176,8 @@ describe('Checks profile page hint modals exist via next', () => {
         cy.get('#help_hints')
       })
   })
-})
 
-describe('Checks profile page hint modals exist via next', () => {
-  it('Navigates the first cycle of hints via the next link', () => {
+  it('Checks profile page hint modals exist via prev', () => {
     cy.student_login()
       .then(() => {
         cy.turn_on_hints()
@@ -222,9 +196,7 @@ describe('Checks profile page hint modals exist via next', () => {
         cy.get('#help_hints')
       })
   })
-})
 
-describe('Closes the hints modal', () => {
   it('Closes the first hints modal', () => {
     cy.student_login()
       .then(() => {
@@ -236,11 +208,8 @@ describe('Closes the hints modal', () => {
           .should('exist')
       })
   })
-})
 
-// =========== Research Consent ===========
-describe('Clicks the consent to research button', () => {
-  it('Toggles the consent to research button either on or off', () => {
+  it('Clicks the consent to research button', () => {
     cy.student_login()
       .then(() => {
         cy.get('#research_consent')
@@ -250,9 +219,9 @@ describe('Clicks the consent to research button', () => {
   })
 })
 
-// =========== Performance Report ===========
-describe('Validate performance report table', () => {
-  it('Checks to confirm each column exists in the performance report table', () => {
+
+describe('Validate performance report table tabs', () => {
+  it('Checks Completion tab', () => {
     cy.student_login()
       .then(() => {
         cy.get('.performance_report')
@@ -265,10 +234,8 @@ describe('Validate performance report table', () => {
           .contains('Texts Completed')
       })
   })
-})
 
-describe('Click First Time Comprehension tab', () => {
-  it('Finds the tab above the performance report, clicks and verifies table headers', () => {
+  it('Click First Time Comprehension tab', () => {
     cy.student_login()
       .then(() => {
         cy.get('.performance-report-tabs')
@@ -285,10 +252,9 @@ describe('Click First Time Comprehension tab', () => {
   })
 })
 
-// =========== Files ===========
 
-describe('Downloads performance report', () => {
-  it('Clicks the link to download the report', () => {
+describe('Confirms the file download links are working correctly', () => {
+  it('Downloads performance report', () => {
     cy.student_login()
       .then(() => {
         cy.wait(1000)
@@ -302,10 +268,8 @@ describe('Downloads performance report', () => {
           })
       })
   })
-})
 
-describe("Checks my words CSV to confirm file link exists", () => {
-  it("Builds the link from localStorage, then reads link", () => {
+  it("Checks My Words CSV to confirm file link exists", () => {
     cy.student_login()
       .then(() => {
         cy.wait(500)
@@ -319,10 +283,8 @@ describe("Checks my words CSV to confirm file link exists", () => {
           })
       })
   })
-})
 
-describe("Checks my words PDF to confirm file link exists", () => {
-  it("Builds the link from localStorage, then reads link", () => {
+  it("Checks my words PDF to confirm file link exists", () => {
     cy.student_login()
       .then(() => {
         cy.wait(500)
@@ -338,7 +300,7 @@ describe("Checks my words PDF to confirm file link exists", () => {
   })
 })
 
-// =========== Links ===========
+
 describe('Checks research link exists', () => {
   it('Finds the Research Consent section and checks the link', () => {
     cy.student_login()
@@ -350,6 +312,3 @@ describe('Checks research link exists', () => {
       })
   })
 })
-
-// Contacts links TBD
-

@@ -11,6 +11,18 @@
 //
 // -- This is a parent command --
 Cypress.Commands.add('student_login', (email, pw) => {
+  cy.visit('http://localhost:1234/login/student')
+  cy.get('#email-input')
+    .type(Cypress.env('USER')) 
+
+  cy.get('#password-input')
+    .type(Cypress.env('PWD'))
+
+  cy.get('.login_submit')
+    .click()
+})
+
+Cypress.Commands.add('student_login_headless', (email, pw) => {
   cy.request({
     method: 'POST',
     url: 'http://localhost:8000/api/student/login',
@@ -84,6 +96,10 @@ Cypress.Commands.add('turn_on_hints', () => {
       .click()
   }
 })
+
+// image diff tool
+const compareSnapshotCommand = require('cypress-image-diff-js/dist/command')
+compareSnapshotCommand()
 
 // -- This is a child command --
 // Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
