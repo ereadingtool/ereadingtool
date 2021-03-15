@@ -184,3 +184,7 @@ ereadingtool.com
 
 #macos
 .DS_Store
+
+web/cypress-visual*
+web/cypress/screenshots/
+web/cypress/videos/
