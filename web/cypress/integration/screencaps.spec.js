@@ -1,7 +1,7 @@
 // Note: Need to login with the form field because we want the webpage to 
 // be visible for the screenshot tool.
 
-// // ======================== Public pages ========================
+// ======================== Public pages ========================
 
 describe('Cleans up screenshot directories', () => {
   it('Deletes comparison/ and screenshots/', () => {
@@ -90,7 +90,7 @@ describe('Snapshots of student pages on MacBook 13"', () => {
           cy.wait(500)
           cy.get('.performance-report-tab')
             .click()
-          cy.compareSnapshot()
+          cy.compareSnapshot('student-profile-performance-report-tab-macbook13', 0.1)
         })
     })
 
@@ -99,8 +99,8 @@ describe('Snapshots of student pages on MacBook 13"', () => {
         .then(() => {
           cy.wait(500)
           cy.get('.difficulty-select')
-            .click()
-          cy.compareSnapshot()
+            .select('Intermediate-Mid')
+          cy.compareSnapshot('student-profile-difficulty-dropdown-macbook13', 0.1)
         })
     })
   })
@@ -128,7 +128,7 @@ describe('Snapshots of public pages on IPhone X', () => {
     })
 
     it('Student signup page snapshot comparison', () => {
-      cy.visit('http://localhost:1234/signup/student')
+     cy.visit('http://localhost:1234/signup/student')
       cy.compareSnapshot('student-signup-iphoneX', 0.1)
     })
 
@@ -142,12 +142,12 @@ describe('Snapshots of public pages on IPhone X', () => {
       cy.compareSnapshot('reset-password-iphoneX', 0.1)
     })
 
-// TODO: Doesn't want to work for some reason.
-//   it('About page snapshot comparison', () => {
-//     cy.visit('http://localhost:1234/about')
-//     cy.viewport('iphone-x')
-//     cy.compareSnapshot('about-page-iphoneX', 0.1)
-//   })
+// // TODO: Doesn't want to work for some reason.
+// //   it('About page snapshot comparison', () => {
+// //     cy.visit('http://localhost:1234/about')
+// //     cy.viewport('iphone-x')
+// //     cy.compareSnapshot('about-page-iphoneX', 0.1)
+// //   })
 
     it('Acknowledgements page snapshot comparison IPhone X viewport', () => {
       cy.visit('http://localhost:1234/acknowledgements')

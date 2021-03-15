@@ -8,6 +8,8 @@ describe('Read Demo Text correctly', () => {
           .click()
           // Expecting to have never started the text or to have previously completed the text, thus starting at the intro
           .then(() => {
+            // wait for websocket response
+            cy.wait(1000)
             cy.get('#text-intro')
               .parent()
               .get('#nav')
@@ -35,7 +37,7 @@ describe('Read Demo Text correctly', () => {
                                 cy.get('#nav')
                                   .contains('Next')
                                   .click()
-                                  .wait(500) // the following get is executing too fast somehow?
+                                  .wait(1000) // the following get is executing too fast somehow?
                                   .then(() => {
                                     cy.get('#nav')
                                       .contains('Previous')
@@ -64,6 +66,8 @@ describe('Read Demo Text incorrectly', () => {
           .click()
           // Expecting to have never started the text or to have previously completed the text, thus starting at the intro
           .then(() => {
+            // wait for websocket response
+            cy.wait(1000)
             cy.get('#text-intro')
               .parent()
               .get('#nav')
@@ -91,7 +95,7 @@ describe('Read Demo Text incorrectly', () => {
                                 cy.get('#nav')
                                   .contains('Next')
                                   .click()
-                                  .wait(500) // the following get is executing too fast somehow?
+                                  .wait(1000) // the following get is executing too fast somehow?
                                   .then(() => {
                                     cy.get('#nav')
                                       .contains('Previous')

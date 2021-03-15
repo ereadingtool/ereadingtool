@@ -32,7 +32,7 @@ describe('Login page is student portal', () => {
       .contains('Reset Password')
       .parentsUntil('.login_options')
       .next('div')
-      .contains('Login as a content editor')
+      .contains('Login as a content creator')
   })
 })
 
@@ -59,15 +59,15 @@ describe('Student login to reset password', () => {
   })
 })
 
-describe('Student login switch to content editor', () => {
-  it('Visits the content editor login page from the student portal', () => {
+describe('Student login switch to content creator', () => {
+  it('Visits the content creator login page from the student portal', () => {
     cy.visit('http://localhost:1234/login/student')
     cy.get('.login_options')
       .find('a')
-      .contains('Login as a content editor')
+      .contains('Login as a content creator')
       .click()
 
-    cy.url().should('include', '/login/instructor')
+    cy.url().should('include', '/login/content-creator')
   })
 })
 
@@ -91,13 +91,13 @@ describe('Student login switch to acknowledgements', () => {
   })
 })
 
-// =========== Content Editor Portal ===========
+// =========== Content Creator Portal ===========
 
 describe('Login page is instructor portal', () => {
   it("Visit STAR login page and confirm it's the student portal", () => {
-    cy.visit('http://localhost:1234/login/instructor')
+    cy.visit('http://localhost:1234/login/content-creator')
     cy.get('.login_role')
-      .contains('Content Editor Login')
+      .contains('Content Creator Login')
 
     cy.get('.login_options')
       .children()
@@ -115,21 +115,21 @@ describe('Login page is instructor portal', () => {
   })
 })
 
-describe('Content Editor login to signup', () => {
+describe('content creator login to signup', () => {
   it('Visits login portal then moves to signup page', () => {
-    cy.visit('http://localhost:1234/login/instructor')
+    cy.visit('http://localhost:1234/login/content-creator')
     cy.get('.login_options')
       .find('a')
       .contains('Sign Up')
       .click()
 
-    cy.url().should('include', '/signup/instructor')
+    cy.url().should('include', '/signup/content-creator')
   })
 })
 
 describe('Student login to reset password', () => {
   it('Visits login portal then moves to reset password page', () => {
-    cy.visit('http://localhost:1234/login/instructor')
+    cy.visit('http://localhost:1234/login/content-creator')
     cy.get('.login_options')
       .find('a')
       .contains('Reset Password')
@@ -139,9 +139,9 @@ describe('Student login to reset password', () => {
   })
 })
 
-describe('Student login switch to content editor', () => {
-  it('Visits the student login page from the content editor portal', () => {
-    cy.visit('http://localhost:1234/login/instructor')
+describe('Student login switch to content creator', () => {
+  it('Visits the student login page from the content creator portal', () => {
+    cy.visit('http://localhost:1234/login/content-creator')
     cy.get('.login_options')
       .find('a')
       .contains('Login as a student')
@@ -151,9 +151,9 @@ describe('Student login switch to content editor', () => {
   })
 })
 
-describe('Content Editor login switch to about', () => {
+describe('content creator login switch to about', () => {
   it('Visits the student login page then moves to the about page', () => {
-    cy.visit('http://localhost:1234/login/instructor')
+    cy.visit('http://localhost:1234/login/content-creator')
     cy.get('#acknowledgements-and-about')
       .find('div')
       .contains('About This Website')
@@ -161,9 +161,9 @@ describe('Content Editor login switch to about', () => {
   })
 })
 
-describe('Content Editor login switch to acknowledgements', () => {
-  it('Visits the content editor login page then moves to the acknowledgements page', () => {
-    cy.visit('http://localhost:1234/login/instructor')
+describe('content creator login switch to acknowledgements', () => {
+  it('Visits the content creator login page then moves to the acknowledgements page', () => {
+    cy.visit('http://localhost:1234/login/content-creator')
     cy.get('#acknowledgements-and-about')
       .find('div')
       .contains('Acknowledgements')

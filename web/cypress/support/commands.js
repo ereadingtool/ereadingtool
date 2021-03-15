@@ -56,8 +56,23 @@ Cypress.Commands.add('student_access_texts', () => {
     })
 })
 
-
 Cypress.Commands.add('admin_login', (csrf) => {
+  const username = Cypress.env('ADMIN_USER')
+  const password = Cypress.env('ADMIN_PWD')
+
+  cy.visit('http://localhost:8001')
+  cy.get('#id_username')
+    .type(Cypress.env('ADMIN_USER'), { log: false }) 
+
+  cy.get('#id_password')
+    .type(Cypress.env('ADMIN_PWD'), { log: false })
+
+  cy.get('.submit-row')
+    .contains('Log in')
+    .click() 
+})
+
+Cypress.Commands.add('admin_login_headless', (csrf) => {
   const username = Cypress.env('ADMIN_USER')
   const password = Cypress.env('ADMIN_PWD')
 
