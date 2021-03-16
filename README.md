@@ -1,8 +1,10 @@
 # ereadingtool
 The ereadingtool allows students and instructors to consume or provide a language's texts and interactively view its translations. Since languages rarely have a one-to-one mapping, texts created on the app can have their translation modified or changed. Students who consume the text material are presented questions created by an instructor for that particular text. Scores and progression is tracked and can be converted to a PDF for alternative viewing. Words can be saved for future studying in either a CSV or PDF.
 
+
 ## Technical Overview
 Ereadingtool is a SPA delivered by an NGINX webserver. The SPA communicates with a Django API server using a REST-ful paradigm. The Django web framework utilizes websocket connections for smooth interaction between the client and the server. It is supported by a Redis in-memory database to quickly serve the texts to the client over this websocket connection. Note that this is a microservice architecture deployed to a single server. The internet facing container is an NGINX reverse-proxy which routes traffic to either the API server or an NGINX webserver which serves the Elm app. The API server connects to a Redis container on the default port. Both the API server and the NGINX webserver are furnished Let's Encrypt certs by the lets-encrypt-nginx-proxy-companion. These certs, and the routing information for the reverse-proxy, are designated by the docker-gen container. For security purposes it does not have the docker socket facing the internet.
+
 
 ## Usage
 To run the app locally, follow the instructions in the **Web** section and the **Server** section. Either order is fine, just be sure to run the API server on a different port than the Elm app is served from.
@@ -39,17 +41,6 @@ Here's an example of a command being run from a CLI in the project's working dir
 ```
 python3 create_text_phrases --text_section 1234
 ```
-
-There's a cron job on the development server that runs `docker exec` to run the django command every night 
-at midnight.
-
-```
-0 0 * * * docker exec django_backend ereadingtool/manage.py create_text_phrases --run-cron 300 &>> cron_output.txt
-```
-
-We check for text sections with less than 300 words and process them once a day. Once this happens a content creator
-will have a flag set on the text they're editing which indicates that it has been processed by a translation service.
-It would then be their responsibility to assign the correct translation of a word by hand given its context.
 
 #### --text_section
 This command takes one argument, the text section, and reaches out to yandex to parse the words in the
@@ -88,6 +79,7 @@ Easily the best testing environment for this is VSCode. To enable tests, be sure
 and confirm there is configuration with an `args` value `test`. Then, you'll want to go to the test section of 
 VSCode and choose to `RUN` the name of your test configuration. Unreconciled issues finding database tables may 
 exist.
+
 
 ## Elm
 
@@ -150,6 +142,7 @@ Environment variables are stored `.env.local` for local development, `.env.devel
 
 There may be occassional caching problems when using these environments. Deleting `.cache/` and `dist/` will usually help.
 
+
 ## Django
 
 Note that we're running Django 2.2 -- there are other dependencies like `Channels` that are pinned due to this. It's served us well, but an upgrade to 3.x would 
@@ -175,18 +168,45 @@ python manage.py runserver
 
 If the text reader isn't working, or nothing is happening over websocket, that's because you need to start Redis.   
 
+
 ## Deploy
 
 We're currently using !(nginx-proxy)[https://github.com/nginx-proxy/nginx-proxy] for deployment. It spins up some containers that can be seen with more
 detail in `docker-compose.yml`. The image below is from the !(let's encrypt companion)[], our app1 and app2 are `node_frontend` and `django_backend`. 
-We've also got Redis container sitting back there.
+We've also got Redis container sitting back there. There's a container for minting certificates to the applications behind the reverse proxy. See the 
+resources section for information about that. 
 ![Image of container system](https://github.com/nginx-proxy/docker-letsencrypt-nginx-proxy-companion/blob/master/schema.png)
 
 #### Changing Domain Name
-If you're to change the domain name, there are a few places which will need updating. in the `RUN` command of `Dockerfile.node` you'll want to change
-the nginx template name in `sites-available`. You'd need to rename the template file itself as well `oldexample.org` -> `newexample.org` in the project's
-root directory. The `docker-compose.yml` is also littered with places to change the domain name. Where the `cors.conf` is copied to, the name of the 
-`VIRTUAL_HOST` and `FRONTEND_HOST` environment variables as well. Finally, you'll need to add the domain to the list of `ALLOWED_HOSTS` in `settings.py`.
+View the document `DEPLOY.md` for a checklist of places to update code depending on the deployment environment. 
+
+#### Documents to copy onto server
+Since there isn't end to end CI for this project, there is a need to `scp` files onto the server. Here's a list of the files that will need to be on the 
+server for the containers to launch:
+
+* `Dockerfile.admin_panel`
+* `Dockerfile.django`
+* `Dockerfile.node`
+* `cors.conf`
+* `db.sqlite3`
+* `docker-compose.yml`
+* `nginx.conf`
+* `nginx.tmpl`
+* `secrets.env`
+* `<DOMAIN.TLD>`
+
+#### Cron job on the server
+There's a cron job on the development server that runs `docker exec` to run the django command every night 
+at midnight.
+
+```
+0 0 * * * docker exec django_backend ereadingtool/manage.py create_text_phrases --run-cron 300 &>> cron_output.txt
+```
+
+We check for text sections with less than 300 words and process them once a day. Once this happens a content creator
+will have a flag set on the text they're editing which indicates that it has been processed by a translation service.
+It would then be their responsibility to assign the correct translation of a word by hand given its context.
+
 
 ## Resources
 
@@ -212,3 +232,7 @@ note that we don't have migration files for these views. How to do this is expla
 when first creating the app that particular migration caused a bunch of trouble. Simply create the view using a database tool
 like db Browser for SQLite in the Execution tab. The model should be able to access the view data at that point.
 !(using database views in Django ORM)[https://resources.rescale.com/using-database-views-in-django-orm/]
+
+#### Nginx Reverse Proxy
+(nginx-proxy)[https://github.com/nginx-proxy/nginx-proxy/]
+(cert machinery)[https://github.com/nginx-proxy/docker-letsencrypt-nginx-proxy-companion]
