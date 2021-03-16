@@ -266,6 +266,7 @@ body {
 
   font-size: 23px;
   font-weight: 300;
+  width: 100%;
 }
 
 .sub_description {
@@ -313,12 +314,13 @@ body {
 .text_item {
   display: grid;
   grid-column: 2;
-
+  grid-gap: 7px;
   align-items: center;
   justify-items: center;
 
-  grid-template-columns: 2% 20% repeat(auto-fill, 13%) 21% 2%;
+  grid-template-columns: 0% 20% 15% 15% 15% 15% 20%;
 
+  overflow: auto;
   background: #f9f9f9;
   border: solid 0.5px lightgrey;
 }
