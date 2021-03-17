@@ -191,15 +191,11 @@ npm i -D cypress
 npm i -D cypress-image-diff-js
 ```
 
-You can [open the tests](https://docs.cypress.io/guides/guides/launching-browsers.html) in either headless mode (default is the Electron browser shipped with cypress),
-or with Chrome/FF (headed). I typically use Chrome, which happens when I start the tests with `npx cypress open`. 
+You can [open the tests](https://docs.cypress.io/guides/guides/launching-browsers.html) in either headless mode (default is the Electron browser shipped with cypress) or with Chrome/FF (headed).
 
-Here are two possible ways to open the cypress tests, both should be run in the `web/` directory. 
+To start the Cypress tests run:
 ```
-npx cypress open
-```
-```
-node_modules/.bin/cypress open
+npm run test:cypress
 ```
 
 ### Visual Regression Tests
@@ -216,6 +212,15 @@ quite polluted with `.png` files, so there is an `exec` command in a cypress tes
 
 An HTML file is created under `web/cypress-visual-report` that contains baseline and comparison should they differ.
 
+### Environment variables
+There's a few environment variables that are necessary for authentication in the tests. 
+```
+CYPRESS_ADMIN_PWD=ereadingtool
+CYPRESS_ADMIN_EMAIL=admin@example.com
+CYPRESS_PWD=cypressstar
+CYPRESS_USER=cypress@star.org
+CYPRESS_ADMIN_USER=admin
+```
 
 ## Deploy
 

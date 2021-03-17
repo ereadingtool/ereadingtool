@@ -5,6 +5,7 @@
   "scripts": {
     "start": "npm install && npm run build:dev && npm run dev",
     "test": "elm-test",
+    "test:cypress": "cypress open",
     "test:watch": "elm-test --watch",
     "build": "run-s build:elm-spa build:elm",
     "build:dev": "run-s build:elm-spa",
