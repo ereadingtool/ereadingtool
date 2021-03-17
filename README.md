@@ -175,6 +175,53 @@ python manage.py runserver
 
 If the text reader isn't working, or nothing is happening over websocket, that's because you need to start Redis.   
 
+## Cypress tests
+
+These tests check functionality of the frontend application as well as uses visual regression testing to confirm modifications to CSS are not breaking the site.
+Since the tests require a database that contains users and text items, it cannot be run in CI easily. To run the tests locally, first confirm that the testing 
+library is installed.
+
+[cypress](https://www.cypress.io/):
+```
+npm i -D cypress
+```
+
+[cypress-image-diff](https://github.com/uktrade/cypress-image-diff/blob/main/docs/Cypress%20integration.md)
+```
+npm i -D cypress-image-diff-js
+```
+
+You can [open the tests](https://docs.cypress.io/guides/guides/launching-browsers.html) in either headless mode (default is the Electron browser shipped with cypress) or with Chrome/FF (headed).
+
+To start the Cypress tests run:
+```
+npm run test:cypress
+```
+
+### Visual Regression Tests
+These tests generate many screenshots. There are three directories in `cypress-visual-screenshots`, none of them should be version controlled.
+```
+cypress-visual-screenshots
+    ├── baseline
+    ├── comparison
+    └── diff
+```
+`baseline` is where we keep the images of the site as it should be. `comparison` contains the new screencaps that are taken each time the tests are run.
+Finally, `diff` contains baseline images overlaid with comparison shots and highlighted red where there are differences. `diff` and `comparison` can become
+quite polluted with `.png` files, so there is an `exec` command in a cypress test to remove these files before each run.
+
+An HTML file is created under `web/cypress-visual-report` that contains baseline and comparison should they differ.
+
+### Environment variables
+There's a few environment variables that are necessary for authentication in the tests. 
+```
+CYPRESS_ADMIN_PWD=ereadingtool
+CYPRESS_ADMIN_EMAIL=admin@example.com
+CYPRESS_PWD=cypressstar
+CYPRESS_USER=cypress@star.org
+CYPRESS_ADMIN_USER=admin
+```
+
 ## Deploy
 
 We're currently using !(nginx-proxy)[https://github.com/nginx-proxy/nginx-proxy] for deployment. It spins up some containers that can be seen with more
