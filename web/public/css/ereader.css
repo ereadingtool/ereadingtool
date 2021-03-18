@@ -173,7 +173,7 @@ body {
   grid-template-areas: 'logo content-nav . profile-nav';
   column-gap: 30px;
 
-  font-size: 28px;
+  font-size: 22px;
   color: white;
   background-color: #0054a6;
 }
