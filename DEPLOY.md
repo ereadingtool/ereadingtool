@@ -52,8 +52,8 @@ Substitute the right `<DOMAIN.TLD>` depending on development or production envir
 * line 14: `      - FRONTEND_HOST=<DOMAIN.TLD>`
 * line 29: `      - VIRTUAL_HOST=<DOMAIN.TLD>`
 * line 30: `      - LETSENCRYPT_HOST=<DOMAIN.TLD>`
-* line 45: `      - VIRTUAL_HOST=admin.steps2ar.org`
-* line 47: `      - LETSENCRYPT_HOST=admin.steps2ar.org`
+* line 45: `      - VIRTUAL_HOST=admin.<DOMAIN.TLD>`
+* line 47: `      - LETSENCRYPT_HOST=admin.<DOMAIN.TLD>`
 * line 69: `      - ${PWD}/cors.conf:/etc/nginx/vhost.d/api.<DOMAIN.TLD>`
 
 #### web/.env.production
