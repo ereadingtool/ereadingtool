@@ -1,0 +1,42 @@
+name: django-tests
+on: 
+  push:
+    branches:
+      - 'devel'
+      - 'master'
+    paths-ignore:
+      - 'README'
+      - '.gitignore'
+jobs:
+  elm-tests:
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Setup Elm environment
+        run: |
+          curl -L -o elm.gz https://github.com/elm/compiler/releases/download/0.19.1/binary-for-linux-64-bit.gz
+          gunzip elm.gz
+          chmod +x elm
+          sudo mv elm /usr/local/bin
+          cd web
+          npm install elm-test
+          ./node_modules/elm-test/bin/elm-test
+    
+  django-tests:
+    runs-on: "ubuntu-latest"
+    environment: ereadingtool tests
+    env:
+      DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+      SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+      YANDEX_TRANSLATION_API_KEY: ${{ secrets.YANDEX_TRANSLATION_API_KEY }}
+      YANDEX_DEFINITION_API_KEY: ${{ secrets.YANDEX_DEFINITION_API_KEY }}
+      TEST_JWT: ${{ secrets.TEST_JWT }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Setup Django environment
+        run: |
+          pip3 install setuptools
+          pip3 install -r requirements.txt
+          python3 manage.py test

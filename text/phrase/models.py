@@ -12,7 +12,7 @@ from text.translations.mixins import TextPhraseGrammemes
 
 class TextPhrase(TextPhraseGrammemes, models.Model):
     class Meta:
-        unique_together = (('instance', 'phrase', 'text_section'),)
+        unique_together = (('instance', 'phrase', 'text_section', 'lemma'),)
 
     text_section = models.ForeignKey(TextSection, related_name='translated_words', on_delete=models.CASCADE)
     instance = models.IntegerField(default=0)
@@ -71,7 +71,7 @@ class TextPhrase(TextPhraseGrammemes, models.Model):
                 'grammeme': cls.grammeme_add_schema()
             },
             'minItems': 1,
-            'required': ['text', 'text_section', 'instance', 'phrase']
+            'required': ['text', 'text_section', 'instance', 'phrase'] # TODO: lemma here
         }
 
         return schema

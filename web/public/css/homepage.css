@@ -1,0 +1,138 @@
+#home-wrapper {
+  display: grid;
+  height: 35vw;
+
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 0.5fr 1fr;
+  grid-template-areas:
+    'hero description'
+    'hero features';
+  grid-column-gap: 30px;
+
+  font-size: calc(1.1vw);
+}
+
+#home-wrapper > .hero {
+  display: grid;
+  grid-area: hero;
+
+  justify-content: center;
+  align-content: center;
+
+  background: url(../img/reader-example.png) no-repeat top;
+  background-size: contain;
+  margin: 5%;
+
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+
+  opacity: .8;
+}
+
+#home-wrapper > .description {
+  display: grid;
+  grid-area: description;
+
+  grid-template-columns: 4fr 1fr;
+  grid-template-areas:
+    'header .'
+    'text .';
+
+  justify-content: center;
+  align-content: end;
+
+  padding-top: 4%;
+}
+
+#home-wrapper > .description > .description-heading {
+  display: grid;
+  grid-area: header;
+  font-family: 'EB Garamond';
+  margin: 0;
+}
+
+#home-wrapper > .description > .description-text {
+  display: grid;
+  grid-area: text;
+}
+
+#home-wrapper > .features {
+  display: grid;
+  grid-area: features;
+
+  grid-template-columns: 4fr 1fr;
+  grid-template-areas: 'text .';
+
+  justify-content: center;
+  align-content: start;
+}
+#home-wrapper > .features a {
+  color: #00478f;
+  text-decoration: none;
+}
+
+#home-wrapper > .features a:hover {
+  text-decoration: underline;
+}
+#home-wrapper > .features > .features-text {
+  display: grid;
+  grid-area: text;
+
+  margin: 0;
+}
+
+#home-wrapper > .features > .features-text > ul {
+  list-style-type: circle;
+}
+
+@media (max-width: 768px) {
+  #home-wrapper {
+    display: grid;
+    height: 100%;
+
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr 1fr;
+    grid-template-areas:
+      'description'
+      'hero'
+      'features';
+
+    grid-gap: 10px;
+
+    padding: 0 25px;
+    font-size: 18px;
+  }
+
+  #home-wrapper > .hero {
+    display: grid;
+    grid-area: hero;
+
+    background: url(../img/reader-example.png) no-repeat center;
+    background-size: contain;
+  }
+
+  #home-wrapper > .description {
+    display: grid;
+    grid-area: description;
+
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'header .'
+      'text .';
+
+    align-content: center;
+
+    padding: 10px 0 0 0;
+  }
+
+  #home-wrapper > .features {
+    display: grid;
+    grid-area: features;
+
+    grid-template-columns: 1fr;
+    grid-template-areas: 'text';
+
+    align-content: center;
+
+    padding: 10px 0 0 0;
+  }
+}

@@ -1,5 +1,7 @@
 import random
 import string
+import json
+import os
 
 from typing import Dict, Union, AnyStr, List
 from typing import Optional, Tuple
@@ -7,13 +9,16 @@ from typing import Optional, Tuple
 from django.test import TestCase
 from django.test.client import Client
 
-from hypothesis.extra.django import from_model
-from hypothesis.strategies import just, text
+from collections import OrderedDict
+from faker import Faker
 
 from text_reading.models import StudentTextReading, InstructorTextReading
 from user.instructor.models import Instructor
 from user.models import ReaderUser
 from user.student.models import Student
+
+from ereadingtool.urls import reverse_lazy
+
 
 SectionSpec = List[Dict[AnyStr, int]]
 Reading = Union[StudentTextReading, InstructorTextReading]
@@ -27,16 +32,18 @@ class TestUser(TestCase):
         self.user = None
         self.user_passwd = None
 
-        self.username_strategy = text(min_size=5, max_size=150)
-        self.password_strategy = text(min_size=8, max_size=12)
+        self.fake = Faker(OrderedDict([
+            ('en-US', 1),
+        ]))
 
-    def new_user(self, password: AnyStr = None, username: AnyStr = None) -> (ReaderUser, AnyStr):
-        reader_user_params = {
-            'is_active': just(True),
-            'username': just(username) if username else self.username_strategy
-        }
+        self.fake.seed_locale('en_US', random.randint(0, 100))
 
-        user = from_model(ReaderUser, **reader_user_params).example()
+    def new_user(self, password: AnyStr = None, username: AnyStr = None, is_staff: AnyStr = False) -> (ReaderUser, AnyStr):
+        user = ReaderUser(is_active=True, is_staff=is_staff, username=username or ''.join(random.choices(
+            string.ascii_uppercase + string.digits + string.ascii_lowercase, k=8)))
+
+        user.email = self.fake['en-US'].email()
+
         user_passwd = password or ''.join(random.choices(
             string.ascii_uppercase + string.digits + string.ascii_lowercase, k=8))
 
@@ -48,28 +55,56 @@ class TestUser(TestCase):
     def new_student(self) -> (ReaderUser, AnyStr, Student):
         user, user_passwd = self.new_user()
 
-        student = from_model(Student, user=just(user)).example()
+        student = Student(user=user)
+        student.save()
 
         return user, user_passwd, student
 
     def new_instructor_with_user(self, user: ReaderUser, **kwargs) -> Instructor:
-        instructor = from_model(Instructor, user=just(user), **kwargs).example()
+        instructor = Instructor(user=user, **kwargs)
+        instructor.save()
 
         return instructor
 
     def new_instructor(self) -> (ReaderUser, AnyStr, Instructor):
-        user, user_passwd = self.new_user()
+        user, user_passwd = self.new_user(is_staff=True)
 
         instructor = self.new_instructor_with_user(user)
 
         return user, user_passwd, instructor
 
-    def login(self, client: Client, user_and_pass: Optional[Tuple[ReaderUser, AnyStr]] = None) -> Client:
-        user, user_passwd = user_and_pass or self.new_user()
+    def instructor_login(self, client: Client,
+              user: Optional[ReaderUser] = None,
+              username: Optional[AnyStr] = None,
+              password: Optional[AnyStr] = None) -> Client:
+        return self.login(client, reverse_lazy('api-instructor-login'), user, username, password)
 
-        logged_in = client.login(username=user.username, password=user_passwd)
+    def student_login(self, client: Client,
+              user: Optional[ReaderUser] = None,
+              username: Optional[AnyStr] = None,
+              password: Optional[AnyStr] = None) -> Client:
+        return self.login(client, reverse_lazy('api-student-login'), user, username, password)
 
-        self.assertTrue(logged_in, 'couldnt login with username="{0}" passwd="{1}"'.format(user.username, user_passwd))
+    def login(self, client: Client, endpoint,
+              user: Optional[ReaderUser] = None,
+              username: Optional[AnyStr] = None,
+              password: Optional[AnyStr] = None) -> Client:
+
+        # get JWT token
+        login_resp = client.post(endpoint, json.dumps({
+            'username': username or user.username,
+            'password': password
+        }), content_type='application/json')
+
+        login_resp_json = json.loads(login_resp.content.decode('utf8'))
+
+        self.assertEquals(login_resp.status_code, 200, json.dumps(json.loads(login_resp.content.decode('utf8')),
+                                                                  indent=4))
+
+        self.assertIn('token_type', login_resp_json, 'no token type')
+        self.assertIn('token', login_resp_json, 'no token')
+
+        client.defaults['HTTP_AUTHORIZATION'] = f"{login_resp_json['token_type']} {login_resp_json['token']}"
 
         return client
 
@@ -77,10 +112,10 @@ class TestUser(TestCase):
                               user_and_pass: Optional[Tuple[ReaderUser, AnyStr]] = None) -> Client:
         if not user_and_pass:
             user, user_passwd, _ = self.new_instructor()
+        else:
+            user, user_passwd = user_and_pass
 
-            user_and_pass = (user, user_passwd)
-
-        client = self.login(client, user_and_pass)
+        client = self.instructor_login(client, user=user, password=user_passwd)
 
         return client
 
@@ -88,9 +123,10 @@ class TestUser(TestCase):
                            user_and_pass: Optional[Tuple[ReaderUser, AnyStr]] = None) -> Client:
         if not user_and_pass:
             user, user_passwd, _ = self.new_student()
+        else:
+            user, user_passwd = user_and_pass
 
-            user_and_pass = (user, user_passwd)
-
-        client = self.login(client, user_and_pass)
+        client = self.student_login(client, user=user, password=user_passwd)
 
         return client
+

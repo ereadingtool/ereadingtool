@@ -1,7 +1,15 @@
 from typing import Dict
 
 from django.utils.translation import gettext as _
-from django.views.generic import TemplateView
+from django.views.generic import View, TemplateView
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+
+
+class APIView(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(APIView, self).dispatch(request, *args, **kwargs)
 
 
 class AcknowledgementView(TemplateView):

@@ -1,0 +1,2 @@
+from text_reading.student.models import StudentTextReading, StudentTextReadingAnswers
+from text_reading.instructor.models import InstructorTextReading, InstructorTextReadingAnswers

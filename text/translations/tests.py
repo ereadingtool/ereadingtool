@@ -1,3 +1,4 @@
+import os
 import json
 
 from django.test import TestCase
@@ -53,6 +54,7 @@ class TestTextWord(TestUser, TestCase):
         return text
 
     def test_text_compound_words(self):
+
         text_word_group_api_endpoint = reverse('text-word-group-api')
         test_data = TestText.get_test_data()
 
@@ -78,6 +80,7 @@ class TestTextWord(TestUser, TestCase):
         self.assertTrue(resp_content['grouped'])
 
     def test_regression_text_compound_words_in_order(self):
+
         text_word_group_api_endpoint = reverse('text-word-group-api')
         test_data = TestText.get_test_data()
 
@@ -119,6 +122,7 @@ class TestTextWord(TestUser, TestCase):
         self.assertEquals('Post Office', text_word_group.phrase, f'phrase {text_word_group.phrase} is backwards!')
 
     def test_add_text_word_to_text_section(self):
+
         text_word_api_endpoint = reverse('text-word-api')
         test_data = TestText.get_test_data()
 
@@ -170,6 +174,7 @@ class TestTextWordTranslations(TestUser, TestCase):
         self.text = Text.objects.get(pk=resp_content['id'])
 
     def test_translations_merge(self):
+
         # mock text word since we don't necessarily want to get into running translations code in this particular test
         test_text_word = TextWord.objects.create(
             phrase='something',
