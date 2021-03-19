@@ -15,6 +15,7 @@ Next you'll want to pull in the necessary files to the instance. This can be don
 
 ```
 docker-compose.yml - Builds the system
+Dockerfile.admin_panel - Nested version of app with cookies auth for django admin panel
 Dockerfile.django - Constructs the API server
 Dockerfile.node  - Constructs the frontend
 cors.conf - Uses Docker volumes to mount in shared location. Adds CORS headers to responses
@@ -281,5 +282,5 @@ like db Browser for SQLite in the Execution tab. The model should be able to acc
 !(using database views in Django ORM)[https://resources.rescale.com/using-database-views-in-django-orm/]
 
 #### Nginx Reverse Proxy
-(nginx-proxy)[https://github.com/nginx-proxy/nginx-proxy/]
-(cert machinery)[https://github.com/nginx-proxy/docker-letsencrypt-nginx-proxy-companion]
+* [nginx-proxy](https://github.com/nginx-proxy/nginx-proxy/)
+* [cert machinery](https://github.com/nginx-proxy/docker-letsencrypt-nginx-proxy-companion)

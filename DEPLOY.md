@@ -1,19 +1,21 @@
 ## Manual deployment checklist
 You may notice that we're using different branches, environment variables, and files
 depending on the build. Also note that <DOMAIN.TLD> is meant to be replaced with 
-whatever domain and top-level domain is being used. Remove the angle brackets as well.
+whatever domain and top-level domain is being used. Remove the angle brackets as well. 
+Don't forget the server needs Docker and Docker Compose installed.
 
 
 ### [PRODUCTION]
 
 #### Dockerfile.admin_panel
-* line 12: `    && git checkout master \`
+* line 12: `    && git checkout master \` or delete this line
 
 #### Dockerfile.django
-* line 13: `    && git checkout master \`
+* line 13: `    && git checkout master \` or delete this line
  
 #### Dockerfile.node
-* line 16: `    && git checkout master \`
+* line 16: `    && git checkout master \` or delete this line
+* line 22: `    && mkdir -p /var/www/<DOMAIN.TLD>/html \`
 * line 23: `    && chown -R $USER:$USER /var/www/<DOMAIN.TLD>/html \
 * line 25: `    && cp -r dist/* /var/www/<DOMAIN.TLD>/html/`
 * line 27: `COPY <DOMAIN.TLD> /etc/nginx/sites-available/`
