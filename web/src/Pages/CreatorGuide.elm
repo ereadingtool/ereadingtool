@@ -203,7 +203,7 @@ This app has limited editing capabilities.
 
 ### In editing mode 
 
-#### Tab labeled "Text"
+### Tab labeled "Text"
 You may edit the text title, introduction, author, difficulty, source, conclusion, tags, questions and feedback freely. All 
 changes will be saved, when you select “Save text.” 
 
@@ -214,7 +214,7 @@ If you detect any defect in a reading passage, you **MUST** delete the entire te
 corrected source text of the reading passage. The new corrected text section will be queued for first pass automatic glossing. 
 Replacing the whole text section will avoid problems for the student user.
 
-#### Tab labeled "Translations"
+### Tab labeled "Translations"
 You can and will need to refine vocabulary information that the automatic glossing has retrieved.
 
 The automatic glossing retrieves: the dictionary head word form of a text word (i.e., the lemma), grammatical information about 
@@ -235,17 +235,17 @@ first one appearing in the text, click to bring up the current glossing, select 
 When all of the words have been selected, click merge on the final word’s glossing dialog box. After you click “merge,” the gloss will 
 disappear and you can click the new merged version of the words and add the appropriate equivalent for the whole phrase.
 
-#### Add text word
+### Add text word
 The automatic first pass glossing may not be able to recognize all the words in the text. If a word has not been processed by the automatic 
 service, you can add information about the unrecognized text word clicking on "Add as text word."  Important. When adding text words, start 
 from the beginning of the text and move forward through the words from left to right, top to bottom. After adding a text word, you may need 
 to try refreshing the page to make sure that the text word has been saved. 
 
-#### Save for all
+### Save for all
 When a text word is selected, a "Save for all" option may be available. Selecting “Save for all” will apply the glossing details of the 
 selected word to all other matching text word instances across the text. Note that “Save for all” does not support words that have been merged.
 
-#### Important considerations in glossing words
+### Important considerations in glossing words
 These glosses are available to students as they read a text, and they should give the basic dictionary information about a word. If the word 
 forms part of a complicated metaphor or plays a key role in the syntax of the reading passage, do not try to convey that information in a 
 vocabulary gloss. That kind of information is best made available to readers in the bilingual feedback to the comprehension questions. The 
@@ -255,7 +255,7 @@ for vocabulary learning.
 Students using the app can save text words that they have looked up to a “My words” list. When the student adds a text word to that list, they 
 will get the lemmas, the immediate context (5 words left and five words right) and the English equivalent you have selected for the context. 
 They can review their “My words list” (saved as a PDF), or export them (in CSV format) to use in flashcard programs, such as 
-[Quizlet](https://quizlet.com/)
+[Quizlet](https://quizlet.com/).
 """
 
 
