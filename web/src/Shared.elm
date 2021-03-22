@@ -108,7 +108,7 @@ init flags url key =
                     if List.any (\path -> url.path == path) publicPaths then
                         Cmd.batch
                             [ requestInstructorProfile session config (Viewer.id viewer)
-                            , Browser.Navigation.replaceUrl key (Route.toString Route.Profile__Instructor)
+                            , Browser.Navigation.replaceUrl key (Route.toString Route.Profile__ContentCreator)
                             , Task.attempt GotTimezone TimeZone.getZone
                             ]
 
@@ -183,7 +183,7 @@ update msg model =
                         Instructor ->
                             Cmd.batch
                                 [ requestInstructorProfile session model.config (Viewer.id viewer)
-                                , Browser.Navigation.replaceUrl model.key (Route.toString Route.Profile__Instructor)
+                                , Browser.Navigation.replaceUrl model.key (Route.toString Route.Profile__ContentCreator)
                                 ]
 
                 Nothing ->
@@ -397,7 +397,7 @@ viewLogo session =
                             Route.toString Route.Profile__Student
 
                         Instructor ->
-                            Route.toString Route.Profile__Instructor
+                            Route.toString Route.Profile__ContentCreator
 
                 Nothing ->
                     Route.toString Route.Top
@@ -438,7 +438,7 @@ viewContentHeader role =
                 [ class "nav-item" ]
                 [ a
                     [ class "nav-link"
-                    , href (Route.toString Route.Text__EditorSearch)
+                    , href (Route.toString Route.Text__CreatorSearch)
                     ]
                     [ text "Edit" ]
                 ]
@@ -472,7 +472,7 @@ viewProfileHeader role toMsg =
                         Route.toString Route.Profile__Student
 
                     Instructor ->
-                        Route.toString Route.Profile__Instructor
+                        Route.toString Route.Profile__ContentCreator
             ]
             [ text "Profile" ]
         ]

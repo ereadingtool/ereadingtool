@@ -354,7 +354,7 @@ update msg (SafeModel model) =
 
         GotTextDeleted (Ok ( metadata, textDelete )) ->
             ( SafeModel model
-            , Browser.Navigation.load (Route.toString Route.Text__EditorSearch)
+            , Browser.Navigation.load (Route.toString Route.Text__CreatorSearch)
             )
 
         GotTextDeleted (Err error) ->
@@ -789,8 +789,8 @@ view (SafeModel model) =
 viewMessages : SafeModel -> Html Msg
 viewMessages (SafeModel model) =
     div [ attribute "class" "msgs" ]
-        [ div [ attribute "class" "error_msg" ] [ viewMessage model.errorMessage ]
-        , div [ attribute "class" "success_msg" ] [ viewMessage model.successMessage ]
+        [ div [ attribute "class" "text-editor-error-msg" ] [ viewMessage model.errorMessage ]
+        , div [ attribute "class" "text-editor-success-msg" ] [ viewMessage model.successMessage ]
         ]
 
 

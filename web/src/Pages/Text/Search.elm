@@ -359,6 +359,21 @@ viewSearchResults timezone textListItems =
     let
         viewSearchResult textItem =
             let
+                difficultyCategory = 
+                    case 
+                        List.head <|
+                            List.filter
+                                (\difficulty ->
+                                    Tuple.first difficulty == textItem.difficulty
+                                )
+                                Shared.difficulties
+                    of
+                        Just difficulty ->
+                            Tuple.second difficulty
+
+                        Nothing ->
+                            ""
+
                 commaDelimitedTags =
                     case textItem.tags of
                         Just tags ->
@@ -401,7 +416,7 @@ viewSearchResults timezone textListItems =
                     , div [ class "sub_description" ] [ Html.text "Title" ]
                     ]
                 , div [ class "result_item" ]
-                    [ div [ class "result_item_title" ] [ Html.text textItem.difficulty ]
+                    [ div [ class "result_item_title" ] [ Html.text difficultyCategory ]
                     , div [ class "sub_description" ] [ Html.text "Difficulty" ]
                     ]
                 , div [ class "result_item" ]

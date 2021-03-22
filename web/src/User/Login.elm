@@ -100,7 +100,6 @@ viewEmailInput { onEmailUpdate, errors } =
     [ div [ class "input-container" ]
         [ Html.input
             ([ id "email-input"
-             , class "email-input"
              , attribute "size" "25"
              , attribute "placeholder" "Email Address"
              , onInput onEmailUpdate

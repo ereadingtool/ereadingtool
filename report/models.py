@@ -5,7 +5,6 @@ from typing import Dict, TypeVar
 from django.db import models
 from text.models import TextDifficulty, Text, TextSection
 from django.utils import timezone
-import yaml
 
 Student = TypeVar('Student')
 
@@ -14,6 +13,7 @@ Student = TypeVar('Student')
 # tying it to a database view with the same fields as specified in the `class`.
 
 class StudentFirstTimeCorrect(models.Model):
+    id = models.BigIntegerField(primary_key=True)
     text = models.ForeignKey(Text, on_delete=models.DO_NOTHING)
     student = models.ForeignKey('user.Student', on_delete=models.DO_NOTHING)
     num_correct = models.IntegerField()
@@ -25,9 +25,9 @@ class StudentFirstTimeCorrect(models.Model):
         db_table = 'report_first_time_correct'
 
 class StudentReadingsInProgress(models.Model):
+    id = models.BigIntegerField(primary_key=True)
     student = models.ForeignKey('user.Student', on_delete=models.DO_NOTHING)
     text = models.ForeignKey(Text, on_delete=models.DO_NOTHING)
-    text_reading = models.ForeignKey('text_reading.StudentTextReading', on_delete=models.DO_NOTHING)
     start_dt = models.DateTimeField()
     text_difficulty_slug = models.SlugField(blank=False)
 
@@ -35,11 +35,24 @@ class StudentReadingsInProgress(models.Model):
         managed = False
         db_table = 'report_texts_in_progress'
 
+    def get_texts(filter_by: Dict):
+        soln = []
+        try:
+            del(filter_by['tags__name__in'])
+        except:
+            pass
+        # srip is a StudentReadingsInProgress object
+        for srip in StudentReadingsInProgress.objects.filter(**filter_by).all():
+            if srip.text not in soln:
+                soln.append(srip.text)
+
+        return soln
+
 
 class StudentReadingsComplete(models.Model):
+    id = models.BigIntegerField(primary_key=True)
     student = models.ForeignKey('user.Student', on_delete=models.DO_NOTHING)
     text = models.ForeignKey(Text, on_delete=models.DO_NOTHING)
-    text_reading = models.ForeignKey('text_reading.StudentTextReading', on_delete=models.DO_NOTHING)
     start_dt = models.DateTimeField()
     end_dt = models.DateTimeField()
     text_difficulty_slug = models.SlugField(blank=False)
@@ -47,6 +60,20 @@ class StudentReadingsComplete(models.Model):
     class Meta:
         managed = False
         db_table = 'report_texts_complete'
+
+    def get_texts(filter_by: Dict):
+        # texts in report_texts_complete
+        soln = []
+        try:
+            del(filter_by['tags__name__in'])
+        except:
+            pass
+        # src is a StudentReadingsComplete object
+        for src in StudentReadingsComplete.objects.filter(**filter_by).all():
+            if src.text not in soln:
+                soln.append(src.text)
+
+        return soln
 
 
 class Flashcards(models.Model):
