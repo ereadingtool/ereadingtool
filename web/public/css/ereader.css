@@ -87,6 +87,34 @@ body {
   align-items: center;
 }
 
+
+.creator-guide {
+  width: 800px;
+  padding: 10px 20px;
+  margin: 0 auto;
+}
+
+.creator-guide h1 {
+  font-size: 36px;
+}
+
+.creator-guide h2 {
+  font-size: 28px;
+}
+
+.creator-guide h3 {
+  font-size: 24px;
+}
+
+.creator-guide p,
+.creator-guide li {
+  font-size: 18px;
+}
+
+.creator-guide li {
+  padding-bottom: 4px;
+}
+
 .cursor {
   cursor: pointer;
 }
