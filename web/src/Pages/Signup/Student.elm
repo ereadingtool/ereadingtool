@@ -11,7 +11,7 @@ import Api.Endpoint as Endpoint
 import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
 import Html exposing (Html, div, span)
-import Html.Attributes exposing (attribute, class, classList, id)
+import Html.Attributes exposing (attribute, class, classList, id, href)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (..)
 import Http.Detailed
@@ -304,31 +304,31 @@ viewStudentWelcomeMsg : List (Html Msg)
 viewStudentWelcomeMsg =
     let
         welcomeTitle =
-            """Welcome to The Language Flagship’s Steps To Advanced Reading (STAR) website."""
+            """Welcome to the website Steps To Advanced Reading (STAR)."""
     in
     [ div [ class "welcome_msg" ]
         [ span [ class "welcome-headline" ] [ Html.text welcomeTitle ]
         , div [ class "welcome-msg-text" ]
             [ Html.p []
                 [ Html.text
-                    """The purpose of this site is to help students improve their reading proficiency in Flagship
-            language that they are studying. This site includes a wide range of texts at different proficiency levels.
-            You will select texts to read by proficiency level and by topic."""
+                    """Developed with support from """
+                    , Html.a [ href "https://www.thelanguageflagship.org/" ]
+                    [ Html.text "The Language Flagship" ]
+                    , Html.text 
+                        """, this site is designed to help students improve their reading proficiency in Russian at a wide 
+                    range of proficiency levels."""
+                ]
+            , Html.p [] 
+                [ Html.text
+                        """After signing in, you will land on a profile page, from which you can go and select a text to read. 
+                    Texts are organized by proficiency level and by topic. After selecting a text, you will get a brief 
+                    contextualizing message in English. Then you will see the first part of the text followed by comprehension 
+                    question(s). Once you’ve read the text and selected the best answer, you will get feedback telling you if 
+                    your choice is correct, and why or why not."""
                 ]
             , Html.p []
-                [ Html.text
-                    """Before reading the Russian texts, you will get a brief contextualizing message in English.
-            Then you will see the first part of the text followed by comprehension questions. Once you’ve read the text
-            and selected the best answer, you will get feedback telling you if your choice is correct, and why or why
-            not."""
-                ]
-            , Html.p []
-                [ Html.text
-                    """The format of this site resembles the Flagship proficiency tests, and our goal is to
-            help you build your reading skills for those tests. Any particular reading should take you between 5-15
-            minutes to complete, and we envision that you can use these texts on the go, when commuting, when waiting
-            for a bus, etc.  You can come back to texts at any time.  If this is your first time using the website,
-            pop-up boxes will help you learn how to use the site."""
+                [ Html.text 
+                    """On your first time using the website, pop-up boxes will guide you in learning how to use the site."""            
                 ]
             ]
         ]
