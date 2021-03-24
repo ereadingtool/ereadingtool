@@ -741,12 +741,12 @@ viewFeedbackLinks =
         [ span [ class "profile_item_title" ] [ Html.text "Contact" ]
         , span [ class "profile_item_value" ]
             [ div []
-                [ Html.a [ attribute "href" "https://goo.gl/forms/Wn5wWVHdmBKOxsFt2" ]
+                [ Html.a [ attribute "href" "https://forms.gle/urBbUYr8AmbFeW9b8" ]
                     [ Html.text "Report a problem"
                     ]
                 ]
             , div []
-                [ Html.a [ attribute "href" "https://goo.gl/forms/z5BKx36xBJR7XqQY2" ]
+                [ Html.a [ attribute "href" "https://forms.gle/6SwVYNyCw95sNrVk8" ]
                     [ Html.text "Please give us feedback!"
                     ]
                 ]
