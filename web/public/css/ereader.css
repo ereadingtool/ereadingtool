@@ -197,7 +197,7 @@ body {
   margin-bottom: 15px;
 
   display: grid;
-  grid-template-columns: 225px auto auto auto;
+  grid-template-columns: 225px auto auto 1fr;
   grid-template-areas: 'logo content-nav . profile-nav';
   column-gap: 30px;
 
@@ -601,7 +601,7 @@ body {
 
     justify-content: center;
 
-    padding: 15px 10px 10px 10px;
+    padding: 15px 20px;
     font-size: 25px;
   }
 
@@ -646,6 +646,10 @@ body {
     padding: 15px 0 10px 10px;
   }
 
+  .infobar {
+    width: 75%;
+  }
+
   .menu-icon {
     display: grid;
     grid-area: menu-icon;
@@ -671,13 +675,6 @@ body {
     opacity: 1;
     transition: opacity 0.25s, height 0.4s;
   }
-
-}
-
-@media (max-width: 568px) {
-  .infobar {
-    width: 75%;
-  }
 }
 
 @media only screen and (max-width: 768px) {
@@ -695,7 +692,7 @@ body {
   #header {
     padding: 10px 15px;
 
-    grid-template-columns: 150px auto auto auto;
+    grid-template-columns: 150px auto auto 1fr;
     column-gap: 20px;
     font-size: 18px;
   }
