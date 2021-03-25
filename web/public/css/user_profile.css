@@ -370,8 +370,28 @@ table th {
 }
 
 @media only screen and (min-device-width: 320px) and (max-device-width: 768px) {
+  .feedback {
+    order: 7;
+  }
+
+  .filter {
+    display: none;
+  }
+
+  .footer_items {
+    margin-top: 0;
+  }
+
   #lower-menu {
     margin-top: 15px;
+  }
+
+  .performance {
+    order: 6;
+  }
+
+  .preferred_difficulty {
+    order: 3;
   }
 
   .profile {
@@ -379,8 +399,8 @@ table th {
     grid-template-columns: 10% [content] auto 10%;
   }
 
-  .footer_items {
-    margin-top: 0;
+  .profile-item {
+    order: 1;
   }
 
   .profile_items {
@@ -400,7 +420,15 @@ table th {
     padding-right: 5px;
   }
 
-  .filter {
-    display: none;
+  #research_consent {
+    order: 4;
+  }
+
+  .show-help {
+    order: 2;
+  }
+
+  #words {
+    order: 5;
   }
 }

@@ -570,7 +570,6 @@ body {
   display: inline-block;
 }
 
-
 @media (max-width: 568px) {
   .content-menu {
     display: grid;
