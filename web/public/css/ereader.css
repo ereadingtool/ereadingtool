@@ -570,6 +570,14 @@ body {
   display: inline-block;
 }
 
+<<<<<<< HEAD
+=======
+.welcome-msg-text a {
+  color: #00478f;
+  text-decoration: none;
+}
+
+>>>>>>> a197b7222218d01346a2d313848ca88888199323
 @media (max-width: 568px) {
   .content-menu {
     display: grid;
