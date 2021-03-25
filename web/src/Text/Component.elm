@@ -205,9 +205,6 @@ reinitialize_ck_editors text_component =
 update_text_errors : TextComponent -> Dict String String -> TextComponent
 update_text_errors (TextComponent txt fields text_tags components) errors =
     let
-        _ =
-            Debug.log "text errors" errors
-
         new_text_component =
             TextComponent
                 txt

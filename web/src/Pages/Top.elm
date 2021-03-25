@@ -7,6 +7,8 @@ module Pages.Top exposing
 
 import Html exposing (..)
 import Html.Attributes exposing (class, href, id)
+import Http exposing (..)
+import Role exposing (Role(..))
 import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)

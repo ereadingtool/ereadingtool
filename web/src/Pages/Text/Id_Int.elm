@@ -4,18 +4,17 @@ import Api
 import Api.Config as Config exposing (Config)
 import Api.Endpoint exposing (word)
 import Api.WebSocket as WebSocket
-import Array exposing (Array)
+import Array
 import Browser.Navigation exposing (Key)
-import Dict exposing (Dict)
+import Dict
 import Html exposing (..)
-import Html.Attributes exposing (attribute, class, classList, href, id)
+import Html.Attributes exposing (attribute, class, classList, id)
 import Html.Events exposing (onClick, onMouseLeave)
 import Html.Parser
 import Html.Parser.Util
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode exposing (Value)
-import Ports
 import Role exposing (Role(..))
 import Session exposing (Session)
 import Shared
@@ -29,14 +28,13 @@ import TextReader.Answer.Model exposing (TextAnswer)
 import TextReader.Model exposing (..)
 import TextReader.Question.Model exposing (TextQuestion)
 import TextReader.Section.Decode
-import TextReader.Section.Model exposing (Section, TextSection, Words)
+import TextReader.Section.Model exposing (Section)
 import TextReader.Text.Decode
 import TextReader.Text.Model exposing (Text)
 import TextReader.TextWord
-import User.Profile exposing (Profile)
+import User.Profile
 import User.Profile.TextReader.Flashcards
 import Viewer
-import Views
 
 
 page : Page Params Model Msg
@@ -264,17 +262,9 @@ handleWebsocketResponse (SafeModel model) message =
                     routeCommandResponse (SafeModel model) commandResponse
 
                 Err err ->
-                    let
-                        _ =
-                            Debug.log "websocket decode error" err
-                    in
                     ( SafeModel model, Cmd.none )
 
         WebSocket.Error err ->
-            let
-                _ =
-                    Debug.log "server error response" err
-            in
             ( SafeModel model, Cmd.none )
 
 
@@ -402,7 +392,6 @@ view (SafeModel model) =
     , body =
         [ div []
             [ viewContent (SafeModel model)
-            , Views.view_footer
             ]
         ]
     }
@@ -702,8 +691,7 @@ viewGloss (SafeModel model) reader_word text_word =
             ]
             [ viewWordAndGrammemes reader_word text_word
             , viewTranslations (TextReader.TextWord.translations text_word)
-
-            -- , viewFlashcardOptions (SafeModel model) reader_word
+            , viewFlashcardOptions (SafeModel model) reader_word
             ]
         ]
 
@@ -759,22 +747,41 @@ viewFlashcardOptions (SafeModel model) reader_word =
         phrase =
             TextReader.Model.phrase reader_word
 
+        translations =
+            Maybe.map
+                TextReader.TextWord.translations
+                (TextReader.Model.textWord reader_word)
+
         flashcards =
             Maybe.withDefault Dict.empty (User.Profile.TextReader.Flashcards.flashcards model.flashcard)
 
         add =
-            div [ class "cursor", onClick (AddToFlashcards reader_word) ] [ Html.text "Add to Flashcards" ]
+            div [ class "cursor", onClick (AddToFlashcards reader_word) ] [ Html.text "Add to My Words" ]
 
         remove =
-            div [ class "cursor", onClick (RemoveFromFlashcards reader_word) ] [ Html.text "Remove from Flashcards" ]
+            div [ class "cursor", onClick (RemoveFromFlashcards reader_word) ] [ Html.text "Remove from My Words" ]
     in
-    div [ class "gloss-flashcard-options" ]
-        (if Dict.member phrase flashcards then
-            [ remove ]
+    case Session.viewer model.session of
+        Just viewer ->
+            case Viewer.role viewer of
+                Student ->
+                    case translations of
+                        Just ts ->
+                            div [ class "gloss-flashcard-options" ] <|
+                                if Dict.member phrase flashcards then
+                                    [ remove ]
 
-         else
-            [ add ]
-        )
+                                else
+                                    [ add ]
+
+                        Nothing ->
+                            Html.text ""
+
+                Instructor ->
+                    Html.text ""
+
+        Nothing ->
+            Html.text ""
 
 
 viewFlashcardWords : SafeModel -> Html Msg

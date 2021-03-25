@@ -2,7 +2,6 @@ module TextReader.Text.Decode exposing (textDecoder)
 
 import Iso8601
 import Json.Decode
-import Json.Decode.Extra exposing (posix)
 import Json.Decode.Pipeline exposing (required)
 import TextReader.Text.Model exposing (Text)
 

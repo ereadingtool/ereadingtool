@@ -1,14 +1,3 @@
-.password-reset-msg {
-  display: grid;
-
-  grid-column: 1;
-  grid-row: auto;
-}
-
-.login_label {
-  display: grid;
-}
-
 .disabled {
   cursor: not-allowed;
   color: #f2f2f2;
@@ -17,6 +6,17 @@
 
 .disabled:hover {
   background-color: #7599bd;
+}
+
+.login_label {
+  display: grid;
+}
+
+.password-reset-msg {
+  display: grid;
+
+  grid-column: 1;
+  grid-row: auto;
 }
 
 .password-reset-show {

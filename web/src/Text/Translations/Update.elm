@@ -9,7 +9,6 @@ import Api.Endpoint as Endpoint
 import Array
 import Dict exposing (Dict)
 import Http
-import Json.Decode as Decode
 import Session exposing (Session)
 import Task exposing (Task)
 import Text.Translations exposing (..)
@@ -26,7 +25,9 @@ update : (Msg -> msg) -> Msg -> Model -> ( Model, Cmd msg )
 update parentMsg msg model =
     case msg of
         MatchTranslations wordInstance ->
-            ( model, matchTranslations parentMsg model wordInstance )
+            ( Text.Translations.Model.uneditAllWords model
+            , matchTranslations parentMsg model wordInstance
+            )
 
         UpdatedTextWords (Ok textWords) ->
             ( Text.Translations.Model.setTextWords model textWords, Cmd.none )
@@ -55,17 +56,9 @@ update parentMsg msg model =
             )
 
         UpdatedTextWords (Err err) ->
-            let
-                _ =
-                    Debug.log "error updating text words" err
-            in
             ( model, Cmd.none )
 
         UpdatedTextWord (Err err) ->
-            let
-                _ =
-                    Debug.log "error updating text word" err
-            in
             ( model, Cmd.none )
 
         MergeWords wordInstances ->
@@ -83,17 +76,9 @@ update parentMsg msg model =
                 )
 
             else
-                let
-                    _ =
-                        Debug.log "error merging text words" mergeResp.error
-                in
                 ( Text.Translations.Model.clearMerge model, Cmd.none )
 
         MergedWords (Err err) ->
-            let
-                _ =
-                    Debug.log "error merging text words" err
-            in
             ( model, Cmd.none )
 
         AddToMergeWords wordInstance ->
@@ -129,10 +114,6 @@ update parentMsg msg model =
             )
 
         MergeFail err ->
-            let
-                _ =
-                    Debug.log "merge failure" err
-            in
             ( setGlobalEditLock model False, Cmd.none )
 
         DeleteTextWord _ ->
@@ -162,10 +143,6 @@ update parentMsg msg model =
 
         -- handle user-friendly msgs
         UpdateTextTranslation (Err err) ->
-            let
-                _ =
-                    Debug.log "error decoding text translation" err
-            in
             ( model, Cmd.none )
 
         UpdateTextTranslations (Ok words) ->
@@ -173,10 +150,6 @@ update parentMsg msg model =
 
         -- handle user-friendly msgs
         UpdateTextTranslations (Err err) ->
-            let
-                _ =
-                    Debug.log "error decoding text translations" err
-            in
             ( model, Cmd.none )
 
         UpdateNewTranslationForTextWord textWord translationTxt ->
@@ -206,10 +179,6 @@ update parentMsg msg model =
 
         -- handle user-friendly msgs
         SubmittedTextTranslation (Err err) ->
-            let
-                _ =
-                    Debug.log "error decoding adding text translations" err
-            in
             ( model, Cmd.none )
 
         DeleteTranslation textWord textTranslation ->
@@ -224,12 +193,8 @@ update parentMsg msg model =
 
         -- handle user-friendly msgs
         DeletedTranslation (Err err) ->
-            let
-                _ =
-                    Debug.log "error deleting text translations" err
-            in
             ( model, Cmd.none )
-
+                
         SelectGrammemeForEditing _ grammemeName ->
             ( Text.Translations.Model.selectGrammemeForEditing model grammemeName
             , Cmd.none

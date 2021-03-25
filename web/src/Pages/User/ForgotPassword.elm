@@ -5,7 +5,7 @@ module Pages.User.ForgotPassword exposing
     , page
     )
 
-import Api exposing (post)
+import Api
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
 import Dict exposing (Dict)
@@ -24,7 +24,6 @@ import Spa.Document exposing (Document)
 import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
 import Utils exposing (isValidEmail)
-import Views
 
 
 page : Page Params Model Msg
@@ -183,7 +182,6 @@ view model =
     , body =
         [ div []
             [ viewContent model
-            , Views.view_footer
             ]
         ]
     }
@@ -218,13 +216,13 @@ viewEmailInput model =
                 []
     in
     [ div [ class "login_role" ] [ Html.text "Forgot Password" ]
-    , div [ class "input-container" ] [
-            Html.input
+    , div [ class "input-container" ]
+        [ Html.input
             ([ id "email-input"
-            , attribute "placeholder" "Email Address"
-            , attribute "size" "25"
-            , onInput UpdateEmail
-            ]
+             , attribute "placeholder" "Email Address"
+             , attribute "size" "25"
+             , onInput UpdateEmail
+             ]
                 ++ emailError
             )
             []
@@ -232,6 +230,7 @@ viewEmailInput model =
         , viewResponse model.response
         ]
     ]
+
 
 viewSubmit : Model -> List (Html Msg)
 viewSubmit model =

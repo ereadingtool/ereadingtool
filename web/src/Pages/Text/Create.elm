@@ -32,7 +32,7 @@ import Text.Update
 import Text.View
 import TextEdit exposing (Mode(..), Tab(..))
 import Time
-import User.Instructor.Profile as InstructorProfile exposing (InstructorProfile)
+import User.Instructor.Profile exposing (InstructorProfile)
 import User.Profile as Profile
 
 
@@ -244,7 +244,7 @@ update msg (SafeModel model) =
 
         GotTextDeleted (Ok ( metadata, textDelete )) ->
             ( SafeModel model
-            , Browser.Navigation.load (Route.toString Route.Text__EditorSearch)
+            , Browser.Navigation.load (Route.toString Route.Text__CreatorSearch)
             )
 
         GotTextDeleted (Err error) ->

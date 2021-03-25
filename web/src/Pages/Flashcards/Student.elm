@@ -11,7 +11,6 @@ import Html.Attributes exposing (attribute, class, classList, id)
 import Html.Events exposing (onClick, onDoubleClick, onInput)
 import Json.Decode
 import Json.Encode as Encode exposing (Value)
-import Menu.Msg as MenuMsg
 import Role exposing (Role(..))
 import Session
 import Shared
@@ -21,7 +20,6 @@ import Spa.Url exposing (Url)
 import User.Profile
 import Utils
 import Viewer
-import Views
 
 
 page : Page Params Model Msg
@@ -104,7 +102,7 @@ type Msg
     | SubmitAnswer
     | RateQuality Int
     | WebSocketResp (Result Json.Decode.Error WebSocket.WebSocketMsg)
-    | Logout MenuMsg.Msg
+    | Logout
 
 
 update : Msg -> SafeModel -> ( SafeModel, Cmd Msg )
@@ -150,7 +148,7 @@ update msg (SafeModel model) =
         RateQuality q ->
             ( SafeModel (FlashcardModel.setQuality model (Just q)), sendCommand (RateQualityReq q) )
 
-        Logout _ ->
+        Logout ->
             ( SafeModel model, Api.logout () )
 
 
@@ -216,10 +214,6 @@ decodeWebSocketResp safeModel str =
 
 webSocketError : SafeModel -> String -> String -> ( SafeModel, Cmd Msg )
 webSocketError model errorType error =
-    let
-        _ =
-            Debug.log errorType error
-    in
     ( model, Cmd.none )
 
 
@@ -277,7 +271,6 @@ view safeModel =
     , body =
         [ div []
             [ viewContent safeModel
-            , Views.view_footer
             ]
         ]
     }

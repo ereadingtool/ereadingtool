@@ -9,7 +9,7 @@ module Text.Model exposing
 
 import Array exposing (Array)
 import Dict
-import Text.Section.Model exposing (emptyTextSection)
+import Text.Section.Model
 import Text.Translations exposing (..)
 import Time exposing (Posix)
 

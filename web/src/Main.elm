@@ -1,6 +1,6 @@
 module Main exposing (main)
 
-import Api exposing (AuthError, AuthSuccess)
+import Api
 import Browser
 import Browser.Navigation as Nav
 import Json.Decode exposing (Value)

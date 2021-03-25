@@ -2,7 +2,7 @@ module TextReader.Answer.Decode exposing (answerDecoder)
 
 import Array exposing (Array)
 import Json.Decode
-import Json.Decode.Pipeline exposing (optional, required)
+import Json.Decode.Pipeline exposing (required)
 import TextReader.Answer.Model exposing (Answer)
 
 

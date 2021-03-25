@@ -115,8 +115,7 @@ init shared { params } =
         , translationServiceProcessed = False
         }
     , Cmd.batch
-        [ Task.perform (\_ -> InitTextFieldEditors) (Task.succeed Nothing)
-        , getText shared.session shared.config params.id
+        [ getText shared.session shared.config params.id
         , Api.websocketDisconnectAll
         ]
     )
@@ -134,7 +133,6 @@ type Msg
     | SubmittedTextDelete
     | ConfirmedTextDelete Bool
     | GotTextDeleted (Result (Http.Detailed.Error String) ( Http.Metadata, Text.Decode.TextDeleteResp ))
-    | InitTextFieldEditors
     | ToggleEditable TextField Bool
     | UpdateTextAttributes String String
     | UpdateTextCkEditors ( String, String )
@@ -356,7 +354,7 @@ update msg (SafeModel model) =
 
         GotTextDeleted (Ok ( metadata, textDelete )) ->
             ( SafeModel model
-            , Browser.Navigation.load (Route.toString Route.Text__EditorSearch)
+            , Browser.Navigation.load (Route.toString Route.Text__CreatorSearch)
             )
 
         GotTextDeleted (Err error) ->
@@ -398,11 +396,6 @@ update msg (SafeModel model) =
 
             else
                 ( SafeModel model, Cmd.none )
-
-        InitTextFieldEditors ->
-            ( SafeModel model
-            , Text.Component.initialize_text_field_ck_editors model.text_component
-            )
 
         ToggleEditable textField editable ->
             let
@@ -796,8 +789,8 @@ view (SafeModel model) =
 viewMessages : SafeModel -> Html Msg
 viewMessages (SafeModel model) =
     div [ attribute "class" "msgs" ]
-        [ div [ attribute "class" "error_msg" ] [ viewMessage model.errorMessage ]
-        , div [ attribute "class" "success_msg" ] [ viewMessage model.successMessage ]
+        [ div [ attribute "class" "text-editor-error-msg" ] [ viewMessage model.errorMessage ]
+        , div [ attribute "class" "text-editor-success-msg" ] [ viewMessage model.successMessage ]
         ]
 
 

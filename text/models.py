@@ -139,6 +139,9 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
                 text_section.update_definitions_if_new(
                     old_body=section_params['text_section_form'].cleaned_data['body'])
 
+            # Need to freshen up the answers. Delete them all and re-add them.
+            text_section.questions.all().delete()
+
             for i, question in enumerate(section_params['questions']):
                 question_obj = question['form'].save(commit=False)
 

@@ -9,7 +9,6 @@ module TextReader.Question.Model exposing
     )
 
 import Array exposing (Array)
-import Question.Field exposing (question)
 import TextReader.Answer.Model exposing (Answer, TextAnswer)
 import Time exposing (Posix)
 

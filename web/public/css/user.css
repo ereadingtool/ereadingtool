@@ -1,3 +1,37 @@
+#acknowledgements-and-about {
+  padding-top: 2%;
+
+  display: grid;
+
+  grid-template-columns: 150px 15px;
+
+  grid-column-gap: 2px;
+
+  font-size: 16px;
+}
+
+.difficulty-info {
+  width: 60%;
+  font-size: 18px;
+}
+
+.difficulty-select {
+  width: auto;
+  background-color: white;
+  border: 1px solid black;
+}
+
+.errors {
+  display: grid;
+}
+
+.help_msgs {
+  margin-top: 5px;
+  font-style: italic;
+  font-size: larger;
+}
+
+
 .help_msgs,
 .button,
 .signup_submit,
@@ -44,16 +78,28 @@ input {
 }
 
 .login_role {
+  font-family: 'EB Garamond';
   font-size: 32px;
   display: grid;
   align-items: center;
 }
 
-.validation-error {
-  display: inline-block;
-  padding-top: 5px;
-  -webkit-padding-before: 0.5%;
-  line-height: 40px;
+.select {
+  border: 0;
+  border-radius: 0;
+}
+
+.signup_title {
+  font-family: 'EB Garamond';
+  font-size: 32px;
+  display: grid;
+  align-items: center;
+}
+
+/* CSS fixes to deal with incorrect styles */
+.signup_submit {
+  width: 100%;
+  padding: 15px 0;
 }
 
 .signup_submit,
@@ -62,36 +108,20 @@ input {
   justify-content: center;
 }
 
-.cursor {
-  cursor: pointer;
-}
-
-.signup_title {
-  font-size: 32px;
-  display: grid;
-  align-items: center;
-}
-
-select {
-  border: 0;
-  border-radius: 0;
-}
-
-.errors {
-  display: grid;
-}
-
-.help_msgs {
-  margin-top: 5px;
-  font-style: italic;
-  font-size: larger;
+validation-error {
+  display: inline-block;
+  padding-top: 5px;
+  -webkit-padding-before: 0.5%;
+  line-height: 40px;
 }
 
 .welcome_msg {
   display: grid;
+  width: 60%;
+
   margin-bottom: 10px;
   margin-top: 15px;
-  font-size: larger;
+  font-size: 18px;
 }
 
 .welcome_msg > .headline {
@@ -105,55 +135,56 @@ select {
   grid-row: 2;
 }
 
-#acknowledgements-and-about {
-  padding-top: 2%;
 
-  display: grid;
-
-  grid-template-columns: 110px 150px;
-
-  grid-column-gap: 2px;
-
-  font-size: 16px;
-}
-
-@media only screen and (max-width: 768px) {
+@media only screen and (min-width: 768px) and (max-width: 1025px) {
   .help_msgs,
   .button,
   .signup_submit,
   select,
   input {
-    width: 100%;
+    width: 95%;
   }
 
   .button {
     height: 40px;
   }
-
+/* 
   select {
     height: 50px;
   }
-
+ */
   #lower-menu {
     margin-top: 0;
     padding: 0;
   }
 
   .signup_title {
-    font-family: 'Helvetica Neue';
+    font-family: 'EB Garamond';
     font-size: 32px;
   }
 
-  .headline {
-    padding-top: 25px;
+  .welcome_msg,
+  .difficulty-info {
+    width: 100%;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .button {
+    height: 40px;
   }
 
-  .welcome_msg > .headline {
-    padding-bottom: 0;
+  .help_msgs,
+  .button,
+  .signup_submit,
+  select,
+  input {
+    width: 95%;
   }
 
-  .signup {
-    margin-top: 15px;
+  #lower-menu {
+    margin-top: 0;
+    padding: 0;
   }
 
   .login,
@@ -167,11 +198,6 @@ select {
     margin-right: 20px;
   }
 
-  .signup_box > input,
-  .login_box > input {
-    height: 45px;
-  }
-
   .filter {
     display: none;
   }
@@ -183,16 +209,35 @@ select {
     align-items: center;
     justify-items: center;
   }
-}
+/* 
+  select {
+    height: 50px;
+  } */
 
-.difficulty-select {
-  width: auto;
-  background-color: white;
-  border: 1px solid black;
-}
+  .signup {
+    margin-top: 15px;
+  }
 
-/* CSS fixes to deal with incorrect styles */
-.signup_submit {
-  width: 100%;
-  padding: 15px 0;
+  .signup_box > input,
+  .login_box > input {
+    height: 45px;
+  }
+
+  .signup_title {
+    font-family: 'EB Garamond';
+    font-size: 32px;
+  }
+
+  .welcome_msg,
+  .difficulty-info {
+    width: 100%;
+  }
+
+  .welcome-headline {
+    padding-top: 25px;
+  }
+
+  .welcome_msg > .headline {
+    padding-bottom: 0;
+  }
 }

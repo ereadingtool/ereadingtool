@@ -5,31 +5,28 @@ module Pages.Signup.Student exposing
     , page
     )
 
-import Api exposing (post)
+import Api
 import Api.Config as Config exposing (Config)
 import Api.Endpoint as Endpoint
 import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
-import Email exposing (EmailAddress)
 import Html exposing (Html, div, span)
-import Html.Attributes exposing (attribute, class, classList)
+import Html.Attributes exposing (attribute, class, classList, id, href)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (..)
 import Http.Detailed
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode
-import Menu.Msg as MenuMsg
+import Markdown
 import Session exposing (Session)
 import Shared
 import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url exposing (Url)
-import Text.Model exposing (TextDifficulty)
 import User.SignUp as SignUp
 import Utils exposing (isValidEmail)
-import Views
 
 
 page : Page Params Model Msg
@@ -71,6 +68,7 @@ type alias Model =
     , difficulties : List ( String, String )
     , signupParams : SignUpParams
     , showPasswords : Bool
+    , showDifficultyInfo : Bool
     , errors : Dict String String
     }
 
@@ -94,6 +92,7 @@ init shared { params } =
                         ""
             }
       , showPasswords = False
+      , showDifficultyInfo = False
       , errors = Dict.empty
       }
     , Cmd.none
@@ -106,6 +105,7 @@ init shared { params } =
 
 type Msg
     = ToggleShowPassword
+    | ToggleShowDifficultyInfo
     | UpdateEmail String
     | UpdatePassword String
     | UpdateConfirmPassword String
@@ -119,6 +119,11 @@ update msg model =
     case msg of
         ToggleShowPassword ->
             ( { model | showPasswords = not model.showPasswords }
+            , Cmd.none
+            )
+
+        ToggleShowDifficultyInfo ->
+            ( { model | showDifficultyInfo = not model.showDifficultyInfo }
             , Cmd.none
             )
 
@@ -249,7 +254,6 @@ view model =
     , body =
         [ div []
             [ viewContent model
-            , Views.view_footer
             ]
         ]
     }
@@ -259,8 +263,8 @@ viewContent : Model -> Html Msg
 viewContent model =
     div [ classList [ ( "signup", True ) ] ]
         [ div [ classList [ ( "signup_box", True ) ] ] <|
-            [ div [ class "signup_title" ] [ Html.text "Student Signup" ] ]
-                ++ [ viewStudentWelcomeMsg ]
+            div [ class "signup_title" ] [ Html.text "Student Signup" ]
+                :: viewStudentWelcomeMsg
                 ++ SignUp.viewEmailInput
                     { errors = model.errors
                     , onEmailInput = UpdateEmail
@@ -273,6 +277,7 @@ viewContent model =
                     , onConfirmPasswordInput = UpdateConfirmPassword
                     }
                 ++ viewDifficultyChoices model
+                ++ viewDifficultyInfo model
                 ++ SignUp.viewInternalErrorMessage model.errors
                 ++ [ Html.div
                         [ attribute "class" "signup_label" ]
@@ -295,63 +300,115 @@ viewContent model =
         ]
 
 
-viewStudentWelcomeMsg : Html Msg
+viewStudentWelcomeMsg : List (Html Msg)
 viewStudentWelcomeMsg =
     let
         welcomeTitle =
-            """Welcome to The Language Flagship’s Steps To Advanced Reading (STAR) website."""
+            """Welcome to the website Steps To Advanced Reading (STAR)."""
     in
-    div [ class "welcome_msg" ]
-        [ span [ class "headline" ] [ Html.text welcomeTitle ]
+    [ div [ class "welcome_msg" ]
+        [ span [ class "welcome-headline" ] [ Html.text welcomeTitle ]
         , div [ class "welcome-msg-text" ]
             [ Html.p []
                 [ Html.text
-                    """The purpose of this site is to help students improve their reading proficiency in Flagship
-            language that they are studying. This site includes a wide range of texts at different proficiency levels.
-            You will select texts to read by proficiency level and by topic."""
+                    """Developed with support from """
+                    , Html.a [ href "https://www.thelanguageflagship.org/" ]
+                    [ Html.text "The Language Flagship" ]
+                    , Html.text 
+                        """, this site is designed to help students improve their reading proficiency in Russian at a wide 
+                    range of proficiency levels."""
+                ]
+            , Html.p [] 
+                [ Html.text
+                        """After signing in, you will land on a profile page, from which you can go and select a text to read. 
+                    Texts are organized by proficiency level and by topic. After selecting a text, you will get a brief 
+                    contextualizing message in English. Then you will see the first part of the text followed by comprehension 
+                    question(s). Once you’ve read the text and selected the best answer, you will get feedback telling you if 
+                    your choice is correct, and why or why not."""
                 ]
             , Html.p []
-                [ Html.text
-                    """Before reading the Russian texts, you will get a brief contextualizing message in English.
-            Then you will see the first part of the text followed by comprehension questions. Once you’ve read the text
-            and selected the best answer, you will get feedback telling you if your choice is correct, and why or why
-            not."""
-                ]
-            , Html.p []
-                [ Html.text
-                    """The format of this site resembles the Flagship proficiency tests, and our goal is to
-            help you build your reading skills for those tests. Any particular reading should take you between 5-15
-            minutes to complete, and we envision that you can use these texts on the go, when commuting, when waiting
-            for a bus, etc.  You can come back to texts at any time.  If this is your first time using the website,
-            pop-up boxes will help you learn how to use the site."""
+                [ Html.text 
+                    """On your first time using the website, pop-up boxes will guide you in learning how to use the site."""            
                 ]
             ]
         ]
+    ]
 
 
 viewDifficultyChoices : Model -> List (Html Msg)
 viewDifficultyChoices model =
-    [ Html.select
-        [ onInput UpdateDifficulty
-        ]
-        [ Html.optgroup [] <|
-            Html.option [ attribute "disabled" "", attribute "selected" "" ] [ Html.text "Choose a preferred difficulty:" ]
-                :: List.map
-                    (\( k, v ) ->
-                        Html.option
-                            (attribute "value" k
-                                :: (if v == model.signupParams.difficulty then
-                                        [ attribute "selected" "" ]
+    [ div [ class "input-container" ]
+        [ Html.select
+            [ onInput UpdateDifficulty
+            ]
+            [ Html.optgroup [] <|
+                Html.option [ attribute "disabled" "", attribute "selected" "" ] [ Html.text "Choose a preferred difficulty:" ]
+                    :: List.map
+                        (\( k, v ) ->
+                            Html.option
+                                (attribute "value" k
+                                    :: (if v == model.signupParams.difficulty then
+                                            [ attribute "selected" "" ]
 
-                                    else
-                                        []
-                                   )
-                            )
-                            [ Html.text v ]
-                    )
-                    model.difficulties
+                                        else
+                                            []
+                                       )
+                                )
+                                [ Html.text v ]
+                        )
+                        model.difficulties
+            ]
+        , Html.span
+            [ onClick ToggleShowDifficultyInfo
+            , id "show-difficulty-info-button"
+            ]
+            [ if model.showDifficultyInfo then
+                Html.img [ id "info-image", attribute "src" "/public/img/info-black.svg" ] []
+
+              else
+                Html.img [ id "info-image", attribute "src" "/public/img/info-gray.svg" ] []
+            ]
         ]
     ]
+
+
+viewDifficultyInfo : Model -> List (Html Msg)
+viewDifficultyInfo model =
+    if model.showDifficultyInfo then
+        case model.signupParams.difficulty of
+            "intermediate_mid" ->
+                [ Markdown.toHtml [ class "difficulty-info" ] """**Texts at the Intermediate Mid level** tend to be short public announcements or 
+            very brief news reports that are clearly organized. Questions will focus on your ability to recognize the 
+            main ideas of the text. Typically, students in second-year Russian can attempt texts at this level. """
+                ]
+
+            "intermediate_high" ->
+                [ Markdown.toHtml [ class "difficulty-info" ] """Texts at the Intermediate High level** will tend to be several paragraphs in length, 
+            touching on topics of personal and/or public interest. The texts will typically describe, explain or narrate 
+            some event or situation related to the topic. At the Intermediate High level, you may be able to get the main 
+            idea of the text, but you might struggle with details.Typically, students in third-year and fourth-year Russian 
+            can attempt texts at this level."""
+                ]
+
+            "advanced_low" ->
+                [ Markdown.toHtml [ class "difficulty-info" ] """**Texts at the Advanced Low level** will be multiple paragraphs in length that 
+            report and describe topics of public interest. At the Advanced Low level, you should be able to understand the 
+            main ideas of the passage as well as the supporting details. Typically, strong students in fourth-year Russian 
+            can attempt these texts."""
+                ]
+
+            "advanced_mid" ->
+                [ Markdown.toHtml [ class "difficulty-info" ] """**Texts at the Advanced Mid level** will be even longer than at the Advanced Low 
+            level, and they address issues of public interest, and they may contain some argumentation. Readers at the 
+            Advanced Mid level have a very broad vocabulary and can comprehend the main ideas and the factual details of 
+            texts. Typically, strong students beyond fourth-year Russian can attempt texts at this level."""
+                ]
+
+            _ ->
+                []
+
+    else
+        []
 
 
 

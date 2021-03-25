@@ -15,9 +15,9 @@ RUN apt update -y \
     && cd ereadingtool \
     && git checkout devel \
     && cd web \
-    && npm install -g parcel-bundler \
+    && npm install -g parcel-bundler@1.12.4 \
     && npm install \
-    && npm run build:staging \
+    && npm run build \
     && apt-get install -y nginx \
     && mkdir -p /var/www/steps2ar.org/html \
     && chown -R $USER:$USER /var/www/steps2ar.org/html \
@@ -25,6 +25,10 @@ RUN apt update -y \
     && cp -r dist/* /var/www/steps2ar.org/html/
 
 COPY steps2ar.org /etc/nginx/sites-available/
+
+# Overwrite the default nginx.conf to gzip more files. If nginx needs to be reloaded:
+# nginx -s reload
+COPY nginx.conf /etc/nginx/
 
 RUN ln -s /etc/nginx/sites-available/steps2ar.org /etc/nginx/sites-enabled/ \
     && rm /etc/nginx/sites-enabled/default
