@@ -767,8 +767,8 @@ viewResearchConsent (SafeModel model) =
             "You have not consented to be a part of a research study."
     in
     div [ id "research_consent" ]
-        [ span [ class "profile_item_title" ] [ Html.text "Research Consent" ]
-        , span []
+        [ div [ class "profile_item_title" ] [ Html.text "Research Consent" ]
+        , div []
             [ Html.text """
           From time to time, there maybe research projects related to this site.
           To read about those projects and to review and sign consent forms,
@@ -779,7 +779,7 @@ viewResearchConsent (SafeModel model) =
                 ]
             , Html.text "."
             ]
-        , span [ class "value" ]
+        , div [ class "value" ]
             [ div
                 [ classList [ ( "check-box", True ), ( "check-box-selected", consented ) ]
                 , onClick ToggleResearchConsent
