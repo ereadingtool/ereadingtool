@@ -383,10 +383,11 @@ viewDifficultyInfo model =
                 ]
 
             "intermediate_high" ->
-                [ Markdown.toHtml [ class "difficulty-info" ] """**will tend to be several paragraphs in length, touching on topics of personal 
-            and/or public interest. The texts will typically describe, explain or narrate some event or situation related 
-            to the topic. At the Intermediate High level, you may be able to get the main idea of the text, but you might 
-            struggle with details.Typically, students in third-year and fourth-year Russian can attempt texts at this level."""
+                [ Markdown.toHtml [ class "difficulty-info" ] """Texts at the Intermediate High level** will tend to be several paragraphs in length, 
+            touching on topics of personal and/or public interest. The texts will typically describe, explain or narrate 
+            some event or situation related to the topic. At the Intermediate High level, you may be able to get the main 
+            idea of the text, but you might struggle with details.Typically, students in third-year and fourth-year Russian 
+            can attempt texts at this level."""
                 ]
 
             "advanced_low" ->
