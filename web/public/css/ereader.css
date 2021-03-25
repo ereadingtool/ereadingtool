@@ -570,6 +570,10 @@ body {
   display: inline-block;
 }
 
+.welcome-msg-text a {
+  color: #00478f;
+  text-decoration: none;
+}
 
 @media (max-width: 568px) {
   .content-menu {
