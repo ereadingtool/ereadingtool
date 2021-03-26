@@ -11,19 +11,92 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='StudentPerformance',
-            fields=[
-                ('id', models.BigIntegerField(primary_key=True, serialize=False)),
-                ('start_dt', models.DateTimeField()),
-                ('end_dt', models.DateTimeField()),
-                ('text_difficulty_slug', models.SlugField()),
-                ('answered_correctly', models.IntegerField()),
-                ('attempted_questions', models.IntegerField()),
-            ],
-            options={
-                'db_table': 'report_student_performance',
-                'managed': False,
-            },
-        ),
-    ]
+            migrations.RunSQL("""
+        DROP VIEW "main"."report_first_time_correct";
+        CREATE VIEW report_first_time_correct AS 
+        SELECT
+        row_number() OVER() as id,
+        ftc.text_id,
+        student_id,
+        CAST (num_correct as FLOAT) as num_correct,
+        num_questions,
+        text_difficulty.slug as text_difficulty_slug
+        FROM
+        first_time_correct_firsttimecorrect as ftc
+        LEFT JOIN 
+        (
+            SELECT
+            text_id,
+            CAST(COUNT(*) as FLOAT) as num_questions
+            FROM
+            (
+                SELECT 
+                    questions.id as question_id,
+                    "questions.order" as question_order,
+                    text_section.text_id as text_id
+                FROM 
+                question_question as questions
+                LEFT JOIN text_textsection as text_section on text_section.id = questions.text_section_id
+            ) 
+            GROUP BY
+                text_id
+        ) as questions on questions.text_id = ftc.text_id
+        LEFT JOIN text_text as texts on texts.id = ftc.text_id 
+        LEFT JOIN text_textdifficulty text_difficulty on texts.difficulty_id = text_difficulty.id
+        ORDER BY 
+        ftc.text_id
+
+        DROP VIEW "main"."report_texts_complete";
+        CREATE VIEW report_texts_complete AS 
+        SELECT
+        row_number() OVER() as id,
+        student_id, 
+        text_id, 
+        start_dt,
+        end_dt,
+        text_difficulty_slug
+        FROM 
+        (
+            SELECT 
+            text_readings.student_id as student_id, 
+            texts.id as text_id, 
+            text_readings.start_dt start_dt,
+            text_readings.end_dt end_dt, 
+            text_difficulty.slug as text_difficulty_slug 
+            FROM 
+            text_reading_studenttextreading as text_readings
+            LEFT JOIN text_text as texts on texts.id = text_readings.text_id 
+            LEFT JOIN text_textdifficulty text_difficulty on texts.difficulty_id = text_difficulty.id 
+            WHERE 
+            text_readings.state = 'complete'
+            ORDER BY
+            text_readings.student_id
+        ) as student_readings
+
+        DROP VIEW "main"."report_texts_in_progress";
+        CREATE VIEW report_texts_in_progress AS 
+        SELECT
+        row_number() OVER() as id,
+        student_id, 
+        text_id, 
+        start_dt, 
+        text_difficulty_slug
+        FROM 
+        (
+            SELECT 
+            text_readings.student_id as student_id, 
+            texts.id as text_id, 
+            text_readings.start_dt start_dt, 
+            text_readings.end_dt end_dt, 
+            text_difficulty.slug as text_difficulty_slug 
+            FROM 
+            text_reading_studenttextreading as text_readings
+            LEFT JOIN text_text as texts on texts.id = text_readings.text_id 
+            LEFT JOIN text_textdifficulty text_difficulty on texts.difficulty_id = text_difficulty.id 
+            WHERE 
+            text_readings.state = 'in_progress'
+            ORDER BY
+            text_readings.student_id
+        ) as student_readings
+            """)
+        ]
