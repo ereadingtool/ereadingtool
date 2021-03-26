@@ -741,12 +741,12 @@ viewFeedbackLinks =
         [ span [ class "profile_item_title" ] [ Html.text "Contact" ]
         , span [ class "profile_item_value" ]
             [ div []
-                [ Html.a [ attribute "href" "https://goo.gl/forms/Wn5wWVHdmBKOxsFt2" ]
+                [ Html.a [ attribute "href" "https://forms.gle/urBbUYr8AmbFeW9b8" ]
                     [ Html.text "Report a problem"
                     ]
                 ]
             , div []
-                [ Html.a [ attribute "href" "https://goo.gl/forms/z5BKx36xBJR7XqQY2" ]
+                [ Html.a [ attribute "href" "https://forms.gle/6SwVYNyCw95sNrVk8" ]
                     [ Html.text "Please give us feedback!"
                     ]
                 ]
@@ -767,8 +767,8 @@ viewResearchConsent (SafeModel model) =
             "You have not consented to be a part of a research study."
     in
     div [ id "research_consent" ]
-        [ span [ class "profile_item_title" ] [ Html.text "Research Consent" ]
-        , span []
+        [ div [ class "profile_item_title" ] [ Html.text "Research Consent" ]
+        , div []
             [ Html.text """
           From time to time, there maybe research projects related to this site.
           To read about those projects and to review and sign consent forms,
@@ -779,7 +779,7 @@ viewResearchConsent (SafeModel model) =
                 ]
             , Html.text "."
             ]
-        , span [ class "value" ]
+        , div [ class "value" ]
             [ div
                 [ classList [ ( "check-box", True ), ( "check-box-selected", consented ) ]
                 , onClick ToggleResearchConsent
@@ -941,38 +941,28 @@ viewPreferredDifficultyHint text_difficulty =
         difficulty_msgs =
             OrderedDict.fromList
                 [ ( "intermediate_mid"
-                  , Markdown.toHtml [] """**Texts at the Intermediate Mid level** tend to be short public announcements,
-        selections from personal correspondence, clearly organized texts in very recognizable genres with clear
-        structure (like a biography, public opinion survey, etc.). Questions will focus on your ability to recognize
-        the main ideas of the text. Typically, students in second year Russian can attempt texts at this level. """
+                  , Markdown.toHtml [] """**Texts at the Intermediate Mid level** tend to be short public announcements or very 
+        brief news reports that are clearly organized. Questions will focus on your ability to recognize the main 
+        ideas of the text. Typically, students in second-year Russian can attempt texts at this level."""
                   )
                 , ( "intermediate_high"
-                  , Markdown.toHtml [] """**Texts at the Intermediate High level** will tend to be several paragraphs in length,
-        touching on topics of personal and/or public interest.  The texts will tell a story, give a description or
-        explanation of something related to the topic. At the intermediate high level, you may be able to get the main
-        idea of the text, but the supporting details may be elusive. Typically, students in third year Russian can
-        attempt texts at this level."""
+                  , Markdown.toHtml [] """**Texts at the Intermediate High level** will tend to be several paragraphs in length, 
+        touching on topics of personal and/or public interest. The texts will typically describe, explain or narrate
+        some event or situation related to the topic. At the Intermediate High level, you may be able to get the main 
+        idea of the text, but you might struggle with details.Typically, students in third-year and fourth-year Russian 
+        can attempt texts at this level."""
                   )
                 , ( "advanced_low"
-                  , Markdown.toHtml [] """**Texts at the Advanced Low level** will be multiple paragraphs in length, touching on
-        topics of public interest. They may be excerpts from straightforward literary texts, from newspapers relating
-        the circumstances related to an event of public interest.  Texts may related to present, past or future time
-        frames. Advanced Low texts will show a strong degree of internal cohesion and organization.  The paragraphs
-        cannot be rearranged without doing damage to the comprehensibility of the passage. At the Advanced low level,
-        you should be able to understand the main ideas of the passage as well as the supporting details.
-        Readers at the Advanced Low level can efficiently balance the use of background knowledge WITH linguistic
-        knowledge to determine the meaning of a text, although complicated word order may interfere with the reader’s
-        comprehension. Typically, students in fourth year Russian can attempt these texts. """
+                  , Markdown.toHtml [] """**Texts at the Advanced Low level** will be multiple paragraphs in length that report 
+        and describe topics of public interest. At the Advanced Low level, you should be able to understand the main 
+        ideas of the passage as well as the supporting details. Typically, strong students in fourth-year Russian can 
+        attempt these texts."""
                   )
                 , ( "advanced_mid"
-                  , Markdown.toHtml [] """**Texts at the Advanced Mid level** will be even longer than at the Advanced Low level.
-        They will address issues of public interest, and they may contain narratives, descriptions, explanations, and
-        some argumentation, laying out and justifying a particular point of view. At the Advanced Mid level, texts
-        contain cultural references that are important for following the author’s point of view and argumentation.
-        Texts may contain unusual plot twists and unexpected turns of events, but they do not confuse readers because
-        readers have a strong command of the vocabulary, syntax, rhetorical devices that organize texts. Readers at the
-        Advanced Mid level can handle the main ideas and the factual details of texts. Typically, strong students in
-        4th year Russian or in 5th year Russian can attempt texts at this level. """
+                  , Markdown.toHtml [] """**Texts at the Advanced Mid level** will be even longer than at the Advanced Low level, 
+        and they address issues of public interest, and they may contain some argumentation. Readers at the Advanced Mid 
+        level have a very broad vocabulary and can comprehend the main ideas and the factual details of texts. Typically, 
+        strong students beyond fourth-year Russian can attempt texts at this level."""
                   )
                 ]
 

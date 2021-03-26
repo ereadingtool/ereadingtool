@@ -18,17 +18,16 @@ table th {
 }
 
 .profile {
-  display: grid;
+  /* display: grid; */
 
   grid-template-columns: 4% 10% [content] auto 15% 4%;
 }
 
 .profile-title {
-  grid-column: content;
-
   margin-top: 20px;
   font-family: 'EB Garamond';
   font-size: 2rem;
+  padding: 0 0 0 25px;
 }
 
 .profile_items {
@@ -109,8 +108,6 @@ table th {
   grid-row: 5;
   font-size: larger;
   grid-template-columns: auto;
-  grid-template-rows: 25px 35px;
-  margin: 20px 20px 20px 0;
 }
 
 .feedback a {
@@ -123,14 +120,14 @@ table th {
 }
 
 .feedback span {
-  padding: 5px;
+  padding: 0 0 5px 0;
 }
 
 #words {
   display: grid;
   grid-template-columns: auto;
   grid-template-rows: 20px 50px;
-  margin-bottom: 15px;
+  margin-bottom: 0px;
 }
 
 #research_consent {
@@ -138,9 +135,7 @@ table th {
   grid-row: 3;
   grid-column: 1 / 3;
   grid-template-columns: auto;
-  grid-template-rows: 35px 35px;
   grid-row-gap: 10px;
-  margin-bottom: 15px;
 }
 
 #research_consent a {
@@ -164,7 +159,7 @@ table th {
 #research_consent > .value > .check-box-text {
   display: inline-block;
   vertical-align: top;
-  padding-top: 4px;
+  padding-top: 1px;
   font-size: 18px;
 }
 
@@ -191,7 +186,7 @@ table th {
   display: inline-block;
   vertical-align: top;
   font-size: 18px;
-  padding-top: 4px;
+  padding-top: 1px;
 }
 
 .check-box-selected {
@@ -268,6 +263,8 @@ table th {
   grid-template-columns: auto;
   grid-template-rows: 25px 35px;
   margin-bottom: 15px;
+
+  overflow: hidden;
 }
 
 .profile_item_title {
