@@ -81,10 +81,11 @@ vocabulary learning should become more proficient readers. The website has been 
 mobile-friendly. The screenshots show how the website looks on a Samsung Galaxy J7 Prime phone using
 the Android operating system.
 
-**1\\.** The STAR website is not connected to any university’s user account, so if you are using the site 
-    for the first time, you will need to create a new account. The program is free, and to sign up 
-    you only need to give a functioning email address and create a password, and choose a reading 
-    difficulty level. If you already have an account, you can log in.
+**1\\.** 
+The STAR website is not connected to any university’s user account, so if you are using the site 
+for the first time, you will need to create a new account. The program is free, and to sign up 
+you only need to give a functioning email address and create a password, and choose a reading 
+difficulty level. If you already have an account, you can log in.
 """
 
 
@@ -105,7 +106,8 @@ viewSecondSection : Html Msg
 viewSecondSection = 
 -- Since Markdown doesn't let you continue a numbered list, we must escape and use plaintext numbering
     Markdown.toHtml [] """
-**2\\.** If you’ve already created an account, then you can just log in to the app.
+**2\\.** 
+If you’ve already created an account, then you can just log in to the app.
 """
 
 
@@ -125,7 +127,8 @@ viewSecondSectionImage =
 viewThirdSection : Html Msg
 viewThirdSection = 
     Markdown.toHtml [] """
-**3\\.** Once you’re logged in, you will land on your “Profile” page, where you will 
+**3\\.** 
+Once you’re logged in, you will land on your “Profile” page, where you will 
 find information about your progress and website settings.
 """
 
@@ -233,7 +236,7 @@ viewTabs =
                 [ href (Route.toString Route.Guide__GettingStarted)
                 , class "guide-link"
                 ]
-                [ text "Starting" ]
+                [ text "Getting Started" ]
             ]
         , div
             [ class "guide-tab"
@@ -246,18 +249,11 @@ viewTabs =
             ]
         , div [ class "guide-tab" ]
             [ a
-                [ href (Route.toString Route.Guide__Page3)
+                [ href (Route.toString Route.Guide__Settings)
                 , class "guide-link"
                 ]
                 [ text "Settings" ]
             ]
-        -- , div [ class "guide-tab" ]
-        --     [ a
-        --         [ href (Route.toString Route.Guide__Page3)
-        --         , class "guide-link"
-        --         ]
-        --         [ text "Page 3" ]
-        --     ]
         -- , div [ class "guide-tab" ]
         --     [ a
         --         [ href (Route.toString Route.Guide__Page3)
