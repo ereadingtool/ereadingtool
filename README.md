@@ -170,6 +170,13 @@ python manage.py runserver
 
 If the text reader isn't working, or nothing is happening over websocket, that's because you need to start Redis.   
 
+
+### Testing
+This setup contains unmanaged models which track the database views `report_texts_complete`, `report_texts_in_progress`, `report_first_time_correct`. This
+inteferes with the normal testing process of `django.tests`. In order to deal with this we need to provide our own test runner and specify that the tables 
+built and torn down for tests should be managed. It's a fairly straightforward process interjecting and setting their meta data to indicate that they're 
+managed. You can read more about this at the link under Resource -> Database Views -> "testing with unmanaged tables".
+
 ## Cypress tests
 
 These tests check functionality of the frontend application as well as uses visual regression testing to confirm modifications to CSS are not breaking the site.
@@ -279,7 +286,9 @@ into a View. These are then accessed by unmanaged models. You can learn more abo
 note that we don't have migration files for these views. How to do this is explained at the end of the blog post. However
 when first creating the app that particular migration caused a bunch of trouble. Simply create the view using a database tool
 like db Browser for SQLite in the Execution tab. The model should be able to access the view data at that point.
-!(using database views in Django ORM)[https://resources.rescale.com/using-database-views-in-django-orm/]
+* [using database views in Django ORM](https://resources.rescale.com/using-database-views-in-django-orm/)
+* [testing with unmanaged tables](https://gist.github.com/raprasad/f292f94657728de45d1614a741928308)
+
 
 #### Nginx Reverse Proxy
 * [nginx-proxy](https://github.com/nginx-proxy/nginx-proxy/)
