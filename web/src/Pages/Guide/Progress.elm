@@ -1,4 +1,4 @@
-module Pages.Guide.Settings exposing (..)
+module Pages.Guide.Progress exposing (..)
 
 import Dict exposing (Dict)
 import Html exposing (..)
@@ -35,12 +35,12 @@ type alias Params =
 
 view : Url Params -> Document Msg
 view { params } =
-    { title = "Guide | Settings"
+    { title = "Guide | Progress"
     , body =
         [ div [ id "body" ]
             [ div [ id "about" ]
                 [ div [ id "about-box" ]
-                    [ div [ id "title" ] [ text "Settings" ]
+                    [ div [ id "title" ] [ text "Progress" ]
                     , viewTabs
                     , viewFirstSection
                     , viewFirstSectionImage
@@ -62,7 +62,7 @@ viewTabs =
                 [ href (Route.toString Route.Guide__GettingStarted)
                 , class "guide-link"
                 ]
-                [ text "Getting Started" ]
+                [ text "Starting" ]
             ]
         , div
             [ class "guide-tab"
@@ -71,11 +71,10 @@ viewTabs =
                 [ href (Route.toString Route.Guide__ReadingTexts)
                 , class "guide-link"
                 ]
-                [ text "Reading Texts" ]
+                [ text "Texts" ]
             ]
         , div
             [ class "guide-tab"
-            , class "selected-guide-tab"
             ]
             [ a
                 [ href (Route.toString Route.Guide__Settings)
@@ -83,7 +82,10 @@ viewTabs =
                 ]
                 [ text "Settings" ]
             ]
-        , div [ class "guide-tab" ]
+        , div 
+            [ class "guide-tab" 
+            , class "selected-guide-tab"
+            ]
             [ a
                 [ href (Route.toString Route.Guide__Progress)
                 , class "guide-link"
@@ -96,27 +98,23 @@ viewTabs =
 viewFirstSection : Html Msg
 viewFirstSection =
     Markdown.toHtml [] """
-**1\\.**
-When you log into the STAR app, you land on your profile page. This page lets you control
-a number of settings and keep track of your reading progress.
+**5\\.**
+**My Words.** In this section, you can access the words that you have saved from when you 
+were reading texts and looking up words. You can download these words either as a PDF 
+(to review visually), or as a plain comma-separated text file, which you can paste in a 
+flashcards program like [Quizlet](https://quizlet.com/), [Anki](https://apps.ankiweb.net/),
+or [Kommit](https://kommit.rosano.ca/). For each word you’ve saved, you’ll get the dictionary 
+form of the word, part of the text’s sentence that includes the word from the text you were 
+reading and an English equivalent appropriate for that context.
 
-**2\\.**
-**Settings: Username, Hints.** 
-From the top row of settings, you can turn on and off the Hints. By default the pop-up 
-bubble Hints are set to appear for new users. You can turn them off, once you’re familiar 
-with the app’s functionality.
-
-**3\\.**
-**Preferred Difficulty.** You can adjust the difficulty level of the texts you are reading.
-The descriptions of the proficiency levels should help you pick a level best suited to your 
-abilities or the next level you want to grow into.
-
-**4\\.**
-**Research Consent.**
-From time to time there may be research projects associated with this site. The Consent forms 
-and details will be posted at another site. This button will let you keep track of whether 
-you’ll allow your data (disassociated with your name and other identifiers) to be included in 
-a study.
+**6\\.**
+**My Performance.** 
+This section gives you two tables: the “Completion” table shows you how much you’ve been 
+reading, by proficiency levels, over the current month (today and the previous 30 days), 
+the previous month (31 to 60 days ago), and cumulatively. The “First Time Comprehension” 
+table will show you how many comprehension questions you’ve answered correctly the first 
+time that you tried them, and what % that represents from all the questions you’ve tried 
+at that level.
 """
 
 
@@ -131,6 +129,25 @@ viewFirstSectionImage =
             ] 
             [] 
         ]
+
+
+viewSecondSection : Html Msg
+viewSecondSection =
+    Markdown.toHtml [] """
+**7\\.**
+This “first time correct” number is a good indicator of how well you will probably read in a 
+testing situation.
+
+
+You can download the “My Performance” tables as a PDF document if you want or need to share 
+your progress with a teacher or an advisor.
+
+
+**8\\.**
+**Contact.**
+These links allow you to report any problems that you encounter when using the site, or to 
+give a general evaluation of the site, its layout and functionality.
+"""
 
 viewAltText : String -> Dict String String -> String
 viewAltText id texts =
