@@ -7,6 +7,7 @@ import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url as Url exposing (Url)
+import Markdown
 
 
 page : Page Params Model Msg
@@ -41,347 +42,183 @@ view { params } =
                 [ div [ id "about-box" ]
                     [ div [ id "title" ] [ text "Getting Started" ]
                     , viewTabs
-                    , p []
-                        [ text
-                            """
-                            This page will give you an overview of the STAR (Steps to Advanced Reading) website’s functionality without
-                            requiring you to create an account. The main function of the website is to allow students to read texts at
-                            and above their proficiency level in Russian and answer comprehension questions on them. The secondary
-                            function of the site allows students to save words encountered in texts to flashcards and to review and
-                            build their vocabulary. The texts and comprehension questions included in the site have been leveled
-                            according the to ACTFL Proficiency Guidelines, and cover the proficiency ranges Intermediate-Mid through
-                            Advanced-Mid.       
-                            """
-                        ]
-                    , p []
-                        [ text
-                            """
-                            The goal of the website is to prepare students to read better in order to reach the ILR-2 level in Reading
-                            and qualify for the Overseas Flagship program.
-                            """
-                        ]
-                    , p []
-                        [ text
-                            """
-                            The pedagogical model is one of microlearning, where students who engage in regular curated reading and
-                            vocabulary learning should become more proficient readers. The website has been designed to be
-                            mobile-friendly. The screenshots show how the website looks on a Samsung Galaxy J7 Prime phone using
-                            the Android operating system.
-                            """
-                        ]
-                    , ol []
-                        [ li []
-                            [ p []
-                                [ text
-                                    """
-                                    The starting place for users is the login page for the STAR website.
-                                    On this page students can create an account, or log in if they already have established an account.
-                                    Instructors who want to add or edit texts on this site can access the instructor log in from this page.
-                                    """
-                                ]
-                            , div [ class "screenshot" ]
-                                [ img
-                                    [ src "/public/img/tutorial/1.jpg"
-                                    , alt (viewAltText "1" altTexts)
-                                    , title (viewAltText "1" altTexts)
-                                    ]
-                                    []
-                                ]
-                            ]
-                        , li []
-                            [ p []
-                                [ text
-                                    """
-                                    When students log into the STAR website, they immediately see their Profile page.
-                                    The profile page contains information related to the user and links to the site’s two main functions:
-                                    reading texts and reviewing flashcards.  On the Profile page, students can read through the
-                                    descriptions of the various proficiency levels and choose the one that they feel fits their current
-                                    level and create their own username (which is shown at the top right corner of the page).
-                                    """
-                                ]
-                            , div [ class "screenshot" ]
-                                [ img
-                                    [ src "/public/img/tutorial/2.jpg"
-                                    , alt (viewAltText "2" altTexts)
-                                    , title (viewAltText "2" altTexts)
-                                    ]
-                                    []
-                                ]
-                            ]
-                        , li []
-                            [ p []
-                                [ text
-                                    """
-                                    The Student Profile page also presents statistics about the students’ use of the site and reading
-                                    performance. For each proficiency level and cumulatively, they can see how many texts they read and
-                                    what percentage of questions they answered correctly in different time frames. They can download this
-                                    information as a PDF which they can choose to share with an advisor.
-                                    """
-                                ]
-                            , div [ class "screenshot" ]
-                                [ img
-                                    [ src "/public/img/tutorial/3.jpg"
-                                    , alt (viewAltText "3" altTexts)
-                                    , title (viewAltText "3" altTexts)
-                                    ]
-                                    []
-                                ]
-                            ]
-                        , li []
-                            [ p []
-                                [ text
-                                    """
-                                    When students follow the “Find a text to read” link, they land on the Text Search page, where
-                                    students can use three different filters to find texts to read. The first filter is for the text and
-                                    question difficulty. If the student has set a difficulty level on their Profile page, then that level
-                                    will be pre-selected in this filter. Students can easily select and deselect levels.
-                                    """
-                                ]
-                            , div [ class "screenshot" ]
-                                [ img
-                                    [ src "/public/img/tutorial/4.jpg"
-                                    , alt (viewAltText "4" altTexts)
-                                    , title (viewAltText "4" altTexts)
-                                    ]
-                                    []
-                                ]
-                            ]
-                        , li []
-                            [ p []
-                                [ text
-                                    """
-                                    The second filter sorts texts by topic. Each text is tagged by which topics they address, and students
-                                    can select what sounds interesting to them. There are 19 subject area tags.
-                                    """
-                                ]
-                            , div [ class "screenshot" ]
-                                [ img
-                                    [ src "/public/img/tutorial/5.jpg"
-                                    , alt (viewAltText "5" altTexts)
-                                    , title (viewAltText "5" altTexts)
-                                    ]
-                                    []
-                                ]
-                            ]
-                        , li []
-                            [ p []
-                                [ text
-                                    """
-                                    The final filter helps students find texts they’ve previously completed reading, texts that they
-                                    haven’t finished reading, and texts they have not started. Once students have selected their desired
-                                    filters, they can see a list of texts fitting those criteria. Each entry in the list includes the
-                                    reading’s title, difficulty level, author, number of text sections, topics, and if applicable, the
-                                    last time the text was read and the number of questions answered correctly.
-                                    """
-                                ]
-                            , div [ class "screenshot" ]
-                                [ img
-                                    [ src "/public/img/tutorial/6.jpg"
-                                    , alt (viewAltText "6" altTexts)
-                                    , title (viewAltText "6" altTexts)
-                                    ]
-                                    []
-                                ]
-                            , p []
-                                [ text
-                                    """
-                                    If students do not use any of the filters (i.e., difficulty, topic tags, and read status),
-                                    they will find a full list of texts included in the site.
-                                    """
-                                ]
-                            ]
-                        , li []
-                            [ p []
-                                [ text
-                                    """
-                                    Once a student has found a text to read, they click on the title and come to a brief pre-reading screen
-                                    that orients them to the genre and type of text.
-                                    """
-                                , div [ class "screenshot" ]
-                                    [ img
-                                        [ src "/public/img/tutorial/7.jpg"
-                                        , alt (viewAltText "7" altTexts)
-                                        , title (viewAltText "7" altTexts)
-                                        ]
-                                        []
-                                    ]
-                                ]
-                            ]
-                        , li []
-                            [ p []
-                                [ text
-                                    """
-                                    After clicking “start,” students begin to read the text. While short texts may only have one section,
-                                    longer texts will be broken up into multiple sections.
-                                    """
-                                , div [ class "screenshot" ]
-                                    [ img
-                                        [ src "/public/img/tutorial/8.jpg"
-                                        , alt (viewAltText "8" altTexts)
-                                        , title (viewAltText "8" altTexts)
-                                        ]
-                                        []
-                                    ]
-                                ]
-                            ]
-                        , li []
-                            [ p []
-                                [ text
-                                    """
-                                    At the the end of each text section, there are comprehension questions with three or four possible
-                                    answers. To ensure that students are understanding what they have just read, they must answer the
-                                    questions before proceeding to the next section of the text.
-                                    """
-                                , div [ class "screenshot" ]
-                                    [ img
-                                        [ src "/public/img/tutorial/9.jpg"
-                                        , alt (viewAltText "9" altTexts)
-                                        , title (viewAltText "9" altTexts)
-                                        ]
-                                        []
-                                    ]
-                                ]
-                            ]
-                        , li []
-                            [ p []
-                                [ text
-                                    """
-                                    At the the end of each text section, there are comprehension questions with three or four possible
-                                    answers. To ensure that students are understanding what they have just read, they must answer the
-                                    questions before proceeding to the next section of the text.
-                                    """
-                                , div [ class "screenshot" ]
-                                    [ img
-                                        [ src "/public/img/tutorial/10.jpg"
-                                        , alt (viewAltText "10" altTexts)
-                                        , title (viewAltText "10" altTexts)
-                                        ]
-                                        []
-                                    ]
-                                ]
-                            ]
-                        , li []
-                            [ p []
-                                [ text
-                                    """
-                                    When student answers an answer correctly, the answer box is bordered in green. When they answer a
-                                    question incorrectly, it is bordered in red. Additionally, the student receives feedback explaining
-                                    why their selected answer was correct or incorrect, and if the student answered incorrectly, the
-                                    feedback also tells which answer was correct and why. The feedback boxes provide a parsed bilingual
-                                    guide to the part of the text related to the question.
-                                    """
-                                , div [ class "screenshot" ]
-                                    [ img
-                                        [ src "/public/img/tutorial/11-left.jpg"
-                                        , alt (viewAltText "11-left" altTexts)
-                                        , title (viewAltText "11-left" altTexts)
-                                        ]
-                                        []
-                                    ]
-                                , div [ class "screenshot" ]
-                                    [ img
-                                        [ src "/public/img/tutorial/11-right.jpg"
-                                        , alt (viewAltText "11-right" altTexts)
-                                        , title (viewAltText "11-right" altTexts)
-                                        ]
-                                        []
-                                    ]
-                                ]
-                            ]
-                        , li []
-                            [ p []
-                                [ text
-                                    """
-                                    At the end of a text, the student will see a post-reading page, which tells them how many comprehension
-                                    questions they answered correctly for that text, links to related readings outside of the website, and
-                                    a message directing them back to the Search Texts page.
-                                    """
-                                , div [ class "screenshot" ]
-                                    [ img
-                                        [ src "/public/img/tutorial/12.jpg"
-                                        , alt (viewAltText "12" altTexts)
-                                        , title (viewAltText "12" altTexts)
-                                        ]
-                                        []
-                                    ]
-                                ]
-                            ]
-                        , li []
-                            [ p []
-                                [ text
-                                    """
-                                    Once a student has added words to their flashcard deck, they can review those words. Students can work
-                                    with flashcards in two modes “Review Only” and “Review and Answer”.
-                                    """
-                                , div [ class "screenshot" ]
-                                    [ img
-                                        [ src "/public/img/tutorial/13.jpg"
-                                        , alt (viewAltText "13" altTexts)
-                                        , title (viewAltText "13" altTexts)
-                                        ]
-                                        []
-                                    ]
-                                ]
-                            ]
-                        , li []
-                            [ p []
-                                [ text
-                                    """
-                                    When students are reviewing a flashcard in “Review Only” mode, they will initially see the Russian word
-                                    and the context that they encountered the word in. They can guess the word, and then double-click the
-                                    flashcard to flip it over and see if their guess was correct.
-                                    """
-                                , div [ class "screenshot" ]
-                                    [ img
-                                        [ src "/public/img/tutorial/14-left.jpg"
-                                        , alt (viewAltText "14-left" altTexts)
-                                        , title (viewAltText "14-left" altTexts)
-                                        ]
-                                        []
-                                    ]
-                                , div [ class "screenshot" ]
-                                    [ img
-                                        [ src "/public/img/tutorial/14-right.jpg"
-                                        , alt (viewAltText "14-right" altTexts)
-                                        , title (viewAltText "14-right" altTexts)
-                                        ]
-                                        []
-                                    ]
-                                ]
-                            ]
-                        , li []
-                            [ p []
-                                [ text
-                                    """
-                                    When students are reviewing a flashcard in “Review and Answer” mode, they must type a translation for
-                                    the word on the flashcard. Once they have answered correctly, they will be asked to judge how difficult
-                                    it was for them to answer the card. This mode uses spaced repetition, so their self-assessment will
-                                    determine when they will next encounter the card.
-                                    """
-                                , div [ class "screenshot" ]
-                                    [ img
-                                        [ src "/public/img/tutorial/15-left.jpg"
-                                        , alt (viewAltText "15-left" altTexts)
-                                        , title (viewAltText "15-left" altTexts)
-                                        ]
-                                        []
-                                    ]
-                                , div [ class "screenshot" ]
-                                    [ img
-                                        [ src "/public/img/tutorial/15-right.jpg"
-                                        , alt (viewAltText "15-right" altTexts)
-                                        , title (viewAltText "15-right" altTexts)
-                                        ]
-                                        []
-                                    ]
-                                ]
-                            ]
-                        ]
+                    , viewFirstSection
+                    , viewFirstSectionImage
+                    , viewSecondSection
+                    , viewSecondSectionImage
+                    , viewThirdSection
+                    , viewThirdSectionImage
+                    , viewFourthSection
+                    , viewFifthSection
+                    , viewFifthSectionImage
+                    , viewSixthSection
+                    , viewSixthSectionImage
+                    , viewSeventhSection
+                    , viewSeventhImage
                     ]
                 ]
             ]
         ]
     }
+
+
+viewFirstSection : Html Msg
+viewFirstSection = 
+    Markdown.toHtml [] """
+This page will give you an overview of the STAR (Steps to Advanced Reading) website’s functionality without
+requiring you to create an account. The main function of the website is to allow students to read texts at
+and above their proficiency level in Russian and answer comprehension questions on them. The secondary
+function of the site allows students to save words encountered in texts to flashcards and to review and
+build their vocabulary. The texts and comprehension questions included in the site have been leveled
+according the to ACTFL Proficiency Guidelines, and cover the proficiency ranges Intermediate-Mid through
+Advanced-Mid.
+
+The goal of the website is to prepare students to read better in order to reach the ILR-2 level in Reading
+and qualify for the Overseas Flagship program.
+
+The pedagogical model is one of microlearning, where students who engage in regular curated reading and
+vocabulary learning should become more proficient readers. The website has been designed to be
+mobile-friendly. The screenshots show how the website looks on a Samsung Galaxy J7 Prime phone using
+the Android operating system.
+
+**1\\.** The STAR website is not connected to any university’s user account, so if you are using the site 
+    for the first time, you will need to create a new account. The program is free, and to sign up 
+    you only need to give a functioning email address and create a password, and choose a reading 
+    difficulty level. If you already have an account, you can log in.
+"""
+
+
+viewFirstSectionImage : Html Msg
+viewFirstSectionImage =
+    div [ class "guide-image-container"] 
+        [ img 
+            [ class "guide-image"
+            , src "/public/img/tutorial/1.png"
+            , alt (viewAltText "1" altTexts)
+            , title (viewAltText "1" altTexts)
+            ] 
+            [] 
+        ]
+
+
+viewSecondSection : Html Msg
+viewSecondSection = 
+-- Since Markdown doesn't let you continue a numbered list, we must escape and use plaintext numbering
+    Markdown.toHtml [] """
+**2\\.** If you’ve already created an account, then you can just log in to the app.
+"""
+
+
+viewSecondSectionImage : Html Msg
+viewSecondSectionImage =
+    div [ class "guide-image-container"] 
+        [ img 
+            [ class "guide-image"
+            , src "/public/img/tutorial/2.png"
+            , alt (viewAltText "2" altTexts)
+            , title (viewAltText "2" altTexts)
+            ] 
+            [] 
+        ]
+        
+
+viewThirdSection : Html Msg
+viewThirdSection = 
+    Markdown.toHtml [] """
+**3\\.** Once you’re logged in, you will land on your “Profile” page, where you will 
+find information about your progress and website settings.
+"""
+
+
+viewThirdSectionImage : Html Msg
+viewThirdSectionImage = 
+    div [ class "guide-image-container"] 
+        [ img 
+            [ class "guide-image"
+            , src "/public/img/tutorial/3.png"
+            , alt (viewAltText "3" altTexts)
+            , title (viewAltText "3" altTexts)
+            ] 
+            [] 
+        ]
+
+
+viewFourthSection : Html Msg
+viewFourthSection = 
+    Markdown.toHtml [] """
+**4\\.** Select “Texts” from the blue banner (or the hamburger menu on mobile) at the top of your screen to 
+find a text to read.
+"""
+
+
+viewFifthSection : Html Msg
+viewFifthSection = 
+    Markdown.toHtml [] """
+**5\\.** You can browse through all the texts available for your reading proficiency level, or you can 
+narrow the range with topic tags or with reading status.
+
+**Tags**
+By selecting tags for topics that are of interest to you, you can narrow the range of available 
+texts. When you select multiple tags, you will get a list of the texts that have either tag. 
+Selecting some combinations of topic tags and proficiency levels will result in no texts being 
+found; adjust tags or your proficiency level.
+"""
+
+
+viewFifthSectionImage : Html Msg
+viewFifthSectionImage = 
+    div [ class "guide-image-container"] 
+        [ img 
+            [ class "guide-image"
+            , src "/public/img/tutorial/4.png"
+            , alt (viewAltText "4" altTexts)
+            , title (viewAltText "4" altTexts)
+            ] 
+            [] 
+        ]
+
+viewSixthSection : Html Msg
+viewSixthSection =
+    Markdown.toHtml [] """
+**Read Status**
+“Unread” returns a list of texts that you’ve not read yet; “In Progress” will let you find texts 
+you’ve started reading, but haven’t finished; “Read” allows you to go back to texts that you have
+previously completed.
+"""
+
+
+viewSixthSectionImage : Html Msg
+viewSixthSectionImage =
+    div [ class "guide-image-container"] 
+        [ img 
+            [ class "guide-image"
+            , src "/public/img/tutorial/5.png"
+            , alt (viewAltText "5" altTexts)
+            , title (viewAltText "5" altTexts)
+            ] 
+            [] 
+        ]
+
+
+viewSeventhSection : Html Msg
+viewSeventhSection =
+    Markdown.toHtml [] """
+**6\\.** In the list of texts for your filters, for each entry you will see the title of the text, difficulty 
+level, author, number of sections, tags, and your status with the text.
+"""
+
+
+viewSeventhImage : Html Msg
+viewSeventhImage =
+    div [ class "guide-image-container"] 
+        [ img 
+            [ class "guide-image"
+            , src "/public/img/tutorial/6.png"
+            , alt (viewAltText "6" altTexts)
+            , title (viewAltText "6" altTexts)
+            ] 
+            [] 
+        ]
 
 
 viewTabs : Html Msg
@@ -396,24 +233,38 @@ viewTabs =
                 [ href (Route.toString Route.Guide__GettingStarted)
                 , class "guide-link"
                 ]
-                [ text "Getting Started" ]
+                [ text "Starting" ]
             ]
         , div
             [ class "guide-tab"
             ]
             [ a
-                [ href (Route.toString Route.Guide__Page2)
+                [ href (Route.toString Route.Guide__ReadingTexts)
                 , class "guide-link"
                 ]
-                [ text "Page 2" ]
+                [ text "Reading Texts" ]
             ]
         , div [ class "guide-tab" ]
             [ a
                 [ href (Route.toString Route.Guide__Page3)
                 , class "guide-link"
                 ]
-                [ text "Page 3" ]
+                [ text "Settings" ]
             ]
+        -- , div [ class "guide-tab" ]
+        --     [ a
+        --         [ href (Route.toString Route.Guide__Page3)
+        --         , class "guide-link"
+        --         ]
+        --         [ text "Page 3" ]
+        --     ]
+        -- , div [ class "guide-tab" ]
+        --     [ a
+        --         [ href (Route.toString Route.Guide__Page3)
+        --         , class "guide-link"
+        --         ]
+        --         [ text "Progress" ]
+        --     ]
         ]
 
 

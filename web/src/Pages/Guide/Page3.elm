@@ -34,12 +34,12 @@ type alias Params =
 
 view : Url Params -> Document Msg
 view { params } =
-    { title = "Guide | Page2"
+    { title = "Guide | Reading Texts"
     , body =
         [ div [ id "body" ]
             [ div [ id "about" ]
                 [ div [ id "about-box" ]
-                    [ div [ id "title" ] [ text "Page2" ]
+                    [ div [ id "title" ] [ text "Reading Texts" ]
                     , viewTabs
                     , viewFirstSection
                     , viewFirstImage
@@ -67,7 +67,7 @@ viewTabs =
             [ class "guide-tab"
             ]
             [ a
-                [ href (Route.toString Route.Guide__Page2)
+                [ href (Route.toString Route.Guide__ReadingTexts)
                 , class "guide-link"
                 ]
                 [ text "Page 2" ]

@@ -192,6 +192,15 @@ body {
   justify-items: center;
 }
 
+.guide-image {
+  width: 60%;
+}
+
+.guide-image-container {
+  display: flex;
+  justify-content: center;
+}
+
 #header {
   padding: 15px 20px;
   margin-bottom: 15px;

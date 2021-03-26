@@ -1,5 +1,6 @@
 #about {
     display: grid;
+    font-size: 18px;
     grid-auto-rows: minmax(65px, auto);
     margin-bottom: 0;
     grid-template-columns: 7% 13% [content] auto 13% 7%;
