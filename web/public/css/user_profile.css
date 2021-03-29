@@ -154,6 +154,7 @@ table th {
   width: 25px;
   height: 25px;
   margin-right: 0.5em;
+  border-radius: 20%;
 }
 
 #research_consent > .value > .check-box-text {
@@ -180,6 +181,7 @@ table th {
   width: 25px;
   height: 25px;
   margin-right: 0.5em;
+  border-radius: 20%;
 }
 
 #show-help > .value > .check-box-text {
