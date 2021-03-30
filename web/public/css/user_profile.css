@@ -374,6 +374,22 @@ table th {
   top: 50px;
 }
 
+@media (max-width: 330px) {
+  .performance-report-tabs {
+    display: grid;
+  }
+
+  .performance-report-tab {
+    display: grid;
+    justify-content: center;
+  }
+
+  .selected-performance-report-tab {
+    display: grid;
+    justify-content: center;
+  }
+}
+
 @media only screen and (min-device-width: 320px) and (max-device-width: 768px) {
   .feedback {
     order: 7;
