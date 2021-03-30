@@ -62,7 +62,7 @@ viewTabs =
                 [ href (Route.toString Route.Guide__GettingStarted)
                 , class "guide-link"
                 ]
-                [ text "Starting" ]
+                [ text "Getting Started" ]
             ]
         , div
             [ class "guide-tab"
@@ -71,7 +71,7 @@ viewTabs =
                 [ href (Route.toString Route.Guide__ReadingTexts)
                 , class "guide-link"
                 ]
-                [ text "Texts" ]
+                [ text "Reading Texts" ]
             ]
         , div
             [ class "guide-tab"
