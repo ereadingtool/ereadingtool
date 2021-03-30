@@ -3,7 +3,7 @@
 
   display: grid;
 
-  grid-template-columns: 150px 15px;
+  grid-template-columns: 125px auto;
 
   grid-column-gap: 2px;
 
