@@ -147,21 +147,13 @@ table th {
   text-decoration: underline;
 }
 
-#research_consent > .value > .check-box {
-  display: inline-block;
-  cursor: pointer;
-  border: solid black 0.5px;
-  width: 25px;
-  height: 25px;
-  margin-right: 0.5em;
-  border-radius: 20%;
+#research_consent > .value {
+  display: flex;
 }
-
 #research_consent > .value > .check-box-text {
-  display: inline-block;
-  vertical-align: top;
-  padding-top: 1px;
   font-size: 18px;
+  padding-top: 1px;
+  padding-left: 5px;
 }
 
 #show-help {
@@ -174,25 +166,22 @@ table th {
   margin-bottom: 15px;
 }
 
-#show-help > .value > .check-box {
-  display: inline-block;
-  cursor: pointer;
-  border: solid black 0.5px;
-  width: 25px;
-  height: 25px;
-  margin-right: 0.5em;
-  border-radius: 20%;
-}
-
-#show-help > .value > .check-box-text {
-  display: inline-block;
-  vertical-align: top;
-  font-size: 18px;
-  padding-top: 1px;
+.check-box {
+  content: url('../img/check_box_outline.svg');
 }
 
 .check-box-selected {
-  background: darkgrey;
+  content: url('../img/check_box.svg');
+}
+
+#show-help > .value {
+  display: flex;
+}
+
+#show-help > .value > .check-box-text {
+  font-size: 18px;
+  padding-top: 1px;
+  padding-left: 5px;
 }
 
 .performance-report-tabs {
