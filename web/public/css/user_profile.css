@@ -152,7 +152,6 @@ table th {
 }
 #research_consent > .value > .check-box-text {
   font-size: 18px;
-  padding-top: 1px;
   padding-left: 5px;
 }
 
@@ -168,10 +167,14 @@ table th {
 
 .check-box {
   content: url('../img/check_box_outline.svg');
+  height: 25px;
+  width: 25px;
 }
 
 .check-box-selected {
   content: url('../img/check_box.svg');
+  height: 25px;
+  width: 25px;
 }
 
 #show-help > .value {
@@ -180,7 +183,6 @@ table th {
 
 #show-help > .value > .check-box-text {
   font-size: 18px;
-  padding-top: 1px;
   padding-left: 5px;
 }
 
