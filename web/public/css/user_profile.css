@@ -19,7 +19,8 @@ table th {
 
 .profile {
   /* display: grid; */
-
+  margin-left: 8%;
+  margin-right: 8%;
   grid-template-columns: 4% 10% [content] auto 15% 4%;
 }
 
@@ -126,8 +127,7 @@ table th {
 #words {
   display: grid;
   grid-template-columns: auto;
-  grid-template-rows: 20px 50px;
-  margin-bottom: 0px;
+  grid-template-rows: auto;
 }
 
 #research_consent {
@@ -154,6 +154,7 @@ table th {
   width: 25px;
   height: 25px;
   margin-right: 0.5em;
+  border-radius: 20%;
 }
 
 #research_consent > .value > .check-box-text {
@@ -168,7 +169,7 @@ table th {
   grid-row: 3;
   grid-column: 3 / 4;
   grid-template-columns: auto;
-  grid-template-rows: 30px 35px;
+  grid-template-rows: auto;
   grid-row-gap: 10px;
   margin-bottom: 15px;
 }
@@ -180,6 +181,7 @@ table th {
   width: 25px;
   height: 25px;
   margin-right: 0.5em;
+  border-radius: 20%;
 }
 
 #show-help > .value > .check-box-text {
@@ -222,9 +224,12 @@ table th {
   margin-top: 10px;
 }
 
-.performance_download_link,
-.words-download-link {
+.performance_download_link {
   margin-top: 10px;
+}
+
+.words-download-link {
+  margin-bottom: 10px;
 }
 
 .performance_download_link a,
@@ -395,6 +400,8 @@ table th {
   }
 
   .profile {
+    margin-left: 0%;
+    margin-right: 0%;
     font-size: 11px;
     grid-template-columns: 10% [content] auto 10%;
   }

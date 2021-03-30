@@ -570,14 +570,15 @@ body {
   display: inline-block;
 }
 
-<<<<<<< HEAD
-=======
 .welcome-msg-text a {
   color: #00478f;
   text-decoration: none;
 }
 
+<<<<<<< HEAD
 >>>>>>> 15cae198... Signup page contents
+=======
+>>>>>>> 4b91d596... Removing merge conflict remenants
 @media (max-width: 568px) {
   .content-menu {
     display: grid;
