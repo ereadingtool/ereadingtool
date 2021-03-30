@@ -727,32 +727,3 @@ body {
     transition: opacity 0.25s, height 0.4s;
   }
 }
-<<<<<<< HEAD
-
-@media only screen and (max-width: 768px) {
-  .not-found > img {
-    width: 80%;
-  }
-}
-
-@media only screen and (min-width: 569px) and (max-width: 768px) {
-  .content-menu {
-    grid-template-columns: repeat(auto-fit, minmax(50px, auto));
-    column-gap: 15px;
-  }
-
-  #header {
-    padding: 10px 15px;
-
-    grid-template-columns: 150px auto auto 1fr;
-    column-gap: 20px;
-    font-size: 18px;
-  }
-
-  .profile-menu {
-    grid-template-columns: repeat(auto-fit, minmax(50px, auto));
-    column-gap: 15px;
-  }
-}
-=======
->>>>>>> 3ad38ea1... Style changes
