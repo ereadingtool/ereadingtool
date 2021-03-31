@@ -28,7 +28,6 @@ table th {
   margin-top: 20px;
   font-family: 'EB Garamond';
   font-size: 2rem;
-  padding: 0 0 0 25px;
 }
 
 .profile_items {
@@ -95,8 +94,6 @@ table th {
   grid-column: 1 / 4;
   grid-row: 2;
 
-  margin-top: 10px;
-
   grid-template-rows: 25px auto;
 }
 
@@ -162,7 +159,6 @@ table th {
   grid-template-columns: auto;
   grid-template-rows: auto;
   grid-row-gap: 10px;
-  margin-bottom: 15px;
 }
 
 .check-box {
@@ -257,8 +253,6 @@ table th {
   display: grid;
 
   grid-template-columns: auto;
-  grid-template-rows: 25px 35px;
-  margin-bottom: 15px;
 
   overflow: hidden;
 }
@@ -420,8 +414,12 @@ table th {
   .profile_items {
     display: flex;
     flex-direction: column;
-
+    border: none;
     margin-top: 15px;
+  }
+
+  .profile-title {
+    padding: 0 0 0 25px;
   }
 
   .menu {
