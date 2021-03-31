@@ -215,9 +215,9 @@ body {
 }
 
 .guide-tabs {
-  display: inline-block;
+  display: grid;
   height: 20px;
-
+  max-width: 450px;
   grid-template-columns: auto auto auto 1fr;
 }
 

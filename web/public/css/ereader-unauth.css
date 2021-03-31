@@ -7,7 +7,7 @@
 }
 
 #about-box {
-    grid-column: content;
+    grid-column: 3;
     display: grid;
     grid-template-columns: auto;
     grid-auto-rows: minmax(50px, auto);
@@ -56,4 +56,14 @@
 .screenshot > img {
     padding-top: 35px;
     max-width: 45%;
+}
+
+
+@media (max-width: 460px) {
+    #about {
+        font-size: 15px;
+        grid-template-columns: auto;
+        margin-left: 15px;
+        margin-right: 15px;
+    }
 }
