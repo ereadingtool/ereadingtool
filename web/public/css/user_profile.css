@@ -253,7 +253,7 @@ table th {
   display: grid;
 
   grid-template-columns: auto;
-
+  margin-bottom: 15px;
   overflow: hidden;
 }
 
