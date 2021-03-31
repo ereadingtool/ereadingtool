@@ -799,7 +799,7 @@ viewResearchConsent (SafeModel model) =
 
 viewShowHelp : SafeModel -> Html Msg
 viewShowHelp (SafeModel model) =
-    div [] <|
+    div [ class "show-help" ] <|
         div [ id "show-help" ]
             [ span [ class "profile_item_title" ] [ Html.text "Show Hints" ]
             , span []
