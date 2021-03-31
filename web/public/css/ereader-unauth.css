@@ -17,6 +17,11 @@
     padding-bottom: 3%;
 }
 
+.markdown-link a {
+    color: #00478f;
+    text-decoration: none;
+}
+
 #acknowledgements {
     grid-column: content;
     display: grid;

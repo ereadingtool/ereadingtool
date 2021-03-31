@@ -521,7 +521,7 @@ viewWelcomeBanner =
             , Html.b [] [ Html.text "Show Hints" ]
             , Html.text " section below. "
             , Html.text "For more details please see the "
-            , Html.a [ href (Route.toString Route.About) ] [ Html.text "About page." ]
+            , Html.a [ href (Route.toString Route.Guide__GettingStarted) ] [ Html.text "Guide." ]
             ]
         ]
 
@@ -799,7 +799,7 @@ viewResearchConsent (SafeModel model) =
 
 viewShowHelp : SafeModel -> Html Msg
 viewShowHelp (SafeModel model) =
-    div [] <|
+    div [ class "show-help" ] <|
         div [ id "show-help" ]
             [ span [ class "profile_item_title" ] [ Html.text "Show Hints" ]
             , span []

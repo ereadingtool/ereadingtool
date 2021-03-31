@@ -2,7 +2,7 @@ module Pages.Guide.Progress exposing (..)
 
 import Dict exposing (Dict)
 import Html exposing (..)
-import Html.Attributes exposing (alt, class, href, id, src, title)
+import Html.Attributes exposing (alt, attribute, class, href, id, src, style, title)
 import Markdown
 import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
@@ -97,7 +97,7 @@ viewTabs =
 
 viewFirstSection : Html Msg
 viewFirstSection =
-    Markdown.toHtml [] """
+    Markdown.toHtml [ attribute "class" "markdown-link" ] """
 **5\\.**
 **My Words.** In this section, you can access the words that you have saved from when you 
 were reading texts and looking up words. You can download these words either as a PDF 
