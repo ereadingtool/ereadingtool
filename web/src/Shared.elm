@@ -423,6 +423,14 @@ viewContentHeader role =
                     ]
                     [ text "Texts" ]
                 ]
+            , div
+                [ class "nav-item" ]
+                [ a
+                    [ class "nav-link"
+                    , href (Route.toString Route.Guide__GettingStarted)
+                    ]
+                    [ text "Guide" ]
+                ]
             ]
 
         Instructor ->
