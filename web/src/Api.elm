@@ -255,7 +255,7 @@ get url maybeCred toMsg decoder =
             case maybeCred of
                 Just cred ->
                     [ credHeader cred 
-                    -- , gzipHeader
+                    , gzipHeader
                     ]
 
                 Nothing ->
