@@ -104,7 +104,7 @@ viewTabs =
 viewFirstSection : Html Msg
 viewFirstSection =
     Markdown.toHtml [] """
-**7\\.** 
+**1\\.**
 After you choose a text to read, you’ll get a brief note that orients you to the reading by giving you some context and background information. 
 Click the “Start” button to begin reading. If you don’t like the text, you can use your browser’s “back” button to find a different text.
 """
@@ -126,7 +126,7 @@ viewFirstSectionImage =
 viewSecondSection : Html Msg
 viewSecondSection =
     Markdown.toHtml [] """
-**8\\.**
+**2\\.**
 The text may be broken in one or more sections. You can keep track of your progress at the top of your page by noting your current section and the total 
 number of sections.    
 """
@@ -148,7 +148,7 @@ viewSecondSectionImage =
 viewThirdSection : Html Msg
 viewThirdSection =
     Markdown.toHtml [] """
-**9\\.** 
+**3\\.**
 Read the text for your current section, and try to answer the questions that follow it. There’s no penalty for selecting a wrong answer, but the app does 
 keep track of the total number of questions you get right on your first attempt to answer them. So, you should try to answer the question as best you can, 
 referring back to the text as much as you need to.
@@ -171,7 +171,7 @@ viewThirdSectionImage =
 viewFourthSection : Html Msg
 viewFourthSection =
     Markdown.toHtml [] """
-**10\\.** 
+**4\\.**
 As you’re reading, if you want to check on an unfamiliar word’s meaning, you can click (single tap on mobile) on any word in the text to see its dictionary 
 form, grammatical information and the best English equivalent for the context. You can save any word or phrase you look up to the “My words” file.
 """
@@ -192,7 +192,7 @@ viewFourthSectionImage =
 viewFifthSection : Html Msg
 viewFifthSection =
     Markdown.toHtml [] """
-**11\\.** 
+**5\\.**
 Be sure to read the feedback to the questions. It has been specially designed to help you learn to read more accurately. Understanding how the words fit together 
 to create the meaning that they have is crucial to becoming a truly advanced reader.
 """
@@ -214,7 +214,7 @@ viewFifthSectionImage =
 viewSixthSection : Html Msg
 viewSixthSection =
     Markdown.toHtml [] """
-**12\\.**
+**6\\.**
 Once you’ve finished a text, you will see a summary of your reading progress. Below that, you’ll have some options: to re-read the text, find another text in 
 the STAR app to read, or to follow links to outside sources related to the topic you’ve just been reading about.
 """
