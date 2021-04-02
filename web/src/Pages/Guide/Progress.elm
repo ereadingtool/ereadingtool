@@ -98,7 +98,7 @@ viewTabs =
 viewFirstSection : Html Msg
 viewFirstSection =
     Markdown.toHtml [ attribute "class" "markdown-link" ] """
-**5\\.**
+**1\\.**
 **My Words.** In this section, you can access the words that you have saved from when you 
 were reading texts and looking up words. You can download these words either as a PDF 
 (to review visually), or as a plain comma-separated text file, which you can paste in a 
@@ -107,7 +107,7 @@ or [Kommit](https://kommit.rosano.ca/). For each word you’ve saved, you’ll g
 form of the word, part of the text’s sentence that includes the word from the text you were 
 reading and an English equivalent appropriate for that context.
 
-**6\\.**
+**2\\.**
 **My Performance.** 
 This section gives you two tables: the “Completion” table shows you how much you’ve been 
 reading, by proficiency levels, over the current month (today and the previous 30 days), 
@@ -134,7 +134,7 @@ viewFirstSectionImage =
 viewSecondSection : Html Msg
 viewSecondSection =
     Markdown.toHtml [] """
-**7\\.**
+**3\\.**
 This “first time correct” number is a good indicator of how well you will probably read in a 
 testing situation.
 
@@ -143,7 +143,7 @@ You can download the “My Performance” tables as a PDF document if you want o
 your progress with a teacher or an advisor.
 
 
-**8\\.**
+**4\\.**
 **Contact.**
 These links allow you to report any problems that you encounter when using the site, or to 
 give a general evaluation of the site, its layout and functionality.
