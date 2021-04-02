@@ -1,5 +1,4 @@
 import json
-import gzip
 
 from typing import TypeVar, Dict, Union
 
@@ -190,9 +189,7 @@ class StudentAPIConsentToResearchView(APIView):
     def put_success(self, request: HttpRequest, student_form: Union[Form, forms.ModelForm]) -> HttpResponse:
         student = student_form.save()
 
-        z = json.dumps({'consented': student.is_consenting_to_research})
-        zz = gzip.compress(z)
-        return HttpResponse(zz)
+        return HttpResponse(json.dumps({'consented': student.is_consenting_to_research}))
 
 
 # Method decorator required for PUT method
