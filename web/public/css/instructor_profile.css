@@ -47,8 +47,6 @@
 .invites {
   grid-template-columns: auto;
   grid-template-rows: 25px 35px;
-
-  margin-bottom: 15px;
 }
 
 .invite {

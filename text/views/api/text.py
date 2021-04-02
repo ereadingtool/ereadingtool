@@ -307,18 +307,12 @@ class TextAPIView(APIView):
             texts = [user.to_text_summary_dict(text=txt) for txt in
                      self.get_texts_queryset(user, set(statuses), filter_by)]
 
-            # zipped_json = gzip.compress(bytes(json.dumps(texts), 'utf-8'))
-            # response = HttpResponse(zipped_json) 
-            # response['Content-Encoding'] = 'gzip'
-            response = (json.dumps(texts))
-            # try:
-            #     response['Content-Length'] = len(texts)
-            # except BaseException as be:
-            #     pass
-            # response['Content-Length'] = len(zipped_json)
-            return response
+            zipped_json = gzip.compress(bytes(json.dumps(texts), 'utf-8'))
+            response = HttpResponse(zipped_json) 
+            response['Content-Encoding'] = 'gzip'
+            response['Content-Length'] = len(zipped_json)
 
-            # return HttpResponse(json.dumps(texts))
+            return response
 
     def get_texts_queryset(self, user: Union[Student, Instructor], statuses: Set, filter_by: Dict):
         all_statuses = dict(text_statuses)
