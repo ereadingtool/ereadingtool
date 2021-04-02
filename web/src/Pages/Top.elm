@@ -91,7 +91,7 @@ viewFeaturesSection =
                 ]
             , div
                 []
-                [ a [ href (Route.toString Route.About) ] [ text "Learn more" ]
+                [ a [ href (Route.toString Route.Guide__GettingStarted) ] [ text "Learn more" ]
                 , text " or "
                 , a [ href (Route.toString Route.Signup__Student) ] [ text "Sign up now" ]
                 ]
