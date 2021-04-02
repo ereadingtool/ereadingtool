@@ -632,7 +632,7 @@ body {
     grid-area: content-nav;
     grid-column: 1/3;
 
-    grid-template-columns: 225px 1fr;
+    grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto auto auto;
     justify-content: left;
     align-items: center;
