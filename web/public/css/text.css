@@ -109,10 +109,11 @@
   display: grid;
 
   padding-top: 25px;
+  padding-bottom: 50px;
 
   grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
 
-  grid-template-rows: minmax(25px, 50px);
+  /* grid-template-rows: minmax(25px, 50px); */
   align-items: center;
 }
 
@@ -198,7 +199,7 @@
   display: grid;
 
   grid-template-columns: 10% [body-col] auto 10%;
-  grid-template-rows: 10% [body-row] auto 10%;
+  grid-template-rows: auto [body-row] auto 10%;
 
   font-family: 'Open Sans';
   font-size: 20px;
@@ -305,6 +306,6 @@
   #nav {
     grid-template-columns: repeat(auto-fit, minmax(275px, 1fr));
 
-    row-gap: 20px;
+    row-gap: 15px;
   }
 }
