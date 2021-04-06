@@ -244,6 +244,7 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
                 ftc = FirstTimeCorrect(student=self.student, text=self.text, num_correct=self.text_reading.score["section_scores"]) 
                 ftc.save()
             except BaseException as be:
+                # TODO: Handle the exception accordingly, should we reply even though the connection is closed?
                 pass
 
         return super().disconnect(code)
