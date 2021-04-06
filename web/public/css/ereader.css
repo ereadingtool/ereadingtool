@@ -89,7 +89,6 @@ body {
 
 
 .creator-guide {
-  width: 800px;
   padding: 10px 20px;
   margin: 0 auto;
 }
@@ -577,7 +576,7 @@ body {
   font-family: 'Open Sans';
 
   grid-template-columns: 4% auto 4%;
-  grid-auto-rows: 110px;
+  grid-auto-rows:  minmax(150px, auto);
 }
 
 .text_tag {
@@ -624,6 +623,18 @@ body {
 .welcome-msg-text a {
   color: #00478f;
   text-decoration: none;
+}
+
+@media (max-width: 768px) {
+  .invites {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .invites > .list {
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 @media (max-width: 880px) {
@@ -705,6 +716,10 @@ body {
     width: 75%;
   }
 
+  #invite_msg {
+    overflow: auto;
+  }
+
   .menu-icon {
     display: grid;
     grid-area: menu-icon;
@@ -727,5 +742,21 @@ body {
 
     opacity: 1;
     transition: opacity 0.25s, height 0.4s;
+  }
+}
+
+@media (max-width: 1400px) {
+  .text_item {
+    display: flex;
+    flex-direction: column;
+    grid-column: 2;
+  }
+
+  .text_items {
+    grid-auto-rows: auto;
+  }
+
+  .tag {
+    font-size: 23px;
   }
 }

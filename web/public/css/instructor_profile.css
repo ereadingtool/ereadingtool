@@ -1,6 +1,7 @@
 #create_invite {
   margin-top: 15px;
   margin-bottom: 15px;
+  display: grid;
 }
 
 #create_invite > #submit {
