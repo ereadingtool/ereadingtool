@@ -17,18 +17,18 @@
 
 @font-face {
   font-family: "Open Sans";
-  src: url("../fonts/opensans-regular.woff2");
+  src: url("../fonts/opensans-regular.woff");
 }
 
 @font-face {
   font-family: "Open Sans";
-  src: url("../fonts/opensans-bold.woff2");
+  src: url("../fonts/opensans-bold.woff");
   font-weight: bold;
 }
 
 @font-face {
   font-family: "Open Sans";
-  src: url("../fonts/opensans-italic.woff2");
+  src: url("../fonts/opensans-italic.woff");
   font-style: italic;
 }
 
