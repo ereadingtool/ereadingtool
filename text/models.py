@@ -349,3 +349,12 @@ class TextSection(TextSectionDefinitionsMixin, Timestamped, models.Model):
     def __str__(self):
         return f'Text Section {self.order} of {self.text.title}'
 
+
+class TextRating(models.Model):
+    class Meta:
+        verbose_name_plural = 'Text Ratings'
+        unique_together = (('student', 'text', 'rating'))
+
+    student = models.ForeignKey('user.Student', null=False, on_delete=models.CASCADE, related_name='text_ratings')
+    text = models.ForeignKey(Text, on_delete=models.CASCADE, related_name='texts')
+    rating = models.IntegerField(default=0)

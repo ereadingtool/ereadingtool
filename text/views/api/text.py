@@ -17,7 +17,7 @@ from question.forms import QuestionForm, AnswerForm
 from question.models import Question
 
 from text.forms import TextForm, TextSectionForm, ModelForm
-from text.models import TextDifficulty, Text, TextSection, text_statuses
+from text.models import TextDifficulty, Text, TextRating, TextSection, text_statuses
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -220,37 +220,48 @@ class TextAPIView(APIView):
         except Text.DoesNotExist:
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
 
+    @jwt_valid()
     def patch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:
             return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
 
         try:
+            student = request.user.student.id
             text = Text.objects.get(pk=kwargs['pk'])
             dir = int(request.GET.get('dir'))
+            x = TextRating.objects \
+                          .filter(text=text, student=student) \
+                          .get()
+            
+            if x.rating == 0:
+                if dir == 1:
+                    x.rating = 1
+                    pass 
+                elif dir == -1:
+                    x.rating = -1
+                    pass
+                else:
+                    raise ValueError
+            elif x.rating == -1:
+                if dir == 1:
+                    x.rating = 1
+                    pass
+                elif dir == -1:
+                    x.rating = 0
+                    pass
+                else:
+                    raise ValueError
+            elif x.rating == 1:
+                if dir == -1:
+                    x.rating = -1
+                    pass
+                elif dir == 1:
+                    x.rating = 0
+                    pass
+                else:
+                    raise ValueError
 
-            # have they voted before? fail silently if so
-
-            # if their vote is 0
-                # if they've passed 1
-                    # then their vote is 1, text_rating = text_rating + 1
-                    # write entry to student-rating table
-                # if they've passed -1
-                    # then their vote is -1, text_rating = text_rating - 1
-                    # write entry to student-rating table
-                # else
-                    # this is an error, they can only pass -1 or 1
-            # if their vote is -1
-                # if they've passed 1
-                    # then their vote is 0, text_rating = text_rating + 1
-                    # write entry to student-rating table
-                # else they've passed -1
-                    # this is an error, they can only go from -1 => 0
-            # if their vote is 1
-                # if they've passed -1
-                    # then their vote is 0, text_rating = text_rating - 1
-                    # write entry to student-rating table
-                # else they've passed 1
-                    # this is an error, they can only go from 1 => 0
+            x.save()
         except:
             pass
         return HttpResponse()
