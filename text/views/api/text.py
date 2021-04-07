@@ -220,6 +220,41 @@ class TextAPIView(APIView):
         except Text.DoesNotExist:
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
 
+    def patch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        if 'pk' not in kwargs:
+            return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
+
+        try:
+            text = Text.objects.get(pk=kwargs['pk'])
+            dir = int(request.GET.get('dir'))
+
+            # have they voted before? fail silently if so
+
+            # if their vote is 0
+                # if they've passed 1
+                    # then their vote is 1, text_rating = text_rating + 1
+                    # write entry to student-rating table
+                # if they've passed -1
+                    # then their vote is -1, text_rating = text_rating - 1
+                    # write entry to student-rating table
+                # else
+                    # this is an error, they can only pass -1 or 1
+            # if their vote is -1
+                # if they've passed 1
+                    # then their vote is 0, text_rating = text_rating + 1
+                    # write entry to student-rating table
+                # else they've passed -1
+                    # this is an error, they can only go from -1 => 0
+            # if their vote is 1
+                # if they've passed -1
+                    # then their vote is 0, text_rating = text_rating - 1
+                    # write entry to student-rating table
+                # else they've passed 1
+                    # this is an error, they can only go from 1 => 0
+        except:
+            pass
+        return HttpResponse()
+
     @jwt_valid()
     def put(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if 'pk' not in kwargs:

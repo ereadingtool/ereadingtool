@@ -64,6 +64,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
                                    related_name='created_texts')
     last_modified_by = models.ForeignKey('user.Instructor', null=True, on_delete=models.SET_NULL,
                                          related_name='last_modified_text')
+    rating = models.IntegerField(default=0)
 
     @property
     def words(self):
