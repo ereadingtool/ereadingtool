@@ -277,6 +277,8 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'ereadingtool/static')
 ]
 
+TEST_RUNNER = 'ereadingtool.settings-test.UnManagedModelTestRunner'
+
 try:
     from local_settings import *
 except ImportError:
