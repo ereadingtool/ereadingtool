@@ -2,7 +2,8 @@ name: django-tests
 on: 
   push:
     branches:
-      - 'feature/ci-cd-with-actions'
+      - 'devel'
+      - 'master'
     paths-ignore:
       - 'README'
       - '.gitignore'
