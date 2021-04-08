@@ -18,14 +18,13 @@ table th {
 }
 
 .profile {
-  display: grid;
-
+  /* display: grid; */
+  margin-left: 8%;
+  margin-right: 8%;
   grid-template-columns: 4% 10% [content] auto 15% 4%;
 }
 
 .profile-title {
-  grid-column: content;
-
   margin-top: 20px;
   font-family: 'EB Garamond';
   font-size: 2rem;
@@ -95,8 +94,6 @@ table th {
   grid-column: 1 / 4;
   grid-row: 2;
 
-  margin-top: 10px;
-
   grid-template-rows: 25px auto;
 }
 
@@ -109,8 +106,6 @@ table th {
   grid-row: 5;
   font-size: larger;
   grid-template-columns: auto;
-  grid-template-rows: 25px 35px;
-  margin: 20px 20px 20px 0;
 }
 
 .feedback a {
@@ -123,14 +118,13 @@ table th {
 }
 
 .feedback span {
-  padding: 5px;
+  padding: 0 0 5px 0;
 }
 
 #words {
   display: grid;
   grid-template-columns: auto;
-  grid-template-rows: 20px 50px;
-  margin-bottom: 15px;
+  grid-template-rows: auto;
 }
 
 #research_consent {
@@ -138,9 +132,7 @@ table th {
   grid-row: 3;
   grid-column: 1 / 3;
   grid-template-columns: auto;
-  grid-template-rows: 35px 35px;
   grid-row-gap: 10px;
-  margin-bottom: 15px;
 }
 
 #research_consent a {
@@ -152,20 +144,12 @@ table th {
   text-decoration: underline;
 }
 
-#research_consent > .value > .check-box {
-  display: inline-block;
-  cursor: pointer;
-  border: solid black 0.5px;
-  width: 25px;
-  height: 25px;
-  margin-right: 0.5em;
+#research_consent > .value {
+  display: flex;
 }
-
 #research_consent > .value > .check-box-text {
-  display: inline-block;
-  vertical-align: top;
-  padding-top: 4px;
   font-size: 18px;
+  padding-left: 5px;
 }
 
 #show-help {
@@ -173,29 +157,29 @@ table th {
   grid-row: 3;
   grid-column: 3 / 4;
   grid-template-columns: auto;
-  grid-template-rows: 30px 35px;
+  grid-template-rows: auto;
   grid-row-gap: 10px;
-  margin-bottom: 15px;
 }
 
-#show-help > .value > .check-box {
-  display: inline-block;
-  cursor: pointer;
-  border: solid black 0.5px;
-  width: 25px;
+.check-box {
+  content: url('../img/check_box_outline.svg');
   height: 25px;
-  margin-right: 0.5em;
-}
-
-#show-help > .value > .check-box-text {
-  display: inline-block;
-  vertical-align: top;
-  font-size: 18px;
-  padding-top: 4px;
+  width: 25px;
 }
 
 .check-box-selected {
-  background: darkgrey;
+  content: url('../img/check_box.svg');
+  height: 25px;
+  width: 25px;
+}
+
+#show-help > .value {
+  display: flex;
+}
+
+#show-help > .value > .check-box-text {
+  font-size: 18px;
+  padding-left: 5px;
 }
 
 .performance-report-tabs {
@@ -227,9 +211,12 @@ table th {
   margin-top: 10px;
 }
 
-.performance_download_link,
-.words-download-link {
+.performance_download_link {
   margin-top: 10px;
+}
+
+.words-download-link {
+  margin-bottom: 10px;
 }
 
 .performance_download_link a,
@@ -266,8 +253,8 @@ table th {
   display: grid;
 
   grid-template-columns: auto;
-  grid-template-rows: 25px 35px;
   margin-bottom: 15px;
+  overflow: hidden;
 }
 
 .profile_item_title {
@@ -372,25 +359,67 @@ table th {
   top: 50px;
 }
 
-@media only screen and (min-device-width: 320px) and (max-device-width: 768px) {
-  #lower-menu {
-    margin-top: 15px;
+@media (max-width: 330px) {
+  .performance-report-tabs {
+    display: grid;
   }
 
-  .profile {
-    font-size: 11px;
-    grid-template-columns: 10% [content] auto 10%;
+  .performance-report-tab {
+    display: grid;
+    justify-content: center;
+  }
+
+  .selected-performance-report-tab {
+    display: grid;
+    justify-content: center;
+  }
+}
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 768px) {
+  .feedback {
+    order: 7;
+  }
+
+  .filter {
+    display: none;
   }
 
   .footer_items {
     margin-top: 0;
   }
 
+  #lower-menu {
+    margin-top: 15px;
+  }
+
+  .performance {
+    order: 6;
+  }
+
+  .preferred_difficulty {
+    order: 3;
+  }
+
+  .profile {
+    margin-left: 0%;
+    margin-right: 0%;
+    font-size: 11px;
+    grid-template-columns: 10% [content] auto 10%;
+  }
+
+  .profile-item {
+    order: 1;
+  }
+
   .profile_items {
     display: flex;
     flex-direction: column;
-
+    border: none;
     margin-top: 15px;
+  }
+
+  .profile-title {
+    padding: 0 0 0 25px;
   }
 
   .menu {
@@ -403,7 +432,15 @@ table th {
     padding-right: 5px;
   }
 
-  .filter {
-    display: none;
+  #research_consent {
+    order: 4;
+  }
+
+  .show-help {
+    order: 2;
+  }
+
+  #words {
+    order: 5;
   }
 }

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 import datetime
 import os
+from corsheaders.defaults import default_headers
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -249,6 +250,9 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:1234'
 ]
 
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'content-encoding'
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/

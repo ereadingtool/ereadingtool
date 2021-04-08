@@ -11,7 +11,7 @@ import Api.Endpoint as Endpoint
 import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
 import Html exposing (Html, div, span)
-import Html.Attributes exposing (attribute, class, classList, id)
+import Html.Attributes exposing (attribute, class, classList, id, href)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (..)
 import Http.Detailed
@@ -304,31 +304,31 @@ viewStudentWelcomeMsg : List (Html Msg)
 viewStudentWelcomeMsg =
     let
         welcomeTitle =
-            """Welcome to The Language Flagship’s Steps To Advanced Reading (STAR) website."""
+            """Welcome to the website Steps To Advanced Reading (STAR)."""
     in
     [ div [ class "welcome_msg" ]
         [ span [ class "welcome-headline" ] [ Html.text welcomeTitle ]
         , div [ class "welcome-msg-text" ]
             [ Html.p []
                 [ Html.text
-                    """The purpose of this site is to help students improve their reading proficiency in Flagship
-            language that they are studying. This site includes a wide range of texts at different proficiency levels.
-            You will select texts to read by proficiency level and by topic."""
+                    """Developed with support from """
+                    , Html.a [ href "https://www.thelanguageflagship.org/" ]
+                    [ Html.text "The Language Flagship" ]
+                    , Html.text 
+                        """, this site is designed to help students improve their reading proficiency in Russian at a wide 
+                    range of proficiency levels."""
+                ]
+            , Html.p [] 
+                [ Html.text
+                        """After signing in, you will land on a profile page, from which you can go and select a text to read. 
+                    Texts are organized by proficiency level and by topic. After selecting a text, you will get a brief 
+                    contextualizing message in English. Then you will see the first part of the text followed by comprehension 
+                    question(s). Once you’ve read the text and selected the best answer, you will get feedback telling you if 
+                    your choice is correct, and why or why not."""
                 ]
             , Html.p []
-                [ Html.text
-                    """Before reading the Russian texts, you will get a brief contextualizing message in English.
-            Then you will see the first part of the text followed by comprehension questions. Once you’ve read the text
-            and selected the best answer, you will get feedback telling you if your choice is correct, and why or why
-            not."""
-                ]
-            , Html.p []
-                [ Html.text
-                    """The format of this site resembles the Flagship proficiency tests, and our goal is to
-            help you build your reading skills for those tests. Any particular reading should take you between 5-15
-            minutes to complete, and we envision that you can use these texts on the go, when commuting, when waiting
-            for a bus, etc.  You can come back to texts at any time.  If this is your first time using the website,
-            pop-up boxes will help you learn how to use the site."""
+                [ Html.text 
+                    """On your first time using the website, pop-up boxes will guide you in learning how to use the site."""            
                 ]
             ]
         ]
@@ -377,41 +377,31 @@ viewDifficultyInfo model =
     if model.showDifficultyInfo then
         case model.signupParams.difficulty of
             "intermediate_mid" ->
-                [ Markdown.toHtml [ class "difficulty-info" ] """**Texts at the Intermediate Mid level** tend to be short public announcements,
-            selections from personal correspondence, clearly organized texts in very recognizable genres with clear
-            structure (like a biography, public opinion survey, etc.). Questions will focus on your ability to recognize
-            the main ideas of the text. Typically, students in second year Russian can attempt texts at this level. """
+                [ Markdown.toHtml [ class "difficulty-info" ] """**Texts at the Intermediate Mid level** tend to be short public announcements or 
+            very brief news reports that are clearly organized. Questions will focus on your ability to recognize the 
+            main ideas of the text. Typically, students in second-year Russian can attempt texts at this level. """
                 ]
 
             "intermediate_high" ->
-                [ Markdown.toHtml [ class "difficulty-info" ] """**Texts at the Intermediate High level** will tend to be several paragraphs in length,
-            touching on topics of personal and/or public interest.  The texts will tell a story, give a description or
-            explanation of something related to the topic. At the intermediate high level, you may be able to get the main
-            idea of the text, but the supporting details may be elusive. Typically, students in third year Russian can
-            attempt texts at this level."""
+                [ Markdown.toHtml [ class "difficulty-info" ] """Texts at the Intermediate High level** will tend to be several paragraphs in length, 
+            touching on topics of personal and/or public interest. The texts will typically describe, explain or narrate 
+            some event or situation related to the topic. At the Intermediate High level, you may be able to get the main 
+            idea of the text, but you might struggle with details.Typically, students in third-year and fourth-year Russian 
+            can attempt texts at this level."""
                 ]
 
             "advanced_low" ->
-                [ Markdown.toHtml [ class "difficulty-info" ] """**Texts at the Advanced Low level** will be multiple paragraphs in length, touching on
-            topics of public interest. They may be excerpts from straightforward literary texts, from newspapers relating
-            the circumstances related to an event of public interest.  Texts may related to present, past or future time
-            frames. Advanced Low texts will show a strong degree of internal cohesion and organization.  The paragraphs
-            cannot be rearranged without doing damage to the comprehensibility of the passage. At the Advanced low level,
-            you should be able to understand the main ideas of the passage as well as the supporting details.
-            Readers at the Advanced Low level can efficiently balance the use of background knowledge WITH linguistic
-            knowledge to determine the meaning of a text, although complicated word order may interfere with the reader’s
-            comprehension. Typically, students in fourth year Russian can attempt these texts. """
+                [ Markdown.toHtml [ class "difficulty-info" ] """**Texts at the Advanced Low level** will be multiple paragraphs in length that 
+            report and describe topics of public interest. At the Advanced Low level, you should be able to understand the 
+            main ideas of the passage as well as the supporting details. Typically, strong students in fourth-year Russian 
+            can attempt these texts."""
                 ]
 
             "advanced_mid" ->
-                [ Markdown.toHtml [ class "difficulty-info" ] """**Texts at the Advanced Mid level** will be even longer than at the Advanced Low level.
-            They will address issues of public interest, and they may contain narratives, descriptions, explanations, and
-            some argumentation, laying out and justifying a particular point of view. At the Advanced Mid level, texts
-            contain cultural references that are important for following the author’s point of view and argumentation.
-            Texts may contain unusual plot twists and unexpected turns of events, but they do not confuse readers because
-            readers have a strong command of the vocabulary, syntax, rhetorical devices that organize texts. Readers at the
-            Advanced Mid level can handle the main ideas and the factual details of texts. Typically, strong students in
-            4th year Russian or in 5th year Russian can attempt texts at this level. """
+                [ Markdown.toHtml [ class "difficulty-info" ] """**Texts at the Advanced Mid level** will be even longer than at the Advanced Low 
+            level, and they address issues of public interest, and they may contain some argumentation. Readers at the 
+            Advanced Mid level have a very broad vocabulary and can comprehend the main ideas and the factual details of 
+            texts. Typically, strong students beyond fourth-year Russian can attempt texts at this level."""
                 ]
 
             _ ->

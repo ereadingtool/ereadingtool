@@ -236,6 +236,9 @@ credHeader : Cred -> Http.Header
 credHeader (Cred token) =
     Http.header "Authorization" ("Bearer " ++ token)
 
+gzipHeader : Http.Header
+gzipHeader =
+    Http.header "Accept-Encoding" "gzip"
 
 get :
     Endpoint
@@ -251,7 +254,9 @@ get url maybeCred toMsg decoder =
         , headers =
             case maybeCred of
                 Just cred ->
-                    [ credHeader cred ]
+                    [ credHeader cred 
+                    , gzipHeader
+                    ]
 
                 Nothing ->
                     []
