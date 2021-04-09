@@ -40,6 +40,7 @@ type alias Text =
 
 type alias TextListItem =
     { id : Int
+    , rating : Int
     , title : String
     , author : String
     , difficulty : String

@@ -228,34 +228,42 @@ class TextAPIView(APIView):
         try:
             student = request.user.student.id
             text = Text.objects.get(pk=kwargs['pk'])
-            dir = int(request.GET.get('dir'))
+            vote_str = request.GET.get('vote')
+
+            if vote_str == "up":
+                vote = 1
+            elif vote_str == "down":
+                vote = -1
+            else:
+                raise ValueError
+
             x = TextRating.objects \
                           .filter(text=text, student=student) \
                           .get()
             
             if x.rating == 0:
-                if dir == 1:
+                if vote == 1:
                     x.rating = 1
                     pass 
-                elif dir == -1:
+                elif vote == -1:
                     x.rating = -1
                     pass
                 else:
                     raise ValueError
             elif x.rating == -1:
-                if dir == 1:
+                if vote == 1:
                     x.rating = 1
                     pass
-                elif dir == -1:
+                elif vote == -1:
                     x.rating = 0
                     pass
                 else:
                     raise ValueError
             elif x.rating == 1:
-                if dir == -1:
+                if vote == -1:
                     x.rating = -1
                     pass
-                elif dir == 1:
+                elif vote == 1:
                     x.rating = 0
                     pass
                 else:

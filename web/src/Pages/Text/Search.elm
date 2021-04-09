@@ -359,6 +359,9 @@ viewSearchResults timezone textListItems =
     let
         viewSearchResult textItem =
             let
+                textRating =
+                            String.fromInt (textItem.rating)
+
                 difficultyCategory = 
                     case 
                         List.head <|
@@ -408,6 +411,10 @@ viewSearchResults timezone textListItems =
             in
             div [ class "search_result" ]
                 [ div [ class "result_item" ]
+                    [ div [ class "result_item_title" ]
+                        [ Html.text textRating ]
+                    ]
+                , div [ class "result_item" ]
                     [ div [ class "result_item_title" ]
                         [ Html.a
                             [ attribute "href" (Route.toString (Route.Text__Id_Int { id = textItem.id })) ]

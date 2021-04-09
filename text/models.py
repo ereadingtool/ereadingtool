@@ -190,6 +190,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
     def to_summary_dict(self) -> Dict:
         text_dict = self.to_dict_meta()
 
+        text_dict['rating'] = self.rating
         text_dict['text_section_count'] = self.sections.count()
         text_dict['translation_service_processed'] = all([ts.translation_service_processed == 1 for ts in self.sections.all()])
 

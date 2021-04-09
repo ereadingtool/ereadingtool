@@ -80,6 +80,7 @@ textListItemDecoder : Json.Decode.Decoder TextListItem
 textListItemDecoder =
     Json.Decode.succeed TextListItem
         |> required "id" Json.Decode.int
+        |> required "rating" Json.Decode.int
         |> required "title" Json.Decode.string
         |> required "author" Json.Decode.string
         |> required "difficulty" Json.Decode.string
