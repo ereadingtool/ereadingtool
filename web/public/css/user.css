@@ -3,7 +3,7 @@
 
   display: grid;
 
-  grid-template-columns: 150px 15px;
+  grid-template-columns: 125px auto;
 
   grid-column-gap: 2px;
 
@@ -168,6 +168,14 @@ validation-error {
     width: 100%;
   }
 }
+
+
+@media (max-width: 340px) {
+  #acknowledgements-and-about {
+    grid-template-columns: auto;
+  }
+}
+  
 
 @media only screen and (max-width: 768px) {
   .button {

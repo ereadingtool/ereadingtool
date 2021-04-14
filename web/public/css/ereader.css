@@ -17,18 +17,18 @@
 
 @font-face {
   font-family: "Open Sans";
-  src: url("../fonts/opensans-regular.woff2");
+  src: url("../fonts/opensans-regular.woff");
 }
 
 @font-face {
   font-family: "Open Sans";
-  src: url("../fonts/opensans-bold.woff2");
+  src: url("../fonts/opensans-bold.woff");
   font-weight: bold;
 }
 
 @font-face {
   font-family: "Open Sans";
-  src: url("../fonts/opensans-italic.woff2");
+  src: url("../fonts/opensans-italic.woff");
   font-style: italic;
 }
 
@@ -81,7 +81,7 @@ body {
 .content-menu {
   display: grid;
   grid-area: content-nav;
-  grid-template-columns: repeat(auto-fit, minmax(50px, auto));
+  grid-template-columns: auto auto auto auto;
   column-gap: 20px;
   justify-content: start;
   align-items: center;
@@ -89,7 +89,6 @@ body {
 
 
 .creator-guide {
-  width: 800px;
   padding: 10px 20px;
   margin: 0 auto;
 }
@@ -191,6 +190,40 @@ body {
   align-items: center;
   justify-items: center;
 }
+
+.guide-image {
+  display: flex;
+  align-items: center;
+  width: 60%;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+}
+
+.guide-image-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.guide-tab {
+  display: inline-block;
+  padding: 7px;
+
+  border: 1px solid #999999;
+  border-left: none;
+}
+
+.guide-tab > .guide-link {
+  color: #000000;
+  text-decoration: none;
+}
+
+.guide-tabs {
+  display: grid;
+  height: 20px;
+  max-width: 450px;
+  grid-template-columns: auto auto auto 1fr;
+}
+
 
 #header {
   padding: 15px 20px;
@@ -307,6 +340,10 @@ body {
 
   font-size: 23px;
   font-weight: 300;
+}
+
+.leftmost-guide-tab {
+  border-left: 1px solid #999999;
 }
 
 .login_options a {
@@ -469,6 +506,19 @@ body {
   align-items: center;
 }
 
+.selected-guide-tab {
+  color: #ffffff;
+  background-color: #0054a6;
+
+  border: 1px solid #999999;
+  border-left: none;
+}
+
+.selected-guide-tab > .guide-link {
+  color: #ffffff;
+  text-decoration: none;
+}
+
 .signup_box select {
   height: 40px;
   border: 1px solid lightgray;
@@ -526,7 +576,7 @@ body {
   font-family: 'Open Sans';
 
   grid-template-columns: 4% auto 4%;
-  grid-auto-rows: 110px;
+  grid-auto-rows:  minmax(150px, auto);
 }
 
 .text_tag {
@@ -575,14 +625,26 @@ body {
   text-decoration: none;
 }
 
-@media (max-width: 568px) {
+@media (max-width: 768px) {
+  .invites {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .invites > .list {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 880px) {
   .content-menu {
     display: grid;
     grid-area: content-nav;
     grid-column: 1/3;
 
-    grid-template-columns: 100%;
-    grid-template-rows: repeat(auto-fit, auto);
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto auto;
     justify-content: left;
     align-items: center;
 
@@ -596,7 +658,7 @@ body {
 
   #header {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 225px 1fr;
     grid-template-rows: auto auto auto;
     grid-template-areas:
       'logo menu-icon'
@@ -654,6 +716,10 @@ body {
     width: 75%;
   }
 
+  #invite_msg {
+    overflow: auto;
+  }
+
   .menu-icon {
     display: grid;
     grid-area: menu-icon;
@@ -663,8 +729,6 @@ body {
   }
 
   .profile-menu {
-    display: grid;
-    grid-area: profile-nav;
     grid-column: 1/3;
 
     grid-template-columns: 100%;
@@ -681,28 +745,18 @@ body {
   }
 }
 
-@media only screen and (max-width: 768px) {
-  .not-found > img {
-    width: 80%;
-  }
-}
-
-@media only screen and (min-width: 569px) and (max-width: 768px) {
-  .content-menu {
-    grid-template-columns: repeat(auto-fit, minmax(50px, auto));
-    column-gap: 15px;
+@media (max-width: 1400px) {
+  .text_item {
+    display: flex;
+    flex-direction: column;
+    grid-column: 2;
   }
 
-  #header {
-    padding: 10px 15px;
-
-    grid-template-columns: 150px auto auto 1fr;
-    column-gap: 20px;
-    font-size: 18px;
+  .text_items {
+    grid-auto-rows: auto;
   }
 
-  .profile-menu {
-    grid-template-columns: repeat(auto-fit, minmax(50px, auto));
-    column-gap: 15px;
+  .tag {
+    font-size: 23px;
   }
 }

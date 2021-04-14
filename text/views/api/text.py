@@ -1,4 +1,5 @@
 import json
+import gzip
 from report.models import StudentReadingsComplete, StudentReadingsInProgress
 import jsonschema
 from typing import TypeVar, Optional, List, Dict, AnyStr, Union, Set
@@ -306,7 +307,12 @@ class TextAPIView(APIView):
             texts = [user.to_text_summary_dict(text=txt) for txt in
                      self.get_texts_queryset(user, set(statuses), filter_by)]
 
-            return HttpResponse(json.dumps(texts))
+            zipped_json = gzip.compress(bytes(json.dumps(texts), 'utf-8'))
+            response = HttpResponse(zipped_json) 
+            response['Content-Encoding'] = 'gzip'
+            response['Content-Length'] = len(zipped_json)
+
+            return response
 
     def get_texts_queryset(self, user: Union[Student, Instructor], statuses: Set, filter_by: Dict):
         all_statuses = dict(text_statuses)
