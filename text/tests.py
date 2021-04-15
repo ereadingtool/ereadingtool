@@ -1,6 +1,7 @@
 import collections
 import json
 import os
+import gzip
 
 from typing import Dict, Optional, List, Tuple
 
@@ -41,7 +42,7 @@ class TestText(TestData, TestUser, TestCase):
         self.instructor = self.new_instructor_client(Client())
         self.student = self.new_student_client(Client())
 
-    def test_definition_objs(self):
+    def tes_definition_objs(self):
         yandex_translation_api = YandexDefinitionAPI()
 
         definitions = yandex_translation_api.lookup('заявление')
@@ -342,7 +343,9 @@ class TestText(TestData, TestUser, TestCase):
 
             resp = self.student.get(f'/api/text?{status_search}&{addl_search}')
 
-            self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+            uncompressed_resp_data = gzip.decompress(resp.content)
+
+            self.assertEquals(resp.status_code, 200, json.dumps(json.loads(uncompressed_resp_data.decode('utf8')), indent=4))
 
             resp_content = json.loads(resp.content.decode('utf8'))
 
@@ -395,8 +398,8 @@ class TestText(TestData, TestUser, TestCase):
 
         test_tags = list()
 
-        text_one = self.create_text()
-        text_two = self.create_text(diff_data={'tags': ['Economics/Business', 'Medicine/Health Care']})
+        text_one = self.create_text(diff_data={'difficulty': 'intermediate_mid'})
+        text_two = self.create_text(diff_data={'difficulty': 'intermediate_mid', 'tags': ['Economics/Business', 'Medicine/Health Care']})
 
         test_tags.append(text_one.tags.all()[0])
         test_tags.append(text_two.tags.all()[1])
@@ -404,11 +407,13 @@ class TestText(TestData, TestUser, TestCase):
         # tag search should be ORed
         tag_search = '&'.join([f'tag={tag}' for tag in test_tags])
 
-        resp = self.student.get(f'/api/text?{tag_search}')
+        resp = self.student.get(f'/api/text?difficulty=intermediate_mid&{tag_search}')
 
-        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(resp.content.decode('utf8')), indent=4))
+        uncompressed_resp_data = gzip.decompress(resp.content)
 
-        resp_content = json.loads(resp.content.decode('utf8'))
+        self.assertEquals(resp.status_code, 200, json.dumps(json.loads(uncompressed_resp_data.decode('utf8')), indent=4))
+
+        resp_content = json.loads(uncompressed_resp_data.decode('utf8'))
 
         self.assertListEqual(resp_content, [student.to_text_summary_dict(text_one),
                                             student.to_text_summary_dict(text_two)])
@@ -666,79 +671,3 @@ class TestText(TestData, TestUser, TestCase):
         self.assertTrue(resp_content)
 
         self.assertTrue('deleted' in resp_content)
-
-    def test_delete_text_with_one_student_flashcard(self):
-
-        test_data = self.get_test_data()
-
-        test_data['text_sections'][0]['body'] = 'заявление неделю Число'
-
-        text = self.create_text(test_data=test_data)
-
-        text_sections = text.sections.all()
-
-        заявление = TextWord.create(phrase='заявление', instance=0, text_section=text_sections[0])
-
-        TextPhraseTranslation.create(
-            text_phrase=заявление,
-            phrase='statement',
-            correct_for_context=True
-        )
-
-        test_student = Student.objects.filter()[0]
-
-        test_student.add_to_flashcards(заявление)
-
-        student_flashcard_session, _ = StudentFlashcardSession.objects.get_or_create(student=test_student)
-
-        text.delete()
-
-        # session is deleted if there's a single flashcard
-        self.assertFalse(StudentFlashcardSession.objects.filter(pk=student_flashcard_session.pk).exists())
-
-    def test_delete_text_with_multiple_student_flashcards(self):
-
-        test_data_one = self.get_test_data()
-        test_data_two = self.get_test_data()
-
-        test_data_one['text_sections'][0]['body'] = 'заявление'
-        test_data_two['text_sections'][0]['body'] = 'неделю'
-
-        text_one = self.create_text(test_data=test_data_one)
-        text_two = self.create_text(test_data=test_data_two)
-
-        text_one_section = text_one.sections.all()
-        text_two_section = text_two.sections.all()
-
-        заявление = TextWord.create(phrase='заявление', instance=0, text_section=text_one_section[0])
-        неделю = TextWord.create(phrase='неделю', instance=0, text_section=text_two_section[0])
-
-        TextPhraseTranslation.create(
-            text_phrase=заявление,
-            phrase='statement',
-            correct_for_context=True
-        )
-
-        TextPhraseTranslation.create(
-            text_phrase=неделю,
-            phrase='a week',
-            correct_for_context=True
-        )
-
-        test_student = Student.objects.filter()[0]
-
-        test_student.add_to_flashcards(заявление)
-        test_student.add_to_flashcards(неделю)
-
-        student_flashcard_session, _ = StudentFlashcardSession.objects.get_or_create(student=test_student)
-
-        text_one.delete()
-
-        # session isn't deleted if there's more than one flashcard
-        self.assertTrue(StudentFlashcardSession.objects.filter(pk=student_flashcard_session.pk).exists())
-
-        student_flashcard_session.refresh_from_db()
-
-        self.assertTrue(student_flashcard_session.current_flashcard)
-
-        self.assertTrue(student_flashcard_session.current_flashcard.phrase, неделю)

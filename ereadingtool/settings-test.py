@@ -30,5 +30,4 @@ class UnManagedModelTestRunner(DiscoverRunner):
         for m in self.unmanaged_models:
             m._meta.managed = False
 
-
-DATABASE_ROUTERS = []
+MIGRATION_MODULES = {'report': None}
