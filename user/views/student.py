@@ -280,22 +280,28 @@ class StudentLoginAPIView(APIView):
         Args: HttpRequest: presumably a POST. Form: a Django type holding form data, aliased up top.
         Returns: JsonResponse containing the new JWT
         """        
-        reader_user = student_login_form.get_user()
+        try:
+            reader_user = student_login_form.get_user()
 
-        token = jwt_encode_token(
-            # cleaned_data sanitizes the form fields https://docs.djangoproject.com/en/3.1/ref/forms/api/#accessing-clean-data
-            # orig_iat means "original issued at" https://tools.ietf.org/html/rfc7519
-            reader_user, student_login_form.cleaned_data.get('orig_iat') 
-        )
+            token = jwt_encode_token(
+                # cleaned_data sanitizes the form fields https://docs.djangoproject.com/en/3.1/ref/forms/api/#accessing-clean-data
+                # orig_iat means "original issued at" https://tools.ietf.org/html/rfc7519
+                reader_user, student_login_form.cleaned_data.get('orig_iat') 
+            )
 
-        # payload now contains string 'Bearer', the token, and the expiration time JWT_EXPIRATION_DELTA (in seconds)
-        jwt_payload = jwt_get_json_with_token(token)
+            if type(token) != str:
+                token = decode(token, 'utf-8')
 
-        # manually add the field `[id]` to the jwt payload
-        jwt_payload['id'] = reader_user.student.pk
+            # payload now contains string 'Bearer', the token, and the expiration time JWT_EXPIRATION_DELTA (in seconds)
+            jwt_payload = jwt_get_json_with_token(token)
 
-        # return to the dispatcher to send out an HTTP response
-        return JsonResponse(jwt_payload)
+            # manually add the field `[id]` to the jwt payload
+            jwt_payload['id'] = reader_user.student.pk
+
+            # return to the dispatcher to send out an HTTP response
+            return JsonResponse(jwt_payload)
+        except Exception as e:
+            print(f"> {type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}\n{jwt_payload}")
 
 
 class StudentSignUpView(TemplateView):

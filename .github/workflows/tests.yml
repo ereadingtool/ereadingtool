@@ -36,4 +36,4 @@ jobs:
         run: |
           pip3 install setuptools
           pip3 install -r requirements.txt
-          python3 manage.py test
+          python3 manage.py test --settings=ereadingtool.settings-test
