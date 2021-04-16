@@ -157,6 +157,8 @@ type Msg
     | CloseHint TextSearch.Help.TextHelp
     | PreviousHint
     | NextHint
+      -- rating messages
+    | Rating String
       -- site-wide messages
     | Logout
 
@@ -259,6 +261,11 @@ update msg (SafeModel model) =
             , TextSearch.Help.scrollToNextMsg model.help
             )
 
+        Rating newRating ->
+            ( SafeModel { model | rating = newRating, results = [] }
+            , updateRating model.session model.config rating 
+            )
+
         Logout ->
             ( SafeModel model
             , Api.logout ()
@@ -285,6 +292,15 @@ updateResults session config textSearch =
         Cmd.none
 
 
+updateRating : Session -> Config -> String -> Cmd Msg
+updateRating session config rating =
+    Api.patchDetailed
+        (Endpoint.textSearch (Config.restApiUrl config) )
+        (Session.cred session)
+        -- encoder for string to json
+        TextSearch
+        Text.Decode.textListDecoder
+        -- decoder for data that comes back from PATCH
 
 -- VIEW
 
@@ -360,10 +376,10 @@ viewSearchResults timezone textListItems =
         viewSearchResult textItem =
             let
                 textRating =
-                            String.fromInt (textItem.rating)
+                    String.fromInt textItem.rating
 
-                difficultyCategory = 
-                    case 
+                difficultyCategory =
+                    case
                         List.head <|
                             List.filter
                                 (\difficulty ->
@@ -410,9 +426,15 @@ viewSearchResults timezone textListItems =
                             "None attempted"
             in
             div [ class "search_result" ]
-                [ div [ class "result_item" ]
-                    [ div [ class "result_item_title" ]
+                [ div [ class "result_item" ] [ 
+                        div [ class "arrow-upward" ] [ Html.span [ onClick Rating "upward" ] [  Html.img [ attribute "src" "/public/img/arrow_upward.svg", attribute "height" "28px", attribute "width" "28px" ] [] ] ]
+                    , div [ class "result_item_title" ]
                         [ Html.text textRating ]
+                    , div [ class "arrow-downward" ] [ Html.img [
+                        attribute "src" "/public/img/arrow_downward.svg"
+                    , attribute "height" "28px"
+                    , attribute "width" "28px"
+                    ] []]
                     ]
                 , div [ class "result_item" ]
                     [ div [ class "result_item_title" ]
