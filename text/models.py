@@ -252,7 +252,9 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
             'created_by': str(self.created_by),
             'tags': [tag.name for tag in self.tags.all()],
             'modified_dt': self.modified_dt.isoformat(),
-            'created_dt': self.created_dt.isoformat()
+            'created_dt': self.created_dt.isoformat(),
+            # TODO: Testing Elm functionality
+            'vote': 'up'
         }
 
     def delete(self, *args, **kwargs):

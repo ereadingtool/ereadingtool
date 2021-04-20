@@ -12,6 +12,7 @@ module Api.Endpoint exposing
     , matchTranslation
     , mergeWords
     , performanceReportLink
+    , rateText
     , request
     , resetPassword
     , studentProfile
@@ -155,6 +156,11 @@ validateUsername baseUrl =
 textSearch : String -> List QueryParameter -> Endpoint
 textSearch baseUrl queryParameters =
     url baseUrl [ "api", "text" ] queryParameters
+
+
+rateText : String -> Int -> Endpoint
+rateText baseUrl id =
+    url baseUrl [ "api", "text", String.fromInt id ] []
 
 
 

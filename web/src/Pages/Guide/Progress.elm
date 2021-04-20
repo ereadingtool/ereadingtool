@@ -82,8 +82,8 @@ viewTabs =
                 ]
                 [ text "Settings" ]
             ]
-        , div 
-            [ class "guide-tab" 
+        , div
+            [ class "guide-tab"
             , class "selected-guide-tab"
             ]
             [ a
@@ -120,14 +120,14 @@ at that level.
 
 viewFirstSectionImage : Html Msg
 viewFirstSectionImage =
-    div [ class "guide-image-container"] 
-        [ img 
+    div [ class "guide-image-container" ]
+        [ img
             [ class "guide-image"
             , src "/public/img/tutorial/13.png"
             , alt (viewAltText "13" altTexts)
             , title (viewAltText "13" altTexts)
-            ] 
-            [] 
+            ]
+            []
         ]
 
 
@@ -148,6 +148,7 @@ your progress with a teacher or an advisor.
 These links allow you to report any problems that you encounter when using the site, or to 
 give a general evaluation of the site, its layout and functionality.
 """
+
 
 viewAltText : String -> Dict String String -> String
 viewAltText id texts =

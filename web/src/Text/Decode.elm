@@ -15,13 +15,16 @@ module Text.Decode exposing
 
 import Array
 import Dict exposing (Dict)
+import Html.Attributes exposing (download)
 import Iso8601
 import Json.Decode
 import Json.Decode.Pipeline exposing (required)
 import Text.Model exposing (Text, TextDifficulty, TextListItem)
 import Text.Section.Decode
 import Text.Translations.Decode
+import Text.Update exposing (Msg(..))
 import Utils
+import Vote exposing (decoder)
 
 
 type alias TextCreateResp =
@@ -81,6 +84,7 @@ textListItemDecoder =
     Json.Decode.succeed TextListItem
         |> required "id" Json.Decode.int
         |> required "rating" Json.Decode.int
+        |> required "vote" decoder
         |> required "title" Json.Decode.string
         |> required "author" Json.Decode.string
         |> required "difficulty" Json.Decode.string

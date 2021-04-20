@@ -1,5 +1,6 @@
 import json
 import gzip
+from logging import BASIC_FORMAT
 from report.models import StudentReadingsComplete, StudentReadingsInProgress
 import jsonschema
 from typing import TypeVar, Optional, List, Dict, AnyStr, Union, Set
@@ -228,7 +229,11 @@ class TextAPIView(APIView):
         try:
             student = request.user.student.id
             text = Text.objects.get(pk=kwargs['pk'])
-            vote_str = request.GET.get('vote')
+            try:
+                vote_str = json.loads(request.body)['rating']
+            except BaseException as be:
+                # TODO: form some sort of fail state
+                pass
 
             if vote_str == "up":
                 vote = 1
@@ -237,10 +242,16 @@ class TextAPIView(APIView):
             else:
                 raise ValueError
 
-            x = TextRating.objects \
-                          .filter(text=text, student=student) \
-                          .get()
-            
+            # Have they voted on this text before?
+            try:
+                x = TextRating.objects \
+                            .filter(text=text, student=student) \
+                            .get()
+            except:
+                TextRating.objects.create(rating=vote, student_id=student, text_id=text.id)
+                return HttpResponse(json.dumps({'errors': 'something went wrong'}))
+
+            # They're changing a previously cast vote
             if x.rating == 0:
                 if vote == 1:
                     x.rating = 1
@@ -269,9 +280,9 @@ class TextAPIView(APIView):
                 else:
                     raise ValueError
 
-            x.save()
-        except:
+        except BaseException as be:
             pass
+        # TODO: create fail state
         return HttpResponse()
 
     @jwt_valid()

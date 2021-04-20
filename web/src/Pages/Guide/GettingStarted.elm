@@ -3,11 +3,11 @@ module Pages.Guide.GettingStarted exposing (Model, Msg, Params, page)
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (alt, class, href, id, src, title)
+import Markdown
 import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url as Url exposing (Url)
-import Markdown
 
 
 page : Page Params Model Msg
@@ -63,7 +63,7 @@ view { params } =
 
 
 viewFirstSection : Html Msg
-viewFirstSection = 
+viewFirstSection =
     Markdown.toHtml [] """
 This page will give you an overview of the STAR (Steps to Advanced Reading) website’s functionality without
 requiring you to create an account. The main function of the website is to allow students to read texts at
@@ -91,20 +91,20 @@ difficulty level. If you already have an account, you can log in.
 
 viewFirstSectionImage : Html Msg
 viewFirstSectionImage =
-    div [ class "guide-image-container"] 
-        [ img 
+    div [ class "guide-image-container" ]
+        [ img
             [ class "guide-image"
             , src "/public/img/tutorial/1.png"
             , alt (viewAltText "1" altTexts)
             , title (viewAltText "1" altTexts)
-            ] 
-            [] 
+            ]
+            []
         ]
 
 
 viewSecondSection : Html Msg
-viewSecondSection = 
--- Since Markdown doesn't let you continue a numbered list, we must escape and use plaintext numbering
+viewSecondSection =
+    -- Since Markdown doesn't let you continue a numbered list, we must escape and use plaintext numbering
     Markdown.toHtml [] """
 **2\\.** 
 If you’ve already created an account, then you can just log in to the app.
@@ -113,19 +113,19 @@ If you’ve already created an account, then you can just log in to the app.
 
 viewSecondSectionImage : Html Msg
 viewSecondSectionImage =
-    div [ class "guide-image-container"] 
-        [ img 
+    div [ class "guide-image-container" ]
+        [ img
             [ class "guide-image"
             , src "/public/img/tutorial/2.png"
             , alt (viewAltText "2" altTexts)
             , title (viewAltText "2" altTexts)
-            ] 
-            [] 
+            ]
+            []
         ]
-        
+
 
 viewThirdSection : Html Msg
-viewThirdSection = 
+viewThirdSection =
     Markdown.toHtml [] """
 **3\\.** 
 Once you’re logged in, you will land on your “Profile” page, where you will 
@@ -134,20 +134,20 @@ find information about your progress and website settings.
 
 
 viewThirdSectionImage : Html Msg
-viewThirdSectionImage = 
-    div [ class "guide-image-container"] 
-        [ img 
+viewThirdSectionImage =
+    div [ class "guide-image-container" ]
+        [ img
             [ class "guide-image"
             , src "/public/img/tutorial/3.png"
             , alt (viewAltText "3" altTexts)
             , title (viewAltText "3" altTexts)
-            ] 
-            [] 
+            ]
+            []
         ]
 
 
 viewFourthSection : Html Msg
-viewFourthSection = 
+viewFourthSection =
     Markdown.toHtml [] """
 **4\\.** Select “Texts” from the blue banner (or the hamburger menu on mobile) at the top of your screen to 
 find a text to read.
@@ -155,7 +155,7 @@ find a text to read.
 
 
 viewFifthSection : Html Msg
-viewFifthSection = 
+viewFifthSection =
     Markdown.toHtml [] """
 **5\\.** You can browse through all the texts available for your reading proficiency level, or you can 
 narrow the range with topic tags or with reading status.
@@ -169,16 +169,17 @@ found; adjust tags or your proficiency level.
 
 
 viewFifthSectionImage : Html Msg
-viewFifthSectionImage = 
-    div [ class "guide-image-container"] 
-        [ img 
+viewFifthSectionImage =
+    div [ class "guide-image-container" ]
+        [ img
             [ class "guide-image"
             , src "/public/img/tutorial/4.png"
             , alt (viewAltText "4" altTexts)
             , title (viewAltText "4" altTexts)
-            ] 
-            [] 
+            ]
+            []
         ]
+
 
 viewSixthSection : Html Msg
 viewSixthSection =
@@ -192,14 +193,14 @@ previously completed.
 
 viewSixthSectionImage : Html Msg
 viewSixthSectionImage =
-    div [ class "guide-image-container"] 
-        [ img 
+    div [ class "guide-image-container" ]
+        [ img
             [ class "guide-image"
             , src "/public/img/tutorial/5.png"
             , alt (viewAltText "5" altTexts)
             , title (viewAltText "5" altTexts)
-            ] 
-            [] 
+            ]
+            []
         ]
 
 
@@ -213,14 +214,14 @@ level, author, number of sections, tags, and your status with the text.
 
 viewSeventhImage : Html Msg
 viewSeventhImage =
-    div [ class "guide-image-container"] 
-        [ img 
+    div [ class "guide-image-container" ]
+        [ img
             [ class "guide-image"
             , src "/public/img/tutorial/6.png"
             , alt (viewAltText "6" altTexts)
             , title (viewAltText "6" altTexts)
-            ] 
-            [] 
+            ]
+            []
         ]
 
 

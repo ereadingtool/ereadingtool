@@ -11,6 +11,7 @@ import Html.Attributes exposing (attribute, class, classList, href, id)
 import Html.Events exposing (onClick)
 import Http
 import Http.Detailed
+import Json.Encode as Encode exposing (Value)
 import Ports exposing (clearInputText)
 import Role exposing (Role(..))
 import Session exposing (Session)
@@ -33,6 +34,7 @@ import User.Profile
 import User.Student.Profile as StudentProfile
 import Utils.Date
 import Viewer
+import Vote exposing (Vote(..))
 
 
 page : Page Params Model Msg
@@ -158,7 +160,7 @@ type Msg
     | PreviousHint
     | NextHint
       -- rating messages
-    | Rating String
+    | Rate Vote Int
       -- site-wide messages
     | Logout
 
@@ -261,9 +263,42 @@ update msg (SafeModel model) =
             , TextSearch.Help.scrollToNextMsg model.help
             )
 
-        Rating newRating ->
-            ( SafeModel { model | rating = newRating, results = [] }
-            , updateRating model.session model.config rating 
+        -- Rate is a type Msg, newRating is a string
+        -- but rate is not a field in the record model, so this is wrong
+        Rate vote textId ->
+            let
+                indexedTextItems =
+                    List.indexedMap Tuple.pair model.results
+
+                updatedTextItem =
+                    List.filter (\indexedTextItem -> (Tuple.second indexedTextItem).id == textId) indexedTextItems
+                        |> List.map
+                            (\indexedTextItem ->
+                                -- case (Tuple.second indexedTextItem).vote of
+                                -- case their previous vote is None, allow them to cast a vote.
+                                -- nested cases to allow updating? STRETCH GOAL
+                                case vote of
+                                    Up ->
+                                        Tuple.mapSecond (\textItem -> { textItem | rating = textItem.rating + 1 }) indexedTextItem
+
+                                    Down ->
+                                        Tuple.mapSecond (\textItem -> { textItem | rating = textItem.rating - 1 }) indexedTextItem
+
+                                    None ->
+                                        indexedTextItem
+                            )
+
+                updatedTextItems =
+                    List.filter (\indexedTextItem -> (Tuple.second indexedTextItem).id /= textId) indexedTextItems
+                        |> List.append updatedTextItem
+                        |> List.sortBy Tuple.first
+                        |> List.map Tuple.second
+            in
+            ( SafeModel
+                { model
+                    | results = updatedTextItems
+                }
+            , updateRating model.session model.config vote textId
             )
 
         Logout ->
@@ -292,15 +327,18 @@ updateResults session config textSearch =
         Cmd.none
 
 
-updateRating : Session -> Config -> String -> Cmd Msg
-updateRating session config rating =
+updateRating : Session -> Config -> Vote -> Int -> Cmd Msg
+updateRating session config vote textId =
     Api.patchDetailed
-        (Endpoint.textSearch (Config.restApiUrl config) )
+        (Endpoint.rateText (Config.restApiUrl config) textId)
+        -- todo: get the text id
         (Session.cred session)
-        -- encoder for string to json
+        (Http.jsonBody (Vote.encode vote))
         TextSearch
-        Text.Decode.textListDecoder
         -- decoder for data that comes back from PATCH
+        Text.Decode.textListDecoder
+
+
 
 -- VIEW
 
@@ -426,15 +464,11 @@ viewSearchResults timezone textListItems =
                             "None attempted"
             in
             div [ class "search_result" ]
-                [ div [ class "result_item" ] [ 
-                        div [ class "arrow-upward" ] [ Html.span [ onClick Rating "upward" ] [  Html.img [ attribute "src" "/public/img/arrow_upward.svg", attribute "height" "28px", attribute "width" "28px" ] [] ] ]
+                [ div [ class "result_item" ]
+                    [ div [ class "arrow-upward" ] [ Html.span [ onClick (Rate Up textItem.id) ] [ Html.img [ attribute "src" "/public/img/arrow_upward.svg", attribute "height" "28px", attribute "width" "28px" ] [] ] ]
                     , div [ class "result_item_title" ]
                         [ Html.text textRating ]
-                    , div [ class "arrow-downward" ] [ Html.img [
-                        attribute "src" "/public/img/arrow_downward.svg"
-                    , attribute "height" "28px"
-                    , attribute "width" "28px"
-                    ] []]
+                    , div [ class "arrow-downward" ] [ Html.span [ onClick (Rate Down textItem.id) ] [ Html.img [ attribute "src" "/public/img/arrow_downward.svg", attribute "height" "28px", attribute "width" "28px" ] [] ] ]
                     ]
                 , div [ class "result_item" ]
                     [ div [ class "result_item_title" ]
