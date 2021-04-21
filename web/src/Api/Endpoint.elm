@@ -158,9 +158,9 @@ textSearch baseUrl queryParameters =
     url baseUrl [ "api", "text" ] queryParameters
 
 
-voteText : String -> Int -> Endpoint
-voteText baseUrl id =
-    url baseUrl [ "api", "text", String.fromInt id ] []
+voteText : String -> Int -> List QueryParameter -> Endpoint
+voteText baseUrl id queryParameters =
+    url baseUrl [ "api", "text", String.fromInt id ] queryParameters
 
 
 

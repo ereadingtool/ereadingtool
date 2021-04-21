@@ -247,11 +247,11 @@ class TextAPIView(APIView):
                 student_vote = TextRating.objects \
                                            .filter(text=text, student=student) \
                                            .get()
+                prev_vote = student_vote.vote
             except BaseException as be:
                 TextRating.objects.create(vote=vote, student_id=student, text_id=text.id)
-                return HttpResponse(json.dumps({'voted': 'success'}))
+                prev_vote = 0
 
-            prev_vote = student_vote.vote
             # They're changing a previously cast vote
             if prev_vote == 0:
                 if vote == 1:
@@ -281,6 +281,10 @@ class TextAPIView(APIView):
                 else:
                     raise ValueError
 
+            # update their vote history
+            student_vote = TextRating.objects \
+                                           .filter(text=text, student=student) \
+                                           .get()
             student_vote.vote = prev_vote
             student_vote.save()
             text.save()
@@ -288,7 +292,9 @@ class TextAPIView(APIView):
         except BaseException as be:
             return HttpResponse(json.dumps({'errors': 'something went wrong'}))
 
-        return HttpResponse()
+        request.method = 'GET'
+        return self.get(request)
+
 
     @jwt_valid()
     def put(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:

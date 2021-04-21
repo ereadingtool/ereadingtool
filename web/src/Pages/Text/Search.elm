@@ -35,6 +35,7 @@ import User.Student.Profile as StudentProfile
 import Utils.Date
 import Viewer
 import Vote exposing (Vote(..))
+import Url.Builder exposing (QueryParameter)
 
 
 page : Page Params Model Msg
@@ -270,23 +271,72 @@ update msg (SafeModel model) =
                 indexedTextItems =
                     List.indexedMap Tuple.pair model.results
 
-                updatedTextItem =
+                updatedTextItemRating =
                     List.filter (\indexedTextItem -> (Tuple.second indexedTextItem).id == textId) indexedTextItems
                         |> List.map
                             (\indexedTextItem ->
-                                -- case (Tuple.second indexedTextItem).vote of
-                                -- case their previous vote is None, allow them to cast a vote.
-                                -- nested cases to allow updating? STRETCH GOAL
-                                case vote of
+                                let
+                                    prevVote = (Tuple.second indexedTextItem).vote
+                                in
+                                case prevVote of
                                     Up ->
-                                        Tuple.mapSecond (\textItem -> { textItem | rating = textItem.rating + 1 }) indexedTextItem
-
-                                    Down ->
-                                        Tuple.mapSecond (\textItem -> { textItem | rating = textItem.rating - 1 }) indexedTextItem
-
+                                        case vote of
+                                            Up ->
+                                                Tuple.mapSecond (\textItem -> { textItem | rating = textItem.rating - 1 }) indexedTextItem
+                                            None ->
+                                                Tuple.mapSecond (\textItem -> { textItem | rating = textItem.rating + 1 }) indexedTextItem
+                                            Down ->
+                                                Tuple.mapSecond (\textItem -> { textItem | rating = textItem.rating - 2 }) indexedTextItem
                                     None ->
-                                        indexedTextItem
+                                        case vote of
+                                            Up ->
+                                                Tuple.mapSecond (\textItem -> { textItem | rating = textItem.rating + 1 }) indexedTextItem
+                                            None ->
+                                                indexedTextItem
+                                            Down ->
+                                                Tuple.mapSecond (\textItem -> { textItem | rating = textItem.rating - 1 }) indexedTextItem
+                                    Down ->
+                                        case vote of
+                                            Up ->
+                                                Tuple.mapSecond (\textItem -> { textItem | rating = textItem.rating + 2 }) indexedTextItem
+                                            None ->
+                                                Tuple.mapSecond (\textItem -> { textItem | rating = textItem.rating - 1 }) indexedTextItem
+                                            Down ->
+                                                Tuple.mapSecond (\textItem -> { textItem | rating = textItem.rating + 1 }) indexedTextItem
                             )
+                updatedTextItem =
+                    List.filter (\indexedTextItem -> (Tuple.second indexedTextItem).id == textId) updatedTextItemRating
+                        |> List.map
+                        (\indexedTextItem ->
+                            let
+                                prevVote = (Tuple.second indexedTextItem).vote
+                            in
+                            case prevVote of
+                                Up ->
+                                    case vote of
+                                        Up ->
+                                            Tuple.mapSecond (\textItem -> { textItem | vote = None }) indexedTextItem
+                                        None ->
+                                            Tuple.mapSecond (\textItem -> { textItem | vote = Up }) indexedTextItem
+                                        Down ->
+                                            Tuple.mapSecond (\textItem -> { textItem | vote = Down }) indexedTextItem
+                                None ->
+                                    case vote of
+                                        Up ->
+                                            Tuple.mapSecond (\textItem -> { textItem | vote = Up }) indexedTextItem
+                                        None ->
+                                            indexedTextItem
+                                        Down ->
+                                            Tuple.mapSecond (\textItem -> { textItem | vote = Down }) indexedTextItem
+                                Down ->
+                                    case vote of
+                                        Up ->
+                                            Tuple.mapSecond (\textItem -> { textItem | vote = Up }) indexedTextItem
+                                        None ->
+                                            Tuple.mapSecond (\textItem -> { textItem | vote = Down }) indexedTextItem
+                                        Down ->
+                                            Tuple.mapSecond (\textItem -> { textItem | vote = None }) indexedTextItem
+                        )
 
                 updatedTextItems =
                     List.filter (\indexedTextItem -> (Tuple.second indexedTextItem).id /= textId) indexedTextItems
@@ -298,7 +348,7 @@ update msg (SafeModel model) =
                 { model
                     | results = updatedTextItems
                 }
-            , updateRating model.session model.config vote textId
+            , updateRating model.session model.config vote textId model.textSearch
             )
 
         Logout ->
@@ -327,15 +377,19 @@ updateResults session config textSearch =
         Cmd.none
 
 
-updateRating : Session -> Config -> Vote -> Int -> Cmd Msg
-updateRating session config vote textId =
+updateRating : Session -> Config -> Vote -> Int -> TextSearch -> Cmd Msg
+updateRating session config vote textId textSearch=
+    let
+        filterParams =
+            Text.Search.filterParams textSearch
+        queryParameters =
+            List.map Endpoint.filterToStringQueryParam filterParams
+    in
     Api.patchDetailed
-        (Endpoint.voteText (Config.restApiUrl config) textId)
-        -- todo: get the text id
+        (Endpoint.voteText (Config.restApiUrl config) textId queryParameters)
         (Session.cred session)
         (Http.jsonBody (Vote.encode vote))
         TextSearch
-        -- decoder for data that comes back from PATCH
         Text.Decode.textListDecoder
 
 
