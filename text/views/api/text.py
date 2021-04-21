@@ -228,12 +228,11 @@ class TextAPIView(APIView):
 
         try:
             student = request.user.student.id
-            text = Text.objects.get(pk=kwargs['pk'])
             try:
-                vote_str = json.loads(request.body)['rating']
+                text = Text.objects.get(pk=kwargs['pk'])
+                vote_str = json.loads(request.body)['vote']
             except BaseException as be:
-                # TODO: form some sort of fail state
-                pass
+                return HttpResponse(json.dumps({'errors': 'something went wrong'}))
 
             if vote_str == "up":
                 vote = 1
@@ -244,45 +243,49 @@ class TextAPIView(APIView):
 
             # Have they voted on this text before?
             try:
-                x = TextRating.objects \
-                            .filter(text=text, student=student) \
-                            .get()
-            except:
-                TextRating.objects.create(rating=vote, student_id=student, text_id=text.id)
-                return HttpResponse(json.dumps({'errors': 'something went wrong'}))
+                # the student's vote if it was previously cast
+                student_vote = TextRating.objects \
+                                           .filter(text=text, student=student) \
+                                           .get()
+            except BaseException as be:
+                TextRating.objects.create(vote=vote, student_id=student, text_id=text.id)
+                return HttpResponse(json.dumps({'voted': 'success'}))
 
             # They're changing a previously cast vote
-            if x.rating == 0:
+            if student_vote.vote == 0:
                 if vote == 1:
-                    x.rating = 1
-                    pass 
+                    student_vote.vote = 1
+                    text.rating = text.rating + 1
                 elif vote == -1:
-                    x.rating = -1
-                    pass
+                    student_vote.vote = -1
+                    text.rating = text.rating - 1
                 else:
                     raise ValueError
-            elif x.rating == -1:
+            elif student_vote.vote == -1:
                 if vote == 1:
-                    x.rating = 1
-                    pass
+                    student_vote.vote = 1
+                    text.rating = text.rating + 2
                 elif vote == -1:
-                    x.rating = 0
-                    pass
+                    student_vote.vote = 0
+                    text.rating = text.rating + 1
                 else:
                     raise ValueError
-            elif x.rating == 1:
+            elif student_vote.vote == 1:
                 if vote == -1:
-                    x.rating = -1
-                    pass
+                    student_vote.vote = -1
+                    text.rating = text.rating - 2
                 elif vote == 1:
-                    x.rating = 0
-                    pass
+                    student_vote.vote = 0
+                    text.rating = text.rating - 1
                 else:
                     raise ValueError
 
+            student_vote.save()
+            text.save()
+
         except BaseException as be:
-            pass
-        # TODO: create fail state
+            return HttpResponse(json.dumps({'errors': 'something went wrong'}))
+
         return HttpResponse()
 
     @jwt_valid()

@@ -37,7 +37,7 @@ decoder =
 encode : Vote -> Value
 encode vote =
     Encode.object
-        [ ( "rating", Encode.string (voteToString vote) )
+        [ ( "vote", Encode.string (voteToString vote) )
         ]
 
 

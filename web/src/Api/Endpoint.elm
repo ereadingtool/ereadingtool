@@ -12,7 +12,7 @@ module Api.Endpoint exposing
     , matchTranslation
     , mergeWords
     , performanceReportLink
-    , rateText
+    , voteText
     , request
     , resetPassword
     , studentProfile
@@ -158,8 +158,8 @@ textSearch baseUrl queryParameters =
     url baseUrl [ "api", "text" ] queryParameters
 
 
-rateText : String -> Int -> Endpoint
-rateText baseUrl id =
+voteText : String -> Int -> Endpoint
+voteText baseUrl id =
     url baseUrl [ "api", "text", String.fromInt id ] []
 
 

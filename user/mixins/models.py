@@ -1,10 +1,11 @@
+from logging import raiseExceptions
 from typing import AnyStr, Union, Tuple
 from typing import Optional
 
 from django.db import models
 from django.utils import timezone
 
-from text.models import Text
+from text.models import Text, TextRating
 from text_reading.base import TextReadingStateMachine
 
 
@@ -112,3 +113,20 @@ class TextReadings(models.Model):
                                     .number_of_sections
 
         return sections_complete
+
+    def vote_history(self, text: Text) -> str:
+        try:
+            v = TextRating.objects \
+                          .filter(text_id=text.id) \
+                          .first() \
+                          .vote
+            if v == 1:
+                return "up"
+            elif v == 0:
+                raise ValueError
+            else:
+                return "down"
+
+        except:
+            # they haven't voted on this text
+            return "none"

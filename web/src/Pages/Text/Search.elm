@@ -160,7 +160,7 @@ type Msg
     | PreviousHint
     | NextHint
       -- rating messages
-    | Rate Vote Int
+    | Vote Vote Int
       -- site-wide messages
     | Logout
 
@@ -265,7 +265,7 @@ update msg (SafeModel model) =
 
         -- Rate is a type Msg, newRating is a string
         -- but rate is not a field in the record model, so this is wrong
-        Rate vote textId ->
+        Vote vote textId ->
             let
                 indexedTextItems =
                     List.indexedMap Tuple.pair model.results
@@ -330,7 +330,7 @@ updateResults session config textSearch =
 updateRating : Session -> Config -> Vote -> Int -> Cmd Msg
 updateRating session config vote textId =
     Api.patchDetailed
-        (Endpoint.rateText (Config.restApiUrl config) textId)
+        (Endpoint.voteText (Config.restApiUrl config) textId)
         -- todo: get the text id
         (Session.cred session)
         (Http.jsonBody (Vote.encode vote))
@@ -465,10 +465,10 @@ viewSearchResults timezone textListItems =
             in
             div [ class "search_result" ]
                 [ div [ class "result_item" ]
-                    [ div [ class "arrow-upward" ] [ Html.span [ onClick (Rate Up textItem.id) ] [ Html.img [ attribute "src" "/public/img/arrow_upward.svg", attribute "height" "28px", attribute "width" "28px" ] [] ] ]
+                    [ div [ class "arrow-upward" ] [ Html.span [ onClick (Vote Up textItem.id) ] [ Html.img [ attribute "src" "/public/img/arrow_upward.svg", attribute "height" "28px", attribute "width" "28px" ] [] ] ]
                     , div [ class "result_item_title" ]
                         [ Html.text textRating ]
-                    , div [ class "arrow-downward" ] [ Html.span [ onClick (Rate Down textItem.id) ] [ Html.img [ attribute "src" "/public/img/arrow_downward.svg", attribute "height" "28px", attribute "width" "28px" ] [] ] ]
+                    , div [ class "arrow-downward" ] [ Html.span [ onClick (Vote Down textItem.id) ] [ Html.img [ attribute "src" "/public/img/arrow_downward.svg", attribute "height" "28px", attribute "width" "28px" ] [] ] ]
                     ]
                 , div [ class "result_item" ]
                     [ div [ class "result_item_title" ]

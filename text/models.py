@@ -253,8 +253,6 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
             'tags': [tag.name for tag in self.tags.all()],
             'modified_dt': self.modified_dt.isoformat(),
             'created_dt': self.created_dt.isoformat(),
-            # TODO: Testing Elm functionality
-            'vote': 'up'
         }
 
     def delete(self, *args, **kwargs):
@@ -356,8 +354,8 @@ class TextSection(TextSectionDefinitionsMixin, Timestamped, models.Model):
 class TextRating(models.Model):
     class Meta:
         verbose_name_plural = 'Text Ratings'
-        unique_together = (('student', 'text', 'rating'))
+        unique_together = (('student', 'text', 'vote'))
 
     student = models.ForeignKey('user.Student', null=False, on_delete=models.CASCADE, related_name='text_ratings')
     text = models.ForeignKey(Text, on_delete=models.CASCADE, related_name='texts')
-    rating = models.IntegerField(default=0)
+    vote = models.IntegerField(default=0)
