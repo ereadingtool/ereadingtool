@@ -251,35 +251,37 @@ class TextAPIView(APIView):
                 TextRating.objects.create(vote=vote, student_id=student, text_id=text.id)
                 return HttpResponse(json.dumps({'voted': 'success'}))
 
+            prev_vote = student_vote.vote
             # They're changing a previously cast vote
-            if student_vote.vote == 0:
+            if prev_vote == 0:
                 if vote == 1:
-                    student_vote.vote = 1
+                    prev_vote = 1
                     text.rating = text.rating + 1
                 elif vote == -1:
-                    student_vote.vote = -1
+                    prev_vote = -1
                     text.rating = text.rating - 1
                 else:
                     raise ValueError
-            elif student_vote.vote == -1:
+            elif prev_vote == -1:
                 if vote == 1:
-                    student_vote.vote = 1
+                    prev_vote = 1
                     text.rating = text.rating + 2
                 elif vote == -1:
-                    student_vote.vote = 0
+                    prev_vote = 0
                     text.rating = text.rating + 1
                 else:
                     raise ValueError
-            elif student_vote.vote == 1:
+            elif prev_vote == 1:
                 if vote == -1:
-                    student_vote.vote = -1
+                    prev_vote = -1
                     text.rating = text.rating - 2
                 elif vote == 1:
-                    student_vote.vote = 0
+                    prev_vote = 0
                     text.rating = text.rating - 1
                 else:
                     raise ValueError
 
+            student_vote.vote = prev_vote
             student_vote.save()
             text.save()
 
