@@ -470,6 +470,18 @@ viewSearchResults timezone textListItems =
                 textRating =
                     String.fromInt textItem.rating
 
+                upArrow = 
+                    case textItem.vote of
+                        Up -> "arrow_upward_enabled.svg" -- turn down grey and up orange
+                        None -> "arrow_upward.svg" -- then both stay black
+                        Down -> "arrow_upward_disabled.svg" -- turn up grey and down blue
+
+                downArrow =
+                    case textItem.vote of
+                        Up -> "arrow_downward_disabled.svg" -- turn down grey and up orange
+                        None -> "arrow_downward.svg" -- then both stay black
+                        Down -> "arrow_downward_enabled.svg" -- turn up grey and down blue
+
                 difficultyCategory =
                     case
                         List.head <|
@@ -518,11 +530,11 @@ viewSearchResults timezone textListItems =
                             "None attempted"
             in
             div [ class "search_result" ]
-                [ div [ class "result_item" ]
-                    [ div [ class "arrow-upward" ] [ Html.span [ onClick (Vote Up textItem.id) ] [ Html.img [ attribute "src" "/public/img/arrow_upward.svg", attribute "height" "28px", attribute "width" "28px" ] [] ] ]
+                [ div [ class "voting-mechanism" ]
+                    [ div [] [ Html.span [ onClick (Vote Up textItem.id) ] [ Html.img [ attribute "src" ("/public/img/" ++ upArrow), attribute "height" "28px", attribute "width" "28px" ] [] ] ]
                     , div [ class "result_item_title" ]
                         [ Html.text textRating ]
-                    , div [ class "arrow-downward" ] [ Html.span [ onClick (Vote Down textItem.id) ] [ Html.img [ attribute "src" "/public/img/arrow_downward.svg", attribute "height" "28px", attribute "width" "28px" ] [] ] ]
+                    , div [] [ Html.span [ onClick (Vote Down textItem.id) ] [ Html.img [ attribute "src" ("/public/img/" ++ downArrow), attribute "height" "28px", attribute "width" "28px" ] [] ] ]
                     ]
                 , div [ class "result_item" ]
                     [ div [ class "result_item_title" ]

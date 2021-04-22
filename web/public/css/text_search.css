@@ -88,7 +88,7 @@
   align-items: center;
   justify-items: center;
 
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: 50px repeat(7, 1fr);
 
   background: #f9f9f9;
 
@@ -247,6 +247,7 @@
 
   filter: brightness(95%);
 }
+
 
 @media only screen and (max-width: 480px) {
   .difficulty_option {
