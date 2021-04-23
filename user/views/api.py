@@ -69,8 +69,7 @@ class APIView(View):
             else:
                 errors = self.format_form_errors(form)
                 return self.post_error(errors, request, form)
-        except Exception as e:
-            print(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}")
+        except:
             return self.post_error(errors)
 
 
