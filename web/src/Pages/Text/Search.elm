@@ -531,10 +531,10 @@ viewSearchResults timezone textListItems =
             in
             div [ class "search_result" ]
                 [ div [ class "voting-mechanism" ]
-                    [ div [] [ Html.span [ onClick (Vote Up textItem.id) ] [ Html.img [ attribute "src" ("/public/img/" ++ upArrow), attribute "height" "28px", attribute "width" "28px" ] [] ] ]
+                    [ div [ class "upvote" ] [ Html.span [ onClick (Vote Up textItem.id) ] [ Html.img [ attribute "src" ("/public/img/" ++ upArrow), attribute "height" "28px", attribute "width" "28px" ] [] ] ]
                     , div [ class "result_item_title" ]
                         [ Html.text textRating ]
-                    , div [] [ Html.span [ onClick (Vote Down textItem.id) ] [ Html.img [ attribute "src" ("/public/img/" ++ downArrow), attribute "height" "28px", attribute "width" "28px" ] [] ] ]
+                    , div [ class "downvote" ] [ Html.span [ onClick (Vote Down textItem.id) ] [ Html.img [ attribute "src" ("/public/img/" ++ downArrow), attribute "height" "28px", attribute "width" "28px" ] [] ] ]
                     ]
                 , div [ class "result_item" ]
                     [ div [ class "result_item_title" ]
