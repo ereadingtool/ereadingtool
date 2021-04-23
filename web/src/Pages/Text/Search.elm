@@ -470,17 +470,30 @@ viewSearchResults timezone textListItems =
                 textRating =
                     String.fromInt textItem.rating
 
+                hasRead =
+                    case textItem.last_read_dt of
+                        Just _ -> "vote-enabled"
+                        Nothing -> "vote-disabled"
+
                 upArrow = 
-                    case textItem.vote of
-                        Up -> "arrow_upward_enabled.svg" -- turn down grey and up orange
-                        None -> "arrow_upward.svg" -- then both stay black
-                        Down -> "arrow_upward_disabled.svg" -- turn up grey and down blue
+                    case textItem.last_read_dt of
+                        Just _ ->
+                            case textItem.vote of
+                                Up -> "arrow_upward_enabled.svg" -- turn down grey and up orange
+                                None -> "arrow_upward.svg" -- then both stay black
+                                Down -> "arrow_upward_disabled.svg" -- turn up grey and down blue
+                        Nothing ->
+                            "arrow_upward_disabled.svg"
 
                 downArrow =
-                    case textItem.vote of
-                        Up -> "arrow_downward_disabled.svg" -- turn down grey and up orange
-                        None -> "arrow_downward.svg" -- then both stay black
-                        Down -> "arrow_downward_enabled.svg" -- turn up grey and down blue
+                    case textItem.last_read_dt of
+                        Just _ ->
+                            case textItem.vote of
+                                Up -> "arrow_downward_disabled.svg" -- turn down grey and up orange
+                                None -> "arrow_downward.svg" -- then both stay black
+                                Down -> "arrow_downward_enabled.svg" -- turn up grey and down blue
+                        Nothing ->
+                            "arrow_downward_disabled.svg"
 
                 difficultyCategory =
                     case
@@ -531,10 +544,10 @@ viewSearchResults timezone textListItems =
             in
             div [ class "search_result" ]
                 [ div [ class "voting-mechanism" ]
-                    [ div [ class "upvote" ] [ Html.span [ onClick (Vote Up textItem.id) ] [ Html.img [ attribute "src" ("/public/img/" ++ upArrow), attribute "height" "28px", attribute "width" "28px" ] [] ] ]
+                    [ div [ class "upvote" ] [ Html.span [ class hasRead, onClick (Vote Up textItem.id) ] [ Html.img [ attribute "src" ("/public/img/" ++ upArrow), attribute "height" "28px", attribute "width" "28px" ] [] ] ]
                     , div [ class "result_item_title" ]
                         [ Html.text textRating ]
-                    , div [ class "downvote" ] [ Html.span [ onClick (Vote Down textItem.id) ] [ Html.img [ attribute "src" ("/public/img/" ++ downArrow), attribute "height" "28px", attribute "width" "28px" ] [] ] ]
+                    , div [ class "downvote" ] [ Html.span [ class hasRead, onClick (Vote Down textItem.id) ] [ Html.img [ attribute "src" ("/public/img/" ++ downArrow), attribute "height" "28px", attribute "width" "28px" ] [] ] ]
                     ]
                 , div [ class "result_item" ]
                     [ div [ class "result_item_title" ]

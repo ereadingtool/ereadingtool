@@ -234,6 +234,14 @@ class TextAPIView(APIView):
             except BaseException as be:
                 return HttpResponse(json.dumps({'errors': 'something went wrong'}))
 
+            # are they allowed to vote?
+            l1 = StudentReadingsComplete.get_texts({'student_id': student})
+            l2 = StudentReadingsInProgress.get_texts({'student_id': student})
+            l3 = set(l1 + l2)
+
+            if text not in l3:
+                raise Exception
+
             if vote_str == "up":
                 vote = 1
             elif vote_str == "down":

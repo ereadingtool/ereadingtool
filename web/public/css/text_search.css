@@ -248,6 +248,13 @@
   filter: brightness(95%);
 }
 
+.vote-enabled {
+  cursor: pointer;
+}
+
+.vote-disabled {
+  pointer-events: none;
+}
 
 @media only screen and (max-width: 480px) {
   .difficulty_option {

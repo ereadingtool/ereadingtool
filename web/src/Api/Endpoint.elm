@@ -160,7 +160,7 @@ textSearch baseUrl queryParameters =
 
 voteText : String -> Int -> List QueryParameter -> Endpoint
 voteText baseUrl id queryParameters =
-    url baseUrl [ "api", "text", String.fromInt id ] queryParameters
+    url baseUrl [ "api", "text", String.fromInt id, "vote" ] queryParameters
 
 
 
