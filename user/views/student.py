@@ -289,9 +289,6 @@ class StudentLoginAPIView(APIView):
                 reader_user, student_login_form.cleaned_data.get('orig_iat') 
             )
 
-            if type(token) != str:
-                token = decode(token, 'utf-8')
-
             # payload now contains string 'Bearer', the token, and the expiration time JWT_EXPIRATION_DELTA (in seconds)
             jwt_payload = jwt_get_json_with_token(token)
 
