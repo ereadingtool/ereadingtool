@@ -42,7 +42,7 @@ class TestText(TestData, TestUser, TestCase):
         self.instructor = self.new_instructor_client(Client())
         self.student = self.new_student_client(Client())
 
-    def tes_definition_objs(self):
+    def test_definition_objs(self):
         yandex_translation_api = YandexDefinitionAPI()
 
         definitions = yandex_translation_api.lookup('заявление')
