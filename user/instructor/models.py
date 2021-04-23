@@ -64,7 +64,7 @@ class Instructor(Profile, TextReadings, models.Model):
 
     def to_text_summary_dict(self, text: Text) -> Dict:
         text_instructor_summary = text.to_student_summary_dict()
-
+        text_instructor_summary['vote'] = "none"
         text_instructor_summary['text_sections_complete'] = self.sections_complete_for(text)
         text_instructor_summary['last_read_dt'] = self.last_read_dt(text)
         text_instructor_summary['questions_correct'] = self.last_read_questions_correct(text)
