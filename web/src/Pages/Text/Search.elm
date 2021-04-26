@@ -271,7 +271,7 @@ update msg (SafeModel model) =
                 indexedTextItems =
                     List.indexedMap Tuple.pair model.results
 
-                updatedTextItemRating =
+                updatedTextItem =
                     List.filter (\indexedTextItem -> (Tuple.second indexedTextItem).id == textId) indexedTextItems
                         |> List.map
                             (\indexedTextItem ->
@@ -304,39 +304,39 @@ update msg (SafeModel model) =
                                             Down ->
                                                 Tuple.mapSecond (\textItem -> { textItem | rating = textItem.rating + 1 }) indexedTextItem
                             )
-                updatedTextItem =
-                    List.filter (\indexedTextItem -> (Tuple.second indexedTextItem).id == textId) updatedTextItemRating
-                        |> List.map
-                        (\indexedTextItem ->
-                            let
-                                prevVote = (Tuple.second indexedTextItem).vote
-                            in
-                            case prevVote of
-                                Up ->
-                                    case vote of
-                                        Up ->
-                                            Tuple.mapSecond (\textItem -> { textItem | vote = None }) indexedTextItem
-                                        None ->
-                                            Tuple.mapSecond (\textItem -> { textItem | vote = Up }) indexedTextItem
-                                        Down ->
-                                            Tuple.mapSecond (\textItem -> { textItem | vote = Down }) indexedTextItem
-                                None ->
-                                    case vote of
-                                        Up ->
-                                            Tuple.mapSecond (\textItem -> { textItem | vote = Up }) indexedTextItem
-                                        None ->
-                                            indexedTextItem
-                                        Down ->
-                                            Tuple.mapSecond (\textItem -> { textItem | vote = Down }) indexedTextItem
-                                Down ->
-                                    case vote of
-                                        Up ->
-                                            Tuple.mapSecond (\textItem -> { textItem | vote = Up }) indexedTextItem
-                                        None ->
-                                            Tuple.mapSecond (\textItem -> { textItem | vote = Down }) indexedTextItem
-                                        Down ->
-                                            Tuple.mapSecond (\textItem -> { textItem | vote = None }) indexedTextItem
-                        )
+                -- updatedTextItem =
+                --     List.filter (\indexedTextItem -> (Tuple.second indexedTextItem).id == textId) updatedTextItemRating
+                --         |> List.map
+                --         (\indexedTextItem ->
+                --             let
+                --                 prevVote = (Tuple.second indexedTextItem).vote
+                --             in
+                --             case prevVote of
+                --                 Up ->
+                --                     case vote of
+                --                         Up ->
+                --                             Tuple.mapSecond (\textItem -> { textItem | vote = None }) indexedTextItem
+                --                         None ->
+                --                             Tuple.mapSecond (\textItem -> { textItem | vote = Up }) indexedTextItem
+                --                         Down ->
+                --                             Tuple.mapSecond (\textItem -> { textItem | vote = Down }) indexedTextItem
+                --                 None ->
+                --                     case vote of
+                --                         Up ->
+                --                             Tuple.mapSecond (\textItem -> { textItem | vote = Up }) indexedTextItem
+                --                         None ->
+                --                             indexedTextItem
+                --                         Down ->
+                --                             Tuple.mapSecond (\textItem -> { textItem | vote = Down }) indexedTextItem
+                --                 Down ->
+                --                     case vote of
+                --                         Up ->
+                --                             Tuple.mapSecond (\textItem -> { textItem | vote = Up }) indexedTextItem
+                --                         None ->
+                --                             Tuple.mapSecond (\textItem -> { textItem | vote = Down }) indexedTextItem
+                --                         Down ->
+                --                             Tuple.mapSecond (\textItem -> { textItem | vote = None }) indexedTextItem
+                --         )
 
                 updatedTextItems =
                     List.filter (\indexedTextItem -> (Tuple.second indexedTextItem).id /= textId) indexedTextItems
