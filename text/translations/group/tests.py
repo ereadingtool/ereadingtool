@@ -23,7 +23,7 @@ class TestTextWordGroup(TestUser, TestCase):
         super(TestTextWordGroup, self).__init__(*args, **kwargs)
 
         self.text_group_endpoint = reverse('text-word-group-api')
-        self.text_group_item_endpoint = lambda group: reverse('text-word-group-api', kwargs={'pk': group.pk})
+        self.text_group_item_endpoint = lambda group: reverse('text-word-group-api', kwargs={'textphrase_ptr_id': group.pk})
 
         self.test_text_data = TestText.get_test_data()
         self.text = None
