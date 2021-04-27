@@ -300,8 +300,7 @@ class TextAPIView(APIView):
         except BaseException as be:
             return HttpResponse(json.dumps({'errors': 'something went wrong'}))
 
-        request.method = 'GET'
-        return self.get(request)
+        return HttpResponse(json.dumps({'textId': text.pk, 'vote': vote_str, 'rating': text.rating}))
 
 
     @jwt_valid()

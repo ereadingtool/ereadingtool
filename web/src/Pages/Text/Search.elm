@@ -11,6 +11,8 @@ import Html.Attributes exposing (attribute, class, classList, href, id)
 import Html.Events exposing (onClick)
 import Http
 import Http.Detailed
+import Json.Decode
+import Json.Decode.Pipeline
 import Json.Encode as Encode exposing (Value)
 import Ports exposing (clearInputText)
 import Role exposing (Role(..))
@@ -30,12 +32,12 @@ import Text.Search.ReadingStatus exposing (TextReadStatus, TextReadStatusSearch)
 import Text.Search.Tag exposing (TagSearch)
 import TextSearch.Help
 import Time exposing (Zone)
+import Url.Builder exposing (QueryParameter)
 import User.Profile
 import User.Student.Profile as StudentProfile
 import Utils.Date
 import Viewer
-import Vote exposing (Vote(..))
-import Url.Builder exposing (QueryParameter)
+import Vote exposing (Vote(..), VoteResponse, voteResponseDecoder)
 
 
 page : Page Params Model Msg
@@ -161,7 +163,8 @@ type Msg
     | PreviousHint
     | NextHint
       -- rating messages
-    | Vote Vote Int
+    | CastVote Vote Int
+    | Vote (Result (Http.Detailed.Error String) ( Http.Metadata, VoteResponse ))
       -- site-wide messages
     | Logout
 
@@ -264,79 +267,74 @@ update msg (SafeModel model) =
             , TextSearch.Help.scrollToNextMsg model.help
             )
 
-        -- Rate is a type Msg, newRating is a string
-        -- but rate is not a field in the record model, so this is wrong
-        Vote vote textId ->
+        CastVote vote textId ->
+            ( SafeModel model
+            , updateRating model.session model.config vote textId model.textSearch
+            )
+
+        Vote (Ok ( _, voteResponse )) ->
             let
+                textId =
+                    voteResponse.textId
+
+                vote =
+                    voteResponse.vote
+
+                rating =
+                    voteResponse.rating
+
                 indexedTextItems =
                     List.indexedMap Tuple.pair model.results
 
-                updatedTextItem =
+                updatedTextItemRating =
                     List.filter (\indexedTextItem -> (Tuple.second indexedTextItem).id == textId) indexedTextItems
                         |> List.map
                             (\indexedTextItem ->
+                                Tuple.mapSecond (\textItem -> { textItem | rating = rating }) indexedTextItem
+                            )
+
+                updatedTextItem =
+                    List.filter (\indexedTextItem -> (Tuple.second indexedTextItem).id == textId) updatedTextItemRating
+                        |> List.map
+                            (\indexedTextItem ->
                                 let
-                                    prevVote = (Tuple.second indexedTextItem).vote
+                                    prevVote =
+                                        (Tuple.second indexedTextItem).vote
                                 in
                                 case prevVote of
                                     Up ->
                                         case vote of
                                             Up ->
-                                                Tuple.mapSecond (\textItem -> { textItem | rating = textItem.rating - 1 }) indexedTextItem
+                                                Tuple.mapSecond (\textItem -> { textItem | vote = None }) indexedTextItem
+
                                             None ->
-                                                Tuple.mapSecond (\textItem -> { textItem | rating = textItem.rating + 1 }) indexedTextItem
+                                                Tuple.mapSecond (\textItem -> { textItem | vote = Up }) indexedTextItem
+
                                             Down ->
-                                                Tuple.mapSecond (\textItem -> { textItem | rating = textItem.rating - 2 }) indexedTextItem
+                                                Tuple.mapSecond (\textItem -> { textItem | vote = Down }) indexedTextItem
+
                                     None ->
                                         case vote of
                                             Up ->
-                                                Tuple.mapSecond (\textItem -> { textItem | rating = textItem.rating + 1 }) indexedTextItem
+                                                Tuple.mapSecond (\textItem -> { textItem | vote = Up }) indexedTextItem
+
                                             None ->
                                                 indexedTextItem
+
                                             Down ->
-                                                Tuple.mapSecond (\textItem -> { textItem | rating = textItem.rating - 1 }) indexedTextItem
+                                                Tuple.mapSecond (\textItem -> { textItem | vote = Down }) indexedTextItem
+
                                     Down ->
                                         case vote of
                                             Up ->
-                                                Tuple.mapSecond (\textItem -> { textItem | rating = textItem.rating + 2 }) indexedTextItem
+                                                Tuple.mapSecond (\textItem -> { textItem | vote = Up }) indexedTextItem
+
                                             None ->
-                                                Tuple.mapSecond (\textItem -> { textItem | rating = textItem.rating - 1 }) indexedTextItem
+                                                Tuple.mapSecond (\textItem -> { textItem | vote = Down }) indexedTextItem
+
                                             Down ->
-                                                Tuple.mapSecond (\textItem -> { textItem | rating = textItem.rating + 1 }) indexedTextItem
+                                                Tuple.mapSecond (\textItem -> { textItem | vote = None }) indexedTextItem
                             )
-                -- updatedTextItem =
-                --     List.filter (\indexedTextItem -> (Tuple.second indexedTextItem).id == textId) updatedTextItemRating
-                --         |> List.map
-                --         (\indexedTextItem ->
-                --             let
-                --                 prevVote = (Tuple.second indexedTextItem).vote
-                --             in
-                --             case prevVote of
-                --                 Up ->
-                --                     case vote of
-                --                         Up ->
-                --                             Tuple.mapSecond (\textItem -> { textItem | vote = None }) indexedTextItem
-                --                         None ->
-                --                             Tuple.mapSecond (\textItem -> { textItem | vote = Up }) indexedTextItem
-                --                         Down ->
-                --                             Tuple.mapSecond (\textItem -> { textItem | vote = Down }) indexedTextItem
-                --                 None ->
-                --                     case vote of
-                --                         Up ->
-                --                             Tuple.mapSecond (\textItem -> { textItem | vote = Up }) indexedTextItem
-                --                         None ->
-                --                             indexedTextItem
-                --                         Down ->
-                --                             Tuple.mapSecond (\textItem -> { textItem | vote = Down }) indexedTextItem
-                --                 Down ->
-                --                     case vote of
-                --                         Up ->
-                --                             Tuple.mapSecond (\textItem -> { textItem | vote = Up }) indexedTextItem
-                --                         None ->
-                --                             Tuple.mapSecond (\textItem -> { textItem | vote = Down }) indexedTextItem
-                --                         Down ->
-                --                             Tuple.mapSecond (\textItem -> { textItem | vote = None }) indexedTextItem
-                --         )
 
                 updatedTextItems =
                     List.filter (\indexedTextItem -> (Tuple.second indexedTextItem).id /= textId) indexedTextItems
@@ -348,8 +346,26 @@ update msg (SafeModel model) =
                 { model
                     | results = updatedTextItems
                 }
-            , updateRating model.session model.config vote textId model.textSearch
+            , Cmd.none
             )
+
+        Vote (Err error) ->
+            case error of
+                Http.Detailed.BadStatus metadata body ->
+                    if metadata.statusCode == 403 then
+                        ( SafeModel model
+                        , Api.logout ()
+                        )
+
+                    else
+                        ( SafeModel { model | errorMessage = Just "An error occurred.  Please contact an administrator." }
+                        , Cmd.none
+                        )
+
+                _ ->
+                    ( SafeModel { model | errorMessage = Just "An error occurred.  Please contact an administrator." }
+                    , Cmd.none
+                    )
 
         Logout ->
             ( SafeModel model
@@ -378,10 +394,11 @@ updateResults session config textSearch =
 
 
 updateRating : Session -> Config -> Vote -> Int -> TextSearch -> Cmd Msg
-updateRating session config vote textId textSearch=
+updateRating session config vote textId textSearch =
     let
         filterParams =
             Text.Search.filterParams textSearch
+
         queryParameters =
             List.map Endpoint.filterToStringQueryParam filterParams
     in
@@ -389,8 +406,8 @@ updateRating session config vote textId textSearch=
         (Endpoint.voteText (Config.restApiUrl config) textId queryParameters)
         (Session.cred session)
         (Http.jsonBody (Vote.encode vote))
-        TextSearch
-        Text.Decode.textListDecoder
+        Vote
+        voteResponseDecoder
 
 
 
@@ -472,16 +489,28 @@ viewSearchResults timezone textListItems =
 
                 hasRead =
                     case textItem.last_read_dt of
-                        Just _ -> "vote-enabled"
-                        Nothing -> "vote-disabled"
+                        Just _ ->
+                            "vote-enabled"
 
-                upArrow = 
+                        Nothing ->
+                            "vote-disabled"
+
+                upArrow =
                     case textItem.last_read_dt of
                         Just _ ->
                             case textItem.vote of
-                                Up -> "arrow_upward_enabled.svg" -- turn down grey and up orange
-                                None -> "arrow_upward.svg" -- then both stay black
-                                Down -> "arrow_upward_disabled.svg" -- turn up grey and down blue
+                                Up ->
+                                    "arrow_upward_enabled.svg"
+
+                                -- turn down grey and up orange
+                                None ->
+                                    "arrow_upward.svg"
+
+                                -- then both stay black
+                                Down ->
+                                    "arrow_upward_disabled.svg"
+
+                        -- turn up grey and down blue
                         Nothing ->
                             "arrow_upward_disabled.svg"
 
@@ -489,9 +518,18 @@ viewSearchResults timezone textListItems =
                     case textItem.last_read_dt of
                         Just _ ->
                             case textItem.vote of
-                                Up -> "arrow_downward_disabled.svg" -- turn down grey and up orange
-                                None -> "arrow_downward.svg" -- then both stay black
-                                Down -> "arrow_downward_enabled.svg" -- turn up grey and down blue
+                                Up ->
+                                    "arrow_downward_disabled.svg"
+
+                                -- turn down grey and up orange
+                                None ->
+                                    "arrow_downward.svg"
+
+                                -- then both stay black
+                                Down ->
+                                    "arrow_downward_enabled.svg"
+
+                        -- turn up grey and down blue
                         Nothing ->
                             "arrow_downward_disabled.svg"
 
@@ -544,10 +582,10 @@ viewSearchResults timezone textListItems =
             in
             div [ class "search_result" ]
                 [ div [ class "voting-mechanism" ]
-                    [ div [ class "upvote" ] [ Html.span [ class hasRead, onClick (Vote Up textItem.id) ] [ Html.img [ attribute "src" ("/public/img/" ++ upArrow), attribute "height" "28px", attribute "width" "28px" ] [] ] ]
+                    [ div [ class "upvote" ] [ Html.span [ class hasRead, onClick (CastVote Up textItem.id) ] [ Html.img [ attribute "src" ("/public/img/" ++ upArrow), attribute "height" "28px", attribute "width" "28px" ] [] ] ]
                     , div [ class "result_item_title" ]
                         [ Html.text textRating ]
-                    , div [ class "downvote" ] [ Html.span [ class hasRead, onClick (Vote Down textItem.id) ] [ Html.img [ attribute "src" ("/public/img/" ++ downArrow), attribute "height" "28px", attribute "width" "28px" ] [] ] ]
+                    , div [ class "downvote" ] [ Html.span [ class hasRead, onClick (CastVote Down textItem.id) ] [ Html.img [ attribute "src" ("/public/img/" ++ downArrow), attribute "height" "28px", attribute "width" "28px" ] [] ] ]
                     ]
                 , div [ class "result_item" ]
                     [ div [ class "result_item_title" ]

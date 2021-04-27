@@ -12,7 +12,6 @@ module Api.Endpoint exposing
     , matchTranslation
     , mergeWords
     , performanceReportLink
-    , voteText
     , request
     , resetPassword
     , studentProfile
@@ -24,6 +23,7 @@ module Api.Endpoint exposing
     , translation
     , unmergeWord
     , validateUsername
+    , voteText
     , word
     , wordsCsvLink
     , wordsPdfLink
