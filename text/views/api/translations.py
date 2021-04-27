@@ -43,7 +43,11 @@ class TextTranslationMatchAPIView(APIView):
                 # "Save for All" they'd need to send "multiple" or something from the frontend. They they would
                 # need to do something similar with the grouped words table- in particular change the textptr to
                 # the new TextPhrase and have the translation point to that new TextPhrase too -- I think.
-                del(text_phrase['word_type'])
+                try:
+                    del(text_phrase['word_type'])
+                except:
+                    # It's not passed by the test suite.
+                    pass
 
                 text_phrase = TextPhrase.objects.get(**text_phrase)
 

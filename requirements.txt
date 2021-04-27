@@ -22,5 +22,5 @@ pytz
 webstack-django-jwt-auth
 django-cors-headers
 # this is new
-PyJWT
+PyJWT>=2.0.1
 whitenoise
