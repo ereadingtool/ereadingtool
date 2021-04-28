@@ -122,10 +122,10 @@ class TextReadings(models.Model):
                           .vote
             if v == 1:
                 return "up"
-            elif v == 0:
-                raise ValueError
-            else:
+            elif v == -1:
                 return "down"
+            else:
+                raise ValueError
 
         except:
             # they haven't voted on this text

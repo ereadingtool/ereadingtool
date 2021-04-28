@@ -12,7 +12,7 @@ import Html.Events exposing (onClick)
 import Http
 import Http.Detailed
 import Json.Decode
-import Json.Decode.Pipeline
+import Json.Decode.Pipeline exposing (required)
 import Json.Encode as Encode exposing (Value)
 import Ports exposing (clearInputText)
 import Role exposing (Role(..))
@@ -37,7 +37,7 @@ import User.Profile
 import User.Student.Profile as StudentProfile
 import Utils.Date
 import Viewer
-import Vote exposing (Vote(..), VoteResponse, voteResponseDecoder)
+import Vote exposing (Vote(..))
 
 
 page : Page Params Model Msg
@@ -54,6 +54,12 @@ page =
 
 
 -- INIT
+
+type alias VoteResponse =
+    { textId : Int
+    , vote : Vote
+    , rating : Int
+    }
 
 
 type alias Params =
@@ -163,8 +169,8 @@ type Msg
     | PreviousHint
     | NextHint
       -- rating messages
-    | CastVote Vote Int
-    | Vote (Result (Http.Detailed.Error String) ( Http.Metadata, VoteResponse ))
+    | Vote Vote Int
+    | GotVote (Result (Http.Detailed.Error String) ( Http.Metadata, VoteResponse ))
       -- site-wide messages
     | Logout
 
@@ -267,12 +273,12 @@ update msg (SafeModel model) =
             , TextSearch.Help.scrollToNextMsg model.help
             )
 
-        CastVote vote textId ->
+        Vote vote textId ->
             ( SafeModel model
             , updateRating model.session model.config vote textId model.textSearch
             )
 
-        Vote (Ok ( _, voteResponse )) ->
+        GotVote (Ok ( _, voteResponse )) ->
             let
                 textId =
                     voteResponse.textId
@@ -349,7 +355,7 @@ update msg (SafeModel model) =
             , Cmd.none
             )
 
-        Vote (Err error) ->
+        GotVote (Err error) ->
             case error of
                 Http.Detailed.BadStatus metadata body ->
                     if metadata.statusCode == 403 then
@@ -406,9 +412,20 @@ updateRating session config vote textId textSearch =
         (Endpoint.voteText (Config.restApiUrl config) textId queryParameters)
         (Session.cred session)
         (Http.jsonBody (Vote.encode vote))
-        Vote
+        GotVote
         voteResponseDecoder
 
+
+
+-- DECODE
+
+
+voteResponseDecoder : Json.Decode.Decoder VoteResponse
+voteResponseDecoder =
+    Json.Decode.succeed VoteResponse
+        |> required "textId" Json.Decode.int
+        |> required "vote" Vote.decoder
+        |> required "rating" Json.Decode.int
 
 
 -- VIEW
@@ -582,10 +599,10 @@ viewSearchResults timezone textListItems =
             in
             div [ class "search_result" ]
                 [ div [ class "voting-mechanism" ]
-                    [ div [ class "upvote" ] [ Html.span [ class hasRead, onClick (CastVote Up textItem.id) ] [ Html.img [ attribute "src" ("/public/img/" ++ upArrow), attribute "height" "28px", attribute "width" "28px" ] [] ] ]
+                    [ div [ class "upvote" ] [ Html.span [ class hasRead, onClick (Vote Up textItem.id) ] [ Html.img [ attribute "src" ("/public/img/" ++ upArrow), attribute "height" "28px", attribute "width" "28px" ] [] ] ]
                     , div [ class "result_item_title" ]
                         [ Html.text textRating ]
-                    , div [ class "downvote" ] [ Html.span [ class hasRead, onClick (CastVote Down textItem.id) ] [ Html.img [ attribute "src" ("/public/img/" ++ downArrow), attribute "height" "28px", attribute "width" "28px" ] [] ] ]
+                    , div [ class "downvote" ] [ Html.span [ class hasRead, onClick (Vote Down textItem.id) ] [ Html.img [ attribute "src" ("/public/img/" ++ downArrow), attribute "height" "28px", attribute "width" "28px" ] [] ] ]
                     ]
                 , div [ class "result_item" ]
                     [ div [ class "result_item_title" ]

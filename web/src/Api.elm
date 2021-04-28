@@ -238,11 +238,6 @@ credHeader (Cred token) =
     Http.header "Authorization" ("Bearer " ++ token)
 
 
-gzipHeader : Http.Header
-gzipHeader =
-    Http.header "Accept-Encoding" "gzip"
-
-
 get :
     Endpoint
     -> Maybe Cred
