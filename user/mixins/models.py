@@ -117,7 +117,7 @@ class TextReadings(models.Model):
     def vote_history(self, text: Text) -> str:
         try:
             v = TextRating.objects \
-                          .filter(text_id=text.id) \
+                          .filter(student_id=self.id, text_id=text.id) \
                           .first() \
                           .vote
             if v == 1:
