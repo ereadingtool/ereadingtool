@@ -94,7 +94,7 @@ viewFirstSectionImage =
     div [ class "guide-image-container"] 
         [ img 
             [ class "guide-image"
-            , src "/public/img/tutorial/1.png"
+            , src "/public/img/tutorial/student/1.png"
             , alt (viewAltText "1" altTexts)
             , title (viewAltText "1" altTexts)
             ] 
@@ -116,7 +116,7 @@ viewSecondSectionImage =
     div [ class "guide-image-container"] 
         [ img 
             [ class "guide-image"
-            , src "/public/img/tutorial/2.png"
+            , src "/public/img/tutorial/student/2.png"
             , alt (viewAltText "2" altTexts)
             , title (viewAltText "2" altTexts)
             ] 
@@ -138,7 +138,7 @@ viewThirdSectionImage =
     div [ class "guide-image-container"] 
         [ img 
             [ class "guide-image"
-            , src "/public/img/tutorial/3.png"
+            , src "/public/img/tutorial/student/3.png"
             , alt (viewAltText "3" altTexts)
             , title (viewAltText "3" altTexts)
             ] 
@@ -173,7 +173,7 @@ viewFifthSectionImage =
     div [ class "guide-image-container"] 
         [ img 
             [ class "guide-image"
-            , src "/public/img/tutorial/4.png"
+            , src "/public/img/tutorial/student/4.png"
             , alt (viewAltText "4" altTexts)
             , title (viewAltText "4" altTexts)
             ] 
@@ -195,7 +195,7 @@ viewSixthSectionImage =
     div [ class "guide-image-container"] 
         [ img 
             [ class "guide-image"
-            , src "/public/img/tutorial/5.png"
+            , src "/public/img/tutorial/student/5.png"
             , alt (viewAltText "5" altTexts)
             , title (viewAltText "5" altTexts)
             ] 
@@ -216,7 +216,7 @@ viewSeventhImage =
     div [ class "guide-image-container"] 
         [ img 
             [ class "guide-image"
-            , src "/public/img/tutorial/6.png"
+            , src "/public/img/tutorial/student/6.png"
             , alt (viewAltText "6" altTexts)
             , title (viewAltText "6" altTexts)
             ] 

@@ -125,7 +125,7 @@ viewFirstSectionImage =
     div [ class "guide-image-container"] 
         [ img 
             [ class "guide-image"
-            , src "/public/img/tutorial/13.png"
+            , src "/public/img/tutorial/student/13.png"
             , alt (viewAltText "13" altTexts)
             , title (viewAltText "13" altTexts)
             ] 
