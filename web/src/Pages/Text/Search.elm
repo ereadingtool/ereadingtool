@@ -283,33 +283,24 @@ update msg (SafeModel model) =
                 textId =
                     voteResponse.textId
 
-                vote =
-                    voteResponse.vote
-
-                rating =
-                    voteResponse.rating
-
                 indexedTextItems =
                     List.indexedMap Tuple.pair model.results
 
-                updatedTextItemRating =
+                updatedTextItem =
                     List.filter (\indexedTextItem -> (Tuple.second indexedTextItem).id == textId) indexedTextItems
                         |> List.map
                             (\indexedTextItem ->
-                                Tuple.mapSecond (\textItem -> { textItem | rating = rating }) indexedTextItem
+                                Tuple.mapSecond (\textItem -> { textItem | rating = voteResponse.rating }) indexedTextItem
                             )
-
-                updatedTextItem =
-                    List.filter (\indexedTextItem -> (Tuple.second indexedTextItem).id == textId) updatedTextItemRating
                         |> List.map
                             (\indexedTextItem ->
                                 let
-                                    prevVote =
+                                    previousVote =
                                         (Tuple.second indexedTextItem).vote
                                 in
-                                case prevVote of
+                                case previousVote of
                                     Up ->
-                                        case vote of
+                                        case voteResponse.vote of
                                             Up ->
                                                 Tuple.mapSecond (\textItem -> { textItem | vote = None }) indexedTextItem
 
@@ -320,7 +311,7 @@ update msg (SafeModel model) =
                                                 Tuple.mapSecond (\textItem -> { textItem | vote = Down }) indexedTextItem
 
                                     None ->
-                                        case vote of
+                                        case voteResponse.vote of
                                             Up ->
                                                 Tuple.mapSecond (\textItem -> { textItem | vote = Up }) indexedTextItem
 
@@ -331,7 +322,7 @@ update msg (SafeModel model) =
                                                 Tuple.mapSecond (\textItem -> { textItem | vote = Down }) indexedTextItem
 
                                     Down ->
-                                        case vote of
+                                        case voteResponse.vote of
                                             Up ->
                                                 Tuple.mapSecond (\textItem -> { textItem | vote = Up }) indexedTextItem
 
