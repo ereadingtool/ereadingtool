@@ -291,9 +291,7 @@ class StudentPerformanceReport(object):
 
 class StudentFlashcardsReport(object):
     """
-    Responsible for creating entries in the report_flashcards table. There is some light error checking 
-    around flashcard meta data. We also have softcoded the text link in the PDF, but it depends on a 
-    `docker-compose.yml` file. If this does not exist the `to_dict()` method will fail.
+    Responsible for creating entries in the report_flashcards table. 
     """
     def __init__(self, student: Student, *args, **kwargs):
         self.student = student

@@ -12,6 +12,7 @@ port module Api exposing
     , getDetailed
     , login
     , logout
+    , patchDetailed
     , performanceReportLink
     , post
     , postDetailed
@@ -236,9 +237,6 @@ credHeader : Cred -> Http.Header
 credHeader (Cred token) =
     Http.header "Authorization" ("Bearer " ++ token)
 
-gzipHeader : Http.Header
-gzipHeader =
-    Http.header "Accept-Encoding" "gzip"
 
 get :
     Endpoint
@@ -254,9 +252,7 @@ get url maybeCred toMsg decoder =
         , headers =
             case maybeCred of
                 Just cred ->
-                    [ credHeader cred 
-                    , gzipHeader
-                    ]
+                    [ credHeader cred ]
 
                 Nothing ->
                     []
@@ -403,6 +399,31 @@ postDetailed :
 postDetailed url maybeCred body toMsg decoder =
     Endpoint.request
         { method = "POST"
+        , url = url
+        , expect = Http.Detailed.expectJson toMsg decoder
+        , headers =
+            case maybeCred of
+                Just cred ->
+                    [ credHeader cred ]
+
+                Nothing ->
+                    []
+        , body = body
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
+
+patchDetailed :
+    Endpoint
+    -> Maybe Cred
+    -> Http.Body
+    -> (Result (Http.Detailed.Error String) ( Http.Metadata, a ) -> msg)
+    -> Decode.Decoder a
+    -> Cmd msg
+patchDetailed url maybeCred body toMsg decoder =
+    Endpoint.request
+        { method = "PATCH"
         , url = url
         , expect = Http.Detailed.expectJson toMsg decoder
         , headers =

@@ -1,5 +1,6 @@
 import json
 import gzip
+from logging import BASIC_FORMAT
 from report.models import StudentReadingsComplete, StudentReadingsInProgress
 import jsonschema
 from typing import TypeVar, Optional, List, Dict, AnyStr, Union, Set
@@ -17,7 +18,7 @@ from question.forms import QuestionForm, AnswerForm
 from question.models import Question
 
 from text.forms import TextForm, TextSectionForm, ModelForm
-from text.models import TextDifficulty, Text, TextSection, text_statuses
+from text.models import TextDifficulty, Text, TextRating, TextSection, text_statuses
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -219,6 +220,88 @@ class TextAPIView(APIView):
 
         except Text.DoesNotExist:
             return HttpResponseServerError(json.dumps({'errors': 'something went wrong'}))
+
+    @jwt_valid()
+    def patch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        if 'pk' not in kwargs:
+            return HttpResponseNotAllowed(permitted_methods=self.allowed_methods)
+
+        try:
+            student = request.user.student.id
+            try:
+                text = Text.objects.get(pk=kwargs['pk'])
+                vote_str = json.loads(request.body)['vote']
+            except BaseException as be:
+                return HttpResponse(json.dumps({'errors': 'something went wrong'}))
+
+            # are they allowed to vote?
+            l1 = StudentReadingsComplete.get_texts({'student_id': student})
+            l2 = StudentReadingsInProgress.get_texts({'student_id': student})
+            l3 = set(l1 + l2)
+
+            if text not in l3:
+                raise Exception
+
+            if vote_str == "up":
+                vote = 1
+            elif vote_str == "down":
+                vote = -1
+            else:
+                raise ValueError
+
+            # Have they voted on this text before?
+            try:
+                # the student's vote if it was previously cast
+                student_vote = TextRating.objects \
+                                           .filter(text=text, student=student) \
+                                           .get()
+                prev_vote = student_vote.vote
+            except BaseException as be:
+                TextRating.objects.create(vote=vote, student_id=student, text_id=text.id)
+                prev_vote = 0
+
+            # They're changing a previously cast vote
+            if prev_vote == 0:
+                if vote == 1:
+                    prev_vote = 1
+                    text.rating = text.rating + 1
+                elif vote == -1:
+                    prev_vote = -1
+                    text.rating = text.rating - 1
+                else:
+                    raise ValueError
+            elif prev_vote == -1:
+                if vote == 1:
+                    prev_vote = 1
+                    text.rating = text.rating + 2
+                elif vote == -1:
+                    prev_vote = 0
+                    text.rating = text.rating + 1
+                else:
+                    raise ValueError
+            elif prev_vote == 1:
+                if vote == -1:
+                    prev_vote = -1
+                    text.rating = text.rating - 2
+                elif vote == 1:
+                    prev_vote = 0
+                    text.rating = text.rating - 1
+                else:
+                    raise ValueError
+
+            # update their vote history
+            student_vote = TextRating.objects \
+                                           .filter(text=text, student=student) \
+                                           .get()
+            student_vote.vote = prev_vote
+            student_vote.save()
+            text.save()
+
+        except BaseException as be:
+            return HttpResponse(json.dumps({'errors': 'something went wrong'}))
+
+        return HttpResponse(json.dumps({'textId': text.pk, 'vote': vote_str, 'rating': text.rating}))
+
 
     @jwt_valid()
     def put(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:

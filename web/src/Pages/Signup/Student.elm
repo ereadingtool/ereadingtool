@@ -11,7 +11,7 @@ import Api.Endpoint as Endpoint
 import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
 import Html exposing (Html, div, span)
-import Html.Attributes exposing (attribute, class, classList, id, href)
+import Html.Attributes exposing (attribute, class, classList, href, id)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (..)
 import Http.Detailed
@@ -312,23 +312,23 @@ viewStudentWelcomeMsg =
             [ Html.p []
                 [ Html.text
                     """Developed with support from """
-                    , Html.a [ href "https://www.thelanguageflagship.org/" ]
+                , Html.a [ href "https://www.thelanguageflagship.org/" ]
                     [ Html.text "The Language Flagship" ]
-                    , Html.text 
-                        """, this site is designed to help students improve their reading proficiency in Russian at a wide 
+                , Html.text
+                    """, this site is designed to help students improve their reading proficiency in Russian at a wide 
                     range of proficiency levels."""
                 ]
-            , Html.p [] 
+            , Html.p []
                 [ Html.text
-                        """After signing in, you will land on a profile page, from which you can go and select a text to read. 
+                    """After signing in, you will land on a profile page, from which you can go and select a text to read. 
                     Texts are organized by proficiency level and by topic. After selecting a text, you will get a brief 
                     contextualizing message in English. Then you will see the first part of the text followed by comprehension 
                     question(s). Once you’ve read the text and selected the best answer, you will get feedback telling you if 
                     your choice is correct, and why or why not."""
                 ]
             , Html.p []
-                [ Html.text 
-                    """On your first time using the website, pop-up boxes will guide you in learning how to use the site."""            
+                [ Html.text
+                    """On your first time using the website, pop-up boxes will guide you in learning how to use the site."""
                 ]
             ]
         ]

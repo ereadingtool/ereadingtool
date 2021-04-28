@@ -76,7 +76,7 @@ class Student(Profile, TextReadings, models.Model):
 
     def to_text_summary_dict(self, text: Text) -> Dict:
         text_student_summary = text.to_student_summary_dict()
-
+        text_student_summary['vote'] = self.vote_history(text)
         text_student_summary['text_sections_complete'] = self.sections_complete_for(text)
         text_student_summary['last_read_dt'] = self.last_read_dt(text)
         text_student_summary['questions_correct'] = self.last_read_questions_correct(text)

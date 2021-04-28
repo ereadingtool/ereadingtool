@@ -133,11 +133,13 @@ viewText timezone textListItem =
     div [ classList [ ( "text_item", True ) ] ]
         [ div [ classList [ ( "item_property", True ) ], attribute "data-id" (String.fromInt textListItem.id) ] [ Html.text "" ]
         , div [ classList [ ( "item_property", True ) ] ]
-            [ div [ class "result_item_title" ] [ Html.a [ attribute "href" ("/text/edit/" ++ String.fromInt textListItem.id) ] [ Html.text textListItem.title ]
-            , span [ classList [ ( "sub_description", True ) ] ]
-                [ Html.text <| "Modified:   " ++ Utils.Date.monthDayYearFormat timezone textListItem.modified_dt
+            [ div [ class "result_item_title" ]
+                [ Html.a [ attribute "href" ("/text/edit/" ++ String.fromInt textListItem.id) ] [ Html.text textListItem.title ]
+                , span [ classList [ ( "sub_description", True ) ] ]
+                    [ Html.text <| "Modified:   " ++ Utils.Date.monthDayYearFormat timezone textListItem.modified_dt
+                    ]
                 ]
-            ] ]
+            ]
         , div [ classList [ ( "item_property", True ) ] ]
             [ Html.text <| String.fromInt textListItem.text_section_count
             , span [ classList [ ( "sub_description", True ) ] ]

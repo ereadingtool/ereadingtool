@@ -156,6 +156,388 @@ describe('Checks student text search page', () => {
         })
     })
 
+    it('Confirms upvoting works', () => {
+      cy.student_access_texts()
+        .then(() => {
+          cy.get('#text_search_results')
+            .contains('Demo Text')
+            .parents('.search_result')
+            .find('.result_item_title')
+            .first()
+            .should('have.text', '0')
+
+          cy.get('#text_search_results')
+            .contains('Demo Text')
+            .parents('.search_result')
+            .find('.upvote')
+            .click()
+            .then(($upvote) => {
+              // is it colored accordingly?
+              cy.wrap($upvote)
+                .find('img')
+                .should('have.attr', 'src', '/public/img/arrow_upward_enabled.svg')
+
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.result_item_title')
+                .first()
+                .should('have.text', '1')
+
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.downvote')
+                .find('img')
+                .should('have.attr', 'src', '/public/img/arrow_downward_disabled.svg')
+
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.upvote')
+                .click()
+
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.upvote')
+                .find('img')
+                .should('have.attr', 'src', '/public/img/arrow_upward.svg')
+
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.downvote')
+                .find('img')
+                .should('have.attr', 'src', '/public/img/arrow_downward.svg')
+            })
+        })
+    })
+
+    it('Confirms downvoting works', () => {
+      cy.student_access_texts()
+        .then(() => {
+          cy.get('#text_search_results')
+            .contains('Demo Text')
+            .parents('.search_result')
+            .find('.result_item_title')
+            .first()
+            .should('have.text', '0')
+
+          cy.get('#text_search_results')
+            .contains('Demo Text')
+            .parents('.search_result')
+            .find('.downvote')
+            .click()
+            .then(($downvote) => {
+              // is it colored accordingly?
+              cy.wrap($downvote)
+                .find('img')
+                .should('have.attr', 'src', '/public/img/arrow_downward_enabled.svg')
+
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.result_item_title')
+                .first()
+                .should('have.text', '-1')
+
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.upvote')
+                .find('img')
+                .should('have.attr', 'src', '/public/img/arrow_upward_disabled.svg')
+
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.downvote')
+                .click()
+
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.upvote')
+                .find('img')
+                .should('have.attr', 'src', '/public/img/arrow_upward.svg')
+
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.downvote')
+                .find('img')
+                .should('have.attr', 'src', '/public/img/arrow_downward.svg')
+            })
+        })
+    })
+
+    it('Undoes an upvote', () => {
+      cy.student_access_texts()
+        .then(() => {
+          cy.get('#text_search_results')
+            .contains('Demo Text')
+            .parents('.search_result')
+            .find('.result_item_title')
+            .first()
+            .should('have.text', '0')
+
+          cy.wait(500)
+
+          cy.get('#text_search_results')
+            .contains('Demo Text')
+            .parents('.search_result')
+            .find('.upvote')
+            .click()
+            .then(($upvote) => {
+              // is it colored accordingly?
+              cy.wrap($upvote)
+                .find('img')
+                .should('have.attr', 'src', '/public/img/arrow_upward_enabled.svg')
+
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.result_item_title')
+                .first()
+                .should('have.text', '1')
+
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.upvote')
+                .click()
+
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.upvote')
+                .find('img')
+                .should('have.attr', 'src', '/public/img/arrow_upward.svg')
+
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.downvote')
+                .find('img')
+                .should('have.attr', 'src', '/public/img/arrow_downward.svg')
+            })
+        })
+    })
+
+    it('Undoes a downvote', () => {
+      cy.student_access_texts()
+        .then(() => {
+
+          // confirms text rating is 0
+          cy.get('#text_search_results')
+            .contains('Demo Text')
+            .parents('.search_result')
+            .find('.result_item_title')
+            .first()
+            .should('have.text', '0')
+
+          // downvotes the text
+          cy.get('#text_search_results')
+            .contains('Demo Text')
+            .parents('.search_result')
+            .find('.downvote')
+            .click()
+            .then(($downvote) => {
+
+              // confirms downvote image
+              cy.wrap($downvote)
+                .find('img')
+                .should('have.attr', 'src', '/public/img/arrow_downward_enabled.svg')
+
+              // confirms downvoted rating
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.result_item_title')
+                .first()
+                .should('have.text', '-1')
+
+              // clicks downvote again
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.downvote')
+                .click()
+
+              // checks rating is now zero after undoing downvote
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.result_item_title')
+                .first()
+                .should('have.text', '0')
+
+              // confirm up arrow is normal (neither enabled or disabled)
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.upvote')
+                .find('img')
+                .should('have.attr', 'src', '/public/img/arrow_upward.svg')
+
+              // confirm down arrow is normal (neither enabled or disabled)
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.downvote')
+                .find('img')
+                .should('have.attr', 'src', '/public/img/arrow_downward.svg')
+            })
+        })
+    })
+
+    it('Downvotes from an upvote', () => {
+      cy.student_access_texts()
+        .then(() => {
+
+          // starts at 0
+          cy.get('#text_search_results')
+            .contains('Demo Text')
+            .parents('.search_result')
+            .find('.result_item_title')
+            .first()
+            .should('have.text', '0')
+
+          // upvotes to 1
+          cy.get('#text_search_results')
+            .contains('Demo Text')
+            .parents('.search_result')
+            .find('.upvote')
+            .click()
+            .then(($upvote) => {
+              cy.wrap($upvote)
+                .find('img')
+                .should('have.attr', 'src', '/public/img/arrow_upward_enabled.svg')
+
+              // confirms rating is 1
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.result_item_title')
+                .first()
+                .should('have.text', '1')
+
+              // downvotes
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.downvote')
+                .click()
+
+              // confirms downvote image
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.downvote')
+                .find('img')
+                .should('have.attr', 'src', '/public/img/arrow_downward_enabled.svg')
+
+              // confirms rating updated
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.result_item_title')
+                .first()
+                .should('have.text', '-1')
+            })
+        })
+    })
+
+    it('Upvotes from a downvote', () => {
+      cy.student_access_texts()
+        .then(() => {
+          // previous test set vote to -1
+          cy.get('#text_search_results')
+            .contains('Demo Text')
+            .parents('.search_result')
+            .find('.result_item_title')
+            .first()
+            .should('have.text', '-1')
+
+          // upvote the downvoted text
+          cy.get('#text_search_results')
+            .contains('Demo Text')
+            .parents('.search_result')
+            .find('.upvote')
+            .click()
+            .then(($upvote) => {
+
+              // upvote should be active
+              cy.wrap($upvote)
+                .find('img')
+                .should('have.attr', 'src', '/public/img/arrow_upward_enabled.svg')
+
+              // check the rating
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.result_item_title')
+                .first()
+                .should('have.text', '1')
+
+              // reset value in db to 0
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.upvote')
+                .click()
+
+              // confirm up arrow is normal (neither enabled or disabled)
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.upvote')
+                .find('img')
+                .should('have.attr', 'src', '/public/img/arrow_upward.svg')
+
+              // confirm down arrow is normal (neither enabled or disabled)
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.upvote')
+                .find('img')
+                .should('have.attr', 'src', '/public/img/arrow_downward.svg')
+            })
+        })
+    })
+
+    it('Confirms downvoting works', () => {
+      cy.student_access_texts()
+        .then(() => {
+          cy.get('#text_search_results')
+            .contains('Demo Text')
+            .parents('.search_result')
+            .find('.result_item_title')
+            .first()
+            .should('have.text', '1')
+
+          cy.get('#text_search_results')
+            .contains('Demo Text')
+            .parents('.search_result')
+            .find('.upvote')
+            .click()
+            .then(($upvote) => {
+              // is it colored accordingly?
+              cy.wrap($upvote)
+                .find('img')
+                .should('have.attr', 'src', '/public/img/arrow_downward_enabled.svg')
+
+              cy.get('#text_search_results')
+                .contains('Demo Text')
+                .parents('.search_result')
+                .find('.result_item_title')
+                .first()
+                .should('have.text', '-1')
+            })
+        })
+    })
+
     it('Checks that text difficulties exist', () => {
       cy.student_access_texts()
         .then(() => {
