@@ -194,7 +194,7 @@ update parentMsg msg model =
         -- handle user-friendly msgs
         DeletedTranslation (Err err) ->
             ( model, Cmd.none )
-                
+
         SelectGrammemeForEditing _ grammemeName ->
             ( Text.Translations.Model.selectGrammemeForEditing model grammemeName
             , Cmd.none

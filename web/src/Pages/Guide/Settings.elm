@@ -122,15 +122,16 @@ a study.
 
 viewFirstSectionImage : Html Msg
 viewFirstSectionImage =
-    div [ class "guide-image-container"] 
-        [ img 
+    div [ class "guide-image-container" ]
+        [ img
             [ class "guide-image"
             , src "/public/img/tutorial/student/13.png"
             , alt (viewAltText "13" altTexts)
             , title (viewAltText "13" altTexts)
-            ] 
-            [] 
+            ]
+            []
         ]
+
 
 viewAltText : String -> Dict String String -> String
 viewAltText id texts =

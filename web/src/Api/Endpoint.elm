@@ -23,6 +23,7 @@ module Api.Endpoint exposing
     , translation
     , unmergeWord
     , validateUsername
+    , voteText
     , word
     , wordsCsvLink
     , wordsPdfLink
@@ -155,6 +156,11 @@ validateUsername baseUrl =
 textSearch : String -> List QueryParameter -> Endpoint
 textSearch baseUrl queryParameters =
     url baseUrl [ "api", "text" ] queryParameters
+
+
+voteText : String -> Int -> List QueryParameter -> Endpoint
+voteText baseUrl id queryParameters =
+    url baseUrl [ "api", "text", String.fromInt id, "vote" ] queryParameters
 
 
 

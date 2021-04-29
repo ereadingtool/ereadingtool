@@ -112,14 +112,14 @@ Click the “Start” button to begin reading. If you don’t like the text, you
 
 viewFirstSectionImage : Html Msg
 viewFirstSectionImage =
-    div [ class "guide-image-container"] 
-        [ img 
+    div [ class "guide-image-container" ]
+        [ img
             [ class "guide-image"
             , src "/public/img/tutorial/student/7.png"
             , alt (viewAltText "7" altTexts)
             , title (viewAltText "7" altTexts)
-            ] 
-            [] 
+            ]
+            []
         ]
 
 
@@ -134,14 +134,14 @@ number of sections.
 
 viewSecondSectionImage : Html Msg
 viewSecondSectionImage =
-    div [ class "guide-image-container"] 
-        [ img 
+    div [ class "guide-image-container" ]
+        [ img
             [ class "guide-image"
             , src "/public/img/tutorial/student/8.png"
             , alt (viewAltText "8" altTexts)
             , title (viewAltText "8" altTexts)
-            ] 
-            [] 
+            ]
+            []
         ]
 
 
@@ -157,14 +157,14 @@ referring back to the text as much as you need to.
 
 viewThirdSectionImage : Html Msg
 viewThirdSectionImage =
-    div [ class "guide-image-container"] 
-        [ img 
+    div [ class "guide-image-container" ]
+        [ img
             [ class "guide-image"
             , src "/public/img/tutorial/student/9.png"
             , alt (viewAltText "9" altTexts)
             , title (viewAltText "9" altTexts)
-            ] 
-            [] 
+            ]
+            []
         ]
 
 
@@ -176,16 +176,17 @@ As you’re reading, if you want to check on an unfamiliar word’s meaning, you
 form, grammatical information and the best English equivalent for the context. You can save any word or phrase you look up to the “My words” file.
 """
 
+
 viewFourthSectionImage : Html Msg
 viewFourthSectionImage =
-    div [ class "guide-image-container"] 
-        [ img 
+    div [ class "guide-image-container" ]
+        [ img
             [ class "guide-image"
             , src "/public/img/tutorial/student/10.png"
             , alt (viewAltText "10" altTexts)
             , title (viewAltText "10" altTexts)
-            ] 
-            [] 
+            ]
+            []
         ]
 
 
@@ -200,14 +201,14 @@ to create the meaning that they have is crucial to becoming a truly advanced rea
 
 viewFifthSectionImage : Html Msg
 viewFifthSectionImage =
-    div [ class "guide-image-container"] 
-        [ img 
+    div [ class "guide-image-container" ]
+        [ img
             [ class "guide-image"
             , src "/public/img/tutorial/student/11.png"
             , alt (viewAltText "11" altTexts)
             , title (viewAltText "11" altTexts)
-            ] 
-            [] 
+            ]
+            []
         ]
 
 
@@ -222,14 +223,14 @@ the STAR app to read, or to follow links to outside sources related to the topic
 
 viewSixthSectionImage : Html Msg
 viewSixthSectionImage =
-    div [ class "guide-image-container"] 
-        [ img 
+    div [ class "guide-image-container" ]
+        [ img
             [ class "guide-image"
             , src "/public/img/tutorial/student/12.png"
             , alt (viewAltText "12" altTexts)
             , title (viewAltText "12" altTexts)
-            ] 
-            [] 
+            ]
+            []
         ]
 
 

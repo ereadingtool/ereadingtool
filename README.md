@@ -169,6 +169,7 @@ python manage.py runserver
 
 If the text reader isn't working, or nothing is happening over websocket, that's because you need to start Redis.   
 
+Due to the database views, sometimes you'll get an error that says it can't add a column or a table doesn't exist. Simply drop the views, make the modification, and rebuild the views with SQL.
 ## Cypress tests
 
 These tests check functionality of the frontend application as well as uses visual regression testing to confirm modifications to CSS are not breaking the site.
