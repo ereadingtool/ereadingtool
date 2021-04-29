@@ -12,6 +12,7 @@ import Dict
 import Text.Section.Model
 import Text.Translations exposing (..)
 import Time exposing (Posix)
+import Vote exposing (..)
 
 
 type alias TextDifficulty =
@@ -40,6 +41,8 @@ type alias Text =
 
 type alias TextListItem =
     { id : Int
+    , rating : Int
+    , vote : Vote
     , title : String
     , author : String
     , difficulty : String

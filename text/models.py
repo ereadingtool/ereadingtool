@@ -64,6 +64,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
                                    related_name='created_texts')
     last_modified_by = models.ForeignKey('user.Instructor', null=True, on_delete=models.SET_NULL,
                                          related_name='last_modified_text')
+    rating = models.IntegerField(default=0)
 
     @property
     def words(self):
@@ -189,6 +190,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
     def to_summary_dict(self) -> Dict:
         text_dict = self.to_dict_meta()
 
+        text_dict['rating'] = self.rating
         text_dict['text_section_count'] = self.sections.count()
         text_dict['translation_service_processed'] = all([ts.translation_service_processed == 1 for ts in self.sections.all()])
 
@@ -250,7 +252,7 @@ class Text(Taggable, WriteLockable, Timestamped, models.Model):
             'created_by': str(self.created_by),
             'tags': [tag.name for tag in self.tags.all()],
             'modified_dt': self.modified_dt.isoformat(),
-            'created_dt': self.created_dt.isoformat()
+            'created_dt': self.created_dt.isoformat(),
         }
 
     def delete(self, *args, **kwargs):
@@ -348,3 +350,12 @@ class TextSection(TextSectionDefinitionsMixin, Timestamped, models.Model):
     def __str__(self):
         return f'Text Section {self.order} of {self.text.title}'
 
+
+class TextRating(models.Model):
+    class Meta:
+        verbose_name_plural = 'Text Ratings'
+        unique_together = (('student', 'text', 'vote'))
+
+    student = models.ForeignKey('user.Student', null=False, on_delete=models.CASCADE, related_name='text_ratings')
+    text = models.ForeignKey(Text, on_delete=models.CASCADE, related_name='texts')
+    vote = models.IntegerField(default=0)

@@ -134,13 +134,14 @@ class TextWordGroupAPIView(APIView):
             del(response['translations'])
 
             try:
-                TextWordGroup.objects.filter(pk=kwargs['textphrase_ptr_id']).delete()
+                rows, deleted = TextWordGroup.objects.filter(pk=kwargs['textphrase_ptr_id']).delete()
+                response['deleted'] = rows > 0
                 response['grouped'] = False
                 response['error'] = None
             except (TextWordGroup.DoesNotExist, KeyError) as e:
                 response['grouped'] = True
-                response['error'] = e 
+                response['error'] = f'missing {str(e)}' 
 
             return HttpResponse(json.dumps(response), content_type='application/json')
-        except BaseException:
+        except BaseException as be:
             return self.default_error_resp

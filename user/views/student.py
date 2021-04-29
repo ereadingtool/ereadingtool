@@ -279,7 +279,7 @@ class StudentLoginAPIView(APIView):
         life span can be changed in settings.py by way of `JWT_EXPIRATION_DELTA`
         Args: HttpRequest: presumably a POST. Form: a Django type holding form data, aliased up top.
         Returns: JsonResponse containing the new JWT
-        """        
+        """
         reader_user = student_login_form.get_user()
 
         token = jwt_encode_token(

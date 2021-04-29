@@ -29,6 +29,7 @@ urlpatterns = [
     path('api/text/word/<int:pk>/translation', TextWordTranslationsAPIView.as_view(),
          name='text-word-translation-api'),
 
+    path('api/text/<int:pk>/vote', TextAPIView.as_view(), name='text-item-api'),
     path('api/text/<int:pk>', TextAPIView.as_view(), name='text-item-api'),
     path('api/text', TextAPIView.as_view(), name='text-api'),
 
