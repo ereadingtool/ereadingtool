@@ -1,7 +1,8 @@
 module Pages.CreatorGuide exposing (Model, Msg, Params, page)
 
+import Dict exposing (Dict)
 import Html exposing (..)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (alt, class, src, title)
 import Markdown
 import Shared
 import Spa.Document exposing (Document)
@@ -90,8 +91,19 @@ viewGuide : Html Msg
 viewGuide =
     div [ class "creator-guide" ]
         [ viewIntroduction
-        , viewCreateText
-        , viewEditText
+        , viewCreateTextFirst
+        , viewCreateTextFirstImage
+        , viewCreateTextSecond
+        , viewCreateTextSecondImage
+        , viewEditTextFirst
+        , viewEditTextFirstImage
+        , viewEditTextSecond
+        , viewEditTextSecondImage
+        , viewEditTextThird
+        , viewEditTextThirdImage
+        , viewEditTextFourth
+        , viewEditTextFourthImage
+        , viewEditTextFifth
         , viewGlossing
         ]
 
@@ -114,8 +126,8 @@ comprehension questions, feedback, then you can cut and paste the elements into 
 """
 
 
-viewCreateText : Html Msg
-viewCreateText =
+viewCreateTextFirst : Html Msg
+viewCreateTextFirst =
     Markdown.toHtml [] """
 ## Creating a text
 
@@ -148,6 +160,24 @@ the “Translations” tab.
   the text strongly suggests a topic that might be of further interest to a student, you can add a link to that 
   external Russian-language site for additional reading. Conclusions are optional, but they do add value in 
   motivating students to learn more about Russian culture. Concluding commentary can be written in English.
+  """
+
+viewCreateTextFirstImage : Html Msg
+viewCreateTextFirstImage =
+    div [ class "guide-image-container"] 
+        [ img 
+            [ class "guide-image"
+            , src "/public/img/tutorial/creator/1.png"
+            , alt (viewAltText "1" altTexts)
+            , title (viewAltText "1" altTexts)
+            ] 
+            [] 
+        ]
+
+
+viewCreateTextSecond : Html Msg
+viewCreateTextSecond =
+    Markdown.toHtml [] """
 - **Text Tags.** Select all the content tags that are appropriate to the topics covered in the original reading. 
   You can select as many tags as are appropriate. Tags help students find texts that match their personal interests.
   Content creators who want to keep specific texts “in reserve” for testing or for research studies should select 
@@ -194,8 +224,20 @@ the “Translations” tab.
 """
 
 
-viewEditText : Html Msg
-viewEditText =
+viewCreateTextSecondImage : Html Msg
+viewCreateTextSecondImage =
+    div [ class "guide-image-container"] 
+        [ img 
+            [ class "guide-image"
+            , src "/public/img/tutorial/creator/2.png"
+            , alt (viewAltText "2" altTexts)
+            , title (viewAltText "2" altTexts)
+            ] 
+            [] 
+        ]
+
+viewEditTextFirst : Html Msg
+viewEditTextFirst =
     Markdown.toHtml [] """
 ## Editing a text
 
@@ -213,7 +255,25 @@ completing the first pass automatic glossing rely on the words remaining in thei
 If you detect any defect in a reading passage, you **MUST** delete the entire text section, add a new text section with the 
 corrected source text of the reading passage. The new corrected text section will be queued for first pass automatic glossing. 
 Replacing the whole text section will avoid problems for the student user.
+"""
 
+
+viewEditTextFirstImage : Html Msg
+viewEditTextFirstImage =
+    div [ class "guide-image-container"] 
+        [ img 
+            [ class "guide-image"
+            , src "/public/img/tutorial/creator/3.png"
+            , alt (viewAltText "3" altTexts)
+            , title (viewAltText "3" altTexts)
+            ] 
+            [] 
+        ]
+
+
+viewEditTextSecond : Html Msg
+viewEditTextSecond =
+    Markdown.toHtml [] """
 ### Tab labeled "Translations"
 You can and will need to refine vocabulary information that the automatic glossing has retrieved.
 
@@ -228,19 +288,70 @@ on proper nouns and adjectives, new words and neologisms.
 Below the grammatical information, you will need to pick the best English equivalent for the context. You should designate the best 
 equivalent for the context by adding a check mark to the right of that entry. Should none of the equivalents offered work for the 
 context, you can add a suitable English equivalent of your own by writing it into the text box and clicking the + sign.
+"""
 
+viewEditTextSecondImage : Html Msg
+viewEditTextSecondImage =
+    div [ class "guide-image-container"] 
+        [ img 
+            [ class "guide-image"
+            , src "/public/img/tutorial/creator/4.png"
+            , alt (viewAltText "4" altTexts)
+            , title (viewAltText "4" altTexts)
+            ] 
+            [] 
+        ]
+
+
+viewEditTextThird : Html Msg
+viewEditTextThird =
+    Markdown.toHtml [] """
 If the text words form part of a multi-word unit that should really be glossed together (i.e., потому что = because; в основном = basically), 
 it is possible to “merge” text words into a unit so that only one gloss is displayed for the whole unit. To merge words, start with the 
 first one appearing in the text, click to bring up the current glossing, select the next word(s) in the phrase that you want to merge. 
 When all of the words have been selected, click merge on the final word’s glossing dialog box. After you click “merge,” the gloss will 
 disappear and you can click the new merged version of the words and add the appropriate equivalent for the whole phrase.
+"""
 
+
+viewEditTextThirdImage : Html Msg
+viewEditTextThirdImage =
+    div [ class "guide-image-container"] 
+        [ img 
+            [ class "guide-image"
+            , src "/public/img/tutorial/creator/5.png"
+            , alt (viewAltText "5" altTexts)
+            , title (viewAltText "5" altTexts)
+            ] 
+            [] 
+        ]
+
+
+viewEditTextFourth : Html Msg
+viewEditTextFourth =
+    Markdown.toHtml [] """
 ### Add text word
 The automatic first pass glossing may not be able to recognize all the words in the text. If a word has not been processed by the automatic 
 service, you can add information about the unrecognized text word clicking on "Add as text word."  Important. When adding text words, start 
 from the beginning of the text and move forward through the words from left to right, top to bottom. After adding a text word, you may need 
 to try refreshing the page to make sure that the text word has been saved. 
+"""
 
+viewEditTextFourthImage =
+    div [ class "guide-image-container"] 
+        [ img 
+            [ class "guide-image"
+            , src "/public/img/tutorial/creator/6.png"
+            , alt (viewAltText "6" altTexts)
+            , title (viewAltText "6" altTexts)
+            ] 
+            [] 
+        ]
+
+
+viewEditTextFifth : Html Msg
+viewEditTextFifth =
+    Markdown.toHtml [] """
 ### Save for all
 When a text word is selected, a "Save for all" option may be available. Selecting “Save for all” will apply the glossing details of the 
 selected word to all other matching text word instances across the text. Note that “Save for all” does not support words that have been merged.
@@ -273,3 +384,25 @@ Once on the Text search page, find the newly added content block by filtering fo
 start the reading.  Make notes of corrections to be made, and then return to the Edit mode to make your changes. Note that any fixes to the 
 original reading text sections will need to be made by completely replacing the text.
 """
+
+
+
+-- ALT TEXTS
+
+
+viewAltText : String -> Dict String String -> String
+viewAltText id texts =
+    case Dict.get id texts of
+        Just text ->
+            text
+
+        Nothing ->
+            ""
+
+
+altTexts : Dict String String
+altTexts =
+    Dict.fromList
+        [ ( "1", "" )
+        , ( "2", "" )
+        ]
