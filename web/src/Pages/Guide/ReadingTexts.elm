@@ -115,7 +115,7 @@ viewFirstSectionImage =
     div [ class "guide-image-container" ]
         [ img
             [ class "guide-image"
-            , src "/public/img/tutorial/7.png"
+            , src "/public/img/tutorial/student/7.png"
             , alt (viewAltText "7" altTexts)
             , title (viewAltText "7" altTexts)
             ]
@@ -137,7 +137,7 @@ viewSecondSectionImage =
     div [ class "guide-image-container" ]
         [ img
             [ class "guide-image"
-            , src "/public/img/tutorial/8.png"
+            , src "/public/img/tutorial/student/8.png"
             , alt (viewAltText "8" altTexts)
             , title (viewAltText "8" altTexts)
             ]
@@ -160,7 +160,7 @@ viewThirdSectionImage =
     div [ class "guide-image-container" ]
         [ img
             [ class "guide-image"
-            , src "/public/img/tutorial/9.png"
+            , src "/public/img/tutorial/student/9.png"
             , alt (viewAltText "9" altTexts)
             , title (viewAltText "9" altTexts)
             ]
@@ -182,7 +182,7 @@ viewFourthSectionImage =
     div [ class "guide-image-container" ]
         [ img
             [ class "guide-image"
-            , src "/public/img/tutorial/10.png"
+            , src "/public/img/tutorial/student/10.png"
             , alt (viewAltText "10" altTexts)
             , title (viewAltText "10" altTexts)
             ]
@@ -204,7 +204,7 @@ viewFifthSectionImage =
     div [ class "guide-image-container" ]
         [ img
             [ class "guide-image"
-            , src "/public/img/tutorial/11.png"
+            , src "/public/img/tutorial/student/11.png"
             , alt (viewAltText "11" altTexts)
             , title (viewAltText "11" altTexts)
             ]
@@ -226,7 +226,7 @@ viewSixthSectionImage =
     div [ class "guide-image-container" ]
         [ img
             [ class "guide-image"
-            , src "/public/img/tutorial/12.png"
+            , src "/public/img/tutorial/student/12.png"
             , alt (viewAltText "12" altTexts)
             , title (viewAltText "12" altTexts)
             ]
@@ -247,45 +247,14 @@ viewAltText id texts =
 altTexts : Dict String String
 altTexts =
     Dict.fromList
-        [ ( "1", "Screenshot of login page" )
-        , ( "2", "Screenshot of profile page with difficulty level options" )
-        , ( "3", "Screenshot of student performance table" )
-        , ( "4", "Screenshot of search filter for text difficulty level" )
-        , ( "5", "Screenshot of search filter for text topics" )
-        , ( "6", "Screenshot of search filter for text read status" )
-        , ( "7"
-          , "Screenshot of text pre-reading screen, with a brief description of the text and a Start button"
-          )
+        [ ( "7", "Screenshot of text pre-reading screen, with a brief description of the text and a Start button" )
         , ( "8", "Screenshot of one section of a text" )
-        , ( "9", "Screenshot of a text with a word glossed" )
-        , ( "10", "Screenshot of a multiple-choice comprehension question" )
-        , ( "11-left", "Screenshot of a text comprehension question answered correctly with feedback" )
-        , ( "11-right", "Screenshot of a text comprehension question answered incorrectly with feedback" )
+        , ( "9", "Screenshot of a text with a multiple questions" )
+        , ( "10", "Screenshot of a glossed word showing its definition" )
+        , ( "11", "Screenshot of a text comprehension question answered incorrectly with feedback" )
         , ( "12"
           , "Screenshot of post-reading page with number of questions answered correctly, "
                 ++ "a message directing students to the Search Texts page, and a link to a reading related "
                 ++ "to the text"
-          )
-        , ( "13"
-          , "Screenshot of the two mode options for flashcards, which are “Review Only” mode and "
-                ++ "“Review and Answer” mode"
-          )
-        , ( "14-left"
-          , "Screenshot of the front of a flashcard in “Review only” mode, with the Russian word "
-                ++ "and its context"
-          )
-        , ( "14-right"
-          , "Screenshot of the back of a flashcard in “Review only” mode, with the English "
-                ++ "translation of the Russian word, and the word’s context"
-          )
-        , ( "15-left"
-          , "Screenshot of the front of a flashcard in “Review and Answer” mode, with the Russian "
-                ++ "word, the word’s context, and a box where students type the answer"
-          )
-        , ( "15-right"
-          , "Screenshot of the back of a flashcard in “Review and Answer” mode, with the English "
-                ++ "translation of the Russian word, the word’s context, and six options from 0 to 5 "
-                ++ "(0 being the most difficult, 5 being the easiest) so that students can judge how "
-                ++ "difficult they found the word"
           )
         ]
