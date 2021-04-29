@@ -403,6 +403,10 @@ viewAltText id texts =
 altTexts : Dict String String
 altTexts =
     Dict.fromList
-        [ ( "1", "" )
-        , ( "2", "" )
+        [ ( "1", "Text editor page for content creators" )
+        , ( "2", "Bottom half of the text editor page for content creators" )
+        , ( "3", "Text edit page with text in edit mode" )
+        , ( "4", "Translation tab showing the text has been processed" )
+        , ( "5", "Example of merging words" )
+        , ( "6", "Example of adding a word" )
         ]
