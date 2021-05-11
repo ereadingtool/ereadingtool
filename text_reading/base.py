@@ -14,6 +14,8 @@ from text_reading.state.models import TextReadingStateMachine
 from text_reading.exceptions import (TextReadingInvalidState, TextReadingNotAllQuestionsAnswered,
                                      TextReadingQuestionNotInSection)
 
+from dashboard.text_reader_sync import dashboard_synchronize_text_reading
+
 
 class TextReading(models.Model):
     class Meta:
@@ -235,6 +237,8 @@ class TextReading(models.Model):
         self.current_section = next_section
 
         self.state = self.current_state.name
+        if not next_section:
+            dashboard_synchronize_text_reading(self)
 
         self.save()
 

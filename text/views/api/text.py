@@ -23,7 +23,7 @@ from text.models import TextDifficulty, Text, TextRating, TextSection, text_stat
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from auth.normal_auth import jwt_valid
-from auth.dashboard import dashboard_connect
+
 
 Student = TypeVar('Student')
 Instructor = TypeVar('Instructor')
@@ -334,7 +334,6 @@ class TextAPIView(APIView):
         except (Text.DoesNotExist, ObjectDoesNotExist):
             return HttpResponse(json.dumps({'errors': 'something went wrong'}))
 
-    @dashboard_connect()
     @jwt_valid()
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         text = None
