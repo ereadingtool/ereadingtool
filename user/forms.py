@@ -171,6 +171,22 @@ class StudentConsentForm(forms.ModelForm):
         return student
 
 
+class StudentDashboardForm(forms.ModelForm):
+    class Meta:
+        model = Student
+        exclude = ('user', 'difficulty_preference', 'research_consent',)
+
+    connect_to_dashboard = forms.BooleanField(required=False)
+
+    def save(self, commit=True):
+        student = super(StudentDashboardForm, self).save(commit=commit)
+
+        if 'connect_to_dashboard' in self.cleaned_data:
+            student.connect_to_dashboard(self.cleaned_data['connect_to_dashboard'])
+
+            return student
+
+
 class StudentForm(forms.ModelForm):
     class Meta:
         model = Student

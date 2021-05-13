@@ -1,3 +1,4 @@
+from user.student.dashboard_user.models import StudentDashboardUser
 from flashcards.student.models import StudentFlashcard
 from typing import Dict, List, Tuple, AnyStr
 
@@ -16,7 +17,7 @@ from user.student.research_consent.models import StudentResearchConsent
 class Student(Profile, TextReadings, models.Model):
     user = models.OneToOneField(ReaderUser, on_delete=models.CASCADE)
     research_consent = models.OneToOneField(StudentResearchConsent, null=True, on_delete=models.SET_NULL)
-
+    dashboard_user = models.OneToOneField(StudentDashboardUser, null=True, on_delete=models.SET_NULL)
     difficulty_preference = models.ForeignKey(TextDifficulty, null=True, on_delete=models.SET_NULL,
                                               related_name='students')
 
@@ -126,3 +127,25 @@ class Student(Profile, TextReadings, models.Model):
             self.research_consent.on()
         else:
             self.research_consent.off()
+
+
+    @property
+    def is_dashboard_user(self):
+        try:
+            if self.dashboard_user:
+                return self.dashboard_user.active
+            else:
+                return False
+        except StudentDashboardUser.DoesNotExist:
+            return False
+
+
+    def connect_to_dashboard(self, connected: bool):
+        if not self.dashboard_user:
+            self.dashboard_user = StudentDashboardUser.objects.create()
+            self.save()
+
+        if connected:
+            self.dashboard_user.on()
+        else:
+            self.dashboard_user.off()
