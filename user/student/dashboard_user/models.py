@@ -14,8 +14,8 @@ class StudentDashboardUser(models.Model):
 
     def on(self):
         if not self.latest_connection_range or self.latest_connection_range.end_dt is not None:
-            self.dashboard_connnection_ranges.create()
-    
+            self.dashboard_connection_ranges.create()
+
     def off(self):
         if self.latest_connection_range and self.latest_connection_range.end_dt is None:
             latest_connection_range = self.latest_connection_range

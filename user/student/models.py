@@ -130,7 +130,7 @@ class Student(Profile, TextReadings, models.Model):
 
 
     @property
-    def is_dashboard_user(self):
+    def connected_to_dashboard(self):
         try:
             if self.dashboard_user:
                 return self.dashboard_user.active

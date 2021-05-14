@@ -11,7 +11,7 @@ from django.urls import reverse
 from django.views.generic import TemplateView, View
 
 from text.models import TextDifficulty
-from user.forms import AuthenticationForm, StudentSignUpForm, StudentForm, StudentConsentForm
+from user.forms import AuthenticationForm, StudentSignUpForm, StudentForm, StudentConsentForm, StudentDashboardForm
 from user.student.models import Student
 from user.views.api import APIView
 from user.views.mixin import ProfileView
@@ -190,6 +190,36 @@ class StudentAPIConsentToResearchView(APIView):
         student = student_form.save()
 
         return HttpResponse(json.dumps({'consented': student.is_consenting_to_research}))
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class StudentAPIConnectToDashboard(APIView):
+
+    @jwt_valid()
+    def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
+        if not Student.objects.filter(pk=kwargs['pk']).count():
+            return HttpResponse(status=400)
+
+        student = Student.objects.get(pk=kwargs['pk'])
+
+        return HttpResponse(json.dumps({'connected': student.connected_to_dashboard}))
+
+    @jwt_valid()
+    def form(self, request: HttpRequest, params: Dict, **kwargs) -> forms.ModelForm:
+        return StudentDashboardForm(params, **kwargs)
+
+    @jwt_valid()
+    def put_error(self, status, errors: Dict) -> HttpResponse:
+        return HttpResponse(json.dumps(errors), status=status)
+
+    @jwt_valid()
+    def put_success(self, request: HttpRequest, student_form: Union[Form, forms.ModelForm]) -> HttpResponse:
+        try:
+            student = student_form.save()
+        except Exception as e:
+            pass
+
+        return HttpResponse(json.dumps({'connected': student.connected_to_dashboard}))
 
 
 # Method decorator required for PUT method

@@ -279,6 +279,10 @@ STATICFILES_DIRS = [
 
 TEST_RUNNER = 'ereadingtool.settings-test.UnManagedModelTestRunner'
 
+
+# Dashboard connection stuff
+DASHBOARD_ENDPOINT = 'https://lrs.languageflagshipdashboard.com/data/xAPI'
+
 try:
     from local_settings import *
 except ImportError:

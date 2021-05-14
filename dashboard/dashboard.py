@@ -13,10 +13,10 @@ def dashboard_connect():
             params = {"email": "user_email@gmail.com"}
             resp = requests.get(protocol+base_url+endpoint, params)
             if resp.content == b'true':
-                is_dashboard_user = True
+                connected_to_dashboard = True
             else:
-                is_dashboard_user = False
-            kwargs["is_dashboard_user"] = is_dashboard_user
+                connected_to_dashboard = False
+            kwargs["connected_to_dashboard"] = connected_to_dashboard
 
             return func(*args, **kwargs)
         return synchronize

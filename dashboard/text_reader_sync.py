@@ -1,5 +1,6 @@
 import requests
 import json
+from uuid import uuid4
 from .dashboard import Actor, DashboardData, Object, Result, Verb
 
 def dashboard_synchronize_text_reading(text_reading):
@@ -27,12 +28,16 @@ def dashboard_synchronize_text_reading(text_reading):
         dashboard_data = json.dumps(DashboardData(actor, result, verb, object).to_dict())
 
         # endpoint = "http://127.0.0.1:5000"
+        endpoint = "http://lrs.languageflagshipdashboard.com/data/xAPI/statements?statementId=" + str(uuid4())
         headers = {
-            # 'X-Experience-API-Version' : '1.0.3',
+            'X-Experience-API-Version' : '1.0.3',
             'Content-Type' : 'application/json' 
         }
 
-        resp = requests.put(endpoint, headers=headers, data=dashboard_data)
+        try:
+            resp = requests.put(endpoint, headers=headers, data=dashboard_data)
+        except Exception as e:
+            pass
 
         return
     else:
