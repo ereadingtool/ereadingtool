@@ -158,7 +158,7 @@ class AuthenticationForm(BaseAuthenticationForm):
 class StudentConsentForm(forms.ModelForm):
     class Meta:
         model = Student
-        exclude = ('user', 'research_consent', 'difficulty_preference', 'dashboard_user')
+        exclude = ('user', 'research_consent', 'difficulty_preference', 'dashboard_user', 'dashboard_last_updated')
 
     consent_to_research = forms.BooleanField(required=False)
 
@@ -174,7 +174,7 @@ class StudentConsentForm(forms.ModelForm):
 class StudentDashboardForm(forms.ModelForm):
     class Meta:
         model = Student
-        exclude = ('user', 'difficulty_preference', 'research_consent', 'dashboard_user')
+        exclude = ('user', 'difficulty_preference', 'research_consent', 'dashboard_user', 'dashboard_last_updated')
 
     connect_to_dashboard = forms.BooleanField(required=False)
 

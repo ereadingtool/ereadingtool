@@ -20,6 +20,7 @@ class Student(Profile, TextReadings, models.Model):
     dashboard_user = models.OneToOneField(StudentDashboardUser, null=True, on_delete=models.SET_NULL)
     difficulty_preference = models.ForeignKey(TextDifficulty, null=True, on_delete=models.SET_NULL,
                                               related_name='students')
+    dashboard_last_updated = models.DateTimeField(null=True)
 
     login_url = reverse_lazy('student-login')
 

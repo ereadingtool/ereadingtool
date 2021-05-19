@@ -1,44 +1,44 @@
 import requests
 import json
+import os
+from ereadingtool.settings import DASHBOARD_STAR_ENDPOINT
 from uuid import uuid4
-from .dashboard import Actor, DashboardData, Object, Result, Verb
+from .dashboard import DashboardActor, DashboardData, DashboardObject, DashboardResult, DashboardVerb
+from .dashboard import dashboard_connected
 
-def dashboard_synchronize_text_reading(text_reading):
-    user_email = text_reading.student.user.email
-    protocol = "https://"
-    base_url  = "api.languageflagshipdashboard.com"
-    endpoint = "/api/userExists"
-    params = {"email": user_email}
-    resp = requests.get(protocol+base_url+endpoint, params)
-    if resp.content == b'true':
-        actor = Actor(text_reading.student.user.first_name + " " + text_reading.student.user.last_name,
-                      text_reading.student.user.email,
-                      "Agent"
-        ).to_dict()
-        score = {
-			"raw": text_reading.score['section_scores'],
-			"min": 0,
-			"max": text_reading.score['possible_section_scores'],
-			"scaled": 1
-        }
-        result = Result(score, text_reading.state).to_dict()
-        verb = Verb().to_dict()
-        object = Object().to_dict()
 
-        dashboard_data = json.dumps(DashboardData(actor, result, verb, object).to_dict())
-
-        # endpoint = "http://127.0.0.1:5000"
-        endpoint = "http://lrs.languageflagshipdashboard.com/data/xAPI/statements?statementId=" + str(uuid4())
-        headers = {
-            'X-Experience-API-Version' : '1.0.3',
-            'Content-Type' : 'application/json' 
-        }
-
-        try:
-            resp = requests.put(endpoint, headers=headers, data=dashboard_data)
-        except Exception as e:
-            pass
-
+@dashboard_connected()
+def dashboard_synchronize_text_reading(text_reading, **kwargs):
+    if not kwargs['connected_to_dashboard']:
         return
     else:
+        try:
+            score = {
+                "raw": text_reading.score['section_scores'],
+                "min": 0,
+                "max": text_reading.score['possible_section_scores'],
+                "scaled": 1
+            }
+            actor = DashboardActor(text_reading.student.user.first_name + " " + text_reading.student.user.last_name,
+                        text_reading.student.user.email,
+                        "Agent"
+            ).to_dict()
+            result = DashboardResult(score, text_reading.state).to_dict()
+            verb = DashboardVerb().to_dict()
+            text_url = DASHBOARD_STAR_ENDPOINT + "/text/" + str(text_reading.text.id)
+            object = DashboardObject(url=text_url).to_dict()
+            dashboard_data = DashboardData(actor, result, verb, object).to_dict()
+
+            endpoint =  + dashboard_data['id']
+            headers = {
+                'X-Experience-API-Version' : '1.0.3',
+                'Content-Type' : 'application/json',
+                'Authorization' : os.getenv("DASHBOARD_TOKEN")
+            }
+
+            requests.put(endpoint, headers=headers, data=json.dumps(dashboard_data))
+        except:
+            # TODO: handle this exception
+            pass
+
         return

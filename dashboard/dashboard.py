@@ -1,16 +1,22 @@
 import requests
 from uuid import uuid4
 from typing import Dict
+# avoiding circular import issue
+import user.student.models as s
+import text_reading.models as tr
 
-from requests.sessions import extract_cookies_to_jar
-
-def dashboard_connect():
+def dashboard_connected():
     def decorator(func):
         def synchronize(*args, **kwargs):
             protocol = "https://"
             base_url  = "api.languageflagshipdashboard.com"
             endpoint = "/api/userExists"
-            params = {"email": "user_email@gmail.com"}
+            if isinstance(args[0], s.Student):
+                params = {"email": args[0].user.email}
+            elif isinstance(args[0], tr.StudentTextReading):
+                params = {"email": args[0].student.user.email}
+            else:
+                params = {"email": ""}
             resp = requests.get(protocol+base_url+endpoint, params)
             if resp.content == b'true':
                 connected_to_dashboard = True
@@ -32,17 +38,14 @@ class DashboardData:
 
     def to_dict(self) -> Dict:
         return {
-            'activities': 'www.duckduckgo.com',
-            'actor': self.actor,
             'id': str(uuid4()),
+            'actor': self.actor,
             'result': self.result,
             'verb': self.verb,
             'object': self.object,
-            'verbs': ["http://adlnet.gov/expapi/verbs/completed"]
         }
 
-# still need to get the text_readering answers...
-class Actor:
+class DashboardActor:
     def __init__(self, name, mbox, object_type):
         self.name = name
         self.mbox = mbox
@@ -51,24 +54,26 @@ class Actor:
     def to_dict(self) -> Dict:
         return {
             'name': self.name,
-            'mbox': self.mbox,
+            'mbox': 'mailto:' + self.mbox,
             'objectType': self.object_type
         }
 
-class Result:
+class DashboardResult:
     def __init__(self, score, state):
         self.score = score
-        self.state = state
+        if state == 'complete':
+            self.state = True
+        else:
+            self.state = False
 
     def to_dict(self) -> Dict:
         return {
             'score': self.score,
             'completion': self.state,
-            'success': 'true',
-            'duration': 'PT85'
+            'success': True,
         }
 
-class Verb:
+class DashboardVerb:
     def to_dict(self) -> Dict:
         return {
             "id": "http://adlnet.gov/expapi/verbs/completed",
@@ -77,10 +82,19 @@ class Verb:
                 }
         }
 
-class Object:
+class DashboardObject:
+    def __init__(self, url=''):
+        try:
+            self.url = url
+        except:
+            self.url = ''
+
+    def set_object_url(self, url):
+        self.url = url
+
     def to_dict(self) -> Dict:
         return {
-            "id": "http://star.com/some/url/for/the/quiz",   # base/text/TEXT_ID
+            "id": self.url,
             "definition": {
                 "type": "http://adlnet.gov/expapi/activities/assessment",
                 "name": {

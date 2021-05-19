@@ -282,7 +282,10 @@ TEST_RUNNER = 'ereadingtool.settings-test.UnManagedModelTestRunner'
 
 # Dashboard connection stuff
 DASHBOARD_ENDPOINT = 'https://lrs.languageflagshipdashboard.com/data/xAPI'
-
+DASHBOARD_UPDATE_DELTA = datetime.timedelta(seconds=86400)
+DASHBOARD_STAR_ENDPOINT = 'https://stepstoadvancedreading.org'
+# LRS is the Learning Record Store
+DASHBOARD_LRS_ENDPOINT = "https://lrs.languageflagshipdashboard.com"
 try:
     from local_settings import *
 except ImportError:

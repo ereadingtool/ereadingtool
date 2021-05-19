@@ -23,6 +23,11 @@ from auth.normal_auth import jwt_valid
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
+from dashboard import login_sync
+from ereadingtool import settings
+from datetime import datetime
+
+
 Form = TypeVar('Form', bound=forms.Form)
 
 
@@ -323,6 +328,19 @@ class StudentLoginAPIView(APIView):
 
         # manually add the field `[id]` to the jwt payload
         jwt_payload['id'] = reader_user.student.pk
+
+        # check if they're a dashboard user, and push data if delta has been exceeded
+        if reader_user.student.connected_to_dashboard:
+            last_updated = reader_user.student.dashboard_last_updated
+            next_interval = datetime.now() + settings.DASHBOARD_UPDATE_DELTA
+            if not last_updated:
+                # they've never pushed an update to the dashboard
+                login_sync.sync_on_login(reader_user.student)
+                pass
+            elif last_updated > next_interval:
+                # push an update since they're overdue
+                pass
+                # This is where a method goes to update their state
 
         # return to the dispatcher to send out an HTTP response
         return JsonResponse(jwt_payload)

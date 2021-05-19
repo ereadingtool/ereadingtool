@@ -69,7 +69,7 @@ class APIView(View):
             else:
                 errors = self.format_form_errors(form)
                 return self.post_error(errors, request, form)
-        except:
+        except Exception as e:
             return self.post_error(errors)
 
 
