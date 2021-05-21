@@ -58,6 +58,8 @@ type alias StudentConsentResp =
     { consented : Bool }
 
 
+type alias StudentConnectResp =
+    { connected : Bool }
 
 -- INIT
 
@@ -77,6 +79,7 @@ type SafeModel
         , navKey : Key
         , profile : StudentProfile
         , consentedToResearch : Bool
+        , connectedToDashboard : Bool
         , flashcards : Maybe (List String)
         , editing : Dict String Bool
         , usernameValidation : UsernameValidation
@@ -102,6 +105,7 @@ init shared { params } =
         , navKey = shared.key
         , profile = studentProfile
         , consentedToResearch = shared.researchConsent
+        , connectedToDashboard = shared.dashboardConnect
         , flashcards = Nothing
         , editing = Dict.empty
         , usernameValidation = { username = Nothing, valid = Nothing, msg = Nothing }
@@ -149,6 +153,9 @@ type Msg
       -- research consent
     | ToggleResearchConsent
     | GotResearchConsent (Result (Http.Detailed.Error String) ( Http.Metadata, StudentConsentResp ))
+      -- dashboard connect
+    | ToggleDashboardConnect
+    | GotDashboardConnect (Result (Http.Detailed.Error String) ( Http.Metadata, StudentConnectResp ))
       -- help messages
     | ToggleShowHelp
     | CloseHint StudentHelp
@@ -260,6 +267,15 @@ update msg (SafeModel model) =
             , putProfile model.session model.config newProfile
             )
 
+        ToggleDashboardConnect ->
+            ( SafeModel model
+            , putDashboardConnect
+                model.session
+                model.config
+                model.profile
+                (not model.connectedToDashboard)
+            )
+
         ToggleResearchConsent ->
             ( SafeModel model
             , putResearchConsent
@@ -289,10 +305,35 @@ update msg (SafeModel model) =
                     ( SafeModel
                         { model
                             | errors =
-                                Dict.fromList [ ( "internal", "An internal error occured. Please contact the developers." ) ]
+                                Dict.fromList [ ( "internal", "An internal error occurred. Please contact the developers." ) ]
                         }
                     , Cmd.none
                     )
+
+        GotDashboardConnect (Ok ( metadata, response )) ->
+            ( SafeModel { model | connectedToDashboard = response.connected }, Cmd.none )
+
+        GotDashboardConnect (Err error) ->
+            case error of
+                Http.Detailed.BadStatus metadata body ->
+                    if metadata.statusCode == 403 then
+                        ( SafeModel model
+                        , Api.logout ()
+                        )
+
+                    else
+                        ( SafeModel { model | errors = errorBodyToDict body }
+                        , Cmd.none
+                        )
+                _ ->
+                        ( SafeModel
+                            { model
+                                | errors =
+                                    Dict.fromList [ ("internal", "An internal error occurred. Please contact the developers." ) ]
+                            }
+                        , Cmd.none
+                        )
+
 
         ToggleShowHelp ->
             ( SafeModel { model | config = Config.mapShowHelp not model.config }
@@ -347,6 +388,26 @@ putProfile session config profile =
                 (Http.jsonBody (profileEncoder profile))
                 GotProfile
                 StudentProfile.decoder
+
+        Nothing ->
+            Cmd.none
+
+
+putDashboardConnect :
+    Session
+    -> Config
+    -> StudentProfile
+    -> Bool
+    -> Cmd Msg
+putDashboardConnect session config studentProfile connect =
+    case StudentProfile.studentID studentProfile of
+        Just studentId ->
+            Api.putDetailed
+                (Endpoint.connectToDashboard (Config.restApiUrl config) studentId)
+                (Session.cred session)
+                (Http.jsonBody (connectEncoder connect))
+                GotDashboardConnect
+                studentConnectRespDecoder
 
         Nothing ->
             Cmd.none
@@ -447,6 +508,11 @@ consentEncoder consented =
         ]
 
 
+connectEncoder : Bool -> Value
+connectEncoder connected =
+    Encode.object
+        [ ( "connected_to_dashboard", Encode.bool connected )
+        ]
 
 -- DECODE
 
@@ -466,6 +532,11 @@ studentConsentRespDecoder =
         (Decode.field "consented" Decode.bool)
 
 
+studentConnectRespDecoder : Decode.Decoder StudentConnectResp
+studentConnectRespDecoder =
+    Decode.map
+        StudentConnectResp
+        (Decode.field "connected" Decode.bool)
 
 -- VIEW
 
@@ -499,6 +570,7 @@ viewContent (SafeModel model) =
                     , viewShowHelp (SafeModel model)
                     , viewStudentPerformance (SafeModel model)
                     , viewResearchConsent (SafeModel model)
+                    , viewDashboardConnect (SafeModel model)
                     , viewMyWords (SafeModel model)
                     , viewFeedbackLinks
                     , if not (String.isEmpty model.errorMessage) then
@@ -797,6 +869,45 @@ viewResearchConsent (SafeModel model) =
         ]
 
 
+viewDashboardConnect : SafeModel -> Html Msg
+viewDashboardConnect (SafeModel model) =
+    let
+        connected =
+            model.connectedToDashboard
+
+        connectedTooltip =
+            "You're connected to the Flagship Connect dashboard."
+
+        notConnectedTooltip =
+            "You're not connected to the Flagship Connect dashboard."
+    in
+    div [ id "dashboard_connect" ]
+        [ div [ class "profile_item_title" ] [ Html.text "Flagship Connect" ]
+        , div []
+            [ Html.text """
+            By checking this box you acknowledge that relevant data will be sent 
+            to the Flagship Connect dashboard. Be sure to use the same email as your
+            Flagship Connect account.
+            """
+            ]
+        , div [ class "value" ]
+            [ div
+                [ classList [ ( "check-box", True ), ( "check-box-selected", connected ) ]
+                , onClick ToggleDashboardConnect
+                , attribute "title"
+                    (if connected then
+                        connectedTooltip
+
+                     else
+                        notConnectedTooltip
+                    )
+                ]
+                []
+            , div [ class "check-box-text" ] [ Html.text "I authorize Flagship Connect." ]
+            ]
+        ]
+
+
 viewShowHelp : SafeModel -> Html Msg
 viewShowHelp (SafeModel model) =
     div [ class "show-help" ] <|
@@ -997,6 +1108,7 @@ save (SafeModel model) shared =
         | config = model.config
         , profile = Profile.fromStudentProfile model.profile
         , researchConsent = model.consentedToResearch
+        , dashboardConnect = model.connectedToDashboard
     }
 
 
@@ -1006,6 +1118,7 @@ load shared (SafeModel model) =
         { model
             | profile = Profile.toStudentProfile shared.profile
             , consentedToResearch = shared.researchConsent
+            , connectedToDashboard = shared.dashboardConnect
         }
     , Cmd.none
     )

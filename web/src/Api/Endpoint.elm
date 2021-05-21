@@ -1,5 +1,6 @@
 module Api.Endpoint exposing
     ( Endpoint
+    , connectToDashboard
     , consentToResearch
     , createText
     , createTranslation
@@ -137,6 +138,11 @@ studentProfile baseUrl id =
 instructorProfile : String -> Int -> Endpoint
 instructorProfile baseUrl id =
     url baseUrl [ "api", "instructor", String.fromInt id ] []
+
+
+connectToDashboard : String -> Int -> Endpoint
+connectToDashboard baseUrl id =
+    url baseUrl [ "api", "student", String.fromInt id, "connect_to_dashboard" ] []
 
 
 consentToResearch : String -> Int -> Endpoint

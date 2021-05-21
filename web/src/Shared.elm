@@ -58,6 +58,7 @@ type alias Model =
     , timezone : Zone
     , profile : Profile
     , researchConsent : Bool
+    , dashboardConnect : Bool
     , menuVisibility : MenuVisibility
     , authMessage : String
     , infobar : Maybe Infobar
@@ -84,7 +85,7 @@ init flags url key =
         config =
             Config.init flags.maybeConfig
     in
-    ( Model url key session config Time.utc Profile.emptyProfile False Hidden "" Nothing
+    ( Model url key session config Time.utc Profile.emptyProfile False False Hidden "" Nothing
     , case Session.viewer session of
         Just viewer ->
             case Viewer.role viewer of
@@ -93,6 +94,7 @@ init flags url key =
                         Cmd.batch
                             [ requestStudentProfile session config (Viewer.id viewer)
                             , getResearchConsent session config (Viewer.id viewer)
+                            , getDashboardConnect session config (Viewer.id viewer)
                             , Browser.Navigation.replaceUrl key (Route.toString Route.Profile__Student)
                             , Task.attempt GotTimezone TimeZone.getZone
                             ]
@@ -101,6 +103,7 @@ init flags url key =
                         Cmd.batch
                             [ requestStudentProfile session config (Viewer.id viewer)
                             , getResearchConsent session config (Viewer.id viewer)
+                            , getDashboardConnect session config (Viewer.id viewer)
                             , Task.attempt GotTimezone TimeZone.getZone
                             ]
 
@@ -142,6 +145,7 @@ type Msg
     | GotTimezone (Result TimeZone.Error ( String, Zone ))
     | GotStudentProfile (Result Error StudentProfile)
     | GotResearchConsent (Result Error Bool)
+    | GotDashboardConnect (Result Error Bool)
     | GotInstructorProfile (Result Error InstructorProfile)
     | ToggleMenuVisibility
     | ClearInfobar
@@ -177,6 +181,7 @@ update msg model =
                             Cmd.batch
                                 [ requestStudentProfile session model.config (Viewer.id viewer)
                                 , getResearchConsent session model.config (Viewer.id viewer)
+                                , getDashboardConnect session model.config (Viewer.id viewer)
                                 , Browser.Navigation.replaceUrl model.key (Route.toString Route.Profile__Student)
                                 ]
 
@@ -206,6 +211,16 @@ update msg model =
             )
 
         GotStudentProfile (Err err) ->
+            ( model
+            , Cmd.none
+            )
+
+        GotDashboardConnect (Ok dashboardConnect) ->
+            ( { model | dashboardConnect = dashboardConnect }
+            , Cmd.none
+            )
+
+        GotDashboardConnect (Err err) ->
             ( model
             , Cmd.none
             )
@@ -266,6 +281,18 @@ requestStudentProfile session config id =
         StudentProfile.decoder
 
 
+getDashboardConnect :
+    Session
+    -> Config
+    -> Id
+    -> Cmd Msg
+getDashboardConnect session config id =
+    Api.get
+        (Endpoint.connectToDashboard (Config.restApiUrl config) (Id.id id))
+        (Session.cred session)
+        GotDashboardConnect
+        (Decode.field "connected" Decode.bool)
+
 getResearchConsent :
     Session
     -> Config
@@ -277,7 +304,6 @@ getResearchConsent session config id =
         (Session.cred session)
         GotResearchConsent
         (Decode.field "consented" Decode.bool)
-
 
 requestInstructorProfile : Session -> Config -> Id -> Cmd Msg
 requestInstructorProfile session config id =

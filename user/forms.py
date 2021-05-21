@@ -176,13 +176,13 @@ class StudentDashboardForm(forms.ModelForm):
         model = Student
         exclude = ('user', 'difficulty_preference', 'research_consent', 'dashboard_user', 'dashboard_last_updated')
 
-    connect_to_dashboard = forms.BooleanField(required=False)
+    connected_to_dashboard = forms.BooleanField(required=False)
 
     def save(self, commit=True):
         student = super(StudentDashboardForm, self).save(commit=commit)
 
-        if 'connect_to_dashboard' in self.cleaned_data:
-            student.connect_to_dashboard(self.cleaned_data['connect_to_dashboard'])
+        if 'connected_to_dashboard' in self.cleaned_data:
+            student.connect_to_dashboard(self.cleaned_data['connected_to_dashboard'])
 
             return student
 

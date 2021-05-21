@@ -25,7 +25,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from dashboard import login_sync
 from ereadingtool import settings
-from datetime import datetime
+from django.utils import timezone
 
 
 Form = TypeVar('Form', bound=forms.Form)
@@ -332,15 +332,9 @@ class StudentLoginAPIView(APIView):
         # check if they're a dashboard user, and push data if delta has been exceeded
         if reader_user.student.connected_to_dashboard:
             last_updated = reader_user.student.dashboard_last_updated
-            next_interval = datetime.now() + settings.DASHBOARD_UPDATE_DELTA
-            if not last_updated:
-                # they've never pushed an update to the dashboard
+            next_interval = timezone.now() + settings.DASHBOARD_UPDATE_DELTA
+            if not last_updated or last_updated > next_interval:
                 login_sync.sync_on_login(reader_user.student)
-                pass
-            elif last_updated > next_interval:
-                # push an update since they're overdue
-                pass
-                # This is where a method goes to update their state
 
         # return to the dispatcher to send out an HTTP response
         return JsonResponse(jwt_payload)

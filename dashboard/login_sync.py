@@ -1,22 +1,17 @@
 from .dashboard import DashboardActor, DashboardData, DashboardObject, DashboardResult, DashboardVerb, dashboard_connected
 from ereadingtool import settings
+from datetime import datetime
 import json
 import requests
 import os
 
 
-# function called because the update interval has been reached
-# TODO: decorate with dashboard_connected() just in case
-
 @dashboard_connected()
 def sync_on_login(student, **kwargs):
-    try:
-        report = json.dumps(student.performance.to_dict())
-
-        actor = DashboardActor(student.user.first_name + " " + student.user.last_name,
-                      student.user.email,
-                      "Agent"
-        ).to_dict()
+    # Contemplating an exception here, what would it be?
+    if not kwargs['connected_to_dashboard']:
+        return
+    else:
         # TODO: find something better than `score` to pass more data
         score = {
             # "raw": report,
@@ -25,6 +20,12 @@ def sync_on_login(student, **kwargs):
             "max": 5,
             "scaled": 0
         }
+        report = json.dumps(student.performance.to_dict())
+
+        actor = DashboardActor(student.user.first_name + " " + student.user.last_name,
+                      student.user.email,
+                      "Agent"
+        ).to_dict()
 
         result = DashboardResult(score, '').to_dict()
         verb = DashboardVerb().to_dict()
@@ -41,7 +42,5 @@ def sync_on_login(student, **kwargs):
 
         requests.put(endpoint, headers=headers, data=json.dumps(dashboard_data))
 
-    except Exception as e:
-        # TODO: handle this error
-        pass
-    pass
+        student.dashboard_last_updated = datetime.now()
+        student.save()
