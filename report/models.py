@@ -344,9 +344,9 @@ class StudentFlashcardsReport(object):
                 texts[text_title] = meta
 
             try:
-                texts[text_title]['flashcards'].append([fc.phrase.phrase, a_side, b_side])
+                texts[text_title]['flashcards'].append([fc.phrase.lemma, a_side, b_side])
             except KeyError:
-                texts[text_title]['flashcards'] = [[fc.phrase.phrase, a_side, b_side]]
+                texts[text_title]['flashcards'] = [[fc.phrase.lemma, a_side, b_side]]
 
         return texts
 
@@ -360,7 +360,7 @@ class StudentFlashcardsCSV(object):
         fc_list = []
 
         for fc in flashcards:
-            a_side = fc.phrase.phrase + " - " + fc.phrase.sentence
+            a_side = fc.phrase.lemma + " - " + fc.phrase.sentence
             b_side = ''
             for translation in fc.phrase.translations.all():
                 if translation.correct_for_context:
