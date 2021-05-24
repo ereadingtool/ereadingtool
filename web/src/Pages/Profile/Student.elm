@@ -712,7 +712,7 @@ viewMyWords (SafeModel model) =
                             Nothing ->
                                 ""
                     ]
-                    [ Html.text "Download your words as a CSV file"
+                    [ Html.text "Download My Words as a CSV file"
                     ]
                 ]
             , div [ class "words-download-link" ]
@@ -728,7 +728,7 @@ viewMyWords (SafeModel model) =
                             Nothing ->
                                 ""
                     ]
-                    [ Html.text "Download your words as a PDF"
+                    [ Html.text "Download My Words as a PDF"
                     ]
                 ]
             ]
