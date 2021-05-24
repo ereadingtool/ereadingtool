@@ -1,27 +1,40 @@
 import requests
 from uuid import uuid4
 from typing import Dict
-# avoiding circular import issue
-import user.student.models as s
-import text_reading.models as tr
 
+
+
+# decorator used to see if a user is connected to the dashboard
 def dashboard_connected():
     def decorator(func):
         def synchronize(*args, **kwargs):
             protocol = "https://"
             base_url  = "api.languageflagshipdashboard.com"
             endpoint = "/api/userExists"
-            if isinstance(args[0], s.Student):
+            cached_dashboard_connection = False
+            try:
                 params = {"email": args[0].user.email}
-            elif isinstance(args[0], tr.StudentTextReading):
-                params = {"email": args[0].student.user.email}
+                cached_dashboard_connection = args[0].user.student.connected_to_dashboard
+            except:
+                try:
+                    params = {"email": args[0].student.user.email}
+                    cached_dashboard_connection = args[0].student.connected_to_dashboard
+                except:
+                    # not sure we can get here
+                    params = {"email": ""}
+                    connected_to_dashboard = False
+                    kwargs["connected_to_dashboard"] = connected_to_dashboard
+                    return func(*args, **kwargs)
+
+            if not cached_dashboard_connection:
+                resp = requests.get(protocol+base_url+endpoint, params)
+                if resp.content == b'true':
+                    connected_to_dashboard = True
+                else:
+                    connected_to_dashboard = False
             else:
-                params = {"email": ""}
-            resp = requests.get(protocol+base_url+endpoint, params)
-            if resp.content == b'true':
                 connected_to_dashboard = True
-            else:
-                connected_to_dashboard = False
+
             kwargs["connected_to_dashboard"] = connected_to_dashboard
 
             return func(*args, **kwargs)
@@ -58,7 +71,15 @@ class DashboardActor:
             'objectType': self.object_type
         }
 
+# What does this result share in common with the others?
 class DashboardResult:
+    NotImplemented
+
+
+class DashboardResultMyWords(DashboardResult):
+    NotImplemented
+
+class DashboardResultTextComplete:
     def __init__(self, score, state):
         self.score = score
         if state == 'complete':
@@ -72,6 +93,7 @@ class DashboardResult:
             'completion': self.state,
             'success': True,
         }
+
 
 class DashboardVerb:
     def to_dict(self) -> Dict:

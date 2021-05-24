@@ -2,27 +2,33 @@ import requests
 import json
 import os
 from ereadingtool.settings import DASHBOARD_STAR_ENDPOINT
-from .dashboard import DashboardActor, DashboardData, DashboardObject, DashboardResultTextComplete, DashboardVerb
+from .dashboard import DashboardActor, DashboardData, DashboardObject, DashboardResult, DashboardVerb
 from .dashboard import dashboard_connected
 
 
 @dashboard_connected()
-def dashboard_synchronize_text_reading(text_reading, **kwargs):
+def dashboard_synchronize_my_words(student, text_phrase, text_section, **kwargs):
     # Contemplating an exception here, what would it be?
     if not kwargs['connected_to_dashboard']:
         return
     else:
-        score = {
-            "raw": text_reading.score['section_scores'],
-            "min": 0,
-            "max": text_reading.score['possible_section_scores'],
-            "scaled": 1
-        }
-        actor = DashboardActor(text_reading.student.user.first_name + " " + text_reading.student.user.last_name,
-                    text_reading.student.user.email,
+        # What kind of data do we want to pass to the LRS here?
+
+        # Same stuff that is provided to the My Words...
+
+        # score = {
+        #     "raw":
+        #     "min": 0,
+        #     "max":
+        #     "scaled": 1
+        # }
+        actor = DashboardActor(student.user.first_name + " " + student.user.last_name,
+                    student.user.email,
                     "Agent"
         ).to_dict()
-        result = DashboardResultTextComplete(score, text_reading.state).to_dict()
+        # result = DashboardResult(score, text_reading.state).to_dict()
+
+        # TODO
         verb = DashboardVerb().to_dict()
         text_url = DASHBOARD_STAR_ENDPOINT + "/text/" + str(text_reading.text.id)
         object = DashboardObject(url=text_url).to_dict()
