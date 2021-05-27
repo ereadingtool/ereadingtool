@@ -1,0 +1,36 @@
+<meta charset="utf-8">
+
+<h2>My Words</h2>
+
+<table summary="My Words">
+    <tr>
+        <th>
+            Phrase
+        </th>
+        <th>
+            Context
+        </th>
+        <th>
+            Dictionary Form
+        </th>
+        <th>
+            Translation
+        </th>
+    </tr>
+    {% for word in words %}
+        <tr>
+            <td>
+                {{ word.phrase }}
+            </td>
+            <td>
+                {{ word.context }}
+            </td>
+            <td>
+                {{ word.lemma }}
+            </td>
+            <td>
+                {{ word.translation }}
+            </td>
+        </tr>
+    {% endfor %}
+</table>

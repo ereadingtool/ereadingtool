@@ -1,4 +1,3 @@
-from report.models import StudentFlashcardsCSV
 from django.urls import path
 from user.views.student import (StudentSignUpView, StudentSignupAPIView, StudentProfileView, StudentAPIView,
                                 StudentAPIConsentToResearchView, StudentLoginView, StudentLoginAPIView,
@@ -7,6 +6,7 @@ from user.views.student import (StudentSignUpView, StudentSignupAPIView, Student
 
 from user.views.student_performance import StudentPerformancePDFView
 from user.views.student_flashcards import StudentFlashcardsPDFView, StudentFlashcardsCSVView
+from user.views.student_my_words import StudentFlashcardsHTMLView
 
 
 api_urlpatterns = [
@@ -31,10 +31,12 @@ elm_load_urlpatterns = [
 urlpatterns = [
     path('profile/student/<int:pk>/performance_report.pdf', StudentPerformancePDFView.as_view(),
          name='student-performance-pdf-link'),
-    path('profile/student/<int:pk>/words.pdf', StudentFlashcardsPDFView.as_view(),
-         name='student-flashcards-pdf-link'),
     path('profile/student/<int:pk>/words.csv', StudentFlashcardsCSVView.as_view(),
          name='student-flashcards-csv-link'),
+    path('profile/student/<int:pk>/words.pdf', StudentFlashcardsPDFView.as_view(),
+         name='student-flashcards-pdf-link'),
+    path('profile/student/<int:pk>/words', StudentFlashcardsHTMLView.as_view(),
+         name='student-flashcards-html-link'),
     path('signup/student', StudentSignUpView.as_view(), name='student-signup'),
     path('login/student', StudentLoginView.as_view(), name='student-login'),
     path('profile/student', StudentProfileView.as_view(), name='student-profile'),

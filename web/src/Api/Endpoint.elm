@@ -27,6 +27,7 @@ module Api.Endpoint exposing
     , word
     , wordsCsvLink
     , wordsPdfLink
+    , wordsHtmlLink
     )
 
 import Http
@@ -291,6 +292,17 @@ wordsCsvLink baseUrl id token =
         , "student"
         , String.fromInt id
         , "words.csv"
+        ]
+        [ Url.Builder.string "token" token ]
+
+
+wordsHtmlLink : String -> Int -> String -> String
+wordsHtmlLink baseUrl id token =
+    Url.Builder.crossOrigin baseUrl
+        [ "profile"
+        , "student"
+        , String.fromInt id
+        , "words"
         ]
         [ Url.Builder.string "token" token ]
 

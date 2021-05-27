@@ -369,3 +369,32 @@ class StudentFlashcardsCSV(object):
             fc_list.append([a_side + ' | ' + b_side])
 
         return fc_list
+
+
+class StudentFlashcardsHTML(object):
+    def __init__(self, student: Student, *args, **kwargs):
+        self.student = student
+        self.flashcards = Flashcards.objects.filter(student=student)
+
+    def to_list(self):
+        x = self.student
+        flashcards = x.flashcards_report.flashcards.all()
+        fc_list = []
+
+        for fc in flashcards:
+            first_cell = fc.phrase.phrase
+            second_cell = fc.phrase.sentence
+            third_cell = fc.phrase.lemma
+            fourth_cell = ''
+            for translation in fc.phrase.translations.all():
+                if translation.correct_for_context:
+                    fourth_cell = translation.phrase
+
+            fc_list.append({
+                'phrase' : first_cell,
+                'context' : second_cell,
+                'lemma' : third_cell,
+                'translation' : fourth_cell
+            })
+
+        return fc_list

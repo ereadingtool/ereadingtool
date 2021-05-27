@@ -28,6 +28,7 @@ port module Api exposing
     , websocketSend
     , wordsCsvLink
     , wordsPdfLink
+    , wordsHtmlLink
     )
 
 import Api.Config as Config exposing (Config)
@@ -542,6 +543,17 @@ wordsPdfLink baseUrl maybeCred id =
 wordsCsvLink : String -> Maybe Cred -> Int -> String
 wordsCsvLink baseUrl maybeCred id =
     Endpoint.wordsCsvLink baseUrl id <|
+        case maybeCred of
+            Just (Cred cred) ->
+                cred
+
+            Nothing ->
+                ""
+
+
+wordsHtmlLink : String -> Maybe Cred -> Int -> String
+wordsHtmlLink baseUrl maybeCred id =
+    Endpoint.wordsHtmlLink baseUrl id <|
         case maybeCred of
             Just (Cred cred) ->
                 cred
