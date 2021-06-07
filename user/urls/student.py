@@ -1,8 +1,8 @@
 from django.urls import path
 from user.views.student import (StudentSignUpView, StudentSignupAPIView, StudentProfileView, StudentAPIView,
-                                StudentAPIConsentToResearchView, StudentLoginView, StudentLoginAPIView,
-                                StudentLogoutAPIView, StudentFlashcardView, ElmLoadJsStudentProfileView,
-                                ElmLoadStudentSignUpView, ElmLoadJsStudentLoginView)
+                                StudentAPIMyWordsView, StudentAPIConsentToResearchView, StudentLoginView,
+                                StudentLoginAPIView, StudentLogoutAPIView, StudentFlashcardView,
+                                ElmLoadJsStudentProfileView, ElmLoadStudentSignUpView, ElmLoadJsStudentLoginView)
 
 from user.views.student_performance import StudentPerformancePDFView
 from user.views.student_flashcards import StudentFlashcardsPDFView, StudentFlashcardsCSVView
@@ -10,13 +10,14 @@ from user.views.student_my_words import StudentFlashcardsHTMLView
 
 
 api_urlpatterns = [
-    path('api/student/signup', StudentSignupAPIView.as_view(), name='api-student-signup'),
-    path('api/student/login', StudentLoginAPIView.as_view(), name='api-student-login'),
-    # TODO: this route is unused since the client side simply invalidates the JWT
-    path('api/student/logout', StudentLogoutAPIView.as_view(), name='api-student-logout'),
-    path('api/student/<int:pk>', StudentAPIView.as_view(), name='api-student'),
-    path('api/student/<int:pk>/consent_to_research', StudentAPIConsentToResearchView.as_view(),
-         name='api-student-research-consent')
+     path('api/student/signup', StudentSignupAPIView.as_view(), name='api-student-signup'),
+     path('api/student/login', StudentLoginAPIView.as_view(), name='api-student-login'),
+     # TODO: this route is unused since the client side simply invalidates the JWT
+     path('api/student/logout', StudentLogoutAPIView.as_view(), name='api-student-logout'),
+     path('api/student/<int:pk>', StudentAPIView.as_view(), name='api-student'),
+     path('api/student/<int:pk>/consent_to_research', StudentAPIConsentToResearchView.as_view(),
+          name='api-student-research-consent'),
+     path('api/my_words', StudentAPIMyWordsView.as_view(), name='api-student-my-words')
 ]
 
 # TODO: Tests rely on these

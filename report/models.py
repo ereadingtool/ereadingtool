@@ -377,8 +377,7 @@ class StudentFlashcardsHTML(object):
         self.flashcards = Flashcards.objects.filter(student=student)
 
     def to_list(self):
-        x = self.student
-        flashcards = x.flashcards_report.flashcards.all()
+        flashcards = self.student.flashcards_report.flashcards.all()
         fc_list = []
 
         for fc in flashcards:
@@ -398,3 +397,31 @@ class StudentFlashcardsHTML(object):
             })
 
         return fc_list
+
+
+class StudentFlashcardsTable(object):
+    def __init__(self, student: Student, *args, **kwargs):
+        self.student = student
+        self.flashcards = Flashcards.objects.filter(student=student)
+
+    def to_list(self):
+        # moving directly from legacy `flashcards` to `my_words` in the model instead of in the view
+        my_words = self.student.flashcards_report.flashcards.all()
+        # my_words_data is a list of dictionaries, each one containing a "my_words" object of 
+        # {phrase:'', context:'', lemma:'', translation:''}
+        my_words_data = []
+
+        for word in my_words:
+            for t in word.phrase.translations.all():
+                if t.correct_for_context:
+                    translation = t.phrase
+            my_words_data.append(
+                {
+                    'phrase': word.phrase.phrase,
+                    'context': word.phrase.sentence,
+                    'lemma': word.phrase.lemma,
+                    'translation': translation
+                }
+            )
+
+        return my_words_data

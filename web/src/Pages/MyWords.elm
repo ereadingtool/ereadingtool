@@ -1,9 +1,11 @@
-module Pages.Profile.MyWords exposing (Params, Model, Msg, page)
+module Pages.MyWords exposing (Params, Model, Msg, page, MyWordsItem)
 
 import Api
+import Api.Endpoint as Endpoint
 import Api.Config as Config exposing (Config)
 import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
+import Json.Decode
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (required)
 import Html exposing (..)
@@ -16,11 +18,9 @@ import Spa.Document exposing (Document)
 import Spa.Page as Page exposing (Page)
 import Spa.Url as Url exposing (Url)
 import User.Profile as Profile
-import User.Student.Performance.Report as PerformanceReport exposing (Tab(..))
 import User.Student.Profile as StudentProfile exposing (StudentProfile)
-import User.Student.Profile.Help as Help exposing (StudentHelp)
-import User.Student.Resource as StudentResource
 import Http
+
 
 page : Page Params Model Msg
 page =
@@ -33,15 +33,6 @@ page =
         , load = load
         }
 
-
-type MyWords =
-    MyWords
-
-type alias UsernameValidation =
-    { username : Maybe StudentResource.StudentUsername
-    , valid : Maybe Bool
-    , msg : Maybe String
-    }
 
 
 type alias MyWordsItem =
@@ -70,13 +61,7 @@ type SafeModel
         , config : Config
         , navKey : Key
         , profile : StudentProfile
-        , consentedToResearch : Bool
-        , flashcards : Maybe (List String)
-        , editing : Dict String Bool
-        , usernameValidation : UsernameValidation
-        , performanceReportTab : PerformanceReport.Tab
         , myWords : List (MyWordsItem)
-        , help : Help.StudentProfileHelp
         , errorMessage : Maybe String
         , errors : Dict String String
         }
@@ -84,32 +69,43 @@ type SafeModel
 init : Shared.Model -> Url Params -> ( SafeModel, Cmd Msg )
 init shared { params } =
     let
-        help =
-            Help.init
-
         studentProfile =
             Profile.toStudentProfile shared.profile
-
-        -- words =
-
-
     in
     ( SafeModel
         { session = shared.session
         , config = shared.config
         , navKey = shared.key
         , profile = studentProfile
-        , consentedToResearch = shared.researchConsent
-        , flashcards = Nothing
-        , editing = Dict.empty
-        , usernameValidation = { username = Nothing, valid = Nothing, msg = Nothing }
-        , performanceReportTab = Completion
         , myWords = []
-        , help = help
         , errorMessage = Nothing
         , errors = Dict.empty
-        }, Cmd.none )
+        }
+    , Cmd.batch
+        -- [ updateMyWords shared.session shared.config (Profile.toStudentProfile shared.profile)
+        [ case StudentProfile.studentID studentProfile of
+            Just id ->
+                if id /= 0 then
+                    updateMyWords 
+                        shared.session 
+                        shared.config 
+                        (Profile.toStudentProfile shared.profile)
+                else
+                    let
+                        _ = Debug.log "student profile" id
+                    in
+                    Cmd.none
 
+            Nothing ->
+                let
+                    _ = Debug.log "here"
+                in
+                Cmd.none
+        , Api.websocketDisconnectAll
+        ]
+    )
+        -- call a function that makes an API call here instead of Cmd.none
+        -- we'll need an endpoint and a decoder
 
 
 -- UPDATE
@@ -158,9 +154,44 @@ update msg (SafeModel model) =
                     )
 
 
--- updateMyWords : Session -> Config -> MyWords -> Cmd Msg
--- updateMyWords session config myWords =
---     Cmd.none
+updateMyWords : Session -> Config -> StudentProfile -> Cmd Msg
+updateMyWords session config profile =
+    case StudentProfile.studentID profile of
+        Just studentId ->
+            Api.getDetailed
+                (Endpoint.myWords 
+                    (Config.restApiUrl config)
+                    -- studentId
+                )
+                (Session.cred session)
+                GotMyWords
+                -- TODO: change the decoder
+                myWordsDecoder
+
+        Nothing ->
+            Cmd.none
+
+
+
+-- DECODE
+
+
+
+-- TODO: make this a single decoder
+myWordsDecoder : Json.Decode.Decoder (List MyWordsItem)
+myWordsDecoder =
+    Json.Decode.list myWordItemDecoder
+
+
+myWordItemDecoder : Json.Decode.Decoder MyWordsItem
+myWordItemDecoder =
+    Json.Decode.succeed MyWordsItem
+        |> required "phrase" Json.Decode.string
+        |> required "context" Json.Decode.string
+        |> required "lemma" Json.Decode.string
+        |> required "translation" Json.Decode.string
+
+
 
 -- SHARED
 
@@ -172,7 +203,30 @@ save (SafeModel model) shared =
 
 load : Shared.Model -> SafeModel -> ( SafeModel, Cmd Msg )
 load shared (SafeModel model) =
-    ( SafeModel model, Cmd.none )
+    -- (SafeModel model, Cmd.none)
+    ( SafeModel
+        { model
+            | profile = Profile.toStudentProfile shared.profile
+        }
+    , case StudentProfile.studentID (Profile.toStudentProfile shared.profile) of
+            Just id ->
+                if id /= 0 then
+                    updateMyWords 
+                        shared.session 
+                        shared.config 
+                        (Profile.toStudentProfile shared.profile)
+                else
+                    let
+                        _ = Debug.log "student profile" id
+                    in
+                    Cmd.none
+
+            Nothing ->
+                let
+                    _ = Debug.log "here"
+                in
+                Cmd.none
+    )
 
 
 subscriptions : SafeModel -> Sub Msg
@@ -199,7 +253,7 @@ viewContent : SafeModel -> Html Msg
 viewContent (SafeModel model) =
     div [][
         viewMyWordsIntro
-        -- , viewTable -- TODO: put a `List (MyWordsItem)` here 
+        , viewTable model.myWords-- TODO: put a `List (MyWordsItem)` here 
     ]
 
 viewMyWordsIntro : Html Msg
@@ -259,14 +313,3 @@ viewLemmaCell item =
 viewTranslationCell : MyWordsItem -> Html msg
 viewTranslationCell item =
     text item.translation
-
-
-myWordsItemDecoder : Decoder MyWordsItem
-myWordsItemDecoder =
-    Decode.succeed MyWordsItem
-        |> required "phrase" Decode.string
-        |> required "context" Decode.string
-        |> required "lemma" Decode.string
-        |> required "translation" Decode.string
-
--- what's the best way to divy up the four decoders

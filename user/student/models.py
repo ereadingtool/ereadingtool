@@ -4,7 +4,7 @@ from typing import Dict, List, Tuple, AnyStr
 from django.db import models
 from django.urls import reverse_lazy, reverse
 
-from report.models import StudentFlashcardsReport, StudentPerformanceReport, \
+from report.models import StudentFlashcardsReport, StudentFlashcardsTable, StudentPerformanceReport, \
                           StudentFlashcardsCSV, StudentFlashcardsHTML
 from text.models import TextDifficulty, Text, TextSection
 from text.phrase.models import TextPhrase
@@ -50,6 +50,10 @@ class Student(Profile, TextReadings, models.Model):
     @property
     def flashcards_html(self) -> 'StudentFlashcardsHTML':
         return StudentFlashcardsHTML(student=self)
+
+    @property
+    def flashcards_table(self) -> 'StudentFlashcadsTable':
+        return StudentFlashcardsTable(student=self)
 
     @property
     def serialized_flashcards(self) -> List[Tuple]:
