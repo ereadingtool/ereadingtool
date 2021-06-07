@@ -389,6 +389,29 @@ body {
   font-size: 18px;
 }
 
+#my-words-box {
+  margin-left: 8%;
+  margin-right: 8%;
+}
+
+#my-words-title {
+  margin-top: 20px;
+  font-family: 'EB Garamond';
+  font-size: 2rem;
+}
+
+#my-words-table {
+  margin-top: 2%;
+  display: flex; /* WIDTH and HEIGHT are required*/
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+}
+
+#my-words-table td {
+  text-align: left;
+}
+
 .nav {
   grid-column: 2;
   grid-row: 3;
@@ -758,5 +781,11 @@ body {
 
   .tag {
     font-size: 23px;
+  }
+}
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 768px) {
+  #my-words-table {
+    font-size: 11px;
   }
 }

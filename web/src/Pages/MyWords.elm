@@ -82,7 +82,6 @@ init shared { params } =
         , errors = Dict.empty
         }
     , Cmd.batch
-        -- [ updateMyWords shared.session shared.config (Profile.toStudentProfile shared.profile)
         [ case StudentProfile.studentID studentProfile of
             Just id ->
                 if id /= 0 then
@@ -91,21 +90,14 @@ init shared { params } =
                         shared.config 
                         (Profile.toStudentProfile shared.profile)
                 else
-                    let
-                        _ = Debug.log "student profile" id
-                    in
                     Cmd.none
-
             Nothing ->
-                let
-                    _ = Debug.log "here"
-                in
                 Cmd.none
+
         , Api.websocketDisconnectAll
         ]
     )
-        -- call a function that makes an API call here instead of Cmd.none
-        -- we'll need an endpoint and a decoder
+
 
 
 -- UPDATE
@@ -203,7 +195,6 @@ save (SafeModel model) shared =
 
 load : Shared.Model -> SafeModel -> ( SafeModel, Cmd Msg )
 load shared (SafeModel model) =
-    -- (SafeModel model, Cmd.none)
     ( SafeModel
         { model
             | profile = Profile.toStudentProfile shared.profile
@@ -242,9 +233,10 @@ view : SafeModel -> Document Msg
 view (SafeModel model) =
     { title = "MyWords"
     , body = 
-        [ div []
-            [ viewContent (SafeModel model)
-            ]
+        [ div [ id "my-words-box" ] [ div [ id "my-words-title" ] [ text "My Words" ]
+        , div []
+            [ viewContent (SafeModel model) ]
+        ]
         ]
     }
 
@@ -258,15 +250,13 @@ viewContent (SafeModel model) =
 
 viewMyWordsIntro : Html Msg
 viewMyWordsIntro =
-    div [ id "test" ]
-        [ Html.text ("My Words is a collection of words chosen by the student throughout their text"
-        ++ " readings. Here we display the phrase, the context in which the phrase is used, the"
-        ++ " dictionary definition, and finally the translation.") ]
+    div [ id "my-words-intro" ]
+        [ Html.text "These are the words that have been saved to My Words." ]
 
 
 viewTable : List (MyWordsItem) -> Html Msg
 viewTable myWords =
-    div [ id "table" ]
+    div [ id "my-words-table" ]
         [
             table [] <|
                 [ tr []
