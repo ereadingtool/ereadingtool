@@ -52,8 +52,8 @@ class Student(Profile, TextReadings, models.Model):
         return StudentFlashcardsHTML(student=self)
 
     @property
-    def flashcards_table(self) -> 'StudentFlashcadsTable':
-        return StudentFlashcardsTable(student=self)
+    def flashcards_table(self) -> 'StudentFlashcardsTable':
+        return StudentFlashcardsTable(student=self) 
 
     @property
     def serialized_flashcards(self) -> List[Tuple]:
