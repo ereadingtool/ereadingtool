@@ -37,6 +37,16 @@ describe('Use navbar items', () => {
     cy.url().should('include', '/text/search')
   })
 
+  it('Clicks the Guide link in the navbar', () => {
+    cy.student_login()
+      .then(() => {
+        cy.get('#header')
+          .contains('Guide')
+          .click()
+      })
+    cy.url().should('include', '/my-words')
+  })
+
   it('Clicks the My Words link in the navbar', () => {
     cy.student_login()
       .then(() => {
