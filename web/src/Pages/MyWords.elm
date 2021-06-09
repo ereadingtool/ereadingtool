@@ -207,15 +207,9 @@ load shared (SafeModel model) =
                         shared.config 
                         (Profile.toStudentProfile shared.profile)
                 else
-                    let
-                        _ = Debug.log "student profile" id
-                    in
                     Cmd.none
 
             Nothing ->
-                let
-                    _ = Debug.log "here"
-                in
                 Cmd.none
     )
 
