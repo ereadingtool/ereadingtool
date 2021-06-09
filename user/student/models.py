@@ -5,7 +5,7 @@ from django.db import models
 from django.urls import reverse_lazy, reverse
 
 from report.models import StudentFlashcardsReport, StudentFlashcardsTable, StudentPerformanceReport, \
-                          StudentFlashcardsCSV, StudentFlashcardsHTML
+                          StudentFlashcardsCSV
 from text.models import TextDifficulty, Text, TextSection
 from text.phrase.models import TextPhrase
 from user.mixins.models import Profile, TextReadings
@@ -46,10 +46,6 @@ class Student(Profile, TextReadings, models.Model):
     @property
     def flashcards_csv(self) -> 'StudentFlashcardsCSV':
         return StudentFlashcardsCSV(student=self)
-
-    @property
-    def flashcards_html(self) -> 'StudentFlashcardsHTML':
-        return StudentFlashcardsHTML(student=self)
 
     @property
     def flashcards_table(self) -> 'StudentFlashcardsTable':

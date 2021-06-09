@@ -36,8 +36,6 @@ urlpatterns = [
          name='student-flashcards-csv-link'),
     path('profile/student/<int:pk>/words.pdf', StudentFlashcardsPDFView.as_view(),
          name='student-flashcards-pdf-link'),
-    path('profile/student/<int:pk>/words', StudentFlashcardsHTMLView.as_view(),
-         name='student-flashcards-html-link'),
     path('signup/student', StudentSignUpView.as_view(), name='student-signup'),
     path('login/student', StudentLoginView.as_view(), name='student-login'),
     path('profile/student', StudentProfileView.as_view(), name='student-profile'),
