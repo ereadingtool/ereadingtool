@@ -42,16 +42,17 @@ type alias CompletionMetrics =
 
 
 type alias ComprehensionReport =
-    { all : ComprehensionMetrics
-    , intermediateMid : ComprehensionMetrics
-    , intermediateHigh : ComprehensionMetrics
-    , advancedLow : ComprehensionMetrics
-    , advancedMid : ComprehensionMetrics
+    { all : Dict String ComprehensionMetrics
+    , intermediateMid : Dict String ComprehensionMetrics
+    , intermediateHigh : Dict String ComprehensionMetrics
+    , advancedLow : Dict String ComprehensionMetrics
+    , advancedMid : Dict String ComprehensionMetrics
     }
 
 
 type alias ComprehensionMetrics =
     { firstTimeCorrectAnswers : Int
+    , firstTimeCorrectTotalAnswers : Int
     , firstTimePercentCorrect : Float
     }
 
@@ -70,18 +71,26 @@ emptyPerformanceReport =
         , advancedMid = Dict.empty
         }
     , comprehension =
-        { all = emptyComprehensionMetrics
-        , intermediateMid = emptyComprehensionMetrics
-        , intermediateHigh = emptyComprehensionMetrics
-        , advancedLow = emptyComprehensionMetrics
-        , advancedMid = emptyComprehensionMetrics
+        { all = Dict.empty
+        , intermediateMid = Dict.empty
+        , intermediateHigh = Dict.empty
+        , advancedLow = Dict.empty
+        , advancedMid = Dict.empty
         }
+    -- , comprehension =
+    --     { all = emptyComprehensionMetrics
+    --     , intermediateMid = emptyComprehensionMetrics
+    --     , intermediateHigh = emptyComprehensionMetrics
+    --     , advancedLow = emptyComprehensionMetrics
+    --     , advancedMid = emptyComprehensionMetrics
+    --     }
     }
 
 
 emptyComprehensionMetrics : ComprehensionMetrics
 emptyComprehensionMetrics =
     { firstTimeCorrectAnswers = 0
+    , firstTimeCorrectTotalAnswers = 0
     , firstTimePercentCorrect = 0.0
     }
 
@@ -120,18 +129,19 @@ completionMetricsDecoder =
 comprehensionReportDecoder : Decoder ComprehensionReport
 comprehensionReportDecoder =
     Decode.succeed ComprehensionReport
-        |> custom (Decode.at [ "all", "categories", "cumulative" ] comprehensionMetricsDecoder)
-        |> custom (Decode.at [ "intermediate_mid", "categories", "cumulative" ] comprehensionMetricsDecoder)
-        |> custom (Decode.at [ "intermediate_high", "categories", "cumulative" ] comprehensionMetricsDecoder)
-        |> custom (Decode.at [ "advanced_low", "categories", "cumulative" ] comprehensionMetricsDecoder)
-        |> custom (Decode.at [ "advanced_mid", "categories", "cumulative" ] comprehensionMetricsDecoder)
+        |> custom (Decode.at [ "all", "categories" ] (Decode.dict comprehensionMetricsDecoder))
+        |> custom (Decode.at [ "intermediate_mid", "categories" ] (Decode.dict comprehensionMetricsDecoder))
+        |> custom (Decode.at [ "intermediate_high", "categories" ] (Decode.dict comprehensionMetricsDecoder))
+        |> custom (Decode.at [ "advanced_low", "categories" ] (Decode.dict comprehensionMetricsDecoder))
+        |> custom (Decode.at [ "advanced_mid", "categories" ] (Decode.dict comprehensionMetricsDecoder))
 
 
 comprehensionMetricsDecoder : Decoder ComprehensionMetrics
 comprehensionMetricsDecoder =
-    Decode.field "metrics"
+    Decode.at ["metrics", "first_time_correct"]
         (Decode.succeed ComprehensionMetrics
-            |> required "first_time_correct" Decode.int
+            |> required "correct_answers" Decode.int
+            |> required "total_answers" Decode.int
             |> required "percent_correct" (Decode.oneOf [ Decode.float, Decode.null 0 ])
         )
 
@@ -151,6 +161,20 @@ completionMetrics timePeriod metricsDict =
             , textsComplete = 0
             , totalTexts = 0
             }
+
+
+comprehensionMetrics : String -> Dict String ComprehensionMetrics -> ComprehensionMetrics
+comprehensionMetrics timePeriod metricsDict =
+    case Dict.get timePeriod metricsDict of
+        Just dict ->
+            dict
+
+        Nothing ->
+            { firstTimeCorrectAnswers = 0
+            , firstTimeCorrectTotalAnswers = 0
+            , firstTimePercentCorrect = 0.0
+            }
+
 
 
 
@@ -279,6 +303,7 @@ viewComprehensionReportTable comprehension =
     table [] <|
         [ tr []
             [ th [] [ text "Level" ]
+            , th [] [ text "Time Period" ]
             , th [] [ text "Answers Correct" ]
             , th [] [ text "Percent Correct" ]
             ]
@@ -290,15 +315,49 @@ viewComprehensionReportTable comprehension =
             ++ viewComprehensionRow "Advanced-Mid" comprehension.advancedMid
 
 
-viewComprehensionRow : String -> ComprehensionMetrics -> List (Html msg)
-viewComprehensionRow level metrics =
+viewComprehensionRow : String -> Dict String ComprehensionMetrics -> List (Html msg)
+viewComprehensionRow level metricsDict =
+    let
+        cumulative =
+            comprehensionMetrics "cumulative" metricsDict
+
+        currentMonth =
+            comprehensionMetrics "current_month" metricsDict
+
+        pastMonth =
+            comprehensionMetrics "past_month" metricsDict
+    in
     [ tr []
-        [ td [] [ text level ]
-        , td [] [ text (String.fromInt metrics.firstTimeCorrectAnswers) ]
-        , td []
-            [ text <|
-                String.fromFloat metrics.firstTimePercentCorrect
-                    ++ "%"
-            ]
+        [ td [ rowspan 4 ] [ text level ]
+        ]
+    , tr []
+        [ td [] [ text "Cumulative" ]
+        , td [] [ viewAnswersCell cumulative ]
+        , td [] [ viewPercentCorrectCell cumulative ]
+        ]
+    , tr []
+        [ td [] [ text "Current Month" ]
+        , td [] [ viewAnswersCell currentMonth ]
+        , td [] [ viewPercentCorrectCell currentMonth ]
+        ]
+    , tr []
+        [ td [] [ text "Past Month" ]
+        , td [] [ viewAnswersCell pastMonth ]
+        , td [] [ viewPercentCorrectCell pastMonth ]
         ]
     ]
+
+
+viewAnswersCell : ComprehensionMetrics -> Html msg
+viewAnswersCell metrics =
+    text <|
+        String.join " " <|
+            [ String.fromInt metrics.firstTimeCorrectAnswers
+            , "out of"
+            , String.fromInt metrics.firstTimeCorrectTotalAnswers
+            ]
+
+viewPercentCorrectCell : ComprehensionMetrics -> Html msg
+viewPercentCorrectCell metrics =
+    text <|
+        String.fromFloat metrics.firstTimePercentCorrect ++ "%"
