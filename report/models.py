@@ -381,6 +381,7 @@ class StudentFlashcardsTable(object):
         my_words = self.student.flashcards_report.flashcards.all()
         # my_words_data is a list of dictionaries, each one containing a "my_words" object of 
         # {phrase:'', context:'', lemma:'', translation:''}
+        listy = list(my_words)
         my_words_data = []
 
         for word in my_words:
@@ -396,4 +397,20 @@ class StudentFlashcardsTable(object):
                 }
             )
 
+        if not my_words_data:
+            my_words_data.append(
+                {
+                    'phrase': 'примеры',
+                    'context': 'Вот наши примеры.',
+                    'lemma': 'пример',
+                    'translation': 'example'
+                }
+            )
+
         return my_words_data
+
+# регионов
+# Подмосковье
+# термометров
+# отметок
+# участников
