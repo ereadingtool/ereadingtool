@@ -308,11 +308,13 @@ class StudentPerformanceReport(object):
 
             # cumulative first time correct various difficulties
             try:
-                cumulative_correct_answers = self.cumulative_first_time_correct.filter(text_difficulty_slug=difficulty.slug) \
-                                                                    .aggregate(correct_answers_aggregate)['correct_answers__sum']
+                cumulative_correct_answers = self.cumulative_first_time_correct \
+                                                 .filter(text_difficulty_slug=difficulty.slug) \
+                                                 .aggregate(correct_answers_aggregate)['correct_answers__sum']
 
-                cumulative_total_answers = self.cumulative_first_time_correct.filter(text_difficulty_slug=difficulty.slug) \
-                                                                  .aggregate(total_answers_aggregate)['total_answers__sum']
+                cumulative_total_answers = self.cumulative_first_time_correct \
+                                               .filter(text_difficulty_slug=difficulty.slug) \
+                                               .aggregate(total_answers_aggregate)['total_answers__sum']
 
                 performance[difficulty.slug]['categories']['cumulative']['metrics']['first_time_correct']['correct_answers'] = int(cumulative_correct_answers)
                 performance[difficulty.slug]['categories']['cumulative']['metrics']['first_time_correct']['total_answers'] = int(cumulative_total_answers)
@@ -328,8 +330,13 @@ class StudentPerformanceReport(object):
 
             # past month first time correct for various difficulties
             try:
-                past_month_correct_answers = self.past_month_first_time_correct.aggregate(correct_answers_aggregate)['correct_answers__sum']
-                past_month_total_answers = self.past_month_first_time_correct.aggregate(total_answers_aggregate)['total_answers__sum']
+                past_month_correct_answers = self.past_month_first_time_correct \
+                                                 .filter(text_difficulty_slug=difficulty.slug) \
+                                                 .aggregate(correct_answers_aggregate)['correct_answers__sum']
+
+                past_month_total_answers = self.past_month_first_time_correct \
+                                               .filter(text_difficulty_slug=difficulty.slug) \
+                                               .aggregate(total_answers_aggregate)['total_answers__sum']
 
                 performance[difficulty.slug]['categories']['past_month']['metrics']['first_time_correct']['correct_answers'] = int(past_month_correct_answers)
                 performance[difficulty.slug]['categories']['past_month']['metrics']['first_time_correct']['total_answers'] = int(past_month_total_answers)
@@ -345,8 +352,12 @@ class StudentPerformanceReport(object):
 
             # current month first time correct for various difficulties
             try:
-                current_month_correct_answers = self.current_month_first_time_correct.aggregate(correct_answers_aggregate)['correct_answers__sum']
-                current_month_total_answers = self.current_month_first_time_correct.aggregate(total_answers_aggregate)['total_answers__sum']
+                current_month_correct_answers = self.current_month_first_time_correct \
+                                                    .filter(text_difficulty_slug=difficulty.slug) \
+                                                    .aggregate(correct_answers_aggregate)['correct_answers__sum']
+                current_month_total_answers = self.current_month_first_time_correct \
+                                                    .filter(text_difficulty_slug=difficulty.slug) \
+                                                    .aggregate(total_answers_aggregate)['total_answers__sum']
 
                 performance[difficulty.slug]['categories']['current_month']['metrics']['first_time_correct']['correct_answers'] = int(current_month_correct_answers)
                 performance[difficulty.slug]['categories']['current_month']['metrics']['first_time_correct']['total_answers'] = int(current_month_total_answers)
