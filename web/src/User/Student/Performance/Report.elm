@@ -77,6 +77,7 @@ emptyPerformanceReport =
         , advancedLow = Dict.empty
         , advancedMid = Dict.empty
         }
+
     -- , comprehension =
     --     { all = emptyComprehensionMetrics
     --     , intermediateMid = emptyComprehensionMetrics
@@ -138,7 +139,7 @@ comprehensionReportDecoder =
 
 comprehensionMetricsDecoder : Decoder ComprehensionMetrics
 comprehensionMetricsDecoder =
-    Decode.at ["metrics", "first_time_correct"]
+    Decode.at [ "metrics", "first_time_correct" ]
         (Decode.succeed ComprehensionMetrics
             |> required "correct_answers" Decode.int
             |> required "total_answers" Decode.int
@@ -174,7 +175,6 @@ comprehensionMetrics timePeriod metricsDict =
             , firstTimeCorrectTotalAnswers = 0
             , firstTimePercentCorrect = 0.0
             }
-
 
 
 
@@ -357,7 +357,9 @@ viewAnswersCell metrics =
             , String.fromInt metrics.firstTimeCorrectTotalAnswers
             ]
 
+
 viewPercentCorrectCell : ComprehensionMetrics -> Html msg
 viewPercentCorrectCell metrics =
     text <|
-        String.fromFloat metrics.firstTimePercentCorrect ++ "%"
+        String.fromFloat metrics.firstTimePercentCorrect
+            ++ "%"
