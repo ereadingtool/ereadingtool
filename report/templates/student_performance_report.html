@@ -43,10 +43,24 @@
 <h2>First Time Comprehension</h2>
 <table border="1">
     <th>Level</th>
-    <th>First Time Correct Answers</th>
-    <th>Percentage of Answers Correct</th>
+    <th>Time Period</th>
+    <th>Texts Started</th>
+    <th>Texts Completed</th>
 
-    <tr>
+    {% for difficulty_key, difficulty in performance_report.items %}
+        <tr>
+            <td rowspan="4">{{ difficulty.title }}</td>
+        </tr>
+
+        {% for category_key, report in difficulty.categories.items %}
+            <tr>
+                <td>{{ report.title }}</td>
+                <td>{{ report.metrics.first_time_correct.correct_answers }} out of {{ report.metrics.first_time_correct.total_answers }}</td>
+                <td>{{ report.metrics.first_time_correct.percent_correct }}</td>
+            </tr>
+        {% endfor %}
+    {% endfor %}
+    <!-- <tr>
         <td>{{ performance_report.all.title }}</td>
         <td>{{ performance_report.all.categories.cumulative.metrics.first_time_correct }}</td>
         <td>{{ performance_report.all.categories.cumulative.metrics.percent_correct }}%</td>
@@ -70,7 +84,7 @@
         <td>{{ performance_report.advanced_mid.title }}</td>
         <td>{{ performance_report.advanced_mid.categories.cumulative.metrics.first_time_correct }}</td>
         <td>{{ performance_report.advanced_mid.categories.cumulative.metrics.percent_correct }}%</td>
-    </tr>
+    </tr> -->
 </table>
 
 {{ report.first_time_correct }}
