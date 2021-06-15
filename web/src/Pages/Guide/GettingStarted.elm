@@ -262,6 +262,13 @@ viewTabs =
                 ]
                 [ text "Progress" ]
             ]
+        , div [ class "guide-tab" ]
+            [ a
+                [ href (Route.toString Route.Guide__Strategies)
+                , class "guide-link"
+                ]
+                [ text "Strategies" ]
+            ]
         ]
 
 

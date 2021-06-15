@@ -207,9 +207,8 @@ body {
 .guide-tab {
   display: inline-block;
   padding: 7px;
-
+  height: 24px;
   border: 1px solid #999999;
-  border-left: none;
 }
 
 .guide-tab > .guide-link {
@@ -219,9 +218,8 @@ body {
 
 .guide-tabs {
   display: grid;
-  height: 20px;
-  max-width: 450px;
-  grid-template-columns: auto auto auto 1fr;
+  max-width: 564px;
+  grid-template-columns: auto auto auto auto 1fr;
 }
 
 
