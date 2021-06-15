@@ -27,8 +27,8 @@ port module Api exposing
     , websocketReceive
     , websocketSend
     , wordsCsvLink
-    , wordsPdfLink
     , wordsHtmlLink
+    , wordsPdfLink
     )
 
 import Api.Config as Config exposing (Config)

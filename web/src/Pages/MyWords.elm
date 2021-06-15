@@ -1,17 +1,16 @@
-module Pages.MyWords exposing (Params, Model, Msg, page, MyWordsItem)
+module Pages.MyWords exposing (Model, Msg, MyWordsItem, Params, page)
 
 import Api
-import Api.Endpoint as Endpoint
 import Api.Config as Config exposing (Config)
+import Api.Endpoint as Endpoint
 import Browser.Navigation exposing (Key)
 import Dict exposing (Dict)
-import Json.Decode
-import Json.Decode as Decode exposing (Decoder)
-import Json.Decode.Pipeline exposing (required)
 import Html exposing (..)
 import Html.Attributes exposing (id)
 import Http
 import Http.Detailed
+import Json.Decode as Decode exposing (Decoder)
+import Json.Decode.Pipeline exposing (required)
 import Session exposing (Session)
 import Shared
 import Spa.Document exposing (Document)
@@ -19,7 +18,6 @@ import Spa.Page as Page exposing (Page)
 import Spa.Url as Url exposing (Url)
 import User.Profile as Profile
 import User.Student.Profile as StudentProfile exposing (StudentProfile)
-import Http
 
 
 page : Page Params Model Msg
@@ -32,7 +30,6 @@ page =
         , save = save
         , load = load
         }
-
 
 
 type alias MyWordsItem =
@@ -61,10 +58,11 @@ type SafeModel
         , config : Config
         , navKey : Key
         , profile : StudentProfile
-        , myWords : List (MyWordsItem)
+        , myWords : List MyWordsItem
         , errorMessage : Maybe String
         , errors : Dict String String
         }
+
 
 init : Shared.Model -> Url Params -> ( SafeModel, Cmd Msg )
 init shared { params } =
@@ -85,15 +83,16 @@ init shared { params } =
         [ case StudentProfile.studentID studentProfile of
             Just id ->
                 if id /= 0 then
-                    updateMyWords 
-                        shared.session 
-                        shared.config 
+                    updateMyWords
+                        shared.session
+                        shared.config
                         (Profile.toStudentProfile shared.profile)
+
                 else
                     Cmd.none
+
             Nothing ->
                 Cmd.none
-
         , Api.websocketDisconnectAll
         ]
     )
@@ -110,7 +109,7 @@ type Msg
 update : Msg -> SafeModel -> ( SafeModel, Cmd Msg )
 update msg (SafeModel model) =
     case msg of
-        GotMyWords (Ok ( metadata, myWords )) -> 
+        GotMyWords (Ok ( metadata, myWords )) ->
             let
                 maybeErrorMessage =
                     if List.isEmpty myWords then
@@ -119,7 +118,7 @@ update msg (SafeModel model) =
                     else
                         Nothing
             in
-            ( SafeModel 
+            ( SafeModel
                 { model
                     | myWords = myWords
                     , errorMessage = maybeErrorMessage
@@ -151,9 +150,9 @@ updateMyWords session config profile =
     case StudentProfile.studentID profile of
         Just studentId ->
             Api.getDetailed
-                (Endpoint.myWords 
+                (Endpoint.myWords
                     (Config.restApiUrl config)
-                    -- studentId
+                 -- studentId
                 )
                 (Session.cred session)
                 GotMyWords
@@ -166,10 +165,9 @@ updateMyWords session config profile =
 
 
 -- DECODE
-
-
-
 -- TODO: make this a single decoder
+
+
 myWordsDecoder : Json.Decode.Decoder (List MyWordsItem)
 myWordsDecoder =
     Json.Decode.list myWordItemDecoder
@@ -200,17 +198,18 @@ load shared (SafeModel model) =
             | profile = Profile.toStudentProfile shared.profile
         }
     , case StudentProfile.studentID (Profile.toStudentProfile shared.profile) of
-            Just id ->
-                if id /= 0 then
-                    updateMyWords 
-                        shared.session 
-                        shared.config 
-                        (Profile.toStudentProfile shared.profile)
-                else
-                    Cmd.none
+        Just id ->
+            if id /= 0 then
+                updateMyWords
+                    shared.session
+                    shared.config
+                    (Profile.toStudentProfile shared.profile)
 
-            Nothing ->
+            else
                 Cmd.none
+
+        Nothing ->
+            Cmd.none
     )
 
 
@@ -226,21 +225,23 @@ subscriptions (SafeModel model) =
 view : SafeModel -> Document Msg
 view (SafeModel model) =
     { title = "MyWords"
-    , body = 
-        [ div [ id "my-words-box" ] [ div [ id "my-words-title" ] [ text "My Words" ]
-        , div []
-            [ viewContent (SafeModel model) ]
-        ]
+    , body =
+        [ div [ id "my-words-box" ]
+            [ div [ id "my-words-title" ] [ text "My Words" ]
+            , div []
+                [ viewContent (SafeModel model) ]
+            ]
         ]
     }
 
 
 viewContent : SafeModel -> Html Msg
 viewContent (SafeModel model) =
-    div [][
-        viewMyWordsIntro
-        , viewTable model.myWords-- TODO: put a `List (MyWordsItem)` here 
-    ]
+    div []
+        [ viewMyWordsIntro
+        , viewTable model.myWords -- TODO: put a `List (MyWordsItem)` here
+        ]
+
 
 viewMyWordsIntro : Html Msg
 viewMyWordsIntro =
@@ -248,25 +249,28 @@ viewMyWordsIntro =
         [ Html.text "These are the words that have been saved to My Words." ]
 
 
-viewTable : List (MyWordsItem) -> Html Msg
+viewTable : List MyWordsItem -> Html Msg
 viewTable myWords =
     div [ id "my-words-table" ]
-        [
-            table [] <|
-                [ tr []
-                    [ th [] [ text "Phrase" ]
-                    , th [] [ text "Context" ]
-                    , th [] [ text "Dictionary Form" ]
-                    , th [] [ text "Translation" ]
-                    ]
+        [ table [] <|
+            [ tr []
+                [ th [] [ text "Phrase" ]
+                , th [] [ text "Context" ]
+                , th [] [ text "Dictionary Form" ]
+                , th [] [ text "Translation" ]
                 ]
+            ]
                 -- for every item in myWords make a viewMyWordsRow
-                 ++ (List.map viewMyWordsRow myWords)
-                    --   div [ id "my-words" ] (List.map viewMyWordsRow myWords)   
+                ++ List.map viewMyWordsRow myWords
+
+        --   div [ id "my-words" ] (List.map viewMyWordsRow myWords)
         ]
 
 
+
 -- viewMyWordsRow : MyWordsItem -> List (Html msg)
+
+
 viewMyWordsRow : MyWordsItem -> Html msg
 viewMyWordsRow item =
     -- [ tr []
@@ -274,9 +278,12 @@ viewMyWordsRow item =
         [ td [] [ viewPhraseCell item ]
         , td [] [ viewContextCell item ]
         , td [] [ viewLemmaCell item ]
-        , td [] [ viewTranslationCell item]
+        , td [] [ viewTranslationCell item ]
         ]
-    -- ]
+
+
+
+-- ]
 
 
 viewPhraseCell : MyWordsItem -> Html msg

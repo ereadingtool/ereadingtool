@@ -27,8 +27,8 @@ module Api.Endpoint exposing
     , voteText
     , word
     , wordsCsvLink
-    , wordsPdfLink
     , wordsHtmlLink
+    , wordsPdfLink
     )
 
 import Http
