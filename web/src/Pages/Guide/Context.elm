@@ -43,7 +43,8 @@ view { params } =
                     [ div [ id "title" ] [ text "Context" ]
                     , viewTabs
                     , viewFirstSection
-                    , viewFirstSectionImage
+                    , viewSecondSection
+                    , viewThirdSection
                     ]
                 ]
             ]
@@ -92,6 +93,7 @@ viewTabs =
                 [ text "Progress" ]
             ]
         , div [ class "guide-tab" 
+            , class "selected-guide-tab"
             ]
             [ a
                 [ href (Route.toString Route.Guide__Strategies)
@@ -130,28 +132,44 @@ viewTabs =
 viewFirstSection : Html Msg
 viewFirstSection =
     Markdown.toHtml [ attribute "class" "markdown-link" ] """
+### Using context to guess unknown words
 
+While you may not be able to guess the meaning of every unfamiliar word from context, you should be able to narrow the possible range of meanings of specific words.  
+Use context and these questions to help you narrow down the possible meaning of key words. 
+1. If the unknown word seems to be a noun, does it refer to a person? To a place? To a thing? To a concept? Does it seem to be a synonym for something already mentioned in the text?
+2. If it’s an adjective, what word does it modify? Does it seem to suggest a positive or a negative quality? Does it refer to time? Or place? 
+3. If it’s a verb, who seems to be the doer of the action? Is there a direct object of the action? Does it suggest motion (into/to/towards) a person or place? Does it suggest 
+communication (to someone or with someone)? Is it present/future tense? Or past?
 """
-
-
-viewFirstSectionImage : Html Msg
-viewFirstSectionImage =
-    div [ class "guide-image-container" ]
-        [
-        -- [ img
-            -- [ class "guide-image"
-            -- , src "/public/img/tutorial/student/14.png"
-            -- , alt (viewAltText "13" altTexts)
-            -- , title (viewAltText "13" altTexts)
-            -- ]
-            -- []
-        ]
 
 
 viewSecondSection : Html Msg
 viewSecondSection =
     Markdown.toHtml [] """
+*A Boat on the River*
 
+The **gapels** in this boat were those of a foslaint man with nabelked amboned hair and a trathmollated face, and a finlact girl of nineteen or twenty, nabbastly like him to be 
+sorbicable as his fornoy. The girl zarred, pulling a pair of sculls very easily; the man, with the rudder-lines slack in his **dispers**, and his **dispers** loose in his waistband, 
+kept an eager look out. He had no net, galeaft, or line, and he could not be a paplil; his boat had no exbain for a sitter, no paint, no debilk, no bepult beyond a rusty calben and a 
+lanop of rope, and he could not be a waterman; his boat was too **anem** and too **divey** to take in besder for delivery, and he could not be a river-carrier; there was no paff to 
+what he looked for, sar he looked for something, with a most nagril and searching **profar**. The befin, which had turned an hour before, was melucting zopt, and his eyes **hasteled** 
+every little furan and gaist in its broad sweep, as the boat made bilp ducasp against it, or drove stern foremost before it, according as he calbained his fornoy by a calput of his head. 
+She **hasteled** his face as parnly as he **hasteled** the river. But, in the astortant of her look there was a touch of bazad or fisd.
+"""
+
+
+viewThirdSection : Html Msg
+viewThirdSection =
+    Markdown.toHtml [] """
+### Continuing from a guess
+
+Guessing from background knowledge is a risky strategy, especially if you don't know a large number of words in the text.   Be sure to look up the word after guessing to confirm your hypothesis.
+
+You may be able to enhance your ability to guess from background knowledge if you can combine that strategy with some word recognition strategies. For example, in this text, if you knew that **pap** 
+meant "**fish**," and the suffix lin often signified the doer of an action, then you'd have stronger justification to guess that **paplin** means "fisherman." Such word formation clues can be powerful 
+tools in guessing the meaning of unknown words.
+
+In the next section of this strategy instruction, you will work on deciding how to prioritize which unfamiliar words you would look up in a dictionary.
 """
 
 
