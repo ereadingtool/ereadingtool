@@ -77,14 +77,6 @@ emptyPerformanceReport =
         , advancedLow = Dict.empty
         , advancedMid = Dict.empty
         }
-
-    -- , comprehension =
-    --     { all = emptyComprehensionMetrics
-    --     , intermediateMid = emptyComprehensionMetrics
-    --     , intermediateHigh = emptyComprehensionMetrics
-    --     , advancedLow = emptyComprehensionMetrics
-    --     , advancedMid = emptyComprehensionMetrics
-    --     }
     }
 
 

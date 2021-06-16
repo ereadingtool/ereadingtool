@@ -712,10 +712,6 @@ viewMyWords (SafeModel model) =
                 --                 Nothing ->
                 --                     ""
                 --         ]
-                --         [ Html.text "Download your words as a CSV file"
-                --         ]
-                --     ]
-                -- , div [ class "words-download-link" ]
                 [ div [ class "words-download-link" ]
                     [ Html.a
                         [ attribute "href" <|
