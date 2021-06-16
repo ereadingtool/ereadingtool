@@ -168,18 +168,18 @@ updateMyWords session config profile =
 -- TODO: make this a single decoder
 
 
-myWordsDecoder : Json.Decode.Decoder (List MyWordsItem)
+myWordsDecoder : Decoder (List MyWordsItem)
 myWordsDecoder =
-    Json.Decode.list myWordItemDecoder
+    Decode.list myWordItemDecoder
 
 
-myWordItemDecoder : Json.Decode.Decoder MyWordsItem
+myWordItemDecoder : Decoder MyWordsItem
 myWordItemDecoder =
-    Json.Decode.succeed MyWordsItem
-        |> required "phrase" Json.Decode.string
-        |> required "context" Json.Decode.string
-        |> required "lemma" Json.Decode.string
-        |> required "translation" Json.Decode.string
+    Decode.succeed MyWordsItem
+        |> required "phrase" Decode.string
+        |> required "context" Decode.string
+        |> required "lemma" Decode.string
+        |> required "translation" Decode.string
 
 
 
