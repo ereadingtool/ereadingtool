@@ -125,6 +125,33 @@ Cypress.Commands.add('turn_on_hints', () => {
   }
 })
 
+Cypress.Commands.add('reset_demo_text', () => {
+  cy.get('#text_search_results')
+    .contains('Demo Text')
+    .parents('.search_result')
+    .find('.result_item_title')
+    .first()
+    .then(($v) => {
+      // console.log($v[0].outerText)
+      let rating = $v[0].outerText
+      if (rating == -1) {
+        // click the downvote
+        cy.get('#text_search_results')
+          .contains('Demo Text')
+          .parents('.search_result')
+          .find('.downvote')
+          .click()
+      } else if (rating == 1) {
+        // click the upvote
+        cy.get('#text_search_results')
+          .contains('Demo Text')
+          .parents('.search_result')
+          .find('.upvote')
+          .click()
+      }
+    })
+})
+
 // image diff tool
 const compareSnapshotCommand = require('cypress-image-diff-js/dist/command')
 compareSnapshotCommand()

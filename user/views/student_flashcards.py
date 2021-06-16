@@ -1,3 +1,7 @@
+from django.views.generic import View
+from django.utils import timezone as dt
+from django.template import loader
+from django.core.files.base import ContentFile
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse
 from django.template.loader import render_to_string
@@ -10,10 +14,7 @@ import io
 from jwt.exceptions import InvalidTokenError
 from urllib.parse import parse_qs
 from user.student.models import Student
-from django.views.generic import View
-from django.utils import timezone as dt
-from django.template import loader
-from django.core.files.base import ContentFile
+
 
 class StudentFlashcardsPDFView(View):
 

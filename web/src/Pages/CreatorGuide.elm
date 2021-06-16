@@ -162,16 +162,17 @@ the “Translations” tab.
   motivating students to learn more about Russian culture. Concluding commentary can be written in English.
   """
 
+
 viewCreateTextFirstImage : Html Msg
 viewCreateTextFirstImage =
-    div [ class "guide-image-container"] 
-        [ img 
+    div [ class "guide-image-container" ]
+        [ img
             [ class "guide-image"
             , src "/public/img/tutorial/creator/1.png"
             , alt (viewAltText "1" altTexts)
             , title (viewAltText "1" altTexts)
-            ] 
-            [] 
+            ]
+            []
         ]
 
 
@@ -226,15 +227,16 @@ viewCreateTextSecond =
 
 viewCreateTextSecondImage : Html Msg
 viewCreateTextSecondImage =
-    div [ class "guide-image-container"] 
-        [ img 
+    div [ class "guide-image-container" ]
+        [ img
             [ class "guide-image"
             , src "/public/img/tutorial/creator/2.png"
             , alt (viewAltText "2" altTexts)
             , title (viewAltText "2" altTexts)
-            ] 
-            [] 
+            ]
+            []
         ]
+
 
 viewEditTextFirst : Html Msg
 viewEditTextFirst =
@@ -260,14 +262,14 @@ Replacing the whole text section will avoid problems for the student user.
 
 viewEditTextFirstImage : Html Msg
 viewEditTextFirstImage =
-    div [ class "guide-image-container"] 
-        [ img 
+    div [ class "guide-image-container" ]
+        [ img
             [ class "guide-image"
             , src "/public/img/tutorial/creator/3.png"
             , alt (viewAltText "3" altTexts)
             , title (viewAltText "3" altTexts)
-            ] 
-            [] 
+            ]
+            []
         ]
 
 
@@ -290,16 +292,17 @@ equivalent for the context by adding a check mark to the right of that entry. Sh
 context, you can add a suitable English equivalent of your own by writing it into the text box and clicking the + sign.
 """
 
+
 viewEditTextSecondImage : Html Msg
 viewEditTextSecondImage =
-    div [ class "guide-image-container"] 
-        [ img 
+    div [ class "guide-image-container" ]
+        [ img
             [ class "guide-image"
             , src "/public/img/tutorial/creator/4.png"
             , alt (viewAltText "4" altTexts)
             , title (viewAltText "4" altTexts)
-            ] 
-            [] 
+            ]
+            []
         ]
 
 
@@ -316,14 +319,14 @@ disappear and you can click the new merged version of the words and add the appr
 
 viewEditTextThirdImage : Html Msg
 viewEditTextThirdImage =
-    div [ class "guide-image-container"] 
-        [ img 
+    div [ class "guide-image-container" ]
+        [ img
             [ class "guide-image"
             , src "/public/img/tutorial/creator/5.png"
             , alt (viewAltText "5" altTexts)
             , title (viewAltText "5" altTexts)
-            ] 
-            [] 
+            ]
+            []
         ]
 
 
@@ -337,15 +340,16 @@ from the beginning of the text and move forward through the words from left to r
 to try refreshing the page to make sure that the text word has been saved. 
 """
 
+
 viewEditTextFourthImage =
-    div [ class "guide-image-container"] 
-        [ img 
+    div [ class "guide-image-container" ]
+        [ img
             [ class "guide-image"
             , src "/public/img/tutorial/creator/6.png"
             , alt (viewAltText "6" altTexts)
             , title (viewAltText "6" altTexts)
-            ] 
-            [] 
+            ]
+            []
         ]
 
 
