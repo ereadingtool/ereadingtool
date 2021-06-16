@@ -22,6 +22,19 @@ Cypress.Commands.add('student_login', (email, pw) => {
     .click()
 })
 
+Cypress.Commands.add('instructor_login', (email, pw) => {
+  cy.visit('http://localhost:1234/login/content-creator')
+  cy.get('#email-input')
+    .type(Cypress.env('ADMIN_EMAIL'))
+
+  cy.get('#password-input')
+    .type(Cypress.env('ADMIN_PWD'))
+
+  cy.get('.login_submit')
+    .click()
+})
+
+
 Cypress.Commands.add('student_login_headless', (email, pw) => {
   cy.request({
     method: 'POST',
