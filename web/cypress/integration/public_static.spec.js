@@ -5,7 +5,7 @@ describe('Homepage links', () => {
       .contains('Learn more')
       .click()
 
-    cy.url().should('include', '/about')
+    cy.url().should('include', '/guide/getting-started')
 
     cy.visit('http://localhost:1234')
     cy.get('.features-text')
@@ -14,16 +14,12 @@ describe('Homepage links', () => {
   })
 })
 
-describe('Aknowledgement links', () => {
-  it('Visits the acknowledgements page and checks links exist', () => {
-    cy.visit('http://localhost:1234/acknowledgments')
-    cy.get('#acknowledgements-intro')
-      .contains('Institute of International Education')
-      .contains('a')
-
-    cy.visit('http://localhost:1234/acknowledgments')
-    cy.get('#acknowledgements-intro')
-      .contains('The Language Flagship')
-      .contains('a')
+describe('About page link', () => {
+  it('Visits the about page and checks links exist', () => {
+    cy.visit('http://localhost:1234')
+    cy.get('#header')
+      .contains('About')
+      .click()
+    cy.url().should('include', '/about')
   })
 })

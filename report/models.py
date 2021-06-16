@@ -444,9 +444,9 @@ class StudentFlashcardsReport(object):
                 texts[text_title] = meta
 
             try:
-                texts[text_title]['flashcards'].append([fc.phrase.phrase, a_side, b_side])
+                texts[text_title]['flashcards'].append([fc.phrase.lemma, a_side, b_side])
             except KeyError:
-                texts[text_title]['flashcards'] = [[fc.phrase.phrase, a_side, b_side]]
+                texts[text_title]['flashcards'] = [[fc.phrase.lemma, a_side, b_side]]
 
         return texts
 
@@ -460,7 +460,7 @@ class StudentFlashcardsCSV(object):
         fc_list = []
 
         for fc in flashcards:
-            a_side = fc.phrase.phrase + " - " + fc.phrase.sentence
+            a_side = fc.phrase.lemma + " - " + fc.phrase.sentence
             b_side = ''
             for translation in fc.phrase.translations.all():
                 if translation.correct_for_context:
@@ -469,3 +469,48 @@ class StudentFlashcardsCSV(object):
             fc_list.append([a_side + ' | ' + b_side])
 
         return fc_list
+
+
+class StudentFlashcardsTable(object):
+    def __init__(self, student: Student, *args, **kwargs):
+        self.student = student
+        self.flashcards = Flashcards.objects.filter(student=student)
+
+    def to_list(self):
+        # moving directly from legacy `flashcards` to `my_words` in the model instead of in the view
+        my_words = self.student.flashcards_report.flashcards.all()
+        # my_words_data is a list of dictionaries, each one containing a "my_words" object of 
+        # {phrase:'', context:'', lemma:'', translation:''}
+        listy = list(my_words)
+        my_words_data = []
+
+        for word in my_words:
+            for t in word.phrase.translations.all():
+                if t.correct_for_context:
+                    translation = t.phrase
+            my_words_data.append(
+                {
+                    'phrase': word.phrase.phrase,
+                    'context': word.phrase.sentence,
+                    'lemma': word.phrase.lemma,
+                    'translation': translation
+                }
+            )
+
+        if not my_words_data:
+            my_words_data.append(
+                {
+                    'phrase': 'примеры',
+                    'context': 'Вот наши примеры.',
+                    'lemma': 'пример',
+                    'translation': 'example'
+                }
+            )
+
+        return my_words_data
+
+# регионов
+# Подмосковье
+# термометров
+# отметок
+# участников
