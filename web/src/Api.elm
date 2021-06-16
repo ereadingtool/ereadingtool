@@ -549,18 +549,7 @@ wordsCsvLink baseUrl maybeCred id =
 
             Nothing ->
                 ""
-
-
-wordsHtmlLink : String -> Maybe Cred -> Int -> String
-wordsHtmlLink baseUrl maybeCred id =
-    Endpoint.wordsHtmlLink baseUrl id <|
-        case maybeCred of
-            Just (Cred cred) ->
-                cred
-
-            Nothing ->
-                ""
-
+1
 
 
 -- WEBSOCKETS

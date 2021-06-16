@@ -306,17 +306,6 @@ wordsCsvLink baseUrl id token =
         [ Url.Builder.string "token" token ]
 
 
-wordsHtmlLink : String -> Int -> String -> String
-wordsHtmlLink baseUrl id token =
-    Url.Builder.crossOrigin baseUrl
-        [ "profile"
-        , "student"
-        , String.fromInt id
-        , "words"
-        ]
-        [ Url.Builder.string "token" token ]
-
-
 
 -- host:8000/flashcards.pdf?token=JWT
 -- QUERY PARAMS
