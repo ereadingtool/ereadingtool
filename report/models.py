@@ -16,8 +16,9 @@ class StudentFirstTimeCorrect(models.Model):
     id = models.BigIntegerField(primary_key=True)
     text = models.ForeignKey(Text, on_delete=models.DO_NOTHING)
     student = models.ForeignKey('user.Student', on_delete=models.DO_NOTHING)
-    num_correct = models.IntegerField()
-    num_questions = models.IntegerField()
+    end_dt = models.DateTimeField()
+    correct_answers = models.IntegerField()
+    total_answers = models.IntegerField()
     text_difficulty_slug = models.SlugField(blank=False)
 
     class Meta:
@@ -124,10 +125,6 @@ class StudentPerformanceReport(object):
             return self.first_of_current_month.replace(month=self.today_dt.month-1)
 
     @property
-    def cumulative_first_time_correct(self):
-        return self.queryset_first_time_correct
-
-    @property
     def cumulative_complete(self):
         return self.queryset_complete
 
@@ -163,14 +160,32 @@ class StudentPerformanceReport(object):
             start_dt__lt=self.first_of_current_month
         )
 
+    @property
+    def cumulative_first_time_correct(self):
+        return self.queryset_first_time_correct
+
+    @property
+    def current_month_first_time_correct(self):
+        return self.queryset_first_time_correct.filter(
+            end_dt__gte=self.first_of_current_month,
+            end_dt__lt=self.first_of_next_month
+        )
+
+    @property
+    def past_month_first_time_correct(self):
+        return self.queryset_first_time_correct.filter(
+            end_dt__gte=self.first_of_last_month,
+            end_dt__lt=self.first_of_current_month
+        )
+
     def to_dict(self) -> Dict:
 
         total_num_of_texts = Text.objects.count()
 
         categories = {
-            'cumulative': {'metrics': {}, 'title': 'Cumulative'},
-            'current_month': {'metrics': {}, 'title': 'Current Month'},
-            'past_month': {'metrics': {}, 'title': 'Past Month'},
+            'cumulative': {'metrics': { 'first_time_correct': {}}, 'title': 'Cumulative'},
+            'current_month': {'metrics': { 'first_time_correct': {}}, 'title': 'Current Month'},
+            'past_month': {'metrics': { 'first_time_correct': {}}, 'title': 'Past Month'},
         }
 
         difficulty_dict = {'title': '', 'categories': categories}
@@ -185,7 +200,7 @@ class StudentPerformanceReport(object):
         for category in ('cumulative', 'past_month', 'current_month',):
             performance['all']['categories'][category]['metrics']['total_texts'] = total_num_of_texts
 
-        # metrics for texts read to completion        
+        # metrics for texts read to completion
         performance['all']['categories']['cumulative']['metrics']['complete'] = self.cumulative_complete.aggregate(completion_aggregate)['text__count']
         performance['all']['categories']['past_month']['metrics']['complete'] = self.past_month_complete.aggregate(completion_aggregate)['text__count']
         performance['all']['categories']['current_month']['metrics']['complete'] = self.current_month_complete.aggregate(completion_aggregate)['text__count']
@@ -195,23 +210,62 @@ class StudentPerformanceReport(object):
         performance['all']['categories']['past_month']['metrics']['in_progress'] = self.past_month_in_progress.aggregate(completion_aggregate)['text__count']
         performance['all']['categories']['current_month']['metrics']['in_progress'] = self.current_month_in_progress.aggregate(completion_aggregate)['text__count']
 
+        # performance['all']['categories']['cumulative']['metrics']['correct_answers']
+        # performance['all']['categories']['cumulative']['metrics']['total_answers']   # NOTE THAT THIS IS DIFFERENT THAN total_texts!!!
+
+        correct_answers_aggregate = models.Sum('correct_answers', output_field=models.FloatField())
+        total_answers_aggregate = models.Sum('total_answers', output_field=models.FloatField())
+
+        # cumulative first time correct for all difficulties
         try:
-            num_correct_aggregate = models.Sum('num_correct', output_field=models.FloatField())
-            num_questions_aggregate = models.Sum('num_questions', output_field=models.FloatField())
+            cumulative_correct_answers = self.cumulative_first_time_correct.aggregate(correct_answers_aggregate)['correct_answers__sum']
+            cumulative_total_answers = self.cumulative_first_time_correct.aggregate(total_answers_aggregate)['total_answers__sum']
 
-            num_correct = self.cumulative_first_time_correct.aggregate(num_correct_aggregate)['num_correct__sum']
-            num_questions = self.cumulative_first_time_correct.aggregate(num_questions_aggregate)['num_questions__sum']
+            performance['all']['categories']['cumulative']['metrics']['first_time_correct']['correct_answers'] = int(cumulative_correct_answers)
+            performance['all']['categories']['cumulative']['metrics']['first_time_correct']['total_answers'] = int(cumulative_total_answers)
 
-            performance['all']['categories']['cumulative']['metrics']['first_time_correct'] = int(num_correct)
-
-            v = (num_correct / num_questions) * 100
+            v = (cumulative_correct_answers / cumulative_total_answers) * 100
             v = round(v, 2)
-            performance['all']['categories']['cumulative']['metrics']['percent_correct'] = v
-        except:
+            performance['all']['categories']['cumulative']['metrics']['first_time_correct']['percent_correct'] = v
+        except Exception as e:
             # Could be type error
-            performance['all']['categories']['cumulative']['metrics']['first_time_correct'] = 0
-            performance['all']['categories']['cumulative']['metrics']['percent_correct'] = 0.00
-            pass
+            performance['all']['categories']['cumulative']['metrics']['first_time_correct']['correct_answers'] = 0
+            performance['all']['categories']['cumulative']['metrics']['first_time_correct']['total_answers'] = 0
+            performance['all']['categories']['cumulative']['metrics']['first_time_correct']['percent_correct'] = 0.00
+
+        # past month first time correct for all difficulties
+        try:
+            past_month_correct_answers = self.past_month_first_time_correct.aggregate(correct_answers_aggregate)['correct_answers__sum']
+            past_month_total_answers = self.past_month_first_time_correct.aggregate(total_answers_aggregate)['total_answers__sum']
+
+            performance['all']['categories']['past_month']['metrics']['first_time_correct']['correct_answers'] = int(past_month_correct_answers)
+            performance['all']['categories']['past_month']['metrics']['first_time_correct']['total_answers'] = int(past_month_total_answers)
+
+            v = (past_month_correct_answers / past_month_total_answers) * 100
+            v = round(v, 2)
+            performance['all']['categories']['past_month']['metrics']['first_time_correct']['percent_correct'] = v
+        except Exception as e:
+            # Could be type error
+            performance['all']['categories']['past_month']['metrics']['first_time_correct']['correct_answers'] = 0
+            performance['all']['categories']['past_month']['metrics']['first_time_correct']['total_answers'] = 0
+            performance['all']['categories']['past_month']['metrics']['first_time_correct']['percent_correct'] = 0.00
+
+        # current month first time correct for all difficulties
+        try:
+            current_month_correct_answers = self.current_month_first_time_correct.aggregate(correct_answers_aggregate)['correct_answers__sum']
+            current_month_total_answers = self.current_month_first_time_correct.aggregate(total_answers_aggregate)['total_answers__sum']
+
+            performance['all']['categories']['current_month']['metrics']['first_time_correct']['correct_answers'] = int(current_month_correct_answers)
+            performance['all']['categories']['current_month']['metrics']['first_time_correct']['total_answers'] = int(current_month_total_answers)
+
+            v = (current_month_correct_answers / current_month_total_answers) * 100
+            v = round(v, 2)
+            performance['all']['categories']['current_month']['metrics']['first_time_correct']['percent_correct'] = v
+        except Exception as e:
+            # Could be type error
+            performance['all']['categories']['current_month']['metrics']['first_time_correct']['correct_answers'] = 0
+            performance['all']['categories']['current_month']['metrics']['first_time_correct']['total_answers'] = 0
+            performance['all']['categories']['current_month']['metrics']['first_time_correct']['percent_correct'] = 0.00
 
         for difficulty in TextDifficulty.objects.annotate(total_texts=models.Count('texts')).order_by('id').all():
             performance[difficulty.slug] = {
@@ -221,7 +275,7 @@ class StudentPerformanceReport(object):
                         'metrics': {
                             'complete': None,
                             'in_progress': None,
-                            'first_time_correct': None
+                            'first_time_correct': {}
                         },
                         'title': 'Cumulative'
                     },
@@ -229,6 +283,7 @@ class StudentPerformanceReport(object):
                         'metrics': {
                             'complete': None,
                             'in_progress': None,
+                            'first_time_correct': {}
                         },
                         'title': 'Current Month'
                     },
@@ -236,6 +291,7 @@ class StudentPerformanceReport(object):
                         'metrics': {
                             'complete': None,
                             'in_progress': None,
+                            'first_time_correct': {}
                         },
                         'title': 'Past Month'
                     }
@@ -250,26 +306,70 @@ class StudentPerformanceReport(object):
             performance[difficulty.slug]['categories']['cumulative']['metrics']['complete'] = self.cumulative_complete.filter(
                 text_difficulty_slug=difficulty.slug).aggregate(completion_aggregate)['text__count']
 
+            # cumulative first time correct various difficulties
             try:
-                num_correct_aggregate = models.Sum('num_correct', output_field=models.FloatField())
-                num_questions_aggregate = models.Sum('num_questions', output_field=models.FloatField())
+                cumulative_correct_answers = self.cumulative_first_time_correct \
+                                                 .filter(text_difficulty_slug=difficulty.slug) \
+                                                 .aggregate(correct_answers_aggregate)['correct_answers__sum']
 
-                num_correct = self.cumulative_first_time_correct.filter(text_difficulty_slug=difficulty.slug) \
-                                                                .aggregate(num_correct_aggregate)['num_correct__sum']
+                cumulative_total_answers = self.cumulative_first_time_correct \
+                                               .filter(text_difficulty_slug=difficulty.slug) \
+                                               .aggregate(total_answers_aggregate)['total_answers__sum']
 
-                num_questions = self.cumulative_first_time_correct.filter(text_difficulty_slug=difficulty.slug) \
-                                                                  .aggregate(num_questions_aggregate)['num_questions__sum']
+                performance[difficulty.slug]['categories']['cumulative']['metrics']['first_time_correct']['correct_answers'] = int(cumulative_correct_answers)
+                performance[difficulty.slug]['categories']['cumulative']['metrics']['first_time_correct']['total_answers'] = int(cumulative_total_answers)
 
-                performance[difficulty.slug]['categories']['cumulative']['metrics']['first_time_correct'] = int(num_correct)
-
-                v = (num_correct / num_questions) * 100
+                v = (cumulative_correct_answers / cumulative_total_answers) * 100
                 v = round(v, 2)
-                performance[difficulty.slug]['categories']['cumulative']['metrics']['percent_correct'] = v
-            except:
+                performance[difficulty.slug]['categories']['cumulative']['metrics']['first_time_correct']['percent_correct'] = v
+            except Exception as e:
                 # If aggregate returns NoneType we fail, write in zero
-                performance[difficulty.slug]['categories']['cumulative']['metrics']['first_time_correct'] = 0
-                performance[difficulty.slug]['categories']['cumulative']['metrics']['percent_correct'] = 0.00
-                pass
+                performance[difficulty.slug]['categories']['cumulative']['metrics']['first_time_correct']['correct_answers'] = 0
+                performance[difficulty.slug]['categories']['cumulative']['metrics']['first_time_correct']['total_answers'] = 0
+                performance[difficulty.slug]['categories']['cumulative']['metrics']['first_time_correct']['percent_correct'] = 0.00
+
+            # past month first time correct for various difficulties
+            try:
+                past_month_correct_answers = self.past_month_first_time_correct \
+                                                 .filter(text_difficulty_slug=difficulty.slug) \
+                                                 .aggregate(correct_answers_aggregate)['correct_answers__sum']
+
+                past_month_total_answers = self.past_month_first_time_correct \
+                                               .filter(text_difficulty_slug=difficulty.slug) \
+                                               .aggregate(total_answers_aggregate)['total_answers__sum']
+
+                performance[difficulty.slug]['categories']['past_month']['metrics']['first_time_correct']['correct_answers'] = int(past_month_correct_answers)
+                performance[difficulty.slug]['categories']['past_month']['metrics']['first_time_correct']['total_answers'] = int(past_month_total_answers)
+
+                v = (past_month_correct_answers / past_month_total_answers) * 100
+                v = round(v, 2)
+                performance[difficulty.slug]['categories']['past_month']['metrics']['first_time_correct']['percent_correct'] = v
+            except:
+                # Could be type error
+                performance[difficulty.slug]['categories']['past_month']['metrics']['first_time_correct']['correct_answers'] = 0
+                performance[difficulty.slug]['categories']['past_month']['metrics']['first_time_correct']['total_answers'] = 0
+                performance[difficulty.slug]['categories']['past_month']['metrics']['first_time_correct']['percent_correct'] = 0.00
+
+            # current month first time correct for various difficulties
+            try:
+                current_month_correct_answers = self.current_month_first_time_correct \
+                                                    .filter(text_difficulty_slug=difficulty.slug) \
+                                                    .aggregate(correct_answers_aggregate)['correct_answers__sum']
+                current_month_total_answers = self.current_month_first_time_correct \
+                                                    .filter(text_difficulty_slug=difficulty.slug) \
+                                                    .aggregate(total_answers_aggregate)['total_answers__sum']
+
+                performance[difficulty.slug]['categories']['current_month']['metrics']['first_time_correct']['correct_answers'] = int(current_month_correct_answers)
+                performance[difficulty.slug]['categories']['current_month']['metrics']['first_time_correct']['total_answers'] = int(current_month_total_answers)
+
+                v = (current_month_correct_answers / current_month_total_answers) * 100
+                v = round(v, 2)
+                performance[difficulty.slug]['categories']['current_month']['metrics']['first_time_correct']['percent_correct'] = v
+            except:
+                # Could be type error
+                performance[difficulty.slug]['categories']['current_month']['metrics']['first_time_correct']['correct_answers'] = 0
+                performance[difficulty.slug]['categories']['current_month']['metrics']['first_time_correct']['total_answers'] = 0
+                performance[difficulty.slug]['categories']['current_month']['metrics']['first_time_correct']['percent_correct'] = 0.00
 
             performance[difficulty.slug]['categories']['past_month']['metrics']['complete'] = self.past_month_complete.filter(
                 text_difficulty_slug=difficulty.slug).aggregate(completion_aggregate)['text__count']

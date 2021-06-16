@@ -3,6 +3,7 @@ from typing import AnyStr
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.generic.websocket import AsyncWebsocketConsumer
+from django.utils import timezone
 from jwt import InvalidTokenError
 
 from question.models import Answer
@@ -241,7 +242,12 @@ class TextReaderConsumer(AsyncJsonWebsocketConsumer):
         if not FirstTimeCorrect.objects.filter(student=self.student, text=self.text).exists():
             # create an entry in the first_time_correct table logging the student, their text, and their score
             try:
-                ftc = FirstTimeCorrect(student=self.student, text=self.text, num_correct=self.text_reading.score["section_scores"]) 
+                ftc = FirstTimeCorrect(student=self.student, 
+                                       text=self.text, 
+                                       correct_answers=self.text_reading.score["section_scores"],
+                                       total_answers=self.text_reading.score["possible_section_scores"],
+                                       end_dt=timezone.now()
+                                       )
                 ftc.save()
             except BaseException as be:
                 # TODO: Handle the exception accordingly, should we reply even though the connection is closed?
