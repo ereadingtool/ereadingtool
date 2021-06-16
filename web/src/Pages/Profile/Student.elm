@@ -700,37 +700,6 @@ viewMyWords (SafeModel model) =
         [ span [ class "profile_item_title" ] [ Html.text "My Words" ]
         , span [ class "profile_item_value" ]
             [ div [ class "words-download-link" ]
-<<<<<<< HEAD
-                [ Html.a
-                    [ attribute "href" <|
-                        case StudentProfile.studentID model.profile of
-                            Just id ->
-                                Api.wordsCsvLink
-                                    (Config.restApiUrl model.config)
-                                    (Session.cred model.session)
-                                    id
-
-                            Nothing ->
-                                ""
-                    ]
-                    [ Html.text "Download My Words as a CSV file"
-                    ]
-                ]
-            , div [ class "words-download-link" ]
-                [ Html.a
-                    [ attribute "href" <|
-                        case StudentProfile.studentID model.profile of
-                            Just id ->
-                                Api.wordsPdfLink
-                                    (Config.restApiUrl model.config)
-                                    (Session.cred model.session)
-                                    id
-
-                            Nothing ->
-                                ""
-                    ]
-                    [ Html.text "Download My Words as a PDF"
-=======
                 -- [ div [ class "words-download-link" ]
                 --     [ Html.a
                 --         [ attribute "href" <|
@@ -758,7 +727,6 @@ viewMyWords (SafeModel model) =
                         ]
                         [ Html.text "Download your words as a PDF"
                         ]
->>>>>>> devel
                     ]
                 ]
             ]
