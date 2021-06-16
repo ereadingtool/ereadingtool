@@ -40,7 +40,7 @@ view { params } =
         [ div [ id "body" ]
             [ div [ id "about" ]
                 [ div [ id "about-box" ]
-                    [ div [ id "title" ] [ text "Progress" ]
+                    [ div [ id "guide-title" ] [ text "Progress" ]
                     , viewTabs
                     , viewFirstSection
                     , viewFirstSectionImage

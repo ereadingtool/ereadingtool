@@ -82,11 +82,11 @@ describe('Student login switch to about', () => {
 })
 
 describe('Student login switch to acknowledgements', () => {
-  it('Visits the student login page then moves to the acknowledgements page', () => {
+  it('Visits the student login page then moves to the about page', () => {
     cy.visit('http://localhost:1234/login/student')
     cy.get('#acknowledgements-and-about')
       .find('div')
-      .contains('Acknowledgements')
+      .contains('About This Website')
       .click()
   })
 })
@@ -166,7 +166,7 @@ describe('content creator login switch to acknowledgements', () => {
     cy.visit('http://localhost:1234/login/content-creator')
     cy.get('#acknowledgements-and-about')
       .find('div')
-      .contains('Acknowledgements')
+      .contains('About This Website')
       .click()
   })
 })
@@ -185,7 +185,7 @@ describe('Confirms texts in to each navbar link', () => {
       // .click({multiple: true}) // don't assert, but neat
       .first().should('have.text', 'Log in').parent()
       .next().should('have.text', 'Sign up')
-      .next().should('have.text', 'Acknowledgements')
+      .next().should('have.text', 'About')
   })
 })
 

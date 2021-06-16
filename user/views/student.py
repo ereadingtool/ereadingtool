@@ -192,10 +192,23 @@ class StudentAPIConsentToResearchView(APIView):
         return HttpResponse(json.dumps({'consented': student.is_consenting_to_research}))
 
 
+@method_decorator(csrf_exempt, name='dispatch')
+class StudentAPIMyWordsView(APIView):
+
+    @jwt_valid()
+    def get(self, request: HttpRequest, **kwargs) -> HttpResponse:
+        # validated by the JWT decorator
+        pk = request.user.student.pk
+        student = Student.objects.get(pk=pk)
+        my_words = student.flashcards_table.to_list()
+
+        return HttpResponse(json.dumps(my_words))
+
+
 # Method decorator required for PUT method
 @method_decorator(csrf_exempt, name='dispatch')
 class StudentAPIView(APIView):
-    
+
     @jwt_valid() 
     def form(self, request: HttpRequest, params: Dict, **kwargs) -> forms.ModelForm:
         return StudentForm(params, **kwargs)
