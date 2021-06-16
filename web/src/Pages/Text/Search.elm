@@ -55,6 +55,7 @@ page =
 
 -- INIT
 
+
 type alias VoteResponse =
     { textId : Int
     , vote : Vote
@@ -417,6 +418,7 @@ voteResponseDecoder =
         |> required "textId" Json.Decode.int
         |> required "vote" Vote.decoder
         |> required "rating" Json.Decode.int
+
 
 
 -- VIEW

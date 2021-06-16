@@ -14,9 +14,6 @@ type Vote
     | None
 
 
-
-
-
 decoder : Decoder Vote
 decoder =
     Decode.string
