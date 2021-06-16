@@ -27,7 +27,6 @@ module Api.Endpoint exposing
     , voteText
     , word
     , wordsCsvLink
-    , wordsHtmlLink
     , wordsPdfLink
     )
 

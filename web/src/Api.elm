@@ -27,7 +27,6 @@ port module Api exposing
     , websocketReceive
     , websocketSend
     , wordsCsvLink
-    , wordsHtmlLink
     , wordsPdfLink
     )
 
@@ -549,7 +548,7 @@ wordsCsvLink baseUrl maybeCred id =
 
             Nothing ->
                 ""
-1
+
 
 
 -- WEBSOCKETS

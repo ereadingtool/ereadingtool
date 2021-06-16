@@ -86,7 +86,6 @@ init shared { params } =
                     updateMyWords
                         shared.session
                         shared.config
-                        (Profile.toStudentProfile shared.profile)
 
                 else
                     Cmd.none
@@ -145,27 +144,19 @@ update msg (SafeModel model) =
                     )
 
 
-updateMyWords : Session -> Config -> StudentProfile -> Cmd Msg
-updateMyWords session config profile =
-    case StudentProfile.studentID profile of
-        Just studentId ->
-            Api.getDetailed
-                (Endpoint.myWords
-                    (Config.restApiUrl config)
-                 -- studentId
-                )
-                (Session.cred session)
-                GotMyWords
-                -- TODO: change the decoder
-                myWordsDecoder
-
-        Nothing ->
-            Cmd.none
+updateMyWords : Session -> Config -> Cmd Msg
+updateMyWords session config =
+    Api.getDetailed
+        (Endpoint.myWords
+            (Config.restApiUrl config)
+        )
+        (Session.cred session)
+        GotMyWords
+        myWordsDecoder
 
 
 
 -- DECODE
--- TODO: make this a single decoder
 
 
 myWordsDecoder : Decoder (List MyWordsItem)
@@ -203,7 +194,6 @@ load shared (SafeModel model) =
                 updateMyWords
                     shared.session
                     shared.config
-                    (Profile.toStudentProfile shared.profile)
 
             else
                 Cmd.none
@@ -239,7 +229,7 @@ viewContent : SafeModel -> Html Msg
 viewContent (SafeModel model) =
     div []
         [ viewMyWordsIntro
-        , viewTable model.myWords -- TODO: put a `List (MyWordsItem)` here
+        , viewTable model.myWords
         ]
 
 
@@ -262,13 +252,7 @@ viewTable myWords =
             ]
                 -- for every item in myWords make a viewMyWordsRow
                 ++ List.map viewMyWordsRow myWords
-
-        --   div [ id "my-words" ] (List.map viewMyWordsRow myWords)
         ]
-
-
-
--- viewMyWordsRow : MyWordsItem -> List (Html msg)
 
 
 viewMyWordsRow : MyWordsItem -> Html msg
@@ -280,10 +264,6 @@ viewMyWordsRow item =
         , td [] [ viewLemmaCell item ]
         , td [] [ viewTranslationCell item ]
         ]
-
-
-
--- ]
 
 
 viewPhraseCell : MyWordsItem -> Html msg

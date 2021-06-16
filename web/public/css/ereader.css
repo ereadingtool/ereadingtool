@@ -403,8 +403,6 @@ body {
 #my-words-table {
   margin-top: 2%;
   display: flex; /* WIDTH and HEIGHT are required*/
-  justify-content: center;
-  align-items: center;
   font-size: 18px;
 }
 
