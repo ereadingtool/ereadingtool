@@ -207,7 +207,7 @@ body {
 .guide-tab {
   display: inline-block;
   padding: 7px;
-  height: 24px;
+  height: 40px;
   border: 1px solid #999999;
 }
 
@@ -218,8 +218,8 @@ body {
 
 .guide-tabs {
   display: grid;
-  max-width: 564px;
-  grid-template-columns: auto auto auto auto 1fr;
+  max-width: 745px;
+  grid-template-columns: repeat(auto-fill, 149px);
 }
 
 
@@ -652,6 +652,12 @@ body {
 
     opacity: 1;
     transition: opacity 0.25s, height 0.4s;
+  }
+
+  .guide-tabs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 134px);
+    max-width: none;
   }
 
   #header {
