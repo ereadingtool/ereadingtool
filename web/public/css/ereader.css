@@ -214,6 +214,8 @@ body {
 .guide-tab > .guide-link {
   color: #000000;
   text-decoration: none;
+  display: flex;
+  height: inherit;
 }
 
 .guide-tabs {
