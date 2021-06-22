@@ -11,6 +11,7 @@ module Api.Endpoint exposing
     , inviteInstructor
     , matchTranslation
     , mergeWords
+    , myWords
     , performanceReportLink
     , request
     , resetPassword
@@ -213,6 +214,15 @@ mergeWords baseUrl =
 unmergeWord : String -> Int -> Endpoint
 unmergeWord baseUrl id =
     url baseUrl [ "api", "text", "word", "compound", String.fromInt id ] []
+
+
+
+-- MY WORDS
+
+
+myWords : String -> Endpoint
+myWords baseUrl =
+    url baseUrl [ "api", "my_words" ] []
 
 
 

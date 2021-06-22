@@ -22,6 +22,19 @@ Cypress.Commands.add('student_login', (email, pw) => {
     .click()
 })
 
+Cypress.Commands.add('instructor_login', (email, pw) => {
+  cy.visit('http://localhost:1234/login/content-creator')
+  cy.get('#email-input')
+    .type(Cypress.env('ADMIN_EMAIL'))
+
+  cy.get('#password-input')
+    .type(Cypress.env('ADMIN_PWD'))
+
+  cy.get('.login_submit')
+    .click()
+})
+
+
 Cypress.Commands.add('student_login_headless', (email, pw) => {
   cy.request({
     method: 'POST',
@@ -110,6 +123,33 @@ Cypress.Commands.add('turn_on_hints', () => {
       .find('.check-box')
       .click()
   }
+})
+
+Cypress.Commands.add('reset_demo_text', () => {
+  cy.get('#text_search_results')
+    .contains('Demo Text')
+    .parents('.search_result')
+    .find('.result_item_title')
+    .first()
+    .then(($v) => {
+      // console.log($v[0].outerText)
+      let rating = $v[0].outerText
+      if (rating == -1) {
+        // click the downvote
+        cy.get('#text_search_results')
+          .contains('Demo Text')
+          .parents('.search_result')
+          .find('.downvote')
+          .click()
+      } else if (rating == 1) {
+        // click the upvote
+        cy.get('#text_search_results')
+          .contains('Demo Text')
+          .parents('.search_result')
+          .find('.upvote')
+          .click()
+      }
+    })
 })
 
 // image diff tool
