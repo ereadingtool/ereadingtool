@@ -279,8 +279,8 @@ into a View. These are then accessed by unmanaged models. You can learn more abo
 note that we don't have migration files for these views. How to do this is explained at the end of the blog post. However
 when first creating the app that particular migration caused a bunch of trouble. Simply create the view using a database tool
 like db Browser for SQLite in the Execution tab. The model should be able to access the view data at that point.
-!(using database views in Django ORM)[https://resources.rescale.com/using-database-views-in-django-orm/]
+[using database views in Django ORM](https://resources.rescale.com/using-database-views-in-django-orm/)
 
 #### Nginx Reverse Proxy
-(nginx-proxy)[https://github.com/nginx-proxy/nginx-proxy/]
-(cert machinery)[https://github.com/nginx-proxy/docker-letsencrypt-nginx-proxy-companion]
+[nginx-proxy](https://github.com/nginx-proxy/nginx-proxy/)
+[cert machinery](https://github.com/nginx-proxy/docker-letsencrypt-nginx-proxy-companion)
