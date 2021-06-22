@@ -527,6 +527,12 @@ body {
   align-items: center;
 }
 
+.sample-passage {
+  background: #f4f1f1;
+  /* border-radius: .5%; */
+  padding: 5px;
+}
+
 .selected-guide-tab {
   color: #ffffff;
   background-color: #0054a6;

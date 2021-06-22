@@ -153,18 +153,22 @@ the end, and make as much sense out of the passage as you can.
 
 viewSecondSection : Html Msg
 viewSecondSection =
-    Markdown.toHtml [] """
-*A Boat on the River*
+    div [class "sample-passage"] [
+        Html.em [] [ Html.text  "A Boat on the River"]
+        , Html.br [] []
+        , Html.br [] []
+        , Html.text """
+        The gapels in this boat were those of a foslaint man with nabelked amboned hair and a trathmollated face, and a finlact girl of nineteen or twenty, 
+        nabbastly like him to be sorbicable as his fornoy. The girl zarred, pulling a pair of sculls very easily; the man, with the rudder-lines slack in 
+        his dispers, and his dispers loose in his waistband, kept an eager look out. He had no net, galeaft, or line, and he could not be a paplil; his boat 
+        had no exbain for a sitter, no paint, no debilk, no bepult beyond a rusty calben and a lanop of rope, and he could not be a waterman; his boat was too 
+        anem and too divey to take in besder for delivery, and he could not be a river-carrier; there was no paff to what he looked for, sar he looked for 
+        something, with a most nagril and searching profar. The befin, which had turned an hour before, was melucting zopt, and his eyes hasteled every little 
+        furan and gaist in its broad sweep, as the boat made bilp ducasp against it, or drove stern foremost before it, according as he calbained his fornoy by 
+        a calput of his head. She hasteled his face as parnly as he hasteled the river. But, in the astortant of her look there was a touch of bazad or fisd.
+        """
+    ]
 
-The gapels in this boat were those of a foslaint man with nabelked amboned hair and a trathmollated face, and a finlact girl of nineteen or twenty, 
-nabbastly like him to be sorbicable as his fornoy. The girl zarred, pulling a pair of sculls very easily; the man, with the rudder-lines slack in 
-his dispers, and his dispers loose in his waistband, kept an eager look out. He had no net, galeaft, or line, and he could not be a paplil; his boat 
-had no exbain for a sitter, no paint, no debilk, no bepult beyond a rusty calben and a lanop of rope, and he could not be a waterman; his boat was too 
-anem and too divey to take in besder for delivery, and he could not be a river-carrier; there was no paff to what he looked for, sar he looked for 
-something, with a most nagril and searching profar. The befin, which had turned an hour before, was melucting zopt, and his eyes hasteled every little 
-furan and gaist in its broad sweep, as the boat made bilp ducasp against it, or drove stern foremost before it, according as he calbained his fornoy by 
-a calput of his head. She hasteled his face as parnly as he hasteled the river. But, in the astortant of her look there was a touch of bazad or fisd.
-"""
 
 
 viewThirdSection : Html Msg

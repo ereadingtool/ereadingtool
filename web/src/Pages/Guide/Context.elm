@@ -45,6 +45,8 @@ view { params } =
                     , viewFirstSection
                     , viewSecondSection
                     , viewThirdSection
+                    , viewFourthSection
+                    , viewFifthSection
                     ]
                 ]
             ]
@@ -145,21 +147,89 @@ communication (to someone or with someone)? Is it present/future tense? Or past?
 
 viewSecondSection : Html Msg
 viewSecondSection =
-    Markdown.toHtml [] """
-*A Boat on the River*
+    div [class "sample-passage"] [
+        Html.em [] [ Html.text  "A Boat on the River"]
+        , Html.br [] []
+        , Html.br [] []
+        , Html.text "The "
+        , Html.strong [] [ Html.text "gapels" ]
+        , Html.text """ in this boat were those of a foslaint man with nabelked amboned hair and a trathmollated face, and a finlact girl of nineteen or twenty, 
+        nabbastly like him to be sorbicable as his fornoy. The girl zarred, pulling a pair of sculls very easily; the man, with the rudder-lines slack in 
+        his """
+        , Html.strong [] [ Html.text "dispers" ]
+        , Html.text " and his "
+        , Html.strong [] [ Html.text "dispers" ] 
+        , Html.text """ loose in his waistband, kept an eager look out. He had no net, galeaft, or line, and he could not be a paplil; his boat 
+        had no exbain for a sitter, no paint, no debilk, no bepult beyond a rusty calben and a lanop of rope, and he could not be a waterman; his boat was too """
+        , Html.strong [] [ Html.text "anem" ]
+        , Html.text " and too "
+        , Html.strong [] [ Html.text "divey" ]
+        , Html.text """ to take in besder for delivery, and he could not be a river-carrier; there was no paff to what he looked for, sar he looked for 
+        something, with a most nagril and searching """
+        , Html.strong [] [ Html.text "profar" ]
+        , Html.text ". The befin, which had turned an hour before, was melucting zopt, and his eyes "
+        , Html.strong [] [ Html.text "hasteled" ] 
+        , Html.text """ every little furan and gaist in its broad sweep, as the boat made bilp ducasp against it, or drove stern foremost before it, according as he calbained his fornoy by 
+        a calput of his head. She """
+        , Html.strong [] [ Html.text "hasteled" ]
+        , Html.text " his face as parnly as he "
+        , Html.strong [] [ Html.text "hasteled" ] 
+        , Html.text " the river. But, in the astortant of her look there was a touch of bazad or fisd."
+    ]
 
-The **gapels** in this boat were those of a foslaint man with nabelked amboned hair and a trathmollated face, and a finlact girl of nineteen or twenty, nabbastly like him to be 
-sorbicable as his fornoy. The girl zarred, pulling a pair of sculls very easily; the man, with the rudder-lines slack in his **dispers**, and his **dispers** loose in his waistband, 
-kept an eager look out. He had no net, galeaft, or line, and he could not be a paplil; his boat had no exbain for a sitter, no paint, no debilk, no bepult beyond a rusty calben and a 
-lanop of rope, and he could not be a waterman; his boat was too **anem** and too **divey** to take in besder for delivery, and he could not be a river-carrier; there was no paff to 
-what he looked for, sar he looked for something, with a most nagril and searching **profar**. The befin, which had turned an hour before, was melucting zopt, and his eyes **hasteled** 
-every little furan and gaist in its broad sweep, as the boat made bilp ducasp against it, or drove stern foremost before it, according as he calbained his fornoy by a calput of his head. 
-She **hasteled** his face as parnly as he **hasteled** the river. But, in the astortant of her look there was a touch of bazad or fisd.
-"""
 
+-- TODO: multiple choice here
 
 viewThirdSection : Html Msg
 viewThirdSection =
+    Markdown.toHtml [] """
+#### Learning to read through unfamiliar words
+
+How many of the non-sense words were you able to guess correctly? What contextual clues helped you the most?  How might you apply some of those same contextual clues when you try to read in Russian?
+
+
+### Other Guessing Strategies
+Another way to approach guessing the meaning of unfamiliar words in a text is to think about what words are likely to appear in the text. Knowing the title "A boat on the river" of this text, 
+you could image that the text might contain the words "fisherman" and "tide," and indeed those words are in the original text.  Can you figure out which non-sense words are standing in for them? 
+"""
+
+viewFourthSection : Html Msg
+viewFourthSection = 
+    div [class "sample-passage"] [
+        Html.em [] [ Html.text  "A Boat on the River"]
+        , Html.br [] []
+        , Html.br [] []
+        , Html.text """
+        The gapels in this boat were those of a foslaint man with nabelked amboned hair and a trathmollated face, and a finlact girl of nineteen or twenty, 
+        nabbastly like him to be sorbicable as his fornoy. The girl zarred, pulling a pair of sculls very easily; the man, with the rudder-lines slack in 
+        his dispers, and his dispers loose in his waistband, kept an eager look out. He had no net, """
+        , Html.strong [] [ Html.text "galeaft"]
+        , Html.text ", or line, and he could not be a "
+        , Html.strong [] [ Html.text "paplil" ]
+        , Html.text "; his boat had no "
+        , Html.strong [] [ Html.text "exbain" ]
+        , Html.text " for a sitter, no paint, no "
+        , Html.strong [] [ Html.text "debilk" ]
+        , Html.text ", no "
+        , Html.strong [] [ Html.text "bepult" ]
+        , Html.text """ beyond a rusty calben and a lanop of rope, and he could not be a waterman; his boat was too 
+        anem and too divey to take in besder for delivery, and he could not be a river-carrier; there was no """
+        , Html.strong [] [ Html.text "paff" ]
+        , Html.text " to what he looked for, sar he looked for something, with a most nagril and searching profar. The "
+        , Html.strong [] [ Html.text "befin" ]
+        , Html.text ", which had turned an hour before, was melucting "
+        , Html.strong [] [ Html.text "zopt" ]
+        , Html.text ", and his eyes hasteled every little "
+        , Html.strong [] [ Html.text "furan" ]
+        , Html.text " and gaist in its broad sweep, as the boat made bilp "
+        , Html.strong [] [ Html.text "ducasp" ]
+        , Html.text """ against it, or drove stern foremost before it, according as he calbained his fornoy by 
+        a calput of his head. She hasteled his face as parnly as he hasteled the river. But, in the astortant of her look there was a touch of bazad or fisd."""
+    ]
+
+
+viewFifthSection : Html Msg
+viewFifthSection =
     Markdown.toHtml [] """
 ### Continuing from a guess
 

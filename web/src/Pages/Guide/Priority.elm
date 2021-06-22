@@ -47,6 +47,8 @@ view { params } =
                     , viewThirdSection
                     , viewFourthSection
                     , viewFifthSection
+                    , viewSixthSection
+                    , viewSeventhSection
                     ]
                 ]
             ]
@@ -147,17 +149,32 @@ The first thing to prioritize are unknown words that appear multiple times in a 
 
 viewSecondSection : Html Msg
 viewSecondSection =
-    Markdown.toHtml [] """
-*A Boat on the River*
-
-The gapels in this boat were those of a foslaint man with nabelked amboned hair and a trathmollated face, and a finlact girl of nineteen or twenty, nabbastly like him to be sorbicable 
-as his **fornoy**. The girl zarred, pulling a pair of sculls very easily; the man, with the rudder-lines slack in his dispers, and his dispers loose in his waistband, kept an eager 
-look out. He had no net, galeaft, or line, and he could not be a paplil; his boat had no **exbain** for a sitter, no paint, no debilk, no bepult beyond a rusty calben and a lanop of rope, 
-and he could not be a waterman; his boat was too anem and too divey to take in besder for delivery, and he could not be a river-carrier; there was no paff to what he looked for, sar he 
-looked for something, with a most nagril and searching profar. The befin, which had turned an hour before, was melucting zopt, and his eyes **hasteled** every little furan and gaist in 
-its broad sweep, as the boat made bilp ducasp against it, or drove stern foremost before it, according as he calbained his **fornoy** by a **calput** of his head. She **hasteled** his face 
-as parnly as he **hasteled** the river. But, in the astortant of her look there was a touch of bazad or fisd.
-"""
+    div [class "sample-passage"] [
+        Html.em [] [ Html.text  "A Boat on the River"]
+        , Html.br [] []
+        , Html.br [] []
+        , Html.text """
+        The gapels in this boat were those of a foslaint man with nabelked amboned hair and a trathmollated face, and a finlact girl of nineteen or twenty, 
+        nabbastly like him to be sorbicable as his """
+        , Html.strong [] [ Html.text "fornoy" ]
+        , Html.text """. The girl zarred, pulling a pair of sculls very easily; the man, with the rudder-lines slack in 
+        his dispers, and his dispers loose in his waistband, kept an eager look out. He had no net, galeaft, or line, and he could not be a paplil; his boat 
+        had no """
+        , Html.strong [] [ Html.text "exbain" ]
+        , Html.text """ for a sitter, no paint, no debilk, no bepult beyond a rusty calben and a lanop of rope, and he could not be a waterman; his boat was too 
+        anem and too divey to take in besder for delivery, and he could not be a river-carrier; there was no paff to what he looked for, sar he looked for 
+        something, with a most nagril and searching profar. The befin, which had turned an hour before, was melucting zopt, and his eyes """
+        , Html.strong [] [ Html.text "hasteled" ]
+        , Html.text " every little furan and gaist in its broad sweep, as the boat made bilp ducasp against it, or drove stern foremost before it, according as he calbained his "
+        , Html.strong [] [ Html.text "fornoy" ]
+        , Html.text " by a "
+        , Html.strong [] [ Html.text "calput" ]
+        , Html.text " of his head. She "
+        , Html.strong [] [ Html.text "hasteled" ]
+        , Html.text " his face as parnly as he "
+        , Html.strong [] [ Html.text "hasteled" ]
+        , Html.text " the river. But, in the astortant of her look there was a touch of bazad or fisd."
+    ]
 
 
 viewThirdSection : Html Msg
@@ -173,43 +190,77 @@ you prioritize what parts of the text you need to focus on.
 Part of prioritizing what words to look up is recognizing or having a strong sense as to the part of speech of the unfamiliar word. Using the grammar of the surrounding text, you can often 
 tell an unfamiliar word’s part of speech. The nonsense words in this text also all use regular English grammatical endings, so those can help you as well. Be sure to determine the part of 
 speech based on how the word is used in the sentence and not just on its grammatical ending.
-
-*A Boat on the River*
-
-The gapels in this boat were those of a foslaint man with nabelked amboned hair and a **trathmollated** face, and a finlact girl of nineteen or twenty, nabbastly like him to be sorbicable 
-as his fornoy. The girl **zarred**, pulling a pair of sculls very easily; the man, with the rudder-lines slack in his dispers, and his dispers loose in his waistband, kept an eager look out. 
-He had no net, galeaft, or line, and he could not be a **paplil**; his boat had no exbain for a sitter, no paint, no debilk, no bepult beyond a rusty calben and a lanop of rope, and he could 
-not be a waterman; his boat was too anem and too divey to take in besder for delivery, and he could not be a river-carrier; there was no paff to what he looked for, **sar** he looked for 
-something, with a most **nagril** and searching profar. The befin, which had turned an hour before, was melucting zopt, and his eyes hasteled every little furan and gaist in its broad sweep, 
-as the boat made bilp ducasp against it, or drove stern foremost before it, according as he calbained his fornoy by a calput of his head. She hasteled his face as **parnly** as he hasteled 
-the river. But, in the astortant of her look there was a touch of bazad or fisd.
 """
 
 
 viewFourthSection : Html Msg
 viewFourthSection =
+    div [class "sample-passage"] [
+        Html.em [] [ Html.text  "A Boat on the River"]
+        , Html.br [] []
+        , Html.br [] []
+        , Html.text "The gapels in this boat were those of a foslaint man with nabelked amboned hair and a "
+        , Html.strong [] [ Html.text "trathmollated" ]
+        , Html.text " face, and a finlact girl of nineteen or twenty, nabbastly like him to be sorbicable as his fornoy. The girl "
+        , Html.strong [] [ Html.text "zarred" ]
+        , Html.text """, pulling a pair of sculls very easily; the man, with the rudder-lines slack in his dispers, and his dispers loose in his waistband, 
+        kept an eager look out. He had no net, galeaft, or line, and he could not be a """
+        , Html.strong [] [ Html.text "paplil" ]
+        , Html.text """; his boat had no exbain for a sitter, no paint, no debilk, no bepult beyond a rusty calben and a lanop of rope, and he could not be a waterman; his boat was too 
+        anem and too divey to take in besder for delivery, and he could not be a river-carrier; there was no paff to what he looked for, """
+        , Html.strong [] [ Html.text "sar" ]
+        , Html.text " he looked for something, with a most "
+        , Html.strong [] [ Html.text "nagril" ]
+        , Html.text """ and searching profar. The befin, which had turned an hour before, was melucting zopt, and his eyes hasteled every little 
+        furan and gaist in its broad sweep, as the boat made bilp ducasp against it, or drove stern foremost before it, according as he calbained his fornoy by 
+        a calput of his head. She hasteled his face as """
+        , Html.strong [] [ Html.text "parnly" ]
+        , Html.text " as he hasteled the river. But, in the astortant of her look there was a touch of bazad or fisd."
+    ]
+
+
+viewFifthSection : Html Msg
+viewFifthSection =
     Markdown.toHtml [] """
 ### Unfamiliar words and their importance to your tasks
 
 If you are reading a text for class, the comprehension questions your teacher has assigned can help you prioritize what parts of the text you need to focus on. For example, your teacher 
 included a question that asked about the emotional relationship between the man and the girl in the boat. You will need to locate the part of the text that contains that information, and to 
 prioritize those descriptive words that will help you understand that relationship.
-
-
-*A Boat on the River*
-
-The gapels in this boat were those of a **foslaint** man with nabelked amboned hair and a trathmollated face, and a finlact girl of nineteen or twenty, nabbastly like him to be sorbicable as his 
-**fornoy**. The girl zarred, pulling a pair of sculls very easily; the man, with the rudder-lines slack in his dispers, and his dispers loose in his waistband, kept an eager look out. He had no net, 
-galeaft, or line, and he could not be a paplil; his boat had no exbain for a sitter, no paint, no debilk, no bepult beyond a rusty calben and a lanop of rope, and he could not be a waterman; his boat 
-was too anem and too **divey** to take in besder for delivery, and he could not be a river-carrier; there was no paff to what he looked for, sar he looked for something, with a most nagril and 
-searching profar. The befin, which had turned an hour before, was melucting zopt, and his eyes hasteled every little furan and gaist in its broad sweep, as the boat made bilp ducasp against it, or 
-drove stern foremost before it, according as he **calbained** his **fornoy** by a calput of his head. She hasteled his face as parnly as he hasteled the river. But, in the astortant of her look there 
-was a touch of **bazad** or **fisd**.
 """
 
 
-viewFifthSection : Html Msg
-viewFifthSection =
+viewSixthSection : Html Msg
+viewSixthSection =
+    div [class "sample-passage"] [
+        Html.em [] [ Html.text  "A Boat on the River"]
+        , Html.br [] []
+        , Html.br [] []
+        , Html.text "The gapels in this boat were those of a "
+        , Html.strong [] [ Html.text "foslaint" ]
+        , Html.text " man with nabelked amboned hair and a trathmollated face, and a finlact girl of nineteen or twenty, nabbastly like him to be sorbicable as his "
+        , Html.strong [] [ Html.text "fornoy" ]
+        , Html.text """. The girl zarred, pulling a pair of sculls very easily; the man, with the rudder-lines slack in 
+        his dispers, and his dispers loose in his waistband, kept an eager look out. He had no net, galeaft, or line, and he could not be a paplil; his boat 
+        had no exbain for a sitter, no paint, no debilk, no bepult beyond a rusty calben and a lanop of rope, and he could not be a waterman; his boat was too 
+        anem and too """
+        , Html.strong [] [ Html.text "divey" ]
+        , Html.text """ to take in besder for delivery, and he could not be a river-carrier; there was no paff to what he looked for, sar he looked for 
+        something, with a most nagril and searching profar. The befin, which had turned an hour before, was melucting zopt, and his eyes hasteled every little 
+        furan and gaist in its broad sweep, as the boat made bilp ducasp against it, or drove stern foremost before it, according as he """
+        , Html.strong [] [ Html.text "calbained" ]
+        , Html.text " his "
+        , Html.strong [] [ Html.text "fornoy" ]
+        , Html.text " by a calput of his head. She hasteled his face as parnly as he hasteled the river. But, in the astortant of her look there was a touch of "
+        , Html.strong [] [ Html.text "bazad" ]
+        , Html.text " or "
+        , Html.strong [] [ Html.text "fisd" ]
+        , Html.text "."
+    ]
+
+
+viewSeventhSection : Html Msg
+viewSeventhSection =
     Markdown.toHtml [] """
 #### When looking up words
 Once you’ve prioritized a word for look up, be sure you make a guess about its English equivalent before you actually look it up. If your guess is right (or a very close synonym to the right answer), 
