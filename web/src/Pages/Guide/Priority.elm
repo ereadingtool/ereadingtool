@@ -104,17 +104,19 @@ init shared { params } =
 
 initHelper : Dict String Activity
 initHelper =
-    Dict.fromList []
-    -- [ 
-        -- Activity { label = "Activity1" 
-        --          , questions = [ Question  {
-        --             label = "Question1"
-        --             , answers = [ Answer "Answer1" True False
-        --               , Answer "Answer2" False False
-        --             ]
-        --          }
-        -- ] }
-    -- ]
+    Dict.fromList 
+        [ ("Activity1"
+        , Activity 
+            ( 
+            Dict.fromList
+                [ ( "Question1", Question ( Dict.fromList
+                                                [
+                                                    ("Answer1", Answer "answer_string" True False)
+                                                    , ("Answer2", Answer "another_answer" False False)
+                                                ] ) ) ]
+            )
+        ) ]
+
     -- [
     --     { "Activity1" :
     --         { "Question1" :
@@ -186,26 +188,6 @@ update msg model =
             , Cmd.none
             )
 
--- updateActivity : Model -> String -> String -> String -> Model
--- updateActivity model activity question answer = 
---     -- case 
---     { model | activities = Dict.update activity (Maybe.map (updateQuestion question answer)) model.activities }
-
-
--- updateQuestion : String -> String -> Dict String Question -> Dict String Question
--- updateQuestion q a qs =
---     -- Dict.update "question1" (Maybe.map (a function that updates an answer in the dict of answers -> returns the value accessed by the key "answer1")) qs
---     Dict.update q (Maybe.map updateAnswer a) qs
-
-
--- updateAnswer : String -> String -> Dict String Answer
--- updateAnswer an ans =
---     -- Dict.update "answer1" (Maybe.map (a function that updates the checked field of the record accessed by "answer1" -> return the value accessed by "answer1")) ans
---     Dict.update an (\a -> Maybe.map updateAnswerCheckedField a) ans
-
--- updateAnswerCheckedField : Answer -> Answer
--- updateAnswerCheckedField an =
---     { an | selected = not an.selected }
 
 
 -- VIEW
@@ -238,39 +220,38 @@ view model =
         ]
     }
 
--- DICT METHOD
--- viewFirstQuestion : Model -> Html Msg
--- viewFirstQuestion model =
---     let 
 
---     in
---     div [] [
---         Html.form [] [
---             input [ type_ "radio", name "activity_1", id "first", onClick (UpdateAnswer firstActivity firstQuestion firstAnswer )] []
---             , label [for "first"] [ text "first"]
---             , input [ type_ "radio", name "activity_1", id "second", onClick (UpdateAnswer firstActivity firstQuestion secondAnswer ) ] []
---             , label [for "second"] [ text "second"]
---         ]
---     ]
-
--- CUSTOM TYPES
 viewFirstQuestion : Model -> Html Msg
 viewFirstQuestion model =
     div [] [
         Html.form [] [
             -- input [ type_ "radio", name "activity_1", id "first", onClick (UpdateAnswer firstActivity firstQuestion firstAnswer )] []
             input [ type_ "radio", name "activity_1", id "first", onClick (UpdateAnswer "Activity1" "Question1" "Answer1" )] []
-            , label [for "first"] [ text "first"]
+            , label [for "first"] [ getQuestion model "Activity1" "Question1" "Answer1" ]
             -- , input [ type_ "radio", name "activity_1", id "second", onClick (UpdateAnswer firstActivity firstQuestion secondAnswer ) ] []
             -- , label [for "second"] [ text "second"]
         ]
     ]
 
--- function that generates a activity
+getQuestion : Model -> String -> String -> String -> Html Msg
+getQuestion model activityKey questionKey answerKey =
+    let
+        maybeQuestion = case Dict.get activityKey model.activities of
+            Just qs -> Dict.get questionKey (questions qs)
+            Nothing -> Maybe.map identity Nothing
 
--- function that generates a question
+        maybeAnswer = case maybeQuestion of
+            Just q -> Dict.get answerKey (answers q)
+            Nothing -> Maybe.map identity Nothing
 
--- function that generates an answer
+        answerText = case maybeAnswer of
+            Just a -> a.answer
+            Nothing -> ""
+    in
+       Html.text answerText
+    
+
+
 
 viewTabs : Html Msg
 viewTabs =
@@ -564,3 +545,24 @@ subscriptions model =
                             -- mark whatever answer as "checked"
                     -- somewhere needs if "correct" and "checked" -> green feedback
                     -- else -> red feedback
+
+-- updateActivity : Model -> String -> String -> String -> Model
+-- updateActivity model activity question answer = 
+--     -- case 
+--     { model | activities = Dict.update activity (Maybe.map (updateQuestion question answer)) model.activities }
+
+
+-- updateQuestion : String -> String -> Dict String Question -> Dict String Question
+-- updateQuestion q a qs =
+--     -- Dict.update "question1" (Maybe.map (a function that updates an answer in the dict of answers -> returns the value accessed by the key "answer1")) qs
+--     Dict.update q (Maybe.map updateAnswer a) qs
+
+
+-- updateAnswer : String -> String -> Dict String Answer
+-- updateAnswer an ans =
+--     -- Dict.update "answer1" (Maybe.map (a function that updates the checked field of the record accessed by "answer1" -> return the value accessed by "answer1")) ans
+--     Dict.update an (\a -> Maybe.map updateAnswerCheckedField a) ans
+
+-- updateAnswerCheckedField : Answer -> Answer
+-- updateAnswerCheckedField an =
+--     { an | selected = not an.selected }
