@@ -2,28 +2,210 @@ module Pages.Guide.Priority exposing (..)
 
 import Dict exposing (Dict)
 import Html exposing (..)
-import Html.Attributes exposing (alt, attribute, class, href, id, src, style, title)
+-- import Html.Attributes exposing (alt, attribute, class, href, id, placeholder, src, style, title, value)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onClick, onInput)
 import Markdown
+import Session exposing (Session)
+import Shared
 import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url as Url exposing (Url)
+import Question.Model exposing (Question)
 
 
 page : Page Params Model Msg
 page =
-    Page.static
-        { view = view
+    Page.application
+        { init = init
+        , update = update
+        , subscriptions = subscriptions
+        , view = view
+        , save = save
+        , load = load
         }
 
 
+
 type alias Model =
-    Url Params
+    { activities : Dict String Activity }
 
 
-type alias Msg =
-    Never
+type alias Answer =
+    { answer : String 
+    , correct : Bool
+    , selected : Bool
+    }
 
+-- DICT METHOD
+
+-- type alias Question =
+--     { question : String
+--     , answers : List Answer
+--     }
+
+-- type alias Activity =
+--     { activity : String
+--     , questions : List Question
+--     }
+
+-- Activities : Dict String Activity
+-- Activities =
+--     Dict.fromList
+--         [ ("firstActivity")
+--         ]
+
+-- Questions : Dict String Question
+-- Questions =
+--     Dict.fromList
+--         [ ("firstQuestion" get "firstQuestion" Answers)]
+
+-- Answers : Dict String Answer
+-- Answers =
+--     Dict.fromList
+--         [ ("firstAnswer", "asdf", True, False)]
+
+
+-- CUSTOM TYPES
+type Activity
+    = Activity (Dict String Question)
+
+type Question
+    = Question (Dict String Answer)
+
+
+questions : Activity -> Dict String Question
+questions (Activity qs) =
+    qs
+
+answers : Question -> Dict String Answer
+answers (Question ans) =
+    ans
+
+
+-- checkAnswer takes question
+-- returns correct answer or not? 
+-- foldl??? with condition that both must be true, if end result is True, they answered correctly
+-- feedback blobs will need to have a hidden flag showResults
+-- model has showResults, when flipped to true calculate results, default showResults... '' ? rendered and hidden OR Maybe Answer
+
+--     showResults last!! 
+
+-- INIT
+
+
+init : Shared.Model -> Url Params -> ( Model, Cmd Msg )
+init shared { params } =
+    ( { activities = initHelper }
+    , Cmd.none
+    )           
+
+
+initHelper : Dict String Activity
+initHelper =
+    Dict.fromList []
+    -- [ 
+        -- Activity { label = "Activity1" 
+        --          , questions = [ Question  {
+        --             label = "Question1"
+        --             , answers = [ Answer "Answer1" True False
+        --               , Answer "Answer2" False False
+        --             ]
+        --          }
+        -- ] }
+    -- ]
+    -- [
+    --     { "Activity1" :
+    --         { "Question1" :
+    --             {
+    --                 "Answer1" :
+    --                     {
+    --                         "answer" : "some answer"
+    --                         , "correct" : True
+    --                         , "checked" : False
+    --                     }
+    --                 , "Answer2" : 
+    --                     {
+    --                         "answer" : "another answer"
+    --                         , "correct" : False
+    --                         , "checked" : False
+    --                     }
+    --             }
+    --         }
+    --     }
+    -- ]
+
+
+-- UPDATE
+
+
+type Msg
+    = UpdateAnswer String String String
+    
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        UpdateAnswer activity question answer ->
+            let
+                -- reuse the drill down for simply getting their answer to return
+                maybeActivity = Maybe.map identity (Dict.get activity model.activities)
+
+                maybeQuestion = case maybeActivity of
+                    -- Just activity -> Maybe.map identity (Dict.get q maybeActivity)
+                    Just ac -> Maybe.map identity (Dict.get question (questions ac))
+                    Nothing -> Maybe.map identity Nothing
+
+                maybeAnswer = case maybeQuestion of
+                    -- Just question -> Maybe.map identity (Dict.get an maybeQuestion)
+                    Just q -> Maybe.map identity (Dict.get answer (answers q))
+                    Nothing -> Maybe.map identity Nothing
+
+                updatedAnswer = case maybeAnswer of
+                --    Just a -> { a | selected = not selected }
+                --    Just an -> Answer ({ an | selected = not an.selected })
+                   Just an -> Answer an.answer an.correct (not an.selected)
+                   Nothing -> Answer "" False False
+
+                updatedQuestion = case maybeQuestion of
+                    Just q -> Question (Dict.update answer (Maybe.map (\_ -> updatedAnswer)) (answers q))
+                    Nothing -> Question (Dict.fromList [])
+
+                updatedActivity = case maybeActivity of
+                    -- Just activity -> Dict.update q (Maybe.map (\_ -> updatedQuestion)) activity
+                    Just ac -> Activity (Dict.update question (Maybe.map (\_ -> updatedQuestion)) (questions ac))
+                    Nothing -> Activity (Dict.fromList [])
+
+
+            in
+            -- ( case updatedActivity of
+            --     Just ac -> { model | activities = Dict.update ac (\_ -> updatedActivity) model.activities }
+            --     Nothing -> model
+            ( { model | activities = Dict.update activity (Maybe.map (\_ -> updatedActivity)) model.activities }
+            , Cmd.none
+            )
+
+-- updateActivity : Model -> String -> String -> String -> Model
+-- updateActivity model activity question answer = 
+--     -- case 
+--     { model | activities = Dict.update activity (Maybe.map (updateQuestion question answer)) model.activities }
+
+
+-- updateQuestion : String -> String -> Dict String Question -> Dict String Question
+-- updateQuestion q a qs =
+--     -- Dict.update "question1" (Maybe.map (a function that updates an answer in the dict of answers -> returns the value accessed by the key "answer1")) qs
+--     Dict.update q (Maybe.map updateAnswer a) qs
+
+
+-- updateAnswer : String -> String -> Dict String Answer
+-- updateAnswer an ans =
+--     -- Dict.update "answer1" (Maybe.map (a function that updates the checked field of the record accessed by "answer1" -> return the value accessed by "answer1")) ans
+--     Dict.update an (\a -> Maybe.map updateAnswerCheckedField a) ans
+
+-- updateAnswerCheckedField : Answer -> Answer
+-- updateAnswerCheckedField an =
+--     { an | selected = not an.selected }
 
 
 -- VIEW
@@ -33,8 +215,8 @@ type alias Params =
     ()
 
 
-view : Url Params -> Document Msg
-view { params } =
+view : Model -> Document Msg
+view model =
     { title = "Guide | Priority"
     , body =
         [ div [ id "body" ]
@@ -42,6 +224,7 @@ view { params } =
                 [ div [ id "about-box" ]
                     [ div [ id "title" ] [ text "Priority" ]
                     , viewTabs
+                    , viewFirstQuestion model
                     , viewFirstSection
                     , viewSecondSection
                     , viewThirdSection
@@ -55,6 +238,39 @@ view { params } =
         ]
     }
 
+-- DICT METHOD
+-- viewFirstQuestion : Model -> Html Msg
+-- viewFirstQuestion model =
+--     let 
+
+--     in
+--     div [] [
+--         Html.form [] [
+--             input [ type_ "radio", name "activity_1", id "first", onClick (UpdateAnswer firstActivity firstQuestion firstAnswer )] []
+--             , label [for "first"] [ text "first"]
+--             , input [ type_ "radio", name "activity_1", id "second", onClick (UpdateAnswer firstActivity firstQuestion secondAnswer ) ] []
+--             , label [for "second"] [ text "second"]
+--         ]
+--     ]
+
+-- CUSTOM TYPES
+viewFirstQuestion : Model -> Html Msg
+viewFirstQuestion model =
+    div [] [
+        Html.form [] [
+            -- input [ type_ "radio", name "activity_1", id "first", onClick (UpdateAnswer firstActivity firstQuestion firstAnswer )] []
+            input [ type_ "radio", name "activity_1", id "first", onClick (UpdateAnswer "Activity1" "Question1" "Answer1" )] []
+            , label [for "first"] [ text "first"]
+            -- , input [ type_ "radio", name "activity_1", id "second", onClick (UpdateAnswer firstActivity firstQuestion secondAnswer ) ] []
+            -- , label [for "second"] [ text "second"]
+        ]
+    ]
+
+-- function that generates a activity
+
+-- function that generates a question
+
+-- function that generates an answer
 
 viewTabs : Html Msg
 viewTabs =
@@ -193,6 +409,7 @@ speech based on how the word is used in the sentence and not just on its grammat
 """
 
 
+
 viewFourthSection : Html Msg
 viewFourthSection =
     div [class "sample-passage"] [
@@ -301,3 +518,49 @@ altTexts : Dict String String
 altTexts =
     Dict.fromList
         [ ]
+
+
+
+-- SHARED
+
+
+save : Model -> Shared.Model -> Shared.Model
+save model shared =
+    shared
+
+
+load : Shared.Model -> Model -> ( Model, Cmd Msg )
+load shared model =
+    ( model, Cmd.none )
+
+
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
+
+
+
+-- given an activity question and answer
+                    -- update the model's corresponding activity question answer to indicate it's been selected
+
+                -- filter the list of activities to find the activity with a matching label to the one passed to update
+                
+                -- use `questions` to get the list of questions given an activity,
+                    -- filter on these to find the question matching the question passed to update
+
+                -- use `answers` to get the list of answers given a question
+                    -- filter on these to find the answer matching the answer passed to update
+
+
+
+                -- func is some function which updates the answer's checked field
+                -- | activities = map func ( List.filter (\v -> v == a) model.activities)-- update one activity.question.answer that has been clicked
+                    -- filter the questions after activities
+                        -- filter answers after questions
+                            -- mark whatever answer as "checked"
+                    -- somewhere needs if "correct" and "checked" -> green feedback
+                    -- else -> red feedback
