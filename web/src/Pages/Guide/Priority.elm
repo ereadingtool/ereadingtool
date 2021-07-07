@@ -13,6 +13,7 @@ import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url as Url exposing (Url)
 import Question.Model exposing (Question)
+import Question.Field exposing (question)
 
 
 page : Page Params Model Msg
@@ -29,7 +30,10 @@ page =
 
 
 type alias Model =
-    { activities : Dict String Activity }
+    { activities : Dict String Activity 
+    , visibleButtons : Dict String ShowButton
+    , visibleSolutions : Dict String ShowSolution
+    }
 
 
 type alias Answer =
@@ -38,42 +42,18 @@ type alias Answer =
     , selected : Bool
     }
 
--- DICT METHOD
 
--- type alias Question =
---     { question : String
---     , answers : List Answer
---     }
-
--- type alias Activity =
---     { activity : String
---     , questions : List Question
---     }
-
--- Activities : Dict String Activity
--- Activities =
---     Dict.fromList
---         [ ("firstActivity")
---         ]
-
--- Questions : Dict String Question
--- Questions =
---     Dict.fromList
---         [ ("firstQuestion" get "firstQuestion" Answers)]
-
--- Answers : Dict String Answer
--- Answers =
---     Dict.fromList
---         [ ("firstAnswer", "asdf", True, False)]
-
-
--- CUSTOM TYPES
 type Activity
     = Activity (Dict String Question)
 
 type Question
     = Question (Dict String Answer)
 
+type ShowButton 
+    = ShowButton (Dict String Bool)
+
+type ShowSolution 
+    = ShowSolution (Dict String Bool)
 
 questions : Activity -> Dict String Question
 questions (Activity qs) =
@@ -83,60 +63,166 @@ answers : Question -> Dict String Answer
 answers (Question ans) =
     ans
 
+showButtons : ShowButton -> Dict String Bool
+showButtons (ShowButton visible) =
+    visible
 
--- checkAnswer takes question
--- returns correct answer or not? 
--- foldl??? with condition that both must be true, if end result is True, they answered correctly
--- feedback blobs will need to have a hidden flag showResults
--- model has showResults, when flipped to true calculate results, default showResults... '' ? rendered and hidden OR Maybe Answer
+showSolutions : ShowSolution -> Dict String Bool
+showSolutions (ShowSolution visible) =
+    visible
 
---     showResults last!! 
+
 
 -- INIT
 
 
 init : Shared.Model -> Url Params -> ( Model, Cmd Msg )
 init shared { params } =
-    ( { activities = initHelper }
+    ( { activities = initActivitiesHelper
+      , visibleButtons = initButtonVisiblityHelper
+      , visibleSolutions = initSolutionVisibilityHelper
+      }
     , Cmd.none
     )           
 
 
-initHelper : Dict String Activity
-initHelper =
+initActivitiesHelper : Dict String Activity
+initActivitiesHelper =
     Dict.fromList 
-        [ ("Activity1"
-        , Activity 
+        [ ( "Activity1"
+            , Activity 
             ( 
-            Dict.fromList
+                Dict.fromList
                 [ ( "Question1", Question ( Dict.fromList
                                                 [
-                                                    ("Answer1", Answer "answer_string" True False)
-                                                    , ("Answer2", Answer "another_answer" False False)
+                                                    ( "Answer1", Answer "exbain" False False )
+                                                    , ( "Answer2", Answer "hasteled" True False )
+                                                    , ( "Answer3", Answer "fornoy" True False )
+                                                    , ( "Answer4", Answer "calput" False False )
                                                 ] ) ) ]
+            ) )
+        , ( "Activity2"
+            , Activity
+            (
+                Dict.fromList
+                [ ( "Question1", Question ( Dict.fromList
+                                                [
+                                                    ( "Answer1", Answer "noun" False False )
+                                                    , ( "Answer2", Answer "verb" True False )
+                                                    , ( "Answer3", Answer "adjective" False False )
+                                                    , ( "Answer4", Answer "adverb" False False )
+                                                    , ( "Answer5", Answer "conjunction" False False )
+                                                ] ) ) 
+                , ( "Question2", Question ( Dict.fromList 
+                                                [
+                                                    ( "Answer1", Answer "noun" False False )
+                                                    , ( "Answer2", Answer "verb" True False )
+                                                    , ( "Answer3", Answer "adjective" False False )
+                                                    , ( "Answer4", Answer "adverb" False False )
+                                                    , ( "Answer5", Answer "conjunction" False False )
+                                                ] ) )
+                , ( "Question3", Question ( Dict.fromList
+                                                 [
+                                                    ( "Answer1", Answer "noun" True False )
+                                                    , ( "Answer2", Answer "verb" False False )
+                                                    , ( "Answer3", Answer "adjective" False False )
+                                                    , ( "Answer4", Answer "adverb" False False )
+                                                    , ( "Answer5", Answer "conjunction" False False )               
+                                                ] ) )
+                , ( "Question4", Question ( Dict.fromList
+                                                 [
+                                                    ( "Answer1", Answer "noun" False False )
+                                                    , ( "Answer2", Answer "verb" False False )
+                                                    , ( "Answer3", Answer "adjective" True False )
+                                                    , ( "Answer4", Answer "adverb" False False )
+                                                    , ( "Answer5", Answer "conjunction" False False )               
+                                                ] ) )
+                , ( "Question5", Question ( Dict.fromList
+                                                 [
+                                                    ( "Answer1", Answer "noun" False False )
+                                                    , ( "Answer2", Answer "verb" False False )
+                                                    , ( "Answer3", Answer "adjective" False False )
+                                                    , ( "Answer4", Answer "adverb" False False )
+                                                    , ( "Answer5", Answer "conjunction" True False )               
+                                                ] ) )
+                , ( "Question6", Question ( Dict.fromList
+                                                 [
+                                                    ( "Answer1", Answer "noun" False False )
+                                                    , ( "Answer2", Answer "verb" False False )
+                                                    , ( "Answer3", Answer "adjective" False False )
+                                                    , ( "Answer4", Answer "adverb" True False )
+                                                    , ( "Answer5", Answer "conjunction" False False )               
+                                                ] ) )
+                ]
+            ) )
+        , ( "Activity3"
+            , Activity
+            (
+                Dict.fromList
+                [ ( "Question1", Question ( Dict.fromList
+                                                [
+                                                    ( "Answer1", Answer "foslaint" False False )
+                                                    , ( "Answer2", Answer "fornoy" True False )
+                                                    , ( "Answer3", Answer "divey" False False )
+                                                    , ( "Answer4", Answer "calbained" True False )
+                                                    , ( "Answer5", Answer "bazad" True False )
+                                                    , ( "Answer6", Answer "fisd" True False )
+                                                ] ) ) ]
+            ) )
+        ]
+
+initButtonVisiblityHelper : Dict String ShowButton
+initButtonVisiblityHelper =
+    Dict.fromList 
+        [ ("Activity1"
+        , ShowButton
+            ( 
+            Dict.fromList
+                [ ( "Question1", False )
+                , ( "Question2", False ) ]
             )
         ) ]
 
-    -- [
-    --     { "Activity1" :
-    --         { "Question1" :
-    --             {
-    --                 "Answer1" :
-    --                     {
-    --                         "answer" : "some answer"
-    --                         , "correct" : True
-    --                         , "checked" : False
-    --                     }
-    --                 , "Answer2" : 
-    --                     {
-    --                         "answer" : "another answer"
-    --                         , "correct" : False
-    --                         , "checked" : False
-    --                     }
-    --             }
-    --         }
-    --     }
-    -- ]
+initSolutionVisibilityHelper : Dict String ShowSolution
+initSolutionVisibilityHelper =
+    Dict.fromList
+        [ ( "Activity1"
+            , ShowSolution
+            (
+                Dict.fromList
+                [ ( "Question1", False ) ]
+            ) ) 
+        , ( "Activity2"
+            , ShowSolution
+            (
+                Dict.fromList
+                [ ( "Question1", False )
+                , ( "Question2", False )
+                , ( "Question3", False )
+                , ( "Question4", False )
+                , ( "Question5", False )
+                , ( "Question6", False )
+                ]
+            ) )
+        , ( "Activity3"
+            , ShowSolution
+            (
+                Dict.fromList
+                [ ( "Question1", False ) ]
+            ) )
+        ]
+
+intSolnHelper : Dict String (Dict String Bool)
+intSolnHelper =
+    Dict.fromList
+        [ ( "Activity1", Dict.fromList [ ( "Question1", False ) ] ) 
+        , ( "Activity2", Dict.fromList [ ( "Question1", False ) 
+                                       , ( "Question2", False )
+                                       , ( "Question3", False )
+                                       , ( "Question4", False )
+                                       , ( "Question5", False )
+                                       , ( "Question6", False )] )
+        ]
 
 
 -- UPDATE
@@ -144,6 +230,7 @@ initHelper =
 
 type Msg
     = UpdateAnswer String String String
+    | RevealSolution String String
     
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -151,42 +238,54 @@ update msg model =
     case msg of
         UpdateAnswer activity question answer ->
             let
-                -- reuse the drill down for simply getting their answer to return
-                maybeActivity = Maybe.map identity (Dict.get activity model.activities)
+                maybeActivity = Dict.get activity model.activities
 
                 maybeQuestion = case maybeActivity of
-                    -- Just activity -> Maybe.map identity (Dict.get q maybeActivity)
-                    Just ac -> Maybe.map identity (Dict.get question (questions ac))
+                    Just ac ->  (Dict.get question (questions ac))
                     Nothing -> Maybe.map identity Nothing
 
-                maybeAnswer = case maybeQuestion of
-                    -- Just question -> Maybe.map identity (Dict.get an maybeQuestion)
-                    Just q -> Maybe.map identity (Dict.get answer (answers q))
-                    Nothing -> Maybe.map identity Nothing
+                -- need to clear previous selected answers in case because only one can have `selected = True`
+                questionCleared = case maybeQuestion of
+                    Just q -> Question (Dict.map (\_ an -> { an | selected = False }) (answers q))
+                    Nothing -> Question (Dict.fromList [])
+
+                maybeAnswer = Dict.get answer (answers questionCleared)
 
                 updatedAnswer = case maybeAnswer of
-                --    Just a -> { a | selected = not selected }
-                --    Just an -> Answer ({ an | selected = not an.selected })
                    Just an -> Answer an.answer an.correct (not an.selected)
                    Nothing -> Answer "" False False
 
-                updatedQuestion = case maybeQuestion of
-                    Just q -> Question (Dict.update answer (Maybe.map (\_ -> updatedAnswer)) (answers q))
-                    Nothing -> Question (Dict.fromList [])
+                updatedQuestion = Question (Dict.update answer (Maybe.map (\_ -> updatedAnswer)) (answers questionCleared))
 
                 updatedActivity = case maybeActivity of
-                    -- Just activity -> Dict.update q (Maybe.map (\_ -> updatedQuestion)) activity
                     Just ac -> Activity (Dict.update question (Maybe.map (\_ -> updatedQuestion)) (questions ac))
                     Nothing -> Activity (Dict.fromList [])
 
+                updatedActivities = Dict.update activity (Maybe.map (\_ -> updatedActivity)) model.activities
 
+                maybeVisibleButton = (Dict.get activity model.visibleButtons)
+
+                buttonVisible = case maybeVisibleButton of
+                    Just soln -> ShowButton (Dict.update question (Maybe.map (\visible -> not visible )) (showButtons soln))
+                    Nothing -> ShowButton (Dict.fromList [])
+
+                updatedButtonVisibility = Dict.update activity (Maybe.map (\_ -> buttonVisible)) model.visibleButtons
             in
-            -- ( case updatedActivity of
-            --     Just ac -> { model | activities = Dict.update ac (\_ -> updatedActivity) model.activities }
-            --     Nothing -> model
-            ( { model | activities = Dict.update activity (Maybe.map (\_ -> updatedActivity)) model.activities }
-            , Cmd.none
-            )
+                ( { model | activities = updatedActivities, visibleButtons = updatedButtonVisibility }
+                , Cmd.none
+                )
+
+        RevealSolution activity question ->
+            let
+                maybeSolution = (Dict.get activity model.visibleSolutions)
+
+                solutionVisible = case maybeSolution of
+                    Just soln -> ShowSolution (Dict.update question (Maybe.map (\visible -> not visible )) (showSolutions soln))
+                    Nothing -> ShowSolution (Dict.fromList [])
+
+                updatedSolutionVisibility = Dict.update activity (Maybe.map (\_ -> solutionVisible)) model.visibleSolutions
+            in
+                ( { model | visibleSolutions = updatedSolutionVisibility }, Cmd.none)
 
 
 
@@ -206,9 +305,9 @@ view model =
                 [ div [ id "about-box" ]
                     [ div [ id "title" ] [ text "Priority" ]
                     , viewTabs
-                    , viewFirstQuestion model
                     , viewFirstSection
                     , viewSecondSection
+                    , viewFirstQuestion model
                     , viewThirdSection
                     , viewFourthSection
                     , viewFifthSection
@@ -223,18 +322,398 @@ view model =
 
 viewFirstQuestion : Model -> Html Msg
 viewFirstQuestion model =
+    let
+        answerButtonVisible = checkAnswerSelected model "Activity1" "Question1"
+
+        answerCorrect = checkAnswerCorrect model "Activity1" "Question1"
+
+        solutionVisible = checkButtonClicked model "Activity1" "Question1"
+    in
     div [] [
-        Html.form [] [
-            -- input [ type_ "radio", name "activity_1", id "first", onClick (UpdateAnswer firstActivity firstQuestion firstAnswer )] []
-            input [ type_ "radio", name "activity_1", id "first", onClick (UpdateAnswer "Activity1" "Question1" "Answer1" )] []
-            , label [for "first"] [ getQuestion model "Activity1" "Question1" "Answer1" ]
-            -- , input [ type_ "radio", name "activity_1", id "second", onClick (UpdateAnswer firstActivity firstQuestion secondAnswer ) ] []
-            -- , label [for "second"] [ text "second"]
+        Html.div [] [ text "Based on frequency alone, which of these four words should you definitely look up?" ]
+        , Html.form [] [
+            input [ type_ "radio", name "activity1_question1", id "a1q1first", class "guide-question", onClick (UpdateAnswer "Activity1" "Question1" "Answer1" )] []
+            , label [for "a1q1first"] [ getAnswerText model "Activity1" "Question1" "Answer1" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity1_question1", id "a1q1second", class "guide-question", onClick (UpdateAnswer "Activity1" "Question1" "Answer2" )] []
+            , label [ for "a1q1second"] [ getAnswerText model "Activity1" "Question1" "Answer2" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity1_question1", id "a1q1third", class "guide-question", onClick (UpdateAnswer "Activity1" "Question1" "Answer3" )] []
+            , label [ for "a1q1third"] [ getAnswerText model "Activity1" "Question1" "Answer3" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity1_question1", id "a1q1fourth", class "guide-question", onClick (UpdateAnswer "Activity1" "Question1" "Answer4" )] []
+            , label [ for "a1q1fourth"] [ getAnswerText model "Activity1" "Question1" "Answer4" ]
+        ]
+        , div [] [
+            if answerButtonVisible then
+                div [] [
+                    button [ onClick (RevealSolution "Activity1" "Question1")] [ Html.text "Check answer"]
+                    , div [] [
+                        if solutionVisible then
+                            ( if answerCorrect then
+                                div [ class "correct_answer" ] 
+                            else
+                                div [ class "incorrect_answer" ] ) [
+                                Html.text "Hasteled -- should be a high priority since it occurs three times in the last five lines"
+                                , Html.br [] []
+                                , Html.text "Fornoy -- should also be a priority, since it occurs twice in two different places in the text"
+                                , Html.text """Exbain -- should be a low priority. It occurs only once, and in the context it’s clear that it has to mean something 
+                                like "bench, seat, or cushion." Unless the word is absolutely key to a comprehension question, having the sense that it is 
+                                something in the range of "bench, seat, cushion" is probably sufficient."""
+                                , Html.br [] []
+                                , Html.text """Calput -- should be a low priority. It occurs only once, and in the context it’s clear that it has to be something 
+                                like "position, tilt, twist, bend of his head."""
+                                ]
+                        else
+                            div [] []
+
+                    ]
+                ]
+            else
+                div [] []
         ]
     ]
 
-getQuestion : Model -> String -> String -> String -> Html Msg
-getQuestion model activityKey questionKey answerKey =
+viewSecondQuestion : Model -> Html Msg
+viewSecondQuestion model =
+    let
+        answerButtonVisible = checkAnswerSelected model "Activity2" "Question1"
+
+        answerCorrect = checkAnswerCorrect model "Activity2" "Question1"
+
+        solutionVisible = checkButtonClicked model "Activity2" "Question1"
+    in
+    div [] [
+        Html.div [] [ text "trathmollated" ]
+        , Html.form [] [
+            input [ type_ "radio", name "activity2_question1", id "a2q1first", class "guide-question", onClick (UpdateAnswer "Activity2" "Question1" "Answer1" )] []
+            , label [for "a2q1first"] [ getAnswerText model "Activity2" "Question1" "Answer1" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity2_question1", id "a2q1second", class "guide-question", onClick (UpdateAnswer "Activity2" "Question1" "Answer2" )] []
+            , label [ for "a2q1second"] [ getAnswerText model "Activity2" "Question1" "Answer2" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity2_question1", id "a2q1third", class "guide-question", onClick (UpdateAnswer "Activity2" "Question1" "Answer3" )] []
+            , label [ for "a2q1third"] [ getAnswerText model "Activity2" "Question1" "Answer3" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity2_question1", id "a2q1fourth", class "guide-question", onClick (UpdateAnswer "Activity2" "Question1" "Answer4" )] []
+            , label [ for "a2q1fourth"] [ getAnswerText model "Activity2" "Question1" "Answer4" ]
+        ]
+        , div [] [
+            if answerButtonVisible then
+                div [] [
+                    button [ onClick (RevealSolution "Activity2" "Question1")] [ Html.text "Check answer"]
+                    , div [] [
+                        if solutionVisible then
+                            if answerCorrect then
+                                div [ class "correct_answer" ] [
+                                    Html.text "The correct answer is \"adjective\". It describes the noun \"face\""
+                                ]
+                            else
+                                div [ class "incorrect_answer" ] [
+                                    Html.text "The correct answer is \"adjective\". It describes the noun \"face\""
+                                ]
+                        else
+                            div [] []
+                    ]
+                ]
+            else
+                div [] []
+        ]
+    ]
+
+viewThirdQuestion : Model -> Html Msg
+viewThirdQuestion model =
+    let
+        answerButtonVisible = checkAnswerSelected model "Activity2" "Question2"
+
+        answerCorrect = checkAnswerCorrect model "Activity2" "Question2"
+
+        solutionVisible = checkButtonClicked model "Activity2" "Question2"
+    in
+    div [] [
+        Html.div [] [ text "zarred" ]
+        , Html.form [] [
+            input [ type_ "radio", name "activity2_question2", id "a2q2first", class "guide-question", onClick (UpdateAnswer "Activity2" "Question2" "Answer1" )] []
+            , label [for "a2q2first"] [ getAnswerText model "Activity2" "Question2" "Answer1" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity2_question2", id "a2q2second", class "guide-question", onClick (UpdateAnswer "Activity2" "Question2" "Answer2" )] []
+            , label [ for "a2q2second"] [ getAnswerText model "Activity2" "Question2" "Answer2" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity2_question2", id "a2q2third", class "guide-question", onClick (UpdateAnswer "Activity2" "Question2" "Answer3" )] []
+            , label [ for "a2q2third"] [ getAnswerText model "Activity2" "Question2" "Answer3" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity2_question2", id "a2q2fourth", class "guide-question", onClick (UpdateAnswer "Activity2" "Question2" "Answer4" )] []
+            , label [ for "a2q2fourth"] [ getAnswerText model "Activity2" "Question2" "Answer4" ]
+        ]
+        , div [] [
+            if answerButtonVisible then
+                div [] [
+                    button [ onClick (RevealSolution "Activity2" "Question2")] [ Html.text "Check answer"]
+                    , div [] [
+                        if solutionVisible then
+                            if answerCorrect then
+                                div [ class "correct_answer" ] [
+                                    Html.text "The correct answer is \"verb\". It follows the subject \"the girl\" and makes a complete thought, so it is most likely a verb. It also has the past tense ending (-ed) on it."
+                                ]
+                            else
+                                div [ class "incorrect_answer" ] [
+                                    Html.text ""
+                                ]
+                        else
+                            div [] []
+                    ]
+                ]
+            else
+                div [] []
+        ]
+    ]
+
+viewFourthQuestion : Model -> Html Msg
+viewFourthQuestion model =
+    let
+        answerButtonVisible = checkAnswerSelected model "Activity2" "Question3"
+
+        answerCorrect = checkAnswerCorrect model "Activity2" "Question3"
+
+        solutionVisible = checkButtonClicked model "Activity2" "Question3"
+    in
+    div [] [
+        Html.div [] [ text "paplil" ]
+        , Html.form [] [
+            input [ type_ "radio", name "activity2_question3", id "a2q3first", class "guide-question", onClick (UpdateAnswer "Activity2" "Question3" "Answer1" )] []
+            , label [for "a2q3first"] [ getAnswerText model "Activity2" "Question3" "Answer1" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity2_question3", id "a2q3second", class "guide-question", onClick (UpdateAnswer "Activity2" "Question3" "Answer2" )] []
+            , label [ for "a2q3second"] [ getAnswerText model "Activity2" "Question3" "Answer2" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity2_question3", id "a2q3third", class "guide-question", onClick (UpdateAnswer "Activity2" "Question3" "Answer3" )] []
+            , label [ for "a2q3third"] [ getAnswerText model "Activity2" "Question3" "Answer3" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity2_question3", id "a2q3fourth", class "guide-question", onClick (UpdateAnswer "Activity2" "Question3" "Answer4" )] []
+            , label [ for "a2q3fourth"] [ getAnswerText model "Activity2" "Question3" "Answer4" ]
+        ]
+        , div [] [
+            if answerButtonVisible then
+                div [] [
+                    button [ onClick (RevealSolution "Activity2" "Question3")] [ Html.text "Check answer"]
+                    , div [] [
+                        if solutionVisible then
+                            if answerCorrect then
+                                div [ class "correct_answer" ] [
+                                    Html.text "The correct answer is \"noun\". The word is preceded by the indefinite article \"a\" which strongly suggests a noun."
+                                ]
+                            else
+                                div [ class "incorrect_answer" ] [
+                                    Html.text "The correct answer is \"noun\". The word is preceded by the indefinite article \"a\" which strongly suggests a noun."
+                                ]
+                        else
+                            div [] []
+                    ]
+                ]
+            else
+                div [] []
+        ]
+    ]
+
+viewFifthQuestion : Model -> Html Msg
+viewFifthQuestion model =
+    let
+        answerButtonVisible = checkAnswerSelected model "Activity2" "Question4"
+
+        answerCorrect = checkAnswerCorrect model "Activity2" "Question4"
+
+        solutionVisible = checkButtonClicked model "Activity2" "Question4"
+    in
+    div [] [
+        Html.div [] [ text "nagril" ]
+        , Html.form [] [
+            input [ type_ "radio", name "activity2_question4", id "a2q4first", class "guide-question", onClick (UpdateAnswer "Activity2" "Question4" "Answer1" )] []
+            , label [for "a2q4first"] [ getAnswerText model "Activity2" "Question4" "Answer1" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity2_question4", id "a2q4second", class "guide-question", onClick (UpdateAnswer "Activity2" "Question4" "Answer2" )] []
+            , label [ for "a2q4second"] [ getAnswerText model "Activity2" "Question4" "Answer2" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity2_question4", id "a2q4third", class "guide-question", onClick (UpdateAnswer "Activity2" "Question4" "Answer3" )] []
+            , label [ for "a2q4third"] [ getAnswerText model "Activity2" "Question4" "Answer3" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity2_question4", id "a2q4fourth", class "guide-question", onClick (UpdateAnswer "Activity2" "Question4" "Answer4" )] []
+            , label [ for "a2q4fourth"] [ getAnswerText model "Activity2" "Question4" "Answer4" ]
+        ]
+        , div [] [
+            if answerButtonVisible then
+                div [] [
+                    button [ onClick (RevealSolution "Activity2" "Question4")] [ Html.text "Check answer"]
+                    , div [] [
+                        if solutionVisible then
+                            if answerCorrect then
+                                div [ class "correct_answer" ] [
+                                    Html.text "The correct answer is \"adjective\". It is used in an adjective phrase following \"a most...\" and it is also in parallel construction to \"searching\" and so it is being used as some kind of modifier to the noun profar."
+                                ]
+                            else
+                                div [ class "incorrect_answer" ] [
+                                    Html.text "The correct answer is \"adjective\". It is used in an adjective phrase following \"a most...\" and it is also in parallel construction to \"searching\" and so it is being used as some kind of modifier to the noun profar."
+                                ]
+                        else
+                            div [] []
+                    ]
+                ]
+            else
+                div [] []
+        ]
+    ]
+
+viewSixthQuestion : Model -> Html Msg
+viewSixthQuestion model =
+    let
+        answerButtonVisible = checkAnswerSelected model "Activity2" "Question5"
+
+        answerCorrect = checkAnswerCorrect model "Activity2" "Question5"
+
+        solutionVisible = checkButtonClicked model "Activity2" "Question5"
+    in
+    div [] [
+        Html.div [] [ text "sar" ]
+        , Html.form [] [
+            input [ type_ "radio", name "activity2_question5", id "a2q5first", class "guide-question", onClick (UpdateAnswer "Activity2" "Question5" "Answer1" )] []
+            , label [for "a2q5first"] [ getAnswerText model "Activity2" "Question5" "Answer1" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity2_question5", id "a2q5second", class "guide-question", onClick (UpdateAnswer "Activity2" "Question5" "Answer2" )] []
+            , label [ for "a2q5second"] [ getAnswerText model "Activity2" "Question5" "Answer2" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity2_question5", id "a2q5third", class "guide-question", onClick (UpdateAnswer "Activity2" "Question5" "Answer3" )] []
+            , label [ for "a2q5third"] [ getAnswerText model "Activity2" "Question5" "Answer3" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity2_question5", id "a2q5fourth", class "guide-question", onClick (UpdateAnswer "Activity2" "Question5" "Answer4" )] []
+            , label [ for "a2q5fourth"] [ getAnswerText model "Activity2" "Question5" "Answer4" ]
+        ]
+        , div [] [
+            if answerButtonVisible then
+                div [] [
+                    button [ onClick (RevealSolution "Activity2" "Question5")] [ Html.text "Check answer"]
+                    , div [] [
+                        if solutionVisible then
+                            if answerCorrect then
+                                div [ class "correct_answer" ] [
+                                    Html.text """The best answer here is "conjunction" since it connects two clauses "there was no..." and "he looked for something," it must be a conjunction, possibly "though" or "but."""
+                                ]
+                            else
+                                div [ class "incorrect_answer" ] [
+                                    Html.text """The best answer here is "conjunction" since it connects two clauses "there was no..." and "he looked for something," it must be a conjunction, possibly "though" or "but."""
+                                ]
+                        else
+                            div [] []
+                    ]
+                ]
+            else
+                div [] []
+        ]
+    ]
+
+viewSeventhQuestion : Model -> Html Msg
+viewSeventhQuestion model =
+    let
+        answerButtonVisible = checkAnswerSelected model "Activity2" "Question6"
+
+        answerCorrect = checkAnswerCorrect model "Activity2" "Question6"
+
+        solutionVisible = checkButtonClicked model "Activity2" "Question6"
+    in
+    div [] [
+        Html.div [] [ text "parnly" ]
+        , Html.form [] [
+            input [ type_ "radio", name "activity2_question6", id "a2q6first", class "guide-question", onClick (UpdateAnswer "Activity2" "Question6" "Answer1" )] []
+            , label [for "a2q6first"] [ getAnswerText model "Activity2" "Question6" "Answer1" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity2_question6", id "a2q6second", class "guide-question", onClick (UpdateAnswer "Activity2" "Question6" "Answer2" )] []
+            , label [ for "a2q6second"] [ getAnswerText model "Activity2" "Question6" "Answer2" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity2_question6", id "a2q6third", class "guide-question", onClick (UpdateAnswer "Activity2" "Question6" "Answer3" )] []
+            , label [ for "a2q6third"] [ getAnswerText model "Activity2" "Question6" "Answer3" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity2_question6", id "a2q6fourth", class "guide-question", onClick (UpdateAnswer "Activity2" "Question6" "Answer4" )] []
+            , label [ for "a2q6fourth"] [ getAnswerText model "Activity2" "Question6" "Answer4" ]
+        ]
+        , div [] [
+            if answerButtonVisible then
+                div [] [
+                    button [ onClick (RevealSolution "Activity2" "Question6")] [ Html.text "Check answer"]
+                    , div [] [
+                        if solutionVisible then
+                            if answerCorrect then
+                                div [ class "correct_answer" ] [
+                                    Html.text """The best answer here is "adverb". It must be an adjective or adverb to be used in the phrase "as X as," and the "-ly" suffix suggests an adverb."""
+                                ]
+                            else
+                                div [ class "incorrect_answer" ] [
+                                    Html.text """The best answer here is "adverb". It must be an adjective or adverb to be used in the phrase "as X as," and the "-ly" suffix suggests an adverb."""
+                                ]
+                        else
+                            div [] []
+                    ]
+                ]
+            else
+                div [] []
+        ]
+    ]
+
+viewEigthQuestion : Model -> Html Msg
+viewEigthQuestion model =
+    let
+        answerButtonVisible = checkAnswerSelected model "Activity3" "Question1"
+
+        answerCorrect = checkAnswerCorrect model "Activity3" "Question1"
+
+        solutionVisible = checkButtonClicked model "Activity3" "Question1"
+    in
+    div [] [
+        Html.div [] [ text "Go back to the text, and locate the place there the author seems to describe the emotions of the characters. Which of these words would be the most important to look up?" ]
+        , Html.form [] [
+            input [ type_ "radio", name "activity3_question1", id "a3q1first", class "guide-question", onClick (UpdateAnswer "Activity3" "Question1" "Answer1" )] []
+            , label [for "a3q1first"] [ getAnswerText model "Activity3" "Question1" "Answer1" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity3_question1", id "a3q1second", class "guide-question", onClick (UpdateAnswer "Activity3" "Question1" "Answer2" )] []
+            , label [ for "a3q1second"] [ getAnswerText model "Activity3" "Question1" "Answer2" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity3_question1", id "a3q1third", class "guide-question", onClick (UpdateAnswer "Activity3" "Question1" "Answer3" )] []
+            , label [ for "a3q1third"] [ getAnswerText model "Activity3" "Question1" "Answer3" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity3_question1", id "a3q1fourth", class "guide-question", onClick (UpdateAnswer "Activity3" "Question1" "Answer4" )] []
+            , label [ for "a3q1fourth"] [ getAnswerText model "Activity3" "Question1" "Answer4" ]
+        ]
+        , div [] [
+            if answerButtonVisible then
+                div [] [
+                    button [ onClick (RevealSolution "Activity3" "Question1")] [ Html.text "Check answer"]
+                    , div [] [
+                        if solutionVisible then
+                            if answerCorrect then
+                                div [ class "correct_answer" ] [
+                                    Html.text """Choices e) bazad and f) fisd would be high priority in determining the emotional charge of this seen, since they both describe the girl's look at the man.
+                                    Choices b) fornoy and d) calbained are medium priority. Knowing the meaning of "fornoy" might help to clarify the bond/relationship between the man and the girl.
+                                    Since "calbained" is an action that the man does with his head, it might reveal how the man communicates with the girl.
+                                    The choice a) foslaint would be lower priority, since it relates primarily to the man in the boat, and "foslaint" is likely to be a word of physical description for the man.
+                                    The choice c) divey would be lowest priority, since it describes the boat, and is unlikely to give a direct indication of the emotional relationship between the man and the girl."""
+                                ]
+                            else
+                                div [ class "incorrect_answer" ] [
+                                    Html.text """Choices e) bazad and f) fisd would be high priority in determining the emotional charge of this seen, since they both describe the girl's look at the man.
+                                    Choices b) fornoy and d) calbained are medium priority. Knowing the meaning of "fornoy" might help to clarify the bond/relationship between the man and the girl.
+                                    Since "calbained" is an action that the man does with his head, it might reveal how the man communicates with the girl.
+                                    The choice a) foslaint would be lower priority, since it relates primarily to the man in the boat, and "foslaint" is likely to be a word of physical description for the man.
+                                    The choice c) divey would be lowest priority, since it describes the boat, and is unlikely to give a direct indication of the emotional relationship between the man and the girl."""
+                                ]
+                        else
+                            div [] []
+                    ]
+                ]
+            else
+                div [] []
+        ]
+    ]
+
+
+getAnswerText : Model -> String -> String -> String -> Html Msg
+getAnswerText model activityKey questionKey answerKey =
     let
         maybeQuestion = case Dict.get activityKey model.activities of
             Just qs -> Dict.get questionKey (questions qs)
@@ -251,6 +730,53 @@ getQuestion model activityKey questionKey answerKey =
        Html.text answerText
     
 
+checkAnswerCorrect : Model -> String -> String -> Bool
+checkAnswerCorrect model activityLabel questionLabel =
+    let
+        maybeActivity = Dict.get activityLabel model.activities
+
+        maybeQuestion = case maybeActivity of
+            Just ac -> (Dict.get questionLabel (questions ac))
+            Nothing -> Maybe.map identity Nothing
+
+        answerList = case maybeQuestion of
+            Just q -> List.map Tuple.second (Dict.toList (answers q))
+            Nothing -> []
+
+        answeredCorrectly = List.any (\v -> v == True) (List.map (\a -> (a.correct == True) && a.selected) answerList)
+    in
+        answeredCorrectly
+
+
+checkAnswerSelected : Model -> String -> String -> Bool
+checkAnswerSelected model activityLabel questionLabel =
+    let 
+        maybeActivity = Dict.get activityLabel model.activities
+
+        maybeQuestion = case maybeActivity of
+            Just ac ->  Dict.get questionLabel (questions ac)
+            Nothing -> Maybe.map identity Nothing
+
+        answerList = case maybeQuestion of
+            Just q -> List.map Tuple.second (Dict.toList (answers q))
+            Nothing -> []
+
+        answerSelected = List.any (\a -> a.selected == True) answerList
+    in
+        answerSelected
+
+checkButtonClicked : Model -> String -> String -> Bool
+checkButtonClicked model activityLabel questionLabel =
+    let
+        maybeShowSolutions = Dict.get activityLabel model.visibleSolutions
+        
+        solutionVisible = case maybeShowSolutions of
+            Just soln -> Dict.get questionLabel (showSolutions soln)
+            Nothing -> Maybe.map identity Nothing
+    in
+        case solutionVisible of
+           Just visible -> visible
+           Nothing -> False
 
 
 viewTabs : Html Msg

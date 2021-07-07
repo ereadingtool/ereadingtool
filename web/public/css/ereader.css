@@ -87,6 +87,10 @@ body {
   align-items: center;
 }
 
+.correct_answer {
+  background: lightgreen;
+  color: black;
+}
 
 .creator-guide {
   padding: 10px 20px;
@@ -204,6 +208,10 @@ body {
   align-items: center;
 }
 
+.guide-question {
+  width: 5%;
+}
+
 .guide-tab {
   display: inline-block;
   padding: 7px;
@@ -274,6 +282,11 @@ body {
 
 .hint_overlay span.cursor:hover {
   text-decoration: underline;
+}
+
+.incorrect_answer {
+  background: lightcoral;
+  color: black;
 }
 
 #info-image {
@@ -528,7 +541,7 @@ body {
 }
 
 .sample-passage {
-  background: #f4f1f1;
+  background: #f4f4f4;
   /* border-radius: .5%; */
   padding: 5px;
 }
