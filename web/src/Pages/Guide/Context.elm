@@ -94,7 +94,8 @@ viewTabs =
                 ]
                 [ text "Progress" ]
             ]
-        , div [ class "guide-tab" 
+        , div
+            [ class "guide-tab"
             , class "selected-guide-tab"
             ]
             [ a
@@ -103,7 +104,8 @@ viewTabs =
                 ]
                 [ text "Strategies" ]
             ]
-        , div [ class "guide-tab" 
+        , div
+            [ class "guide-tab"
             ]
             [ a
                 [ href (Route.toString Route.Guide__Comprehension)
@@ -111,7 +113,8 @@ viewTabs =
                 ]
                 [ text "Comprehension" ]
             ]
-        , div [ class "guide-tab" 
+        , div
+            [ class "guide-tab"
             , class "selected-guide-tab"
             ]
             [ a
@@ -120,7 +123,8 @@ viewTabs =
                 ]
                 [ text "Context" ]
             ]
-        , div [ class "guide-tab" 
+        , div
+            [ class "guide-tab"
             ]
             [ a
                 [ href (Route.toString Route.Guide__Priority)
@@ -147,8 +151,8 @@ communication (to someone or with someone)? Is it present/future tense? Or past?
 
 viewSecondSection : Html Msg
 viewSecondSection =
-    div [class "sample-passage"] [
-        Html.em [] [ Html.text  "A Boat on the River"]
+    div [ class "sample-passage" ]
+        [ Html.em [] [ Html.text "A Boat on the River" ]
         , Html.br [] []
         , Html.br [] []
         , Html.text "The "
@@ -158,7 +162,7 @@ viewSecondSection =
         his """
         , Html.strong [] [ Html.text "dispers" ]
         , Html.text " and his "
-        , Html.strong [] [ Html.text "dispers" ] 
+        , Html.strong [] [ Html.text "dispers" ]
         , Html.text """ loose in his waistband, kept an eager look out. He had no net, galeaft, or line, and he could not be a paplil; his boat 
         had no exbain for a sitter, no paint, no debilk, no bepult beyond a rusty calben and a lanop of rope, and he could not be a waterman; his boat was too """
         , Html.strong [] [ Html.text "anem" ]
@@ -168,17 +172,19 @@ viewSecondSection =
         something, with a most nagril and searching """
         , Html.strong [] [ Html.text "profar" ]
         , Html.text ". The befin, which had turned an hour before, was melucting zopt, and his eyes "
-        , Html.strong [] [ Html.text "hasteled" ] 
+        , Html.strong [] [ Html.text "hasteled" ]
         , Html.text """ every little furan and gaist in its broad sweep, as the boat made bilp ducasp against it, or drove stern foremost before it, according as he calbained his fornoy by 
         a calput of his head. She """
         , Html.strong [] [ Html.text "hasteled" ]
         , Html.text " his face as parnly as he "
-        , Html.strong [] [ Html.text "hasteled" ] 
+        , Html.strong [] [ Html.text "hasteled" ]
         , Html.text " the river. But, in the astortant of her look there was a touch of bazad or fisd."
-    ]
+        ]
+
 
 
 -- TODO: multiple choice here
+
 
 viewThirdSection : Html Msg
 viewThirdSection =
@@ -193,17 +199,18 @@ Another way to approach guessing the meaning of unfamiliar words in a text is to
 you could image that the text might contain the words "fisherman" and "tide," and indeed those words are in the original text.  Can you figure out which non-sense words are standing in for them? 
 """
 
+
 viewFourthSection : Html Msg
-viewFourthSection = 
-    div [class "sample-passage"] [
-        Html.em [] [ Html.text  "A Boat on the River"]
+viewFourthSection =
+    div [ class "sample-passage" ]
+        [ Html.em [] [ Html.text "A Boat on the River" ]
         , Html.br [] []
         , Html.br [] []
         , Html.text """
         The gapels in this boat were those of a foslaint man with nabelked amboned hair and a trathmollated face, and a finlact girl of nineteen or twenty, 
         nabbastly like him to be sorbicable as his fornoy. The girl zarred, pulling a pair of sculls very easily; the man, with the rudder-lines slack in 
         his dispers, and his dispers loose in his waistband, kept an eager look out. He had no net, """
-        , Html.strong [] [ Html.text "galeaft"]
+        , Html.strong [] [ Html.text "galeaft" ]
         , Html.text ", or line, and he could not be a "
         , Html.strong [] [ Html.text "paplil" ]
         , Html.text "; his boat had no "
@@ -225,7 +232,7 @@ viewFourthSection =
         , Html.strong [] [ Html.text "ducasp" ]
         , Html.text """ against it, or drove stern foremost before it, according as he calbained his fornoy by 
         a calput of his head. She hasteled his face as parnly as he hasteled the river. But, in the astortant of her look there was a touch of bazad or fisd."""
-    ]
+        ]
 
 
 viewFifthSection : Html Msg
@@ -256,4 +263,4 @@ viewAltText id texts =
 altTexts : Dict String String
 altTexts =
     Dict.fromList
-        [ ]
+        []

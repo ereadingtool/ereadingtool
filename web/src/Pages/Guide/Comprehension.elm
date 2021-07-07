@@ -92,7 +92,8 @@ viewTabs =
                 ]
                 [ text "Progress" ]
             ]
-        , div [ class "guide-tab" 
+        , div
+            [ class "guide-tab"
             , class "selected-guide-tab"
             ]
             [ a
@@ -101,7 +102,8 @@ viewTabs =
                 ]
                 [ text "Strategies" ]
             ]
-        , div [ class "guide-tab" 
+        , div
+            [ class "guide-tab"
             , class "selected-guide-tab"
             ]
             [ a
@@ -110,7 +112,8 @@ viewTabs =
                 ]
                 [ text "Comprehension" ]
             ]
-        , div [ class "guide-tab" 
+        , div
+            [ class "guide-tab"
             ]
             [ a
                 [ href (Route.toString Route.Guide__Context)
@@ -118,7 +121,8 @@ viewTabs =
                 ]
                 [ text "Context" ]
             ]
-        , div [ class "guide-tab" 
+        , div
+            [ class "guide-tab"
             ]
             [ a
                 [ href (Route.toString Route.Guide__Priority)
@@ -153,8 +157,8 @@ the end, and make as much sense out of the passage as you can.
 
 viewSecondSection : Html Msg
 viewSecondSection =
-    div [class "sample-passage"] [
-        Html.em [] [ Html.text  "A Boat on the River"]
+    div [ class "sample-passage" ]
+        [ Html.em [] [ Html.text "A Boat on the River" ]
         , Html.br [] []
         , Html.br [] []
         , Html.text """
@@ -167,8 +171,7 @@ viewSecondSection =
         furan and gaist in its broad sweep, as the boat made bilp ducasp against it, or drove stern foremost before it, according as he calbained his fornoy by 
         a calput of his head. She hasteled his face as parnly as he hasteled the river. But, in the astortant of her look there was a touch of bazad or fisd.
         """
-    ]
-
+        ]
 
 
 viewThirdSection : Html Msg
@@ -199,4 +202,4 @@ viewAltText id texts =
 altTexts : Dict String String
 altTexts =
     Dict.fromList
-        [ ]
+        []
