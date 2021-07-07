@@ -489,16 +489,14 @@ viewSecondQuestion model =
                     [ button [ onClick (RevealSolution "Activity2" "Question1") ] [ Html.text "Check answer" ]
                     , div []
                         [ if solutionVisible then
-                            if answerCorrect then
+                            (if answerCorrect then
                                 div [ class "correct_answer" ]
-                                    [ Html.text "The correct answer is \"adjective\". It describes the noun \"face\""
-                                    ]
 
-                            else
+                             else
                                 div [ class "incorrect_answer" ]
-                                    [ Html.text "The correct answer is \"adjective\". It describes the noun \"face\""
-                                    ]
-
+                            )
+                                [ Html.text "The correct answer is \"adjective\". It describes the noun \"face\""
+                                ]
                           else
                             div [] []
                         ]
@@ -543,16 +541,14 @@ viewThirdQuestion model =
                     [ button [ onClick (RevealSolution "Activity2" "Question2") ] [ Html.text "Check answer" ]
                     , div []
                         [ if solutionVisible then
-                            if answerCorrect then
+                            (if answerCorrect then
                                 div [ class "correct_answer" ]
-                                    [ Html.text "The correct answer is \"verb\". It follows the subject \"the girl\" and makes a complete thought, so it is most likely a verb. It also has the past tense ending (-ed) on it."
-                                    ]
 
-                            else
+                             else
                                 div [ class "incorrect_answer" ]
-                                    [ Html.text ""
-                                    ]
-
+                            )
+                                [ Html.text "The correct answer is \"verb\". It follows the subject \"the girl\" and makes a complete thought, so it is most likely a verb. It also has the past tense ending (-ed) on it."
+                                ]
                           else
                             div [] []
                         ]
@@ -597,15 +593,14 @@ viewFourthQuestion model =
                     [ button [ onClick (RevealSolution "Activity2" "Question3") ] [ Html.text "Check answer" ]
                     , div []
                         [ if solutionVisible then
-                            if answerCorrect then
+                            (if answerCorrect then
                                 div [ class "correct_answer" ]
-                                    [ Html.text "The correct answer is \"noun\". The word is preceded by the indefinite article \"a\" which strongly suggests a noun."
-                                    ]
 
-                            else
+                             else
                                 div [ class "incorrect_answer" ]
-                                    [ Html.text "The correct answer is \"noun\". The word is preceded by the indefinite article \"a\" which strongly suggests a noun."
-                                    ]
+                            )
+                                [ Html.text "The correct answer is \"noun\". The word is preceded by the indefinite article \"a\" which strongly suggests a noun."
+                                ]
 
                           else
                             div [] []
@@ -651,15 +646,14 @@ viewFifthQuestion model =
                     [ button [ onClick (RevealSolution "Activity2" "Question4") ] [ Html.text "Check answer" ]
                     , div []
                         [ if solutionVisible then
-                            if answerCorrect then
+                            (if answerCorrect then
                                 div [ class "correct_answer" ]
-                                    [ Html.text "The correct answer is \"adjective\". It is used in an adjective phrase following \"a most...\" and it is also in parallel construction to \"searching\" and so it is being used as some kind of modifier to the noun profar."
-                                    ]
 
-                            else
+                             else
                                 div [ class "incorrect_answer" ]
-                                    [ Html.text "The correct answer is \"adjective\". It is used in an adjective phrase following \"a most...\" and it is also in parallel construction to \"searching\" and so it is being used as some kind of modifier to the noun profar."
-                                    ]
+                            )
+                                [ Html.text "The correct answer is \"adjective\". It is used in an adjective phrase following \"a most...\" and it is also in parallel construction to \"searching\" and so it is being used as some kind of modifier to the noun profar."
+                                ]
 
                           else
                             div [] []
@@ -705,15 +699,14 @@ viewSixthQuestion model =
                     [ button [ onClick (RevealSolution "Activity2" "Question5") ] [ Html.text "Check answer" ]
                     , div []
                         [ if solutionVisible then
-                            if answerCorrect then
+                            (if answerCorrect then
                                 div [ class "correct_answer" ]
-                                    [ Html.text """The best answer here is "conjunction" since it connects two clauses "there was no..." and "he looked for something," it must be a conjunction, possibly "though" or "but."""
-                                    ]
 
-                            else
+                             else
                                 div [ class "incorrect_answer" ]
-                                    [ Html.text """The best answer here is "conjunction" since it connects two clauses "there was no..." and "he looked for something," it must be a conjunction, possibly "though" or "but."""
-                                    ]
+                            )
+                                [ Html.text """The best answer here is "conjunction" since it connects two clauses "there was no..." and "he looked for something," it must be a conjunction, possibly "though" or "but."""
+                                ]
 
                           else
                             div [] []
@@ -759,15 +752,14 @@ viewSeventhQuestion model =
                     [ button [ onClick (RevealSolution "Activity2" "Question6") ] [ Html.text "Check answer" ]
                     , div []
                         [ if solutionVisible then
-                            if answerCorrect then
+                            (if answerCorrect then
                                 div [ class "correct_answer" ]
-                                    [ Html.text """The best answer here is "adverb". It must be an adjective or adverb to be used in the phrase "as X as," and the "-ly" suffix suggests an adverb."""
-                                    ]
 
-                            else
+                             else
                                 div [ class "incorrect_answer" ]
-                                    [ Html.text """The best answer here is "adverb". It must be an adjective or adverb to be used in the phrase "as X as," and the "-ly" suffix suggests an adverb."""
-                                    ]
+                            )
+                                [ Html.text """The best answer here is "adverb". It must be an adjective or adverb to be used in the phrase "as X as," and the "-ly" suffix suggests an adverb."""
+                                ]
 
                           else
                             div [] []
@@ -813,23 +805,18 @@ viewEigthQuestion model =
                     [ button [ onClick (RevealSolution "Activity3" "Question1") ] [ Html.text "Check answer" ]
                     , div []
                         [ if solutionVisible then
-                            if answerCorrect then
+                            (if answerCorrect then
                                 div [ class "correct_answer" ]
-                                    [ Html.text """Choices e) bazad and f) fisd would be high priority in determining the emotional charge of this seen, since they both describe the girl's look at the man.
-                                    Choices b) fornoy and d) calbained are medium priority. Knowing the meaning of "fornoy" might help to clarify the bond/relationship between the man and the girl.
-                                    Since "calbained" is an action that the man does with his head, it might reveal how the man communicates with the girl.
-                                    The choice a) foslaint would be lower priority, since it relates primarily to the man in the boat, and "foslaint" is likely to be a word of physical description for the man.
-                                    The choice c) divey would be lowest priority, since it describes the boat, and is unlikely to give a direct indication of the emotional relationship between the man and the girl."""
-                                    ]
 
-                            else
+                             else
                                 div [ class "incorrect_answer" ]
-                                    [ Html.text """Choices e) bazad and f) fisd would be high priority in determining the emotional charge of this seen, since they both describe the girl's look at the man.
-                                    Choices b) fornoy and d) calbained are medium priority. Knowing the meaning of "fornoy" might help to clarify the bond/relationship between the man and the girl.
-                                    Since "calbained" is an action that the man does with his head, it might reveal how the man communicates with the girl.
-                                    The choice a) foslaint would be lower priority, since it relates primarily to the man in the boat, and "foslaint" is likely to be a word of physical description for the man.
-                                    The choice c) divey would be lowest priority, since it describes the boat, and is unlikely to give a direct indication of the emotional relationship between the man and the girl."""
-                                    ]
+                            )
+                                [ Html.text """Choices e) bazad and f) fisd would be high priority in determining the emotional charge of this seen, since they both describe the girl's look at the man.
+                                Choices b) fornoy and d) calbained are medium priority. Knowing the meaning of "fornoy" might help to clarify the bond/relationship between the man and the girl.
+                                Since "calbained" is an action that the man does with his head, it might reveal how the man communicates with the girl.
+                                The choice a) foslaint would be lower priority, since it relates primarily to the man in the boat, and "foslaint" is likely to be a word of physical description for the man.
+                                The choice c) divey would be lowest priority, since it describes the boat, and is unlikely to give a direct indication of the emotional relationship between the man and the girl."""
+                                ]
 
                           else
                             div [] []
