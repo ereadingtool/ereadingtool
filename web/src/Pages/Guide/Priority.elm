@@ -174,50 +174,24 @@ update msg model =
     case msg of
         UpdateAnswer activity question answer ->
             let
-                maybeActivity =
-                    Dict.get activity model.activities
+                maybeActivity = accessActivity model activity
+                maybeQuestion = accessQuestion question maybeActivity
 
-                maybeQuestion =
-                    case maybeActivity of
-                        Just ac ->
-                            Dict.get question (questions ac)
+                -- need to clear previous selected answers in `case` because only one can have `selected = True`
+                -- questionCleared = clearQuestion maybeQuestion
 
-                        Nothing ->
-                            Maybe.map identity Nothing
+                maybeAnswer = accessAnswer answer maybeQuestion
 
-                -- need to clear previous selected answers in case because only one can have `selected = True`
-                questionCleared =
-                    case maybeQuestion of
-                        Just q ->
-                            Question (Dict.map (\_ an -> { an | selected = False }) (answers q)) { showButton = True, showSolution = False}
+                updatedAnswer = updateAnswer maybeAnswer
 
-                        Nothing ->
-                            Question (Dict.fromList []) { showButton = False, showSolution = False}
+-- model maybeUpdatedAnswer activityKey questionKey answerKey
+                updatedQuestion = updateQuestion model activity question answer (Just updatedAnswer)
+                -- updatedQuestion = updateQuestion updatedAnswer answer questionCleared
 
-                maybeAnswer =
-                    Dict.get answer (answers questionCleared)
+                updatedActivity = updateActivity maybeActivity question updatedQuestion
 
-                updatedAnswer =
-                    case maybeAnswer of
-                        Just an ->
-                            Answer an.answer an.correct (not an.selected)
-
-                        Nothing ->
-                            Answer "" False False
-
-                updatedQuestion =
-                    Question (Dict.update answer (Maybe.map (\_ -> updatedAnswer)) (answers questionCleared)) { showButton = True, showSolution = False }
-
-                updatedActivity =
-                    case maybeActivity of
-                        Just ac ->
-                            Activity (Dict.update question (Maybe.map (\_ -> updatedQuestion)) (questions ac))
-
-                        Nothing ->
-                            Activity (Dict.fromList [])
-
-                updatedActivities =
-                    Dict.update activity (Maybe.map (\_ -> updatedActivity)) model.activities
+                updatedActivities = updateActivities model activity updatedActivity
+                    -- Dict.update activity (Maybe.map (\_ -> updatedActivity)) model.activities
             in
             ( { model | activities = updatedActivities }
             , Cmd.none
@@ -251,7 +225,86 @@ update msg model =
             ( { model | activities = updatedActivities }, Cmd.none )
 
 
+accessActivity : Model -> String -> Maybe Activity
+accessActivity model activity =
+    Dict.get activity model.activities
 
+-- accessAndClearQuestion : Maybe Activity -> String -> Maybe Question
+-- accessAndClearQuestion maybeActivity questionKey =
+accessQuestion : String -> Maybe Activity -> Maybe Question
+accessQuestion questionKey maybeActivity =
+        case maybeActivity of
+            Just ac -> Dict.get questionKey (questions ac)
+                -- let
+                    -- maybeQuestion = Dict.get questionKey (questions ac)
+                -- in
+                -- case maybeQuestion of
+                --     Just q -> Maybe.map identity (Question (Dict.map (\_ an -> { an | selected = False }) (answers q)) { showButton = True, showSolution = False})
+                --     Nothing -> Maybe.map identity (Question (Dict.fromList []) { showButton = False, showSolution = False})
+            Nothing ->
+                -- Maybe.map identity (Question (Dict.fromList []) { showButton = False, showSolution = False})
+                Maybe.map identity Nothing
+
+accessAnswer : String -> Maybe Question -> Maybe Answer
+accessAnswer answer maybeQuestion =
+    case maybeQuestion of
+        Just q -> Dict.get answer (answers q)
+        Nothing -> Just (Answer "" False False)
+
+clearQuestion : Maybe Question -> Question
+clearQuestion maybeQuestion =
+    case maybeQuestion of
+        Just q ->
+            Question (Dict.map (\_ an -> { an | selected = False }) (answers q)) { showButton = True, showSolution = False}
+
+        Nothing ->
+            Question (Dict.fromList []) { showButton = False, showSolution = False} 
+
+updateAnswer : Maybe Answer -> Answer
+updateAnswer maybeAnswer =
+    case maybeAnswer of
+        Just an ->
+            Answer an.answer an.correct (not an.selected)
+
+        Nothing ->
+            Answer "" False False
+
+updateQuestion : Model -> String -> String -> String -> Maybe Answer -> Question
+updateQuestion model activityKey questionKey answerKey updatedAnswer =
+-- updateQuestion model activityKey questionKey answerKey maybeUpdatedAnswer =
+    -- make the cleared question here
+    -- case maybeUpdatedAnswer of
+    --     Just updatedAnswer -> 
+            let
+                clearedQuestion = accessActivity model activityKey
+                        |> accessQuestion questionKey
+                        |> clearQuestion
+            in
+                -- Question (Dict.update answerKey (Maybe.map (\_ -> updatedAnswer)) (answers clearedQuestion)) { showButton = True, showSolution = False }
+                Question (Dict.update answerKey (\_ -> updatedAnswer) (answers clearedQuestion)) { showButton = True, showSolution = False }
+        -- Nothing -> Question (Dict.fromList []) { showButton = False, showSolution = False}
+
+
+        -- before clearing the question in this function
+        -- Just updatedAnswer -> Maybe.map identity (Question (Dict.update answerKey (Maybe.map (\_ -> updatedAnswer)) (answers clearedQuestion)) { showButton = True, showSolution = False })
+        -- Nothing -> Maybe.map identity (Question (Dict.fromList []) { showButton = False, showSolution = False})
+    -- before answer was a Maybe type
+    -- Question (Dict.update answerKey (Maybe.map (\_ -> updatedAnswer)) (answers clearedQuestion)) { showButton = True, showSolution = False }
+
+
+updateActivity : Maybe Activity -> String -> Question -> Activity
+updateActivity maybeActivity questionKey updatedQuestion =
+    case maybeActivity of
+        Just ac ->
+            Activity (Dict.update questionKey (Maybe.map (\_ -> updatedQuestion)) (questions ac))
+
+        Nothing ->
+            Activity (Dict.fromList [])
+
+updateActivities : Model -> String -> Activity -> Dict String Activity
+updateActivities model activityKey updatedActivity =
+    Dict.update activityKey (Maybe.map (\_ -> updatedActivity)) model.activities
+ 
 -- VIEW
 
 
