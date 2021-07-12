@@ -7,15 +7,13 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Markdown
-import Question.Field exposing (question)
-import Question.Model exposing (Question)
 import Session exposing (Session)
 import Shared
 import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url as Url exposing (Url)
-
+import Help.Activities exposing (..)
 
 page : Page Params Model Msg
 page =
@@ -28,56 +26,11 @@ page =
         , load = load
         }
 
-
 type alias Model =
     { activities : Dict String Activity
-    , visibleButtons : Dict String ShowButton
-    , visibleSolutions : Dict String ShowSolution
-    }
-
-
-type alias Answer =
-    { answer : String
-    , correct : Bool
-    , selected : Bool
-    }
-
-
-type Activity
-    = Activity (Dict String Question)
-
-
-type Question
-    -- = Question (Dict String Answer) { showButton: Bool, showSolution: Bool }
-    = Question (Dict String Answer)
-
-
-type ShowButton
-    = ShowButton (Dict String Bool)
-
-
-type ShowSolution
-    = ShowSolution (Dict String Bool)
-
-
-questions : Activity -> Dict String Question
-questions (Activity qs) =
-    qs
-
-
-answers : Question -> Dict String Answer
-answers (Question ans) =
-    ans
-
-
-showButtons : ShowButton -> Dict String Bool
-showButtons (ShowButton visible) =
-    visible
-
-
-showSolutions : ShowSolution -> Dict String Bool
-showSolutions (ShowSolution visible) =
-    visible
+    -- , visibleButtons : Dict String ShowButton
+    -- , visibleSolutions : Dict String ShowSolution
+    }    
 
 
 
@@ -87,8 +40,8 @@ showSolutions (ShowSolution visible) =
 init : Shared.Model -> Url Params -> ( Model, Cmd Msg )
 init shared { params } =
     ( { activities = initActivitiesHelper
-      , visibleButtons = initButtonVisiblityHelper
-      , visibleSolutions = initSolutionVisibilityHelper
+    --   , visibleButtons = initButtonVisiblityHelper
+    --   , visibleSolutions = initSolutionVisibilityHelper
       }
     , Cmd.none
     )
@@ -109,6 +62,7 @@ initActivitiesHelper =
                                 , ( "Answer4", Answer "calput" False False )
                                 ]
                             )
+                            { showButton = False, showSolution = False}
                       )
                     ]
                 )
@@ -126,6 +80,7 @@ initActivitiesHelper =
                                 , ( "Answer5", Answer "conjunction" False False )
                                 ]
                             )
+                            { showButton = False, showSolution = False}
                       )
                     , ( "Question2"
                       , Question
@@ -137,6 +92,7 @@ initActivitiesHelper =
                                 , ( "Answer5", Answer "conjunction" False False )
                                 ]
                             )
+                            { showButton = False, showSolution = False}
                       )
                     , ( "Question3"
                       , Question
@@ -148,6 +104,7 @@ initActivitiesHelper =
                                 , ( "Answer5", Answer "conjunction" False False )
                                 ]
                             )
+                            { showButton = False, showSolution = False}
                       )
                     , ( "Question4"
                       , Question
@@ -159,6 +116,7 @@ initActivitiesHelper =
                                 , ( "Answer5", Answer "conjunction" False False )
                                 ]
                             )
+                            { showButton = False, showSolution = False}
                       )
                     , ( "Question5"
                       , Question
@@ -170,6 +128,7 @@ initActivitiesHelper =
                                 , ( "Answer5", Answer "conjunction" True False )
                                 ]
                             )
+                            { showButton = False, showSolution = False}
                       )
                     , ( "Question6"
                       , Question
@@ -181,6 +140,7 @@ initActivitiesHelper =
                                 , ( "Answer5", Answer "conjunction" False False )
                                 ]
                             )
+                            { showButton = False, showSolution = False}
                       )
                     ]
                 )
@@ -199,6 +159,7 @@ initActivitiesHelper =
                                 , ( "Answer6", Answer "fisd" True False )
                                 ]
                             )
+                            { showButton = False, showSolution = False}
                       )
                     ]
                 )
@@ -206,65 +167,65 @@ initActivitiesHelper =
         ]
 
 
-initButtonVisiblityHelper : Dict String ShowButton
-initButtonVisiblityHelper =
-    Dict.fromList
-        [ ( "Activity1"
-          , ShowButton
-                (Dict.fromList
-                    [ ( "Question1", False )
-                    , ( "Question2", False )
-                    ]
-                )
-          )
-        ]
+-- initButtonVisiblityHelper : Dict String ShowButton
+-- initButtonVisiblityHelper =
+--     Dict.fromList
+--         [ ( "Activity1"
+--           , ShowButton
+--                 (Dict.fromList
+--                     [ ( "Question1", False )
+--                     , ( "Question2", False )
+--                     ]
+--                 )
+--           )
+--         ]
 
 
-initSolutionVisibilityHelper : Dict String ShowSolution
-initSolutionVisibilityHelper =
-    Dict.fromList
-        [ ( "Activity1"
-          , ShowSolution
-                (Dict.fromList
-                    [ ( "Question1", False ) ]
-                )
-          )
-        , ( "Activity2"
-          , ShowSolution
-                (Dict.fromList
-                    [ ( "Question1", False )
-                    , ( "Question2", False )
-                    , ( "Question3", False )
-                    , ( "Question4", False )
-                    , ( "Question5", False )
-                    , ( "Question6", False )
-                    ]
-                )
-          )
-        , ( "Activity3"
-          , ShowSolution
-                (Dict.fromList
-                    [ ( "Question1", False ) ]
-                )
-          )
-        ]
+-- initSolutionVisibilityHelper : Dict String ShowSolution
+-- initSolutionVisibilityHelper =
+--     Dict.fromList
+--         [ ( "Activity1"
+--           , ShowSolution
+--                 (Dict.fromList
+--                     [ ( "Question1", False ) ]
+--                 )
+--           )
+--         , ( "Activity2"
+--           , ShowSolution
+--                 (Dict.fromList
+--                     [ ( "Question1", False )
+--                     , ( "Question2", False )
+--                     , ( "Question3", False )
+--                     , ( "Question4", False )
+--                     , ( "Question5", False )
+--                     , ( "Question6", False )
+--                     ]
+--                 )
+--           )
+--         , ( "Activity3"
+--           , ShowSolution
+--                 (Dict.fromList
+--                     [ ( "Question1", False ) ]
+--                 )
+--           )
+--         ]
 
 
-intSolnHelper : Dict String (Dict String Bool)
-intSolnHelper =
-    Dict.fromList
-        [ ( "Activity1", Dict.fromList [ ( "Question1", False ) ] )
-        , ( "Activity2"
-          , Dict.fromList
-                [ ( "Question1", False )
-                , ( "Question2", False )
-                , ( "Question3", False )
-                , ( "Question4", False )
-                , ( "Question5", False )
-                , ( "Question6", False )
-                ]
-          )
-        ]
+-- intSolnHelper : Dict String (Dict String Bool)
+-- intSolnHelper =
+--     Dict.fromList
+--         [ ( "Activity1", Dict.fromList [ ( "Question1", False ) ] )
+--         , ( "Activity2"
+--           , Dict.fromList
+--                 [ ( "Question1", False )
+--                 , ( "Question2", False )
+--                 , ( "Question3", False )
+--                 , ( "Question4", False )
+--                 , ( "Question5", False )
+--                 , ( "Question6", False )
+--                 ]
+--           )
+--         ]
 
 
 
@@ -296,10 +257,10 @@ update msg model =
                 questionCleared =
                     case maybeQuestion of
                         Just q ->
-                            Question (Dict.map (\_ an -> { an | selected = False }) (answers q))
+                            Question (Dict.map (\_ an -> { an | selected = False }) (answers q)) { showButton = True, showSolution = False}
 
                         Nothing ->
-                            Question (Dict.fromList [])
+                            Question (Dict.fromList []) { showButton = False, showSolution = False}
 
                 maybeAnswer =
                     Dict.get answer (answers questionCleared)
@@ -313,7 +274,7 @@ update msg model =
                             Answer "" False False
 
                 updatedQuestion =
-                    Question (Dict.update answer (Maybe.map (\_ -> updatedAnswer)) (answers questionCleared))
+                    Question (Dict.update answer (Maybe.map (\_ -> updatedAnswer)) (answers questionCleared)) { showButton = True, showSolution = False }
 
                 updatedActivity =
                     case maybeActivity of
@@ -326,41 +287,54 @@ update msg model =
                 updatedActivities =
                     Dict.update activity (Maybe.map (\_ -> updatedActivity)) model.activities
 
-                maybeVisibleButton =
-                    Dict.get activity model.visibleButtons
+                -- maybeVisibleButton =
+                --     Dict.get activity model.visibleButtons
 
-                buttonVisible =
-                    case maybeVisibleButton of
-                        Just soln -> -- TODO soln -> button
-                            ShowButton (Dict.update question (Maybe.map (\visible -> not visible)) (showButtons soln))
+                -- buttonVisible =
+                --     case maybeVisibleButton of
+                --         Just soln -> -- TODO soln -> button
+                --             ShowButton (Dict.update question (Maybe.map (\visible -> not visible)) (showButtons soln))
 
-                        Nothing ->
-                            ShowButton (Dict.fromList [])
+                --         Nothing ->
+                --             ShowButton (Dict.fromList [])
 
-                updatedButtonVisibility =
-                    Dict.update activity (Maybe.map (\_ -> buttonVisible)) model.visibleButtons
+                -- updatedButtonVisibility =
+                --     Dict.update activity (Maybe.map (\_ -> buttonVisible)) model.visibleButtons
             in
-            ( { model | activities = updatedActivities, visibleButtons = updatedButtonVisibility }
+            ( { model | activities = updatedActivities }
+            -- ( { model | activities = updatedActivities, visibleButtons = updatedButtonVisibility }
             , Cmd.none
             )
 
         RevealSolution activity question ->
             let
-                maybeSolution =
-                    Dict.get activity model.visibleSolutions
+                maybeActivity =
+                    Dict.get activity model.activities
 
-                solutionVisible =
-                    case maybeSolution of
-                        Just soln ->
-                            ShowSolution (Dict.update question (Maybe.map (\visible -> not visible)) (showSolutions soln))
+                maybeQuestion = case maybeActivity of
+                    Just ac ->
+                        Dict.get question (questions ac)
+                    Nothing -> Maybe.map identity Nothing
+
+                updatedQuestion = case maybeQuestion of
+                    Just q -> Question (answers q) { showButton = True, showSolution = True }
+                    Nothing -> Question (Dict.fromList []) { showButton = False, showSolution = False }
+
+                updatedActivity =
+                    case maybeActivity of
+                        Just ac ->
+                            Activity (Dict.update question (Maybe.map (\_ -> updatedQuestion)) (questions ac))
 
                         Nothing ->
-                            ShowSolution (Dict.fromList [])
+                            Activity (Dict.fromList []) 
 
-                updatedSolutionVisibility =
-                    Dict.update activity (Maybe.map (\_ -> solutionVisible)) model.visibleSolutions
+                updatedActivities =
+                    Dict.update activity (Maybe.map (\_ -> updatedActivity)) model.activities
+                -- updatedSolutionVisibility =
+                --     Dict.update activity (Maybe.map (\_ -> solutionVisible)) model.visibleSolutions
             in
-            ( { model | visibleSolutions = updatedSolutionVisibility }, Cmd.none )
+            -- ( { model | visibleSolutions = updatedSolutionVisibility }, Cmd.none )
+            ( { model | activities = updatedActivities }, Cmd.none )
 
 
 
@@ -385,6 +359,12 @@ view model =
                     , viewFirstQuestion model
                     , viewThirdSection
                     , viewFourthSection
+                    , viewSecondQuestion model
+                    , viewThirdQuestion model
+                    , viewFourthQuestion model
+                    , viewFifthQuestion model
+                    , viewSixthQuestion model
+                    , viewSeventhQuestion model
                     , viewFifthSection
                     , viewSixthSection
                     , viewSeventhSection
@@ -406,6 +386,8 @@ viewFirstQuestion model =
 
         solutionVisible =
             checkButtonClicked model "Activity1" "Question1"
+
+        _ = Debug.log "solutionsVisible" solutionVisible
     in
     div []
         [ Html.div [] [ text "Based on frequency alone, which of these four words should you definitely look up?" ]
@@ -486,8 +468,9 @@ viewSecondQuestion model =
         , div []
             [ if answerButtonVisible then
                 div []
-                    [ button [ onClick (RevealSolution "Activity2" "Question1") ] [ Html.text "Check answer" ]
-                    , div []
+                    -- [ button [ onClick (RevealSolution "Activity2" "Question1") ] [ Html.text "Check answer" ]
+                    -- , div []
+                    [ div []
                         [ if solutionVisible then
                             (if answerCorrect then
                                 div [ class "correct_answer" ]
@@ -538,8 +521,9 @@ viewThirdQuestion model =
         , div []
             [ if answerButtonVisible then
                 div []
-                    [ button [ onClick (RevealSolution "Activity2" "Question2") ] [ Html.text "Check answer" ]
-                    , div []
+                    -- [ button [ onClick (RevealSolution "Activity2" "Question2") ] [ Html.text "Check answer" ]
+                    -- , div []
+                    [ div []
                         [ if solutionVisible then
                             (if answerCorrect then
                                 div [ class "correct_answer" ]
@@ -590,8 +574,9 @@ viewFourthQuestion model =
         , div []
             [ if answerButtonVisible then
                 div []
-                    [ button [ onClick (RevealSolution "Activity2" "Question3") ] [ Html.text "Check answer" ]
-                    , div []
+                    -- [ button [ onClick (RevealSolution "Activity2" "Question3") ] [ Html.text "Check answer" ]
+                    -- , div []
+                    [ div []
                         [ if solutionVisible then
                             (if answerCorrect then
                                 div [ class "correct_answer" ]
@@ -643,8 +628,9 @@ viewFifthQuestion model =
         , div []
             [ if answerButtonVisible then
                 div []
-                    [ button [ onClick (RevealSolution "Activity2" "Question4") ] [ Html.text "Check answer" ]
-                    , div []
+                    -- [ button [ onClick (RevealSolution "Activity2" "Question4") ] [ Html.text "Check answer" ]
+                    -- , div []
+                    [ div []
                         [ if solutionVisible then
                             (if answerCorrect then
                                 div [ class "correct_answer" ]
@@ -696,8 +682,9 @@ viewSixthQuestion model =
         , div []
             [ if answerButtonVisible then
                 div []
-                    [ button [ onClick (RevealSolution "Activity2" "Question5") ] [ Html.text "Check answer" ]
-                    , div []
+                    -- [ button [ onClick (RevealSolution "Activity2" "Question5") ] [ Html.text "Check answer" ]
+                    -- , div []
+                    [ div []
                         [ if solutionVisible then
                             (if answerCorrect then
                                 div [ class "correct_answer" ]
@@ -749,8 +736,9 @@ viewSeventhQuestion model =
         , div []
             [ if answerButtonVisible then
                 div []
-                    [ button [ onClick (RevealSolution "Activity2" "Question6") ] [ Html.text "Check answer" ]
-                    , div []
+                    -- [ button [ onClick (RevealSolution "Activity2" "Question6") ] [ Html.text "Check answer" ]
+                    -- , div []
+                    [ div []
                         [ if solutionVisible then
                             (if answerCorrect then
                                 div [ class "correct_answer" ]
@@ -802,8 +790,9 @@ viewEigthQuestion model =
         , div []
             [ if answerButtonVisible then
                 div []
-                    [ button [ onClick (RevealSolution "Activity3" "Question1") ] [ Html.text "Check answer" ]
-                    , div []
+                    -- [ button [ onClick (RevealSolution "Activity3" "Question1") ] [ Html.text "Check answer" ]
+                    -- , div []
+                    [ div []
                         [ if solutionVisible then
                             (if answerCorrect then
                                 div [ class "correct_answer" ]
@@ -918,23 +907,17 @@ checkAnswerSelected model activityLabel questionLabel =
 checkButtonClicked : Model -> String -> String -> Bool
 checkButtonClicked model activityLabel questionLabel =
     let
-        maybeShowSolutions =
-            Dict.get activityLabel model.visibleSolutions
+        maybeActivities =
+            Dict.get activityLabel model.activities
 
-        solutionVisible =
-            case maybeShowSolutions of
-                Just soln ->
-                    Dict.get questionLabel (showSolutions soln)
+        maybeQuestion = case maybeActivities of
+            Just activities -> Dict.get questionLabel (questions activities)
+            Nothing -> Maybe.map identity Nothing
 
-                Nothing ->
-                    Maybe.map identity Nothing
     in
-    case solutionVisible of
-        Just visible ->
-            visible
-
-        Nothing ->
-            False
+        case maybeQuestion of 
+            Just question -> showSolution question
+            Nothing -> False 
 
 
 viewTabs : Html Msg
