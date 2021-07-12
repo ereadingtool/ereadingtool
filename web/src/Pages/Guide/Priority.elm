@@ -1,6 +1,5 @@
 module Pages.Guide.Priority exposing (..)
 
--- import Html.Attributes exposing (alt, attribute, class, href, id, placeholder, src, style, title, value)
 
 import Dict exposing (Dict)
 import Html exposing (..)
@@ -27,10 +26,7 @@ page =
         }
 
 type alias Model =
-    { activities : Dict String Activity
-    -- , visibleButtons : Dict String ShowButton
-    -- , visibleSolutions : Dict String ShowSolution
-    }    
+    { activities : Dict String Activity }    
 
 
 
@@ -39,10 +35,7 @@ type alias Model =
 
 init : Shared.Model -> Url Params -> ( Model, Cmd Msg )
 init shared { params } =
-    ( { activities = initActivitiesHelper
-    --   , visibleButtons = initButtonVisiblityHelper
-    --   , visibleSolutions = initSolutionVisibilityHelper
-      }
+    ( { activities = initActivitiesHelper }
     , Cmd.none
     )
 
@@ -167,67 +160,6 @@ initActivitiesHelper =
         ]
 
 
--- initButtonVisiblityHelper : Dict String ShowButton
--- initButtonVisiblityHelper =
---     Dict.fromList
---         [ ( "Activity1"
---           , ShowButton
---                 (Dict.fromList
---                     [ ( "Question1", False )
---                     , ( "Question2", False )
---                     ]
---                 )
---           )
---         ]
-
-
--- initSolutionVisibilityHelper : Dict String ShowSolution
--- initSolutionVisibilityHelper =
---     Dict.fromList
---         [ ( "Activity1"
---           , ShowSolution
---                 (Dict.fromList
---                     [ ( "Question1", False ) ]
---                 )
---           )
---         , ( "Activity2"
---           , ShowSolution
---                 (Dict.fromList
---                     [ ( "Question1", False )
---                     , ( "Question2", False )
---                     , ( "Question3", False )
---                     , ( "Question4", False )
---                     , ( "Question5", False )
---                     , ( "Question6", False )
---                     ]
---                 )
---           )
---         , ( "Activity3"
---           , ShowSolution
---                 (Dict.fromList
---                     [ ( "Question1", False ) ]
---                 )
---           )
---         ]
-
-
--- intSolnHelper : Dict String (Dict String Bool)
--- intSolnHelper =
---     Dict.fromList
---         [ ( "Activity1", Dict.fromList [ ( "Question1", False ) ] )
---         , ( "Activity2"
---           , Dict.fromList
---                 [ ( "Question1", False )
---                 , ( "Question2", False )
---                 , ( "Question3", False )
---                 , ( "Question4", False )
---                 , ( "Question5", False )
---                 , ( "Question6", False )
---                 ]
---           )
---         ]
-
-
 
 -- UPDATE
 
@@ -286,23 +218,8 @@ update msg model =
 
                 updatedActivities =
                     Dict.update activity (Maybe.map (\_ -> updatedActivity)) model.activities
-
-                -- maybeVisibleButton =
-                --     Dict.get activity model.visibleButtons
-
-                -- buttonVisible =
-                --     case maybeVisibleButton of
-                --         Just soln -> -- TODO soln -> button
-                --             ShowButton (Dict.update question (Maybe.map (\visible -> not visible)) (showButtons soln))
-
-                --         Nothing ->
-                --             ShowButton (Dict.fromList [])
-
-                -- updatedButtonVisibility =
-                --     Dict.update activity (Maybe.map (\_ -> buttonVisible)) model.visibleButtons
             in
             ( { model | activities = updatedActivities }
-            -- ( { model | activities = updatedActivities, visibleButtons = updatedButtonVisibility }
             , Cmd.none
             )
 
@@ -330,10 +247,7 @@ update msg model =
 
                 updatedActivities =
                     Dict.update activity (Maybe.map (\_ -> updatedActivity)) model.activities
-                -- updatedSolutionVisibility =
-                --     Dict.update activity (Maybe.map (\_ -> solutionVisible)) model.visibleSolutions
             in
-            -- ( { model | visibleSolutions = updatedSolutionVisibility }, Cmd.none )
             ( { model | activities = updatedActivities }, Cmd.none )
 
 
@@ -386,8 +300,6 @@ viewFirstQuestion model =
 
         solutionVisible =
             checkButtonClicked model "Activity1" "Question1"
-
-        _ = Debug.log "solutionsVisible" solutionVisible
     in
     div []
         [ Html.div [] [ text "Based on frequency alone, which of these four words should you definitely look up?" ]
@@ -468,9 +380,8 @@ viewSecondQuestion model =
         , div []
             [ if answerButtonVisible then
                 div []
-                    -- [ button [ onClick (RevealSolution "Activity2" "Question1") ] [ Html.text "Check answer" ]
-                    -- , div []
-                    [ div []
+                    [ button [ onClick (RevealSolution "Activity2" "Question1") ] [ Html.text "Check answer" ]
+                    , div []
                         [ if solutionVisible then
                             (if answerCorrect then
                                 div [ class "correct_answer" ]
@@ -517,13 +428,15 @@ viewThirdQuestion model =
             , Html.br [] []
             , input [ type_ "radio", name "activity2_question2", id "a2q2fourth", class "guide-question", onClick (UpdateAnswer "Activity2" "Question2" "Answer4") ] []
             , label [ for "a2q2fourth" ] [ getAnswerText model "Activity2" "Question2" "Answer4" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity2_question2", id "a2q2fifth", class "guide-question", onClick (UpdateAnswer "Activity2" "Question2" "Answer5") ] []
+            , label [ for "a2q2fifth" ] [ getAnswerText model "Activity2" "Question2" "Answer5" ]
             ]
         , div []
             [ if answerButtonVisible then
                 div []
-                    -- [ button [ onClick (RevealSolution "Activity2" "Question2") ] [ Html.text "Check answer" ]
-                    -- , div []
-                    [ div []
+                    [ button [ onClick (RevealSolution "Activity2" "Question2") ] [ Html.text "Check answer" ]
+                    , div []
                         [ if solutionVisible then
                             (if answerCorrect then
                                 div [ class "correct_answer" ]
@@ -570,13 +483,15 @@ viewFourthQuestion model =
             , Html.br [] []
             , input [ type_ "radio", name "activity2_question3", id "a2q3fourth", class "guide-question", onClick (UpdateAnswer "Activity2" "Question3" "Answer4") ] []
             , label [ for "a2q3fourth" ] [ getAnswerText model "Activity2" "Question3" "Answer4" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity2_question3", id "a2q3fifth", class "guide-question", onClick (UpdateAnswer "Activity2" "Question3" "Answer5") ] []
+            , label [ for "a2q3fifth" ] [ getAnswerText model "Activity2" "Question3" "Answer5" ]
             ]
         , div []
             [ if answerButtonVisible then
                 div []
-                    -- [ button [ onClick (RevealSolution "Activity2" "Question3") ] [ Html.text "Check answer" ]
-                    -- , div []
-                    [ div []
+                    [ button [ onClick (RevealSolution "Activity2" "Question3") ] [ Html.text "Check answer" ]
+                    , div []
                         [ if solutionVisible then
                             (if answerCorrect then
                                 div [ class "correct_answer" ]
@@ -624,13 +539,15 @@ viewFifthQuestion model =
             , Html.br [] []
             , input [ type_ "radio", name "activity2_question4", id "a2q4fourth", class "guide-question", onClick (UpdateAnswer "Activity2" "Question4" "Answer4") ] []
             , label [ for "a2q4fourth" ] [ getAnswerText model "Activity2" "Question4" "Answer4" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity2_question5", id "a2q4fifth", class "guide-question", onClick (UpdateAnswer "Activity2" "Question4" "Answer5") ] []
+            , label [ for "a2q4fifth" ] [ getAnswerText model "Activity2" "Question4" "Answer5" ]
             ]
         , div []
             [ if answerButtonVisible then
                 div []
-                    -- [ button [ onClick (RevealSolution "Activity2" "Question4") ] [ Html.text "Check answer" ]
-                    -- , div []
-                    [ div []
+                    [ button [ onClick (RevealSolution "Activity2" "Question4") ] [ Html.text "Check answer" ]
+                    , div []
                         [ if solutionVisible then
                             (if answerCorrect then
                                 div [ class "correct_answer" ]
@@ -678,13 +595,15 @@ viewSixthQuestion model =
             , Html.br [] []
             , input [ type_ "radio", name "activity2_question5", id "a2q5fourth", class "guide-question", onClick (UpdateAnswer "Activity2" "Question5" "Answer4") ] []
             , label [ for "a2q5fourth" ] [ getAnswerText model "Activity2" "Question5" "Answer4" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity2_question6", id "a2q5fifth", class "guide-question", onClick (UpdateAnswer "Activity2" "Question5" "Answer5") ] []
+            , label [ for "a2q5fifth" ] [ getAnswerText model "Activity2" "Question5" "Answer5" ]
             ]
         , div []
             [ if answerButtonVisible then
                 div []
-                    -- [ button [ onClick (RevealSolution "Activity2" "Question5") ] [ Html.text "Check answer" ]
-                    -- , div []
-                    [ div []
+                    [ button [ onClick (RevealSolution "Activity2" "Question5") ] [ Html.text "Check answer" ]
+                    , div []
                         [ if solutionVisible then
                             (if answerCorrect then
                                 div [ class "correct_answer" ]
@@ -732,13 +651,15 @@ viewSeventhQuestion model =
             , Html.br [] []
             , input [ type_ "radio", name "activity2_question6", id "a2q6fourth", class "guide-question", onClick (UpdateAnswer "Activity2" "Question6" "Answer4") ] []
             , label [ for "a2q6fourth" ] [ getAnswerText model "Activity2" "Question6" "Answer4" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity2_question6", id "a2q6fifth", class "guide-question", onClick (UpdateAnswer "Activity2" "Question6" "Answer5") ] []
+            , label [ for "a2q6fifth" ] [ getAnswerText model "Activity2" "Question6" "Answer5" ]
             ]
         , div []
             [ if answerButtonVisible then
                 div []
-                    -- [ button [ onClick (RevealSolution "Activity2" "Question6") ] [ Html.text "Check answer" ]
-                    -- , div []
-                    [ div []
+                    [ button [ onClick (RevealSolution "Activity2" "Question6") ] [ Html.text "Check answer" ]
+                    , div []
                         [ if solutionVisible then
                             (if answerCorrect then
                                 div [ class "correct_answer" ]
@@ -786,13 +707,15 @@ viewEigthQuestion model =
             , Html.br [] []
             , input [ type_ "radio", name "activity3_question1", id "a3q1fourth", class "guide-question", onClick (UpdateAnswer "Activity3" "Question1" "Answer4") ] []
             , label [ for "a3q1fourth" ] [ getAnswerText model "Activity3" "Question1" "Answer4" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity3_question1", id "a3q1fifth", class "guide-question", onClick (UpdateAnswer "Activity3" "Question1" "Answer5") ] []
+            , label [ for "a3q1fifth" ] [ getAnswerText model "Activity3" "Question1" "Answer5" ]
             ]
         , div []
             [ if answerButtonVisible then
                 div []
-                    -- [ button [ onClick (RevealSolution "Activity3" "Question1") ] [ Html.text "Check answer" ]
-                    -- , div []
-                    [ div []
+                    [ button [ onClick (RevealSolution "Activity3" "Question1") ] [ Html.text "Check answer" ]
+                    , div []
                         [ if solutionVisible then
                             (if answerCorrect then
                                 div [ class "correct_answer" ]
