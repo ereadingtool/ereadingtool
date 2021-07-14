@@ -67,8 +67,8 @@ initActivitiesHelper =
                       , Question
                             (Dict.fromList
                                 [ ( "Answer1", Answer "noun" False False )
-                                , ( "Answer2", Answer "verb" True False )
-                                , ( "Answer3", Answer "adjective" False False )
+                                , ( "Answer2", Answer "verb" False False )
+                                , ( "Answer3", Answer "adjective" True False )
                                 , ( "Answer4", Answer "adverb" False False )
                                 , ( "Answer5", Answer "conjunction" False False )
                                 ]
@@ -178,7 +178,7 @@ update msg model =
                     |> accessQuestion question
                     |> accessAnswer answer
                     |> updateAnswer
-                    |> updateQuestion model activity question answer
+                    |> updateQuestionShowsButton model activity question answer
                     |> updateActivity model activity question
                     |> updateActivities model activity
             in
@@ -188,28 +188,33 @@ update msg model =
 
         RevealSolution activity question ->
             let
-                maybeActivity =
-                    Dict.get activity model.activities
+                -- maybeActivity =
+                --     Dict.get activity model.activities
 
-                maybeQuestion = case maybeActivity of
-                    Just ac ->
-                        Dict.get question (questions ac)
-                    Nothing -> Maybe.map identity Nothing
+                -- maybeQuestion = case maybeActivity of
+                --     Just ac ->
+                --         Dict.get question (questions ac)
+                --     Nothing -> Maybe.map identity Nothing
 
-                updatedQuestion = case maybeQuestion of
-                    Just q -> Question (answers q) { showButton = True, showSolution = True }
-                    Nothing -> Question (Dict.fromList []) { showButton = False, showSolution = False }
+                -- updatedQuestion = case maybeQuestion of
+                --     Just q -> Question (answers q) { showButton = True, showSolution = True }
+                --     Nothing -> Question (Dict.fromList []) { showButton = False, showSolution = False }
 
-                updatedActivity =
-                    case maybeActivity of
-                        Just ac ->
-                            Activity (Dict.update question (Maybe.map (\_ -> updatedQuestion)) (questions ac))
+                -- updatedActivity =
+                --     case maybeActivity of
+                --         Just ac ->
+                --             Activity (Dict.update question (Maybe.map (\_ -> updatedQuestion)) (questions ac))
 
-                        Nothing ->
-                            Activity (Dict.fromList []) 
+                --         Nothing ->
+                --             Activity (Dict.fromList []) 
 
-                updatedActivities =
-                    Dict.update activity (Maybe.map (\_ -> updatedActivity)) model.activities
+                -- updatedActivities =
+                --     Dict.update activity (Maybe.map (\_ -> updatedActivity)) model.activities
+                updatedActivities = accessActivity model activity
+                    |> accessQuestion question
+                    |> updateQuestionShowsSolution
+                    |> updateActivity model activity question
+                    |> updateActivities model activity
             in
             ( { model | activities = updatedActivities }, Cmd.none )
 
@@ -254,8 +259,8 @@ updateAnswer maybeAnswer =
         Nothing ->
             Just (Answer "" False False)
 
-updateQuestion : Model -> String -> String -> String -> Maybe Answer -> Question
-updateQuestion model activityKey questionKey answerKey updatedAnswer =
+updateQuestionShowsButton : Model -> String -> String -> String -> Maybe Answer -> Question
+updateQuestionShowsButton model activityKey questionKey answerKey updatedAnswer =
     let
         clearedQuestion = accessActivity model activityKey
                 |> accessQuestion questionKey
@@ -263,6 +268,12 @@ updateQuestion model activityKey questionKey answerKey updatedAnswer =
     in
         Question (Dict.update answerKey (\_ -> updatedAnswer) (answers clearedQuestion)) { showButton = True, showSolution = False }
 
+
+updateQuestionShowsSolution : Maybe Question -> Question
+updateQuestionShowsSolution maybeQuestion = 
+    case maybeQuestion of
+        Just q -> Question (answers q) { showButton = True, showSolution = True }
+        Nothing -> Question (Dict.fromList []) { showButton = False, showSolution = False }
 
 updateActivity : Model -> String -> String -> Question -> Activity
 updateActivity model activityKey questionKey updatedQuestion =
@@ -311,6 +322,7 @@ view model =
                     , viewSeventhQuestion model
                     , viewFifthSection
                     , viewSixthSection
+                    , viewEigthQuestion model
                     , viewSeventhSection
                     ]
                 ]
@@ -406,6 +418,9 @@ viewSecondQuestion model =
             , Html.br [] []
             , input [ type_ "radio", name "activity2_question1", id "a2q1fourth", class "guide-question", onClick (UpdateAnswer "Activity2" "Question1" "Answer4") ] []
             , label [ for "a2q1fourth" ] [ getAnswerText model "Activity2" "Question1" "Answer4" ]
+            , Html.br [] []
+            , input [ type_ "radio", name "activity2_question1", id "a2q1fifth", class "guide-question", onClick (UpdateAnswer "Activity2" "Question1" "Answer5") ] []
+            , label [ for "a2q1fifth" ] [ getAnswerText model "Activity2" "Question1" "Answer5" ]
             ]
         , div []
             [ if answerButtonVisible then
