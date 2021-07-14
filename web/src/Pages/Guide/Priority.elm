@@ -4,7 +4,7 @@ module Pages.Guide.Priority exposing (..)
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick)
 import Markdown
 import Session exposing (Session)
 import Shared
