@@ -768,11 +768,11 @@ viewEigthQuestion model =
                              else
                                 div [ class "incorrect-answer-guide" ]
                             )
-                                [ Html.text """Choices e) bazad and f) fisd would be high priority in determining the emotional charge of this seen, since they both describe the girl's look at the man.
-                                Choices b) fornoy and d) calbained are medium priority. Knowing the meaning of "fornoy" might help to clarify the bond/relationship between the man and the girl.
+                                [ Html.text """Choices "bazad" and "fisd" would be high priority in determining the emotional charge of this seen, since they both describe the girl's look at the man.
+                                Choices "fornoy" and "d" calbained are medium priority. Knowing the meaning of "fornoy" might help to clarify the bond/relationship between the man and the girl.
                                 Since "calbained" is an action that the man does with his head, it might reveal how the man communicates with the girl.
-                                The choice a) foslaint would be lower priority, since it relates primarily to the man in the boat, and "foslaint" is likely to be a word of physical description for the man.
-                                The choice c) divey would be lowest priority, since it describes the boat, and is unlikely to give a direct indication of the emotional relationship between the man and the girl."""
+                                The choice "foslaint" would be lower priority, since it relates primarily to the man in the boat, and "foslaint" is likely to be a word of physical description for the man.
+                                The choice "divey" would be lowest priority, since it describes the boat, and is unlikely to give a direct indication of the emotional relationship between the man and the girl."""
                                 ]
 
                           else
