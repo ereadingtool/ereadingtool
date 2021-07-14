@@ -87,9 +87,11 @@ body {
   align-items: center;
 }
 
-.correct_answer {
-  background: lightgreen;
-  color: black;
+.correct-answer-guide {
+  border: 1px solid;
+  border-color: #07e200 !important;
+  padding: 7px;
+  margin-top: 10px;
 }
 
 .creator-guide {
@@ -209,6 +211,13 @@ body {
 }
 
 .guide-question {
+  border: #00458a solid 0.5px;
+  border-radius: 2px;
+  margin-top: 7px;
+  padding: 7px;
+}
+
+.guide-question-button {
   width: 5%;
 }
 
@@ -284,9 +293,11 @@ body {
   text-decoration: underline;
 }
 
-.incorrect_answer {
-  background: lightcoral;
-  color: black;
+.incorrect-answer-guide {
+  border-color: #fc3605 !important;
+  border: 1px solid;
+  padding: 7px;
+  margin-top: 10px;
 }
 
 #info-image {
@@ -542,8 +553,9 @@ body {
 
 .sample-passage {
   background: #f4f4f4;
-  /* border-radius: .5%; */
-  padding: 5px;
+  border-radius: 2px;
+  padding: 7px;
+  margin: 10px;
 }
 
 .selected-guide-tab {

@@ -196,7 +196,7 @@ How many of the non-sense words were you able to guess correctly? What contextua
 
 ### Other Guessing Strategies
 Another way to approach guessing the meaning of unfamiliar words in a text is to think about what words are likely to appear in the text. Knowing the title "A boat on the river" of this text, 
-you could image that the text might contain the words "fisherman" and "tide," and indeed those words are in the original text.  Can you figure out which non-sense words are standing in for them? 
+you could imagine that the text might contain the words "fisherman" and "tide," and indeed those words are in the original text.  Can you figure out which non-sense words are standing in for them? 
 """
 
 
