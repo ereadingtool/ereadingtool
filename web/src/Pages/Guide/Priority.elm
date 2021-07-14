@@ -26,7 +26,7 @@ page =
         }
 
 type alias Model =
-    { activities : Dict String Activity }    
+    { activities : Dict String Activity }
 
 
 
