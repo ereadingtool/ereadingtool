@@ -87,6 +87,12 @@ body {
   align-items: center;
 }
 
+.correct-answer-guide {
+  border: 1px solid;
+  border-color: #07e200 !important;
+  padding: 7px;
+  margin-top: 10px;
+}
 
 .creator-guide {
   padding: 10px 20px;
@@ -204,24 +210,35 @@ body {
   align-items: center;
 }
 
+.guide-question {
+  border: #00458a solid 0.5px;
+  border-radius: 2px;
+  margin-top: 7px;
+  padding: 7px;
+}
+
+.guide-question-button {
+  width: 5%;
+}
+
 .guide-tab {
   display: inline-block;
   padding: 7px;
-
+  height: 40px;
   border: 1px solid #999999;
-  border-left: none;
 }
 
 .guide-tab > .guide-link {
   color: #000000;
   text-decoration: none;
+  display: flex;
+  height: inherit;
 }
 
 .guide-tabs {
   display: grid;
-  height: 20px;
-  max-width: 450px;
-  grid-template-columns: auto auto auto 1fr;
+  max-width: 745px;
+  grid-template-columns: repeat(auto-fill, 149px);
 }
 
 
@@ -274,6 +291,13 @@ body {
 
 .hint_overlay span.cursor:hover {
   text-decoration: underline;
+}
+
+.incorrect-answer-guide {
+  border-color: #fc3605 !important;
+  border: 1px solid;
+  padding: 7px;
+  margin-top: 10px;
 }
 
 #info-image {
@@ -527,6 +551,13 @@ body {
   align-items: center;
 }
 
+.sample-passage {
+  background: #f4f4f4;
+  border-radius: 2px;
+  padding: 7px;
+  margin: 10px;
+}
+
 .selected-guide-tab {
   color: #ffffff;
   background-color: #0054a6;
@@ -675,6 +706,12 @@ body {
 
     opacity: 1;
     transition: opacity 0.25s, height 0.4s;
+  }
+
+  .guide-tabs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 134px);
+    max-width: none;
   }
 
   #header {

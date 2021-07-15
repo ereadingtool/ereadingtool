@@ -3,11 +3,11 @@
     font-size: 18px;
     grid-auto-rows: minmax(65px, auto);
     margin-bottom: 0;
-    grid-template-columns: 7% 13% [content] auto 13% 7%;
+    grid-template-columns: 8% auto 8%;
 }
 
 #about-box {
-    grid-column: 3;
+    grid-column: 2;
     display: grid;
     grid-template-columns: auto;
     grid-auto-rows: minmax(50px, auto);
@@ -58,12 +58,12 @@
     max-width: 45%;
 }
 
-
-@media (max-width: 460px) {
+@media (max-width: 880px) {
     #about {
         font-size: 15px;
-        grid-template-columns: auto;
-        margin-left: 15px;
-        margin-right: 15px;
+    }
+    
+    .guide-tabs{
+        grid-template-columns: repeat(auto-fill, 134px);
     }
 }
