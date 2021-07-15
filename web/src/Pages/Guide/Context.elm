@@ -39,7 +39,6 @@ init shared { params } =
     , Cmd.none
     )
 
--- TODO
 initActivitiesHelper : Dict String Activity
 initActivitiesHelper =
     Dict.fromList 
@@ -371,6 +370,15 @@ viewTabs =
                 , class "guide-link"
                 ]
                 [ text "Priority" ]
+            ]
+        , div
+            [ class "guide-tab"
+            ]
+            [ a
+                [ href (Route.toString Route.Guide__Recognition)
+                , class "guide-link"
+                ]
+                [ text "Recognition" ]
             ]
         ]
 
