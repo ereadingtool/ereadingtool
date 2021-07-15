@@ -1,7 +1,7 @@
 module Pages.Guide.Priority exposing (..)
 
-
 import Dict exposing (Dict)
+import Help.Activities exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -12,7 +12,7 @@ import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url as Url exposing (Url)
-import Help.Activities exposing (..)
+
 
 page : Page Params Model Msg
 page =
@@ -24,6 +24,7 @@ page =
         , save = save
         , load = load
         }
+
 
 type alias Model =
     { activities : Dict String Activity }
@@ -55,7 +56,7 @@ initActivitiesHelper =
                                 , ( "Answer4", Answer "calput" False False )
                                 ]
                             )
-                            { showButton = False, showSolution = False}
+                            { showButton = False, showSolution = False }
                       )
                     ]
                 )
@@ -73,7 +74,7 @@ initActivitiesHelper =
                                 , ( "Answer5", Answer "conjunction" False False )
                                 ]
                             )
-                            { showButton = False, showSolution = False}
+                            { showButton = False, showSolution = False }
                       )
                     , ( "Question2"
                       , Question
@@ -85,7 +86,7 @@ initActivitiesHelper =
                                 , ( "Answer5", Answer "conjunction" False False )
                                 ]
                             )
-                            { showButton = False, showSolution = False}
+                            { showButton = False, showSolution = False }
                       )
                     , ( "Question3"
                       , Question
@@ -97,7 +98,7 @@ initActivitiesHelper =
                                 , ( "Answer5", Answer "conjunction" False False )
                                 ]
                             )
-                            { showButton = False, showSolution = False}
+                            { showButton = False, showSolution = False }
                       )
                     , ( "Question4"
                       , Question
@@ -109,7 +110,7 @@ initActivitiesHelper =
                                 , ( "Answer5", Answer "conjunction" False False )
                                 ]
                             )
-                            { showButton = False, showSolution = False}
+                            { showButton = False, showSolution = False }
                       )
                     , ( "Question5"
                       , Question
@@ -121,7 +122,7 @@ initActivitiesHelper =
                                 , ( "Answer5", Answer "conjunction" True False )
                                 ]
                             )
-                            { showButton = False, showSolution = False}
+                            { showButton = False, showSolution = False }
                       )
                     , ( "Question6"
                       , Question
@@ -133,7 +134,7 @@ initActivitiesHelper =
                                 , ( "Answer5", Answer "conjunction" False False )
                                 ]
                             )
-                            { showButton = False, showSolution = False}
+                            { showButton = False, showSolution = False }
                       )
                     ]
                 )
@@ -152,7 +153,7 @@ initActivitiesHelper =
                                 , ( "Answer6", Answer "fisd" True False )
                                 ]
                             )
-                            { showButton = False, showSolution = False}
+                            { showButton = False, showSolution = False }
                       )
                     ]
                 )
@@ -174,13 +175,14 @@ update msg model =
     case msg of
         UpdateAnswer activity question answer ->
             let
-                updatedActivities = accessActivity model activity
-                    |> accessQuestion question
-                    |> accessAnswer answer
-                    |> updateAnswer
-                    |> updateQuestionShowsButton model activity question answer
-                    |> updateActivity model activity question
-                    |> updateActivities model activity
+                updatedActivities =
+                    accessActivity model activity
+                        |> accessQuestion question
+                        |> accessAnswer answer
+                        |> updateAnswer
+                        |> updateQuestionShowsButton model activity question answer
+                        |> updateActivity model activity question
+                        |> updateActivities model activity
             in
             ( { model | activities = updatedActivities }
             , Cmd.none
@@ -188,11 +190,12 @@ update msg model =
 
         RevealSolution activity question ->
             let
-                updatedActivities = accessActivity model activity
-                    |> accessQuestion question
-                    |> updateQuestionShowsSolution
-                    |> updateActivity model activity question
-                    |> updateActivities model activity
+                updatedActivities =
+                    accessActivity model activity
+                        |> accessQuestion question
+                        |> updateQuestionShowsSolution
+                        |> updateActivity model activity question
+                        |> updateActivities model activity
             in
             ( { model | activities = updatedActivities }, Cmd.none )
 
@@ -205,32 +208,36 @@ accessActivity : Model -> String -> Maybe Activity
 accessActivity model activity =
     Dict.get activity model.activities
 
+
 accessQuestion : String -> Maybe Activity -> Maybe Question
 accessQuestion questionKey maybeActivity =
-        case maybeActivity of
-            Just ac ->
-                Dict.get questionKey (questions ac)
+    case maybeActivity of
+        Just ac ->
+            Dict.get questionKey (questions ac)
 
-            Nothing ->
-                Maybe.map identity Nothing
+        Nothing ->
+            Maybe.map identity Nothing
+
 
 accessAnswer : String -> Maybe Question -> Maybe Answer
 accessAnswer answer maybeQuestion =
     case maybeQuestion of
-        Just q -> 
+        Just q ->
             Dict.get answer (answers q)
 
-        Nothing -> 
+        Nothing ->
             Just (Answer "" False False)
+
 
 clearQuestion : Maybe Question -> Question
 clearQuestion maybeQuestion =
     case maybeQuestion of
         Just q ->
-            Question (Dict.map (\_ an -> { an | selected = False }) (answers q)) { showButton = True, showSolution = False}
+            Question (Dict.map (\_ an -> { an | selected = False }) (answers q)) { showButton = True, showSolution = False }
 
         Nothing ->
-            Question (Dict.fromList []) { showButton = False, showSolution = False} 
+            Question (Dict.fromList []) { showButton = False, showSolution = False }
+
 
 updateAnswer : Maybe Answer -> Maybe Answer
 updateAnswer maybeAnswer =
@@ -241,26 +248,33 @@ updateAnswer maybeAnswer =
         Nothing ->
             Just (Answer "" False False)
 
+
 updateQuestionShowsButton : Model -> String -> String -> String -> Maybe Answer -> Question
 updateQuestionShowsButton model activityKey questionKey answerKey updatedAnswer =
     let
-        clearedQuestion = accessActivity model activityKey
+        clearedQuestion =
+            accessActivity model activityKey
                 |> accessQuestion questionKey
                 |> clearQuestion
     in
-        Question (Dict.update answerKey (\_ -> updatedAnswer) (answers clearedQuestion)) { showButton = True, showSolution = False }
+    Question (Dict.update answerKey (\_ -> updatedAnswer) (answers clearedQuestion)) { showButton = True, showSolution = False }
 
 
 updateQuestionShowsSolution : Maybe Question -> Question
-updateQuestionShowsSolution maybeQuestion = 
+updateQuestionShowsSolution maybeQuestion =
     case maybeQuestion of
-        Just q -> Question (answers q) { showButton = True, showSolution = True }
-        Nothing -> Question (Dict.fromList []) { showButton = False, showSolution = False }
+        Just q ->
+            Question (answers q) { showButton = True, showSolution = True }
+
+        Nothing ->
+            Question (Dict.fromList []) { showButton = False, showSolution = False }
+
 
 updateActivity : Model -> String -> String -> Question -> Activity
 updateActivity model activityKey questionKey updatedQuestion =
-    let 
-        maybeActivity = accessActivity model activityKey
+    let
+        maybeActivity =
+            accessActivity model activityKey
     in
     case maybeActivity of
         Just ac ->
@@ -269,12 +283,13 @@ updateActivity model activityKey questionKey updatedQuestion =
         Nothing ->
             Activity (Dict.fromList [])
 
+
 updateActivities : Model -> String -> Activity -> Dict String Activity
 updateActivities model activityKey updatedActivity =
     Dict.update activityKey (Maybe.map (\_ -> updatedActivity)) model.activities
- 
 
- 
+
+
 -- VIEW
 
 
@@ -594,6 +609,7 @@ viewSecondQuestion model =
                             )
                                 [ Html.text "The correct answer is \"adjective\". It describes the noun \"face\""
                                 ]
+
                           else
                             div [] []
                         ]
@@ -649,6 +665,7 @@ viewThirdQuestion model =
                             )
                                 [ Html.text "The correct answer is \"verb\". It follows the subject \"the girl\" and makes a complete thought, so it is most likely a verb. It also has the past tense ending (-ed) on it."
                                 ]
+
                           else
                             div [] []
                         ]
@@ -960,7 +977,7 @@ viewEigthQuestion model =
         , div [ class "guide-button" ]
             [ if answerButtonVisible then
                 div []
-                    [ div [ class "guide-button" ] [ button [ onClick (RevealSolution "Activity3" "Question1") ]  [ Html.text "Check answer" ] ]
+                    [ div [ class "guide-button" ] [ button [ onClick (RevealSolution "Activity3" "Question1") ] [ Html.text "Check answer" ] ]
                     , div []
                         [ if solutionVisible then
                             (if answerCorrect then
@@ -1111,14 +1128,20 @@ checkButtonClicked model activityLabel questionLabel =
         maybeActivities =
             Dict.get activityLabel model.activities
 
-        maybeQuestion = case maybeActivities of
-            Just activities -> Dict.get questionLabel (questions activities)
-            Nothing -> Maybe.map identity Nothing
+        maybeQuestion =
+            case maybeActivities of
+                Just activities ->
+                    Dict.get questionLabel (questions activities)
 
+                Nothing ->
+                    Maybe.map identity Nothing
     in
-        case maybeQuestion of 
-            Just question -> showSolution question
-            Nothing -> False 
+    case maybeQuestion of
+        Just question ->
+            showSolution question
+
+        Nothing ->
+            False
 
 
 

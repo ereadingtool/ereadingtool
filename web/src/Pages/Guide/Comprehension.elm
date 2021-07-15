@@ -1,7 +1,7 @@
 module Pages.Guide.Comprehension exposing (..)
 
-
 import Dict exposing (Dict)
+import Help.Activities exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -11,7 +11,7 @@ import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url as Url exposing (Url)
-import Help.Activities exposing (..)
+
 
 page : Page Params Model Msg
 page =
@@ -23,6 +23,7 @@ page =
         , save = save
         , load = load
         }
+
 
 type alias Model =
     { activities : Dict String Activity }
@@ -41,7 +42,7 @@ init shared { params } =
 
 initActivitiesHelper : Dict String Activity
 initActivitiesHelper =
-    Dict.fromList 
+    Dict.fromList
         [ ( "Activity1"
           , Activity
                 (Dict.fromList
@@ -102,7 +103,7 @@ initActivitiesHelper =
                                 ]
                             )
                             { showButton = False, showSolution = False }
-                      ) 
+                      )
                     ]
                 )
           )
@@ -123,13 +124,14 @@ update msg model =
     case msg of
         UpdateAnswer activity question answer ->
             let
-                updatedActivities = accessActivity model activity
-                    |> accessQuestion question
-                    |> accessAnswer answer
-                    |> updateAnswer
-                    |> updateQuestionShowsButton model activity question answer
-                    |> updateActivity model activity question
-                    |> updateActivities model activity
+                updatedActivities =
+                    accessActivity model activity
+                        |> accessQuestion question
+                        |> accessAnswer answer
+                        |> updateAnswer
+                        |> updateQuestionShowsButton model activity question answer
+                        |> updateActivity model activity question
+                        |> updateActivities model activity
             in
             ( { model | activities = updatedActivities }
             , Cmd.none
@@ -137,11 +139,12 @@ update msg model =
 
         RevealSolution activity question ->
             let
-                updatedActivities = accessActivity model activity
-                    |> accessQuestion question
-                    |> updateQuestionShowsSolution
-                    |> updateActivity model activity question
-                    |> updateActivities model activity
+                updatedActivities =
+                    accessActivity model activity
+                        |> accessQuestion question
+                        |> updateQuestionShowsSolution
+                        |> updateActivity model activity question
+                        |> updateActivities model activity
             in
             ( { model | activities = updatedActivities }, Cmd.none )
 
@@ -154,32 +157,36 @@ accessActivity : Model -> String -> Maybe Activity
 accessActivity model activity =
     Dict.get activity model.activities
 
+
 accessQuestion : String -> Maybe Activity -> Maybe Question
 accessQuestion questionKey maybeActivity =
-        case maybeActivity of
-            Just ac ->
-                Dict.get questionKey (questions ac)
+    case maybeActivity of
+        Just ac ->
+            Dict.get questionKey (questions ac)
 
-            Nothing ->
-                Maybe.map identity Nothing
+        Nothing ->
+            Maybe.map identity Nothing
+
 
 accessAnswer : String -> Maybe Question -> Maybe Answer
 accessAnswer answer maybeQuestion =
     case maybeQuestion of
-        Just q -> 
+        Just q ->
             Dict.get answer (answers q)
 
-        Nothing -> 
+        Nothing ->
             Just (Answer "" False False)
+
 
 clearQuestion : Maybe Question -> Question
 clearQuestion maybeQuestion =
     case maybeQuestion of
         Just q ->
-            Question (Dict.map (\_ an -> { an | selected = False }) (answers q)) { showButton = True, showSolution = False}
+            Question (Dict.map (\_ an -> { an | selected = False }) (answers q)) { showButton = True, showSolution = False }
 
         Nothing ->
-            Question (Dict.fromList []) { showButton = False, showSolution = False} 
+            Question (Dict.fromList []) { showButton = False, showSolution = False }
+
 
 updateAnswer : Maybe Answer -> Maybe Answer
 updateAnswer maybeAnswer =
@@ -190,26 +197,33 @@ updateAnswer maybeAnswer =
         Nothing ->
             Just (Answer "" False False)
 
+
 updateQuestionShowsButton : Model -> String -> String -> String -> Maybe Answer -> Question
 updateQuestionShowsButton model activityKey questionKey answerKey updatedAnswer =
     let
-        clearedQuestion = accessActivity model activityKey
+        clearedQuestion =
+            accessActivity model activityKey
                 |> accessQuestion questionKey
                 |> clearQuestion
     in
-        Question (Dict.update answerKey (\_ -> updatedAnswer) (answers clearedQuestion)) { showButton = True, showSolution = False }
+    Question (Dict.update answerKey (\_ -> updatedAnswer) (answers clearedQuestion)) { showButton = True, showSolution = False }
 
 
 updateQuestionShowsSolution : Maybe Question -> Question
-updateQuestionShowsSolution maybeQuestion = 
+updateQuestionShowsSolution maybeQuestion =
     case maybeQuestion of
-        Just q -> Question (answers q) { showButton = True, showSolution = True }
-        Nothing -> Question (Dict.fromList []) { showButton = False, showSolution = False }
+        Just q ->
+            Question (answers q) { showButton = True, showSolution = True }
+
+        Nothing ->
+            Question (Dict.fromList []) { showButton = False, showSolution = False }
+
 
 updateActivity : Model -> String -> String -> Question -> Activity
 updateActivity model activityKey questionKey updatedQuestion =
-    let 
-        maybeActivity = accessActivity model activityKey
+    let
+        maybeActivity =
+            accessActivity model activityKey
     in
     case maybeActivity of
         Just ac ->
@@ -217,6 +231,7 @@ updateActivity model activityKey questionKey updatedQuestion =
 
         Nothing ->
             Activity (Dict.fromList [])
+
 
 updateActivities : Model -> String -> Activity -> Dict String Activity
 updateActivities model activityKey updatedActivity =
@@ -449,6 +464,7 @@ viewFirstQuestion model =
                                 , Html.br [] []
                                 , Html.text """There are two people in the boat, a man and a girl. They are mentioned in the first sentence, and then they are referred to only as "he" and "she." """
                                 ]
+
                           else
                             div [] []
                         ]
@@ -502,6 +518,7 @@ viewSecondQuestion model =
                                 using his head ("according as he calbained his fornoy by a calput of his head"), and the phrase ("nabbastly like him to be sorbicable as his fornoy") 
                                 probably explains the relationship between them. """
                                 ]
+
                           else
                             div [] []
                         ]
@@ -567,6 +584,7 @@ viewThirdQuestion model =
                                 small size; the list of things that it is missing ("no exbain for a sitter, no paint, no debilk, no bepult beyond a rusty calben and a lanop of rope") 
                                 suggests that it is poor and plain; and that it's a row boat is suggested in the phrase ("The girl zarred, pulling a pair of sculls very easily"). """
                                 ]
+
                           else
                             div [] []
                         ]
@@ -626,6 +644,7 @@ viewFourthQuestion model =
                                 the boat is unfit for the commercial purposes of river transport. A pleasure trip seems unlikely since the boat isn't particularly comfortable or well-appointed. 
                                 A rescue mission also is unlikely since there's no reference to urgency or someone in the water. """
                                 ]
+
                           else
                             div [] []
                         ]
@@ -683,6 +702,7 @@ viewFifthQuestion model =
                                 ("eager look out" and "what he looked for" and "searching."). The man's mood doesn't seem to be shared by the girl, and so that suggests some conflict 
                                 between the two, and so the mood might be tense or anxious. """
                                 ]
+
                           else
                             div [] []
                         ]
@@ -790,14 +810,20 @@ checkButtonClicked model activityLabel questionLabel =
         maybeActivities =
             Dict.get activityLabel model.activities
 
-        maybeQuestion = case maybeActivities of
-            Just activities -> Dict.get questionLabel (questions activities)
-            Nothing -> Maybe.map identity Nothing
+        maybeQuestion =
+            case maybeActivities of
+                Just activities ->
+                    Dict.get questionLabel (questions activities)
 
+                Nothing ->
+                    Maybe.map identity Nothing
     in
-        case maybeQuestion of 
-            Just question -> showSolution question
-            Nothing -> False 
+    case maybeQuestion of
+        Just question ->
+            showSolution question
+
+        Nothing ->
+            False
 
 
 

@@ -15,7 +15,7 @@ type Activity
 
 
 type Question
-    = Question (Dict String Answer) { showButton: Bool, showSolution: Bool }
+    = Question (Dict String Answer) { showButton : Bool, showSolution : Bool }
 
 
 questions : Activity -> Dict String Question

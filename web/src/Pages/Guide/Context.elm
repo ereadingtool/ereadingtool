@@ -1,6 +1,7 @@
 module Pages.Guide.Context exposing (..)
 
 import Dict exposing (Dict)
+import Help.Activities exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -10,7 +11,6 @@ import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url as Url exposing (Url)
-import Help.Activities exposing (..)
 
 
 page : Page Params Model Msg
@@ -30,7 +30,7 @@ type alias Model =
 
 
 
--- INIT 
+-- INIT
 
 
 init : Shared.Model -> Url Params -> ( Model, Cmd Msg )
@@ -39,9 +39,10 @@ init shared { params } =
     , Cmd.none
     )
 
+
 initActivitiesHelper : Dict String Activity
 initActivitiesHelper =
-    Dict.fromList 
+    Dict.fromList
         [ ( "Activity1"
           , Activity
                 (Dict.fromList
@@ -109,7 +110,7 @@ initActivitiesHelper =
                 )
           )
         , ( "Activity2"
-          , Activity 
+          , Activity
                 (Dict.fromList
                     [ ( "Question1"
                       , Question
@@ -145,7 +146,7 @@ initActivitiesHelper =
 -- UPDATE
 
 
-type Msg 
+type Msg
     = UpdateAnswer String String String
     | RevealSolution String String
 
@@ -155,13 +156,14 @@ update msg model =
     case msg of
         UpdateAnswer activity question answer ->
             let
-                updatedActivities = accessActivity model activity
-                    |> accessQuestion question
-                    |> accessAnswer answer
-                    |> updateAnswer
-                    |> updateQuestionShowsButton model activity question answer
-                    |> updateActivity model activity question
-                    |> updateActivities model activity
+                updatedActivities =
+                    accessActivity model activity
+                        |> accessQuestion question
+                        |> accessAnswer answer
+                        |> updateAnswer
+                        |> updateQuestionShowsButton model activity question answer
+                        |> updateActivity model activity question
+                        |> updateActivities model activity
             in
             ( { model | activities = updatedActivities }
             , Cmd.none
@@ -169,11 +171,12 @@ update msg model =
 
         RevealSolution activity question ->
             let
-                updatedActivities = accessActivity model activity
-                    |> accessQuestion question
-                    |> updateQuestionShowsSolution
-                    |> updateActivity model activity question
-                    |> updateActivities model activity
+                updatedActivities =
+                    accessActivity model activity
+                        |> accessQuestion question
+                        |> updateQuestionShowsSolution
+                        |> updateActivity model activity question
+                        |> updateActivities model activity
             in
             ( { model | activities = updatedActivities }, Cmd.none )
 
@@ -186,32 +189,36 @@ accessActivity : Model -> String -> Maybe Activity
 accessActivity model activity =
     Dict.get activity model.activities
 
+
 accessQuestion : String -> Maybe Activity -> Maybe Question
 accessQuestion questionKey maybeActivity =
-        case maybeActivity of
-            Just ac ->
-                Dict.get questionKey (questions ac)
+    case maybeActivity of
+        Just ac ->
+            Dict.get questionKey (questions ac)
 
-            Nothing ->
-                Maybe.map identity Nothing
+        Nothing ->
+            Maybe.map identity Nothing
+
 
 accessAnswer : String -> Maybe Question -> Maybe Answer
 accessAnswer answer maybeQuestion =
     case maybeQuestion of
-        Just q -> 
+        Just q ->
             Dict.get answer (answers q)
 
-        Nothing -> 
+        Nothing ->
             Just (Answer "" False False)
+
 
 clearQuestion : Maybe Question -> Question
 clearQuestion maybeQuestion =
     case maybeQuestion of
         Just q ->
-            Question (Dict.map (\_ an -> { an | selected = False }) (answers q)) { showButton = True, showSolution = False}
+            Question (Dict.map (\_ an -> { an | selected = False }) (answers q)) { showButton = True, showSolution = False }
 
         Nothing ->
-            Question (Dict.fromList []) { showButton = False, showSolution = False} 
+            Question (Dict.fromList []) { showButton = False, showSolution = False }
+
 
 updateAnswer : Maybe Answer -> Maybe Answer
 updateAnswer maybeAnswer =
@@ -222,26 +229,33 @@ updateAnswer maybeAnswer =
         Nothing ->
             Just (Answer "" False False)
 
+
 updateQuestionShowsButton : Model -> String -> String -> String -> Maybe Answer -> Question
 updateQuestionShowsButton model activityKey questionKey answerKey updatedAnswer =
     let
-        clearedQuestion = accessActivity model activityKey
+        clearedQuestion =
+            accessActivity model activityKey
                 |> accessQuestion questionKey
                 |> clearQuestion
     in
-        Question (Dict.update answerKey (\_ -> updatedAnswer) (answers clearedQuestion)) { showButton = True, showSolution = False }
+    Question (Dict.update answerKey (\_ -> updatedAnswer) (answers clearedQuestion)) { showButton = True, showSolution = False }
 
 
 updateQuestionShowsSolution : Maybe Question -> Question
-updateQuestionShowsSolution maybeQuestion = 
+updateQuestionShowsSolution maybeQuestion =
     case maybeQuestion of
-        Just q -> Question (answers q) { showButton = True, showSolution = True }
-        Nothing -> Question (Dict.fromList []) { showButton = False, showSolution = False }
+        Just q ->
+            Question (answers q) { showButton = True, showSolution = True }
+
+        Nothing ->
+            Question (Dict.fromList []) { showButton = False, showSolution = False }
+
 
 updateActivity : Model -> String -> String -> Question -> Activity
 updateActivity model activityKey questionKey updatedQuestion =
-    let 
-        maybeActivity = accessActivity model activityKey
+    let
+        maybeActivity =
+            accessActivity model activityKey
     in
     case maybeActivity of
         Just ac ->
@@ -250,10 +264,11 @@ updateActivity model activityKey questionKey updatedQuestion =
         Nothing ->
             Activity (Dict.fromList [])
 
+
 updateActivities : Model -> String -> Activity -> Dict String Activity
 updateActivities model activityKey updatedActivity =
     Dict.update activityKey (Maybe.map (\_ -> updatedActivity)) model.activities
- 
+
 
 
 -- VIEW
@@ -432,14 +447,15 @@ viewSecondSection =
 
 viewInstructionsFirstActivity : Html Msg
 viewInstructionsFirstActivity =
-    div [] [
-        Html.br [] []
+    div []
+        [ Html.br [] []
         , Html.strong [] [ Html.text "Instructions" ]
         , Html.br [] []
         , Html.br [] []
         , Html.text """Using context clues from the text above, try to guess the meaning of these nonsense words from the set of words provided. 
                                 To help you find the words in the text, they have been put in bold-face. Be sure to re-read the sentence or section of the text before making your guess."""
-    ]
+        ]
+
 
 viewFirstQuestion : Model -> Html Msg
 viewFirstQuestion model =
@@ -733,6 +749,7 @@ viewFifthQuestion model =
             ]
         ]
 
+
 viewThirdSection : Html Msg
 viewThirdSection =
     Markdown.toHtml [] """
@@ -784,13 +801,13 @@ viewFourthSection =
 
 viewInstructionsSecondActivity : Html Msg
 viewInstructionsSecondActivity =
-    div [] [
-        Html.br [] []
+    div []
+        [ Html.br [] []
         , Html.strong [] [ Html.text "Instructions" ]
         , Html.br [] []
         , Html.br [] []
         , Html.text """Since this paragraph deals with a boat on a river, it should be no surprise that it contains the words fisherman and tide. Go back and re-read the text. Which non-sense words are standing in for them?"""
-    ]
+        ]
 
 
 viewSixthQuestion : Model -> Html Msg
@@ -1022,14 +1039,20 @@ checkButtonClicked model activityLabel questionLabel =
         maybeActivities =
             Dict.get activityLabel model.activities
 
-        maybeQuestion = case maybeActivities of
-            Just activities -> Dict.get questionLabel (questions activities)
-            Nothing -> Maybe.map identity Nothing
+        maybeQuestion =
+            case maybeActivities of
+                Just activities ->
+                    Dict.get questionLabel (questions activities)
 
+                Nothing ->
+                    Maybe.map identity Nothing
     in
-        case maybeQuestion of 
-            Just question -> showSolution question
-            Nothing -> False 
+    case maybeQuestion of
+        Just question ->
+            showSolution question
+
+        Nothing ->
+            False
 
 
 

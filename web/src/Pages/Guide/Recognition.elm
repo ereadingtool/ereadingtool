@@ -1,6 +1,7 @@
 module Pages.Guide.Recognition exposing (..)
 
 import Dict exposing (Dict)
+import Help.Activities exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -10,7 +11,6 @@ import Spa.Document exposing (Document)
 import Spa.Generated.Route as Route
 import Spa.Page as Page exposing (Page)
 import Spa.Url as Url exposing (Url)
-import Help.Activities exposing (..)
 
 
 page : Page Params Model Msg
@@ -42,367 +42,367 @@ init shared { params } =
 
 initActivitiesHelper : Dict String Activity
 initActivitiesHelper =
-    Dict.fromList 
+    Dict.fromList
         [ ( "Activity1"
           , Activity
-            (Dict.fromList
-                [ ( "Question1"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "адрес" False False )
-                            , ( "Answer2", Answer "парк" False False )
-                            , ( "Answer3", Answer "проспект" False False )
-                            , ( "Answer4", Answer "театр" True False )
-                            , ( "Answer5", Answer "музыка" False False )
-                            , ( "Answer6", Answer "виза" False False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                , ( "Question2"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "адрес" True False )
-                            , ( "Answer2", Answer "парк" False False )
-                            , ( "Answer3", Answer "проспект" False False )
-                            , ( "Answer4", Answer "театр" False False )
-                            , ( "Answer5", Answer "музыка" False False )
-                            , ( "Answer6", Answer "виза" False False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                ]
-            )
+                (Dict.fromList
+                    [ ( "Question1"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "адрес" False False )
+                                , ( "Answer2", Answer "парк" False False )
+                                , ( "Answer3", Answer "проспект" False False )
+                                , ( "Answer4", Answer "театр" True False )
+                                , ( "Answer5", Answer "музыка" False False )
+                                , ( "Answer6", Answer "виза" False False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    , ( "Question2"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "адрес" True False )
+                                , ( "Answer2", Answer "парк" False False )
+                                , ( "Answer3", Answer "проспект" False False )
+                                , ( "Answer4", Answer "театр" False False )
+                                , ( "Answer5", Answer "музыка" False False )
+                                , ( "Answer6", Answer "виза" False False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    ]
+                )
           )
         , ( "Activity2"
           , Activity
-            (Dict.fromList
-                [ ( "Question1"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "реформа" False False )
-                            , ( "Answer2", Answer "логика" True False )
-                            , ( "Answer3", Answer "фигура" False False )
-                            , ( "Answer4", Answer "секунда" False False )
-                            , ( "Answer5", Answer "фаза" False False )
-                            , ( "Answer6", Answer "поза" False False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                , ( "Question2"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "реформа" False False )
-                            , ( "Answer2", Answer "логика" False False )
-                            , ( "Answer3", Answer "фигура" False False )
-                            , ( "Answer4", Answer "секунда" True False )
-                            , ( "Answer5", Answer "фаза" False False )
-                            , ( "Answer6", Answer "поза" False False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                , ( "Question3"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "реформа" False False )
-                            , ( "Answer2", Answer "логика" False False )
-                            , ( "Answer3", Answer "фигура" False False )
-                            , ( "Answer4", Answer "секунда" False False )
-                            , ( "Answer5", Answer "фаза" True False )
-                            , ( "Answer6", Answer "поза" False False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                , ( "Question4"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "реформа" False False )
-                            , ( "Answer2", Answer "логика" False False )
-                            , ( "Answer3", Answer "фигура" False False )
-                            , ( "Answer4", Answer "секунда" False False )
-                            , ( "Answer5", Answer "фаза" False False )
-                            , ( "Answer6", Answer "поза" True False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                ]
-            )
+                (Dict.fromList
+                    [ ( "Question1"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "реформа" False False )
+                                , ( "Answer2", Answer "логика" True False )
+                                , ( "Answer3", Answer "фигура" False False )
+                                , ( "Answer4", Answer "секунда" False False )
+                                , ( "Answer5", Answer "фаза" False False )
+                                , ( "Answer6", Answer "поза" False False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    , ( "Question2"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "реформа" False False )
+                                , ( "Answer2", Answer "логика" False False )
+                                , ( "Answer3", Answer "фигура" False False )
+                                , ( "Answer4", Answer "секунда" True False )
+                                , ( "Answer5", Answer "фаза" False False )
+                                , ( "Answer6", Answer "поза" False False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    , ( "Question3"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "реформа" False False )
+                                , ( "Answer2", Answer "логика" False False )
+                                , ( "Answer3", Answer "фигура" False False )
+                                , ( "Answer4", Answer "секунда" False False )
+                                , ( "Answer5", Answer "фаза" True False )
+                                , ( "Answer6", Answer "поза" False False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    , ( "Question4"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "реформа" False False )
+                                , ( "Answer2", Answer "логика" False False )
+                                , ( "Answer3", Answer "фигура" False False )
+                                , ( "Answer4", Answer "секунда" False False )
+                                , ( "Answer5", Answer "фаза" False False )
+                                , ( "Answer6", Answer "поза" True False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    ]
+                )
           )
         , ( "Activity3"
           , Activity
-            (Dict.fromList
-                [ ( "Question1"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "элита" False False )
-                            , ( "Answer2", Answer "дата" False False )
-                            , ( "Answer3", Answer "атака" False False )
-                            , ( "Answer4", Answer "техника" False False )
-                            , ( "Answer5", Answer "манера" False False )
-                            , ( "Answer6", Answer "пауза" True False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                , ( "Question2"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "элита" True False )
-                            , ( "Answer2", Answer "дата" False False )
-                            , ( "Answer3", Answer "атака" False False )
-                            , ( "Answer4", Answer "техника" False False )
-                            , ( "Answer5", Answer "манера" False False )
-                            , ( "Answer6", Answer "пауза" False False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                , ( "Question3"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "элита" False False )
-                            , ( "Answer2", Answer "дата" True False )
-                            , ( "Answer3", Answer "атака" False False )
-                            , ( "Answer4", Answer "техника" False False )
-                            , ( "Answer5", Answer "манера" False False )
-                            , ( "Answer6", Answer "пауза" False False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                , ( "Question4"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "элита" False False )
-                            , ( "Answer2", Answer "дата" False False )
-                            , ( "Answer3", Answer "атака" False False )
-                            , ( "Answer4", Answer "техника" False False )
-                            , ( "Answer5", Answer "манера" True False )
-                            , ( "Answer6", Answer "пауза" False False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                ]
-            )
+                (Dict.fromList
+                    [ ( "Question1"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "элита" False False )
+                                , ( "Answer2", Answer "дата" False False )
+                                , ( "Answer3", Answer "атака" False False )
+                                , ( "Answer4", Answer "техника" False False )
+                                , ( "Answer5", Answer "манера" False False )
+                                , ( "Answer6", Answer "пауза" True False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    , ( "Question2"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "элита" True False )
+                                , ( "Answer2", Answer "дата" False False )
+                                , ( "Answer3", Answer "атака" False False )
+                                , ( "Answer4", Answer "техника" False False )
+                                , ( "Answer5", Answer "манера" False False )
+                                , ( "Answer6", Answer "пауза" False False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    , ( "Question3"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "элита" False False )
+                                , ( "Answer2", Answer "дата" True False )
+                                , ( "Answer3", Answer "атака" False False )
+                                , ( "Answer4", Answer "техника" False False )
+                                , ( "Answer5", Answer "манера" False False )
+                                , ( "Answer6", Answer "пауза" False False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    , ( "Question4"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "элита" False False )
+                                , ( "Answer2", Answer "дата" False False )
+                                , ( "Answer3", Answer "атака" False False )
+                                , ( "Answer4", Answer "техника" False False )
+                                , ( "Answer5", Answer "манера" True False )
+                                , ( "Answer6", Answer "пауза" False False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    ]
+                )
           )
         , ( "Activity4"
           , Activity
-            (Dict.fromList
-                [ ( "Question1"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "жанр" False False )
-                            , ( "Answer2", Answer "сюжет" False False )
-                            , ( "Answer3", Answer "этаж" False False )
-                            , ( "Answer4", Answer "пляж" True False )
-                            , ( "Answer5", Answer "режим" False False )
-                            , ( "Answer6", Answer "экипаж" False False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                , ( "Question2"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "жанр" False False )
-                            , ( "Answer2", Answer "сюжет" False False )
-                            , ( "Answer3", Answer "этаж" False False )
-                            , ( "Answer4", Answer "пляж" False False )
-                            , ( "Answer5", Answer "режим" True False )
-                            , ( "Answer6", Answer "экипаж" False False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                , ( "Question3"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "жанр" False False )
-                            , ( "Answer2", Answer "сюжет" False False )
-                            , ( "Answer3", Answer "этаж" False False )
-                            , ( "Answer4", Answer "пляж" False False )
-                            , ( "Answer5", Answer "режим" False False )
-                            , ( "Answer6", Answer "экипаж" True False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                , ( "Question4"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "жанр" False False )
-                            , ( "Answer2", Answer "сюжет" True False )
-                            , ( "Answer3", Answer "этаж" False False )
-                            , ( "Answer4", Answer "пляж" False False )
-                            , ( "Answer5", Answer "режим" False False )
-                            , ( "Answer6", Answer "экипаж" False False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                , ( "Question5"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "жанр" True False )
-                            , ( "Answer2", Answer "сюжет" False False )
-                            , ( "Answer3", Answer "этаж" False False )
-                            , ( "Answer4", Answer "пляж" False False )
-                            , ( "Answer5", Answer "режим" False False )
-                            , ( "Answer6", Answer "экипаж" False False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                ]
-            )
+                (Dict.fromList
+                    [ ( "Question1"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "жанр" False False )
+                                , ( "Answer2", Answer "сюжет" False False )
+                                , ( "Answer3", Answer "этаж" False False )
+                                , ( "Answer4", Answer "пляж" True False )
+                                , ( "Answer5", Answer "режим" False False )
+                                , ( "Answer6", Answer "экипаж" False False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    , ( "Question2"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "жанр" False False )
+                                , ( "Answer2", Answer "сюжет" False False )
+                                , ( "Answer3", Answer "этаж" False False )
+                                , ( "Answer4", Answer "пляж" False False )
+                                , ( "Answer5", Answer "режим" True False )
+                                , ( "Answer6", Answer "экипаж" False False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    , ( "Question3"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "жанр" False False )
+                                , ( "Answer2", Answer "сюжет" False False )
+                                , ( "Answer3", Answer "этаж" False False )
+                                , ( "Answer4", Answer "пляж" False False )
+                                , ( "Answer5", Answer "режим" False False )
+                                , ( "Answer6", Answer "экипаж" True False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    , ( "Question4"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "жанр" False False )
+                                , ( "Answer2", Answer "сюжет" True False )
+                                , ( "Answer3", Answer "этаж" False False )
+                                , ( "Answer4", Answer "пляж" False False )
+                                , ( "Answer5", Answer "режим" False False )
+                                , ( "Answer6", Answer "экипаж" False False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    , ( "Question5"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "жанр" True False )
+                                , ( "Answer2", Answer "сюжет" False False )
+                                , ( "Answer3", Answer "этаж" False False )
+                                , ( "Answer4", Answer "пляж" False False )
+                                , ( "Answer5", Answer "режим" False False )
+                                , ( "Answer6", Answer "экипаж" False False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    ]
+                )
           )
         , ( "Activity5"
           , Activity
-            (Dict.fromList
-                [ ( "Question1"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "цикл" False False )
-                            , ( "Answer2", Answer "принцип" False False )
-                            , ( "Answer3", Answer "рецепт" False False )
-                            , ( "Answer4", Answer "цитата" True False )
-                            , ( "Answer5", Answer "церемония" False False )
-                            , ( "Answer6", Answer "официант" False False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                , ( "Question2"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "цикл" False False )
-                            , ( "Answer2", Answer "принцип" False False )
-                            , ( "Answer3", Answer "рецепт" False False )
-                            , ( "Answer4", Answer "цитата" False False )
-                            , ( "Answer5", Answer "церемония" False False )
-                            , ( "Answer6", Answer "официант" True False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                , ( "Question3"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "цикл" True False )
-                            , ( "Answer2", Answer "принцип" False False )
-                            , ( "Answer3", Answer "рецепт" False False )
-                            , ( "Answer4", Answer "цитата" False False )
-                            , ( "Answer5", Answer "церемония" False False )
-                            , ( "Answer6", Answer "официант" False False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                , ( "Question4"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "цикл" False False )
-                            , ( "Answer2", Answer "принцип" False False )
-                            , ( "Answer3", Answer "рецепт" True False )
-                            , ( "Answer4", Answer "цитата" False False )
-                            , ( "Answer5", Answer "церемония" False False )
-                            , ( "Answer6", Answer "официант" False False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                , ( "Question5"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "цикл" False False )
-                            , ( "Answer2", Answer "принцип" True False )
-                            , ( "Answer3", Answer "рецепт" False False )
-                            , ( "Answer4", Answer "цитата" False False )
-                            , ( "Answer5", Answer "церемония" False False )
-                            , ( "Answer6", Answer "официант" False False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                ]
-            )
+                (Dict.fromList
+                    [ ( "Question1"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "цикл" False False )
+                                , ( "Answer2", Answer "принцип" False False )
+                                , ( "Answer3", Answer "рецепт" False False )
+                                , ( "Answer4", Answer "цитата" True False )
+                                , ( "Answer5", Answer "церемония" False False )
+                                , ( "Answer6", Answer "официант" False False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    , ( "Question2"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "цикл" False False )
+                                , ( "Answer2", Answer "принцип" False False )
+                                , ( "Answer3", Answer "рецепт" False False )
+                                , ( "Answer4", Answer "цитата" False False )
+                                , ( "Answer5", Answer "церемония" False False )
+                                , ( "Answer6", Answer "официант" True False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    , ( "Question3"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "цикл" True False )
+                                , ( "Answer2", Answer "принцип" False False )
+                                , ( "Answer3", Answer "рецепт" False False )
+                                , ( "Answer4", Answer "цитата" False False )
+                                , ( "Answer5", Answer "церемония" False False )
+                                , ( "Answer6", Answer "официант" False False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    , ( "Question4"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "цикл" False False )
+                                , ( "Answer2", Answer "принцип" False False )
+                                , ( "Answer3", Answer "рецепт" True False )
+                                , ( "Answer4", Answer "цитата" False False )
+                                , ( "Answer5", Answer "церемония" False False )
+                                , ( "Answer6", Answer "официант" False False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    , ( "Question5"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "цикл" False False )
+                                , ( "Answer2", Answer "принцип" True False )
+                                , ( "Answer3", Answer "рецепт" False False )
+                                , ( "Answer4", Answer "цитата" False False )
+                                , ( "Answer5", Answer "церемония" False False )
+                                , ( "Answer6", Answer "официант" False False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    ]
+                )
           )
         , ( "Activity6"
           , Activity
-            (Dict.fromList
-                [ ( "Question1"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "героиня" False False )
-                            , ( "Answer2", Answer "гармония" True False )
-                            , ( "Answer3", Answer "гипотеза" False False )
-                            , ( "Answer4", Answer "алкоголь" False False )
-                            , ( "Answer5", Answer "горизонт" False False )
-                            , ( "Answer6", Answer "госпиталь" False False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                , ( "Question2"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "героиня" True False )
-                            , ( "Answer2", Answer "гармония" False False )
-                            , ( "Answer3", Answer "гипотеза" False False )
-                            , ( "Answer4", Answer "алкоголь" False False )
-                            , ( "Answer5", Answer "горизонт" False False )
-                            , ( "Answer6", Answer "госпиталь" False False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                , ( "Question3"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "героиня" False False )
-                            , ( "Answer2", Answer "гармония" False False )
-                            , ( "Answer3", Answer "гипотеза" False False )
-                            , ( "Answer4", Answer "алкоголь" False False )
-                            , ( "Answer5", Answer "горизонт" False False )
-                            , ( "Answer6", Answer "госпиталь" True False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                , ( "Question4"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "героиня" False False )
-                            , ( "Answer2", Answer "гармония" False False )
-                            , ( "Answer3", Answer "гипотеза" True False )
-                            , ( "Answer4", Answer "алкоголь" False False )
-                            , ( "Answer5", Answer "горизонт" False False )
-                            , ( "Answer6", Answer "госпиталь" False False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                , ( "Question5"
-                  , Question
-                        (Dict.fromList
-                            [ ( "Answer1", Answer "героиня" False False )
-                            , ( "Answer2", Answer "гармония" False False )
-                            , ( "Answer3", Answer "гипотеза" False False )
-                            , ( "Answer4", Answer "алкоголь" False False )
-                            , ( "Answer5", Answer "горизонт" True False )
-                            , ( "Answer6", Answer "госпиталь" False False )
-                            ]
-                        )
-                        { showButton = False, showSolution = False }
-                  )
-                ]
-            )
+                (Dict.fromList
+                    [ ( "Question1"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "героиня" False False )
+                                , ( "Answer2", Answer "гармония" True False )
+                                , ( "Answer3", Answer "гипотеза" False False )
+                                , ( "Answer4", Answer "алкоголь" False False )
+                                , ( "Answer5", Answer "горизонт" False False )
+                                , ( "Answer6", Answer "госпиталь" False False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    , ( "Question2"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "героиня" True False )
+                                , ( "Answer2", Answer "гармония" False False )
+                                , ( "Answer3", Answer "гипотеза" False False )
+                                , ( "Answer4", Answer "алкоголь" False False )
+                                , ( "Answer5", Answer "горизонт" False False )
+                                , ( "Answer6", Answer "госпиталь" False False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    , ( "Question3"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "героиня" False False )
+                                , ( "Answer2", Answer "гармония" False False )
+                                , ( "Answer3", Answer "гипотеза" False False )
+                                , ( "Answer4", Answer "алкоголь" False False )
+                                , ( "Answer5", Answer "горизонт" False False )
+                                , ( "Answer6", Answer "госпиталь" True False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    , ( "Question4"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "героиня" False False )
+                                , ( "Answer2", Answer "гармония" False False )
+                                , ( "Answer3", Answer "гипотеза" True False )
+                                , ( "Answer4", Answer "алкоголь" False False )
+                                , ( "Answer5", Answer "горизонт" False False )
+                                , ( "Answer6", Answer "госпиталь" False False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    , ( "Question5"
+                      , Question
+                            (Dict.fromList
+                                [ ( "Answer1", Answer "героиня" False False )
+                                , ( "Answer2", Answer "гармония" False False )
+                                , ( "Answer3", Answer "гипотеза" False False )
+                                , ( "Answer4", Answer "алкоголь" False False )
+                                , ( "Answer5", Answer "горизонт" True False )
+                                , ( "Answer6", Answer "госпиталь" False False )
+                                ]
+                            )
+                            { showButton = False, showSolution = False }
+                      )
+                    ]
+                )
           )
         ]
 
@@ -411,7 +411,7 @@ initActivitiesHelper =
 -- UPDATE
 
 
-type Msg 
+type Msg
     = UpdateAnswer String String String
     | RevealSolution String String
 
@@ -421,13 +421,14 @@ update msg model =
     case msg of
         UpdateAnswer activity question answer ->
             let
-                updatedActivities = accessActivity model activity
-                    |> accessQuestion question
-                    |> accessAnswer answer
-                    |> updateAnswer
-                    |> updateQuestionShowsButton model activity question answer
-                    |> updateActivity model activity question
-                    |> updateActivities model activity
+                updatedActivities =
+                    accessActivity model activity
+                        |> accessQuestion question
+                        |> accessAnswer answer
+                        |> updateAnswer
+                        |> updateQuestionShowsButton model activity question answer
+                        |> updateActivity model activity question
+                        |> updateActivities model activity
             in
             ( { model | activities = updatedActivities }
             , Cmd.none
@@ -435,11 +436,12 @@ update msg model =
 
         RevealSolution activity question ->
             let
-                updatedActivities = accessActivity model activity
-                    |> accessQuestion question
-                    |> updateQuestionShowsSolution
-                    |> updateActivity model activity question
-                    |> updateActivities model activity
+                updatedActivities =
+                    accessActivity model activity
+                        |> accessQuestion question
+                        |> updateQuestionShowsSolution
+                        |> updateActivity model activity question
+                        |> updateActivities model activity
             in
             ( { model | activities = updatedActivities }, Cmd.none )
 
@@ -452,32 +454,36 @@ accessActivity : Model -> String -> Maybe Activity
 accessActivity model activity =
     Dict.get activity model.activities
 
+
 accessQuestion : String -> Maybe Activity -> Maybe Question
 accessQuestion questionKey maybeActivity =
-        case maybeActivity of
-            Just ac ->
-                Dict.get questionKey (questions ac)
+    case maybeActivity of
+        Just ac ->
+            Dict.get questionKey (questions ac)
 
-            Nothing ->
-                Maybe.map identity Nothing
+        Nothing ->
+            Maybe.map identity Nothing
+
 
 accessAnswer : String -> Maybe Question -> Maybe Answer
 accessAnswer answer maybeQuestion =
     case maybeQuestion of
-        Just q -> 
+        Just q ->
             Dict.get answer (answers q)
 
-        Nothing -> 
+        Nothing ->
             Just (Answer "" False False)
+
 
 clearQuestion : Maybe Question -> Question
 clearQuestion maybeQuestion =
     case maybeQuestion of
         Just q ->
-            Question (Dict.map (\_ an -> { an | selected = False }) (answers q)) { showButton = True, showSolution = False}
+            Question (Dict.map (\_ an -> { an | selected = False }) (answers q)) { showButton = True, showSolution = False }
 
         Nothing ->
-            Question (Dict.fromList []) { showButton = False, showSolution = False} 
+            Question (Dict.fromList []) { showButton = False, showSolution = False }
+
 
 updateAnswer : Maybe Answer -> Maybe Answer
 updateAnswer maybeAnswer =
@@ -488,26 +494,33 @@ updateAnswer maybeAnswer =
         Nothing ->
             Just (Answer "" False False)
 
+
 updateQuestionShowsButton : Model -> String -> String -> String -> Maybe Answer -> Question
 updateQuestionShowsButton model activityKey questionKey answerKey updatedAnswer =
     let
-        clearedQuestion = accessActivity model activityKey
+        clearedQuestion =
+            accessActivity model activityKey
                 |> accessQuestion questionKey
                 |> clearQuestion
     in
-        Question (Dict.update answerKey (\_ -> updatedAnswer) (answers clearedQuestion)) { showButton = True, showSolution = False }
+    Question (Dict.update answerKey (\_ -> updatedAnswer) (answers clearedQuestion)) { showButton = True, showSolution = False }
 
 
 updateQuestionShowsSolution : Maybe Question -> Question
-updateQuestionShowsSolution maybeQuestion = 
+updateQuestionShowsSolution maybeQuestion =
     case maybeQuestion of
-        Just q -> Question (answers q) { showButton = True, showSolution = True }
-        Nothing -> Question (Dict.fromList []) { showButton = False, showSolution = False }
+        Just q ->
+            Question (answers q) { showButton = True, showSolution = True }
+
+        Nothing ->
+            Question (Dict.fromList []) { showButton = False, showSolution = False }
+
 
 updateActivity : Model -> String -> String -> Question -> Activity
 updateActivity model activityKey questionKey updatedQuestion =
-    let 
-        maybeActivity = accessActivity model activityKey
+    let
+        maybeActivity =
+            accessActivity model activityKey
     in
     case maybeActivity of
         Just ac ->
@@ -516,10 +529,11 @@ updateActivity model activityKey questionKey updatedQuestion =
         Nothing ->
             Activity (Dict.fromList [])
 
+
 updateActivities : Model -> String -> Activity -> Dict String Activity
 updateActivities model activityKey updatedActivity =
     Dict.update activityKey (Maybe.map (\_ -> updatedActivity)) model.activities
- 
+
 
 
 -- VIEW
@@ -527,6 +541,7 @@ updateActivities model activityKey updatedActivity =
 
 type alias Params =
     ()
+
 
 view : Model -> Document Msg
 view model =
@@ -536,46 +551,46 @@ view model =
             [ div [ id "about" ]
                 [ div [ id "about-box" ]
                     [ div [ id "title" ] [ text "Recognition" ]
-                        , viewTabs
-                        , viewFirstSection
-                        , viewInstructionsFirstActivity
-                        , viewFirstQuestion model
-                        , viewSecondQuestion model
-                        , viewNoteFirstActivity
-                        , viewSecondSection
-                        , viewThirdSection
-                        , viewInstructionsSecondActivity
-                        , viewThirdQuestion model
-                        , viewFourthQuestion model
-                        , viewFifthQuestion model
-                        , viewSixthQuestion model
-                        , viewNoteSecondActivity
-                        , viewInstructionsThirdActivity
-                        , viewSeventhQuestion model
-                        , viewEigthQuestion model
-                        , viewNinthQuestion model
-                        , viewTenthQuestion model
-                        , viewFourthSection
-                        , viewInstructionsFourthActivity
-                        , viewEleventhQuestion model
-                        , viewTwelfthQuestion model
-                        , viewThirteenthQuestion model
-                        , viewFourteenthQuestion model
-                        , viewFifteenthQuestion model
-                        , viewSixteenthQuestion model
-                        , viewSeventeenthQuestion model
-                        , viewEighteenthQuestion model
-                        , viewNineteenthQuestion model
-                        , viewTwentiethQuestion model
-                        , viewSixthSection
-                        , viewInstructionsSixthActivity
-                        , viewTwentyFirstQuestion model
-                        , viewTwentySecondQuestion model
-                        , viewTwentyThirdQuestion model
-                        , viewTwentyFourthQuestion model
-                        , viewTwentyFifthQuestion model
-                        , viewSeventhSection
-                        , viewEigthSection
+                    , viewTabs
+                    , viewFirstSection
+                    , viewInstructionsFirstActivity
+                    , viewFirstQuestion model
+                    , viewSecondQuestion model
+                    , viewNoteFirstActivity
+                    , viewSecondSection
+                    , viewThirdSection
+                    , viewInstructionsSecondActivity
+                    , viewThirdQuestion model
+                    , viewFourthQuestion model
+                    , viewFifthQuestion model
+                    , viewSixthQuestion model
+                    , viewNoteSecondActivity
+                    , viewInstructionsThirdActivity
+                    , viewSeventhQuestion model
+                    , viewEigthQuestion model
+                    , viewNinthQuestion model
+                    , viewTenthQuestion model
+                    , viewFourthSection
+                    , viewInstructionsFourthActivity
+                    , viewEleventhQuestion model
+                    , viewTwelfthQuestion model
+                    , viewThirteenthQuestion model
+                    , viewFourteenthQuestion model
+                    , viewFifteenthQuestion model
+                    , viewSixteenthQuestion model
+                    , viewSeventeenthQuestion model
+                    , viewEighteenthQuestion model
+                    , viewNineteenthQuestion model
+                    , viewTwentiethQuestion model
+                    , viewSixthSection
+                    , viewInstructionsSixthActivity
+                    , viewTwentyFirstQuestion model
+                    , viewTwentySecondQuestion model
+                    , viewTwentyThirdQuestion model
+                    , viewTwentyFourthQuestion model
+                    , viewTwentyFifthQuestion model
+                    , viewSeventhSection
+                    , viewEigthSection
                     ]
                 ]
             ]
@@ -687,7 +702,7 @@ international origin.  Try the examples below.
 
 
 viewInstructionsFirstActivity : Html Msg
-viewInstructionsFirstActivity = 
+viewInstructionsFirstActivity =
     Markdown.toHtml [ attribute "class" "markdown-link" ] """
 #### Activity 1
 
@@ -750,6 +765,7 @@ viewFirstQuestion model =
                                 , Html.br [] []
                                 , Html.text """International words that begin with th in English often as spelled just with т in Russian. """
                                 ]
+
                           else
                             div [] []
                         ]
@@ -759,7 +775,6 @@ viewFirstQuestion model =
                 div [] []
             ]
         ]
-
 
 
 viewSecondQuestion : Model -> Html Msg
@@ -816,23 +831,23 @@ Russian as **кс** or **кз**. You can see this in the Russian words **ксе�
 **экзамен** = examination, an end-of-term test.
                                 """
                                 ]
+                            -- [ Html.text "The correct answer is: адрес = address"
+                            -- , Html.br [] []
+                            -- , Html.text """International words will sometimes have modified spelling in Russian. Double-letters which make a single sound are often spelled
+                            -- with a single letter in Russian. The opposite is also true: single letters in English that make a double sound are spelled with two letters in Russian.
+                            -- For example, English """
+                            -- , Html.strong [] [ text "x" ]
+                            -- , Html.text """, making the sounds "k - s," is spelled in Russian as """
+                            -- , Html.strong [] [ text "кс" ]
+                            -- , Html.text " or "
+                            -- , Html.strong [] [ text "кз" ]
+                            -- , Html.text ". You can see this in the Russian words "
+                            -- , Html.strong [] [ text "ксерокс" ]
+                            -- , Html.text " = xerox, where the name brand in Russian became the word for a duplicate produced on a copy machine, and "
+                            -- , Html.strong [] [ text "экзамен" ]
+                            -- , Html.text " = examination, an end-of-term test."
+                            -- ]
 
-                                -- [ Html.text "The correct answer is: адрес = address"
-                                -- , Html.br [] []
-                                -- , Html.text """International words will sometimes have modified spelling in Russian. Double-letters which make a single sound are often spelled 
-                                -- with a single letter in Russian. The opposite is also true: single letters in English that make a double sound are spelled with two letters in Russian. 
-                                -- For example, English """
-                                -- , Html.strong [] [ text "x" ]
-                                -- , Html.text """, making the sounds "k - s," is spelled in Russian as """
-                                -- , Html.strong [] [ text "кс" ]
-                                -- , Html.text " or "
-                                -- , Html.strong [] [ text "кз" ]
-                                -- , Html.text ". You can see this in the Russian words "
-                                -- , Html.strong [] [ text "ксерокс" ]
-                                -- , Html.text " = xerox, where the name brand in Russian became the word for a duplicate produced on a copy machine, and "
-                                -- , Html.strong [] [ text "экзамен" ]
-                                -- , Html.text " = examination, an end-of-term test."
-                                -- ]
                           else
                             div [] []
                         ]
@@ -845,7 +860,7 @@ Russian as **кс** or **кз**. You can see this in the Russian words **ксе�
 
 
 viewNoteFirstActivity : Html Msg
-viewNoteFirstActivity = 
+viewNoteFirstActivity =
     Markdown.toHtml [ attribute "class" "markdown-link" ] """
 **Note:** You should still use context to verify what exact sense the word has, but the words should be easily recognized. For example парк means "park" in the sense of a place for recreation, and not something you do with a car. 
 """
@@ -862,6 +877,7 @@ For example, many international words for nouns may acquire a feminine ending in
 
 Many international words borrowed into Russian may have a narrower or slightly different range of meanings than the words may have in English.  Consider context as you try to identify the specific meaning that an international word has in Russian.
 """
+
 
 viewThirdSection : Html Msg
 viewThirdSection =
@@ -881,34 +897,35 @@ viewThirdSection =
             , tr []
                 [ td [] [ text "система" ]
                 , td [] [ text "system" ]
-                , td [] [ Markdown.toHtml [ attribute "class" "markdown-link" ] """Note that Russian **и** often stands in for **y** in words of Greek origin. """]
+                , td [] [ Markdown.toHtml [ attribute "class" "markdown-link" ] """Note that Russian **и** often stands in for **y** in words of Greek origin. """ ]
                 ]
             , tr []
                 [ td [] [ text "группа" ]
                 , td [] [ text "group" ]
-                , td [] [ text "Some international words do retain double consonants."]
+                , td [] [ text "Some international words do retain double consonants." ]
                 ]
-            , tr [] 
+            , tr []
                 [ td [] [ text "фирма" ]
                 , td [] [ text "firm" ]
                 , td [] [ Markdown.toHtml [ attribute "class" "markdown-link" ] """As in a company or a business, where originally a transaction was firmed up, or confirmed 
-                by a signature. International words from Latin often have an **ф** in Russian, where English will have **f**."""]]
+                by a signature. International words from Latin often have an **ф** in Russian, where English will have **f**.""" ]
+                ]
             , tr []
                 [ td [] [ text "катастрофа" ]
                 , td [] [ text "catastrophe" ]
-                , td [] [ Markdown.toHtml [ attribute "class" "markdown-link" ] """International words borrowed from Greek, often have an <strong>ф</strong> in Russian, where English will have <strong>ph</strong>."""]
+                , td [] [ Markdown.toHtml [ attribute "class" "markdown-link" ] """International words borrowed from Greek, often have an <strong>ф</strong> in Russian, where English will have <strong>ph</strong>.""" ]
                 ]
             , tr []
                 [ td [] [ text "схема" ]
                 , td [] [ text "scheme" ]
-                , td [] [ Markdown.toHtml [ attribute "class" "markdown-link" ] """As in a schematic drawing. International words borrowed from Greek, often have an **х** in Russian, where English will have **ch**."""]
+                , td [] [ Markdown.toHtml [ attribute "class" "markdown-link" ] """As in a schematic drawing. International words borrowed from Greek, often have an **х** in Russian, where English will have **ch**.""" ]
                 ]
             ]
         ]
 
 
 viewInstructionsSecondActivity : Html Msg
-viewInstructionsSecondActivity = 
+viewInstructionsSecondActivity =
     Markdown.toHtml [ attribute "class" "markdown-link" ] """
 #### Activity 2 
 
@@ -969,6 +986,7 @@ viewThirdQuestion model =
                             )
                                 [ Html.text "The correct answer is: логика = logic "
                                 ]
+
                           else
                             div [] []
                         ]
@@ -1027,6 +1045,7 @@ viewFourthQuestion model =
                             )
                                 [ Html.text "The correct answer is: секунда = second "
                                 ]
+
                           else
                             div [] []
                         ]
@@ -1088,6 +1107,7 @@ viewFifthQuestion model =
                                 , Markdown.toHtml [ attribute "class" "markdown-link" ] """This is an international word of Greek origin, where the Russian **ф** corresponds 
                                 with English **ph**. Once your eye is trained to this, you should have no trouble seeing that **сфера** is **sphere** and **атмосфера** is **atmosphere**. """
                                 ]
+
                           else
                             div [] []
                         ]
@@ -1146,6 +1166,7 @@ viewSixthQuestion model =
                             )
                                 [ Html.text "The correct answer is: поза = pose "
                                 ]
+
                           else
                             div [] []
                         ]
@@ -1157,16 +1178,15 @@ viewSixthQuestion model =
         ]
 
 
-
 viewNoteSecondActivity : Html Msg
-viewNoteSecondActivity = 
+viewNoteSecondActivity =
     Markdown.toHtml [ attribute "class" "markdown-link" ] """
 **Note:** You should still use context to verify what exact sense the word has, but the words should be easily recognized. 
 """
 
 
 viewInstructionsThirdActivity : Html Msg
-viewInstructionsThirdActivity = 
+viewInstructionsThirdActivity =
     Markdown.toHtml [ attribute "class" "markdown-link" ] """
 #### Activity 3
 
@@ -1227,6 +1247,7 @@ viewSeventhQuestion model =
                             )
                                 [ Html.text "The correct answer is: пауза = pause "
                                 ]
+
                           else
                             div [] []
                         ]
@@ -1285,6 +1306,7 @@ viewEigthQuestion model =
                             )
                                 [ Html.text "The correct answer is: элита = elite "
                                 ]
+
                           else
                             div [] []
                         ]
@@ -1346,6 +1368,7 @@ viewNinthQuestion model =
                                 , Markdown.toHtml [ attribute "class" "markdown-link" ] """Дата only refers to the calendar in Russian, a much narrower range of meaning that the 
                                 English "date" (which can be a romantic partner, a social event, or even a fruit). Also note that the English word **data** is **данные** in Russian. """
                                 ]
+
                           else
                             div [] []
                         ]
@@ -1407,6 +1430,7 @@ viewTenthQuestion model =
                                 , Markdown.toHtml [ attribute "class" "markdown-link" ] """Манера has a much more limited range of use in Russian than the English manner. The 
                                 Russian манера is used only about external ways of behaving or acting. The Russian equivalents of "a manner of speaking," "in what manner" and other phrases won't use the word манера. """
                                 ]
+
                           else
                             div [] []
                         ]
@@ -1494,6 +1518,7 @@ viewEleventhQuestion model =
                             )
                                 [ Html.text "The correct answer is: пляж = beach, from French plage."
                                 ]
+
                           else
                             div [] []
                         ]
@@ -1552,6 +1577,7 @@ viewTwelfthQuestion model =
                             )
                                 [ Html.text "The correct answer is: режим = regime"
                                 ]
+
                           else
                             div [] []
                         ]
@@ -1610,6 +1636,7 @@ viewThirteenthQuestion model =
                             )
                                 [ Html.text "The correct answer is: экипаж = crew, although the French équipage starts out with the meaning of a carriage, and then comes to mean the whole team-- carriage, plus horses, plus driver."
                                 ]
+
                           else
                             div [] []
                         ]
@@ -1670,6 +1697,7 @@ viewFourteenthQuestion model =
                                 , Html.br [] []
                                 , Markdown.toHtml [ attribute "class" "markdown-link" ] """The French **sujet** is related to English **subject**, as much as the plot is the subject matter of a work of literature."""
                                 ]
+
                           else
                             div [] []
                         ]
@@ -1732,6 +1760,7 @@ viewFifteenthQuestion model =
 
                                 The final word in this set **этаж** comes from the French **étage**, meaning "floor" (i.e., level of a building). It is related to the English word **stage**. """
                                 ]
+
                           else
                             div [] []
                         ]
@@ -1814,6 +1843,7 @@ viewSixteenthQuestion model =
                             )
                                 [ Html.text "The correct answer is: цитата = quotation, think about citation."
                                 ]
+
                           else
                             div [] []
                         ]
@@ -1823,6 +1853,7 @@ viewSixteenthQuestion model =
                 div [] []
             ]
         ]
+
 
 viewSeventeenthQuestion : Model -> Html Msg
 viewSeventeenthQuestion model =
@@ -1871,6 +1902,7 @@ viewSeventeenthQuestion model =
                             )
                                 [ Html.text "The correct answer is: официант = waiter; think about someone officiating over the dining room at a restaurant"
                                 ]
+
                           else
                             div [] []
                         ]
@@ -1929,6 +1961,7 @@ viewEighteenthQuestion model =
                             )
                                 [ Markdown.toHtml [ attribute "class" "markdown-link" ] """The correct answer is: 1. цикл = cycle, as a word from Greek, the English y is often expressed in Russian with an **и**."""
                                 ]
+
                           else
                             div [] []
                         ]
@@ -1991,6 +2024,7 @@ The correct answer is: рецепт = prescription (medical sense of word); reci
 The word **рецепт** is from Latin, and is related to the English word French **received** / **receipt**.
                                 """
                                 ]
+
                           else
                             div [] []
                         ]
@@ -2055,6 +2089,7 @@ The Latin word is **principium**, and the grammatical ending -ium is usually not
 The final word in this set **церемония** is equivalent to English **ceremony**. 
                                 """
                                 ]
+
                           else
                             div [] []
                         ]
@@ -2137,6 +2172,7 @@ viewTwentyFirstQuestion model =
                             )
                                 [ Html.text "The correct answer is: гармония = harmony."
                                 ]
+
                           else
                             div [] []
                         ]
@@ -2195,6 +2231,7 @@ viewTwentySecondQuestion model =
                             )
                                 [ Html.text "The correct answer is: героиня = heroine; the drug heroin will be героин in Russian."
                                 ]
+
                           else
                             div [] []
                         ]
@@ -2255,6 +2292,7 @@ viewTwentyThirdQuestion model =
 The correct answer is: госпиталь = hospital, but usually used only about military and field hospitals. Civilian hospitals in Russian are called **больница**, a place for the sick ( **больные** ) and people who have pain (**боль**).
                                 """
                                 ]
+
                           else
                             div [] []
                         ]
@@ -2317,6 +2355,7 @@ The correct answer is: гипотеза = hypothesis
 You have to make multiple substitutions to see the connection here: Russian **и** often takes the place of the Latin letter **y**; Russian **т** often takes the place of **th**, and finally the grammatical ending **-is** is truncated in Russian and replaced by **-а**.
                                 """
                                 ]
+
                           else
                             div [] []
                         ]
@@ -2373,8 +2412,8 @@ viewTwentyFifthQuestion model =
                              else
                                 div [ class "incorrect-answer-guide" ]
                             )
-                                [ Markdown.toHtml [ attribute "class" "markdown-link" ] 
-                                """
+                                [ Markdown.toHtml [ attribute "class" "markdown-link" ]
+                                    """
 The correct answer is: горизонт = horizon
 
 Like English, the Russian word can be used in metaphorical senses as well as geographic and geometric meanings.
@@ -2382,6 +2421,7 @@ Like English, the Russian word can be used in metaphorical senses as well as geo
 The final word in this set **алкоголь** = English **alchohol** borrowed from the Arabic **alkohl**. 
                                 """
                                 ]
+
                           else
                             div [] []
                         ]
@@ -2418,118 +2458,132 @@ viewEigthSection =
                 ]
             , tr []
                 [ td [] [ text "стол" ]
-                , td [] [ Markdown.toHtml [ attribute "class" "markdown-link" ] 
-                    """
+                , td []
+                    [ Markdown.toHtml [ attribute "class" "markdown-link" ]
+                        """
 "stole" 
 
 Could it be related to "stealing"? 
-                    """ 
-                    ]
-                , td [] [ Markdown.toHtml [ attribute "class" "markdown-link" ] 
                     """
+                    ]
+                , td []
+                    [ Markdown.toHtml [ attribute "class" "markdown-link" ]
+                        """
 Вот ваш стол. Тут можете работать.
 
 Here's your ___. You can work here. 
-                    """ 
-                    ]
-                , td [] [ Markdown.toHtml [ attribute "class" "markdown-link" ] 
                     """
+                    ]
+                , td []
+                    [ Markdown.toHtml [ attribute "class" "markdown-link" ]
+                        """
 Although **стол** sounds like **stole**, the Russian word is a noun meaning "table," and that makes it unlikely to be related to an English verb. 
 Furthermore, **steal** is one of those core concepts in a culture, and it is unlikely that Russian needed to borrow a word for that notion.
-                    """ 
+                    """
                     ]
                 ]
             , tr []
                 [ td [] [ text "магазин" ]
-                , td [] [ Markdown.toHtml [ attribute "class" "markdown-link" ] 
-                    """
+                , td []
+                    [ Markdown.toHtml [ attribute "class" "markdown-link" ]
+                        """
 "magazin"
 
 Could it mean "magazine"?
-                    """ 
-                    ]
-                , td [] [ Markdown.toHtml [ attribute "class" "markdown-link" ] 
                     """
+                    ]
+                , td []
+                    [ Markdown.toHtml [ attribute "class" "markdown-link" ]
+                        """
 В 1995 году в Internet появился первый книжный магазин ― знаменитый Amazon.com.
 
 In 1995 the famous Amazon.com was the first internet book ___ to appear on the internet. 
-                    """ 
-                    ]
-                , td [] [ Markdown.toHtml [ attribute "class" "markdown-link" ] 
                     """
+                    ]
+                , td []
+                    [ Markdown.toHtml [ attribute "class" "markdown-link" ]
+                        """
 **Магазин** is indeed an international word, borrowed into Russian. However, it was borrowed from French, where **magazin** is a **store**, not a periodical to read. Words like this are often called "false friends" because, although they look the same across languages, they have completely different meanings.
-                    """ 
+                    """
                     ]
                 ]
             , tr []
                 [ td [] [ text "смелый" ]
-                , td [] [ Markdown.toHtml [ attribute "class" "markdown-link" ] 
-                    """
+                , td []
+                    [ Markdown.toHtml [ attribute "class" "markdown-link" ]
+                        """
 "smely"
 
 Could it be related to "smelly"?
-                    """ 
-                    ]
-                , td [] [ Markdown.toHtml [ attribute "class" "markdown-link" ] 
                     """
+                    ]
+                , td []
+                    [ Markdown.toHtml [ attribute "class" "markdown-link" ]
+                        """
 Костя в жизни был не очень смелый, и он боялся лезть в драку.
 
 Kostya in life wasn't very ___ and he was afraid of getting into a fight.
-                    """ 
-                    ]
-                , td [] [ Markdown.toHtml [ attribute "class" "markdown-link" ] 
                     """
+                    ]
+                , td []
+                    [ Markdown.toHtml [ attribute "class" "markdown-link" ]
+                        """
 Although **смелый** sounds like **smelly**, they are not at all related. The Russian word **смелый** means **bold**, **daring** and is related to the verb **сметь**, which means "to dare." This is one of those core concepts in a culture, and it is unlikely that Russian needed to borrow a word for that notion.
-                    """ 
+                    """
                     ]
                 ]
             , tr []
                 [ td [] [ text "пластинка" ]
-                , td [] [ Markdown.toHtml [ attribute "class" "markdown-link" ] 
-                    """
+                , td []
+                    [ Markdown.toHtml [ attribute "class" "markdown-link" ]
+                        """
 "plastinka"
 
 Could it be related to plastic?
-                    """ 
-                    ]
-                , td [] [ Markdown.toHtml [ attribute "class" "markdown-link" ] 
                     """
+                    ]
+                , td []
+                    [ Markdown.toHtml [ attribute "class" "markdown-link" ]
+                        """
 В 70-ые года в детстве Маша любила "Битлз" и все время слушала пластинки этой группы.
 
 In the 1970s, in her childhood Masha loved the Beatles and listened to that group's ___ all the time.
-                    """ 
-                    ]
-                , td [] [ Markdown.toHtml [ attribute "class" "markdown-link" ] 
                     """
+                    ]
+                , td []
+                    [ Markdown.toHtml [ attribute "class" "markdown-link" ]
+                        """
 Although **ластинка** sounds almost like **plastic**, the words are not at all related. The Russian word **пластинка** means **record (vinyl disk with recorded audio)** and is related to the adjective **плоский**, which means "flat."
-                    """ 
+                    """
                     ]
                 ]
             , tr []
                 [ td [] [ text "ремонт" ]
-                , td [] [ Markdown.toHtml [ attribute "class" "markdown-link" ] 
-                    """
+                , td []
+                    [ Markdown.toHtml [ attribute "class" "markdown-link" ]
+                        """
 "remont"
 
 Could it be related to "remounting"?
-                    """ 
-                    ]
-                , td [] [ Markdown.toHtml [ attribute "class" "markdown-link" ] 
                     """
+                    ]
+                , td []
+                    [ Markdown.toHtml [ attribute "class" "markdown-link" ]
+                        """
 К концу января ремонт был закончен. Кухня была вся новая.
 
 By the end of January the ___ was finished. The kitchen was completely new.
-                    """ 
-                    ]
-                , td [] [ Markdown.toHtml [ attribute "class" "markdown-link" ] 
                     """
+                    ]
+                , td []
+                    [ Markdown.toHtml [ attribute "class" "markdown-link" ]
+                        """
 **Ремонт** is indeed an international word, borrowed into Russian. However, it was borrowed from French, where **remonte** means **remodeling** and **renovation**.
-                    """ 
+                    """
                     ]
                 ]
             ]
         ]
-
 
 
 
@@ -2628,14 +2682,20 @@ checkButtonClicked model activityLabel questionLabel =
         maybeActivities =
             Dict.get activityLabel model.activities
 
-        maybeQuestion = case maybeActivities of
-            Just activities -> Dict.get questionLabel (questions activities)
-            Nothing -> Maybe.map identity Nothing
+        maybeQuestion =
+            case maybeActivities of
+                Just activities ->
+                    Dict.get questionLabel (questions activities)
 
+                Nothing ->
+                    Maybe.map identity Nothing
     in
-        case maybeQuestion of 
-            Just question -> showSolution question
-            Nothing -> False 
+    case maybeQuestion of
+        Just question ->
+            showSolution question
+
+        Nothing ->
+            False
 
 
 
