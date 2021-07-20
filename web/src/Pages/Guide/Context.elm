@@ -929,7 +929,7 @@ viewFifthSection =
 Guessing from background knowledge is a risky strategy, especially if you don't know a large number of words in the text.   Be sure to look up the word after guessing to confirm your hypothesis.
 
 You may be able to enhance your ability to guess from background knowledge if you can combine that strategy with some word recognition strategies. For example, in this text, if you knew that **pap** 
-meant "**fish**," and the suffix **lin** often signified the doer of an action, then you'd have stronger justification to guess that **paplin** means "fisherman." Such word formation clues can be powerful 
+meant "**fish**," and the suffix **lin** often signified the doer of an action, then you'd have stronger justification to guess that **paplin** means "**fisherman**." Such word formation clues can be powerful 
 tools in guessing the meaning of unknown words.
 
 In the next section of this strategy instruction, you will work on deciding how to prioritize which unfamiliar words you would look up in a dictionary.
