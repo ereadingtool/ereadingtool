@@ -668,8 +668,10 @@ viewFourthQuestion model =
                             )
                                 [ Html.text """The best answer here is: "gaze" """
                                 , Html.br [] []
-                                , Html.text """""binoculars" can't work because the article "a" ("he looked...with a most... profar") rules out the plural binoculars. "thirst" 
-                                would mix senses (looking with drinking), and so that seems awkward. "interest", "gaze", and "need" are all possible, but "gaze" best fits with the verb "looked." """
+                                , Html.text """
+""binoculars" can't work because the unknown word is modified by the article "a" ("he looked...with a most... profar") and that rules out the plural binoculars. "Thirst" seems 
+unlikely since it would create a mixed metaphor (one can drink with intense thirst, but looking pairs better with gaze). "Interest", "gaze", and "need" are all possible, but 
+"gaze" fits best with the verb "looked." """
                                 ]
 
                           else
@@ -696,7 +698,7 @@ viewFifthQuestion model =
             checkButtonClicked model "Activity1" "Question5"
     in
     div [ class "guide-question" ]
-        [ Html.div [] [ text "profar" ]
+        [ Html.div [] [ text "hasteled" ]
         , Html.form []
             [ input [ type_ "radio", name "activity1_question5", id "a1q5first", class "guide-question-button", onClick (UpdateAnswer "Activity1" "Question5" "Answer1") ] []
             , label [ for "a1q5first" ] [ getAnswerText model "Activity1" "Question5" "Answer1" ]
@@ -927,7 +929,7 @@ viewFifthSection =
 Guessing from background knowledge is a risky strategy, especially if you don't know a large number of words in the text.   Be sure to look up the word after guessing to confirm your hypothesis.
 
 You may be able to enhance your ability to guess from background knowledge if you can combine that strategy with some word recognition strategies. For example, in this text, if you knew that **pap** 
-meant "**fish**," and the suffix lin often signified the doer of an action, then you'd have stronger justification to guess that **paplin** means "fisherman." Such word formation clues can be powerful 
+meant "**fish**," and the suffix **lin** often signified the doer of an action, then you'd have stronger justification to guess that **paplin** means "fisherman." Such word formation clues can be powerful 
 tools in guessing the meaning of unknown words.
 
 In the next section of this strategy instruction, you will work on deciding how to prioritize which unfamiliar words you would look up in a dictionary.

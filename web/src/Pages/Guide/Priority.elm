@@ -495,12 +495,13 @@ viewFirstQuestion model =
                                 [ Html.text "Hasteled -- should be a high priority since it occurs three times in the last five lines"
                                 , Html.br [] []
                                 , Html.text "Fornoy -- should also be a priority, since it occurs twice in two different places in the text"
+                                , Html.br [] []
                                 , Html.text """Exbain -- should be a low priority. It occurs only once, and in the context it’s clear that it has to mean something 
                                 like "bench, seat, or cushion." Unless the word is absolutely key to a comprehension question, having the sense that it is 
                                 something in the range of "bench, seat, cushion" is probably sufficient."""
                                 , Html.br [] []
                                 , Html.text """Calput -- should be a low priority. It occurs only once, and in the context it’s clear that it has to be something 
-                                like "position, tilt, twist, bend of his head."""
+                                like "position, tilt, twist, bend" of his head."""
                                 ]
 
                           else
@@ -518,10 +519,16 @@ viewThirdSection : Html Msg
 viewThirdSection =
     Markdown.toHtml [] """
 ### Prioritize words to look up strategically
-What next to prioritize will depend on what your motivation for reading is. If you’re trying to follow the basic plot of a story, then look up nouns and verbs, so you know where, when, 
-who and what. If you’re trying to understand a character, then look up adjectives and phrases that are applied to that character. If you are trying to follow motivations of characters, then 
-looking up words in the clause that starts with the word “because….” might be most helpful. If you are reading a text for class, the comprehension questions your teacher has assigned can help 
-you prioritize what parts of the text you need to focus on.
+What next to prioritize will depend on what your motivation for reading is. 
+
+If you’re trying to follow the basic plot of a story, then look up nouns and verbs, so you know the answers to the 
+questions: where? when? who? what is happening? 
+
+If you’re trying to understand a character, then look up adjectives and phrases that are applied to that character. 
+
+If you are trying to follow motivations of characters, then looking up words in the clause that starts with the word “because….” might be most helpful. 
+
+If you are reading a text for class, the comprehension questions your teacher has assigned can help you prioritize what parts of the text you need to focus on.
 
 #### Unfamiliar words and their part of speech
 Part of prioritizing what words to look up is recognizing or having a strong sense as to the part of speech of the unfamiliar word. Using the grammar of the surrounding text, you can often 
@@ -598,7 +605,7 @@ viewSecondQuestion model =
                              else
                                 div [ class "incorrect-answer-guide" ]
                             )
-                                [ Html.text "The correct answer is \"adjective\". It describes the noun \"face\""
+                                [ Html.text "The correct answer is \"adjective\". It describes the noun \"face.\""
                                 ]
 
                           else
@@ -654,7 +661,7 @@ viewThirdQuestion model =
                              else
                                 div [ class "incorrect-answer-guide" ]
                             )
-                                [ Html.text "The correct answer is \"verb\". It follows the subject \"the girl\" and makes a complete thought, so it is most likely a verb. It also has the past tense ending (-ed) on it."
+                                [ Html.text "The correct answer is \"verb.\" It follows the subject \"the girl\" and makes a complete thought, so it is most likely a verb. It also has the past tense ending (-ed) on it."
                                 ]
 
                           else
@@ -710,7 +717,7 @@ viewFourthQuestion model =
                              else
                                 div [ class "incorrect-answer-guide" ]
                             )
-                                [ Html.text "The correct answer is \"noun\". The word is preceded by the indefinite article \"a\" which strongly suggests a noun."
+                                [ Html.text "The correct answer is \"noun.\" The word is preceded by the indefinite article \"a\" which strongly suggests a noun."
                                 ]
 
                           else
@@ -766,7 +773,7 @@ viewFifthQuestion model =
                              else
                                 div [ class "incorrect-answer-guide" ]
                             )
-                                [ Html.text "The correct answer is \"adjective\". It is used in an adjective phrase following \"a most...\" and it is also in parallel construction to \"searching\" and so it is being used as some kind of modifier to the noun profar."
+                                [ Html.text "The correct answer is \"adjective.\" It is used in an adjective phrase following \"a most...\" and it is also in parallel construction to \"searching\" and so it is being used as some kind of modifier to the noun profar."
                                 ]
 
                           else
@@ -822,7 +829,7 @@ viewSixthQuestion model =
                              else
                                 div [ class "incorrect-answer-guide" ]
                             )
-                                [ Html.text """The best answer here is "conjunction" since it connects two clauses "there was no..." and "he looked for something," it must be a conjunction, possibly "though" or "but."""
+                                [ Html.text """The best answer here is "conjunction" since it connects two clauses "there was no..." and "he looked for something," it must be a conjunction, possibly "though" or "but." """
                                 ]
 
                           else
@@ -878,7 +885,7 @@ viewSeventhQuestion model =
                              else
                                 div [ class "incorrect-answer-guide" ]
                             )
-                                [ Html.text """The best answer here is "adverb". It must be an adjective or adverb to be used in the phrase "as X as," and the "-ly" suffix suggests an adverb."""
+                                [ Html.text """The best answer here is "adverb." It must be an adjective or adverb to be used in the phrase "as X as," and the "-ly" suffix suggests an adverb."""
                                 ]
 
                           else
@@ -977,8 +984,8 @@ viewEigthQuestion model =
                              else
                                 div [ class "incorrect-answer-guide" ]
                             )
-                                [ Html.text """Choices "bazad" and "fisd" would be high priority in determining the emotional charge of this seen, since they both describe the girl's look at the man.
-                                Choices "fornoy" and "d" calbained are medium priority. Knowing the meaning of "fornoy" might help to clarify the bond/relationship between the man and the girl.
+                                [ Html.text """Choices "bazad" and "fisd" would be high priority in determining the emotional charge of this scene, since they both describe the girl's look at the man.
+                                Choices "fornoy" and "calbained" are medium priority. Knowing the meaning of "fornoy" might help to clarify the bond/relationship between the man and the girl.
                                 Since "calbained" is an action that the man does with his head, it might reveal how the man communicates with the girl.
                                 The choice "foslaint" would be lower priority, since it relates primarily to the man in the boat, and "foslaint" is likely to be a word of physical description for the man.
                                 The choice "divey" would be lowest priority, since it describes the boat, and is unlikely to give a direct indication of the emotional relationship between the man and the girl."""

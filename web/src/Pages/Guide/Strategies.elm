@@ -149,11 +149,11 @@ viewSecondSection =
     Markdown.toHtml [] """
 #### Reading for deeper comprehension.
 
-Now read the text (sentence, paragraph) again. This time around try to get as much as possible out of the text without drawing on your assumptions.
+Now read the text (sentence, paragraph) again. This time around, try to get as much as possible out of the text without drawing on your assumptions.
 
 When you’ve gotten to the end of this reading, try to summarize for yourself the main points by seeing how many questions like these you can answer: What happened? Who did it? When? Where? Why? How?
 
-Don’t worry if you can’t answer all those questions on the first deep reading. Go back and read again. Confirm your answers to the main points that you did get.  Add details or connections to those points. 
+Don’t worry if you can’t answer all those questions on the first deep reading. Go back and read again. Confirm your answers to the main points that you did get. Add details to those points or find the connections between them.
 If you’ve been having trouble reading to the end of the text (or paragraph or sentence), keep on reading even if you may lose the thread of what’s happening for a while.
 
 Now summarize the fuller picture you’ve gotten of the text (or sentence or paragraph).
@@ -169,8 +169,8 @@ viewThirdSection =
 After reading through a text twice or three times, you probably have a good idea of what words you need to check to make sure your hypotheses about the text are correct.
 
 Prioritize the words that you look up by picking key nouns or verbs first. They will give you more of the bones or the skeleton of the sentence. If you’ve got a good idea about all the “bones” or specific 
-facts, then you might check that you really understand the relationship between the facts by looking up the connectors that hold them together. If you’re sure of the facts, but you can’t make out the attitude 
-to the facts, look up some of the adjectives and adverbs since they will often reveal the author’s evaluation of the facts.
+facts, then you might check whether you really understand the relationship between the facts by looking up the connectors that hold them together. If you’re sure of the facts, but you can’t make out the 
+writer's attitude to the facts, look up some of the adjectives and adverbs since they will often reveal the author’s evaluation of the facts.
 
 Before you click to see a translation, take a guess about what the word means.Once you’ve looked up a word, fit the word into the whole sentence where it appears. Does confirming that word help you figure 
 out the rest of the sentence? If so, move on to the next sentence, and see if you can go further.

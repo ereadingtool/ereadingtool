@@ -397,7 +397,7 @@ viewThirdSection =
     Markdown.toHtml [] """
 ### Learning to read through unfamiliar words
 
-How many of the comprehension questions were you able to answer correctly? Did the presence of so many unfamiliar words keep you from forming a general impression of what is going on in this passage? 
+How many of the comprehension questions *who? what? when? where? why?* were you able to answer correctly? Did the presence of so many unfamiliar words keep you from forming a general impression of what is going on in this passage? 
 
 Which ones of your hypotheses about the text were accurate? Which ones did you need to abandon? Did trying to visualize what the scene might look like help you in reading the text?
 
@@ -571,9 +571,11 @@ viewThirdQuestion model =
                             )
                                 [ Html.text """The most likely answers are: "Small", "Plain", and "has oars". """
                                 , Html.br [] []
-                                , Html.text """That the boat is unfit for commercial purposes "he could not be a waterman...and he could not be a river-carrier" suggests its 
-                                small size; the list of things that it is missing ("no exbain for a sitter, no paint, no debilk, no bepult beyond a rusty calben and a lanop of rope") 
-                                suggests that it is poor and plain; and that it's a row boat is suggested in the phrase ("The girl zarred, pulling a pair of sculls very easily"). """
+                                , Html.text """
+We know that the boat is unfit for commercial purposes "he could not be a waterman...and he could not be a river-carrier" 
+suggests its small size; the list of things that it is missing ("no exbain for a sitter, no paint, no debilk, no bepult 
+beyond a rusty calben and a lanop of rope") suggests that the boat is poorly equipped and plain; and that it's a row boat is suggested in the phrase 
+("The girl zarred, pulling a pair of sculls very easily"). """
                                 ]
 
                           else
@@ -631,7 +633,7 @@ viewFourthQuestion model =
                             )
                                 [ Html.text """The best answer here is: Can't tell. """
                                 , Html.br [] []
-                                , Html.text """We can rule out choices involving fishing or hauling items since the text tells us that the man doesn't have a net or a line that he'd need for fishing, and 
+                                , Html.text """We can rule out the choices involving fishing or hauling items since the text tells us that the man doesn't have a net or a line that he'd need for fishing, and 
                                 the boat is unfit for the commercial purposes of river transport. A pleasure trip seems unlikely since the boat isn't particularly comfortable or well-appointed. 
                                 A rescue mission also is unlikely since there's no reference to urgency or someone in the water. """
                                 ]
@@ -688,10 +690,10 @@ viewFifthQuestion model =
                             )
                                 [ Html.text """The best answers here are: Anxious or Can't tell. """
                                 , Html.br [] []
-                                , Html.text """While the plainness of the boat and the absence of so many basics suggests that the people in the boat are very poor and that the 
-                                trip isn't to bring them pleasure, so "Cheerful" seems unlikely. "Bored" also seems unlikely since the man is described as looking for something 
-                                ("eager look out" and "what he looked for" and "searching."). The man's mood doesn't seem to be shared by the girl, and so that suggests some conflict 
-                                between the two, and so the mood might be tense or anxious. """
+                                , Html.text """
+Since the text mentions the plainness of the boat and the absence of so many features, it seems unlikely that the people in the boat are there for pleasure. For this reason, 
+"Cheerful" seems unlikely way to describe their mood. "Bored" also seems unlikely since the man is described as looking for something ("eager look out" and "what he looked for" 
+and "searching."). The man's mood doesn't seem to be shared by the girl, and so that suggests some conflict between the two, and so the mood might be tense or anxious. """
                                 ]
 
                           else
