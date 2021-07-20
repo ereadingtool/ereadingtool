@@ -126,15 +126,6 @@ viewTabs =
                 ]
                 [ text "Priority" ]
             ]
-        , div
-            [ class "guide-tab"
-            ]
-            [ a
-                [ href (Route.toString Route.Guide__Recognition)
-                , class "guide-link"
-                ]
-                [ text "Recognition" ]
-            ]
         ]
 
 
